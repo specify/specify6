@@ -89,10 +89,14 @@ public class RepResourcePropsPanel extends JPanel
      */
     protected void createUI(final  ReportSpecify rep)
     {
-        String rowDefStr = showTableIds ? "p,p,p,p,p,p,p,10dlu" : "p,p,p,p,p,p,10dlu"; //adding 10dlu lower padding to try  
-                                                                                       // to try to prevent selection
-                                                                                       // problems in ReportRepeatPanel 
-                                                                                       // typeCombo.
+//        String rowDefStr = showTableIds ? "p,p,p,p,p,p,p,10dlu" : "p,p,p,p,p,p,10dlu"; //adding 10dlu lower padding to try  
+//                                                                                       // to try to prevent selection
+//                                                                                       // problems in ReportRepeatPanel 
+//                                                                                       // typeCombo.
+
+        //Hiding Collection and Level
+        String rowDefStr = showTableIds ? "p,p,p,p,p,10dlu" : "p,p,p,p,10dlu"; 
+
         PanelBuilder builder = new PanelBuilder(new FormLayout("right:p, 2dlu, fill:p:grow", rowDefStr), this);
         CellConstraints cc = new CellConstraints();
         
@@ -107,12 +111,12 @@ public class RepResourcePropsPanel extends JPanel
         titleLbl.setVisible(false);
         titleTxt.setVisible(false);
         
-        builder.add(UIHelper.createLabel(UIRegistry.getResourceString("REP_LEVEL_LBL")), cc.xy(1,3));
+//        builder.add(UIHelper.createLabel(UIRegistry.getResourceString("REP_LEVEL_LBL")), cc.xy(1,3));
         levelTxt = UIHelper.createTextField("3");
         levelTxt.setEnabled(false);
-        builder.add(levelTxt, cc.xy(3, 3));
+//        builder.add(levelTxt, cc.xy(3, 3));
         
-        builder.add(UIHelper.createLabel(UIRegistry.getResourceString("REP_REPTYPE_LBL")), cc.xy(1,4));
+        builder.add(UIHelper.createLabel(UIRegistry.getResourceString("REP_REPTYPE_LBL")), cc.xy(1,3));
         typeCombo = UIHelper.createComboBox();
         typeCombo.addItem(UIRegistry.getResourceString("REP_REPORT"));
         typeCombo.addItem(UIRegistry.getResourceString("REP_LABEL"));
@@ -120,28 +124,28 @@ public class RepResourcePropsPanel extends JPanel
         {
             typeCombo.setSelectedIndex(1);
         }
-        builder.add(typeCombo, cc.xy(3, 4));
+        builder.add(typeCombo, cc.xy(3, 3));
         
-        builder.add(UIHelper.createLabel(UIRegistry.getResourceString("REP_RESDIR_LBL")), cc.xy(1,5));
-        resDirTxt = UIHelper.createTextField("Collection");
+//        builder.add(UIHelper.createLabel(UIRegistry.getResourceString("REP_RESDIR_LBL")), cc.xy(1,5));
+        resDirTxt = UIHelper.createTextField(MainFrameSpecify.DEFAULT_REPORT_RESOURCE_DIR);
         resDirTxt.setEnabled(false);
-        builder.add(resDirTxt, cc.xy(3, 5));
+//        builder.add(resDirTxt, cc.xy(3, 5));
 
         if (showTableIds)
         {
-            builder.add(UIHelper.createLabel(UIRegistry.getResourceString("REP_TBL_LBL")), cc.xy(1,6));
+            builder.add(UIHelper.createLabel(UIRegistry.getResourceString("REP_TBL_LBL")), cc.xy(1,4));
             tblCombo = UIHelper.createComboBox();
             fillTblCombo();
             tblCombo.setSelectedIndex(0);
-            builder.add(tblCombo, cc.xy(3, 6));
+            builder.add(tblCombo, cc.xy(3, 4));
         }
         
         if (rep != null)
         {
-            builder.add(UIHelper.createLabel(UIRegistry.getResourceString("REP_REPEAT_LBL")), cc.xy(1, showTableIds ? 7 : 6));
+            builder.add(UIHelper.createLabel(UIRegistry.getResourceString("REP_REPEAT_LBL")), cc.xy(1, showTableIds ? 5 : 4));
             repeatPanel = new ReportRepeatPanel(rep.getConnection(), canceller);
             repeatPanel.createUI(rep.getSpReport() == null ? null : rep.getSpReport().getRepeats());
-            builder.add(repeatPanel, cc.xy(3, showTableIds ? 7 : 6));
+            builder.add(repeatPanel, cc.xy(3, showTableIds ? 5 : 4));
         }
         else
         {

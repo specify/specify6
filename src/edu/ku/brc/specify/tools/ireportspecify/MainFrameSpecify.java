@@ -44,12 +44,13 @@ import javax.swing.UIManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.dom4j.Element;
 
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.ExperienceBlue;
 
-import edu.ku.brc.af.auth.UserAndMasterPasswordMgr;
 import edu.ku.brc.af.auth.SecurityMgr;
+import edu.ku.brc.af.auth.UserAndMasterPasswordMgr;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.af.core.PermissionIFace;
@@ -92,12 +93,16 @@ import edu.ku.brc.util.Pair;
  */
 public class MainFrameSpecify extends MainFrame
 {    
-    private static final Logger log = Logger.getLogger(MainFrameSpecify.class);
-    protected static final String REP_CHOOSE_REPORT = "REP_CHOOSE_REPORT";
-    
-    protected boolean refreshingConnections = false;
+    private static final Logger   log                         = Logger
+                                                                      .getLogger(MainFrameSpecify.class);
 
-    protected static Integer overwrittenReportId = null;
+    protected static final String    REP_CHOOSE_REPORT           = "REP_CHOOSE_REPORT";
+
+    public static final String DEFAULT_REPORT_RESOURCE_DIR = "Personal";
+
+    protected boolean             refreshingConnections       = false;
+
+    protected static Integer      overwrittenReportId         = null;
     
     /**
      * @param args -
@@ -266,13 +271,42 @@ public class MainFrameSpecify extends MainFrame
         if (resApp != null)
         {
             String metaData = resApp.getAppRes().getMetaData();
+            String newMetaData = "isimport=1";
+            try
+            {
+                Element element = XMLHelper.readFileToDOM4J(jasperFile);
+                List<?> parameters = element.selectNodes("/jasperReport/parameter");
+                boolean isDropSite = false;
+                for (Object p : parameters)
+                {
+                    Element param = (Element) p;
+                    if (param.attributeValue("name").equals(ReportsBaseTask.RECORDSET_PARAM))
+                    {
+                        isDropSite = true;
+                        break;
+                    }
+                }   
+                if (isDropSite)
+                {
+                    newMetaData += ";hasrsdropparam=1";
+                }
+                else
+                {
+                    newMetaData += ";hasrsdropparam=0";
+                }
+            }
+            catch (Exception e)
+            {
+                UIRegistry.getStatusBar().setErrorMessage(e.getLocalizedMessage(), e);
+                return false;
+            }
             if (StringUtils.isEmpty(metaData))
             {
-                metaData = "isimport=1";
+                metaData = newMetaData;
             }
             else
             {
-                metaData += ";isimport=1";
+                metaData += ";" + newMetaData;
             }
             resApp.getAppRes().setMetaData(metaData);
             return saveXML(xml, resApp, null, false);
@@ -391,7 +425,7 @@ public class MainFrameSpecify extends MainFrame
             if (newRep && !result)
             {
                 //XXX - more 'Collection' hard-coding
-                AppContextMgr.getInstance().removeAppResource("Collection", appRes);
+                AppContextMgr.getInstance().removeAppResource(DEFAULT_REPORT_RESOURCE_DIR, appRes);
             }
             session.close();
         }
@@ -484,7 +518,7 @@ public class MainFrameSpecify extends MainFrame
         if (!saveAs)
     	{
             appRes = spRep == null ? 
-    	        AppContextMgr.getInstance().getResourceFromDir("Collection", jrf.getReport().getName()) :
+    	        AppContextMgr.getInstance().getResourceFromDir(DEFAULT_REPORT_RESOURCE_DIR, jrf.getReport().getName()) :
     	            spRep.getAppResource();
     	}
         if (appRes != null)
@@ -525,7 +559,7 @@ public class MainFrameSpecify extends MainFrame
     private static AppResAndProps getAppRes(final String appResName, final Integer tableid, final boolean confirmOverwrite)
     {
         //XXX - hard-coded for 'Collection' directory.
-        AppResourceIFace resApp = AppContextMgr.getInstance().getResourceFromDir("Collection", appResName);
+        AppResourceIFace resApp = AppContextMgr.getInstance().getResourceFromDir(DEFAULT_REPORT_RESOURCE_DIR, appResName);
         if (resApp != null)
         {
             if (!confirmOverwrite)
@@ -594,7 +628,7 @@ public class MainFrameSpecify extends MainFrame
             //XXX - more 'Collection' dir hard-coding
             else 
             {
-            	match = (SpAppResource )AppContextMgr.getInstance().getResourceFromDir("Collection", propPanel.getNameTxt().getText());
+            	match = (SpAppResource )AppContextMgr.getInstance().getResourceFromDir(DEFAULT_REPORT_RESOURCE_DIR, propPanel.getNameTxt().getText());
             	if (match != null)
             	{
             		if (appRes == null || !((SpAppResource )appRes).getId().equals(match.getId()))
@@ -664,7 +698,7 @@ public class MainFrameSpecify extends MainFrame
             {
                 //XXX - which Dir???
                 //XXX - what level???
-                modifiedRes = AppContextMgr.getInstance().createAppResourceForDir("Collection");
+                modifiedRes = AppContextMgr.getInstance().createAppResourceForDir(DEFAULT_REPORT_RESOURCE_DIR);
             }
             else
             {

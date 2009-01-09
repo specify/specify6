@@ -93,33 +93,36 @@ public class ReportsBaseTask extends BaseTask
     protected static final Logger log = Logger.getLogger(ReportsBaseTask.class);
             
     // Static Data Members
-    public static final String     REPORTS      = "Reports";
-    public static final String     REPORTS_MIME = "jrxml/report";
-    public static final String     LABELS_MIME  = "jrxml/label";
+    public static final String           REPORTS             = "Reports";
+    public static final String           REPORTS_MIME        = "jrxml/report";
+    public static final String           LABELS_MIME         = "jrxml/label";
+    public static final String           RECORDSET_PARAM     = "itemnum";
 
-    //public static final String DOLABELS_ACTION     = "DoLabels";
-    public static final String NEWRECORDSET_ACTION = "RPT.NewRecordSet";
-    public static final String PRINT_REPORT        = "RPT.PrintReport";
-    public static final String OPEN_EDITOR         = "RPT.OpenEditor";
-    public static final String RUN_REPORT          = "RPT.RunReport";
-    public static final String REFRESH             = "RPT.Refresh";
-    public static final String IMPORT              = "RPT.Import";
-    public static final String REPORT_DELETED      = "RPT.ReportDeleted";
+    // public static final String DOLABELS_ACTION = "DoLabels";
+    public static final String           NEWRECORDSET_ACTION = "RPT.NewRecordSet";
+    public static final String           PRINT_REPORT        = "RPT.PrintReport";
+    public static final String           OPEN_EDITOR         = "RPT.OpenEditor";
+    public static final String           RUN_REPORT          = "RPT.RunReport";
+    public static final String           REFRESH             = "RPT.Refresh";
+    public static final String           IMPORT              = "RPT.Import";
+    public static final String           REPORT_DELETED      = "RPT.ReportDeleted";
 
     // Data Members
-    protected DataFlavor              defaultFlavor    = null;
-    protected DataFlavor              spReportFlavor   = new DataFlavor(SpReport.class, "SpReport");
-    protected DataFlavor              runReportFlavor  = new DataFlavor(SpReport.class, RUN_REPORT);
-    protected List<Pair<String,String>>   navMimeDefs      = null;
-    protected Vector<NavBoxIFace>     extendedNavBoxes = new Vector<NavBoxIFace>();
-    protected Vector<NavBoxItemIFace> reportsList      = new Vector<NavBoxItemIFace>();
-    protected NavBox                  actionNavBox     = null;
-    protected NavBox                  reportsNavBox    = null;
-    protected NavBox                  labelsNavBox     = null;
-    protected String                  reportHintKey    = "REPORT_TT";
+    protected DataFlavor                 defaultFlavor       = null;
+    protected DataFlavor                 spReportFlavor      = new DataFlavor(SpReport.class,
+                                                                     "SpReport");
+    protected DataFlavor                 runReportFlavor     = new DataFlavor(SpReport.class,
+                                                                     RUN_REPORT);
+    protected List<Pair<String, String>> navMimeDefs         = null;
+    protected Vector<NavBoxIFace>        extendedNavBoxes    = new Vector<NavBoxIFace>();
+    protected Vector<NavBoxItemIFace>    reportsList         = new Vector<NavBoxItemIFace>();
+    protected NavBox                     actionNavBox        = null;
+    protected NavBox                     reportsNavBox       = null;
+    protected NavBox                     labelsNavBox        = null;
+    protected String                     reportHintKey       = "REPORT_TT";
 
     // temp data
-    protected NavBoxItemIFace         oneNbi           = null;
+    protected NavBoxItemIFace            oneNbi              = null;
 
     //iReport MainFrame
     //protected static MainFrameSpecify iReportMainFrame   = null;
@@ -207,11 +210,16 @@ public class ReportsBaseTask extends BaseTask
                 params.put("title", ap.getDescription()); //$NON-NLS-1$
                 params.put("file", ap.getName()); //$NON-NLS-1$
                 params.put("mimetype", mimeType); //$NON-NLS-1$
-                if (params.get("isimport") != null)
+                Object param = params.get("isimport");
+                if (param != null && param.equals("1"))
                 {
                     params.put("appresource", ap);
                 }
-
+                param = params.get("hasrsdropparam");
+                if (param != null)
+                {
+                    params.put(RECORDSET_PARAM, param);
+                }
                 String localIconName = params.getProperty("icon"); //$NON-NLS-1$
                 if (StringUtils.isEmpty(localIconName))
                 {
@@ -346,10 +354,13 @@ public class ReportsBaseTask extends BaseTask
         
         RolloverCommand roc = (RolloverCommand)nbi;
         String tblIdStr = tcd.getParams().getProperty("tableid");
-        if (StringUtils.isEmpty(tblIdStr))
+        String dropStr = tcd.getParams().getProperty("hasrsdropparam");
+        String impStr = tcd.getParams().getProperty("isimport");
+        boolean canBeRsDropSite = dropStr != null ? dropStr.equals("1") : true;
+        if (StringUtils.isEmpty(tblIdStr) && canBeRsDropSite)
         {
             roc.addDropDataFlavor(RecordSetTask.RECORDSET_FLAVOR);
-        } else if (tblContext == null)
+        } else if (tblContext == null && canBeRsDropSite)
         {
             DataFlavorTableExt dfx = new DataFlavorTableExt(RecordSetTask.RECORDSET_FLAVOR.getDefaultRepresentationClass(), 
                     RecordSetTask.RECORDSET_FLAVOR.getHumanPresentableName(), new int[] {Integer.parseInt(tblIdStr)});
@@ -357,6 +368,10 @@ public class ReportsBaseTask extends BaseTask
         }
         
         //roc.addDragDataFlavor(defaultFlavor);
+        if (impStr != null && impStr.equals("1") && !canBeRsDropSite)
+        {
+            roc.addDragDataFlavor(spReportFlavor);
+        }
         
         if (cmdAction.getProperties().get("spreport") != null)
         {
@@ -664,18 +679,21 @@ public class ReportsBaseTask extends BaseTask
             params.putAll(UIHelper.parseProperties(paramList));
         }
         
-        if (cmdAction.getData() instanceof RecordSetIFace)
+        String impStr = params.getProperty("isimport");
+        String rsDropStr = params.getProperty("hasrsdropparam");
+        boolean canRunWithoutRS = impStr != null && impStr.equals("1") && rsDropStr != null && rsDropStr.equals("0");
+        if (cmdAction.getData() instanceof RecordSetIFace || canRunWithoutRS)
         {
-            RecordSetIFace recordSet = (RecordSetIFace)cmdAction.getData();
+            RecordSetIFace recordSet = cmdAction.getData() instanceof RecordSetIFace ? (RecordSetIFace)cmdAction.getData() : null;
             
             // XXX For the Demo and until I revist a generalized way of associating a default set of reports and labels
             // to To things. One way to get here with a null title is to click on the Labels btn from the search results
-            if (recordSet.getDbTableId() != null && recordSet.getDbTableId() == 1 && cmdAction.getPropertyAsString("title") == null)
+            if (recordSet != null && recordSet.getDbTableId() != null && recordSet.getDbTableId() == 1 && cmdAction.getPropertyAsString("title") == null)
             {
                 cmdAction.setProperty("file", "fish_label.jrxml");
                 cmdAction.setProperty("title", "Fish Labels");
                 
-            } else if (recordSet.getDbTableId() != null && recordSet.getDbTableId() == 52 && cmdAction.getPropertyAsString("title") == null)
+            } else if (recordSet != null && recordSet.getDbTableId() != null && recordSet.getDbTableId() == 52 && cmdAction.getPropertyAsString("title") == null)
             {
                 // XXX For the Demo and until I revist a generalized way of associating a default set of reports and labels
                 // to To things. One way to get here with a null title is to click on the Labels btn from the search results
@@ -684,7 +702,7 @@ public class ReportsBaseTask extends BaseTask
             }
 
 
-            if (checkForALotOfLabels(recordSet))
+            if (recordSet == null || checkForALotOfLabels(recordSet))
             {
                 String labelFileName = cmdAction.getPropertyAsString("file");
                 
@@ -773,9 +791,9 @@ public class ReportsBaseTask extends BaseTask
                 }
             }
         }
-        else if (cmdAction.isAction(PRINT_REPORT))
+        else if (cmdAction.isAction(PRINT_REPORT) )
         {
-            if (cmdAction.getData() instanceof CommandAction && ((CommandAction)cmdAction.getData()).isAction(RUN_REPORT))
+            if (data instanceof CommandAction && ((CommandAction)data).isAction(RUN_REPORT))
             {
                 runReport(cmdAction);
             }
@@ -797,7 +815,14 @@ public class ReportsBaseTask extends BaseTask
             }
             else 
             {
-                printReport(cmdAction);
+                if (data instanceof CommandAction && ((CommandAction )data).isAction(PRINT_REPORT))
+                {
+                    printReport((CommandAction )data);
+                }
+                else
+                {
+                    printReport(cmdAction);
+                }
             }
         }
 //        else if (cmdAction.isAction(OPEN_EDITOR))
@@ -806,7 +831,19 @@ public class ReportsBaseTask extends BaseTask
 //        }
         else if (cmdAction.isAction(RUN_REPORT))
         {
-            runReport(cmdAction);
+            boolean doRun = true;
+            if (data instanceof CommandAction && ((CommandAction )data).isAction(PRINT_REPORT))
+            {
+                doRun = ((CommandAction )data).getProperty("spreport") != null;
+            }
+            if (doRun)
+            {
+                runReport(cmdAction);
+            }
+            else
+            {
+                printReport((CommandAction )data);
+            }
         }
         else if (cmdAction.isAction(REFRESH))
         {

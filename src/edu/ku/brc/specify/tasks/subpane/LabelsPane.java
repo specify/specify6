@@ -201,6 +201,11 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
             this.recordSet  = null;
             this.dataSource = (JRDataSource)data;
         }
+        else
+        {
+            this.recordSet = null;
+            this.dataSource = null;
+        }
         this.params    = paramsArg;
 
         AppResourceIFace appRes    = AppContextMgr.getInstance().getResource(mainReportName); 
@@ -304,11 +309,6 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
                                 + File.separator);
                         parameters.put("DATASOURCE", dataSource);
 
-                        if (recordSet != null)
-                        {
-                            parameters.put("itemnum", DBTableIdMgr.getInstance().getInClause(
-                                    recordSet));
-                        }
                         if (size > virtualizerThresholdSize)
                         {
                             JRFileVirtualizer fileVirtualizer = new JRFileVirtualizer(10);
@@ -323,6 +323,11 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
                                 parameters.put(key, params.get(key));
                             }
                         }
+                        if (recordSet != null)
+                        {
+                            parameters.put("itemnum", DBTableIdMgr.getInstance().getInClause(
+                                    recordSet));
+                        }
 
                         // XXX What about losing a connection here?
                         if (requiresHibernate)
@@ -334,7 +339,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
                         }
 
                         progressLabel.setText(getResourceString("JasperReportFilling"));
-                        if (recordSet != null)
+                        if (recordSet != null || (recordSet == null && dataSource == null))
                         {
                             asyncFillHandler = AsynchronousFillHandle.createHandle(jasperReport,
                                     parameters, DBConnection.getInstance().getConnection());
