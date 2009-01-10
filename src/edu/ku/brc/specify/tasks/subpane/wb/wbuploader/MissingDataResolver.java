@@ -125,6 +125,8 @@ public class MissingDataResolver implements ActionListener
             }
             catch (UploaderException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(MissingDataResolver.class, ex);
             	UIRegistry.showError(ex.getLocalizedMessage());
             }
             uiTbl.setModel(bldModel(false));

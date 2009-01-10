@@ -42,6 +42,8 @@ public class CacheManager
                 }
                 catch (Exception e)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(CacheManager.class, e);
                     log.error("Error shutting down registered cache", e);
                 }
             }

@@ -9,15 +9,9 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 
-import java.util.List;
-import java.util.Vector;
-
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.af.core.ServiceInfo;
 import edu.ku.brc.af.ui.db.QueryForIdResultsIFace;
-import edu.ku.brc.specify.tasks.DataEntryTask;
-import edu.ku.brc.specify.tasks.RecordSetTask;
 import edu.ku.brc.specify.tasks.subpane.ESResultsTablePanel;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
 import edu.ku.brc.specify.ui.db.ResultSetTableModel;

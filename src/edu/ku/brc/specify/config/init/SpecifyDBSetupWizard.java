@@ -641,6 +641,8 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
         }
         catch (Exception e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyDBSetupWizard.class, e);
             e.printStackTrace();
         }
         

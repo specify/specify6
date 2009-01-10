@@ -559,6 +559,8 @@ public class DataModelClassGenerator extends JFrame
                 }
                 catch (Exception e)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataModelClassGenerator.class, e);
                     //log.error("Can't change L&F: ", e);
                 }
                 DataModelClassGenerator dmcg = new DataModelClassGenerator(Appraisal.class);

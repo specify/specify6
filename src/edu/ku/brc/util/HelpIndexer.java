@@ -73,6 +73,8 @@ public class HelpIndexer
         }
         catch (IOException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(HelpIndexer.class, ex);
             System.out.println("Error reading map file: " + ex.getMessage());
             return;
         }
@@ -110,6 +112,8 @@ public class HelpIndexer
         }
         catch (IOException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(HelpIndexer.class, ex);
             System.out.println("error writing output file: " + ex.getMessage());
         }
     }
@@ -123,6 +127,8 @@ public class HelpIndexer
         }
         catch (IOException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(HelpIndexer.class, ex);
             System.out.println("error processing file: " + file.getName());
             return null;
         }
@@ -201,6 +207,8 @@ public class HelpIndexer
         }
         catch (IOException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(HelpIndexer.class, ex);
             System.out.println("error processing file: " + file.getName());
             return;
         }

@@ -167,6 +167,8 @@ public class WorkbenchBackupMgr
         }
         catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchBackupMgr.class, ex);
             log.error(ex);
         }
         return backupName;

@@ -625,6 +625,8 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         } 
         catch (SQLException ex)
         {
+            UsageTracker.incrSQLUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BaseTreeTask.class, ex);
             log.error("SQLException: " + ex.toString()); //$NON-NLS-1$
             log.error(ex.getMessage());
             

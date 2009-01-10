@@ -105,6 +105,8 @@ public class BrowserLauncherBtn extends JButton implements GetSetValueIFace
         }
         catch (Exception e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BrowserLauncherBtn.class, e);
             String errorMsg = String.format(getResourceString("ERROR_CANT_OPEN_URL"), new Object[] {urlBuilder.toString()});
             UIRegistry.getStatusBar().setErrorMessage(errorMsg, e);
         }

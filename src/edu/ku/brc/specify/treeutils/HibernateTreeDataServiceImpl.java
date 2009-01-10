@@ -889,6 +889,8 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
                 }
                 catch (Exception e)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(HibernateTreeDataServiceImpl.class, e);
                     tx.rollback();
                     return false;
                 }
@@ -1186,6 +1188,8 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         }
         catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(HibernateTreeDataServiceImpl.class, ex);
             result = false;
             log.error("Error while committing transaction to DB",ex);
             tx.rollback();

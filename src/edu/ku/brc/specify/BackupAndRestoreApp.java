@@ -726,6 +726,8 @@ public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener
         }
         catch (Exception e)
         {
+            UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BackupAndRestoreApp.class, e);
             log.error("Can't change L&F: ", e); //$NON-NLS-1$
         }
         

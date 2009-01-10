@@ -337,6 +337,8 @@ public class Uploader implements ActionListener, KeyListener
                     }
                     catch (CloneNotSupportedException ex)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
                         log.error(ex);
                         continue;
                     }
@@ -500,6 +502,8 @@ public class Uploader implements ActionListener, KeyListener
             }
             catch (DirectedGraphException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
                 throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
             }
             // find the 'right' rel. ie: discard Agent ->> ModifiedByAgentID/CreatedByAgentID
@@ -564,6 +568,8 @@ public class Uploader implements ActionListener, KeyListener
                     }
                     catch (UploaderException ex)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
                         throw ex;
                     }
                 }
@@ -735,6 +741,8 @@ public class Uploader implements ActionListener, KeyListener
                     }
                     catch (NumberFormatException e)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, e);
                         genSpPresent = false;
                     }
                 }
@@ -876,6 +884,8 @@ public class Uploader implements ActionListener, KeyListener
         }
         catch (DirectedGraphException e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, e);
             logDebug(e);
             throw new UploaderException(e, UploaderException.ABORT_IMPORT);
         }
@@ -921,6 +931,8 @@ public class Uploader implements ActionListener, KeyListener
             }
             catch (DirectedGraphException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
                 throw new UploaderException(ex);
             }
             parentTbl = rankTbl;
@@ -994,6 +1006,8 @@ public class Uploader implements ActionListener, KeyListener
                         }
                         catch (DirectedGraphException ex)
                         {
+                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
                             throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
                         }
                     }
@@ -1185,6 +1199,8 @@ public class Uploader implements ActionListener, KeyListener
                 }
                 catch (DirectedGraphException ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
                     throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
                 }
             }
@@ -1194,10 +1210,14 @@ public class Uploader implements ActionListener, KeyListener
             }
             catch (ClassNotFoundException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
                 throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
             }
             catch (NoSuchMethodException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
                 throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
             }
         }
@@ -1231,6 +1251,8 @@ public class Uploader implements ActionListener, KeyListener
         }
         catch (DirectedGraphException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
             throw new UploaderException(ex);
         }
     }
@@ -1293,6 +1315,8 @@ public class Uploader implements ActionListener, KeyListener
                 }
                 catch (Exception ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
                     setOpKiller(ex);
                     return false;
                 }
@@ -1659,6 +1683,8 @@ public class Uploader implements ActionListener, KeyListener
         }
         catch (DirectedGraphException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
             throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
         }
         
@@ -1679,6 +1705,8 @@ public class Uploader implements ActionListener, KeyListener
             }
             catch (ClassNotFoundException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
                 log.error(ex);
                 return null;
             }
@@ -1693,6 +1721,8 @@ public class Uploader implements ActionListener, KeyListener
             }
             catch (NoSuchMethodException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
                 log.error(ex);
                 return null;
             }
@@ -2207,6 +2237,8 @@ public class Uploader implements ActionListener, KeyListener
                         }
                         catch (ClassNotFoundException ex)
                         {
+                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
                             log.error(ex);
                             return null;
                         }
@@ -2221,6 +2253,8 @@ public class Uploader implements ActionListener, KeyListener
                         }
                         catch (NoSuchMethodException ex)
                         {
+                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
                             log.error(ex);
                             return null;
                         }
@@ -2236,6 +2270,8 @@ public class Uploader implements ActionListener, KeyListener
                 }
                 catch (Exception ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
                     setOpKiller(ex);
                     return false;
                 }
@@ -2511,6 +2547,8 @@ public class Uploader implements ActionListener, KeyListener
                     }
                     catch (UploaderException ex)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
                         throw new RuntimeException(ex);
                     }
                 }
@@ -3123,6 +3161,8 @@ public class Uploader implements ActionListener, KeyListener
                             }
                             catch (UploaderException ex)
                             {
+                                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
                                 if (ex.getStatus() == UploaderException.ABORT_ROW)
                                 {
                                     logDebug(ex.getMessage());
@@ -3149,6 +3189,8 @@ public class Uploader implements ActionListener, KeyListener
                 }
                 catch (Exception ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
                     setOpKiller(ex);
                     return false;
                 }
@@ -3304,6 +3346,8 @@ public class Uploader implements ActionListener, KeyListener
                     }
                     catch (Exception ex)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
                         setOpKiller(ex);
                         return false;
                     }
@@ -3569,6 +3613,8 @@ public class Uploader implements ActionListener, KeyListener
                 }
                 catch (Exception ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
                     setOpKiller(ex);
                     return false;
                 }
@@ -3631,6 +3677,8 @@ public class Uploader implements ActionListener, KeyListener
         }
         catch (UploaderException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
             logDebug(ex.getMessage() + " (" + t.getTable().getName() + ", row "
                     + Integer.toString(row) + ")");
             throw ex;
@@ -3733,6 +3781,8 @@ public class Uploader implements ActionListener, KeyListener
                 }
                 catch (Exception ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
                     session.rollback();
                     throw new RuntimeException(ex);
                 }
@@ -3740,6 +3790,8 @@ public class Uploader implements ActionListener, KeyListener
         }
         catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
             throw new RuntimeException(ex);
         }
         finally

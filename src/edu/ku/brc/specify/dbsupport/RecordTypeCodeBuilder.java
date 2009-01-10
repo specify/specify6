@@ -66,11 +66,15 @@ public class RecordTypeCodeBuilder
                 }
                 catch (InvocationTargetException ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RecordTypeCodeBuilder.class, ex);
                     log.error(ex);
                     return null;
                 }
                 catch (IllegalAccessException ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RecordTypeCodeBuilder.class, ex);
                     log.error(ex);
                     return null;
                 }
@@ -78,6 +82,8 @@ public class RecordTypeCodeBuilder
         }
         catch (NoSuchMethodException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RecordTypeCodeBuilder.class, ex);
             //ignore it and move on.
         }
         log.debug("returning null TypeCodes for " + tblClass.getName());
@@ -136,11 +142,15 @@ public class RecordTypeCodeBuilder
                 }
                 catch (InvocationTargetException ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RecordTypeCodeBuilder.class, ex);
                     log.error(ex);
                     return false;
                 }
                 catch (IllegalAccessException ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RecordTypeCodeBuilder.class, ex);
                     log.error(ex);
                     return false;
                 }
@@ -148,6 +158,8 @@ public class RecordTypeCodeBuilder
         }
         catch (NoSuchMethodException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RecordTypeCodeBuilder.class, ex);
             //ignore it and move on.
         }
         return false;

@@ -102,6 +102,8 @@ public class AttachmentReferenceBaseBusRules extends BaseBusRules
                     }
                     catch (Exception e)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AttachmentReferenceBaseBusRules.class, e);
                         log.error("Failed to delete Attachment record from database", e);
                         
                     } finally
@@ -114,6 +116,8 @@ public class AttachmentReferenceBaseBusRules extends BaseBusRules
                 }
                 catch (IOException e)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AttachmentReferenceBaseBusRules.class, e);
                     log.warn("Failed to delete attachment files from disk", e);
                 }
             }

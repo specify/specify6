@@ -55,6 +55,8 @@ public class RelQRI extends FieldQRI
         }
         catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RelQRI.class, ex);
             ex.printStackTrace();
             iconName = "BlankIcon";
             title = "????";

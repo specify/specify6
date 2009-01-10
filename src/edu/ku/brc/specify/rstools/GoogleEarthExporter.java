@@ -148,6 +148,8 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
                 }
                 catch (Exception e)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(GoogleEarthExporter.class, e);
                 	log.warn("Failed to open external viewer (e.g. Google Earth) for KML file", e);
                     String errorMessage = getResourceString("GOOGLE_EARTH_ERROR");
                     UIRegistry.getStatusBar().setErrorMessage(errorMessage,e);
@@ -155,6 +157,8 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
             }
             catch (Exception e)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(GoogleEarthExporter.class, e);
                 log.error("Exception caught while creating KML output or opening Google Earth", e);
                 String errorMessage = getResourceString("KML_EXPORT_ERROR");
                 UIRegistry.getStatusBar().setErrorMessage(errorMessage,e);

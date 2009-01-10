@@ -544,6 +544,8 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                     }
                     catch (StaleObjectException e1)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TreeDefinitionEditor.class, e1);
                         // another user or process has changed the data "underneath" us
                         UIRegistry.showLocalizedError("UPDATE_DATA_STALE"); //$NON-NLS-1$
                         if (session != null)
@@ -587,6 +589,8 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                     }
                     catch (Exception e)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TreeDefinitionEditor.class, e);
                         success = false;
                         UIRegistry.showLocalizedError("UNRECOVERABLE_DB_ERROR"); //$NON-NLS-1$
 
@@ -701,6 +705,8 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
             }
             catch (Exception e)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TreeDefinitionEditor.class, e);
                 System.err.println(e);
             }
         }
@@ -944,6 +950,8 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                     }
                     catch (Exception e)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TreeDefinitionEditor.class, e);
                         success = false;
                         UIRegistry.showLocalizedError("UNRECOVERABLE_DB_ERROR"); //$NON-NLS-1$
 
@@ -1083,6 +1091,8 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                 }
                 catch (StaleObjectException e1)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TreeDefinitionEditor.class, e1);
                     // another user or process has changed the data "underneath" us
                     UIRegistry.showLocalizedError("UPDATE_DATA_STALE"); //$NON-NLS-1$
 
@@ -1177,6 +1187,8 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                 }
                 catch (Exception e)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TreeDefinitionEditor.class, e);
                     success = false;
                     UIRegistry.showLocalizedError("UNRECOVERABLE_DB_ERROR"); //$NON-NLS-1$
 
@@ -1298,6 +1310,8 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                     }
                     catch (StaleObjectException e1)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TreeDefinitionEditor.class, e1);
                         // another user or process has changed the data "underneath" us
                         UIRegistry.showLocalizedError("UPDATE_DATA_STALE"); //$NON-NLS-1$
 
@@ -1336,6 +1350,8 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                     }
                     catch (Exception e)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TreeDefinitionEditor.class, e);
                         success = false;
                         UIRegistry.showLocalizedError("UNRECOVERABLE_DB_ERROR"); //$NON-NLS-1$
 

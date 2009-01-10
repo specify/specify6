@@ -7,7 +7,6 @@
 package edu.ku.brc.specify.ui;
 
 import java.io.File;
-import java.net.URL;
 import java.util.Hashtable;
 
 import javax.swing.ListCellRenderer;
@@ -72,6 +71,8 @@ public class RepresentativeTextFactory implements ObjectTextMapper
             }
             catch (Exception e)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RepresentativeTextFactory.class, e);
                 e.printStackTrace();
                 log.error("An error occurred while configuring RepresentativeTextFactory.");
             }

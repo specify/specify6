@@ -173,6 +173,8 @@ public class IconViewObj implements Viewable
         }
         catch (ClassNotFoundException e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(IconViewObj.class, e);
             log.error("Data class of view cannot be found", e);
         }
     }

@@ -576,6 +576,8 @@ public class Division extends UserGroupScope implements java.io.Serializable, Co
         } 
         catch (SQLException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Division.class, ex);
             System.err.println("SQLException: " + ex.toString()); //$NON-NLS-1$
             System.err.println(ex.getMessage());
             

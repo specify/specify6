@@ -643,6 +643,8 @@ public class DateConverter
         }
         catch (ParseException pe)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DateConverter.class, pe);
             System.out.println(pe.getMessage());
         }
     }

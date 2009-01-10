@@ -6,10 +6,8 @@
  */
 package edu.ku.brc.services.biogeomancer;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
 import java.util.List;
 
 import org.apache.commons.httpclient.HttpClient;

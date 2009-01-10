@@ -1294,11 +1294,15 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         }
         catch (DirectedGraphException ex)
         {
+            UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
             UIRegistry.clearGlassPaneMsg();
             UIRegistry.getStatusBar().setErrorMessage(ex.getMessage());
         }
         catch (UploaderException ex)
         {
+            UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
             UIRegistry.clearGlassPaneMsg();
             UIRegistry.getStatusBar().setErrorMessage(ex.getMessage());
         }

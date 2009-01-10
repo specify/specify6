@@ -193,11 +193,15 @@ public class DataDict
         }
         catch (IOException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataDict.class, ex);
             System.err.println(file.getAbsolutePath());
             ex.printStackTrace();
         }
         catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataDict.class, ex);
             ex.printStackTrace();
         }
     }

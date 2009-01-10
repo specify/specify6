@@ -187,6 +187,8 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
             }
             catch (StaleStateException sse)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(HibernateDataProviderSession.class, sse);
                 throw new StaleObjectException(sse);
             }
             return mergedObj;

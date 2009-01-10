@@ -542,10 +542,14 @@ public class UserAndMasterPasswordMgr
         } 
         catch (MalformedURLException mue) 
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UserAndMasterPasswordMgr.class, mue);
             mue.printStackTrace();
         } 
         catch (IOException ioe) 
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UserAndMasterPasswordMgr.class, ioe);
             ioe.printStackTrace();
             
         } catch (Exception ex) 

@@ -872,6 +872,8 @@ public class EMailHelper
                 }
                 catch (MessagingException mex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(EMailHelper.class, mex);
                     instance.lastErrorMsg = mex.toString();
                     
                     Exception ex = null;

@@ -135,6 +135,8 @@ public class SpecifySecurityMgr extends SecurityMgr
         } 
         catch (java.lang.ClassNotFoundException e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifySecurityMgr.class, e);
             log.error("authenticateDB - Could not connect to database, driverclass - ClassNotFoundException: "); //$NON-NLS-1$
             log.error(e.getMessage());
             e.printStackTrace();
@@ -142,6 +144,8 @@ public class SpecifySecurityMgr extends SecurityMgr
         }
         catch (SQLException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifySecurityMgr.class, ex);
             log.error("authenticateDB - SQLException: " + ex.toString()); //$NON-NLS-1$
             log.error("authenticateDB - " + ex.getMessage()); //$NON-NLS-1$
             throw new LoginException("authenticateDB - SQLException: " + ex.getMessage()); //$NON-NLS-1$
@@ -262,6 +266,8 @@ public class SpecifySecurityMgr extends SecurityMgr
         }
         catch (Exception e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifySecurityMgr.class, e);
             throw new RuntimeException(e);
         }
         
@@ -299,6 +305,8 @@ public class SpecifySecurityMgr extends SecurityMgr
         }
         catch (Exception e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifySecurityMgr.class, e);
             throw new RuntimeException(e);
         }
         

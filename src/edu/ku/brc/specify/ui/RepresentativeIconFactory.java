@@ -77,6 +77,8 @@ public class RepresentativeIconFactory implements ObjectIconMapper
             }
             catch (Exception e)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RepresentativeIconFactory.class, e);
                 e.printStackTrace();
                 log.error("An error occurred while configuring RepresentativeIconFactory.");
             }

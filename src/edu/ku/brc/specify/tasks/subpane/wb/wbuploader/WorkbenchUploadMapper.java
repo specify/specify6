@@ -252,6 +252,8 @@ public class WorkbenchUploadMapper
                 }
                 catch (java.lang.NumberFormatException numEx)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchUploadMapper.class, numEx);
                     log.error("Bad number format in workbench upload def file: "
                             + DatamodelHelper.getDatamodelFilePath());
                     return null;
@@ -324,11 +326,15 @@ public class WorkbenchUploadMapper
         }
         catch (FileNotFoundException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchUploadMapper.class, ex);
             log.error(ex);
             return null;
         }
         catch (DocumentException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchUploadMapper.class, ex);
             log.error(ex);
             return null;
         }
@@ -349,6 +355,8 @@ public class WorkbenchUploadMapper
         }
         catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchUploadMapper.class, ex);
             if (ex instanceof UploaderException)
             {
                 throw (UploaderException )ex;

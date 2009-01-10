@@ -201,6 +201,8 @@ public class PluginsTask extends BaseTask
                 }
                 catch (Exception e)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PluginsTask.class, e);
                     log.warn("Failed to instantiate an exporter",e);
                     continue;
                 }
@@ -376,6 +378,8 @@ public class PluginsTask extends BaseTask
         }
         catch (Exception e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PluginsTask.class, e);
             log.error("Exception while exporting a RecordSet", e);
             JStatusBar statusBar = UIRegistry.getStatusBar();
             statusBar.setErrorMessage(e.getMessage(), e);
@@ -397,6 +401,8 @@ public class PluginsTask extends BaseTask
         }
         catch (Exception e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PluginsTask.class, e);
             log.error("Exception while exporting a data list", e);
             JStatusBar statusBar = UIRegistry.getStatusBar();
             statusBar.setErrorMessage(e.getLocalizedMessage(), e);

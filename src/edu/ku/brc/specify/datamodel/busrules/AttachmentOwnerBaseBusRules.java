@@ -152,6 +152,8 @@ public abstract class AttachmentOwnerBaseBusRules extends BaseBusRules
                     }
                     catch (IOException e)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AttachmentOwnerBaseBusRules.class, e);
                         log.error("Unable to store attached file", e); //$NON-NLS-1$
                     }
                 }

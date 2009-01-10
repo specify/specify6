@@ -10,11 +10,10 @@
 package edu.ku.brc.specify.toycode;
 
 import java.sql.Connection;
-import java.sql.Statement;
-import java.sql.ResultSet;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.lang.System;
+import java.sql.Statement;
 
 /**
  * @author timbo
@@ -99,6 +98,8 @@ public class BirthdayQ
                     }
                     catch (SQLException ex)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BirthdayQ.class, ex);
                     	year = 0;
                     }
                     if (year > 1915)
@@ -160,6 +161,8 @@ public class BirthdayQ
                         }
                         catch (SQLException ex)
                         {
+                            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BirthdayQ.class, ex);
                             System.out.println(ex);
                             System.out.println(sb);
                             System.out.println(++errCount);
@@ -186,10 +189,14 @@ public class BirthdayQ
         }
         catch (ClassNotFoundException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BirthdayQ.class, ex);
             System.out.println(ex);
         }
         catch (SQLException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BirthdayQ.class, ex);
             // handle any errors
             System.out.println("SQLException: " + ex.getMessage());
             System.out.println("SQLState: " + ex.getSQLState());

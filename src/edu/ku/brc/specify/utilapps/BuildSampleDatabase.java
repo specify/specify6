@@ -5530,6 +5530,8 @@ public class BuildSampleDatabase
                 }
                 catch (IOException e)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BuildSampleDatabase.class, e);
                     log.error("Unable to add card image to workbench row", e);
                 }
             }
@@ -5725,6 +5727,8 @@ public class BuildSampleDatabase
             }
             catch (Exception e)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BuildSampleDatabase.class, e);
                 log.error("Could not create attachments", e);
             }
         
@@ -7750,6 +7754,8 @@ public class BuildSampleDatabase
         }
         catch (Exception e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BuildSampleDatabase.class, e);
             e.printStackTrace();
         }
         

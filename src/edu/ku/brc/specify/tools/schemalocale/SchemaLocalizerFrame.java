@@ -486,6 +486,8 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
                 }
                 catch (Exception e)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SchemaLocalizerFrame.class, e);
                     e.printStackTrace();
                 }
                 

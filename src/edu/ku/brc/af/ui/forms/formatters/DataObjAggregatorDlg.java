@@ -563,10 +563,16 @@ public class DataObjAggregatorDlg extends CustomDialog implements DataChangeList
             }
             catch (IllegalAccessException iae)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataObjAggregatorDlg.class, iae);
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataObjAggregatorDlg.class, iae);
                 throw new RuntimeException("Illegal Access Exception: " + iae.getMessage());
             }
             catch (InvocationTargetException ite)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataObjAggregatorDlg.class, ite);
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataObjAggregatorDlg.class, ite);
                 throw new RuntimeException("Invocation Target Exception: " + ite.getMessage());
             }
         }

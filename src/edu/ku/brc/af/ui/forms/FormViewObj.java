@@ -2315,6 +2315,8 @@ public class FormViewObj implements Viewable,
             }
             catch (org.hibernate.ObjectNotFoundException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormViewObj.class, ex);
                 String errMsg = null;
                 String msg    = ex.toString();
                 if (StringUtils.contains(msg, "No row with the given identifier exists"))
@@ -2349,6 +2351,8 @@ public class FormViewObj implements Viewable,
             }
             catch (Exception e)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormViewObj.class, e);
                 log.error("******* " + e);
                 e.printStackTrace();
                 session.rollback();
@@ -4159,6 +4163,8 @@ public class FormViewObj implements Viewable,
                     }
                     catch (HibernateException ex)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHQLUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormViewObj.class, ex);
                         //Oh No!
                         //take the drastic measures in the unreachable else block below...
                         Object beforeSaveDataObj = dataObj;
@@ -4168,6 +4174,8 @@ public class FormViewObj implements Viewable,
                         }
                         catch (Exception ex2)
                         {
+                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormViewObj.class, ex2);
                             throw new RuntimeException(ex2);
                         }
                         replaceDataObjInList(beforeSaveDataObj, dataObj);

@@ -353,6 +353,8 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
         }
         catch (Exception e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QBQueryForIdResultsHQL.class, e);
             throw new RuntimeException(e);
         }
     }

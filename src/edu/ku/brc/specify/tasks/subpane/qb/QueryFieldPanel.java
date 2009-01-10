@@ -654,6 +654,8 @@ public class QueryFieldPanel extends JPanel implements ActionListener
             }
             catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryFieldPanel.class, ex);
                 throw new ParseException(getLabel() + " - " 
                         + String.format(UIRegistry.getResourceString("QB_PARSE_ERROR"), ex.getLocalizedMessage()), -1);
             }
@@ -842,6 +844,8 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                         }
                         catch (ParseException ex)
                         {
+                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryFieldPanel.class, ex);
                             throw new ParseException(getLabel()
                                     + " - "
                                     + String.format(UIRegistry.getResourceString("QB_PARSE_ERROR"),
@@ -879,11 +883,15 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                     }
                     catch (NoSuchMethodException ex)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryFieldPanel.class, ex);
                         // this will never happen. trust me.
                         throw new RuntimeException(ex);
                     }
                     catch (InvocationTargetException ex)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryFieldPanel.class, ex);
                         if (ex.getTargetException() instanceof NumberFormatException)
                         {
                             String msg = ex.getTargetException().getLocalizedMessage();
@@ -900,14 +908,20 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                     }
                     catch (IllegalAccessException ex)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryFieldPanel.class, ex);
                         throw new RuntimeException(ex);
                     }
                     catch (InstantiationException ex)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryFieldPanel.class, ex);
                         throw new RuntimeException(ex);
                     }
                     catch (NumberFormatException ex)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryFieldPanel.class, ex);
                         String msg = ex.getLocalizedMessage();
                         if (StringUtils.isBlank(msg))
                         {

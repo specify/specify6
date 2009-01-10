@@ -147,6 +147,8 @@ public class GeoCoordGeoLocateProvider implements GeoCoordServiceProviderIFace
                                 }
                                 catch (Exception e)
                                 {
+                                    UsageTracker.incrHandledUsageCount();
+                                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(GeoCoordGeoLocateProvider.class, e);
                                     log.warn("Failed to pre-cache GEOLocate results map",e); //$NON-NLS-1$
                                 }
                             }
@@ -184,6 +186,8 @@ public class GeoCoordGeoLocateProvider implements GeoCoordServiceProviderIFace
                     }
                     catch (InterruptedException e)
                     {
+                        UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(GeoCoordGeoLocateProvider.class, e);
                         // ignore this query since results were not available
                         log.warn("Process cancelled by user",e); //$NON-NLS-1$
                         mapGrabExecServ.shutdown();
@@ -191,6 +195,8 @@ public class GeoCoordGeoLocateProvider implements GeoCoordServiceProviderIFace
                     }
                     catch (ExecutionException e)
                     {
+                        UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(GeoCoordGeoLocateProvider.class, e);
                         // ignore this query since results were not available
                         log.error(completedQuery.toString() + " had an execution error",e); //$NON-NLS-1$
                     }

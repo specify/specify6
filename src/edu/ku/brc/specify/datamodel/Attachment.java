@@ -605,6 +605,8 @@ public class Attachment extends DataModelObjBase implements Serializable
         }
         catch (IOException e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Attachment.class, e);
             thumbFile = null;
         }
         attachmentMgr.storeAttachmentFile(this, origFile, thumbFile);

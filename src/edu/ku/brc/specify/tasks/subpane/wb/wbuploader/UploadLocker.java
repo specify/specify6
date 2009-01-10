@@ -134,6 +134,8 @@ public class UploadLocker implements TaskSemaphoreMgrCallerIFace
         }
         catch (Exception e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UploadLocker.class, e);
             e.printStackTrace();
             return USER_ACTION.Error;
         }

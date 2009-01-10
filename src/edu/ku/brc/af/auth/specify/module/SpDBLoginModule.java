@@ -151,12 +151,16 @@ public class SpDBLoginModule implements LoginModule
         } 
         catch (LoginException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpDBLoginModule.class, ex);
             log.error("LoginException" + ex.getMessage());
             authenticated = false;
             ex.printStackTrace();
         } 
         catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpDBLoginModule.class, ex);
             log.error("Exception" + ex.getMessage());
             ex.printStackTrace();
             throw new LoginException(ex.getMessage());

@@ -105,6 +105,8 @@ public class ExceptionTracker
         }
         catch (Exception e)
         {
+            UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ExceptionTracker.class, e);
             throw new ConnectionException(e);
         }
     }
@@ -207,6 +209,8 @@ public class ExceptionTracker
                 }
                 catch (Exception e)
                 {
+                    UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ExceptionTracker.class, e);
                     // if any exceptions occur, return them so the finished() method can have them
                     return e;
                 }

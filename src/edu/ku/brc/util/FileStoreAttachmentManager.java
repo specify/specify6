@@ -98,6 +98,8 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
         }
         catch (IOException e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FileStoreAttachmentManager.class, e);
             // TODO What should we do in this case?
             e.printStackTrace();
         }
@@ -186,6 +188,8 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
         }
         catch (IOException e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FileStoreAttachmentManager.class, e);
             // if the attachment file differs from the original that we copied to a tmp location...
             if( !FileUtils.contentEquals(origFile, tmpOrig) )
             {

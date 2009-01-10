@@ -377,11 +377,17 @@ public class UIFormatterEditorDlg extends CustomDialog
         }
         catch (UIFieldFormatterInvalidatesExistingValueException e1)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UIFormatterEditorDlg.class, e1);
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UIFormatterEditorDlg.class, e1);
             fmtErrMsg = getResourceString("FFE_INVALID_FORMAT") + " (*)";
             setError(fmtErrMsg, true); 
         }
         catch (UIFieldFormatterParsingException e2) 
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UIFormatterEditorDlg.class, e2);
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UIFormatterEditorDlg.class, e2);
             fmtErrMsg = getResourceString("FFE_INVALID_FORMAT");
             setError(fmtErrMsg, true); 
         }

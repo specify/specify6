@@ -205,6 +205,8 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
         }
         catch (Exception e1)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WebLinkButton.class, e1);
             log.error("Failed to build URL", e1); //$NON-NLS-1$
             return;
         }
@@ -224,6 +226,8 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
         }
         catch (URISyntaxException e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WebLinkButton.class, e);
             log.error("Bad URL syntax: " + urlString, e); //$NON-NLS-1$
             return;
         }
@@ -235,6 +239,8 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
         }
         catch (Exception e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WebLinkButton.class, e);
             UIRegistry.showLocalizedError("WEBLNK_BAD", "\n"+uri);
             log.error("Failed to open URL: " + uri.toString(), e); //$NON-NLS-1$
             return;

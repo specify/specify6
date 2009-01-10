@@ -173,6 +173,8 @@ public class PickListTestApp
         } 
         catch (Exception e) 
         { 
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PickListTestApp.class, e);
             log.error("Can't change L&F: ", e); 
         }    
       

@@ -17,7 +17,6 @@ package edu.ku.brc.af.ui.forms.validation;
 
 import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIHelper.setControlSize;
-import static edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterField.*;
 
 import java.awt.CardLayout;
 import java.awt.Color;
@@ -60,6 +59,7 @@ import edu.ku.brc.af.ui.forms.ViewFactory;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterField;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterField.FieldType;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.UIHelper;
@@ -1279,6 +1279,9 @@ s     * @param isViewOnly
                }
                catch (Exception e)
                {
+                   edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                   edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ValFormattedTextField.class, e);
+                   edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();                   edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ValFormattedTextField.class, e);
                    log.error("Can't change L&F: ", e);
                }
            }

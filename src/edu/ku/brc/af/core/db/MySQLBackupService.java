@@ -555,6 +555,8 @@ public class MySQLBackupService extends BackupServiceFactory
                     }
                     catch (IOException ex)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(MySQLBackupService.class, ex);
                         ex.printStackTrace();
                         errorMsg = ex.toString();
                         

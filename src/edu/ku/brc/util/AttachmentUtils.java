@@ -81,6 +81,8 @@ public class AttachmentUtils
                 }
                 catch (IOException e1)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AttachmentUtils.class, e1);
                     e1.printStackTrace();
                 }
             }

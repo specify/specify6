@@ -448,6 +448,8 @@ public class UpdatesApp extends JPanel
                 }
                 catch (Exception e)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UpdatesApp.class, e);
                     System.err.println("Can't change L&F: "+e); //$NON-NLS-1$
                 }
                 

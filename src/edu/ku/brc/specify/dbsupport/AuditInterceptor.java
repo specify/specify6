@@ -15,10 +15,8 @@
 
 package edu.ku.brc.specify.dbsupport;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.Iterator;
-import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Transaction;

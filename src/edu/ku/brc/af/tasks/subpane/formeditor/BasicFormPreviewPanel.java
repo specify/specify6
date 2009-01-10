@@ -31,7 +31,6 @@ import edu.ku.brc.af.ui.forms.persist.AltViewIFace;
 import edu.ku.brc.af.ui.forms.persist.FormCell;
 import edu.ku.brc.af.ui.forms.persist.View;
 import edu.ku.brc.af.ui.forms.persist.ViewDef;
-import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
 /**

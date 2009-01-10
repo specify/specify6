@@ -868,6 +868,8 @@ public class TemplateEditor extends CustomDialog
         }
         catch (Exception e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TemplateEditor.class, e);
             // we can't determine the class of the DB mapping, so assume String
             log.warn("Exception while looking up field type.  Assuming java.lang.String.",e);
             tableClass = String.class;
@@ -1062,6 +1064,8 @@ public class TemplateEditor extends CustomDialog
         }
         catch (Exception e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TemplateEditor.class, e);
             log.error("Failed to read/parse automapping config file", e);
             return;
         }

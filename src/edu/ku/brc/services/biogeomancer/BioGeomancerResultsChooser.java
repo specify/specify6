@@ -193,6 +193,8 @@ public class BioGeomancerResultsChooser extends CustomDialog
         }
         catch (Exception e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BioGeomancerResultsChooser.class, e);
             UIRegistry.getStatusBar().setErrorMessage(getResourceString("BioGeomancerResultsChooser.RESULTS_ERROR"), e); //$NON-NLS-1$
             super.setVisible(false);
         }

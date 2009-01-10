@@ -391,6 +391,8 @@ public class SecurityAdminPane extends BaseSubPane
         }
         catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SecurityAdminPane.class, ex);
             throw new RuntimeException(ex);
         }
         finally
@@ -696,6 +698,8 @@ public class SecurityAdminPane extends BaseSubPane
             }
             catch (PatternSyntaxException pse)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SecurityAdminPane.class, pse);
                 p = null;
             }
         }

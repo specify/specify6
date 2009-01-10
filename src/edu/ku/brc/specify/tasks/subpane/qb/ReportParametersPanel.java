@@ -130,6 +130,8 @@ public class ReportParametersPanel extends JPanel
         }
         catch (JRException jrex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ReportParametersPanel.class, jrex);
             throw new RuntimeException(jrex);
         }
         

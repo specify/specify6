@@ -734,6 +734,8 @@ public class DataImportDialog extends JDialog implements ActionListener
 		} 
     	catch (Exception e)
 		{
+    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataImportDialog.class, e);
     		log.error("Error attempting to parse input csv file:" + e);
 		}
 		return 0;
@@ -995,6 +997,8 @@ public class DataImportDialog extends JDialog implements ActionListener
         } 
         catch (IOException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataImportDialog.class, ex);
         	String[] columnNames = {};
         	String[][] blankData = {{}};
             model = new PreviewTableModel(columnNames, blankData);

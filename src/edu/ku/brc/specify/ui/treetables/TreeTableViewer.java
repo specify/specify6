@@ -59,6 +59,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.apache.log4j.Logger;
+import org.apache.poi.hssf.record.formula.functions.T;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -271,6 +272,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	    }
 	    catch (Exception ex)
 	    {
+    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TreeTableViewer.class, ex);
 	        System.out.println(ex);
 	    }
 	    
@@ -864,6 +867,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                 }
                 catch (NumberFormatException nfe)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TreeTableViewer.class, nfe);
                     nodeId = null;
                     log.warn("'selected_node' preference contained unparsable value.  Removing value.");
                     prefs.remove(selNodePrefName);
@@ -882,6 +887,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                     }
                     catch (Exception e)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TreeTableViewer.class, e);
                         log.warn("Failed to show and select previously selected node");
                     }
                 }
@@ -1785,6 +1792,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                         }
                         catch (StaleObjectException e1)
                         {
+                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TreeTableViewer.class, e1);
                             // another user or process has changed the data "underneath" us
                             UIRegistry.showLocalizedError("UPDATE_DATA_STALE");
                             if (session != null)
@@ -1857,6 +1866,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                         }
                         catch (Exception e)
                         {
+                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TreeTableViewer.class, e);
                             success = false;
                             UIRegistry.showLocalizedError("UNRECOVERABLE_DB_ERROR");
     
@@ -2713,6 +2724,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         }
         catch (Exception e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TreeTableViewer.class, e);
             log.error("Unknown error when trying to store the selected node id during tree viewer shutdown.", e);
         }
 		
@@ -2883,6 +2896,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                     }
                     catch (Exception e)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TreeTableViewer.class, e);
                         log.error(e);
                         e.printStackTrace();
                     }
@@ -2929,6 +2944,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                     }
                     catch (Exception e)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TreeTableViewer.class, e);
                         log.error(e);
                         e.printStackTrace();
                     }

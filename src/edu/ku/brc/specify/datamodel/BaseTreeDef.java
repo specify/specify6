@@ -136,6 +136,8 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
         }
         catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BaseTreeDef.class, ex);
             nodeUpdateSession.rollback();
         }
         finally
@@ -433,6 +435,8 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
         }
         catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BaseTreeDef.class, ex);
             log.error(ex);
             UIRegistry.showLocalizedError("BaseTreeDef.UnableToUpdate");
             return;

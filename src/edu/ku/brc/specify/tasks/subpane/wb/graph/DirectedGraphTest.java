@@ -140,6 +140,8 @@ public class DirectedGraphTest {
         }
         catch (DirectedGraphException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DirectedGraphTest.class, ex);
             //huh?
         }
     }
@@ -161,6 +163,8 @@ public class DirectedGraphTest {
         }
         catch (DirectedGraphException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DirectedGraphTest.class, ex);
             //what?
         }
 

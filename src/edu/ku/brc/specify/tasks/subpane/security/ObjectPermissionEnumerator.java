@@ -87,6 +87,8 @@ public class ObjectPermissionEnumerator extends PermissionEnumerator
         } 
         catch (Exception e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ObjectPermissionEnumerator.class, e);
             e.printStackTrace();
         }
         finally

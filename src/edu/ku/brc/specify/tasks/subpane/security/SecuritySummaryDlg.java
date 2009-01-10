@@ -3,22 +3,9 @@ package edu.ku.brc.specify.tasks.subpane.security;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Hashtable;
 
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
-import javax.swing.JTable;
-import javax.swing.SwingConstants;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableColumnModel;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -27,12 +14,10 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.af.auth.specify.permission.PermissionService;
 import edu.ku.brc.af.auth.specify.principal.UserPrincipalHibernateService;
 import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.ui.db.ViewBasedDisplayPanel;
 import edu.ku.brc.specify.datamodel.SpPermission;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.ui.CustomDialog;
-import edu.ku.brc.ui.UIHelper;
 
 /**
  * @author ricardo

@@ -190,6 +190,7 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
             
         } catch (Exception ex)
         {
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BaseTreeBusRules.class, ex);
             // Error Dialog
             ex.printStackTrace();
             
@@ -845,6 +846,7 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
                     
                 } catch (Exception ex)
                 {
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BaseTreeBusRules.class, ex);
                     ex.printStackTrace();
                     
                 } finally

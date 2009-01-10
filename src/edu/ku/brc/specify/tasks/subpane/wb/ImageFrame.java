@@ -666,6 +666,8 @@ public class ImageFrame extends JFrame implements PropertyChangeListener
                     }
                     catch (IOException e)
                     {
+                        UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImageFrame.class, e);
                         statusBar.setErrorMessage("Exception while adding a new image", e);
                     }
                 }
@@ -736,6 +738,8 @@ public class ImageFrame extends JFrame implements PropertyChangeListener
         }
         catch (IOException e)
         {
+            UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImageFrame.class, e);
             statusBar.setErrorMessage("Exception while replacing image", e);
         }
     }
@@ -921,6 +925,8 @@ public class ImageFrame extends JFrame implements PropertyChangeListener
                     }
                     catch (IOException e)
                     {
+                        UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImageFrame.class, e);
                         log.warn("Failed to generate a thumbnail for " + rowImage.getCardImageFullPath(), e);
                     }
                 }

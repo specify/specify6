@@ -380,6 +380,8 @@ public class WorkbenchPaneSS extends BaseSubPane
                             }
                             catch (Exception ex)
                             {
+                                UsageTracker.incrHandledUsageCount();
+                                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchPaneSS.class, ex);
                                 log.error(ex);
                                 return ex;
                             }
@@ -1717,6 +1719,8 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
             catch (Exception e)
             {
+                UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchPaneSS.class, e);
                 // this could be a number format exception
                 // or a null pointer exception if the field was empty
                 // either way, we skip this record
@@ -1740,6 +1744,8 @@ public class WorkbenchPaneSS extends BaseSubPane
                 }
                 catch (Exception e)
                 {
+                    UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchPaneSS.class, e);
                     // this could be a number format exception
                     // or a null pointer exception if the field was empty
                     // either way, we'll just treat this record as though it only has lat1 and lon1
@@ -1888,6 +1894,8 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
             catch (Exception e)
             {
+                UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchPaneSS.class, e);
                 // this value didn't convert correctly
                 // it would be nice to highlight that cell, but I don't know how we could do that
                 log.warn("Could not convert contents of cell (" + (rowIndex+1) + "," + (columnIndex+1) + ")");
@@ -2583,6 +2591,8 @@ public class WorkbenchPaneSS extends BaseSubPane
         }
         catch (StaleObjectException ex) // was StaleObjectStateException
         {
+            UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchPaneSS.class, ex);
             if (opened && !committed)
             {
                 session.rollback();
@@ -2594,6 +2604,8 @@ public class WorkbenchPaneSS extends BaseSubPane
         }
         catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchPaneSS.class, ex);
             log.error("******* " + ex);
             ex.printStackTrace();
             if (opened && !committed)
@@ -2709,6 +2721,8 @@ public class WorkbenchPaneSS extends BaseSubPane
                         }
                         catch (Exception ex)
                         {
+                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchPaneSS.class, ex);
                             log.error(ex);
                         }
                         return result;
@@ -3156,6 +3170,8 @@ public class WorkbenchPaneSS extends BaseSubPane
         }
         catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchPaneSS.class, ex);
             UIRegistry.getStatusBar().setErrorMessage(ex.getMessage());
             Uploader.unlockApp();
             Uploader.unlockUpload();

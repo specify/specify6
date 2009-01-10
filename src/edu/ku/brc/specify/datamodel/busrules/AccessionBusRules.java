@@ -92,6 +92,7 @@ public class AccessionBusRules extends AttachmentOwnerBaseBusRules
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AccessionBusRules.class, ex);
                 ex.printStackTrace();
                 UsageTracker.incrNetworkUsageCount();
                 
@@ -209,6 +210,7 @@ public class AccessionBusRules extends AttachmentOwnerBaseBusRules
                         
                     } catch (Exception ex)
                     {
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AccessionBusRules.class, ex);
                         log.error(ex);
                         throw new RuntimeException(ex);
                     }

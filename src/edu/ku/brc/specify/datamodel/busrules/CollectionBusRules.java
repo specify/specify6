@@ -92,7 +92,7 @@ public class CollectionBusRules extends BaseBusRules
     {
         super.beforeMerge(dataObj, session);
         
-        Collection   collection = (Collection)dataObj;
+        Collection collection = (Collection)dataObj;
         
         for (AutoNumberingScheme ans : collection.getNumberingSchemes())
         {

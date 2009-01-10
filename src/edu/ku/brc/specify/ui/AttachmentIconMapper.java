@@ -123,6 +123,8 @@ public class AttachmentIconMapper implements ObjectIconMapper
                     }
                     catch (IOException e)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AttachmentIconMapper.class, e);
                         // unable to create thumbnail
                         thumbFile = null;
                     }

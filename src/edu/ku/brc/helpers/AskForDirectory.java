@@ -22,8 +22,6 @@ import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
-import edu.ku.brc.ui.UIRegistry;
-
 /**
  * Implementation of the ExternalFileRepositoryIFace for a local directory/disk based external repository
  

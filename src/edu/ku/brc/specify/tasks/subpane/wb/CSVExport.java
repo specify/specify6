@@ -59,6 +59,8 @@ public class CSVExport implements DataExport
         }
         catch (IOException e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(CSVExport.class, e);
             throw e;
         }
     }
@@ -93,6 +95,8 @@ public class CSVExport implements DataExport
             }
             catch (IOException e)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(CSVExport.class, e);
                 throw (e);
             }
         }

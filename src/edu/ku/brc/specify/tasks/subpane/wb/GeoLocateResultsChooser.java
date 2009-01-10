@@ -187,6 +187,8 @@ public class GeoLocateResultsChooser extends CustomDialog
         }
         catch (Exception e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(GeoLocateResultsChooser.class, e);
             UIRegistry.getStatusBar().setErrorMessage("Error while displaying GEOLocate results", e); // TODO i18n
             super.setVisible(false);
         }

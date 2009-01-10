@@ -222,6 +222,8 @@ public class StatsTrackerTask extends BaseTask
                 }
                 catch (Exception e)
                 {
+                    UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(StatsTrackerTask.class, e);
                     // if any exceptions occur, return them so the finished() method can have them
                     return e;
                 }
@@ -275,6 +277,8 @@ public class StatsTrackerTask extends BaseTask
         }
         catch (Exception e)
         {
+            UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(StatsTrackerTask.class, e);
             throw new ConnectionException(e);
         }
         

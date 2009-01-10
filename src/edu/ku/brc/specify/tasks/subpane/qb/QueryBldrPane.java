@@ -1033,6 +1033,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         }
         catch (Exception ex)
         {
+            UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryBldrPane.class, ex);
             UIRegistry.getStatusBar().setErrorMessage(ex.getLocalizedMessage(), ex);
             UIRegistry.writeTimedSimpleGlassPaneMsg(ex.getLocalizedMessage(), Color.RED);
             runningResults.set(null);
@@ -1384,6 +1386,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         }
         catch (Exception e)
         {
+            UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryBldrPane.class, e);
             e.printStackTrace();
             throw new RuntimeException(e);
         }
@@ -1550,6 +1554,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 }
                 catch (Exception ex)
                 {
+                    UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryBldrPane.class, ex);
                     UIRegistry.getStatusBar().setErrorMessage(ex.getLocalizedMessage(), ex);
                     return;
                 }
@@ -1589,6 +1595,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         }
         catch (JRException ex)
         {
+            UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryBldrPane.class, ex);
             log.error(ex);
             ex.printStackTrace();
         }
@@ -1975,6 +1983,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         }
         catch (Exception ex)
         {
+            UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryBldrPane.class, ex);
             log.error(ex);
 
         }
@@ -2455,6 +2465,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 }
                 catch (ArrayIndexOutOfBoundsException ex)
                 {
+                    UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryBldrPane.class, ex);
                     log.error(ex);
                 }
                 queryFieldsPanel.repaint();
@@ -2778,6 +2790,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     }
                     catch (CloneNotSupportedException ex)
                     {
+                        UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryBldrPane.class, ex);
                         throw new RuntimeException(ex);
                     }
                 }

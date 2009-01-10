@@ -70,6 +70,8 @@ public class JasperCompilerRunnable implements Runnable
     	}
     	catch (InterruptedException ex)
     	{
+        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(JasperCompilerRunnable.class, ex);
     		throw new RuntimeException(ex);
     	}
     }

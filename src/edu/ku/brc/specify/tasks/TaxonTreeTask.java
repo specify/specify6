@@ -121,6 +121,8 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
                     }
                     catch (Exception e1)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TaxonTreeTask.class, e1);
                         String errorMessage = getResourceString("ERROR_CANT_OPEN_WEBPAGE") + ": " + itisURL;
                         log.warn(errorMessage, e1);
                         UIRegistry.getStatusBar().setErrorMessage(errorMessage, e1);

@@ -259,6 +259,8 @@ public class RegisterSpecify
                 }
                 catch (Exception e)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RegisterSpecify.class, e);
                     // if any exceptions occur, return them so the finished() method can have them
                     return e;
                 }
@@ -345,6 +347,8 @@ public class RegisterSpecify
         }
         catch (Exception e)
         {
+            UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RegisterSpecify.class, e);
             e.printStackTrace();
             throw new ConnectionException(e);
         }
@@ -698,6 +702,8 @@ public class RegisterSpecify
             }
             catch (Exception e)
             {
+                UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RegisterSpecify.class, e);
                 throw new ConnectionException(e);
             }
             

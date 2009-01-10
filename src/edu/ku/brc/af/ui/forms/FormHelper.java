@@ -9,6 +9,9 @@
  */
 package edu.ku.brc.af.ui.forms;
 
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getViewbasedFactory;
+
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -32,7 +35,6 @@ import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.UIHelper;
-import static edu.ku.brc.ui.UIRegistry.*;
 
 
 /**

@@ -109,6 +109,8 @@ public class DirectedGraph<E, F>
         }
         catch (DirectedGraphException e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DirectedGraph.class, e);
             throw e;
         }
     }
@@ -481,6 +483,8 @@ public class DirectedGraph<E, F>
             }
             catch (DirectedGraphException e)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DirectedGraph.class, e);
                 throw e; // this should never happen since u is right out of vertices.
             }
         }
@@ -557,6 +561,8 @@ public class DirectedGraph<E, F>
         }
         catch (DirectedGraphException e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DirectedGraph.class, e);
             throw e;
         }
         return result;
@@ -596,6 +602,8 @@ public class DirectedGraph<E, F>
         }
         catch (DirectedGraphException e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DirectedGraph.class, e);
             throw e;
         }
     }

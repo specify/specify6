@@ -130,6 +130,8 @@ public class InfoRequest extends CollectionMember implements java.io.Serializabl
             }
             catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(InfoRequest.class, ex);
                 ex.printStackTrace();
             }
         }

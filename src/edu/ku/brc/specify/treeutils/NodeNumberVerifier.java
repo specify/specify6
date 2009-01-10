@@ -56,6 +56,8 @@ public class NodeNumberVerifier<T extends Treeable<T, D, I>, D extends TreeDefIf
         }
         catch (Exception e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(NodeNumberer.class, e);
             System.out.println("OH NO! " + e.getMessage());
             return false;
         }

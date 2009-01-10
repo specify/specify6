@@ -118,6 +118,8 @@ public class AttachmentBusRules extends BaseBusRules
         }
         catch (IOException e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AttachmentBusRules.class, e);
             // unable to create thumbnail
             thumbFile = null;
         }

@@ -135,6 +135,8 @@ public class IReportLauncher implements DatabaseLoginListener
                 }
                 catch (Exception e)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(IReportLauncher.class, e);
                     e.printStackTrace();
                     throw new RuntimeException(e);
                 }

@@ -117,6 +117,8 @@ public class LogView extends HttpServlet
         }
         catch (UnknownHostException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(LogView.class, ex);
             return "";
         }
         return addr.getHostName();
@@ -160,6 +162,8 @@ public class LogView extends HttpServlet
         }
         catch (InterruptedException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(LogView.class, ex);
             // if we didn't get all of the results in the allotted time, oh well
             // do nothing
         }

@@ -9,13 +9,15 @@
  */
 package edu.ku.brc.specify.tools.datamodelgenerator;
 
+import static edu.ku.brc.helpers.XMLHelper.getAttr;
+import static edu.ku.brc.helpers.XMLHelper.getConfigDir;
+import static edu.ku.brc.helpers.XMLHelper.readFileToDOM4J;
+
 import java.io.PrintWriter;
 import java.util.Iterator;
 
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
-
-import static edu.ku.brc.helpers.XMLHelper.*;
 
 /**
  * @author rod

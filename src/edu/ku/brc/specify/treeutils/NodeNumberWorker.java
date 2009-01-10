@@ -146,6 +146,8 @@ public abstract class NodeNumberWorker<T extends Treeable<T, D, I>, D extends Tr
             }
             catch (HibernateException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHQLUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(NodeNumberWorker.class, ex);
                 //continue
             }
             T result = rootDefItem.getTreeEntries().iterator().next();

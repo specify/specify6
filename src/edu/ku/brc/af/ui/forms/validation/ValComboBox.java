@@ -15,7 +15,8 @@
 
 package edu.ku.brc.af.ui.forms.validation;
 
-import static edu.ku.brc.ui.UIHelper.*;
+import static edu.ku.brc.ui.UIHelper.createComboBox;
+import static edu.ku.brc.ui.UIHelper.setControlSize;
 
 import java.awt.Color;
 import java.awt.Component;

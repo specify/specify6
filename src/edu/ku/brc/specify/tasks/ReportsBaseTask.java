@@ -951,6 +951,8 @@ public class ReportsBaseTask extends BaseTask
             }
             catch (Exception e)
             {
+                UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ReportsBaseTask.class, e);
                 if (transOpen)
                 {
                     session.rollback();

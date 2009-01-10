@@ -663,6 +663,8 @@ public class FileCache implements DataCacheIFace
         }
         catch (NumberFormatException nfe)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FileCache.class, nfe);
             log.error("Unable to parse access time for cache item: " + key, nfe);
             accessTimeMillis = Long.MIN_VALUE;
         }

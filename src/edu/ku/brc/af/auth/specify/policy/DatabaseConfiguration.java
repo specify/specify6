@@ -228,6 +228,8 @@ public class DatabaseConfiguration extends Configuration
         } 
         catch (SQLException e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DatabaseConfiguration.class, e);
             log.error("getAppConfigurationEntry: SQLException retrieving for applicationName="+ applicationName, e); //$NON-NLS-1$
             throw new RuntimeException("SQLException retrieving for applicationName="+ applicationName, e); //$NON-NLS-1$
         } 

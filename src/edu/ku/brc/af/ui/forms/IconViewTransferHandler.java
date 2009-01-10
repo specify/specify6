@@ -74,6 +74,8 @@ public class IconViewTransferHandler extends TransferHandler
         }
         catch (Exception e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(IconViewTransferHandler.class, e);
             e.printStackTrace();
         }
         return result;

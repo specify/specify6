@@ -159,6 +159,8 @@ public class MainFrameSpecify extends MainFrame
         }
         catch (Exception e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(MainFrameSpecify.class, e);
             e.printStackTrace();
             throw new RuntimeException(e);
         }
@@ -187,6 +189,8 @@ public class MainFrameSpecify extends MainFrame
         }
         catch (Exception e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(MainFrameSpecify.class, e);
             e.printStackTrace();
             throw new RuntimeException(e);
         }
@@ -264,6 +268,8 @@ public class MainFrameSpecify extends MainFrame
         }
         catch (IOException e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(MainFrameSpecify.class, e);
             UIRegistry.getStatusBar().setErrorMessage(e.getLocalizedMessage(), e);
             return false;
         }
@@ -297,6 +303,8 @@ public class MainFrameSpecify extends MainFrame
             }
             catch (Exception e)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(MainFrameSpecify.class, e);
                 UIRegistry.getStatusBar().setErrorMessage(e.getLocalizedMessage(), e);
                 return false;
             }
@@ -374,6 +382,8 @@ public class MainFrameSpecify extends MainFrame
                     }
                     catch (org.hibernate.UnresolvableObjectException e)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(MainFrameSpecify.class, e);
                         log.debug("Report has been deleted in Specify? (" + e + ")");
                     }
                 }
@@ -1420,6 +1430,8 @@ public class MainFrameSpecify extends MainFrame
                 }
                 catch (Exception e)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(MainFrameSpecify.class, e);
                     log.error("Can't change L&F: ", e); //$NON-NLS-1$
                 }
                 

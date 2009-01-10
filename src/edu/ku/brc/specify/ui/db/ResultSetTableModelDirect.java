@@ -96,6 +96,8 @@ public class ResultSetTableModelDirect extends AbstractTableModel
         }
         catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ResultSetTableModelDirect.class, ex);
             log.error("In constructor of ResultSetTableModel", ex);
         }
     }

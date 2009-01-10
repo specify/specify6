@@ -1330,6 +1330,8 @@ public class InteractionsTask extends BaseTask
                 }
                 catch (Exception ex)
                 {
+                    UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(InteractionsTask.class, ex);
                     //skip this res
                 }
                 if (includeIt)

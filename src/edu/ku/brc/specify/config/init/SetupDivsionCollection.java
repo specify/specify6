@@ -40,6 +40,16 @@ import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.UIRegistry;
 
+/**
+ * (NOT IN USE)
+ * 
+ * @author rod
+ *
+ * @code_status Alpha
+ *
+ * Jan 10, 2009
+ *
+ */
 public class SetupDivsionCollection extends JDialog
 {
     //private static final Logger log = Logger.getLogger(SetupDivsionCollection.class);
@@ -283,7 +293,7 @@ public class SetupDivsionCollection extends JDialog
         {
             final SwingWorker worker = new SwingWorker()
             {
-                protected boolean isOK = false;
+                //protected boolean isOK = false;
                 
                 public Object construct()
                 {

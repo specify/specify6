@@ -13,7 +13,6 @@ import java.util.Properties;
 import javax.swing.SwingUtilities;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.tasks.subpane.wb.CSVExport;
@@ -97,6 +96,8 @@ public class ExportToFile implements RecordSetToolsIFace
             }
             catch (IOException e)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ExportToFile.class, e);
                 throw(e);
             }
         }

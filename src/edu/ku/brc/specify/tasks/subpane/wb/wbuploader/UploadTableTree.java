@@ -95,6 +95,8 @@ public class UploadTableTree extends UploadTable
         }
         catch (ClassNotFoundException cnfEx)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UploadTableTree.class, cnfEx);
             throw new UploaderException(cnfEx, UploaderException.ABORT_IMPORT);
         }
     }
@@ -291,6 +293,8 @@ public class UploadTableTree extends UploadTable
         }
         catch (NonUniqueResultException hex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UploadTableTree.class, hex);
             throw new RuntimeException(hex);
         }
         finally
@@ -333,18 +337,26 @@ public class UploadTableTree extends UploadTable
         } 
         catch (NoSuchMethodException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UploadTableTree.class, ex);
             throw new RuntimeException(ex);
         } 
         catch (InvocationTargetException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UploadTableTree.class, ex);
             throw new RuntimeException(ex);
         } 
         catch (InstantiationException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UploadTableTree.class, ex);
             throw new RuntimeException(ex);
         }
         catch (IllegalAccessException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UploadTableTree.class, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -413,6 +425,8 @@ public class UploadTableTree extends UploadTable
             }
             catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UploadTableTree.class, ex);
                 throw new RuntimeException(ex);
             }
         }
@@ -437,6 +451,8 @@ public class UploadTableTree extends UploadTable
             }
             catch (UploaderException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UploadTableTree.class, ex);
                 throw new RuntimeException("Error accessing tree definition.");
             }
         }
@@ -477,6 +493,8 @@ public class UploadTableTree extends UploadTable
         }
         catch (UploaderException ux)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UploadTableTree.class, ux);
             return tblClass.getSimpleName() + "_" + uploader.getIdentifier();
         }
     }
@@ -495,6 +513,8 @@ public class UploadTableTree extends UploadTable
         }
         catch (UploaderException ux)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UploadTableTree.class, ux);
             return tblClass.getSimpleName();
         }
     }
@@ -627,6 +647,8 @@ public class UploadTableTree extends UploadTable
             }
             catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UploadTableTree.class, ex);
                 if (ex instanceof UploaderException) { throw (UploaderException) ex; }
                 throw new UploaderException(ex);
             }

@@ -118,6 +118,8 @@ public class GeoCoordBGMProvider implements GeoCoordServiceProviderIFace
                     }
                     catch (IOException ex1)
                     {
+                        UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(GeoCoordBGMProvider.class, ex1);
                         String warning = getResourceString("GeoCoordBGMProvider.WB_BIOGEOMANCER_UNAVAILABLE"); //$NON-NLS-1$
                         statusBar.setWarningMessage(warning, ex1);
                         log.error("A network error occurred while contacting the BioGeomancer service", ex1); //$NON-NLS-1$
@@ -128,6 +130,8 @@ public class GeoCoordBGMProvider implements GeoCoordServiceProviderIFace
                     }
                     catch (Exception ex2)
                     {
+                        UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(GeoCoordBGMProvider.class, ex2);
                         // right now we'll simply blame this on BG
                         // in the future we might get more specific about this error
                         String warning = getResourceString("GeoCoordBGMProvider.WB_BIOGEOMANCER_UNAVAILABLE"); //$NON-NLS-1$
@@ -157,6 +161,8 @@ public class GeoCoordBGMProvider implements GeoCoordServiceProviderIFace
                                 }
                                 catch (Exception e)
                                 {
+                                    UsageTracker.incrHandledUsageCount();
+                                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(GeoCoordBGMProvider.class, e);
                                     log.warn("Failed to pre-cache BioGeomancer results map",e); //$NON-NLS-1$
                                 }
                             }

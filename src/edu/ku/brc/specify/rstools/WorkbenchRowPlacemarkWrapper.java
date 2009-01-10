@@ -151,6 +151,8 @@ public class WorkbenchRowPlacemarkWrapper implements GoogleEarthPlacemarkIFace
                     }
                     catch (Exception e)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchRowPlacemarkWrapper.class, e);
                         latitude = null;
                     }
                 }
@@ -167,6 +169,8 @@ public class WorkbenchRowPlacemarkWrapper implements GoogleEarthPlacemarkIFace
                     }
                     catch (Exception e)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchRowPlacemarkWrapper.class, e);
                         longitude = null;
                     }
                 }

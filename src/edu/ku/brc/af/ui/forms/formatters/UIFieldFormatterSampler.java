@@ -113,6 +113,9 @@ public class UIFieldFormatterSampler implements SQLExecutionListener
 		}
 		catch (SQLException e) 
 		{
+    edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UIFieldFormatterSampler.class, e);
+    edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UIFieldFormatterSampler.class, e);
 			results.clear();
 			ready = false;
 		}

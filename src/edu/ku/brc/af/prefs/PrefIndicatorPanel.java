@@ -13,19 +13,13 @@ import static edu.ku.brc.ui.UIHelper.paintBorderGlow;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.GraphicsConfiguration;
-import java.awt.Insets;
-import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Shape;
-import java.awt.Transparency;
 import java.awt.geom.GeneralPath;
 import java.awt.image.BufferedImage;
 import java.util.Vector;
 
-import edu.ku.brc.ui.JTiledPanel;
 import edu.ku.brc.ui.dnd.SimpleGlassPane;
 import edu.ku.brc.util.Pair;
 
