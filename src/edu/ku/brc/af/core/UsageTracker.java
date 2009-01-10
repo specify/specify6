@@ -49,6 +49,8 @@ public class UsageTracker
 {
     public static final String NT_CON_EX = "NT_CON_EX"; // Network Connection Exception
     public static final String SQL_EX    = "SQ_EX";     // SQL Exception
+    public static final String HQL_EX    = "HQ_EX";     // Hibernate Exception
+    public static final String HNDLE_EX  = "HNDLE";     // Handled Exception
     
     private static final String USAGE_PREFIX = "Usage.";
     
@@ -164,7 +166,7 @@ public class UsageTracker
     }
 
     /**
-     * Incremements the usage count for a network exception.
+     * Increments the usage count for a network exception.
      */
     public synchronized static void incrNetworkUsageCount()
     {
@@ -172,11 +174,27 @@ public class UsageTracker
     }
 
     /**
-     * Incremements the usage count for a SQL exception.
+     * Increments the usage count for a SQL exception.
      */
     public synchronized static void incrSQLUsageCount()
     {
         incrUsageCount(SQL_EX);
+    }
+
+    /**
+     * Increments the usage count for a SQL exception.
+     */
+    public synchronized static void incrHQLUsageCount()
+    {
+        incrUsageCount(HQL_EX);
+    }
+
+    /**
+     * Increments the usage count for a SQL exception.
+     */
+    public synchronized static void incrHandledUsageCount()
+    {
+        incrUsageCount(HNDLE_EX);
     }
 
     /**
