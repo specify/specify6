@@ -1415,7 +1415,15 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
              }
          }
          return recordSetFromDB;
-     }
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    public String toString()
+    {
+        return getName();
+    }
     
     //--------------------------------------------------------------
     // SecurityOptionIFace
