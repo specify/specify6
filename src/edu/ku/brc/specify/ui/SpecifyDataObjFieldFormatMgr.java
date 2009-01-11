@@ -84,6 +84,8 @@ public class SpecifyDataObjFieldFormatMgr extends DataObjFieldFormatMgr implemen
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyDataObjFieldFormatMgr.class, ex);
                 ex.printStackTrace();
             }
         }

@@ -609,6 +609,8 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DBObjSearchPanel.class, ex);
                 errMsg = ex.toString();
                 ex.printStackTrace();
                 

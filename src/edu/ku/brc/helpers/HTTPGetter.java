@@ -147,24 +147,32 @@ public class HTTPGetter implements Runnable
 
         } catch (ConnectException ce)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(HTTPGetter.class, ce);
             log.error("Could not make HTTP connection.  (" //$NON-NLS-1$
                     + ce.toString() + ")"); //$NON-NLS-1$
             status = ErrorCode.HttpError;
 
         } catch (HttpException he)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(HTTPGetter.class, he);
             log.error("Http problem making request.  (" //$NON-NLS-1$
                     + he.toString() + ")"); //$NON-NLS-1$
             status = ErrorCode.HttpError;
 
         } catch (IOException ioe)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(HTTPGetter.class, ioe);
             log.error("IO problem making request.  (" + ioe.toString() //$NON-NLS-1$
                     + ")"); //$NON-NLS-1$
             status = ErrorCode.IOError;
 
         } catch (Exception e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(HTTPGetter.class, e);
             log.error("Error: " + e); //$NON-NLS-1$
             status = ErrorCode.Error;
 

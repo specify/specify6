@@ -257,6 +257,8 @@ public class Encryption
 
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Encryption.class, ex);
             log.error("Error decrypting password."); // XXX FIXME Probably want to display a dialog here //$NON-NLS-1$
             return str;
         }
@@ -291,6 +293,8 @@ public class Encryption
 
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Encryption.class, ex);
             log.error("Error endcrypting password."); // XXX FIXME Probably want to display a dialog here //$NON-NLS-1$
             return str;
         }

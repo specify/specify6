@@ -103,6 +103,8 @@ public class StatsTrackerTask extends edu.ku.brc.af.tasks.StatsTrackerTask
                         
                     } catch (Exception ex)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(StatsTrackerTask.class, ex);
                         ex.printStackTrace();
                     }
                 }

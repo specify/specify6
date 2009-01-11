@@ -733,6 +733,8 @@ public class FormViewObj implements Viewable,
 
             } catch (ClassNotFoundException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormViewObj.class, ex);
                 throw new RuntimeException(ex);
             }
         }
@@ -879,6 +881,8 @@ public class FormViewObj implements Viewable,
                                     
                                 } catch (Exception ex) 
                                 {
+                                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormViewObj.class, ex);
                                     isOK = false; // this really shouldn't happen
                                 }
                             }
@@ -1794,6 +1798,8 @@ public class FormViewObj implements Viewable,
                     
                 } catch (Exception ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormViewObj.class, ex);
                     ex.printStackTrace();
                 } finally
                 {
@@ -2271,6 +2277,8 @@ public class FormViewObj implements Viewable,
                 
             } catch (StaleObjectException e) // was StaleObjectStateException
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormViewObj.class, e);
                 session.rollback();
                 recoverFromStaleObject("UPDATE_DATA_STALE", null);
                 tryAgain = false;
@@ -2280,6 +2288,8 @@ public class FormViewObj implements Viewable,
                 
             } catch (ConstraintViolationException e)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormViewObj.class, e);
                 log.error(e);
                 log.error(e.getSQLException());
                 log.error(e.getSQLException().getSQLState());
@@ -2709,6 +2719,8 @@ public class FormViewObj implements Viewable,
                     
                 } catch (org.hibernate.HibernateException ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHQLUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormViewObj.class, ex);
                     // we could check the type to make sure it was a "dirty colleciton" error
                     // but for now I am not.
                     attachFailed = true;
@@ -2820,6 +2832,8 @@ public class FormViewObj implements Viewable,
                 
             } catch (edu.ku.brc.dbsupport.StaleObjectException e)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormViewObj.class, e);
                 e.printStackTrace();
                 doClearObj = false;
                 session.rollback();
@@ -2827,6 +2841,8 @@ public class FormViewObj implements Viewable,
                 
             } catch (Exception e)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormViewObj.class, e);
                 e.printStackTrace();
                 doClearObj = false;
                 session.rollback();
@@ -2847,6 +2863,8 @@ public class FormViewObj implements Viewable,
 
         } catch (Exception e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormViewObj.class, e);
             log.error("******* " + e);
             e.printStackTrace();
             
@@ -2945,6 +2963,8 @@ public class FormViewObj implements Viewable,
             }
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormViewObj.class, ex);
             log.error(ex);
         }
     }
@@ -3577,6 +3597,8 @@ public class FormViewObj implements Viewable,
             dObj = tmpSession.get(tableInfo.getClassObj(), recordSetItemList.get(index).getRecordId());
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormViewObj.class, ex);
             ex.printStackTrace();
             
         } finally
@@ -3721,6 +3743,8 @@ public class FormViewObj implements Viewable,
             }
         } catch (SQLException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormViewObj.class, ex);
             SwingUtilities.invokeLater( new Runnable() {
                 //@Override
                 public void run()
@@ -4199,6 +4223,8 @@ public class FormViewObj implements Viewable,
                         }
                     } catch (Exception ex)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormViewObj.class, ex);
                         new RuntimeException(ex);
                     }
                 }
@@ -4435,6 +4461,8 @@ public class FormViewObj implements Viewable,
                         
                     } catch (NullPointerException ex)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormViewObj.class, ex);
                         log.error("FieldCell["+fieldInfo.getFormCell().getName()+" data["+dataObj+"]");
                         throw new RuntimeException(ex);
                     }
@@ -4591,6 +4619,8 @@ public class FormViewObj implements Viewable,
                             
                         } catch (Exception ex)
                         {
+                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormViewObj.class, ex);
                             log.error(ex);
                             // XXX TODO Show error dialog here
                         }

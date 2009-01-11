@@ -963,6 +963,8 @@ public class SecurityAdminPane extends BaseSubPane
            
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SecurityAdminPane.class, ex);
             ex.printStackTrace();
             session.rollback();
             

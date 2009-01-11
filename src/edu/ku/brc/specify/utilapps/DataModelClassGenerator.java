@@ -195,6 +195,8 @@ public class DataModelClassGenerator extends JFrame
             
         } catch (IOException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataModelClassGenerator.class, ex);
             ex.printStackTrace();
             return;
         }
@@ -523,6 +525,8 @@ public class DataModelClassGenerator extends JFrame
             
         } catch (IOException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataModelClassGenerator.class, ex);
             ex.printStackTrace();
         }
   

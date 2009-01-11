@@ -158,6 +158,8 @@ public class SpecifySecurityMgr extends SecurityMgr
                 if (stmt != null)  stmt.close(); 
             } catch (SQLException e)
             {
+                edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifySecurityMgr.class, e);
                 log.error("Exception caught: " + e.toString()); //$NON-NLS-1$
                 e.printStackTrace();
             }

@@ -164,6 +164,8 @@ public class StatGroupTableFromQuery extends StatGroupTable implements SQLExecut
 
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(StatGroupTableFromQuery.class, ex);
             log.error(ex);
             ex.printStackTrace();
         }

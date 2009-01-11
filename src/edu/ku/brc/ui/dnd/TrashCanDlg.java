@@ -143,6 +143,8 @@ public class TrashCanDlg extends JDialog implements ActionListener, ListSelectio
 
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TrashCanDlg.class, ex);
             log.error(ex);
         }
         

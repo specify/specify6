@@ -178,6 +178,8 @@ public class DebugLoggerDialog extends CustomDialog
             
         } catch (IOException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DebugLoggerDialog.class, ex);
             ex.printStackTrace();
         }
         super.okButtonPressed();
@@ -252,6 +254,8 @@ public class DebugLoggerDialog extends CustomDialog
                             
                         } catch (Exception ex)
                         {
+                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DebugLoggerDialog.class, ex);
                             
                         }
                     }
@@ -259,6 +263,8 @@ public class DebugLoggerDialog extends CustomDialog
                 
             } catch (IOException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DebugLoggerDialog.class, ex);
                 ex.printStackTrace();
             }
         } else

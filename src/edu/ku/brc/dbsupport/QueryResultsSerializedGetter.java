@@ -159,6 +159,8 @@ public class QueryResultsSerializedGetter implements QRCProcessorListener
                 
             } catch (SQLException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryResultsSerializedGetter.class, ex);
                 log.error(ex);
             }
         }
@@ -187,6 +189,8 @@ public class QueryResultsSerializedGetter implements QRCProcessorListener
                     
                 } catch (SQLException ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryResultsSerializedGetter.class, ex);
                     log.error(ex);
                 }
             }

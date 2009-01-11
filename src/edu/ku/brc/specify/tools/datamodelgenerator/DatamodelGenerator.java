@@ -428,9 +428,13 @@ public class DatamodelGenerator
             
         } catch (ClassNotFoundException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DatamodelGenerator.class, ex);
             
         } catch (IOException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DatamodelGenerator.class, ex);
             ex.printStackTrace();
         }
         return null;
@@ -956,6 +960,8 @@ public class DatamodelGenerator
                         
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DatamodelGenerator.class, ex);
             ex.printStackTrace();
         }  
     }
@@ -1036,6 +1042,8 @@ public class DatamodelGenerator
             
         } catch (IOException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DatamodelGenerator.class, ex);
             ex.printStackTrace();
         }
 
@@ -1139,6 +1147,8 @@ public class DatamodelGenerator
                         
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DatamodelGenerator.class, ex);
             ex.printStackTrace();
         }  
     }
@@ -1188,6 +1198,8 @@ public class DatamodelGenerator
             
         } catch (IOException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DatamodelGenerator.class, ex);
             ex.printStackTrace();
         }
     }
@@ -1231,6 +1243,8 @@ public class DatamodelGenerator
                         
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DatamodelGenerator.class, ex);
             ex.printStackTrace();
         }  
     }
@@ -1337,6 +1351,8 @@ public class DatamodelGenerator
 
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DatamodelGenerator.class, ex);
             ex.printStackTrace();
             log.fatal(ex);
         }
@@ -1432,6 +1448,8 @@ public class DatamodelGenerator
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DatamodelGenerator.class, ex);
             log.error("error writing writeTree", ex);
             return false;
         }
@@ -1509,6 +1527,8 @@ public class DatamodelGenerator
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DatamodelGenerator.class, ex);
             ex.printStackTrace();
             log.fatal(ex);
         }

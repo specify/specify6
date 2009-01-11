@@ -150,6 +150,8 @@ public class AskForNumbersDlg extends CustomDialog
                             
                         } catch (java.lang.NumberFormatException ex)
                         {
+                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AskForNumbersDlg.class, ex);
                             errorList.append(getLocalizedMessage("AFN_NUMFMT_ERROR", catNum));
                             errorList.append("\n");
                             isOK = false;
@@ -177,6 +179,8 @@ public class AskForNumbersDlg extends CustomDialog
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AskForNumbersDlg.class, ex);
                 log.error(ex);
                 ex.printStackTrace();
                 

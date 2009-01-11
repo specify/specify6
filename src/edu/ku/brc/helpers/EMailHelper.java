@@ -287,16 +287,22 @@ public class EMailHelper
     
                 } catch (SendFailedException mex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(EMailHelper.class, mex);
                     mex.printStackTrace();
                     exception = mex;
                     
                 } catch (MessagingException mex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(EMailHelper.class, mex);
                     mex.printStackTrace();
                     exception = mex;
                     
                 } catch (Exception mex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(EMailHelper.class, mex);
                     mex.printStackTrace();
                     exception = mex;
                 
@@ -335,6 +341,8 @@ public class EMailHelper
 
         } catch (Exception mex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(EMailHelper.class, mex);
             instance.lastErrorMsg = mex.toString();
             
             mex.printStackTrace();
@@ -486,6 +494,8 @@ public class EMailHelper
                 return AccountType.valueOf(acctType);
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(EMailHelper.class, ex);
                 return AccountType.Unknown;
             }
         }
@@ -572,6 +582,8 @@ public class EMailHelper
 
         } catch (MessagingException mex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(EMailHelper.class, mex);
             instance.lastErrorMsg = mex.toString();
         }
         return false;
@@ -620,6 +632,8 @@ public class EMailHelper
 
                 } catch (Exception ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(EMailHelper.class, ex);
 
                     instance.lastErrorMsg = ex.toString();
                     ex.printStackTrace();
@@ -659,12 +673,16 @@ public class EMailHelper
                 }
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(EMailHelper.class, ex);
                 instance.lastErrorMsg  = ex.toString();
                 status = false;
             }
 
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(EMailHelper.class, ex);
             instance.lastErrorMsg  = ex.toString();
             status = false;
         }
@@ -734,6 +752,8 @@ public class EMailHelper
                 store.close();
             } catch (MessagingException mex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(EMailHelper.class, mex);
                 instance.lastErrorMsg = mex.toString();
             }
         }
@@ -909,6 +929,8 @@ public class EMailHelper
 
         } catch (MessagingException mex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(EMailHelper.class, mex);
             instance.lastErrorMsg = mex.toString();
 
             //mex.printStackTrace();
@@ -922,6 +944,8 @@ public class EMailHelper
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(EMailHelper.class, ex);
             ex.printStackTrace();
         }
         

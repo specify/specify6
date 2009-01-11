@@ -260,6 +260,8 @@ public class FormGenerator
             
         } catch (IOException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormGenerator.class, ex);
             ex.printStackTrace();
         }
 

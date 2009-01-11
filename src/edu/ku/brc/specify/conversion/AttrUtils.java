@@ -78,6 +78,8 @@ public class AttrUtils
             
         } catch (Exception e) 
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AttrUtils.class, e);
             log.warn("******* " + e);
             HibernateUtil.rollbackTransaction();
         } 
@@ -130,6 +132,8 @@ public class AttrUtils
 
             } catch (Exception e)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AttrUtils.class, e);
                 log.warn("******* " + e);
                 e.printStackTrace();
                 HibernateUtil.rollbackTransaction();
@@ -170,6 +174,8 @@ public class AttrUtils
             
         } catch (Exception e) 
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AttrUtils.class, e);
             log.warn("******* " + e);
             HibernateUtil.rollbackTransaction();
         } 

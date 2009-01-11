@@ -58,6 +58,8 @@ public abstract class CustomQueryFactory
                  
             } catch (Exception e) 
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(CustomQueryFactory.class, e);
                 InternalError error = new InternalError("Can't instantiate CustomQueryFactory factory " + factoryNameStr); //$NON-NLS-1$
                 error.initCause(e);
                 throw error;

@@ -589,6 +589,8 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
             }
         } catch (SQLException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ExpressSearchTask.class, ex);
             ex.printStackTrace();
         }
     }
@@ -991,6 +993,8 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                 
             } catch (SQLException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ExpressSearchTask.class, ex);
                 ex.printStackTrace();
             }
         }
@@ -1057,6 +1061,8 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                     }
                 } catch (SQLException ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ExpressSearchTask.class, ex);
                     ex.printStackTrace();
                 }
 

@@ -94,6 +94,8 @@ public class AppPreferences
                 
             } catch (Exception e) 
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AppPreferences.class, e);
                 InternalError error = new InternalError("Can't instantiate "+factoryName+" factory " + remoteSaverClassName); //$NON-NLS-1$ //$NON-NLS-2$
                 error.initCause(e);
                 throw error;
@@ -147,6 +149,8 @@ public class AppPreferences
             }
         } catch (BackingStoreException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AppPreferences.class, ex);
            log.error(ex); 
         }
     }
@@ -168,6 +172,8 @@ public class AppPreferences
             }
         } catch (BackingStoreException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AppPreferences.class, ex);
            log.error(ex); 
         }
     }
@@ -468,6 +474,8 @@ public class AppPreferences
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AppPreferences.class, ex);
                 
             }
         } else

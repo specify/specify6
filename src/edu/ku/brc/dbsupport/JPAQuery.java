@@ -216,6 +216,8 @@ public class JPAQuery implements CustomQueryIFace
                 
             } catch (JDBCConnectionException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(JPAQuery.class, ex);
                 HibernateUtil.rebuildSessionFactory();
                 Query localQuery = session.createQuery(sqlStr);
                 resultsList = localQuery.list();
@@ -230,6 +232,8 @@ public class JPAQuery implements CustomQueryIFace
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(JPAQuery.class, ex);
             log.error("** In Exception ["+sqlStr+"]"); //$NON-NLS-1$ //$NON-NLS-2$
             log.error(ex);
             ex.printStackTrace();

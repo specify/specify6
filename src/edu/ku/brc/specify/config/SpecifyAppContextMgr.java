@@ -273,6 +273,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
                 return null;
             }
         }
@@ -321,6 +323,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
             ex.printStackTrace();
             
         } finally
@@ -408,6 +412,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
             ex.printStackTrace();
             showLocalizedError(ex.toString()); // Yes, I know it isn't localized.
         }
@@ -595,6 +601,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
             ex.printStackTrace();
             showLocalizedError(ex.toString()); // Yes, I know it isn't localized.
             
@@ -807,6 +815,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
             
         } catch (CloneNotSupportedException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -859,6 +869,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
                         
                     } catch (Exception ex)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
                         ex.printStackTrace();
                         session.rollback();
                         
@@ -1061,6 +1073,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
             
         } catch (org.hibernate.exception.SQLGrammarException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
             showLocalizedError("SpecifyAppContextMgr.SCHEMA_OUTOF_SYNC"); //$NON-NLS-1$
             System.exit(0);
         }
@@ -1106,6 +1120,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
                         
                     } catch (Exception ex)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
                         log.error(ex);
                     }
                 }
@@ -1216,6 +1232,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     
                 } catch (Exception ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
                     log.error(ex);
                 }
                 System.exit(0);
@@ -1360,6 +1378,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
             ex.printStackTrace();
             
         } finally 
@@ -1422,6 +1442,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
     
                     } catch (org.dom4j.DocumentException ex)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
                         /*if (dlg == null)
                         {
                             dlg = new UnhandledExceptionDialog("SAX Parser", ex);
@@ -1434,6 +1456,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
                         
                     } catch (final Exception ex)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
                         log.error(vso.getName());
                         log.error(ex);
                         ex.printStackTrace();
@@ -1453,6 +1477,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 }
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
                 ex.printStackTrace();
                 
             } finally
@@ -1626,6 +1652,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
                 session.rollback();
                 log.error(ex);
                 
@@ -1671,6 +1699,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
             }
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
             log.error(ex);
             ex.printStackTrace();
             
@@ -1720,6 +1750,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
 
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
             log.error(ex);
             throw new RuntimeException(ex);
         }
@@ -1744,6 +1776,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
 
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
             log.error(ex);
             throw new RuntimeException(ex);
         }
@@ -1778,6 +1812,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
     
                     } catch (Exception ex)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
                         log.error(ex);
                         throw new RuntimeException(ex);
                     }
@@ -1787,6 +1823,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
                 log.error(ex);
                 
             } finally 
@@ -1855,6 +1893,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     
                 } catch (Exception ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
                     session.rollback();
                     
                     log.error(ex);
@@ -1864,6 +1904,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
             log.error(ex);
             
         } finally
@@ -1968,6 +2010,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 return true;
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
                 session.rollback();
                 log.error(ex);
                 return false;
@@ -2134,6 +2178,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
 
                 } catch (Exception ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
                     ex.printStackTrace();
                     log.error(ex);
                 }
@@ -2178,6 +2224,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
                 log.error(ex);
             } finally
             {
@@ -2222,6 +2270,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
             log.error(ex);
             // error dialog "Unable load the PickList and it's items."
             
@@ -2273,6 +2323,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     }
                 } catch (Exception ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
                     ex.printStackTrace();
                     
                 } finally
@@ -2317,6 +2369,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     }
                 } catch (Exception ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
                     // it's ok 
                     // we get when it can't find the search dialog
                     
@@ -2333,6 +2387,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
                 log.error(ex);
             } finally
             {
@@ -2627,6 +2683,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
                 ex.printStackTrace();
                 return null;
                 

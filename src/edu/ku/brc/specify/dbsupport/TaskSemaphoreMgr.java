@@ -79,6 +79,8 @@ public class TaskSemaphoreMgr
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TaskSemaphoreMgr.class, ex);
             ex.printStackTrace();
             //log.error(ex);
             
@@ -116,6 +118,8 @@ public class TaskSemaphoreMgr
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TaskSemaphoreMgr.class, ex);
             ex.printStackTrace();
             //log.error(ex);
             
@@ -159,6 +163,8 @@ public class TaskSemaphoreMgr
                     }
                 } catch (StaleObjectException ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TaskSemaphoreMgr.class, ex);
                     lockWasRemoved = false;
                 }
                 
@@ -174,6 +180,8 @@ public class TaskSemaphoreMgr
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TaskSemaphoreMgr.class, ex);
             ex.printStackTrace();
             //log.error(ex);
             
@@ -226,6 +234,8 @@ public class TaskSemaphoreMgr
                 
                 } catch (StaleObjectException ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TaskSemaphoreMgr.class, ex);
                     semaphore = null;
                 }
                 
@@ -328,6 +338,8 @@ public class TaskSemaphoreMgr
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TaskSemaphoreMgr.class, ex);
             ex.printStackTrace();
             //log.error(ex);
             

@@ -85,6 +85,8 @@ public class XMLChecksumUtil
                 
             } catch (IOException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(XMLChecksumUtil.class, ex);
                 throw new RuntimeException("Couldn't locate Checksum file ["+checksumFile.getAbsolutePath()+"]");
             }
         } else
@@ -137,6 +139,8 @@ public class XMLChecksumUtil
     
         } catch (IOException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(XMLChecksumUtil.class, ex);
             throw new RuntimeException("Couldn't locate Checksum file ["+checksumFile.getAbsolutePath()+"]");
         }
 

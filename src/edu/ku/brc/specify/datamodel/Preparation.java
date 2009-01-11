@@ -327,6 +327,7 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
                 
             } catch (SQLException ex)
             {
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Preparation.class, ex);
                 UsageTracker.incrSQLUsageCount();
                 ex.printStackTrace();
                 

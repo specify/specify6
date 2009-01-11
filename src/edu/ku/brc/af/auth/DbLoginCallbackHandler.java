@@ -129,6 +129,8 @@ public class DbLoginCallbackHandler implements CallbackHandler
             }
         } catch (Exception e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DbLoginCallbackHandler.class, e);
             log.error("Exception: " + e.getMessage()); //$NON-NLS-1$
             e.printStackTrace();
         }

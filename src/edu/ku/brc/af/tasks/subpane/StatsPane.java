@@ -127,6 +127,8 @@ public class StatsPane extends BaseSubPane
             return QueryType.valueOf(type.toUpperCase());
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(StatsPane.class, ex);
             log.error(ex);
         }
         return QueryType.SQL;
@@ -159,6 +161,8 @@ public class StatsPane extends BaseSubPane
                         
                     } catch (Exception ex)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(StatsPane.class, ex);
                         
                     }
                     if (classObj != null)
@@ -410,6 +414,8 @@ public class StatsPane extends BaseSubPane
                     
                 } catch (Exception ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(StatsPane.class, ex);
                     ex.printStackTrace();
                 }
             }
@@ -563,6 +569,8 @@ public class StatsPane extends BaseSubPane
 
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(StatsPane.class, ex);
             log.error(ex);
             ex.printStackTrace();
         }

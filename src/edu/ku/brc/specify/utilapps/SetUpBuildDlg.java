@@ -460,6 +460,8 @@ class SetUpBuildDlg extends CustomDialog
                 
             } catch (IOException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SetUpBuildDlg.class, ex);
                 ex.printStackTrace();
             }
         }
@@ -494,6 +496,8 @@ class SetUpBuildDlg extends CustomDialog
             
         } catch (IOException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SetUpBuildDlg.class, ex);
             ex.printStackTrace();
         }
         System.out.println("Stop");
@@ -544,6 +548,8 @@ class SetUpBuildDlg extends CustomDialog
                     
                 } catch (Exception ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SetUpBuildDlg.class, ex);
                     ex.printStackTrace();
                 }
             } else

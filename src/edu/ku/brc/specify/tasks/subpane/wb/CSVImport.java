@@ -132,6 +132,8 @@ public class CSVImport extends DataImport implements DataImportIFace
             
         } catch (IOException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(CSVImport.class, ex);
            log.error(ex);
         }
         

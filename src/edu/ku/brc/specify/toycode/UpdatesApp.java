@@ -159,6 +159,8 @@ public class UpdatesApp extends JPanel
             
         } catch (Exception ex) 
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UpdatesApp.class, ex);
             props = new Properties();
         }
         
@@ -208,6 +210,8 @@ public class UpdatesApp extends JPanel
             
         } catch (Exception ex) 
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UpdatesApp.class, ex);
             ex.printStackTrace();
         }
         
@@ -309,6 +313,8 @@ public class UpdatesApp extends JPanel
                 
             } catch (IOException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UpdatesApp.class, ex);
                 ex.printStackTrace();
             }
         } else
@@ -338,6 +344,8 @@ public class UpdatesApp extends JPanel
             
         } catch (IOException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UpdatesApp.class, ex);
             ex.printStackTrace();
         }
         System.out.println("Stop"); 
@@ -368,6 +376,8 @@ public class UpdatesApp extends JPanel
             }
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UpdatesApp.class, ex);
             ex.printStackTrace();
         }
         return menu;

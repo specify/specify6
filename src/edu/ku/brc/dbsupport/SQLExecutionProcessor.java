@@ -177,6 +177,8 @@ public class SQLExecutionProcessor
             }
         } catch (SQLException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SQLExecutionProcessor.class, ex);
             log.error(ex);
         }
 
@@ -197,6 +199,8 @@ public class SQLExecutionProcessor
             }
         } catch (SQLException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SQLExecutionProcessor.class, ex);
             log.error(ex);
         }
 
@@ -255,6 +259,8 @@ public class SQLExecutionProcessor
 
         } catch (java.sql.SQLException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SQLExecutionProcessor.class, ex);
             log.error("Error in run["+sqlStr+"]", ex); //$NON-NLS-1$ //$NON-NLS-2$
             if (listener != null)
             {
@@ -263,6 +269,8 @@ public class SQLExecutionProcessor
 
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SQLExecutionProcessor.class, ex);
             log.error("Error in run["+sqlStr+"]", ex); //$NON-NLS-1$ //$NON-NLS-2$
             if (listener != null)
             {

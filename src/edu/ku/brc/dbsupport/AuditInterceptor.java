@@ -110,6 +110,8 @@ public abstract class AuditInterceptor extends EmptyInterceptor
                  
             } catch (Exception e) 
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AuditInterceptor.class, e);
                 InternalError error = new InternalError("Can't instantiate AuditInterceptor factory " + factoryName); //$NON-NLS-1$
                 error.initCause(e);
                 throw error;

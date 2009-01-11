@@ -281,6 +281,8 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
 
         } catch (ClassNotFoundException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TextFieldWithInfo.class, ex);
            log.error(ex);
            throw new RuntimeException(ex);
         }

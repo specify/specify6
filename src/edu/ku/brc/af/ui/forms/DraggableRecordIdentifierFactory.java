@@ -74,6 +74,8 @@ public class DraggableRecordIdentifierFactory
                  
             } catch (Exception e) 
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DraggableRecordIdentifierFactory.class, e);
                 log.error(e);
                 InternalError error = new InternalError("Can't instantiate DraggableRecordIdentifierFactory factory " + factoryName);
                 error.initCause(e);

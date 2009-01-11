@@ -272,6 +272,8 @@ public class PluginsTask extends BaseTask
                     
                 } catch (Exception ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PluginsTask.class, ex);
                     log.error(ex);
                     ex.printStackTrace();
                     
@@ -283,6 +285,8 @@ public class PluginsTask extends BaseTask
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PluginsTask.class, ex);
             ex.printStackTrace();
             log.error(ex);
         }

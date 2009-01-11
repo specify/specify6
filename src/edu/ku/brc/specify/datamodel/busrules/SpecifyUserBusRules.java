@@ -203,6 +203,8 @@ public class SpecifyUserBusRules extends BaseBusRules
                         
                     } catch (Exception ex)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyUserBusRules.class, ex);
                         ex.printStackTrace();
                     }
                     break;

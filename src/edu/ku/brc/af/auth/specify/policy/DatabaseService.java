@@ -46,6 +46,8 @@ public class DatabaseService
             
         } catch (java.lang.ClassNotFoundException e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DatabaseService.class, e);
             log.error("getAdminLevelConnection - Could not connect to database, driverclass - ClassNotFoundException: "); //$NON-NLS-1$
             log.error("getAdminLevelConnection - " + e.getMessage()); //$NON-NLS-1$
         }
@@ -60,6 +62,8 @@ public class DatabaseService
             return con;
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DatabaseService.class, ex);
             log.error("getAdminLevelConnection - Exception: "); //$NON-NLS-1$
             log.error("getAdminLevelConnection - " + ex.getMessage()); //$NON-NLS-1$
         }
@@ -79,6 +83,8 @@ public class DatabaseService
             
         } catch (java.lang.ClassNotFoundException e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DatabaseService.class, e);
             log.error("getConnection - Could not connect to database, driverclass - ClassNotFoundException: "); //$NON-NLS-1$
             log.error("getConnection - "+ e.getMessage()); //$NON-NLS-1$
             // throw new LoginException("Database driver class not found: " + driverClass);

@@ -414,6 +414,8 @@ public class FishConversion
             
         } catch (SQLException e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FishConversion.class, e);
             e.printStackTrace();
             log.error(e);
         } 

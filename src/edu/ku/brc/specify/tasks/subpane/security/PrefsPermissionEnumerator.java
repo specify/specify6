@@ -86,6 +86,8 @@ public class PrefsPermissionEnumerator extends PermissionEnumerator
                                 
                             } catch (MissingResourceException ex)
                             {
+                                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PrefsPermissionEnumerator.class, ex);
                                 //log.error("Couldn't find key["+title+"]"); 
                             }
                         }
@@ -110,6 +112,8 @@ public class PrefsPermissionEnumerator extends PermissionEnumerator
             }
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PrefsPermissionEnumerator.class, ex);
             ex.printStackTrace();
         }
 	}

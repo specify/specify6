@@ -456,6 +456,8 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
             
         } catch (IOException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ViewSetSelectorPanel.class, ex);
             ex.printStackTrace();
         }
     }
@@ -1174,6 +1176,8 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
 
                     } catch (Exception ex)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ViewSetSelectorPanel.class, ex);
                         //log.error(vso.getName());
                         //log.error(ex);
                         ex.printStackTrace();
@@ -1569,6 +1573,8 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ViewSetSelectorPanel.class, ex);
                 ex.printStackTrace();
             }
             

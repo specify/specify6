@@ -175,6 +175,8 @@ public class NavBoxAction implements ActionListener
                     
                 } catch (CloneNotSupportedException ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(NavBoxAction.class, ex);
                     ex.printStackTrace();
                 }
             } else

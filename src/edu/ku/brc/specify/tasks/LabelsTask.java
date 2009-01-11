@@ -216,6 +216,8 @@ public class LabelsTask extends ReportsBaseTask
 
                     } catch (PrinterException ex)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(LabelsTask.class, ex);
                         //System.err.println(ex);
                         ex.printStackTrace(); 
                     }

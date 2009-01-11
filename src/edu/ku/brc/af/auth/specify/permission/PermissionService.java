@@ -83,6 +83,8 @@ public class PermissionService
             }
         } catch (SQLException e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PermissionService.class, e);
             log.error("Exception caught: " + e); //$NON-NLS-1$
             e.printStackTrace();
         } finally
@@ -95,6 +97,8 @@ public class PermissionService
                 
             } catch (SQLException e)
             {
+                edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PermissionService.class, e);
                 log.error("Exception caught: " + e.toString()); //$NON-NLS-1$
                 e.printStackTrace();
             }
@@ -301,6 +305,8 @@ public class PermissionService
                 
             } catch (SQLException e)
             {
+                edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PermissionService.class, e);
                 log.error("Exception caught: " + e.toString()); //$NON-NLS-1$
                 e.printStackTrace();
             }
@@ -325,6 +331,8 @@ public class PermissionService
             clazz = Class.forName(clazzStr);
         } catch (ClassNotFoundException e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PermissionService.class, e);
             log.error("ClassNotFoundException: " + e.getMessage()); //$NON-NLS-1$
         }
 
@@ -363,15 +371,23 @@ public class PermissionService
                 }
             } catch (NoSuchMethodException e)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PermissionService.class, e);
                 log.error("findPermissions() Constructor for Permission with Id {"+id+"}of {"+clazzStr+"} threw Exception {"+e+"}. Skipping."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
             } catch (InstantiationException e)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PermissionService.class, e);
                 log.error("findPermissions() Constructor for Permission with Id {"+id+"}of {"+clazz+"} threw Exception {"+e+"}. Skipping."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
             } catch (IllegalAccessException e)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PermissionService.class, e);
                 log.error("findPermissions() Constructor for Permission with Id {"+id+"}of {"+clazz+"} threw Exception {"+e+"}. Skipping."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
             } catch (InvocationTargetException e)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PermissionService.class, e);
                 log.error("findPermissions() Constructor for Permission with Id {"+id+"}of {"+clazz+"} threw Exception {"+e+"}. Skipping."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
             }
         } else
@@ -420,6 +436,8 @@ public class PermissionService
                 return true;
             } catch (SQLException e)
             {
+                edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PermissionService.class, e);
                 log.error("Exception caught: " + e); //$NON-NLS-1$
                 e.printStackTrace();
             } finally
@@ -430,6 +448,8 @@ public class PermissionService
                     if (pstmt != null)  pstmt.close(); 
                 } catch (SQLException e)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PermissionService.class, e);
                     log.error("Exception caught: " + e.toString()); //$NON-NLS-1$
                     e.printStackTrace();
                 }
@@ -488,6 +508,8 @@ public class PermissionService
                 
             } catch (SQLException e)
             {
+                edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PermissionService.class, e);
                 log.error("Exception caught: " + e.toString()); //$NON-NLS-1$
                 e.printStackTrace();
             }
@@ -537,6 +559,8 @@ public class PermissionService
                 if (pstmt != null)  pstmt.close(); 
             } catch (SQLException e)
             {
+                edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PermissionService.class, e);
                 log.error("Exception caught: " + e.toString()); //$NON-NLS-1$
                 e.printStackTrace();
             }
@@ -586,6 +610,8 @@ public class PermissionService
                 if (pstmt != null)  pstmt.close(); 
             } catch (SQLException e)
             {
+                edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PermissionService.class, e);
                 log.error("Exception caught: " + e.toString()); //$NON-NLS-1$
                 e.printStackTrace();
             }
@@ -609,6 +635,8 @@ public class PermissionService
             
         } catch (final Exception e1)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PermissionService.class, e1);
             log.error(e1);
             e1.printStackTrace();
             
@@ -647,9 +675,13 @@ public class PermissionService
             return true;
         } catch (SecurityException e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PermissionService.class, e);
             log.warn("runCheckPermssion - Does not have permission" + perm.toString()); //$NON-NLS-1$
         } catch (Exception ee)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PermissionService.class, ee);
             log.error("runCheckPermssion - exception caught"); //$NON-NLS-1$
             ee.printStackTrace();
             log.error(ee.getCause());

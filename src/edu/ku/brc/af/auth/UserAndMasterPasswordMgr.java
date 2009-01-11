@@ -369,6 +369,8 @@ public class UserAndMasterPasswordMgr
                         
                     } catch (IOException ex)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UserAndMasterPasswordMgr.class, ex);
                         ex.printStackTrace();
                         displayErrorDlgLocalized("FILE_NOT_CREATED", keyFilePath);
                         
@@ -554,6 +556,8 @@ public class UserAndMasterPasswordMgr
             
         } catch (Exception ex) 
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UserAndMasterPasswordMgr.class, ex);
             ex.printStackTrace(); 
             
         } finally
@@ -564,6 +568,8 @@ public class UserAndMasterPasswordMgr
                 
             } catch (IOException ioe) 
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UserAndMasterPasswordMgr.class, ioe);
                 ioe.printStackTrace();
             }
         }
@@ -757,6 +763,8 @@ public class UserAndMasterPasswordMgr
                  
             } catch (Exception e) 
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UserAndMasterPasswordMgr.class, e);
                 InternalError error = new InternalError("Can't instantiate UserAndMasterPasswordMgr factory " + factoryNameStr); //$NON-NLS-1$
                 error.initCause(e);
                 throw error;

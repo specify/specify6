@@ -294,6 +294,8 @@ public class JAutoCompTextField extends JTextField
                     
                 } catch (Exception ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(JAutoCompTextField.class, ex);
                     ex.printStackTrace();
                 }
                 

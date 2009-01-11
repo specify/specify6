@@ -472,6 +472,8 @@ public class SpAppResource extends DataModelObjBase implements java.io.Serializa
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpAppResource.class, ex);
            log.error(ex);
            ex.printStackTrace();
            
@@ -524,6 +526,8 @@ public class SpAppResource extends DataModelObjBase implements java.io.Serializa
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpAppResource.class, ex);
            log.error(ex);
            ex.printStackTrace();
            

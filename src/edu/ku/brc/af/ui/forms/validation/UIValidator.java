@@ -94,6 +94,8 @@ public class UIValidator
 
             } catch (Exception e)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UIValidator.class, e);
                 log.debug("Exp["+expression+"]");
                 // XXX FIXME
                 e.printStackTrace();
@@ -145,6 +147,8 @@ public class UIValidator
 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UIValidator.class, ex);
                 return Type.OK;
             }
         }
@@ -214,6 +218,8 @@ public class UIValidator
 
             } catch (Exception e)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UIValidator.class, e);
                 // XXX FIXME
                 e.printStackTrace();
             }

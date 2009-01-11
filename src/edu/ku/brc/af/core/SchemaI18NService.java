@@ -90,6 +90,8 @@ public abstract class SchemaI18NService
                  
             } catch (Exception e) 
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SchemaI18NService.class, e);
                 InternalError error = new InternalError("Can't instantiate SchemaI18NService factory " + factoryNameStr); //$NON-NLS-1$
                 error.initCause(e);
                 throw error;

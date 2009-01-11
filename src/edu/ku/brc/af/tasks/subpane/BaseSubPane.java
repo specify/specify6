@@ -217,6 +217,8 @@ public class BaseSubPane extends JTiledPanel implements SubPaneIFace, Printable
                 printJob.print();
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BaseSubPane.class, ex);
                 throw new RuntimeException(ex);
             }
         }

@@ -177,6 +177,8 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AppPrefsDBIOIImpl.class, ex);
                 ex.printStackTrace();
                 log.error(ex);
                 
@@ -226,6 +228,8 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
                 
             } catch (IOException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AppPrefsDBIOIImpl.class, ex);
                 throw new BackingStoreException(ex);
             }
         } else

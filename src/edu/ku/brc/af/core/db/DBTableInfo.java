@@ -91,6 +91,8 @@ public class DBTableInfo extends DBInfoBase
             //Class.
         } catch (ClassNotFoundException e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DBTableInfo.class, e);
             log.error("Trying to find class: " + className + " but class was not found"); //$NON-NLS-1$ //$NON-NLS-2$
             //e.printStackTrace();
         }
@@ -296,6 +298,8 @@ public class DBTableInfo extends DBInfoBase
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DBTableInfo.class, ex);
                 log.error(ex);
             }
         }

@@ -146,6 +146,8 @@ public class AdminInfoSubPanelWrapper
 		            
 		        } catch (Exception ex)
 		        {
+    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AdminInfoSubPanelWrapper.class, ex);
 		            ex.printStackTrace();
 		            session.rollback();
 		            

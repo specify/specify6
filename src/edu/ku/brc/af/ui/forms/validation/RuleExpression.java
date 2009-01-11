@@ -54,6 +54,8 @@ public class RuleExpression implements FormValidationRuleIFace
 
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RuleExpression.class, ex);
             log.error(ex);
             //ex.printStackTrace();
         }
@@ -89,6 +91,8 @@ public class RuleExpression implements FormValidationRuleIFace
             log.debug("the return from the evaluation is of class "+result);
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RuleExpression.class, ex);
             log.error(ex);
         }
         return false;

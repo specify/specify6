@@ -139,6 +139,8 @@ public class SaveRecordSetDlg extends JDialog
 
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SaveRecordSetDlg.class, ex);
             log.error(ex);
         }
         

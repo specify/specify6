@@ -88,6 +88,8 @@ public class SpecifyUserTest extends TestCase
             assertTrue("SpecifyUser failed to be deleted from the database.", deleteSpecifyUserDB(testUser.getId()));
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyUserTest.class, ex);
             log.error("******* " + ex);
             ex.printStackTrace();
             HibernateUtil.rollbackTransaction();
@@ -124,6 +126,8 @@ public class SpecifyUserTest extends TestCase
                 }
             } catch (Exception i)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyUserTest.class, i);
                 HibernateUtil.rollbackTransaction();
                 shouldNotBeCreated = true;
             }
@@ -131,6 +135,8 @@ public class SpecifyUserTest extends TestCase
             assertTrue("SpecifyUser failed to be deleted from the database.", deleteSpecifyUserDB(testUser.getId()));
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyUserTest.class, ex);
             log.error("******* " + ex);
             ex.printStackTrace();
             HibernateUtil.rollbackTransaction();

@@ -270,6 +270,8 @@ public class LoanReturnDlg extends JDialog
         
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(LoanReturnDlg.class, ex);
             // Error Dialog
             ex.printStackTrace();
             

@@ -335,6 +335,8 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SchemaLocalizerDlg.class, ex);
             ex.printStackTrace();
             
         } finally
@@ -355,6 +357,8 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
                 }
             } catch (Exception e)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SchemaLocalizerDlg.class, e);
                 e.printStackTrace();
             }
         }
@@ -487,6 +491,8 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
                     
                 } catch (Exception e)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SchemaLocalizerDlg.class, e);
                     e.printStackTrace();
                     
                 } finally
@@ -564,6 +570,8 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SchemaLocalizerDlg.class, ex);
                 ex.printStackTrace();
             } finally
             {
@@ -682,6 +690,8 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SchemaLocalizerDlg.class, ex);
             ex.printStackTrace();
         } finally
         {
@@ -708,6 +718,8 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SchemaLocalizerDlg.class, ex);
             ex.printStackTrace();
         } finally
         {
@@ -731,6 +743,8 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SchemaLocalizerDlg.class, ex);
             ex.printStackTrace();
             
         } finally
@@ -751,6 +765,8 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
                 }
             } catch (Exception e)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SchemaLocalizerDlg.class, e);
                 e.printStackTrace();
             }
         }
@@ -842,6 +858,8 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
             }
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SchemaLocalizerDlg.class, ex);
             ex.printStackTrace();
         } finally
         {
@@ -891,6 +909,8 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SchemaLocalizerDlg.class, ex);
                 log.error(ex);
                 ex.printStackTrace();
                 

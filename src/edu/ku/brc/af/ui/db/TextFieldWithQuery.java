@@ -970,6 +970,8 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     
                         } catch (java.util.IllegalFormatConversionException ex)
                         {
+                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TextFieldWithQuery.class, ex);
                             ex.printStackTrace();
                             
                             list.addElement(values[0] != null ? values[0].toString() : "(No Value)"); //$NON-NLS-1$

@@ -97,6 +97,8 @@ public class WebLinkMgr
                  
             } catch (Exception e) 
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WebLinkMgr.class, e);
                 InternalError error = new InternalError("Can't instantiate WebLink factory " + factoryNameStr); //$NON-NLS-1$
                 error.initCause(e);
                 throw error;

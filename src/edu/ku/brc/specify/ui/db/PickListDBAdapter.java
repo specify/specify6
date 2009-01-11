@@ -198,6 +198,8 @@ public class PickListDBAdapter extends AbstractListModel implements PickListDBAd
 
         } catch (Exception e) 
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PickListDBAdapter.class, e);
             // ignoring warning about 'null'
             if (session != null)
             {

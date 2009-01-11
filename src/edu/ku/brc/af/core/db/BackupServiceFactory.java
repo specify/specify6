@@ -83,6 +83,8 @@ public abstract class BackupServiceFactory
                  
             } catch (Exception e) 
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BackupServiceFactory.class, e);
                 InternalError error = new InternalError("Can't instantiate RecordSet factory " + factoryNameStr); //$NON-NLS-1$
                 error.initCause(e);
                 throw error;
@@ -183,6 +185,8 @@ public abstract class BackupServiceFactory
                     
                 } catch (IOException ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BackupServiceFactory.class, ex);
                     throw new RuntimeException(ex);
                 }
             }
@@ -207,6 +211,8 @@ public abstract class BackupServiceFactory
                 
             } catch (IOException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BackupServiceFactory.class, ex);
                 ex.printStackTrace();
                 //throw new BackingStoreException(ex);
             }

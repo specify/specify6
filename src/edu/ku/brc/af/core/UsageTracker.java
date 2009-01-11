@@ -96,6 +96,8 @@ public class UsageTracker
 
             } catch (IOException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UsageTracker.class, ex);
                 // ok to die silently
                 ex.printStackTrace();
             }
@@ -137,6 +139,8 @@ public class UsageTracker
             
         } catch (IOException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UsageTracker.class, ex);
             // ok to die silently
             ex.printStackTrace();
         }

@@ -100,6 +100,8 @@ public class PrepTypeBusRules extends BaseBusRules
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PrepTypeBusRules.class, ex);
             ex.printStackTrace();
             
         } finally
@@ -111,6 +113,8 @@ public class PrepTypeBusRules extends BaseBusRules
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PrepTypeBusRules.class, ex);
                 ex.printStackTrace();
             }
         }
@@ -174,6 +178,8 @@ public class PrepTypeBusRules extends BaseBusRules
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PrepTypeBusRules.class, ex);
             ex.printStackTrace();
             
         } finally

@@ -179,6 +179,8 @@ public class SkinsMgr
                 FileUtils.writeStringToFile(skinsFile, xstream.toXML(skinsHash));
             } catch (IOException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SkinsMgr.class, ex);
                 ex.printStackTrace();
             }
         }

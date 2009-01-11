@@ -68,6 +68,8 @@ public class DataObjectSettableFactory
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataObjectSettableFactory.class, ex);
                 System.err.println("Unable to create class["+className+"]");
                 ex.printStackTrace(); // XXX FIXME
             }

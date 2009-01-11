@@ -67,6 +67,8 @@ public class PermissionHelper
             }, null);
         } catch (SecurityException e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PermissionHelper.class, e);
             allowed = false;
         }
 

@@ -63,6 +63,8 @@ public class ResultSetTableModelDirect extends AbstractTableModel
                 this.resultSet.close();
             } catch (SQLException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ResultSetTableModelDirect.class, ex);
                 log.error(ex);
             }
         }
@@ -92,6 +94,8 @@ public class ResultSetTableModelDirect extends AbstractTableModel
             }
         } catch (SQLException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ResultSetTableModelDirect.class, ex);
             log.error("In constructor of ResultSetTableModel", ex);
         }
         catch (Exception ex)
@@ -129,6 +133,8 @@ public class ResultSetTableModelDirect extends AbstractTableModel
             
         } catch (SQLException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ResultSetTableModelDirect.class, ex);
             log.error("In getColumnCount", ex);
         }
         return 0;
@@ -166,6 +172,8 @@ public class ResultSetTableModelDirect extends AbstractTableModel
 
         } catch (SQLException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ResultSetTableModelDirect.class, ex);
             return "N/A";
         }
     }
@@ -218,6 +226,8 @@ public class ResultSetTableModelDirect extends AbstractTableModel
 
         } catch (SQLException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ResultSetTableModelDirect.class, ex);
             log.error("getValueAt", ex);
         }
 
@@ -257,6 +267,8 @@ public class ResultSetTableModelDirect extends AbstractTableModel
                 resultSet.close();
             } catch (SQLException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ResultSetTableModelDirect.class, ex);
                 log.error(ex);
             }
             resultSet  = null;
@@ -314,6 +326,8 @@ public class ResultSetTableModelDirect extends AbstractTableModel
             }
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ResultSetTableModelDirect.class, ex);
             log.error(ex);
         }
         return null;

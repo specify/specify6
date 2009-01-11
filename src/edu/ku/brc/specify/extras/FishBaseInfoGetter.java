@@ -123,6 +123,8 @@ public class FishBaseInfoGetter extends HTTPGetter
 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FishBaseInfoGetter.class, ex);
                 ex.printStackTrace();
                 status = ErrorCode.Error;
             }
@@ -142,6 +144,8 @@ public class FishBaseInfoGetter extends HTTPGetter
 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FishBaseInfoGetter.class, ex);
                 ex.printStackTrace();
                 status = ErrorCode.Error;
             }
@@ -168,6 +172,8 @@ public class FishBaseInfoGetter extends HTTPGetter
 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FishBaseInfoGetter.class, ex);
                 ex.printStackTrace();
                 status = ErrorCode.Error;
             }
@@ -198,6 +204,8 @@ public class FishBaseInfoGetter extends HTTPGetter
 
                 } catch (Exception ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FishBaseInfoGetter.class, ex);
                     ex.printStackTrace();
                     status = ErrorCode.Error;
                 }

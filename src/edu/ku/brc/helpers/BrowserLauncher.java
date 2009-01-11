@@ -90,6 +90,8 @@ public class BrowserLauncher
             }
         } catch (Exception e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BrowserLauncher.class, e);
             JOptionPane.showMessageDialog(null, errMsg + ":\n" + e.getLocalizedMessage()); //$NON-NLS-1$
         }
     }

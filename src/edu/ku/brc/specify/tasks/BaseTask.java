@@ -72,6 +72,8 @@ public abstract class BaseTask extends edu.ku.brc.af.tasks.BaseTask
             
         } catch (IOException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BaseTask.class, ex);
             ex.printStackTrace();
         }
         
@@ -132,6 +134,8 @@ public abstract class BaseTask extends edu.ku.brc.af.tasks.BaseTask
                 
             } catch (IOException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BaseTask.class, ex);
                 ex.printStackTrace();
             }
         }

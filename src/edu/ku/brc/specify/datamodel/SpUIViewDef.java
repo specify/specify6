@@ -599,12 +599,18 @@ public class SpUIViewDef extends DataModelObjBase implements ViewDefIFace, Table
                 
             } catch (ClassNotFoundException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpUIViewDef.class, ex);
                 log.error(ex);
             } catch (InstantiationException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpUIViewDef.class, ex);
                 log.error(ex);
             } catch (IllegalAccessException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpUIViewDef.class, ex);
                 log.error(ex);
             }
         }
@@ -635,12 +641,18 @@ public class SpUIViewDef extends DataModelObjBase implements ViewDefIFace, Table
                 
             } catch (ClassNotFoundException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpUIViewDef.class, ex);
                 log.error(ex);
             } catch (InstantiationException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpUIViewDef.class, ex);
                 log.error(ex);
             } catch (IllegalAccessException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpUIViewDef.class, ex);
                 log.error(ex);
             }
         }
@@ -769,6 +781,8 @@ public class SpUIViewDef extends DataModelObjBase implements ViewDefIFace, Table
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpUIViewDef.class, ex);
                 log.error(ex);
             }
         }

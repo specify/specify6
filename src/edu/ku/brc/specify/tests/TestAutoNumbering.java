@@ -144,6 +144,8 @@ public class TestAutoNumbering extends TestCase
                 
             } catch (SQLException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TestAutoNumbering.class, ex);
                 ex.printStackTrace();
                 return false;
             }
@@ -188,6 +190,8 @@ public class TestAutoNumbering extends TestCase
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TestAutoNumbering.class, ex);
             ex.printStackTrace();
             return false;
         }
@@ -251,6 +255,8 @@ public class TestAutoNumbering extends TestCase
             }
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TestAutoNumbering.class, ex);
             ex.printStackTrace();
         } finally
         {
@@ -823,6 +829,8 @@ public class TestAutoNumbering extends TestCase
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TestAutoNumbering.class, ex);
             ex.printStackTrace();
         }
         div.removeReference(accession, "accessions");

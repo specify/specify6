@@ -91,6 +91,8 @@ public class StatsTask extends BaseTask
                 }
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(StatsTask.class, ex);
                 log.error("Couldn't load `StatisticsPanel` " +ex); //$NON-NLS-1$
             }
     

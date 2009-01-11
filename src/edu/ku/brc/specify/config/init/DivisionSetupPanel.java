@@ -100,6 +100,8 @@ public class DivisionSetupPanel extends JPanel implements SetupPanelIFace
             }
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DivisionSetupPanel.class, ex);
             ex.printStackTrace();
         } finally
         {

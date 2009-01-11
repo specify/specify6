@@ -444,6 +444,8 @@ public class ResourceImportExportDlg extends CustomDialog
                         
                     } catch (IOException ex)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ResourceImportExportDlg.class, ex);
                         ex.printStackTrace();
                     }
                 }
@@ -482,6 +484,8 @@ public class ResourceImportExportDlg extends CustomDialog
                     
                 } catch (IOException ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ResourceImportExportDlg.class, ex);
                     ex.printStackTrace();
                 }
                 
@@ -537,6 +541,8 @@ public class ResourceImportExportDlg extends CustomDialog
                             
                         } catch (Exception ex)
                         {
+                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ResourceImportExportDlg.class, ex);
                             session.rollback();
                             
                             ex.printStackTrace();
@@ -549,6 +555,8 @@ public class ResourceImportExportDlg extends CustomDialog
                                 
                             } catch (Exception ex)
                             {
+                                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ResourceImportExportDlg.class, ex);
                                 ex.printStackTrace();
                             }
                         }

@@ -481,6 +481,8 @@ public class QueryTask extends BaseTask
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryTask.class, ex);
                 // XXX Error dialog
                 session.rollback();
             }
@@ -1019,6 +1021,8 @@ public class QueryTask extends BaseTask
             }
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryTask.class, ex);
             throw new RuntimeException(ex);
             
         }
@@ -1220,6 +1224,8 @@ public class QueryTask extends BaseTask
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryTask.class, ex);
             if (transOpen)
             {
                 session.rollback();
@@ -1657,6 +1663,8 @@ public class QueryTask extends BaseTask
             }
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryTask.class, ex);
             ex.printStackTrace();
             return;
         }
@@ -1804,6 +1812,8 @@ public class QueryTask extends BaseTask
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryTask.class, ex);
             // XXX Error dialog
             ex.printStackTrace();
         }

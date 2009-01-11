@@ -299,6 +299,8 @@ public class JComboBoxFromQuery extends JComboBox
 
         } catch (BadLocationException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(JComboBoxFromQuery.class, ex);
             ex.printStackTrace();
         }
 
@@ -429,6 +431,8 @@ public class JComboBoxFromQuery extends JComboBox
     
                             } catch (java.util.IllegalFormatConversionException ex)
                             {
+                                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(JComboBoxFromQuery.class, ex);
                                 list.addElement(values[0] != null ? values[0].toString() : UIRegistry.getResourceString("JComboBoxFromQuery.NO_VALUE")); //$NON-NLS-1$
                             }
                         }
@@ -445,6 +449,8 @@ public class JComboBoxFromQuery extends JComboBox
                 }
             } catch (SQLException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(JComboBoxFromQuery.class, ex);
                 ex.printStackTrace();
                 
             } finally
@@ -464,6 +470,8 @@ public class JComboBoxFromQuery extends JComboBox
             }
         } catch (SQLException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(JComboBoxFromQuery.class, ex);
             ex.printStackTrace();
         }
     }

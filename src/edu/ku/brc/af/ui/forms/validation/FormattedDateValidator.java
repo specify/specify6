@@ -106,6 +106,8 @@ public class FormattedDateValidator implements FormattedTextValidatorIFace
                         
                     } catch (ParseException ex)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormattedDateValidator.class, ex);
                         reason = "Invalid Date";
                         return false;
                     }

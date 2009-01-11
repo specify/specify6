@@ -760,6 +760,8 @@ public class ViewFactory
 
                 } catch (Exception ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ViewFactory.class, ex);
                     log.error("size prop for Image is incorrect ["+sizeDefStr+"]");
                 }
             }
@@ -906,6 +908,8 @@ public class ViewFactory
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ViewFactory.class, ex);
                log.error(ex);
                ex.printStackTrace();
                throw new RuntimeException(ex);
@@ -1557,6 +1561,8 @@ public class ViewFactory
                             }
                         } catch (Exception ex)
                         {
+                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ViewFactory.class, ex);
                             log.error("Couldn't find field ["+cellSubView.getName()+"] in class ["+parentView.getClassName()+"]");
                         }
                         
@@ -1886,6 +1892,8 @@ public class ViewFactory
                     
                 } catch (java.lang.NoSuchFieldException ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ViewFactory.class, ex);
                     String parentTitle = parentCls.getSimpleName();
                     DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(parentCls.getName());
                     if (ti != null)
@@ -1910,6 +1918,8 @@ public class ViewFactory
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ViewFactory.class, ex);
                 ex.printStackTrace();
             }
         }
@@ -2013,6 +2023,8 @@ public class ViewFactory
 
                     } catch (Exception ex)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ViewFactory.class, ex);
                         log.error(ex);
                     }
                 } else
@@ -2168,6 +2180,8 @@ public class ViewFactory
 
         } catch (Exception e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ViewFactory.class, e);
             log.error("buildPanel - Outer Name["+altView.getName()+"]");
             e.printStackTrace();
         }
@@ -2278,6 +2292,8 @@ public class ViewFactory
 
         } catch (Exception e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ViewFactory.class, e);
             log.error("buildPanel - Outer Name["+altView.getName()+"]");
             e.printStackTrace();
         }
@@ -2320,6 +2336,8 @@ public class ViewFactory
 
         } catch (Exception e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ViewFactory.class, e);
             log.error("buildPanel - Outer Name["+altView.getName()+"]");
             e.printStackTrace();
         }

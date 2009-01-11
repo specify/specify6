@@ -79,6 +79,8 @@ public class UIControlTOHTML
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UIControlTOHTML.class, ex);
                 ex.printStackTrace();
             }
         }

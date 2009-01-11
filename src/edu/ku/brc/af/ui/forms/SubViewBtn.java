@@ -210,6 +210,8 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
 
         } catch (ClassNotFoundException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SubViewBtn.class, ex);
            log.error(ex);
            throw new RuntimeException(ex);
         }
@@ -401,6 +403,8 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
                         }
                     } catch (Exception ex)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SubViewBtn.class, ex);
                         ex.printStackTrace();
                     }
                     
@@ -413,6 +417,8 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SubViewBtn.class, ex);
                 ex.printStackTrace();
             } finally
             {
@@ -581,6 +587,8 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SubViewBtn.class, ex);
             ex.printStackTrace();
         } finally
         {

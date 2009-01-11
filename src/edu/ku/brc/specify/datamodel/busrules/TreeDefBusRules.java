@@ -117,6 +117,8 @@ public class TreeDefBusRules extends BaseBusRules
                     
                 } catch (Exception ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TreeDefBusRules.class, ex);
                     ex.printStackTrace();
                     
                 } finally

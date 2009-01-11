@@ -513,6 +513,8 @@ public class Scriptlet extends JRDefaultScriptlet
 
                     } catch (NoSuchElementException ex)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Scriptlet.class, ex);
                         log.error(ex);
                         return label;
                     }
@@ -548,6 +550,8 @@ public class Scriptlet extends JRDefaultScriptlet
 
                     } catch (NoSuchElementException ex)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Scriptlet.class, ex);
                         log.error(ex);
                         return label;
                     }

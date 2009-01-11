@@ -83,6 +83,8 @@ public class PickListDBAdapterFactory
                  
             } catch (Exception e) 
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PickListDBAdapterFactory.class, e);
                 InternalError error = new InternalError("Can't instantiate PickListAdapterFactory factory " + factoryName); //$NON-NLS-1$
                 error.initCause(e);
                 throw error;

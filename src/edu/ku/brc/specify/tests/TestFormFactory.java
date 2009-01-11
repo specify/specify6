@@ -44,6 +44,8 @@ public class TestFormFactory extends TestCase
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TestFormFactory.class, ex);
             //ex.printStackTrace();
             log.info(ex);  
         }*/

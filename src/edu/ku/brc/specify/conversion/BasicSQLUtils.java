@@ -497,6 +497,8 @@ public class BasicSQLUtils
 
         } catch (SQLException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BasicSQLUtils.class, ex);
             ex.printStackTrace();
             
         } finally
@@ -553,6 +555,8 @@ public class BasicSQLUtils
 
         } catch (SQLException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BasicSQLUtils.class, ex);
             log.error(ex);
             ex.printStackTrace();
 
@@ -578,6 +582,8 @@ public class BasicSQLUtils
 
         } catch (SQLException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BasicSQLUtils.class, ex);
             //e.printStackTrace();
             log.error(ex);
         }
@@ -602,6 +608,8 @@ public class BasicSQLUtils
 
         } catch (SQLException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BasicSQLUtils.class, ex);
             log.error(ex);
             ex.printStackTrace();
         }
@@ -641,6 +649,8 @@ public class BasicSQLUtils
 
         } catch (SQLException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BasicSQLUtils.class, ex);
             log.error(ex);
             ex.printStackTrace();
         }
@@ -674,6 +684,8 @@ public class BasicSQLUtils
 
         } catch (SQLException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BasicSQLUtils.class, ex);
             log.error(ex);
             ex.printStackTrace();
         }
@@ -784,11 +796,13 @@ public class BasicSQLUtils
                 str =  clob.getSubString(1, (int) clob.length());
                 str = escapeStringLiterals(str);
                 return '"'+str+'"';
-            } catch (SQLException e)
+            } catch (SQLException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BasicSQLUtils.class, ex);
                 log.error("error occurred trying to get string from clob for SQL Server driver");
                 // TODO Auto-generated catch block
-                e.printStackTrace();
+                ex.printStackTrace();
                 System.exit(0);
             }
             //return getStrValue(obj, null);    
@@ -955,6 +969,8 @@ public class BasicSQLUtils
 
         } catch (SQLException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BasicSQLUtils.class, ex);
             log.error(ex);
         }
     }
@@ -993,6 +1009,8 @@ public class BasicSQLUtils
 
         } catch (SQLException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BasicSQLUtils.class, ex);
             log.error(ex);
             ex.printStackTrace();
         }
@@ -1024,6 +1042,8 @@ public class BasicSQLUtils
 
         } catch (SQLException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BasicSQLUtils.class, ex);
             log.error(ex);
             ex.printStackTrace();
         }
@@ -1599,6 +1619,8 @@ public class BasicSQLUtils
 
         } catch (SQLException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BasicSQLUtils.class, ex);
             //e.printStackTrace();
             log.error(sqlStr);
             log.error(ex);
@@ -1695,6 +1717,8 @@ public class BasicSQLUtils
 
         } catch (SQLException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BasicSQLUtils.class, ex);
             log.error(ex);
         }
         return -1;
@@ -1718,6 +1742,8 @@ public class BasicSQLUtils
             
         } catch (SQLException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BasicSQLUtils.class, ex);
             ex.printStackTrace();
         }
         return -1;
@@ -1754,6 +1780,8 @@ public class BasicSQLUtils
 
         } catch (SQLException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BasicSQLUtils.class, ex);
             log.error(ex);
             
         } finally
@@ -1802,6 +1830,8 @@ public class BasicSQLUtils
 
         } catch (SQLException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BasicSQLUtils.class, ex);
             log.error(ex);
         }
         return -1;
@@ -1892,6 +1922,8 @@ public class BasicSQLUtils
 
             } catch (SQLException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BasicSQLUtils.class, ex);
                 log.error(ex);
                 ex.printStackTrace();
                 System.exit(0);
@@ -1946,8 +1978,9 @@ public class BasicSQLUtils
             }
         } catch (SQLException ex)
         {
-            log
-                    .error("Error encountered trying to turn off foreign key constraints on database");
+            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BasicSQLUtils.class, ex);
+            log.error("Error encountered trying to turn off foreign key constraints on database");
             log.error(ex);
         }  
     }
@@ -1979,6 +2012,8 @@ public class BasicSQLUtils
             }
         } catch (SQLException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BasicSQLUtils.class, ex);
             log.error(ex);
         } 
     }

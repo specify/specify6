@@ -505,6 +505,8 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
                     
                 } catch (Exception ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ValFormattedTextFieldSingle.class, ex);
                     ex.printStackTrace();
                 }
             }
@@ -805,6 +807,8 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
             }
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ValFormattedTextFieldSingle.class, ex);
             
         }
         return UIValidatable.ErrorType.Error;
@@ -965,6 +969,8 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
 
                 } catch (ParseException ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ValFormattedTextFieldSingle.class, ex);
                     log.error("Date is in error for parsing["+value+"]");
                 }
             }
@@ -1186,6 +1192,8 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
 
             } catch (BadLocationException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ValFormattedTextFieldSingle.class, ex);
                 throw new RuntimeException(ex);
             }
         }

@@ -237,6 +237,8 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(GoogleEarthExporter.class, ex);
             }
         }
         return null;
@@ -354,6 +356,8 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
 
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(GoogleEarthExporter.class, ex);
             // XXX Error dialog saying there was a problem with the export
             ex.printStackTrace();
         }
@@ -514,6 +518,8 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
             }
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(GoogleEarthExporter.class, ex);
             // no need to throw an exception or display it
         }
         return false;

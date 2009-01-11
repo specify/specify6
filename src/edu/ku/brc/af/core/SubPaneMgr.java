@@ -419,6 +419,8 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
                 
             } catch (ArrayIndexOutOfBoundsException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SubPaneMgr.class, ex);
                 System.err.println(getTabCount()+"   - "+ getComponentCount());
                 
                 log.error(ex);
@@ -470,6 +472,8 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
                     
                 } catch (ArrayIndexOutOfBoundsException ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SubPaneMgr.class, ex);
                     log.error(ex);
                     ex.printStackTrace();
                 }

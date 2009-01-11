@@ -184,6 +184,8 @@ public class RecordSetProxy implements RecordSetIFace
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RecordSetProxy.class, ex);
             ex.printStackTrace();
             
         } finally
@@ -204,6 +206,8 @@ public class RecordSetProxy implements RecordSetIFace
                 }
             } catch (Exception e)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RecordSetProxy.class, e);
                 e.printStackTrace();
             }
         }
@@ -263,6 +267,8 @@ public class RecordSetProxy implements RecordSetIFace
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RecordSetProxy.class, ex);
             ex.printStackTrace();
             recordSet = null;
             

@@ -914,6 +914,8 @@ public class TableViewObj implements Viewable,
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TableViewObj.class, ex);
                 ex.printStackTrace();
             } finally
             {
@@ -2666,6 +2668,8 @@ public class TableViewObj implements Viewable,
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TableViewObj.class, ex);
                 log.debug("row,col "+row+", "+column);
                 ex.printStackTrace();
             }

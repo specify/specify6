@@ -72,6 +72,8 @@ public class DataObjectGettableFactory
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataObjectGettableFactory.class, ex);
                 ex.printStackTrace(); // gettableClassName FIXME
             }
         }

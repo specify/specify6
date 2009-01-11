@@ -86,6 +86,8 @@ public class RepositoryAgreementBusRules extends AttachmentOwnerBaseBusRules
                 
             } catch (final Exception e1)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RepositoryAgreementBusRules.class, e1);
                 e1.printStackTrace();
                 
             } finally

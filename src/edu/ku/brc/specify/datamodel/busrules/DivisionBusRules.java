@@ -165,6 +165,8 @@ public class DivisionBusRules extends BaseBusRules
                             
                         } catch (Exception ex)
                         {
+                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DivisionBusRules.class, ex);
                             ex.printStackTrace();
                         }
                     }
@@ -387,6 +389,8 @@ public class DivisionBusRules extends BaseBusRules
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DivisionBusRules.class, ex);
             ex.printStackTrace();
             //log.error(ex);
             throw new RuntimeException(ex);
@@ -399,6 +403,8 @@ public class DivisionBusRules extends BaseBusRules
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DivisionBusRules.class, ex);
                 ex.printStackTrace();
                 //log.error(ex);
                 throw new RuntimeException(ex);

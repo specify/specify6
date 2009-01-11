@@ -119,6 +119,8 @@ public abstract class DataModelObjBase implements FormDataObjIFace,
             return str;
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataModelObjBase.class, ex);
             ex.printStackTrace();
         }
         return getClass().getName() + hashCode();
@@ -237,6 +239,8 @@ public abstract class DataModelObjBase implements FormDataObjIFace,
             
         } catch (java.lang.NoSuchMethodException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataModelObjBase.class, ex);
             log.error("Couldn't find method ["+methodName+"] on Class ["+dataObject.getDataClass().getSimpleName()+"] for arg["+ref.getDataClass()+"]");
             log.error("For Class "+dataObject.getClass().getSimpleName());
             for (Method m : dataObject.getClass().getMethods())
@@ -251,6 +255,8 @@ public abstract class DataModelObjBase implements FormDataObjIFace,
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataModelObjBase.class, ex);
             ex.printStackTrace();
 
         }
@@ -286,6 +292,8 @@ public abstract class DataModelObjBase implements FormDataObjIFace,
         
                 } catch (Exception ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataModelObjBase.class, ex);
                     ex.printStackTrace();
                 }
             } else
@@ -294,6 +302,8 @@ public abstract class DataModelObjBase implements FormDataObjIFace,
             }
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataModelObjBase.class, ex);
             ex.printStackTrace();
         }
         return false;
@@ -323,6 +333,8 @@ public abstract class DataModelObjBase implements FormDataObjIFace,
 
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataModelObjBase.class, ex);
             ex.printStackTrace();
         }
 
@@ -349,6 +361,8 @@ public abstract class DataModelObjBase implements FormDataObjIFace,
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataModelObjBase.class, ex);
             ex.printStackTrace();
         }
         return null;
@@ -773,6 +787,8 @@ public abstract class DataModelObjBase implements FormDataObjIFace,
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataModelObjBase.class, ex);
             ex.printStackTrace();
             
         } finally
@@ -837,6 +853,8 @@ public abstract class DataModelObjBase implements FormDataObjIFace,
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataModelObjBase.class, ex);
             ex.printStackTrace();
             log.error(ex);
             errMsg = ex.toString();
@@ -889,6 +907,8 @@ public abstract class DataModelObjBase implements FormDataObjIFace,
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataModelObjBase.class, ex);
             ex.printStackTrace();
             log.error(ex);
             errMsg = ex.toString();
@@ -942,6 +962,8 @@ public abstract class DataModelObjBase implements FormDataObjIFace,
             
         } catch (SQLException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataModelObjBase.class, ex);
             ex.printStackTrace();
             errMsg = ex.toString();
             
@@ -951,6 +973,8 @@ public abstract class DataModelObjBase implements FormDataObjIFace,
                 
             } catch (SQLException ex2)
             {
+                edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataModelObjBase.class, ex2);
                 ex.printStackTrace();
             }
             return false;
@@ -969,6 +993,8 @@ public abstract class DataModelObjBase implements FormDataObjIFace,
                 }
             } catch (SQLException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataModelObjBase.class, ex);
                 ex.printStackTrace();
             }
         }

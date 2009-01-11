@@ -76,6 +76,8 @@ public class HelpMgr
 
         } catch (Exception ee)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(HelpMgr.class, ee);
             // Say what the exception really is
             log.error(ee);
             return;
@@ -136,6 +138,8 @@ public class HelpMgr
             return true;
         } catch (BadIDException e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(HelpMgr.class, e);
             return false;
         }
     }
@@ -258,11 +262,15 @@ public class HelpMgr
             return Map.ID.create(id, hs);
         } catch (BadIDException e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(HelpMgr.class, e);
             try
             {
                 return Map.ID.create(getDefaultID(), hs);
             } catch (BadIDException e2)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(HelpMgr.class, e2);
                 return null;
             }
         }
@@ -321,6 +329,8 @@ public class HelpMgr
                     }
                 } catch (InvalidHelpSetContextException e)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(HelpMgr.class, e);
                     helpless();
                 }
             }

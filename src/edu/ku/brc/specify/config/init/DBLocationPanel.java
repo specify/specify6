@@ -71,6 +71,8 @@ class DBLocationPanel extends BaseSetupPanel
             
         } catch (IOException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DBLocationPanel.class, ex);
             localDirOK = false;
         }
         

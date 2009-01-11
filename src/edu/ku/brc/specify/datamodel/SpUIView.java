@@ -530,6 +530,8 @@ public class SpUIView extends DataModelObjBase implements ViewIFace
                      
                 } catch (Exception e) 
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpUIView.class, e);
                     
                     InternalError error = new InternalError("Can't instantiate BusinessRulesIFace [" + businessRulesClassName + "]");
                     error.initCause(e);

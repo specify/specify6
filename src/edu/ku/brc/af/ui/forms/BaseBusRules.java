@@ -183,6 +183,8 @@ public class BaseBusRules implements BusinessRulesIFace
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BaseBusRules.class, ex);
                 ex.printStackTrace();
                 
             } finally
@@ -200,6 +202,8 @@ public class BaseBusRules implements BusinessRulesIFace
                     
                 } catch (Exception ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BaseBusRules.class, ex);
                     ex.printStackTrace();
                 }
             }
@@ -250,6 +254,8 @@ public class BaseBusRules implements BusinessRulesIFace
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BaseBusRules.class, ex);
             ex.printStackTrace();
             
         }
@@ -285,6 +291,8 @@ public class BaseBusRules implements BusinessRulesIFace
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BaseBusRules.class, ex);
             ex.printStackTrace();
             
         } finally
@@ -302,6 +310,8 @@ public class BaseBusRules implements BusinessRulesIFace
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BaseBusRules.class, ex);
                 ex.printStackTrace();
             }
         }
@@ -371,6 +381,8 @@ public class BaseBusRules implements BusinessRulesIFace
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BaseBusRules.class, ex);
             ex.printStackTrace();
             
         } finally
@@ -388,6 +400,8 @@ public class BaseBusRules implements BusinessRulesIFace
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BaseBusRules.class, ex);
                 ex.printStackTrace();
             }
         }

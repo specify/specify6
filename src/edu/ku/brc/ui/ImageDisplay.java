@@ -182,6 +182,8 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
 
 		} catch (Exception e)
 		{
+    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImageDisplay.class, e);
 			//log.error(e);
 			e.printStackTrace();
 		}
@@ -213,6 +215,8 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
 					return;
 				} catch (URISyntaxException e)
 				{
+    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImageDisplay.class, e);
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -457,6 +461,8 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
 
 			} catch (Exception e)
 			{
+    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImageDisplay.class, e);
 				//log.error(e);
 				e.printStackTrace();
 			}

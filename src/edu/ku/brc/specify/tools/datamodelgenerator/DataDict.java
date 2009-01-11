@@ -322,6 +322,8 @@ public class DataDict
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataDict.class, ex);
             ex.printStackTrace();
             return false;
         }
@@ -536,6 +538,8 @@ public class DataDict
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataDict.class, ex);
             ex.printStackTrace();
         }
     }

@@ -1043,6 +1043,8 @@ public class ConvertVerifier
                             
                         } catch (Exception ex)
                         {
+                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ConvertVerifier.class, ex);
                             ex.printStackTrace();
                         }
                     }

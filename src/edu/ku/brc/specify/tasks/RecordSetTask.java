@@ -178,6 +178,8 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RecordSetTask.class, ex);
                 ex.printStackTrace();
                 
             } finally
@@ -198,6 +200,8 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
                     }
                 } catch (Exception e)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RecordSetTask.class, e);
                     e.printStackTrace();
                 }
             }
@@ -446,6 +450,8 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RecordSetTask.class, ex);
             ex.printStackTrace();
             
         } finally
@@ -462,6 +468,8 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
                 }
             } catch (Exception e)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RecordSetTask.class, e);
                 e.printStackTrace();
             }
         }
@@ -508,6 +516,8 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RecordSetTask.class, ex);
             ex.printStackTrace();
             
         } finally
@@ -524,6 +534,8 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
                 }
             } catch (Exception e)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RecordSetTask.class, e);
                 e.printStackTrace();
             }
         }
@@ -586,6 +598,8 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
                         
                     } catch (Exception ex)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RecordSetTask.class, ex);
                         ex.printStackTrace();
                         //log.error(ex);
                         
@@ -676,6 +690,8 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RecordSetTask.class, ex);
             
         } finally 
         {
@@ -808,6 +824,8 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
                                 
                             } catch (SQLException ex)
                             {
+                                edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RecordSetTask.class, ex);
                                 ex.printStackTrace();
                                 doRollback = true;
                                 
@@ -828,6 +846,8 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
                                     
                                 } catch (SQLException ex2)
                                 {
+                                    edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RecordSetTask.class, ex2);
                                     ex2.printStackTrace();
                                 }
                             }
@@ -879,6 +899,8 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
                 
             } catch (CloneNotSupportedException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RecordSetTask.class, ex);
                 throw new RuntimeException(ex);
             }
         }
@@ -912,6 +934,8 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RecordSetTask.class, ex);
             ex.printStackTrace();
             log.error(ex);
             
@@ -951,6 +975,8 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RecordSetTask.class, ex);
                 ex.printStackTrace();
                 log.error(ex);
                 
@@ -1004,6 +1030,8 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RecordSetTask.class, ex);
                 ex.printStackTrace();
                 //log.error(ex);
                 

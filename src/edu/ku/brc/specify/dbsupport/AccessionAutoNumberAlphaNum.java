@@ -108,6 +108,8 @@ public class AccessionAutoNumberAlphaNum extends AutoNumberGeneric
             }
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AccessionAutoNumberAlphaNum.class, ex);
             ex.printStackTrace();
         }
         return null;

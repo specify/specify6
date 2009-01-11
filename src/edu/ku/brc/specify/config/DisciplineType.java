@@ -252,6 +252,8 @@ public class DisciplineType implements Comparable<DisciplineType>
             }
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DisciplineType.class, ex);
             ex.printStackTrace();
             log.error(ex);
         }

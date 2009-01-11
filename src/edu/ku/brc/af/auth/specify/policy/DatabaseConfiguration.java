@@ -243,6 +243,8 @@ public class DatabaseConfiguration extends Configuration
                     conn.close();
                 } catch (SQLException e)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DatabaseConfiguration.class, e);
                     log.error("getAppConfigurationEntry() Couldn't close connection. SQLException: " + e.getSQLState()); //$NON-NLS-1$
                 }
             }

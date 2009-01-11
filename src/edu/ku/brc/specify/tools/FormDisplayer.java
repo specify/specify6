@@ -124,6 +124,8 @@ public class FormDisplayer
             
         } catch (IOException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormDisplayer.class, ex);
             ex.printStackTrace();
         }
     }
@@ -200,6 +202,8 @@ public class FormDisplayer
                 }
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormDisplayer.class, ex);
                 
             }
             FormPane formPane = new FormPane(view.getName(), null, null, view.getName(), "edit", data, MultiView.IS_NEW_OBJECT | MultiView.HIDE_SAVE_BTN); //$NON-NLS-1$
@@ -239,6 +243,8 @@ public class FormDisplayer
                         Thread.sleep(500);
                     } catch (Exception ex)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormDisplayer.class, ex);
                         
                     }
                     showView();
@@ -302,6 +308,8 @@ public class FormDisplayer
 
         } catch (Exception e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormDisplayer.class, e);
             e.printStackTrace();
         }
 
@@ -346,6 +354,8 @@ public class FormDisplayer
 
         } catch (Exception e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormDisplayer.class, e);
             e.printStackTrace();
         }
         
@@ -414,6 +424,8 @@ public class FormDisplayer
 
         } catch (Exception e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormDisplayer.class, e);
             e.printStackTrace();
         }
     }
@@ -451,6 +463,8 @@ public class FormDisplayer
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormDisplayer.class, ex);
                 ex.printStackTrace();
             }
         }
@@ -463,6 +477,8 @@ public class FormDisplayer
             
         } catch (IOException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormDisplayer.class, ex);
             ex.printStackTrace();
         }
         
@@ -493,6 +509,8 @@ public class FormDisplayer
             }
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormDisplayer.class, ex);
             ex.printStackTrace();
         }
 
@@ -533,6 +551,8 @@ public class FormDisplayer
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormDisplayer.class, ex);
             ex.printStackTrace();
         }
     }

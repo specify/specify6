@@ -177,6 +177,8 @@ public class ConfigureCSV extends ConfigureExternalDataBase
 
             } catch (FileNotFoundException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ConfigureCSV.class, ex);
                 ex.printStackTrace();
             }
         }
@@ -236,6 +238,8 @@ public class ConfigureCSV extends ConfigureExternalDataBase
                 }
             } catch (IOException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ConfigureCSV.class, ex);
                 ex.printStackTrace();
                 status = Status.Error;
             }
@@ -469,6 +473,8 @@ public class ConfigureCSV extends ConfigureExternalDataBase
                  
             } catch (IOException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ConfigureCSV.class, ex);
                 ex.printStackTrace();
             }
         }

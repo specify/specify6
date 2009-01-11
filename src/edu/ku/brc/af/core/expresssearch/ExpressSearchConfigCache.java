@@ -220,6 +220,8 @@ public class ExpressSearchConfigCache
                     
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ExpressSearchConfigCache.class, ex);
                 log.error(ex);
                 ex.printStackTrace();
                 
@@ -241,6 +243,8 @@ public class ExpressSearchConfigCache
             
         } catch (MissingResourceException ex) 
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ExpressSearchConfigCache.class, ex);
             log.error("Couldn't find key["+key+"] in resource bundle ["+key+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             return key;
         }

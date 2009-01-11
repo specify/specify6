@@ -63,6 +63,8 @@ public class RecordSetFactory
                  
             } catch (Exception e) 
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RecordSetFactory.class, e);
                 InternalError error = new InternalError("Can't instantiate RecordSet factory " + factoryNameStr); //$NON-NLS-1$
                 error.initCause(e);
                 throw error;

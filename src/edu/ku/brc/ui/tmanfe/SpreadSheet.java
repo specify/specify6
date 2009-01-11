@@ -780,6 +780,8 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
                     }
                 } catch (Exception ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpreadSheet.class, ex);
                     ex.printStackTrace();
                 }
             }

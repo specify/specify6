@@ -304,6 +304,8 @@ public class SpecifySchemaI18NService extends SchemaI18NService
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifySchemaI18NService.class, ex);
             ex.printStackTrace();
             
         } finally
@@ -324,6 +326,8 @@ public class SpecifySchemaI18NService extends SchemaI18NService
                 }
             } catch (Exception e)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifySchemaI18NService.class, e);
                 e.printStackTrace();
             }
         }

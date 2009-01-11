@@ -112,6 +112,8 @@ public class ViewDef implements Cloneable, ViewDefIFace
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ViewDef.class, ex);
             ex.printStackTrace(); // XXX REMOVE ME
             log.error(ex);
         }

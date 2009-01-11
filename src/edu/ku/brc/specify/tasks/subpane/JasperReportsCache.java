@@ -140,6 +140,8 @@ public class JasperReportsCache implements DataCacheIFace
             }
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(JasperReportsCache.class, ex);
            log.error(ex);
         }
    }
@@ -203,6 +205,8 @@ public class JasperReportsCache implements DataCacheIFace
                     
                 } catch (Exception ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(JasperReportsCache.class, ex);
                     throw new RuntimeException(ex);
                 }
             }
@@ -277,6 +281,8 @@ public class JasperReportsCache implements DataCacheIFace
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(JasperReportsCache.class, ex);
            log.error(ex);
         }
     }

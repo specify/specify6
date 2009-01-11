@@ -225,6 +225,8 @@ public class XLSImport extends DataImport implements DataImportIFace
                 return status = this.truncations.size() == 0 && this.messages.size() == 0 ? DataImportIFace.Status.Valid : DataImportIFace.Status.Modified;
             } catch (IOException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(XLSImport.class, ex);
                 log.error(ex);
             }
         }

@@ -87,6 +87,8 @@ public abstract class GeoRefRecordSetProcessorBase implements RecordSetToolsIFac
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(GeoRefRecordSetProcessorBase.class, ex);
             // XXX error dialog
             log.error(ex);
             
@@ -174,6 +176,8 @@ public abstract class GeoRefRecordSetProcessorBase implements RecordSetToolsIFac
                 }
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(GeoRefRecordSetProcessorBase.class, ex);
                 
             } finally
             {
@@ -313,6 +317,8 @@ public abstract class GeoRefRecordSetProcessorBase implements RecordSetToolsIFac
                                     
                                 } catch (Exception ex)
                                 {
+                                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(GeoRefRecordSetProcessorBase.class, ex);
                                     log.error(ex);
                                     ex.printStackTrace();
                                     
@@ -324,12 +330,16 @@ public abstract class GeoRefRecordSetProcessorBase implements RecordSetToolsIFac
                         
                     } catch (Exception ex)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(GeoRefRecordSetProcessorBase.class, ex);
                         // XXX error dialog
                         log.error(ex);
                     }    
                 }
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(GeoRefRecordSetProcessorBase.class, ex);
                 log.error(ex);
                 // XXX error dialog
                 

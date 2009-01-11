@@ -260,6 +260,8 @@ public class TaxonLabelFormatting extends UIPluginBase
             searchPanel.setOKBtn(mapToBtn);
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TaxonLabelFormatting.class, ex);
             log.error(ex);
             ex.printStackTrace();
         }

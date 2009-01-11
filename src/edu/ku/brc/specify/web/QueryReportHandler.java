@@ -97,6 +97,8 @@ public class QueryReportHandler
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryReportHandler.class, ex);
             ex.printStackTrace();
         } finally
         {
@@ -145,6 +147,8 @@ public class QueryReportHandler
              
          } catch (Exception ex)
          {
+             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryReportHandler.class, ex);
              ex.printStackTrace();
          } finally
          {
@@ -190,6 +194,8 @@ public class QueryReportHandler
         
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryReportHandler.class, ex);
             ex.printStackTrace();
         } finally
         {
@@ -344,17 +350,23 @@ public class QueryReportHandler
                             
                         } catch (Exception ex)
                         {
+                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryReportHandler.class, ex);
                             ex.printStackTrace();
                         }
                     }
     
                 } catch (JRException ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryReportHandler.class, ex);
                     ex.printStackTrace();
                     out.println(ex.toString());
                     
                 } catch (IOException ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryReportHandler.class, ex);
                     ex.printStackTrace();
                     
                 } finally
@@ -374,6 +386,8 @@ public class QueryReportHandler
                     
                 } catch (IOException ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryReportHandler.class, ex);
                     ex.printStackTrace();
                 }
             }
@@ -412,12 +426,16 @@ public class QueryReportHandler
                     
                 } catch (IOException ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryReportHandler.class, ex);
                     ex.printStackTrace();
                 }
             }
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryReportHandler.class, ex);
             ex.printStackTrace();
             
         } finally

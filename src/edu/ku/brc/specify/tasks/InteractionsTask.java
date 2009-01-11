@@ -362,6 +362,8 @@ public class InteractionsTask extends BaseTask
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(InteractionsTask.class, ex);
             log.error(ex);
             ex.printStackTrace();
         }
@@ -654,6 +656,8 @@ public class InteractionsTask extends BaseTask
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(InteractionsTask.class, ex);
             ex.printStackTrace();
             
         } finally
@@ -1580,6 +1584,8 @@ public class InteractionsTask extends BaseTask
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(InteractionsTask.class, ex);
             ex.printStackTrace();
             log.error(ex);
             
@@ -1673,6 +1679,8 @@ public class InteractionsTask extends BaseTask
                     
                 } catch (Exception ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(InteractionsTask.class, ex);
                     ex.printStackTrace();
                     // Error Dialog
                     
@@ -1883,6 +1891,8 @@ public class InteractionsTask extends BaseTask
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(InteractionsTask.class, ex);
                 ex.printStackTrace();
                 log.error(ex);
             } finally

@@ -243,6 +243,8 @@ public class WorkbenchTask extends BaseTask
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
                 log.error(ex);
                 ex.printStackTrace();
                 
@@ -540,6 +542,8 @@ public class WorkbenchTask extends BaseTask
                         
                     } catch (Exception ex)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
                         log.error(ex);
                         
                     } finally
@@ -796,6 +800,8 @@ public class WorkbenchTask extends BaseTask
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
             ex.printStackTrace();
         }
         return workbenchTemplate;
@@ -912,6 +918,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
             log.error(ex);
             ex.printStackTrace();
 
@@ -976,6 +984,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
             log.error(ex);
             
         } finally 
@@ -1140,6 +1150,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                sendExportCommand(props, workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems(), command);
            } catch (Exception ex)
            {
+               edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+               edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
                log.error(ex);
            }
            finally
@@ -1213,6 +1225,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
                 log.error(ex);
             }
             finally
@@ -1346,6 +1360,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                    }
                } catch (Exception ex)
                {
+                   edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                   edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
                    log.error(ex);
                }
                finally
@@ -1606,6 +1622,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
             log.error(ex);
             
         } finally
@@ -1662,6 +1680,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                          
                      } catch (Exception ex)
                      {
+                         edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                         edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
                          ex.printStackTrace();
                          UIRegistry.clearGlassPaneMsg();
                          
@@ -1829,6 +1849,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                          
                      } catch (Exception ex)
                      {
+                         edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                         edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
                          log.error(ex);
                          ex.printStackTrace();
                      } 
@@ -1842,6 +1864,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                                  
                              } catch (Exception ex)
                              {
+                                 edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
                                  log.error(ex);
                              }
                          }
@@ -1911,6 +1935,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
             ex.printStackTrace();
             
         } finally
@@ -1921,6 +1947,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
                 log.error(ex);
             }
         }
@@ -2008,6 +2036,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                         
                     } catch (Exception ex)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
                         ex.printStackTrace();
                         
                     } finally 
@@ -2018,6 +2048,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                             
                         } catch (Exception ex)
                         {
+                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
                             log.error(ex);
                         }
                     }
@@ -2295,6 +2327,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
            log.error(ex); 
         }
         finally
@@ -2306,6 +2340,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                     session.close();
                 } catch (Exception ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
                     log.error(ex);
                 }
             }
@@ -2434,6 +2470,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                         
                     } catch (Exception ex)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
                         log.error(ex);
                     }
                     finally 
@@ -2445,6 +2483,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                                 hibSession.close();
                             } catch (Exception ex)
                             {
+                                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
                                 log.error(ex);
                             }
                         }
@@ -2453,6 +2493,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
                 log.error(ex);
             }
             
@@ -2594,6 +2636,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
                 log.error(ex);
                 ex.printStackTrace();
                 
@@ -2604,6 +2648,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                     session.close();
                 } catch (Exception ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
                     log.error(ex);
                 }  
             }
@@ -2694,6 +2740,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
             log.error(ex);
             UIRegistry.clearGlassPaneMsg();
             
@@ -2706,6 +2754,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                     session.close();
                 } catch (Exception ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
                     log.error(ex);
                     UIRegistry.clearGlassPaneMsg();
                 }
@@ -2992,6 +3042,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
                 log.error(ex);
             }
             finally
@@ -3023,6 +3075,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, ex);
                 log.error(ex);
             }
             finally
@@ -3137,6 +3191,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                             
                         } catch (Exception e)
                         {
+                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchTask.class, e);
                             log.error(e);
                         }
                     }

@@ -306,6 +306,8 @@ public class DateParser
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DateParser.class, ex);
             
         }
         dateError = DateErrorType.UnknownError;

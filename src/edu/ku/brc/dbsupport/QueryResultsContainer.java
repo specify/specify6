@@ -116,6 +116,8 @@ public class QueryResultsContainer implements QueryResultsContainerIFace, SQLExe
                 }
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryResultsContainer.class, ex);
                 log.error(ex);
             }
         }

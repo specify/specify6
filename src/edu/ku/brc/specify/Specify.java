@@ -1063,10 +1063,8 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                         try
                         {
                             AppPreferences.getLocalPrefs().flush();
-                        } catch (BackingStoreException ex)
-                        {
-                            
-                        }
+                        } catch (BackingStoreException ex) { }
+                        
                         CommandDispatcher.dispatch(new CommandAction("Preferences", "Changed", AppPreferences.getLocalPrefs()));
                     }
                 }

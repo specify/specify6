@@ -154,6 +154,8 @@ public class CarryForwardInfo
             
         } catch (Exception ex) 
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(CarryForwardInfo.class, ex);
         }
         return false;
     }
@@ -187,6 +189,8 @@ public class CarryForwardInfo
                     
                 } catch (Exception ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(CarryForwardInfo.class, ex);
                     ex.printStackTrace();
                 }
             } else
@@ -235,6 +239,8 @@ public class CarryForwardInfo
                                 
                             } catch (CloneNotSupportedException ex)
                             {
+                                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(CarryForwardInfo.class, ex);
                                 //log.error(ex);
                                 ex.printStackTrace();
                             }

@@ -73,6 +73,8 @@ public class UserPrincipalSQLService
             }
         } catch (SQLException e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UserPrincipalSQLService.class, e);
             log.error("Exception caught: " + e);
             e.printStackTrace();
         } finally
@@ -83,6 +85,8 @@ public class UserPrincipalSQLService
                 if(pstmt != null)  pstmt.close(); 
             } catch (SQLException e)
             {
+                edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UserPrincipalSQLService.class, e);
                 log.error("Exception caught: " + e.toString());
                 e.printStackTrace();
             }
@@ -116,6 +120,8 @@ public class UserPrincipalSQLService
             }
         } catch (SQLException e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UserPrincipalSQLService.class, e);
             log.error("Exception caught: " + e); //$NON-NLS-1$
             e.printStackTrace();
         } finally
@@ -126,6 +132,8 @@ public class UserPrincipalSQLService
                 if(pstmt != null)  pstmt.close(); 
             } catch (SQLException e)
             {
+                edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UserPrincipalSQLService.class, e);
                 log.error("Exception caught: " + e.toString()); //$NON-NLS-1$
                 e.printStackTrace();
             }
@@ -176,6 +184,8 @@ public class UserPrincipalSQLService
             }
         } catch (SQLException e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UserPrincipalSQLService.class, e);
             log.error("Exception caught: " + e); //$NON-NLS-1$
             e.printStackTrace();
         } finally
@@ -187,6 +197,8 @@ public class UserPrincipalSQLService
                 
             } catch (SQLException e)
             {
+                edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UserPrincipalSQLService.class, e);
                 log.error("Exception caught: " + e.toString()); //$NON-NLS-1$
                 e.printStackTrace();
             }
@@ -255,6 +267,8 @@ public class UserPrincipalSQLService
             }
         } catch (SQLException e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UserPrincipalSQLService.class, e);
             log.error("Exception caught: " + e); //$NON-NLS-1$
             e.printStackTrace();
         } finally
@@ -265,6 +279,8 @@ public class UserPrincipalSQLService
                 if (pstmt != null)  pstmt.close();
             } catch (SQLException e)
             {
+                edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UserPrincipalSQLService.class, e);
                 log.error("addUser Exception caught: " + e.toString()); //$NON-NLS-1$
                 e.printStackTrace();
             }
@@ -326,6 +342,8 @@ public class UserPrincipalSQLService
 
         } catch (SQLException e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UserPrincipalSQLService.class, e);
             log.error("Exception caught: " + e); //$NON-NLS-1$
             e.printStackTrace();
         } finally
@@ -337,6 +355,8 @@ public class UserPrincipalSQLService
                 
             } catch (SQLException e)
             {
+                edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UserPrincipalSQLService.class, e);
                 log.error("addUser Exception caught: " + e.toString()); //$NON-NLS-1$
                 e.printStackTrace();
             }

@@ -462,6 +462,8 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SystemSetupTask.class, ex);
                 log.error(ex);
                 
             } finally
@@ -512,6 +514,8 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                     dataObj = session.getData(clazz, fieldName, value, DataProviderSessionIFace.CompareType.Equals);
                 } catch (Exception ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SystemSetupTask.class, ex);
                     log.error(ex);
                     // XXX error dialog
                 } finally
@@ -581,6 +585,8 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SystemSetupTask.class, ex);
                 log.error(ex);
                 
             } finally
@@ -662,6 +668,8 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
         
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SystemSetupTask.class, ex);
             log.warn(ex);
             
         } finally
@@ -1046,6 +1054,8 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                             }
                         } catch (Exception ex)
                         {
+                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SystemSetupTask.class, ex);
                             log.error(ex); // XXX need error dialog
                             
                         } finally

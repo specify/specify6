@@ -103,14 +103,20 @@ public final class FormHelper
     
             } catch (NoSuchMethodException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormHelper.class, ex);
                 ex.printStackTrace();
     
             } catch (IllegalAccessException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormHelper.class, ex);
                 ex.printStackTrace();
     
             } catch (InvocationTargetException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormHelper.class, ex);
                 ex.printStackTrace();
             } 
         }
@@ -135,10 +141,14 @@ public final class FormHelper
             
         } catch (IllegalAccessException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormHelper.class, ex);
             ex.printStackTrace();
    
         } catch (InstantiationException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormHelper.class, ex);
             ex.printStackTrace();
         }
         return null;
@@ -156,6 +166,8 @@ public final class FormHelper
             
         } catch (ClassNotFoundException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormHelper.class, ex);
             ex.printStackTrace();
         }
     
@@ -179,14 +191,20 @@ public final class FormHelper
     
         } catch (NoSuchMethodException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormHelper.class, ex);
             ex.printStackTrace();
     
         } catch (IllegalAccessException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormHelper.class, ex);
             ex.printStackTrace();
     
         } catch (InvocationTargetException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormHelper.class, ex);
             ex.printStackTrace();
         }
     
@@ -232,14 +250,20 @@ public final class FormHelper
         
             } catch (NoSuchMethodException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormHelper.class, ex);
                 ex.printStackTrace();
         
             } catch (IllegalAccessException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormHelper.class, ex);
                 ex.printStackTrace();
         
             } catch (InvocationTargetException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormHelper.class, ex);
                 ex.printStackTrace();
             }
         } else
@@ -263,14 +287,20 @@ public final class FormHelper
     
         } catch (NoSuchMethodException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormHelper.class, ex);
             ex.printStackTrace();
     
         } catch (IllegalAccessException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormHelper.class, ex);
             ex.printStackTrace();
     
         } catch (InvocationTargetException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormHelper.class, ex);
             ex.printStackTrace();
         }
     
@@ -346,18 +376,26 @@ public final class FormHelper
                                     }
                                 } catch (NoSuchMethodException ex)
                                 {
+                                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormHelper.class, ex);
                                     ex.printStackTrace();
     
                                 } catch (IllegalAccessException ex)
                                 {
+                                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormHelper.class, ex);
                                     ex.printStackTrace();
     
                                 } catch (InvocationTargetException ex)
                                 {
+                                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormHelper.class, ex);
                                     ex.printStackTrace();
     
                                 } catch (InstantiationException ex)
                                 {
+                                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormHelper.class, ex);
                                     ex.printStackTrace();
                                 }
                             }

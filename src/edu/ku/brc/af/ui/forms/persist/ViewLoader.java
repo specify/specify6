@@ -284,6 +284,8 @@ public class ViewLoader
 
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ViewLoader.class, ex);
             log.error("view["+name+"] has illegal type["+element.attributeValue(TYPE)+"]", ex);
             throw ex;
         }
@@ -1054,6 +1056,8 @@ public class ViewLoader
                     
                 } catch (Exception ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ViewLoader.class, ex);
                     
                 }
             }

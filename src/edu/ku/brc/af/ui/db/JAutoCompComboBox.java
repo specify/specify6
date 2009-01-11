@@ -145,6 +145,8 @@ public class JAutoCompComboBox extends JEditComboBox
             
         } catch (BadLocationException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(JAutoCompComboBox.class, ex);
             ex.printStackTrace();
         }
         

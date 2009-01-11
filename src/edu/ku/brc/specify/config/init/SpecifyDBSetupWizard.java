@@ -134,6 +134,8 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyDBSetupWizard.class, ex);
             
         }
         
@@ -374,6 +376,8 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyDBSetupWizard.class, ex);
             
         }
         
@@ -453,6 +457,8 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
                             
                         } catch (Exception ex)
                         {
+                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyDBSetupWizard.class, ex);
                             ex.printStackTrace();
                         }
                         return null;
@@ -471,6 +477,8 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
             
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyDBSetupWizard.class, ex);
                 ex.printStackTrace();
             }
     }
@@ -586,6 +594,8 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
             }
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyDBSetupWizard.class, ex);
             return false;
         }
         return true;
@@ -627,6 +637,8 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
             
         } catch (MissingResourceException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyDBSetupWizard.class, ex);
             Locale.setDefault(Locale.ENGLISH);
             UIRegistry.setResourceLocale(Locale.ENGLISH);
         }

@@ -518,6 +518,8 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
             
         } catch (IOException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SchemaLocalizerXMLHelper.class, ex);
             ex.printStackTrace();
         }
         return containers;
@@ -669,6 +671,8 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
             FileUtils.writeStringToFile(new File("schema_localization.xml"), xstream.toXML(containers));
         } catch (IOException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SchemaLocalizerXMLHelper.class, ex);
             ex.printStackTrace();
         }
     }
@@ -804,6 +808,8 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
             
         } catch (IOException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SchemaLocalizerXMLHelper.class, ex);
             log.error("error writing writeTree", ex);
         }
         return false;
@@ -920,6 +926,8 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                 
             } catch (IOException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SchemaLocalizerXMLHelper.class, ex);
                 ex.printStackTrace();
             }
         }

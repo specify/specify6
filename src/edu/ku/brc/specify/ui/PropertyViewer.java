@@ -120,6 +120,8 @@ public class PropertyViewer extends JPanel
             }
         } catch (Exception e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PropertyViewer.class, e);
             log.error("Can't create the tree.");
         }*/
     }
@@ -185,6 +187,8 @@ public class PropertyViewer extends JPanel
             }
         } catch (Exception e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PropertyViewer.class, e);
             log.error("Can't create the tree.");
         }*/
         return rootNode;

@@ -102,6 +102,8 @@ public class CollectionBusRules extends BaseBusRules
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(CollectionBusRules.class, ex);
                 ex.printStackTrace();
             }
         }
@@ -194,6 +196,8 @@ public class CollectionBusRules extends BaseBusRules
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(CollectionBusRules.class, ex);
                 ex.printStackTrace();
                 
             } finally
@@ -326,6 +330,8 @@ public class CollectionBusRules extends BaseBusRules
                         
                     } catch (Exception ex)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(CollectionBusRules.class, ex);
                         ex.printStackTrace();
                     }
                 }

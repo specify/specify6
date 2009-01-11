@@ -892,6 +892,8 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                     
                 } catch (Exception ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ValComboBoxFromQuery.class, ex);
                     ex.printStackTrace();
                 } finally
                 {
@@ -1236,6 +1238,8 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ValComboBoxFromQuery.class, ex);
                 ex.printStackTrace();
             } finally 
             {

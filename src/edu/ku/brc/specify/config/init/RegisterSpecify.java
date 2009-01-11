@@ -709,6 +709,8 @@ public class RegisterSpecify
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RegisterSpecify.class, ex);
             ex.printStackTrace();
         }
     }*/

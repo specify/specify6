@@ -225,6 +225,8 @@ public class SpDBLoginModule implements LoginModule
             return true;
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpDBLoginModule.class, ex);
             log.error("Specify exception occurred" + ex.toString());
             ex.printStackTrace();
             throw new LoginException(ex.getMessage());

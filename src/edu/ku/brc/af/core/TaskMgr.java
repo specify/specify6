@@ -521,6 +521,8 @@ public class TaskMgr implements CommandListener
     
                     } catch (Exception ex)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TaskMgr.class, ex);
                         log.error(ex);
                         ex.printStackTrace();
                         
@@ -584,6 +586,8 @@ public class TaskMgr implements CommandListener
         
                         } catch (Exception ex)
                         {
+                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TaskMgr.class, ex);
                             log.error(ex);
                             ex.printStackTrace();
                             
@@ -596,6 +600,8 @@ public class TaskMgr implements CommandListener
 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TaskMgr.class, ex);
                 ex.printStackTrace();
                 log.error(ex);
             }
@@ -702,6 +708,8 @@ public class TaskMgr implements CommandListener
             }
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TaskMgr.class, ex);
             ex.printStackTrace();
             log.error(ex);
         }

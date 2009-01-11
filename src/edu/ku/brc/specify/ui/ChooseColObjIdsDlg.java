@@ -175,6 +175,8 @@ public class ChooseColObjIdsDlg extends JDialog implements ActionListener
 
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ChooseColObjIdsDlg.class, ex);
             log.error(ex);
         }
         

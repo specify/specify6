@@ -136,6 +136,8 @@ public class ERTICaptionInfo
                 
             } catch (java.util.MissingResourceException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ERTICaptionInfo.class, ex);
                 log.error("Missing resource ["+key+"] or ["+key+"_desc]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                 colLabel    = key;
                 description = key+"_desc"; //$NON-NLS-1$
@@ -204,6 +206,8 @@ public class ERTICaptionInfo
                     
                 } catch (ClassNotFoundException ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ERTICaptionInfo.class, ex);
                     ex.printStackTrace();
                 }
             }
@@ -222,6 +226,8 @@ public class ERTICaptionInfo
                     
                 } catch (ClassNotFoundException ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ERTICaptionInfo.class, ex);
                     ex.printStackTrace();
                 }
             }
@@ -244,6 +250,8 @@ public class ERTICaptionInfo
                     
                 } catch (ClassNotFoundException ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ERTICaptionInfo.class, ex);
                     ex.printStackTrace();
                 }
             } else

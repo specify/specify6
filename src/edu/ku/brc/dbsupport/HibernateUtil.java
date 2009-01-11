@@ -247,7 +247,8 @@ public class HibernateUtil {
             
             sessionFactory = configuration.buildSessionFactory();
             
-        } catch (Throwable ex) {
+        } catch (Throwable ex) 
+        {
             // We have to catch Throwable, otherwise we will miss
             // NoClassDefFoundError and other subclasses of Error
             log.error("Building SessionFactory failed.", ex); //$NON-NLS-1$
@@ -299,6 +300,8 @@ public class HibernateUtil {
                 sf = (SessionFactory) new InitialContext().lookup(sfName);
             } catch (NamingException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(HibernateUtil.class, ex);
                 throw new RuntimeException(ex);
             }
         } else
@@ -499,6 +502,8 @@ public class HibernateUtil {
                 threadTransaction.set(null);
             } catch (RuntimeException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(HibernateUtil.class, ex);
                 log.error(ex);
                 rollbackTransaction();
                 throw ex;

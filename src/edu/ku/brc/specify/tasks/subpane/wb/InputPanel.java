@@ -461,6 +461,8 @@ public class InputPanel extends JPanel implements GhostActionable
                 value = declaredField.get(null);
             } catch (Exception e)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(InputPanel.class, e);
                 // do nothing
             }
             hints.put(RenderingHints.KEY_TEXT_ANTIALIASING, value);

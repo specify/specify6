@@ -517,6 +517,8 @@ public class FormValidator implements ValidationListener, DataChangeListener
 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormValidator.class, ex);
                 log.error(name+" "+ex.toString());
                 formIsOK = false;
                 //ex.printStackTrace();

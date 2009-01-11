@@ -134,6 +134,8 @@ public class SpecifySchemaGenerator
                         
                     } catch (IOException ex)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifySchemaGenerator.class, ex);
                         log.error(ex);
                     }
                     throw new RuntimeException("Error deleting directory["+derbyDBDir.getAbsolutePath()+"]");
@@ -189,6 +191,8 @@ public class SpecifySchemaGenerator
                 
             } catch (SQLException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifySchemaGenerator.class, ex);
                 log.error("SQLException could not drop database ["+dbName+"]:" + "\n" + ex.toString());
                 ex.toString();
             }        
@@ -229,6 +233,8 @@ public class SpecifySchemaGenerator
                 
             } catch (SQLException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifySchemaGenerator.class, ex);
                 //log.error("SQLException could not drop database ["+dbName+"]:" + "\n" + ex.toString());
                 ex.printStackTrace();
             }        

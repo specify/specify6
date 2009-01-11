@@ -119,6 +119,8 @@ public class ERDVisualizer extends JFrame
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ERDVisualizer.class, ex);
                 ex.printStackTrace();
             }
         }
@@ -139,6 +141,8 @@ public class ERDVisualizer extends JFrame
             
         } catch (IOException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ERDVisualizer.class, ex);
             ex.printStackTrace();
         }
         
@@ -163,6 +167,8 @@ public class ERDVisualizer extends JFrame
             }
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ERDVisualizer.class, ex);
             ex.printStackTrace();
         }
         
@@ -460,6 +466,8 @@ public class ERDVisualizer extends JFrame
                         
                     } catch (Exception ex)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ERDVisualizer.class, ex);
                         ex.printStackTrace();
                     }
                     return null;
@@ -507,6 +515,8 @@ public class ERDVisualizer extends JFrame
 
         } catch (Exception e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ERDVisualizer.class, e);
             e.printStackTrace();
         }
 
@@ -688,6 +698,8 @@ public class ERDVisualizer extends JFrame
             
         } catch (Exception e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ERDVisualizer.class, e);
             e.printStackTrace();
         }
     }
@@ -741,6 +753,8 @@ public class ERDVisualizer extends JFrame
 
         } catch (IOException e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ERDVisualizer.class, e);
             e.printStackTrace();
         }
 
@@ -767,6 +781,8 @@ public class ERDVisualizer extends JFrame
 
         } catch (Exception e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ERDVisualizer.class, e);
             // do nothing
         }
         renderingHints.put(RenderingHints.KEY_TEXT_ANTIALIASING, value);

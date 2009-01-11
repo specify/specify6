@@ -520,6 +520,8 @@ public class DataEntryTask extends BaseTask
     
             } catch (Exception ex)
             {
+                UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataEntryTask.class, ex);
                 log.error(ex);
                 ex.printStackTrace();
             }
@@ -886,6 +888,8 @@ public class DataEntryTask extends BaseTask
                 
             } catch (Exception ex)
             {
+                UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataEntryTask.class, ex);
                 log.error(ex);
                 ex.printStackTrace();
             }

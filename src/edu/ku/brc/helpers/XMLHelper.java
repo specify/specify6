@@ -202,6 +202,8 @@ public class XMLHelper
 
        } catch (Exception ex)
        {
+           edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+           edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(XMLHelper.class, ex);
            log.error(ex);
        }
        return null;
@@ -322,10 +324,14 @@ public class XMLHelper
            }
        } catch (FileNotFoundException ex) 
        {
+           edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+           edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(XMLHelper.class, ex);
            ex.printStackTrace();
          
        } catch (IOException ex)
        {
+           edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+           edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(XMLHelper.class, ex);
            ex.printStackTrace();
          
        } finally 
@@ -338,6 +344,8 @@ public class XMLHelper
                }
            } catch (IOException ex) 
            {
+               edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+               edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(XMLHelper.class, ex);
                ex.printStackTrace();
            }
        }
@@ -496,6 +504,8 @@ public class XMLHelper
            }
        } catch (IOException ex)
        {
+           edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+           edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(XMLHelper.class, ex);
            log.error(ex);
        }
        return sb.toString();

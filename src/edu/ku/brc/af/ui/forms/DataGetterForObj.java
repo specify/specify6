@@ -131,14 +131,20 @@ public class DataGetterForObj implements DataObjectGettable
 
                     } catch (NoSuchMethodException ex)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataGetterForObj.class, ex);
                         ex.printStackTrace();
 
                     } catch (IllegalAccessException ex)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataGetterForObj.class, ex);
                         ex.printStackTrace();
 
                     } catch (InvocationTargetException ex)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataGetterForObj.class, ex);
                         ex.printStackTrace();
                     }
 
@@ -160,6 +166,8 @@ public class DataGetterForObj implements DataObjectGettable
                 }
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataGetterForObj.class, ex);
                 log.error(ex);
             }
         }

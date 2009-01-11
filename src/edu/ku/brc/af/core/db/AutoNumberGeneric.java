@@ -134,6 +134,8 @@ public class AutoNumberGeneric implements AutoNumberIFace
             }
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AutoNumberGeneric.class, ex);
             ex.printStackTrace();
         }
         return null;
@@ -160,6 +162,8 @@ public class AutoNumberGeneric implements AutoNumberIFace
                         
                     } catch (Exception ex) 
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AutoNumberGeneric.class, ex);
                         //ex.printStackTrace();
                     }
                 }
@@ -366,6 +370,8 @@ public class AutoNumberGeneric implements AutoNumberIFace
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AutoNumberGeneric.class, ex);
                 ex.printStackTrace();
                 
             } finally

@@ -264,6 +264,8 @@ public class LocalizerApp extends LocalizableBaseApp
             }
         } catch (IOException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(LocalizerApp.class, ex);
             ex.printStackTrace();
         }
         return false;
@@ -427,6 +429,8 @@ public class LocalizerApp extends LocalizableBaseApp
             
         } catch (IOException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(LocalizerApp.class, ex);
             ex.printStackTrace();
         }
     }
@@ -565,6 +569,8 @@ public class LocalizerApp extends LocalizableBaseApp
                     
                 } catch (MissingResourceException ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(LocalizerApp.class, ex);
                     Locale.setDefault(Locale.ENGLISH);
                     UIRegistry.setResourceLocale(Locale.ENGLISH);
                 }

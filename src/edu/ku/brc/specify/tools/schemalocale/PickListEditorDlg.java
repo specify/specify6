@@ -227,6 +227,8 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
             
         }  catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PickListEditorDlg.class, ex);
             //log.error(ex);
             ex.printStackTrace();
             // XXX error dialog
@@ -316,6 +318,8 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PickListEditorDlg.class, ex);
                 //log.error(ex);
                 ex.printStackTrace();
                 pickListCache = null;
@@ -401,6 +405,8 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PickListEditorDlg.class, ex);
                 //log.error(ex);
                 ex.printStackTrace();
                 
@@ -470,6 +476,8 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PickListEditorDlg.class, ex);
                 //log.error(ex);
                 ex.printStackTrace();
                 

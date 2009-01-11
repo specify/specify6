@@ -218,6 +218,8 @@ public class ChildNodeCounter implements SQLExecutionListener, CustomQueryListen
                 
             } catch (SQLException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ChildNodeCounter.class, ex);
                 ex.printStackTrace();
             }
             setCount(0);
@@ -242,6 +244,8 @@ public class ChildNodeCounter implements SQLExecutionListener, CustomQueryListen
                 
             } catch (SQLException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ChildNodeCounter.class, ex);
                 ex.printStackTrace();
             }
         }

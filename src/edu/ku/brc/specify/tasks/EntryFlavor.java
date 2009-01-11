@@ -120,6 +120,8 @@ public class EntryFlavor implements Cloneable
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(EntryFlavor.class, ex);
             //System.err.println(className);
             throw new RuntimeException(ex);
         }

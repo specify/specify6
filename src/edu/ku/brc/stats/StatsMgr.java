@@ -96,6 +96,8 @@ public class StatsMgr
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(StatsMgr.class, ex);
             log.error(ex);
         }
         return dom;

@@ -2484,6 +2484,8 @@ public class DataBuilder
             }
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataBuilder.class, ex);
             ex.printStackTrace();
             System.out.println(ex);
         }
@@ -2690,6 +2692,8 @@ public class DataBuilder
             
         } catch (IOException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataBuilder.class, ex);
             ex.printStackTrace();
         }
         return null;
@@ -2722,6 +2726,8 @@ public class DataBuilder
                 
             } catch (IOException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataBuilder.class, ex);
                 ex.printStackTrace();
             }
         }
@@ -2915,6 +2921,8 @@ public class DataBuilder
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataBuilder.class, ex);
             ex.printStackTrace();
             
         } finally

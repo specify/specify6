@@ -98,12 +98,16 @@ public class SpecifyDeleteHelper
                 
             } catch (SQLException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyDeleteHelper.class, ex);
                 ex.printStackTrace();
                 try
                 {
                     connection.rollback();
                 } catch (SQLException ex2)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyDeleteHelper.class, ex2);
                     ex.printStackTrace();
                 }
                 
@@ -117,6 +121,8 @@ public class SpecifyDeleteHelper
                     }
                 } catch (SQLException ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyDeleteHelper.class, ex);
                     ex.printStackTrace();
                 }
             }
@@ -141,6 +147,8 @@ public class SpecifyDeleteHelper
             }
         } catch (SQLException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyDeleteHelper.class, ex);
             ex.printStackTrace();
         }
     }
@@ -310,6 +318,8 @@ public class SpecifyDeleteHelper
                                 treeClass = Class.forName("edu.ku.brc.specify.datamodel."+className);
                             } catch (Exception ex)
                             {
+                                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyDeleteHelper.class, ex);
                                 ex.printStackTrace();
                             }
                             if (treeClass == cls)
@@ -336,6 +346,8 @@ public class SpecifyDeleteHelper
                         
                     } catch (SQLException ex)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyDeleteHelper.class, ex);
                         ex.printStackTrace();
                     }
                 }

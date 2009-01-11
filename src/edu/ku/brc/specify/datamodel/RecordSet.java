@@ -563,6 +563,8 @@ public class RecordSet extends CollectionMember implements java.io.Serializable,
                     
                 } catch (SQLException e)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RecordSet.class, e);
                     e.printStackTrace();
                     
                 } finally
@@ -574,6 +576,8 @@ public class RecordSet extends CollectionMember implements java.io.Serializable,
                         
                     } catch (SQLException e)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RecordSet.class, e);
                         e.printStackTrace();
                     }
                 }
@@ -613,6 +617,8 @@ public class RecordSet extends CollectionMember implements java.io.Serializable,
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RecordSet.class, ex);
                 ex.printStackTrace();
             }
         }

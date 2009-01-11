@@ -102,6 +102,8 @@ public class DBTableIdMgr
                 
             } catch (Exception e) 
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DBTableIdMgr.class, e);
                 InternalError error = new InternalError("Can't instantiate WebLink factory " + factoryNameStr); //$NON-NLS-1$
                 error.initCause(e);
                 throw error;
@@ -272,11 +274,15 @@ public class DBTableIdMgr
 
 		} catch (java.lang.NumberFormatException numEx)
 		{
+    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DBTableIdMgr.class, numEx);
 			log.error("Specify datamodel input file: " + DatamodelHelper.getDatamodelFilePath() //$NON-NLS-1$
 					+ " failed to provide valid table id for class/table:" + classname); //$NON-NLS-1$
 			log.error(numEx);
 		} catch (Exception ex)
 		{
+    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DBTableIdMgr.class, ex);
 			log.error(ex);
 			ex.printStackTrace();
 		}
@@ -625,6 +631,8 @@ public class DBTableIdMgr
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DBTableIdMgr.class, ex);
             //log.error(ex); // this isn't an error
         }
         return null;
@@ -649,6 +657,8 @@ public class DBTableIdMgr
                     
                 } catch (Exception ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DBTableIdMgr.class, ex);
                     log.error("Bad Business Rule class name["+br+"]"); //$NON-NLS-1$ //$NON-NLS-2$
                     log.error(ex);
                 }

@@ -103,11 +103,15 @@ public class JaasContext
             
         } catch (LoginException lex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(JaasContext.class, lex);
             log.error("jaasLogin() - " + lex.getClass().getName() + ": " + lex.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
             log.error("jaasLogin() - user failed to login using through jaas framework"); //$NON-NLS-1$
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(JaasContext.class, ex);
             log.error("jaasLogin() - " + ex.getClass().getName() + ": " + ex.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
         }
         return loginSuccess;

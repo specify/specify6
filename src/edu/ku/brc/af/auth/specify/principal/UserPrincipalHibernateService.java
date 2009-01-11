@@ -67,6 +67,8 @@ public class UserPrincipalHibernateService
             
         } catch (final Exception e1)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UserPrincipalHibernateService.class, e1);
             log.error("Exception caught: " + e1.toString());
             e1.printStackTrace();
             
@@ -97,6 +99,8 @@ public class UserPrincipalHibernateService
             
         } catch (final Exception e1)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UserPrincipalHibernateService.class, e1);
             log.error("Exception caught: " + e1.toString()); //$NON-NLS-1$
             e1.printStackTrace();
         } finally
@@ -131,6 +135,8 @@ public class UserPrincipalHibernateService
             
         } catch (SQLException e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UserPrincipalHibernateService.class, e);
             log.error("addToUserGroup - " + e); //$NON-NLS-1$
             e.printStackTrace();
             
@@ -143,6 +149,8 @@ public class UserPrincipalHibernateService
                     conn.close();
                 } catch (SQLException e)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UserPrincipalHibernateService.class, e);
                     log.error("Exception caught: " + e.toString()); //$NON-NLS-1$
                     e.printStackTrace();
                 }
@@ -188,6 +196,8 @@ public class UserPrincipalHibernateService
             
         } catch (SQLException e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UserPrincipalHibernateService.class, e);
             log.error("Exception caught: " + e); //$NON-NLS-1$
             e.printStackTrace();
             
@@ -200,6 +210,8 @@ public class UserPrincipalHibernateService
                     conn.close();
                 } catch (SQLException e)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UserPrincipalHibernateService.class, e);
                     log.error("Exception caught: " + e.toString()); //$NON-NLS-1$
                     e.printStackTrace();
                 }
@@ -256,6 +268,8 @@ public class UserPrincipalHibernateService
             
         } catch (Exception e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UserPrincipalHibernateService.class, e);
             log.error("Executing sql" + pstmt.toString()); //$NON-NLS-1$
             log.error("Exception caught: " + e); //$NON-NLS-1$
             return false;
@@ -268,6 +282,8 @@ public class UserPrincipalHibernateService
                     conn.close();
                 } catch (SQLException e)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UserPrincipalHibernateService.class, e);
                     e.printStackTrace();
                 }
             }
@@ -295,8 +311,10 @@ public class UserPrincipalHibernateService
 
         } catch (Exception e)
 
+
         {
-            log.error("Exception caught: " + e); //$NON-NLS-1$
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UserPrincipalHibernateService.class, e);
             
         } finally
         {
@@ -328,6 +346,8 @@ public class UserPrincipalHibernateService
             
         } catch (SQLException e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UserPrincipalHibernateService.class, e);
             log.error("addToUserGroup - " + e); //$NON-NLS-1$
             e.printStackTrace();
             
@@ -340,6 +360,8 @@ public class UserPrincipalHibernateService
                     conn.close();
                 } catch (SQLException e)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UserPrincipalHibernateService.class, e);
                     log.error("Exception caught: " + e.toString()); //$NON-NLS-1$
                     e.printStackTrace();
                 }

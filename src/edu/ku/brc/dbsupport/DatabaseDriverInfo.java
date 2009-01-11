@@ -345,6 +345,8 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
             } 
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DatabaseDriverInfo.class, ex);
             ex.printStackTrace();
             log.error(ex);
         }

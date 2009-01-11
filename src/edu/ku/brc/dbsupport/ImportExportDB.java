@@ -101,6 +101,8 @@ public class ImportExportDB
 
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImportExportDB.class, ex);
             ex.printStackTrace();
         } finally
         {
@@ -151,12 +153,16 @@ public class ImportExportDB
             }
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImportExportDB.class, ex);
             try
             {
                 ex.printStackTrace();
                 HibernateUtil.rollbackTransaction();
             } catch (Exception ex1)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImportExportDB.class, ex1);
                 ex1.printStackTrace();
             }
         }
@@ -196,6 +202,8 @@ public class ImportExportDB
             }
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImportExportDB.class, ex);
             ex.printStackTrace();
         }
     }
@@ -230,6 +238,8 @@ public class ImportExportDB
             }
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImportExportDB.class, ex);
             ex.printStackTrace();
         }
         return dbObject;
@@ -261,6 +271,8 @@ public class ImportExportDB
             }
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImportExportDB.class, ex);
             ex.printStackTrace();
         }
         return dbObject;
@@ -291,6 +303,8 @@ public class ImportExportDB
             }
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImportExportDB.class, ex);
             ex.printStackTrace();
         }
         return dbObject;
@@ -396,6 +410,8 @@ public class ImportExportDB
             }
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImportExportDB.class, ex);
             // the last par tof the string conatins the class
             // if(err.startsWith("org.hibernate.PropertyValueException")){
             try
@@ -407,6 +423,8 @@ public class ImportExportDB
                 // the import aagain
             } catch (Exception ex1)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImportExportDB.class, ex1);
                 ex1.printStackTrace();
             }
             // }else{
@@ -523,6 +541,8 @@ public class ImportExportDB
             }
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImportExportDB.class, ex);
             // String err = ex.toString();
             // the last par tof the string conatins the class
             // if(err.startsWith("org.hibernate.PropertyValueException")){
@@ -535,6 +555,8 @@ public class ImportExportDB
                 // the import aagain
             } catch (Exception ex1)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImportExportDB.class, ex1);
                 ex1.printStackTrace();
             }
             // }else{
@@ -662,6 +684,8 @@ public class ImportExportDB
             }
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImportExportDB.class, ex);
             // the last par tof the string conatins the class
             // if(err.startsWith("org.hibernate.PropertyValueException")){
             try
@@ -673,6 +697,8 @@ public class ImportExportDB
                 // the import aagain
             } catch (Exception ex1)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImportExportDB.class, ex1);
                 ex1.printStackTrace();
             }
             // }else{
@@ -763,6 +789,8 @@ public class ImportExportDB
             }
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImportExportDB.class, ex);
             ex.printStackTrace();
         }
     }
@@ -854,6 +882,8 @@ public class ImportExportDB
             dbObject = agent;
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImportExportDB.class, ex);
             ex.printStackTrace();
         }
 
@@ -948,6 +978,8 @@ public class ImportExportDB
             dbObject = agent;
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImportExportDB.class, ex);
             ex.printStackTrace();
         }
 
@@ -1043,6 +1075,8 @@ public class ImportExportDB
             dbObject = agent;
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImportExportDB.class, ex);
             ex.printStackTrace();
         }
 
@@ -1149,6 +1183,8 @@ public class ImportExportDB
             }
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImportExportDB.class, ex);
             ex.printStackTrace();
         }
     }
@@ -1259,6 +1295,8 @@ public class ImportExportDB
             }
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImportExportDB.class, ex);
             ex.printStackTrace();
         }
     }
@@ -1366,6 +1404,8 @@ public class ImportExportDB
 
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImportExportDB.class, ex);
             ex.printStackTrace();
         }
         return agent;
@@ -1471,6 +1511,8 @@ public class ImportExportDB
             return set;
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImportExportDB.class, ex);
             ex.printStackTrace();
             return null;
         }
@@ -1580,6 +1622,8 @@ public class ImportExportDB
             }
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImportExportDB.class, ex);
             ex.printStackTrace();
         }
     }
@@ -1700,6 +1744,8 @@ public class ImportExportDB
                             return tableObject;
                         } catch (FileNotFoundException e)
                         {
+                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImportExportDB.class, e);
                             // normal
                             String className = tablerel.getClassName().substring(29)
                                     .toLowerCase();// strip working set
@@ -1730,6 +1776,8 @@ public class ImportExportDB
             }
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImportExportDB.class, ex);
             ex.printStackTrace();
         }
         return null;
@@ -1858,6 +1906,8 @@ public class ImportExportDB
                             
                         } catch (FileNotFoundException e)
                         {
+                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImportExportDB.class, e);
                             // normal
                             String className = tablerel.getClassName().substring(29)
                                     .toLowerCase();// strip working set
@@ -1888,6 +1938,8 @@ public class ImportExportDB
             }
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImportExportDB.class, ex);
             ex.printStackTrace();
         }
         return null;
@@ -2005,6 +2057,8 @@ public class ImportExportDB
             }
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImportExportDB.class, ex);
             if (ex.toString().startsWith("java.lang.NumberFormatException")) { return null; } //$NON-NLS-1$
             // else
             ex.printStackTrace();
@@ -2126,6 +2180,8 @@ public class ImportExportDB
             }
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImportExportDB.class, ex);
             if (ex.toString().startsWith("java.lang.NumberFormatException")) { return null; } //$NON-NLS-1$
             // else
             ex.printStackTrace();
@@ -2260,6 +2316,8 @@ public class ImportExportDB
             // }
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImportExportDB.class, ex);
             if (ex.toString().startsWith("java.lang.NumberFormatException")) { return null; } //$NON-NLS-1$
             // else
             ex.printStackTrace();
@@ -2291,6 +2349,8 @@ public class ImportExportDB
 
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImportExportDB.class, ex);
 
             ex.printStackTrace();
         }
@@ -2316,6 +2376,8 @@ public class ImportExportDB
             // just retun the object
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImportExportDB.class, ex);
 
             if (ex.toString().startsWith("org.hibernate.NonUniqueObjectException")) //$NON-NLS-1$
             {
@@ -2346,6 +2408,8 @@ public class ImportExportDB
             dbObject = buildSingleDBObject(className, num, false);
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImportExportDB.class, ex);
             ex.printStackTrace();
         }
         // return the object
@@ -2373,6 +2437,8 @@ public class ImportExportDB
             dbObject = session.load(temp.getClass(), num);
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImportExportDB.class, ex);
             if (ex.toString().startsWith("org.hibernate.ObjectNotFoundException")) //$NON-NLS-1$
             {// create new parent
                 dbObject = buildSingleDataBaseObject(className, num, false);
@@ -2409,6 +2475,8 @@ public class ImportExportDB
                         return loaded;
                     } catch (Exception ex2)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImportExportDB.class, ex2);
                         ex2.printStackTrace();
                     }
                 }
@@ -2500,6 +2568,8 @@ public class ImportExportDB
             } while (i.hasNext());
         } catch (java.lang.NullPointerException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImportExportDB.class, ex);
             System.err.println("table: " + dbTable + " does not exsist"); //$NON-NLS-1$ //$NON-NLS-2$
         }
         return children;
@@ -2544,6 +2614,8 @@ public class ImportExportDB
             } while (i.hasNext());
         } catch (java.lang.NullPointerException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImportExportDB.class, ex);
             System.err.println("table:" + dbTable + " does not exsist"); //$NON-NLS-1$ //$NON-NLS-2$
         }
         return parents;
@@ -2586,6 +2658,8 @@ public class ImportExportDB
             } while (i.hasNext());
         } catch (java.lang.NullPointerException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImportExportDB.class, ex);
             System.err.println("table: " + dbTable + " does not exsist"); //$NON-NLS-1$ //$NON-NLS-2$
         }
         return parents;
@@ -2613,6 +2687,8 @@ public class ImportExportDB
             }
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImportExportDB.class, ex);
             ex.printStackTrace();
         }
         System.out.println();
@@ -2710,6 +2786,8 @@ public class ImportExportDB
             }
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImportExportDB.class, ex);
             ex.printStackTrace();
         }
         System.out.println();
@@ -2752,6 +2830,8 @@ public class ImportExportDB
             System.out.println("Wrote: " + dbTable + ".xml"); //$NON-NLS-1$ //$NON-NLS-2$
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImportExportDB.class, ex);
             ex.printStackTrace();
         }
         System.out.println();
@@ -2792,6 +2872,8 @@ public class ImportExportDB
             System.out.println("Wrote: " + dataBase + ".xml"); //$NON-NLS-1$ //$NON-NLS-2$
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImportExportDB.class, ex);
             ex.printStackTrace();
         }
 
@@ -2854,6 +2936,8 @@ public class ImportExportDB
             cal.setTime(date);
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImportExportDB.class, ex);
             ex.printStackTrace();
         }
         return cal;

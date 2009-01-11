@@ -65,6 +65,8 @@ public abstract class DefaultFormFieldValueFactory
                  
             } catch (Exception e) 
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DefaultFormFieldValueFactory.class, e);
                 InternalError error = new InternalError("Can't instantiate DefaultFormFieldValueFactory factory " + factoryNameStr);
                 error.initCause(e);
                 throw error;

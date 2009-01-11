@@ -430,6 +430,8 @@ public class ChooseFromListDlg<T> extends JDialog
 
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ChooseFromListDlg.class, ex);
             log.error(ex);
         }
 

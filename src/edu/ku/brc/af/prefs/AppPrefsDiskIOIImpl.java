@@ -126,6 +126,8 @@ public class AppPrefsDiskIOIImpl implements AppPrefsIOIFace
 
                 } catch (IOException ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AppPrefsDiskIOIImpl.class, ex);
                     throw new RuntimeException(ex);
                 }
             }
@@ -155,6 +157,8 @@ public class AppPrefsDiskIOIImpl implements AppPrefsIOIFace
                 
             } catch (IOException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AppPrefsDiskIOIImpl.class, ex);
                 throw new BackingStoreException(ex);
             }
         }

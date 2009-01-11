@@ -215,6 +215,8 @@ public class NavigationTreeMgr
             
         } catch (final Exception e1)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(NavigationTreeMgr.class, e1);
             session.rollback();
             
             e1.printStackTrace();
@@ -282,6 +284,8 @@ public class NavigationTreeMgr
             
         } catch (final Exception e1)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(NavigationTreeMgr.class, e1);
             session.rollback();
             
             e1.printStackTrace();
@@ -411,6 +415,8 @@ public class NavigationTreeMgr
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(NavigationTreeMgr.class, ex);
             ex.printStackTrace();
         } finally
         {
@@ -446,6 +452,8 @@ public class NavigationTreeMgr
                 
             } catch (final Exception e1)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(NavigationTreeMgr.class, e1);
                 session.rollback();
                 
                 e1.printStackTrace();
@@ -733,6 +741,8 @@ public class NavigationTreeMgr
             
         } catch (final Exception e1)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(NavigationTreeMgr.class, e1);
             session.rollback();
             log.error("Exception caught: " + e1.toString());
             e1.printStackTrace();
@@ -813,6 +823,8 @@ public class NavigationTreeMgr
             
         } catch (final Exception e1)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(NavigationTreeMgr.class, e1);
             session.rollback();
             log.error("Exception caught: " + e1.toString());
             e1.printStackTrace();

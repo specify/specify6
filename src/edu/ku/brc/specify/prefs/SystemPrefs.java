@@ -412,6 +412,8 @@ public class SystemPrefs extends GenericPrefsPanel
                         
                     } catch (Exception ex)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SystemPrefs.class, ex);
                         ex.printStackTrace();
                         try
                         {
@@ -419,6 +421,8 @@ public class SystemPrefs extends GenericPrefsPanel
                             
                         } catch (Exception ex2)
                         {
+                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SystemPrefs.class, ex);
                             ex2.printStackTrace();
                         }
                         UIRegistry.showLocalizedError("SystemPrefs.NO_MOVE_ATTCH", newDir.getAbsoluteFile());
@@ -459,7 +463,9 @@ public class SystemPrefs extends GenericPrefsPanel
                     
                 } catch (Exception ex)
                 {
-                     ex.printStackTrace();
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SystemPrefs.class, ex);
+                    ex.printStackTrace();
                 }
             }
         }

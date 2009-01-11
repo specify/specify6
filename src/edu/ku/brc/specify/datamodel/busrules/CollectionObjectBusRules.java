@@ -89,6 +89,8 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
         
                 } catch (Exception ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(CollectionObjectBusRules.class, ex);
                     log.error(ex);
                     ex.printStackTrace();
                     
@@ -233,6 +235,8 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                     
                 } catch (Exception ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(CollectionObjectBusRules.class, ex);
                     ex.printStackTrace();
                 }
             }
@@ -262,6 +266,8 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                         
                     } catch (Exception ex)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(CollectionObjectBusRules.class, ex);
                         ex.printStackTrace();
                         return false;
                     }
@@ -321,6 +327,8 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                 }
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(CollectionObjectBusRules.class, ex);
                 ex.printStackTrace();
                 // Error Dialog
                 

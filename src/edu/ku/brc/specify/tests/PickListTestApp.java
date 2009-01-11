@@ -108,6 +108,8 @@ public class PickListTestApp
             dbConnection.close();
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PickListTestApp.class, ex);
             ex.printStackTrace();
         }*/
 
@@ -310,6 +312,8 @@ public class PickListTestApp
             menu.setMnemonic(getResourceString(mneuKey).charAt(0));
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PickListTestApp.class, ex);
             ex.printStackTrace();
             log.info("Couldn't create menu for " + labelKey + "  " + mneuKey);
         }
@@ -470,6 +474,8 @@ public class PickListTestApp
           
         } catch (Exception e) 
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PickListTestApp.class, e);
             HibernateUtil.rollbackTransaction();
             e.printStackTrace();
             
@@ -509,6 +515,8 @@ public class PickListTestApp
             
         } catch (SQLException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PickListTestApp.class, ex);
             ex.printStackTrace();
         }
         

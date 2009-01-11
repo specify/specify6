@@ -157,6 +157,8 @@ public class EditorTask extends BaseTask
 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(EditorTask.class, ex);
                 ex.printStackTrace();
             }
             

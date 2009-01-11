@@ -123,6 +123,8 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
 
             } catch (Exception e)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UIFieldFormatterMgr.class, e);
                 InternalError error = new InternalError("Can't instantiate UIFieldFormatterMgr factory " + factoryNameStr);
                 error.initCause(e);
                 throw error;
@@ -494,6 +496,8 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
 
                             } catch (Exception ex)
                             {
+                                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UIFieldFormatterMgr.class, ex);
                                 log.error(ex);
                                 ex.printStackTrace();
                             }
@@ -525,6 +529,8 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
 
                             } catch (Exception ex)
                             {
+                                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UIFieldFormatterMgr.class, ex);
                                 log.error("[" + typeStr + "]" + ex.toString());
                             }
 
@@ -568,6 +574,8 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
                                 dataClass = Class.forName(dataClassName);
                             } catch (Exception ex)
                             {
+                                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UIFieldFormatterMgr.class, ex);
                                 log.error("Couldn't load class [" + dataClassName + "] for [" + name + "]");
                             }
 
@@ -601,6 +609,8 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
             }
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UIFieldFormatterMgr.class, ex);
             ex.printStackTrace();
             log.error(ex);
         }
@@ -713,6 +723,8 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
 
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UIFieldFormatterMgr.class, ex);
             log.error(ex);
             ex.printStackTrace();
         }

@@ -366,6 +366,8 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
 
             } catch (JRException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(LabelsPane.class, ex);
                 setLabelText(getResourceString("JasperReportCreatingViewer"));
                 log.error(ex);
                 ex.printStackTrace();
@@ -400,6 +402,8 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(LabelsPane.class, ex);
                 log.error(ex);
             }
         }
@@ -487,6 +491,8 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(LabelsPane.class, ex);
             setLabelText(getResourceString("JasperReportCreatingViewer"));
             log.error(ex);
             ex.printStackTrace();

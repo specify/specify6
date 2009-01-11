@@ -245,6 +245,8 @@ public class DataObjFieldFormatMgr
                             dataClass = Class.forName(className);
                         } catch (Exception ex)
                         {
+                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataObjFieldFormatMgr.class, ex);
                             log.error("Couldn't load class ["+className+"]");
                         }
                     } else
@@ -310,6 +312,8 @@ public class DataObjFieldFormatMgr
                                     
                                 } catch (Exception ex)
                                 {
+                                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataObjFieldFormatMgr.class, ex);
                                     log.error(ex);
                                     ex.printStackTrace();
                                 }
@@ -379,6 +383,8 @@ public class DataObjFieldFormatMgr
                             dataClass = Class.forName(dataClassName);
                         } catch (Exception ex)
                         {
+                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataObjFieldFormatMgr.class, ex);
                             log.error("Couldn't load class ["+dataClassName+"]");
                         }
                     } else
@@ -397,6 +403,8 @@ public class DataObjFieldFormatMgr
             }
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataObjFieldFormatMgr.class, ex);
             ex.printStackTrace();
             log.error(ex);
         }
@@ -504,6 +512,8 @@ public class DataObjFieldFormatMgr
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataObjFieldFormatMgr.class, ex);
                 ex.printStackTrace();
             }
         }
@@ -1131,6 +1141,8 @@ public class DataObjFieldFormatMgr
                      
                 } catch (Exception e) 
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataObjFieldFormatMgr.class, e);
                     InternalError error = new InternalError("Can't instantiate DataObjFieldFormatMgr factory " + factoryNameStr);
                     error.initCause(e);
                     throw error;

@@ -92,6 +92,8 @@ public class DataSetterForObj implements DataObjectSettable
             }
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataSetterForObj.class, ex);
             log.error("Trouble setting value field named[" + (fieldName != null ? fieldName.trim() : "null")+ 
                     "] in data object [" + (dataObj != null ? dataObj.getClass().toString() : "null")+ "]");
             log.error(ex);

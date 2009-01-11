@@ -167,6 +167,8 @@ public class IconManager extends Component
             
         } catch (NullPointerException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(IconManager.class, ex);
              log.error("Image at URL ["+url+"] ["+iconName+"] ["+fileName+"] couldn't be loaded.");
         }
        
@@ -463,6 +465,8 @@ public class IconManager extends Component
             }
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(IconManager.class, ex);
             ex.printStackTrace();
             log.error(ex);
         }

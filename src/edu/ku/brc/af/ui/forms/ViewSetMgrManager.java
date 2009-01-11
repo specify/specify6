@@ -153,6 +153,8 @@ public class ViewSetMgrManager
                     
                 } catch (IOException ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ViewSetMgrManager.class, ex);
                     throw new RuntimeException(ex);
                 }
                 

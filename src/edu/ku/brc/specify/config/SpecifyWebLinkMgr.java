@@ -83,6 +83,8 @@ public class SpecifyWebLinkMgr extends WebLinkMgr implements CommandListener
                 loadFromXML(FileUtils.readFileToString(file));
             } catch (IOException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyWebLinkMgr.class, ex);
                 ex.printStackTrace();
             }
         } else
@@ -138,6 +140,8 @@ public class SpecifyWebLinkMgr extends WebLinkMgr implements CommandListener
 
                 } catch (Exception ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyWebLinkMgr.class, ex);
                     ex.printStackTrace();
                 }
                 

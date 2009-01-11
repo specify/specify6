@@ -71,6 +71,8 @@ public class DBRelationshipInfo extends DBInfoBase implements DBTableChildIFace
             
         } catch (ClassNotFoundException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DBRelationshipInfo.class, ex);
             log.error(ex);
         }
     }

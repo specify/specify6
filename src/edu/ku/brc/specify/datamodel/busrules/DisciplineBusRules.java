@@ -218,6 +218,8 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
                         
                     } catch (Exception ex)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DisciplineBusRules.class, ex);
                         ex.printStackTrace();
                     }
                 }
@@ -295,6 +297,8 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
                     
                 } catch (Exception ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DisciplineBusRules.class, ex);
                     ex.printStackTrace();
                     UsageTracker.incrNetworkUsageCount();
                 }
@@ -490,6 +494,8 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
     
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DisciplineBusRules.class, ex);
             ex.printStackTrace();
             //log.error(ex);
             throw new RuntimeException(ex);
@@ -502,6 +508,8 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DisciplineBusRules.class, ex);
                 ex.printStackTrace();
                 //log.error(ex);
                 throw new RuntimeException(ex);

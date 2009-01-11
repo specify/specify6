@@ -488,6 +488,8 @@ public class GraphicsUtils
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(GraphicsUtils.class, ex);
             ex.printStackTrace();
         }
         return "";
@@ -509,6 +511,8 @@ public class GraphicsUtils
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(GraphicsUtils.class, ex);
             ex.printStackTrace();
         }
         return null;

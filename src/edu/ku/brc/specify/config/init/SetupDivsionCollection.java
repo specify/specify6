@@ -286,6 +286,8 @@ public class SetupDivsionCollection extends JDialog
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SetupDivsionCollection.class, ex);
             
         }
         
@@ -358,6 +360,8 @@ public class SetupDivsionCollection extends JDialog
                             
                         } catch (Exception ex)
                         {
+                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SetupDivsionCollection.class, ex);
                             ex.printStackTrace();
                             CommandDispatcher.dispatch(new CommandAction("SystemSetup", "DivisionError", division));
                             
@@ -383,6 +387,8 @@ public class SetupDivsionCollection extends JDialog
         
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SetupDivsionCollection.class, ex);
             ex.printStackTrace();
         }
     }

@@ -267,6 +267,8 @@ public class RelatedClassSetter
 					.getId());
 		} catch (Exception ex) 
 		{
+    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RelatedClassSetter.class, ex);
 			throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
 		} finally 
 		{
@@ -287,6 +289,8 @@ public class RelatedClassSetter
 					.getId());
 		} catch (Exception ex) 
 		{
+    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RelatedClassSetter.class, ex);
 			throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
 		} finally 
 		{

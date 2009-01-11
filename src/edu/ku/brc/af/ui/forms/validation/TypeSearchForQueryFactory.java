@@ -111,6 +111,8 @@ public class TypeSearchForQueryFactory
                 }
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TypeSearchForQueryFactory.class, ex);
                 ex.printStackTrace();
                 log.error(ex);
             }

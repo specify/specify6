@@ -402,6 +402,8 @@ public class ConfigureXLS extends ConfigureExternalDataBase
             status = Status.Valid;
         } catch (IOException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ConfigureXLS.class, ex);
             status = Status.Error;
         }
     }

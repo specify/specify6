@@ -393,6 +393,8 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
 
                 } catch (Exception ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(LocalityMapperSubPane.class, ex);
                     ex.printStackTrace();
                 }
             }

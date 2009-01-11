@@ -118,6 +118,8 @@ public abstract class LocalizerBasePanel extends JPanel
 
                     } catch (NullPointerException e)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(LocalizerBasePanel.class, e);
                         FileInputStream fin = new FileInputStream(file);
                         zip = new ZipInputStream(fin);
                     }
@@ -136,14 +138,20 @@ public abstract class LocalizerBasePanel extends JPanel
                     
                 } catch (MalformedURLException e)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(LocalizerBasePanel.class, e);
                     e.printStackTrace();
 
                 } catch (FileNotFoundException e)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(LocalizerBasePanel.class, e);
                     e.printStackTrace();
 
                 } catch (IOException e)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(LocalizerBasePanel.class, e);
                     e.printStackTrace();
                 }
                 return null;

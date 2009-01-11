@@ -214,6 +214,8 @@ public class NumberingSchemeSetupDlg extends CustomDialog
             }
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(NumberingSchemeSetupDlg.class, ex);
             ex.printStackTrace();
         } finally
         {

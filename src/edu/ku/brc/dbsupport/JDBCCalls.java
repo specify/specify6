@@ -45,6 +45,8 @@ public class JDBCCalls
             dbConnection = null;
         } catch (SQLException e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(JDBCCalls.class, e);
             // TODO Auto-generated catch block
             e.printStackTrace();
         }

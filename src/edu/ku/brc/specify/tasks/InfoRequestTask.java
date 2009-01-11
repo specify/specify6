@@ -128,6 +128,8 @@ public class InfoRequestTask extends BaseTask
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(InfoRequestTask.class, ex);
                 log.error(ex);
                 ex.printStackTrace();
                 
@@ -238,6 +240,8 @@ public class InfoRequestTask extends BaseTask
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(InfoRequestTask.class, ex);
             ex.printStackTrace();
             log.error(ex);
             

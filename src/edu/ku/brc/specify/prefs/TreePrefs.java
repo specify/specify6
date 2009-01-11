@@ -107,6 +107,8 @@ public class TreePrefs extends GenericPrefsPanel
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TreePrefs.class, ex);
             ex.printStackTrace();
             
         } finally

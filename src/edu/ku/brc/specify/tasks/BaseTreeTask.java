@@ -422,6 +422,8 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BaseTreeTask.class, ex);
             ex.printStackTrace();
             
         } finally
@@ -457,6 +459,8 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BaseTreeTask.class, ex);
             ex.printStackTrace();
             
         } finally
@@ -645,6 +649,8 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BaseTreeTask.class, ex);
                 ex.printStackTrace();
             }
         }

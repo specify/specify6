@@ -140,6 +140,8 @@ public class GeographyTreeTask extends BaseTreeTask<Geography,GeographyTreeDef,G
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(GeographyTreeTask.class, ex);
             log.error(ex);
             ex.printStackTrace();
         }

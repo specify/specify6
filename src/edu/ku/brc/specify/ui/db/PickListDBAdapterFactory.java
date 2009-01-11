@@ -137,6 +137,8 @@ public class PickListDBAdapterFactory extends edu.ku.brc.af.ui.db.PickListDBAdap
                     
                 } catch (Exception ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PickListDBAdapterFactory.class, ex);
                     log.error(ex);
                     ex.printStackTrace();
                     

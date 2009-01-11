@@ -135,6 +135,8 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
             }
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DBObjDialogFactory.class, ex);
             log.error(ex);
             ex.printStackTrace();
             throw new RuntimeException("Couldn't load DialogDefs");

@@ -1143,6 +1143,8 @@ public class DataImportDialog extends JDialog implements ActionListener
 
 		} catch (IOException ex)
 		{
+    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataImportDialog.class, ex);
 			log.error("Error attempting to parse input csv file:" + ex);
 		}
 		return null;

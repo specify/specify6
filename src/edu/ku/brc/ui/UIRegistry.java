@@ -1104,7 +1104,9 @@ public class UIRegistry
 	                instance.longTermCache.setMaxCacheSize(20000);
 	            } catch (Exception ex)
 	            {
-	                ex.printStackTrace();
+	                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+	                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UIRegistry.class, ex);
+                    ex.printStackTrace();
 	                log.error(ex);
 	            }
 	        }
@@ -1136,6 +1138,8 @@ public class UIRegistry
 	                instance.shortTermCache = new FileCache();
 	            } catch (Exception ex)
 	            {
+	                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+	                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UIRegistry.class, ex);
 	                ex.printStackTrace();
 	                log.error(ex);
 	            }
@@ -1170,6 +1174,8 @@ public class UIRegistry
                     instance.formsCache.setEnforceMaxCacheSize(false);
                 } catch (Exception ex)
                 {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UIRegistry.class, ex);
                     ex.printStackTrace();
                     log.error(ex);
                 }

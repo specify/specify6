@@ -168,10 +168,14 @@ public class ViewSet implements Comparable<ViewSetIFace>, ViewSetIFace
 
             } catch (FileNotFoundException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ViewSet.class, ex);
                 log.error(ex);
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ViewSet.class, ex);
                 log.error(ex);
                 ex.printStackTrace();
             }
@@ -399,6 +403,8 @@ public class ViewSet implements Comparable<ViewSetIFace>, ViewSetIFace
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ViewSet.class, ex);
                 ex.printStackTrace();
                 
             } finally

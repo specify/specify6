@@ -909,6 +909,8 @@ public class DatabaseLoginPanel extends JTiledPanel
 
                     } catch (Exception ex)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DatabaseLoginPanel.class, ex);
                         log.warn(ex);
                         finished();
                     }*/

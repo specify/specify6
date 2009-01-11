@@ -410,6 +410,8 @@ public class AutoCompletion extends PlainDocument
             
         } catch (BadLocationException e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AutoCompletion.class, e);
             throw new RuntimeException(e.toString());
         }
     }

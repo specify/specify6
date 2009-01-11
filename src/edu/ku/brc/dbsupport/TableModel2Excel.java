@@ -77,6 +77,8 @@ public class TableModel2Excel
             
         } catch (IOException ioex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TableModel2Excel.class, ioex);
             return new File(prefix + Long.toString(new Date().getTime()) + ext);
         }
     }
@@ -208,6 +210,8 @@ public class TableModel2Excel
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TableModel2Excel.class, ex);
                 log.error("convertToExcel", ex); //$NON-NLS-1$
             }
         }

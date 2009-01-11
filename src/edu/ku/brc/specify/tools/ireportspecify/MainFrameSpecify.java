@@ -421,6 +421,8 @@ public class MainFrameSpecify extends MainFrame
             }               
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(MainFrameSpecify.class, ex);
             if (transOpen)
             {
                session.rollback();
@@ -1002,6 +1004,8 @@ public class MainFrameSpecify extends MainFrame
                 setActiveReportForm(reportFrame);
             } catch (Exception e)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(MainFrameSpecify.class, e);
                 e.printStackTrace();
                 logOnConsole(e.getMessage() + "\n");
             }
@@ -1014,6 +1018,8 @@ public class MainFrameSpecify extends MainFrame
                 setActiveReportForm(reportFrame);
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(MainFrameSpecify.class, ex);
                 ex.printStackTrace();
             }
         }
@@ -1075,6 +1081,8 @@ public class MainFrameSpecify extends MainFrame
             return report;
         } catch (IOException e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(MainFrameSpecify.class, e);
             return null;
         }
     }
@@ -1120,6 +1128,8 @@ public class MainFrameSpecify extends MainFrame
             return report;
         } catch (IOException e)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(MainFrameSpecify.class, e);
             return null;
         }
     }
@@ -1323,6 +1333,8 @@ public class MainFrameSpecify extends MainFrame
             
         } catch (MissingResourceException ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(MainFrameSpecify.class, ex);
             Locale.setDefault(Locale.ENGLISH);
             UIRegistry.setResourceLocale(Locale.ENGLISH);
         }

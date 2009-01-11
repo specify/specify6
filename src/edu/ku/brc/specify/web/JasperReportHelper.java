@@ -292,6 +292,8 @@ public class JasperReportHelper implements AsynchronousFilllListener, JasperComp
 
             } catch (JRException ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(JasperReportHelper.class, ex);
                 //setLabelText(getResourceString("JasperReportCreatingViewer"));
                 log.error(ex);
                 ex.printStackTrace();
@@ -326,6 +328,8 @@ public class JasperReportHelper implements AsynchronousFilllListener, JasperComp
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(JasperReportHelper.class, ex);
                 log.error(ex);
             }
         }
@@ -365,6 +369,8 @@ public class JasperReportHelper implements AsynchronousFilllListener, JasperComp
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(JasperReportHelper.class, ex);
             log.error(ex);
             ex.printStackTrace();
         }
@@ -452,6 +458,8 @@ public class JasperReportHelper implements AsynchronousFilllListener, JasperComp
                 
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(JasperReportHelper.class, ex);
                 log.error(ex);
                 ex.printStackTrace();
                 

@@ -167,6 +167,8 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr implements C
                             
                         } catch (Exception ex)
                         {
+                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyUIFieldFormatterMgr.class, ex);
                             log.error("Couldn't load class [" + dataClassName + "] for [" + name + "]");
                         }
                         
@@ -183,6 +185,8 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr implements C
             
         } catch (Exception ex)
         {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyUIFieldFormatterMgr.class, ex);
             ex.printStackTrace();
             log.error(ex);
         }
@@ -203,6 +207,8 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr implements C
                 FileUtils.writeStringToFile(outputFile, xml);
             } catch (Exception ex)
             {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyUIFieldFormatterMgr.class, ex);
                 ex.printStackTrace();
             }
         } else
@@ -287,6 +293,8 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr implements C
                         
                     } catch (Exception ex)
                     {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyUIFieldFormatterMgr.class, ex);
                         ex.printStackTrace();
                         throw new RuntimeException(ex);
                         
