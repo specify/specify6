@@ -57,8 +57,8 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
     protected static transient Boolean isRenumberingNodes = null;
     protected static transient boolean doNodeNumberUpdates = true;
     protected static transient boolean uploadInProgress = false;
-    protected static transient String nodeNumbersInvalid = "Node Numbers Invalid";
-    protected static transient String numberingNodes = "Numbering Nodes";
+    protected static transient String nodeNumbersInvalid = "BadNodes";
+    protected static transient String numberingNodes = "UpdateNodes";
     
     protected transient DataProviderSessionIFace nodeUpdateSession = null;
     protected transient QueryIFace nodeQ = null;
@@ -265,19 +265,19 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
             //seems like a lock is the best way to persist the out-of-date state
             if (!arg)
             {
-                TaskSemaphoreMgr.USER_ACTION action = TaskSemaphoreMgr.lock(getNodeNumberUptoDateLockTitle(), nodeNumbersInvalid, null, TaskSemaphoreMgr.SCOPE.Discipline, canOverrideLock());
+                TaskSemaphoreMgr.USER_ACTION action = TaskSemaphoreMgr.lock(getNodeNumberUptoDateLockTitle(), getNodeNumberUptoDateLockName(), null, TaskSemaphoreMgr.SCOPE.Discipline, canOverrideLock());
                 canSwitch = action == TaskSemaphoreMgr.USER_ACTION.OK;        
             }
             else
             {
-                if (!TaskSemaphoreMgr.isLocked(getNodeNumberUptoDateLockTitle(), nodeNumbersInvalid, TaskSemaphoreMgr.SCOPE.Discipline))
+                if (!TaskSemaphoreMgr.isLocked(getNodeNumberUptoDateLockTitle(), getNodeNumberUptoDateLockName(), TaskSemaphoreMgr.SCOPE.Discipline))
                 {
                     canSwitch = true;
                 }
                 else
                 {
-                    canSwitch = TaskSemaphoreMgr.unlock(getClass().getSimpleName(), 
-                            nodeNumbersInvalid, TaskSemaphoreMgr.SCOPE.Discipline);
+                    canSwitch = TaskSemaphoreMgr.unlock(getNodeNumberUptoDateLockTitle(), 
+                            getNodeNumberUptoDateLockName(), TaskSemaphoreMgr.SCOPE.Discipline);
                 }
             }
             if (canSwitch)
@@ -521,7 +521,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
      */
     protected String getNodeNumberingLockName()
     {
-        return numberingNodes + getClass().getSimpleName();
+        return numberingNodes + getNodeClass().getSimpleName();
     }
     
     /**
@@ -529,8 +529,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
      */
     protected String getNodeNumberUptoDateLockName()
     {
-        return nodeNumbersInvalid + getClass().getSimpleName();
-        
+        return nodeNumbersInvalid + getNodeClass().getSimpleName();
     }
     
     /**
