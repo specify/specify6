@@ -85,7 +85,7 @@ public class SpecifyExceptionTracker extends ExceptionTracker
         final JTextField        titleTF    = createTextField();
         final JTextField        bugTF      = createTextField();
         final JTextArea         commentsTA = createTextArea(6, 60);
-        final JTextArea         stackTraceTA = createTextArea(6, 60);
+        final JTextArea         stackTraceTA = createTextArea(15, 60);
         
         int y = 1;
         pb.add(createFormLabel("Task"), cc.xy(1, y));

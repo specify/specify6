@@ -21,6 +21,7 @@ import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.HeadlessException;
+import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -29,6 +30,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 
 import org.apache.commons.lang.StringUtils;
@@ -366,6 +368,36 @@ public class CustomDialog extends JDialog
 
     }
     
+    /**
+     * @param title the title of the virtual titlebar
+     */
+    public void setCustomTitleBar(final String title)
+    {
+        setUndecorated(true);
+        
+        getMainPanel().setBorder(null);//BorderFactory.createLineBorder(Color.BLACK));
+
+        GradiantLabel titleBarLabel = new GradiantLabel(title, SwingConstants.CENTER);
+        
+        titleBarLabel.setBGBaseColor(SystemColor.windowBorder);
+        titleBarLabel.setGradiants(UIHelper.makeLighter(SystemColor.windowBorder, 0.2),
+                                   UIHelper.makeDarker(SystemColor.windowBorder, 0.2));
+        
+        getMainPanel().add(titleBarLabel, BorderLayout.NORTH);
+    }
+    
+    /**
+     * @return the mainPanel
+     */
+    public JPanel getMainPanel()
+    {
+        if (mainPanel == null)
+        {
+            createUI();
+        }
+        return mainPanel;
+    }
+
     public Component getContentPanel()
     {
         return contentPanel;

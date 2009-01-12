@@ -46,6 +46,10 @@ public class GradiantLabel extends JLabel
 {
     protected Color   textColor        = null;
     protected Color   textColorShadow  = null;
+    protected Color   bgBaseColor      = null;
+    
+    protected Color   gradiantTop      = null;
+    protected Color   gradiantBot      = null;
     
     /**
      * Defaults to a gradiant square Label
@@ -56,6 +60,7 @@ public class GradiantLabel extends JLabel
         super(text);
         setTextColor(Color.BLACK);
         setBorder(new EmptyBorder(0,0,0,0));
+        bgBaseColor = (new JLabel()).getBackground();
     }
     
     /**
@@ -67,9 +72,9 @@ public class GradiantLabel extends JLabel
     {
         super(text, align);
         setTextColor(Color.BLACK);
+        bgBaseColor = (new JLabel()).getBackground();
     }
     
-
     /* (non-Javadoc)
      * @see java.awt.Component#getPreferredSize()
      */
@@ -101,7 +106,7 @@ public class GradiantLabel extends JLabel
     {
         Graphics2D g2 = (Graphics2D)g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setColor(this.getBackground());
+        g2.setColor(getBackground());
         
         String text      = getText();
         int    textWidth = g2.getFontMetrics().stringWidth(text);
@@ -110,7 +115,7 @@ public class GradiantLabel extends JLabel
         int h = this.getHeight();
         g2.fillRect(0,0, w,h);
  
-        drawLabelBody(w,h, getForeground(), g2);
+        drawLabelBody(w,h, bgBaseColor, g2);
 
         Icon icon = getIcon();
         if (icon == null)
@@ -133,8 +138,9 @@ public class GradiantLabel extends JLabel
     protected void drawLabelBody(int w, int h, Color base, Graphics2D g2) 
     {
         // draw the Label body
-        Color grad_top = base.brighter();
-        Color grad_bot = base.darker();        
+        Color grad_top = gradiantTop != null ? gradiantTop : base.brighter();
+        Color grad_bot = gradiantBot != null ? gradiantBot : base.darker();
+        
         GradientPaint bg = new GradientPaint(new Point(0,0), grad_top,
                                              new Point(0,h), grad_bot);
         g2.setPaint(bg);
@@ -164,14 +170,53 @@ public class GradiantLabel extends JLabel
 
     }
     
-    
      // generate the alpha version of this color
     protected static Color alphaColor(Color color, int alpha) 
     {
         return new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha);
     }
     
-    
+    /**
+     * @param gradiantBot the gradiantBot to set
+     */
+    public void setGradiants(Color gradiantTop, Color gradiantBot)
+    {
+        this.gradiantTop = gradiantTop;
+        this.gradiantBot = gradiantBot;
+    }
+
+    /**
+     * @return the textColorShadow
+     */
+    public Color getTextColorShadow()
+    {
+        return textColorShadow;
+    }
+
+    /**
+     * @param textColorShadow the textColorShadow to set
+     */
+    public void setTextColorShadow(Color textColorShadow)
+    {
+        this.textColorShadow = textColorShadow;
+    }
+
+    /**
+     * @return the bgBaseColor
+     */
+    public Color getBGBaseColor()
+    {
+        return bgBaseColor;
+    }
+
+    /**
+     * @param bgBaseColor the bgBaseColor to set
+     */
+    public void setBGBaseColor(Color bgBaseColor)
+    {
+        this.bgBaseColor = bgBaseColor;
+    }
+
     public Color getTextColor()
     {
         return textColor;

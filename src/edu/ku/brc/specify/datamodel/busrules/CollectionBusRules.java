@@ -155,7 +155,6 @@ public class CollectionBusRules extends BaseBusRules
         MultiView  disciplineMV = formViewObj.getMVParent().getMultiViewParent();
         Discipline discipline   = (Discipline)disciplineMV.getData();
         
-        
         NumberingSchemeSetupDlg dlg;
         if (UIRegistry.getMostRecentWindow() instanceof Dialog)
         {
@@ -170,6 +169,7 @@ public class CollectionBusRules extends BaseBusRules
                     discipline, 
                     (Collection)newDataObj);
         }
+        dlg.setCustomTitleBar(UIRegistry.getResourceString("SEL_NUM_SCHEME"));
         
         dlg.setVisible(true);
         if (!dlg.isCancelled())

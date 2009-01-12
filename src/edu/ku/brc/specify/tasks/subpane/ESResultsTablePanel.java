@@ -178,7 +178,7 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         }
 
         topTitleBar = new GradiantLabel(results.getTitle(), SwingConstants.LEFT);
-        topTitleBar.setForeground(bannerColor);
+        topTitleBar.setBGBaseColor(bannerColor);
         topTitleBar.setTextColor(Color.WHITE);
         topTitleBar.addMouseListener(new MouseAdapter() {
             @Override

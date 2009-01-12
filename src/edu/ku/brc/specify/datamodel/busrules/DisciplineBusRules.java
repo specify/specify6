@@ -343,12 +343,13 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
         Discipline discipline = (Discipline)newDataObj;
         
         CellConstraints cc = new CellConstraints();
-        PanelBuilder    pb = new PanelBuilder(new FormLayout("p", "p,4px,p"));
+        PanelBuilder    pb = new PanelBuilder(new FormLayout("p", "p,4px,p,4px"));
         
         final JComboBox cbx = UIHelper.createComboBox(dispList);
         pb.add(UIHelper.createI18NLabel("CHOOSEDISP"), cc.xy(1, 1));
         pb.add(cbx, cc.xy(1, 3));
         pb.setDefaultDialogBorder();
+        
         
         Window parentWin = UIRegistry.getMostRecentWindow();
         CustomDialog dlg;
@@ -359,6 +360,8 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
         {
             dlg = new CustomDialog((Frame)UIRegistry.getMostRecentWindow(), "", true, CustomDialog.OK_BTN, pb.getPanel());
         }
+        dlg.setCustomTitleBar(UIRegistry.getResourceString("CREATEDISP"));
+
         UIHelper.centerAndShow(dlg);
         
         discipline.setType(((DisciplineType)cbx.getSelectedItem()).getName());

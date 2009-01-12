@@ -66,13 +66,13 @@ public class NumberingSchemeSetupDlg extends CustomDialog
                                    final Discipline discipline,
                                    final Collection collection)
     {
-        super(frame, "", true, OKHELP, null);
+        super(frame, "", true, OK_BTN, null);
         
         this.division   = division;
         this.discipline = discipline;
         this.collection = collection;
         
-        okLabel = UIRegistry.getResourceString("CLOSE");
+        //okLabel = UIRegistry.getResourceString("CLOSE");
     }
     
     /**
@@ -83,13 +83,13 @@ public class NumberingSchemeSetupDlg extends CustomDialog
                                    final Discipline discipline,
                                    final Collection collection)
     {
-        super(dialog, "", true, OKHELP, null);
+        super(dialog, "", true, OK_BTN, null);
         
         this.division   = division;
         this.discipline = discipline;
         this.collection = collection;
         
-        okLabel = UIRegistry.getResourceString("CLOSE");
+        //okLabel = UIRegistry.getResourceString("CLOSE");
     }
     
     /**
