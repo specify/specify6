@@ -775,7 +775,7 @@ public class UploadTable implements Comparable<UploadTable>
         boolean result = false;
         for (UploadField f : uploadFields.get(index))
         {
-            if (StringUtils.isNotEmpty(f.getValue()))
+            if (StringUtils.isNotEmpty(f.getValue()) || f == autoAssignedField)
             {
                 result = true;
                 break;
