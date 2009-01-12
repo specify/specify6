@@ -110,8 +110,6 @@ public class IdHashMapper implements IdMapperIFace
                     
                 } catch (Exception ex)
                 {
-                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(IdHashMapper.class, ex);
                     // Exception may occur if table doesn't exist
                 }
 
@@ -274,14 +272,10 @@ public class IdHashMapper implements IdMapperIFace
 	            
 	        } catch (com.mysql.jdbc.exceptions.MySQLSyntaxErrorException ex)
 	        {
-    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(IdHashMapper.class, ex);
 	            log.error(ex);
 	            
 	        } catch (Exception ex)
 	        {
-    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(IdHashMapper.class, ex);
 	            //ex.printStackTrace();
 	            log.error(ex);
 	        }

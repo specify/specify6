@@ -7044,10 +7044,10 @@ public class BuildSampleDatabase
                         
                     } catch (Exception e)
                     {
-                        JOptionPane.showMessageDialog(null, "Master User["+saUserName+"] could not be created!");
+                        //JOptionPane.showMessageDialog(null, "Master User["+saUserName+"] could not be created!");
                         e.printStackTrace();
                     }
-                    return false;
+                    return true;
                 }
             } catch (SQLException ex)
             {

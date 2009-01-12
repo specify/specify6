@@ -302,8 +302,6 @@ public class BasicSQLUtils
         } 
         catch (Exception ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BasicSQLUtils.class, ex);
             //TODO: Problem encountered with the CUPaleo database when converting the AccessionAgent 
             //We (Rod?) need to go in an create a hashtable that
             if ((ex instanceof MySQLIntegrityConstraintViolationException)&&(cmdStr.contains("INSERT INTO accessionagent")))

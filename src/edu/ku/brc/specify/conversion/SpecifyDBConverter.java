@@ -190,8 +190,6 @@ public class SpecifyDBConverter
                 }
                 catch (Exception e)
                 {
-                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyDBConverter.class, e);
                     log.error("Can't change L&F: ", e);
                 }
                 
@@ -289,8 +287,6 @@ public class SpecifyDBConverter
                         
                     } catch (Exception ex)
                     {
-                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyDBConverter.class, ex);
                         ex.printStackTrace();
                     }
                     return null;
@@ -324,8 +320,6 @@ public class SpecifyDBConverter
                         
                     } catch (Exception ex)
                     {
-                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyDBConverter.class, ex);
                         ex.printStackTrace();
                     }
                     return null;
@@ -646,8 +640,6 @@ public class SpecifyDBConverter
                         
                     } catch (Exception ex)
                     {
-                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyDBConverter.class, ex);
                         ex.printStackTrace();
                     } finally
                     {
@@ -905,8 +897,6 @@ public class SpecifyDBConverter
                             
                         } catch (Exception ex)
                         {
-                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyDBConverter.class, ex);
                             throw new RuntimeException(ex);
                             
                         }
@@ -1157,8 +1147,6 @@ public class SpecifyDBConverter
                         
                     } catch (Exception ex)
                     {
-                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyDBConverter.class, ex);
                         ex.printStackTrace();
                     }
                     
@@ -1166,8 +1154,6 @@ public class SpecifyDBConverter
                     
                 } catch (Exception ex)
                 {
-                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyDBConverter.class, ex);
                     ex.printStackTrace();
                 }
                 
@@ -1295,8 +1281,6 @@ public class SpecifyDBConverter
 
                         } catch (Exception e)
                         {
-                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyDBConverter.class, e);
                             log.error("******* " + e);
                             e.printStackTrace();
                             HibernateUtil.rollbackTransaction();
@@ -1327,8 +1311,6 @@ public class SpecifyDBConverter
 
         } catch (Exception ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyDBConverter.class, ex);
             ex.printStackTrace();
 
             if (idMapperMgr != null && GenericDBConversion .shouldDeleteMapTables())
@@ -1405,8 +1387,6 @@ public class SpecifyDBConverter
             
         } catch (Exception ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyDBConverter.class, ex);
             if (trans != null)
             {
                 trans.rollback();
@@ -1548,8 +1528,6 @@ public class SpecifyDBConverter
 
             } catch (Exception ex)
             {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyDBConverter.class, ex);
                 log.error(ex);
             }
         } 
@@ -1661,8 +1639,6 @@ public class SpecifyDBConverter
             
         } catch (Exception ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyDBConverter.class, ex);
             log.error(ex);
         }
         
