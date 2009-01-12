@@ -3734,7 +3734,7 @@ public class BuildSampleDatabase
         Calendar endDate = Calendar.getInstance();
         endDate.set(1993, 5, 30);
         
-        Permit permit = createPermit("1980-"+disciplineType.getAbbrev()+"-0001", "US Dept Wildlife", issuedDate, startDate, endDate, null);
+        Permit permit = createPermit("1980-"+disciplineType.getAbbrev().substring(0, 2)+"-0001", "US Dept Wildlife", issuedDate, startDate, endDate, null);
         permit.setIssuedTo(ku);
         permit.setIssuedBy(agents.get(4));
         dataObjects.add(permit);
@@ -3894,7 +3894,7 @@ public class BuildSampleDatabase
 
         calendar.set(2006, 10, 27, 23, 59, 59);
         Accession acc1 = createAccession(division,
-                                         "gift", "complete", "2000-"+disciplineType.getAbbrev()+"-001", 
+                                         "gift", "complete", "2000-"+disciplineType.getAbbrev().substring(0, 2)+"-001", 
                                          DateFormat.getInstance().format(calendar.getTime()), 
                                          calendar, calendar);
         acc1.setText1(disciplineType.getTitle());
@@ -3911,7 +3911,7 @@ public class BuildSampleDatabase
         accAgents.add(createAccessionAgent("reviewer", reviewer, acc1, null));
 
         Accession acc2 = createAccession(division,
-                "field_work", "inprocess", "2004-"+disciplineType.getAbbrev()+"-002", 
+                "field_work", "inprocess", "2004-"+disciplineType.getAbbrev().substring(0, 2)+"-002", 
                 DateFormat.getInstance().format(calendar.getTime()), calendar, calendar);
         
         Agent donor2 =    agents.get(5);

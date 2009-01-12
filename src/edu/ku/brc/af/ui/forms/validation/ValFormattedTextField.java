@@ -63,6 +63,7 @@ import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterField.FieldType;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * A Multiple JTextFields (wrapped inside a JPanel) that provides for "formatted" input. The format "mask" is define in XML
@@ -953,6 +954,10 @@ s     * @param isViewOnly
         {
             if (formatter.isInBoundFormatter())
             {
+                if (data.length() > 0 && data.length() != formatter.getLength())
+                {
+                    UIRegistry.showError(String.format("For Formatter Name '%s' the data is the wrong size.\nData size '%d' and format Len '%d'", formatter.getName(), data.length(), formatter.getLength()));
+                }
                 needsUpdating = (StringUtils.isEmpty(data) || data.length() != formatter.getLength()) && formatter.getAutoNumber() != null && formatter.isIncrementer();
                 
                 fmtVal = (String)formatter.formatToUI(data);
