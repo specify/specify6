@@ -49,7 +49,7 @@ public class UploadInfoRenderable implements TableNameRendererIFace, Comparable<
      */
     public String getIconName()
     {
-        return tblClass.getSimpleName();
+        return tblClass.getSimpleName().toLowerCase();
     }
     
     /* (non-Javadoc)
