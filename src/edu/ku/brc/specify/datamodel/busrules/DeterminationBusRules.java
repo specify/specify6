@@ -26,6 +26,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -36,6 +37,7 @@ import edu.ku.brc.af.ui.db.PickListItemIFace;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.persist.AltViewIFace.CreationMode;
+import edu.ku.brc.af.ui.forms.validation.ValCheckBox;
 import edu.ku.brc.af.ui.forms.validation.ValComboBox;
 import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -65,6 +67,8 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class DeterminationBusRules extends BaseBusRules
 {
+    private static final Logger  log   = Logger.getLogger(DeterminationBusRules.class);
+    
     protected Determination  determination         = null;
 
     protected KeyListener    nameChangeKL         = null;
@@ -92,6 +96,22 @@ public class DeterminationBusRules extends BaseBusRules
         {
             determination = (Determination)formViewObj.getDataObj();
 
+            //if determination exists and is new (no key) then set current true if CO has no other dets
+            Component currentComp     = formViewObj.getControlByName("isCurrent");
+            if (determination != null && determination.getDeterminationId() == null && currentComp != null)
+            {
+                if (determination.getCollectionObject().getDeterminations().size() == 1)
+                {
+                    if (currentComp instanceof ValCheckBox)
+                    {
+                        ((ValCheckBox )currentComp).setSelected(true);
+                    }
+                    else
+                    {
+                        log.error("IsCurrent not set to true because form control is of unexpected type: " + currentComp.getClass().getName());
+                    }
+                }
+            }
             Component activeTax = formViewObj.getControlByName("activeTaxon");
             if (activeTax != null)
             {
