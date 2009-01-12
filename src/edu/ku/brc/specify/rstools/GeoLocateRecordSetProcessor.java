@@ -60,13 +60,12 @@ public class GeoLocateRecordSetProcessor extends GeoRefRecordSetProcessorBase im
         processRecordSet(recordSet, requestParams, new GeoCoordGeoLocateProvider());
     }
 
-
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.exporters.RecordSetExporterIFace#getIconName()
      */
     public String getIconName()
     {
-        return "BioGeoMancer32"; // XXX need GeoLocate Icon
+        return "GEOLocate"; // XXX need GeoLocate Icon
     }
 
     /* (non-Javadoc)

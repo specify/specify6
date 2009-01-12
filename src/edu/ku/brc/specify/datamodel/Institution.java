@@ -51,7 +51,7 @@ public class Institution extends UserGroupScope implements java.io.Serializable
      protected Integer       institutionId;
      protected String        name;
      protected String        altName;
-     protected String        abbrev;
+     protected String        code;
      protected String        uri;
      protected String        iconURI;
      protected String        ipr;
@@ -93,8 +93,8 @@ public class Institution extends UserGroupScope implements java.io.Serializable
         super.init();
         
         name              = null;
-        altName             = null;
-        abbrev            = null;
+        altName           = null;
+        code              = null;
         uri               = null;
         iconURI           = null;
         ipr               = null;
@@ -134,12 +134,12 @@ public class Institution extends UserGroupScope implements java.io.Serializable
     }
     
     /**
-     * @return the abbrev
+     * @return the code
      */
-    @Column(name = "Abbrev", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
-    public String getAbbrev()
+    @Column(name = "Code", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+    public String getCode()
     {
-        return abbrev;
+        return code;
     }
 
     /**
@@ -282,10 +282,10 @@ public class Institution extends UserGroupScope implements java.io.Serializable
     /**
      * @param abbrev the abbrev to set
      */
-    @Column(name = "Abbrev", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
-    public void setAbbrev(String abbrev)
+    @Column(name = "Code", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
+    public void setCode(String code)
     {
-        this.abbrev = abbrev;
+        this.code = code;
     }
 
     /**

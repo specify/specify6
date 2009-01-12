@@ -263,7 +263,7 @@
     <field column="Relation To Named Place" name="relationToNamedPlace" type="java.lang.String" length="120"/>
     <field column="Locality Name" name="localityName" type="java.lang.String" length="255"/>
     <field column="Base Meridian" name="baseMeridian" type="java.lang.String" length="50"/>
-    <field column="Range" name="range" type="java.lang.String" length="50"/>
+    <field column="Range" name="rangeDesc" type="java.lang.String" length="50"/>
     <field column="Range Direction" name="rangeDirection" type="java.lang.String" length="50"/>
     <field column="Township" name="township" type="java.lang.String" length="50"/>
     <field column="Township Direction" name="townshipDirection" type="java.lang.String" length="50"/>

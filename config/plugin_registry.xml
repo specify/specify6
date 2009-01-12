@@ -44,15 +44,16 @@
 	</core>
 	
 	<uiplugins>
-		<plugin name="WebLinkButton" class="edu.ku.brc.af.ui.weblink.WebLinkButton"/>
-		<plugin name="PartialDateUI" class="edu.ku.brc.specify.plugins.PartialDateUI"/>
-		<plugin name="LocalityGoogleEarth" class="edu.ku.brc.specify.plugins.LocalityGoogleEarthPlugin"/>
-		<plugin name="LocalityGeoRef" class="edu.ku.brc.specify.plugins.LocalityGeoRefPlugin"/>
-		<plugin name="FishBase" class="edu.ku.brc.specify.plugins.FishBase"/>
-		<plugin name="LatLonUI" class="edu.ku.brc.specify.plugins.latlon.LatLonUI"/>
+		<plugin name="WebLinkButton"        class="edu.ku.brc.af.ui.weblink.WebLinkButton"/>
+		<plugin name="PartialDateUI"        class="edu.ku.brc.specify.plugins.PartialDateUI"/>
+		<plugin name="LocalityGoogleEarth"  class="edu.ku.brc.specify.plugins.LocalityGoogleEarthPlugin"/>
+		<plugin name="LocalityGeoRef"       class="edu.ku.brc.specify.plugins.LocalityGeoRefPlugin"/>
+		<plugin name="FishBase"             class="edu.ku.brc.specify.plugins.FishBase"/>
+		<plugin name="LatLonUI"             class="edu.ku.brc.specify.plugins.latlon.LatLonUI"/>
 		<plugin name="TaxonLabelFormatting" class="edu.ku.brc.specify.plugins.TaxonLabelFormatting"/>
-		<plugin name="ColRelTypePlugin" class="edu.ku.brc.specify.plugins.CollectionRelPlugin"/>
-		<plugin name="PasswordStrengthUI" class="edu.ku.brc.af.ui.PasswordStrengthUI"/>
+		<plugin name="ColRelTypePlugin"     class="edu.ku.brc.specify.plugins.CollectionRelPlugin"/>
+        <plugin name="PasswordStrengthUI"   class="edu.ku.brc.af.ui.PasswordStrengthUI"/>
+        <plugin name="IllustrativeBarCodeUI" class="edu.ku.brc.af.ui.IllustrativeBarCodeUI"/>
 		
 	</uiplugins>
 	

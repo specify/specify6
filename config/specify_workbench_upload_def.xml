@@ -241,7 +241,7 @@
     <field table="Locality" name="drainage" actualtable="LocalityDetail" relationshipname="locality"/>
     <field table="Locality" name="township" actualtable="LocalityDetail" relationshipname="locality"/>
     <field table="Locality" name="townshipDirection" actualtable="LocalityDetail" relationshipname="locality"/>
-    <field table="Locality" name="range" actualtable="LocalityDetail" relationshipname="locality"/>
+    <field table="Locality" name="rangeDesc" actualtable="LocalityDetail" relationshipname="locality"/>
     <field table="Locality" name="rangeDirection" actualtable="LocalityDetail" relationshipname="locality"/>
     <field table="Locality" name="section" actualtable="LocalityDetail" relationshipname="locality"/>
     <field table="Locality" name="sectionPart" actualtable="LocalityDetail" relationshipname="locality"/>

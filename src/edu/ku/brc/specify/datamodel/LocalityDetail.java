@@ -39,7 +39,7 @@ public class LocalityDetail extends DataModelObjBase
     // Fields    
     protected Integer               localityDetailId;
     protected String                baseMeridian;
-    protected String                range;
+    protected String                rangeDesc;
     protected String                rangeDirection;
     protected String                township;
     protected String                townshipDirection;
@@ -98,7 +98,7 @@ public class LocalityDetail extends DataModelObjBase
         
         localityDetailId = null;
         baseMeridian = null;
-        range       = null;
+        rangeDesc       = null;
         rangeDirection = null;
         township    = null;
         townshipDirection = null;
@@ -188,13 +188,13 @@ public class LocalityDetail extends DataModelObjBase
     /**
      *      * The Range of a legal description
      */
-    @Column(name = "Range", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
-    public String getRange() {
-        return this.range;
+    @Column(name = "RangeDesc", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    public String getRangeDesc() {
+        return this.rangeDesc;
     }
     
-    public void setRange(String range) {
-        this.range = range;
+    public void setRangeDesc(String rangeDesc) {
+        this.rangeDesc = rangeDesc;
     }
 
     /**

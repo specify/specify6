@@ -264,7 +264,7 @@ public class Scriptlet extends JRDefaultScriptlet
      */
     public String degrees(String floatStr, boolean isLat) throws JRScriptletException
     {
-    return "Not Implemented!";//degrees(new Float(Float.parseFloat(floatStr)), isLat);
+        return "Not Implemented!";//degrees(new Float(Float.parseFloat(floatStr)), isLat);
     }
 
     /**
@@ -276,9 +276,25 @@ public class Scriptlet extends JRDefaultScriptlet
      * @throws JRScriptletException XXX
      */
     public String locality(final Object desc, 
-                           final BigDecimal lat, 
-                           final BigDecimal lon, 
-                           final Integer    originalLatLongUnit) throws JRScriptletException
+                           final Float lat, 
+                           final Float lon, 
+                           final int    originalLatLongUnit) throws JRScriptletException
+    {
+        return localityBD(desc, new BigDecimal(lat), new BigDecimal(lat), originalLatLongUnit);
+    }
+
+    /**
+     * Formats a Lat,Lon into a single string where the values are separated by a comma.
+     * @param desc a prefix of a description
+     * @param lat the latitude
+     * @param lon the longitude
+     * @return Formats a Lat,Lon into a single string where the values are separated by a comma
+     * @throws JRScriptletException XXX
+     */
+    public String localityBD(final Object desc, 
+                             final BigDecimal lat, 
+                             final BigDecimal lon, 
+                             final Integer    originalLatLongUnit) throws JRScriptletException
     {
 
         StringBuffer strBuf = new StringBuffer();

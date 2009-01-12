@@ -18,6 +18,7 @@ import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JOptionPane;
 import javax.swing.event.ChangeListener;
 
 import org.apache.commons.lang.NotImplementedException;
@@ -116,6 +117,7 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
                     }
                 } else
                 {
+                    JOptionPane.showMessageDialog(null, "The LatLonUI is missing the 'geoid' parameter", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
             }
@@ -131,10 +133,16 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
                 String locName = locality.getLocalityName();
                 if (StringUtils.isEmpty(locName))
                 {
-                    ValTextField txt = parent.getCompById(locId);
-                    if (txt != null)
+                    if (locId != null)
                     {
-                        locName = (String)txt.getValue();
+                        ValTextField txt = parent.getCompById(locId);
+                        if (txt != null)
+                        {
+                            locName = (String)txt.getValue();
+                        }
+                    } else
+                    {
+                        JOptionPane.showMessageDialog(null, "The LatLonUI is missing the 'locid' parameter", "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 }
                 GeoCoordData geoCoordData = new GeoCoordData(id,
@@ -304,7 +312,12 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
            
            BigDecimal lat1 = new BigDecimal(Double.parseDouble(gcData.getLatitude()));
            BigDecimal lon1 = new BigDecimal(Double.parseDouble(gcData.getLongitude()));
-           
+
+           if (llId == null)
+           {
+               JOptionPane.showMessageDialog(null, "The LatLonUI is missing the 'llid' parameter", "Error", JOptionPane.ERROR_MESSAGE);
+               return;
+           }
            LatLonUI latLonUI = parent.getCompById(llId);
            if (latLonUI != null)
            {

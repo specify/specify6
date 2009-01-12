@@ -176,7 +176,7 @@
         
          <view name="CollectionObjectSub"
               class="edu.ku.brc.specify.datamodel.CollectionObject"
-              busrules="edu.ku.brc.specify.datamodel.busrules.CollectionObjectBusRules"
+              usedefbusrule="false"
               resourcelabels="false">
               <desc><![CDATA[The Collection Object Subform for Accessions.]]></desc>
               <altviews>
@@ -1590,8 +1590,9 @@
       	<desc><![CDATA[DNA Sequence Form]]></desc>
         <enableRules/>
         
-            <columnDef>p,2px,p,2px,p,2px,p,p:g</columnDef>
-            <rowDef auto="true" cell="p" sep="2px"/>
+            <columnDef>120px,2px,p,2px,p,2px,p,p:g</columnDef>
+            <!--  <rowDef>p,2px,p,2px,p,2px,t:p:g,2px,p,2px,p,2px,p,2px,p,2px,p,2px,p,2px,p,2px</rowDef> -->
+            <rowDef auto="true" cell="t:p" sep="2px"/>
             
             <rows>
             	<row>
@@ -1606,16 +1607,63 @@
             		<cell type="label" labelfor="5"/>
                     <cell type="field" id="5" name="sequencer" uitype="querycbx" initialize="name=Agent"/>
             	</row>
-            	<row>
-                     <cell type="label" labelfor="4"/>
-                     <cell type="field" id="4" name="geneSequence" uitype="textarea" colspan="6"/>
-            	</row>
+                <row>
+                    <cell type="separator" label="Nucleotide Sequence" colspan="8"/>
+                </row>
+                <row>
+                    <cell type="panel" id="16" name="outerPanel" coldef="120px,2px,p" rowdef="p,2px,p,2px,p,2px,p,2px,p,2px,p,2px" colspan="3">
+                        <rows>
+			                <row>
+			                     <cell type="label" label="Residues:" initialize="align=right"/>
+			                     <cell type="field" id="residues" name="residues" uitype="text" readonly="true"/>
+			                </row>
+			                <row>
+			                     <cell type="label" label="Comp A:" initialize="align=right;fg=0,190,0"/>
+			                     <cell type="field" id="compa" name="compa" uitype="text" readonly="true"/>
+			                </row>
+			                <row>
+			                     <cell type="label" label="Comp G:" initialize="align=right"/>
+			                     <cell type="field" id="compg" name="compg" uitype="text" readonly="true"/>
+			                </row>
+			                <row>
+			                     <cell type="label" label="Comp C:" initialize="align=right;fg=0,0,190"/>
+			                     <cell type="field" id="compc" name="compc" uitype="text" readonly="true"/>
+			                </row>
+			                <row>
+			                     <cell type="label" label="Comp T:" initialize="align=right;fg=190,0,0"/>
+			                     <cell type="field" id="compt" name="compt" uitype="text" readonly="true"/>
+			                </row>
+			                <row>
+			                     <cell type="label" label="Ambiguous:" initialize="align=right"/>
+			                     <cell type="field" id="ambiguous" name="ambiguous" uitype="text" readonly="true"/>
+			                </row>
+                        </rows>
+                    </cell>
+                     <cell type="field" id="4" name="geneSequence" uitype="textarea" colspan="4" rows="8"/>
+                </row>
+                <row>
+                    <cell type="separator" label="Illustrative Barcode" colspan="8"/>
+                </row>
+                <row>
+                    <cell type="field" id="8" name="this" uitype="plugin" initialize="name=IllustrativeBarCodeUI" readonly="true" colspan="8"/>
+                </row>
                 <row>
                     <cell type="separator" label="Attachments" colspan="8"/>
                 </row>
                 <row>
                     <cell type="subview" id="6" name="attachments" viewname="ObjectAttachment" initialize="btn=true;icon=DNASequenceAttachment;addsearch=true"/>
                 </row>
+                <row>
+                    <cell type="panel" id="20" name="outerPanel2" coldef="f:p:g,0px,p,10px,p,f:p:g" rowdef="p" colspan="8">
+                        <rows>
+                            <row>
+                                <cell type="label" label=" "/>
+                                <cell type="command" id="SearchBold" name="SearchBold" label="Search Bold" ignore="true"/>
+                                <cell type="command" id="UploadBold" name="UploadBold" label="Upload to Bold" ignore="true"/>
+                            </row>
+                        </rows>
+                    </cell>
+                </row>                
             </rows>
 	  </viewdef>
         
@@ -1629,8 +1677,9 @@
         <desc><![CDATA[DNA Sequence Form]]></desc>
         <enableRules/>
         
-            <columnDef>p,2px,p,2px,p,2px,p,p:g</columnDef>
-            <rowDef auto="true" cell="p" sep="2px"/>
+            <columnDef>120px,2px,p,2px,p,2px,p,p:g</columnDef>
+            <!--  <rowDef>p,2px,p,2px,p,2px,t:p:g,2px,p,2px,p,2px,p,2px,p,2px,p,2px,p,2px,p,2px</rowDef> -->
+            <rowDef auto="true" cell="t:p" sep="2px"/>
             
             <rows>
                 <row>
@@ -1644,8 +1693,44 @@
                     <cell type="field" id="5" name="sequencer" uitype="querycbx" initialize="name=Agent"/>
                 </row>
                 <row>
-                     <cell type="label" labelfor="4"/>
-                     <cell type="field" id="4" name="geneSequence" uitype="textarea" colspan="6"/>
+                    <cell type="separator" label="Nucleotide Sequence" colspan="8"/>
+                </row>
+                <row>
+                    <cell type="panel" id="16" name="outerPanel" coldef="120px,2px,p" rowdef="p,2px,p,2px,p,2px,p,2px,p,2px,p,2px" colspan="3">
+                        <rows>
+                            <row>
+                                 <cell type="label" label="Residues:" initialize="align=right"/>
+                                 <cell type="field" id="residues" name="residues" uitype="text" readonly="true"/>
+                            </row>
+                            <row>
+                                 <cell type="label" label="Comp A:" initialize="align=right;fg=0,190,0"/>
+                                 <cell type="field" id="compa" name="compa" uitype="text" readonly="true"/>
+                            </row>
+                            <row>
+                                 <cell type="label" label="Comp G:" initialize="align=right"/>
+                                 <cell type="field" id="compg" name="compg" uitype="text" readonly="true"/>
+                            </row>
+                            <row>
+                                 <cell type="label" label="Comp C:" initialize="align=right;fg=0,0,190"/>
+                                 <cell type="field" id="compc" name="compc" uitype="text" readonly="true"/>
+                            </row>
+                            <row>
+                                 <cell type="label" label="Comp T:" initialize="align=right;fg=190,0,0"/>
+                                 <cell type="field" id="compt" name="compt" uitype="text" readonly="true"/>
+                            </row>
+                            <row>
+                                 <cell type="label" label="Ambiguous:" initialize="align=right"/>
+                                 <cell type="field" id="ambiguous" name="ambiguous" uitype="text" readonly="true"/>
+                            </row>
+                        </rows>
+                    </cell>
+                     <cell type="field" id="4" name="geneSequence" uitype="textarea" colspan="4" rows="8"/>
+                </row>
+                <row>
+                    <cell type="separator" label="Illustrative Barcode" colspan="8"/>
+                </row>
+                <row>
+                    <cell type="field" id="8" name="this" uitype="plugin" initialize="name=IllustrativeBarCodeUI" readonly="true" colspan="8"/>
                 </row>
                 <row>
                     <cell type="separator" label="Attachments" colspan="8"/>
@@ -2013,8 +2098,8 @@
                         <rows>
                             <row>
                                 <cell type="label" label=" "/>
-                                <cell type="command" id="14" name="ReturnLoan" label="Return Loan" commandtype="Interactions" action="ReturnLoan" ignore="true"/>
-                                <cell type="field" uitype="checkbox" id="13" name="generateInvoice" label="Generate Invoice on Save" ignore="true" default="true"/>
+                                <cell type="command" id="14" name="ReturnLoan" label="Return Loan" commandtype="Interactions" action="ReturnLoan" ignore="true" initialize="vis=false"/>
+                                <cell type="field" uitype="checkbox" id="13" name="generateInvoice" label="Generate Invoice on Save" ignore="true" default="true" initialize="vis=false"/>
                             </row>
                         </rows>
                     </cell>

@@ -1021,6 +1021,7 @@ public class QueryTask extends BaseTask
             }
         } catch (Exception ex)
         {
+            ex.printStackTrace();
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryTask.class, ex);
             throw new RuntimeException(ex);

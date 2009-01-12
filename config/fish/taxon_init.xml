@@ -7,7 +7,7 @@
 		<level name="Phylum" enforced="false" infullname="false" rank="30"/>
 		<level name="Class" enforced="false" infullname="false" rank="60"/>
 		<level name="Order" enforced="false" infullname="false" rank="100"/>
-		<level name="Family" enforced="true" infullname="false" rank="140"/>
+        <level name="Family" enforced="true" infullname="false" rank="140"/>
 		<level name="Genus"  enforced="true" infullname="true" rank="180"/>
 		<level name="Species" enforced="false" infullname="true" rank="220"/>
     </treedef>
@@ -28,6 +28,13 @@
 							</node>
 						</node>
 					</node>
+					<node name="Acipenseriformes" rank="100">
+                        <node name="Acipenseridae" rank="140">
+                            <node name="Acipenser" common="" rank="180">
+                                <node name="brevirostrum" common="" rank="220"/>
+                            </node>
+                        </node>
+                    </node>
 				</node>
 			</node>
 		</node>

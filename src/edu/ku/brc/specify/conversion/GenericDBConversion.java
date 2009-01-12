@@ -2485,7 +2485,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
             Hashtable<String, String> values = new Hashtable<String, String>();
 
-            log.info("Using FieldSetSubTypeID " + useField);
+            //log.info("Using FieldSetSubTypeID " + useField);
             rs.first();
             int count = 0;
             do
@@ -2496,7 +2496,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     String lowerStr = val.toLowerCase();
                     if (values.get(lowerStr) == null)
                     {
-                        log.info("[" + val + "]");
+                        //log.info("[" + val + "]");
                         pl.addItem(val, val);
                         values.put(lowerStr, val);
                         count++;
@@ -5583,9 +5583,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 usedFieldHash.clear();
                 valuesSQL.setLength(0);
 
-                boolean hasData = false;
+                boolean           hasData  = false;
                 ResultSetMetaData metaData = rs.getMetaData();
-                int cols = metaData.getColumnCount();
+                int               cols     = metaData.getColumnCount();
                 for (int i = 1; i <= cols; i++)
                 {
                     String colName = metaData.getColumnName(i);
@@ -5603,7 +5603,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     if (rows == 0)
                     {
                         if (colSQL.length() > 0)
+                        {
                             colSQL.append(",");
+                        }
                         colSQL.append(colName);
                     }
 
@@ -5702,14 +5704,15 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 "Drainage",   // TODO make sure this is right, meg added due to conversion non-mapping errors????
                 "Island",     // TODO make sure this is right, meg added due to conversion non-mapping errors????
                 "IslandGroup",// TODO make sure this is right, meg added due to conversion non-mapping errors????
-                "WaterBody",  // TODO make sure this is right, meg added due to conversion non-mappingerrors????
+                "WaterBody",  // TODO make sure this is right, meg added due to conversion non-mapping errors????
                 "Version", 
                 "CreatedByAgentID", 
                 "ModifiedByAgentID", 
                 "CollectionMemberID",
                 "ShortName", 
                 "DisciplineID",
-                "GUID"};
+                "GUID",
+                "SrcLatLongUnit"};
         BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(fieldsToIgnore);
 
         errorsToShow &= ~BasicSQLUtils.SHOW_NULL_FK; // Turn off this error for LocalityID

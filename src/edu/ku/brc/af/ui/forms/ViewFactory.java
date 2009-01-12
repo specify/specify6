@@ -1052,6 +1052,11 @@ public class ViewFactory
                     lStr = "<html>" + StringUtils.replace(lStr, LF, "<br>") + "</html>";
                 }
                 JLabel lbl = createLabel(lStr, align);
+                String colorStr = cellLabel.getProperty("fg");
+                if (StringUtils.isNotEmpty(colorStr))
+                {
+                    lbl.setForeground(UIHelper.parseRGB(colorStr));
+                }
                 labelsForHash.put(cellLabel.getLabelFor(), lbl);
                 bi.compToAdd =  lbl;
                 viewBldObj.addLabel(cellLabel, lbl);
@@ -1708,9 +1713,13 @@ public class ViewFactory
 
             bi.doRegControl     = false;
             bi.doAddToValidator = false;
-
         }
-
+        
+        String visProp = cell.getProperty("vis");
+        if (StringUtils.isNotEmpty(visProp) && visProp.equalsIgnoreCase("false") && bi.compToAdd != null)
+        {
+            bi.compToAdd.setVisible(false);
+        }
     }
     
     /**

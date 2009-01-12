@@ -52,7 +52,7 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
     
     // Fields
     protected String                     collectionName;
-    protected String                     collectionPrefix; // Collection Acronym
+    protected String                     code; // Collection Acronym
     protected Boolean                    isEmbeddedCollectingEvent;
     protected String                     regNumber;
     protected String                     description;
@@ -110,7 +110,7 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
     {
         super.init();
         collectionName         = null;
-        collectionPrefix       = null;
+        code                   = null;
         isEmbeddedCollectingEvent = true;
         regNumber              = null;
         description            = null;
@@ -204,13 +204,13 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
     /**
      *      * Text Displayed with Catalog numbers. E.g. 'KU'
      */
-    @Column(name = "CollectionPrefix", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
-    public String getCollectionPrefix() {
-        return this.collectionPrefix;
+    @Column(name = "Code", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    public String getCode() {
+        return this.code;
     }
 
-    public void setCollectionPrefix(String collectionPrefix) {
-        this.collectionPrefix = collectionPrefix;
+    public void setCode(String code) {
+        this.code = code;
     }
 
     /**

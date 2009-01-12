@@ -1385,7 +1385,7 @@
         <isHidden>false</isHidden>
         <version>0</version>
       </item>
-      <item name="range">
+      <item name="rangeDesc">
         <names>
           <str language="en">
             <text>Range</text>

@@ -401,7 +401,7 @@ public class DataBuilder
     {
         Collection collection = new Collection();
         collection.initialize();
-        collection.setCollectionPrefix(prefix);
+        collection.setCode(prefix);
         collection.setModifiedByAgent(null);
         collection.setCollectionName(name);
         collection.addReference(catalogNumberingScheme, "numberingSchemes");
@@ -1494,7 +1494,7 @@ public class DataBuilder
         collection.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
         //collection.setIsTissueSeries(isTissueSeries);
         collection.setCollectionName(seriesName);
-        collection.setCollectionPrefix(collectionPrefix);
+        collection.setCode(collectionPrefix);
         //collection.setTissue(tissue);
         persist(collection);
         return collection;
@@ -2004,7 +2004,7 @@ public class DataBuilder
         localityDetail.initialize();
         
         localityDetail.setBaseMeridian(baseMeridian);
-        localityDetail.setRange(range);
+        localityDetail.setRangeDesc(range);
         localityDetail.setRangeDirection(rangeDirection);
         localityDetail.setTownship(township);
         localityDetail.setTownshipDirection(townshipDirection);

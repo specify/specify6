@@ -1372,15 +1372,11 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
     {
         try
         {
-            
-            System.err.println("Checking ");
             UpdateDescriptor updateDesc= UpdateChecker.getUpdateDescriptor(UIRegistry.getResourceString("UPDATE_PATH"),
                                                                            ApplicationDisplayMode.UNATTENDED);
 
             UpdateDescriptorEntry entry = updateDesc.getPossibleUpdateEntry();
 
-            System.err.println("entry: "+entry);
-            
             if (entry != null)
             {
                 Object[] options = { getResourceString("Specify.INSTALLUPDATE"),  //$NON-NLS-1$

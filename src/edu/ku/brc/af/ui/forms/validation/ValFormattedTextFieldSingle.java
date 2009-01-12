@@ -82,8 +82,8 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
 {
     private static final Logger log  = Logger.getLogger(ValFormattedTextFieldSingle.class);
 
-    protected static ColorWrapper     valtextcolor       = null;
-    protected static ColorWrapper     requiredfieldcolor = null;  
+    protected static ColorWrapper     valTextColor       = null;
+    protected static ColorWrapper     requiredFieldColor = null;  
 
     protected UIValidatable.ErrorType     valState       = UIValidatable.ErrorType.Valid;
     protected boolean                     isRequired     = false;
@@ -347,13 +347,21 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
     public void initColors()
     {
         bgColor = getBackground();
-        if (valtextcolor == null || requiredfieldcolor == null)
+        if (valTextColor == null || requiredFieldColor == null)
         {
-            valtextcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "valtextcolor");
-            requiredfieldcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");
+            valTextColor       = AppPrefsCache.getColorWrapper("ui", "formatting", "valtextcolor");
+            requiredFieldColor = AppPrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");
         }
     }
 
+    /* (non-Javadoc)
+     * @see javax.swing.JComponent#setBackground(java.awt.Color)
+     */
+    public void setBackground(final Color bg)
+    {
+        super.setBackground(bg);
+        bgColor = bg;
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.validation.UIValidatable#isNotEmpty()
@@ -400,7 +408,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
             Graphics2D g2d = (Graphics2D)g;
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             Dimension dim = getSize();
-            g.setColor(valtextcolor.getColor());
+            g.setColor(valTextColor.getColor());
             g.drawRect(1, 1, dim.width-2, dim.height-2);
         }
     }
@@ -421,7 +429,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
             super.setEnabled(enabled);
         }
 
-        setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
+        setBackground(isRequired && isEnabled() ? requiredFieldColor.getColor() : bgColor);
         
         // rods - 09/05/08 - (Bug 5858) need to hide the default value when disabled
         if (enabled)
@@ -589,7 +597,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
     {
         if (!isViewOnly)
         {
-            setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
+            setBackground(isRequired && isEnabled() ? requiredFieldColor.getColor() : bgColor);
             this.isRequired = isRequired;
         }
     }

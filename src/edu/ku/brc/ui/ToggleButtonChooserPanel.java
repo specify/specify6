@@ -195,7 +195,8 @@ public class ToggleButtonChooserPanel<T> extends JPanel implements ActionListene
         {
             rowDef.append(",2px,p");
         }
-
+        rowDef.append(",10px");
+        
         int y    = 1;
         CellConstraints cc         = new CellConstraints();
         PanelBuilder    panelBlder = new PanelBuilder(new FormLayout("f:p:g", rowDef.toString()), this);

@@ -923,6 +923,11 @@ public class ViewLoader
                                                                 getLabel(cellElement),
                                                                 getAttr(cellElement, "commandtype", ""),
                                                                 getAttr(cellElement, "action", "")));
+                            String initialize = getAttr(cellElement, "initialize", null);
+                            if (StringUtils.isNotEmpty(initialize))
+                            {
+                                cell.setProperties(UIHelper.parseProperties(initialize));
+                            }
                             break;
                         }
                         case panel:

@@ -54,11 +54,14 @@ import edu.ku.brc.af.ui.forms.validation.FormValidator;
 import edu.ku.brc.af.ui.forms.validation.UIValidatable;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.Pair;
 
 /**
  * @author rods
@@ -414,6 +417,8 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
                 }
                 multiView.setParentDataObj(parentObj);
                 multiView.setData(dataObj);
+                CommandDispatcher.dispatch(new CommandAction("Data_Entry", "SHOW_SUBVIEW", new Pair<Object, Object>(parentObj, dataObj)));
+
                 
             } catch (Exception ex)
             {
@@ -496,6 +501,9 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
         {
             
         }
+        
+        CommandDispatcher.dispatch(new CommandAction("Data_Entry", "CLOSE_SUBVIEW", new Pair<Object, Object>(parentObj, dataObj)));
+        
         frame.dispose();
         frame = null;
     }

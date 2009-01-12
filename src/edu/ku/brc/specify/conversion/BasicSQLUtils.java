@@ -209,11 +209,11 @@ public class BasicSQLUtils
             {
                 ignoreMapLocal.clear();
             }
-            log.info("Ignore these Field Names when mapping:");
+            //log.info("Ignore these Field Names when mapping:");
             for (String name : fieldNames)
             {
                 ignoreMapLocal.put(name, "X");
-                log.info(name);
+                //log.info(name);
             }
         }
         return ignoreMapLocal;
@@ -1197,7 +1197,7 @@ public class BasicSQLUtils
         {
             frame.setDesc("Copying Table "+fromTableName);
         }
-        log.debug("Copying Table "+fromTableName);
+        log.info("Copying Table "+fromTableName);
 
         List<String> fromFieldNameList = new ArrayList<String>();
         getFieldNamesFromSchema(fromConn, fromTableName, fromFieldNameList, sourceServerType);

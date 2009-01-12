@@ -56,6 +56,7 @@ public class DNASequence extends CollectionMember
     protected String   processIdentifier;
     protected Calendar seqDate;
     protected Calendar submissionDate;
+    protected String   barCodeIdent;
     
     protected Agent    sequencer;
     protected String   ncbiNumber;
@@ -91,6 +92,7 @@ public class DNASequence extends CollectionMember
         submissionDate    = null;
         sequencer         = null;
         ncbiNumber        = null;
+        barCodeIdent      = null;
         collectionObject  = null;
         attachments       = new TreeSet<DNASequenceAttachment>();
     }
@@ -191,6 +193,14 @@ public class DNASequence extends CollectionMember
     public void setNcbiNumber(String ncbiNumber)
     {
         this.ncbiNumber = ncbiNumber;
+    }
+
+    /**
+     * @param barCodeIdent the barCodeIdent to set
+     */
+    public void setBarCodeIdent(String barCodeIdent)
+    {
+        this.barCodeIdent = barCodeIdent;
     }
 
     /**
@@ -315,6 +325,16 @@ public class DNASequence extends CollectionMember
     {
         return ncbiNumber;
     }
+
+    /**
+     * @return the barCodeIdent
+     */
+    @Column(name = "BarCodeIdent", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
+    public String getBarCodeIdent()
+    {
+        return barCodeIdent;
+    }
+
 
     /**
      * @return the dnaSequence
