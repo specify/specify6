@@ -373,8 +373,8 @@ public class RegProcessor
             }
             catch (Exception e)
             {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RegProcessor.class, e);
+                //edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RegProcessor.class, e);
                 e.printStackTrace();
                 throw new ConnectionException(e);
             }

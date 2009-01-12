@@ -43,7 +43,7 @@ import edu.ku.brc.ui.UIRegistry;
  * 
  * @author rod
  *
- * @code_status Alpha
+ * @code_status Beta
  *
  * Oct 17, 2008
  *
@@ -54,7 +54,10 @@ public class RegisterSpecify
 
     private enum RegisterType { Institution, Division, Discipline, Collection }
     
-    private static boolean isFirstReg = false;
+    private static RegisterSpecify instance   = new RegisterSpecify();
+    
+    private boolean hasConnection = false;
+    private boolean isFirstReg    = false;
     
     
     /**
@@ -66,10 +69,18 @@ public class RegisterSpecify
     }
     
     /**
+     * @return the instance
+     */
+    public static RegisterSpecify getInstance()
+    {
+        return instance;
+    }
+
+    /**
      * @param title
      * @return
      */
-    private static boolean askToReg(final String typeTitle, final String typeName)
+    private boolean askToReg(final String typeTitle, final String typeName)
     {
         Object[] options = { getResourceString("YES"),  //$NON-NLS-1$
                              getResourceString("NO")  //$NON-NLS-1$
@@ -134,10 +145,18 @@ public class RegisterSpecify
     }
     
     /**
+     * @return the hasConnection
+     */
+    public static boolean hasConnection()
+    {
+        return getInstance().hasConnection;
+    }
+
+    /**
      * 
      */
     @SuppressWarnings({ "unchecked" })
-    private static <T> T update(final Class<?> cls, final Object dataObjArg)
+    private <T> T update(final Class<?> cls, final Object dataObjArg)
     {
         Object dataObj = dataObjArg;
         DataModelObjBase.save(dataObj);
@@ -159,7 +178,7 @@ public class RegisterSpecify
     {
         Institution inst = AppContextMgr.getInstance().getClassObject(Institution.class);
         inst.setHasBeenAsked(true);
-        inst = update(Institution.class, inst);
+        inst = getInstance().update(Institution.class, inst);
         return inst;
     }
     
@@ -170,7 +189,7 @@ public class RegisterSpecify
     {
         Institution inst = AppContextMgr.getInstance().getClassObject(Institution.class);
         inst.setIsAnonymous(isAnonymous);
-        inst = update(Institution.class, inst);
+        inst = getInstance().update(Institution.class, inst);
         return inst;
     }
     
@@ -184,18 +203,18 @@ public class RegisterSpecify
         
         Institution inst = acMgr.getClassObject(Institution.class);
         inst.setRegNumber(regNumber);
-        inst = update(Institution.class, inst);
+        inst = getInstance().update(Institution.class, inst);
         
-        isFirstReg = true;
+        getInstance().isFirstReg = true;
         
-        doStartRegister(RegisterType.Division, isAnonymous, false);
+        getInstance().doStartRegister(RegisterType.Division, isAnonymous, false);
     }
     
     /**
      * @param regNumber
      * @param isAnonymous
      */
-    private static void setDivisionHasRegistered(final String regNumber, final boolean isAnonymous)
+    private void setDivisionHasRegistered(final String regNumber, final boolean isAnonymous)
     {
         AppContextMgr acMgr = AppContextMgr.getInstance();
                 
@@ -210,7 +229,7 @@ public class RegisterSpecify
      * @param regNumber
      * @param isAnonymous
      */
-    private static void setDisciplineHasRegistered(final String regNumber, final boolean isAnonymous)
+    private void setDisciplineHasRegistered(final String regNumber, final boolean isAnonymous)
     {
         AppContextMgr acMgr = AppContextMgr.getInstance();
                 
@@ -225,7 +244,7 @@ public class RegisterSpecify
      * @param regNumber
      * @param isAnonymous
      */
-    private static void setCollectionHasRegistered(final String regNumber, final boolean isAnonymous)
+    private void setCollectionHasRegistered(final String regNumber, final boolean isAnonymous)
     {
         Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
         collection.setRegNumber(regNumber);
@@ -242,9 +261,9 @@ public class RegisterSpecify
      * @param isAnonymous
      * @param isForISANumber
      */
-    protected static void doStartRegister(final RegisterType regType, 
-                                          final boolean      isAnonymous,
-                                          final boolean      isForISANumber)
+    private void doStartRegister(final RegisterType regType, 
+                                 final boolean      isAnonymous,
+                                 final boolean      isForISANumber)
     {
         // Create a SwingWorker to connect to the server in the background, then show results on the Swing thread
         SwingWorker workerThread = new SwingWorker()
@@ -257,7 +276,12 @@ public class RegisterSpecify
                 {
                     return doRegisterInternal(regType, isAnonymous, isForISANumber);
                 }
-                catch (Exception e)
+                catch (ConnectionException e)
+                {
+                    // do nothing
+                    return null;
+                    
+                } catch (Exception e)
                 {
                     edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                     edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RegisterSpecify.class, e);
@@ -309,7 +333,7 @@ public class RegisterSpecify
                             return;
                         }
                     }
-                } else if (isForISANumber)
+                } else if (isForISANumber && RegisterSpecify.this.hasConnection)
                 {
                     UIRegistry.showLocalizedError("SpReg.ISA_ERROR");
                 }
@@ -324,9 +348,9 @@ public class RegisterSpecify
      * @return
      * @throws Exception if an IO error occurred or the response couldn't be parsed
      */
-    protected static String doRegisterInternal(final RegisterType regType, 
-                                               final boolean isAnonymous,
-                                               final boolean isForISANumber) throws Exception
+    private String doRegisterInternal(final RegisterType regType, 
+                                      final boolean isAnonymous,
+                                      final boolean isForISANumber) throws Exception
     {
         HttpClient httpClient = new HttpClient();
         httpClient.getParams().setParameter("http.useragent", RegisterSpecify.class.getName()); //$NON-NLS-1$
@@ -347,8 +371,9 @@ public class RegisterSpecify
         }
         catch (Exception e)
         {
-            UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RegisterSpecify.class, e);
+            hasConnection = false;
+            //UsageTracker.incrHandledUsageCount();
+            //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RegisterSpecify.class, e);
             e.printStackTrace();
             throw new ConnectionException(e);
         }
@@ -389,7 +414,7 @@ public class RegisterSpecify
      * @param value
      * @return
      */
-    private static String fixParam(final String value)
+    private String fixParam(final String value)
     {
         return value == null ? "" : value;
     }
@@ -400,7 +425,7 @@ public class RegisterSpecify
      * @param sendUsageStats if true, the POST parameters include usage stats
      * @return an array of POST parameters
      */
-    protected static NameValuePair[] createPostParameters(final RegisterType regType, 
+    private NameValuePair[] createPostParameters(final RegisterType regType, 
                                                           final boolean isAnonymous,
                                                           final boolean isForISANumber)
     {
@@ -493,11 +518,18 @@ public class RegisterSpecify
         return paramArray;
     }
 
-
     /**
      * 
      */
     public static void register(final boolean forceRegistration)
+    {
+        getInstance().registerInternal(forceRegistration);
+    }
+
+    /**
+     * 
+     */
+    private void registerInternal(final boolean forceRegistration)
     {
         AppPreferences localPrefs = AppPreferences.getLocalPrefs();
         
@@ -574,7 +606,7 @@ public class RegisterSpecify
     /**
      * @param isAnonymous
      */
-    protected static void showRegisteredNumbers(final boolean isAnonymous)
+    private void showRegisteredNumbers(final boolean isAnonymous)
     {
         CellConstraints cc = new CellConstraints();
         PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g", "10px,p,10px"));
@@ -661,13 +693,16 @@ public class RegisterSpecify
                 
                 collection.setIsaNumber(isaNumber);
                 
-                doStartRegister(RegisterType.Collection, false, true);
+                getInstance().doStartRegister(RegisterType.Collection, false, true);
                 
                 AppPreferences.getLocalPrefs().putBoolean(EXTRA_CHECK, true);
             }
         }
     }
     
+    /**
+     *
+     */
     public static class ConnectionException extends IOException
     {
         public ConnectionException(@SuppressWarnings("unused") Throwable e)

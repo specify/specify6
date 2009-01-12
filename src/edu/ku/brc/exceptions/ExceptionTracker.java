@@ -105,8 +105,9 @@ public class ExceptionTracker
         }
         catch (Exception e)
         {
-            UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ExceptionTracker.class, e);
+            e.printStackTrace();
+            //UsageTracker.incrHandledUsageCount();
+            //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ExceptionTracker.class, e);
             throw new ConnectionException(e);
         }
     }

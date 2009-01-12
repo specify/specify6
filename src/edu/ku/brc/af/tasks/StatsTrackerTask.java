@@ -277,8 +277,9 @@ public class StatsTrackerTask extends BaseTask
         }
         catch (Exception e)
         {
-            UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(StatsTrackerTask.class, e);
+            e.printStackTrace();
+            //UsageTracker.incrHandledUsageCount();
+            //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(StatsTrackerTask.class, e);
             throw new ConnectionException(e);
         }
         
