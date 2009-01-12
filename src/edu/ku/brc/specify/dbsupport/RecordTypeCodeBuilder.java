@@ -158,8 +158,6 @@ public class RecordTypeCodeBuilder
         }
         catch (NoSuchMethodException ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RecordTypeCodeBuilder.class, ex);
             //ignore it and move on.
         }
         return false;
