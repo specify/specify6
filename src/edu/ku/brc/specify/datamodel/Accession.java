@@ -215,7 +215,7 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
     /**
      * A user-visible identifier of the Accession. Typically an integer, but may include alphanumeric characters as prefix, suffix, and separators
      */
-    @Column(name = "AccessionNumber", unique = true, nullable = false, insertable = true, updatable = true, length = 60)
+    @Column(name = "AccessionNumber", unique = false, nullable = false, insertable = true, updatable = true, length = 60)
     public String getAccessionNumber() {
         return this.accessionNumber;
     }
