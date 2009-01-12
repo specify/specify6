@@ -30,6 +30,8 @@ import org.apache.commons.lang.StringUtils;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.core.UsageTracker;
+import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.ui.CommandAction;
@@ -158,6 +160,8 @@ public class StatsTrackerTask extends BaseTask
                     
                     if (doExit)
                     {
+                        DataProviderFactory.getInstance().shutdown();
+                        DBConnection.getInstance().close();
                         System.exit(0);
                     }
                 }

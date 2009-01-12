@@ -1722,7 +1722,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             statsTrackerTask.sendStats(false, false); // false means don't do it silently
             return;
         }
-        if (false)
+        if (true)
         {
             ExceptionTracker.getInstance().capture(Specify.class, new Exception("Hello"));
         }
@@ -1933,11 +1933,14 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                         statsTrackerTask.sendStats(true, false); // false means don't do it silently
                         return false;
                     }
-                    
+                    DataProviderFactory.getInstance().shutdown();
+                    DBConnection.getInstance().close();
                 } else
                 {
+                    DBConnection.getInstance().close();
                     System.exit(0);
                 }
+                
             }
         }
         return okToShutdown;

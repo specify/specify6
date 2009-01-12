@@ -145,21 +145,23 @@ public class DBConnection
      */
     public void close()
     {
-        if (dbCloseConnectionStr != null)
+        try
         {
-            try
+            if (dbCloseConnectionStr != null)
             {
                 Connection con = DriverManager.getConnection(dbCloseConnectionStr, dbUsername, dbPassword);
                 if (con != null)
                 {
                     con.close();
                 }
-            } catch (Exception ex)
+            } else if (connection != null)
             {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DBConnection.class, ex);
-                log.error(ex);
+                connection.close();
+                connection = null;
             }
+        } catch (Exception ex)
+        {
+            log.error(ex);
         }
     }
     
@@ -310,6 +312,15 @@ public class DBConnection
         }
         
         return connection;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#finalize()
+     */
+    public void finalize()
+    {
+        DataProviderFactory.getInstance().shutdown();
+        close();
     }
     
     /**
