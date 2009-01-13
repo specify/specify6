@@ -6,7 +6,6 @@
         <view name="Accession"
               class="edu.ku.brc.specify.datamodel.Accession"
               busrules="edu.ku.brc.specify.datamodel.busrules.AccessionBusRules"
-              isinternal="false"
               resourcelabels="false">
             <desc><![CDATA[The Accession form.]]></desc>
             <altviews>
@@ -461,7 +460,6 @@
         <view name="Permit"
             class="edu.ku.brc.specify.datamodel.Permit"
             busrules="edu.ku.brc.specify.datamodel.busrules.PermitBusRules"
-            isinternal="false"
             resourcelabels="false">
             <desc><![CDATA[Permit subform within the Accession form.]]></desc>
             <altviews  defaultmode="view">

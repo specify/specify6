@@ -10,7 +10,9 @@
 	    <view sidebar="true"  name="Geography"          view="Geography"          iconname="Geography"          tooltip=""/> 
 	    <view sidebar="true"  name="GeologicTimePeriod" view="GeologicTimePeriod" iconname="GeologicTimePeriod" tooltip=""/> 
 	    <view sidebar="false" name="Loan"               view="Loan"               iconname="Loan"               tooltip=""/>    
-	    <view sidebar="false" name="Gift"               view="Gift"               iconname="Gift"               tooltip=""/> 
+		<view sidebar="false" name="Accession"          view="Accession"          iconname="Accession"          tooltip=""/>    
+		<view sidebar="false" name="Permit"             view="Permit"             iconname="Permit"             tooltip=""/>    
+		<view sidebar="false" name="Gift"               view="Gift"               iconname="Gift"               tooltip=""/> 
 	    <view sidebar="false" name="Borrow"             view="Borrow"             iconname="Borrow"             tooltip=""/>    
 	    <view sidebar="false" name="ExchangeIn"         view="ExchangeIn"         iconname="ExchangeIn"         tooltip=""/> 
 	    <view sidebar="false" name="ExchangeOut"        view="ExchangeOut"        iconname="ExchangeOut"        tooltip=""/>    
