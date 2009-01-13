@@ -2682,7 +2682,7 @@
                     <cell type="field" id="3" name="count" uitype="text" isrequired="true"/>
 
                     <cell type="label" labelfor="4"/>
-                    <cell type="field" id="4" name="storageLocation" uitype="querycbx" initialize="name=Storage" cols="20"/>
+                    <cell type="field" id="4" name="storage" uitype="querycbx" initialize="name=Storage" cols="20"/>
                 </row>
                 <row>
                     <cell type="subview" id="attachments" viewname="ObjectAttachment" name="preparationAttachments" colspan="12" initialize="btn=true;icon=PreparationAttachment"/>
