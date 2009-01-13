@@ -20,9 +20,9 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 
 /**
- * Simple PlainDocument that enables the shutting off of notifications on document changes
+ * Simple PlainDocument that enables the shutting off of notifications on document changes.
  *
- * @code_status Beta
+ * @code_status Complete
  * 
  * @author rods
  *
@@ -33,28 +33,51 @@ public class ValPlainTextDocument extends PlainDocument
     protected int     limit        = -1;
 
     /**
-     * Creates a simle PlainDocument
+     * Constructor.
      */
     public ValPlainTextDocument()
     {
         super();
     }
     
+    /**
+     * Constructor.
+     * @param limit the number of characters the document can hold.
+     */
+    public ValPlainTextDocument(final int limit)
+    {
+        super();
+        this.limit = limit;
+    }
+    
+    /**
+     * @param limit the number of characters the document can hold.
+     */
     public void setLimit(int limit)
     {
         this.limit = limit;
     }
 
+    /**
+     * @return whether document notifications are being blocked.
+     */
     public boolean isIgnoreNotify()
     {
         return ignoreNotify;
     }
 
+    /**
+     * Used to block notifications when the document changes.
+     * @param ignoreNotify true no notifications take place.
+     */
     public void setIgnoreNotify(boolean ignoreNotify)
     {
         this.ignoreNotify = ignoreNotify;
     }
 
+    /* (non-Javadoc)
+     * @see javax.swing.text.AbstractDocument#fireChangedUpdate(javax.swing.event.DocumentEvent)
+     */
     @Override
     protected void fireChangedUpdate(DocumentEvent e)
     {
@@ -64,6 +87,9 @@ public class ValPlainTextDocument extends PlainDocument
         }
     }
 
+    /* (non-Javadoc)
+     * @see javax.swing.text.AbstractDocument#fireInsertUpdate(javax.swing.event.DocumentEvent)
+     */
     @Override
     protected void fireInsertUpdate(DocumentEvent e)
     {
@@ -73,6 +99,9 @@ public class ValPlainTextDocument extends PlainDocument
         }
     }
 
+    /* (non-Javadoc)
+     * @see javax.swing.text.AbstractDocument#fireRemoveUpdate(javax.swing.event.DocumentEvent)
+     */
     @Override
     protected void fireRemoveUpdate(DocumentEvent e)
     {
@@ -97,5 +126,4 @@ public class ValPlainTextDocument extends PlainDocument
             super.insertString(offset, strArg, attr);
         }
     }
-    
 }

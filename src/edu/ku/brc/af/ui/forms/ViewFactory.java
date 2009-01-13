@@ -95,6 +95,7 @@ import edu.ku.brc.af.ui.forms.validation.ValFormattedTextField;
 import edu.ku.brc.af.ui.forms.validation.ValFormattedTextFieldSingle;
 import edu.ku.brc.af.ui.forms.validation.ValListBox;
 import edu.ku.brc.af.ui.forms.validation.ValPasswordField;
+import edu.ku.brc.af.ui.forms.validation.ValPlainTextDocument;
 import edu.ku.brc.af.ui.forms.validation.ValSpinner;
 import edu.ku.brc.af.ui.forms.validation.ValTextArea;
 import edu.ku.brc.af.ui.forms.validation.ValTextField;
@@ -439,11 +440,17 @@ public class ViewFactory
      * @return ValTextArea
      */
     public static JTextArea createTextArea(final FormValidator validator,
-                                           final FormCellField cellField)
+                                           final FormCellField cellField,
+                                           final DBFieldInfo   fieldInfo)
     {
         ValTextArea textArea = new ValTextArea("", cellField.getTxtRows(), cellField.getTxtCols());
         if (validator != null)
         {
+            if (fieldInfo != null && fieldInfo.getLength() > 0)
+            {
+                textArea.setDocument(new ValPlainTextDocument(fieldInfo.getLength()));
+            }
+            
             UIValidator.Type type = parseValidationType(cellField.getValidationType());
             DataChangeNotifier dcn = validator.hookupComponent(textArea, cellField.getIdent(), type, null, true);
             if (type == UIValidator.Type.Changed)
@@ -1329,7 +1336,7 @@ public class ViewFactory
                 
                 case textarea:
                 {
-                    JTextArea ta = createTextArea(validator, cellField);
+                    JTextArea ta = createTextArea(validator, cellField, fieldInfo);
                     JScrollPane scrollPane = new JScrollPane(ta);
                     scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
                     scrollPane.setVerticalScrollBarPolicy(UIHelper.isMacOS() ? ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS : ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
