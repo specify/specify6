@@ -41,6 +41,7 @@ import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -810,6 +811,10 @@ public class FormViewObj implements Viewable,
         {
             FVOFieldInfo fieldInfo = getFieldInfoForId(id);
             String       fieldName = fieldInfo.getFormCell().getName();
+            DBFieldInfo  fi        = ti != null ? ti.getFieldByName(fieldName) : null;
+            
+            fieldInfo.setFieldInfo(fi);
+                    
             //log.debug(fieldName);
 
             // Start by assuming it is OK to be added
@@ -821,8 +826,23 @@ public class FormViewObj implements Viewable,
                 if (fcf.isReadOnly())
                 {
                     isOK = false; 
+                } else 
+                {
+                    DBInfoBase infoBase = fieldInfo.getFieldInfo();
+                    if (infoBase instanceof DBFieldInfo)
+                    {
+                        if (fi.isUnique())
+                        {
+                            isOK = false;
+                            
+                        } else if (fi.getFormatter() != null && fi.getFormatter().isIncrementer())
+                        {
+                            isOK = false;
+                        }
+                    }
                 }
             }
+            
             // At this point we have weeded out any "fields" and we need to get a label for the field
             // And weed out any SubViews.
             if (isOK)
@@ -843,7 +863,6 @@ public class FormViewObj implements Viewable,
                 DBInfoBase infoBase = null;
                 if (ti != null)
                 {
-                    DBFieldInfo fi = ti.getFieldByName(fieldName);
                     if (fi != null)
                     {
                         infoBase = fi;
@@ -908,7 +927,13 @@ public class FormViewObj implements Viewable,
             }
         }
         
-        Collections.sort(itemLabels);
+        Collections.sort(itemLabels, new Comparator<FVOFieldInfo>() {
+            @Override
+            public int compare(FVOFieldInfo o1, FVOFieldInfo o2)
+            {
+                return o1.getLabel().compareTo(o2.getLabel());
+            }
+        });
         
         ToggleButtonChooserDlg<FVOFieldInfo> dlg = new ToggleButtonChooserDlg<FVOFieldInfo>((Frame)UIRegistry.getTopWindow(),
                 UIRegistry.getResourceString("CONFIG_CARRY_FORWARD_TITLE"), 
