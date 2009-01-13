@@ -16,6 +16,8 @@ import javax.swing.tree.TreePath;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.auth.specify.principal.UserPrincipal;
+
 import edu.ku.brc.af.auth.specify.principal.AdminPrincipal;
 import edu.ku.brc.af.auth.specify.principal.GroupPrincipal;
 import edu.ku.brc.af.core.AppContextMgr;
@@ -202,6 +204,16 @@ public class NavigationTreeMgr
             // break the association between the user and all its agents, 
             // so the user can be later deleted
             user.getAgents().clear();
+            // delete related user principal (but leave other principals (admin & regular groups) intact
+            for (SpPrincipal principal : user.getSpPrincipals())
+            {
+                if (UserPrincipal.class.getCanonicalName().equals(principal.getGroupSubClass()))
+                {
+                    // delete user principal: permissions will be deleted together because of 
+                    // Hibernate cascade is setup for deleting orphans
+                    session.delete(principal);
+                }
+            }
             // remove user from groups
             user.getSpPrincipals().clear();
             session.saveOrUpdate(user);
