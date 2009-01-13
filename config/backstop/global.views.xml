@@ -1384,7 +1384,7 @@
                 <rule id="definitionItem"><![CDATA[parent.getValue() != null]]></rule>
                 <rule id="acceptedGeologicTimePeriod"><![CDATA[!isAccepted.isSelected()]]></rule>
             </enableRules>
-            <columnDef>100px,3dlu,p:g,3dlu,p,3dlu,p:g</columnDef>
+            <columnDef>p,3dlu,p:g,3dlu,p,3dlu,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
 
             <rows>
@@ -1510,7 +1510,7 @@
                 <rule id="definitionItem"><![CDATA[parent.getValue() != null]]></rule>
                 <rule id="acceptedLithoStrat"><![CDATA[!isAccepted.isSelected()]]></rule>
             </enableRules>
-            <columnDef>100px,3dlu,p:g,3dlu,200px,3dlu,p:g</columnDef>
+            <columnDef>p,3dlu,p:g,3dlu,200px,3dlu,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
 
             <rows>
