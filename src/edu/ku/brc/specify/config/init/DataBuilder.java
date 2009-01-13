@@ -1519,7 +1519,6 @@ public class DataBuilder
         collectingevent.initialize();
         collectingevent.setVerbatimDate(verbatimDate);
         collectingevent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-        collectingevent.setGroupPermittedToView(groupPermittedToView);
         collectingevent.setStartDate(startDate);
         collectingevent.setEndDate(endDate);
         collectingevent.setStationFieldNumber(stationFieldNumber);
@@ -1597,7 +1596,6 @@ public class DataBuilder
         collectionobject.setCatalogedDateVerbatim(catalogedDateVerbatim);
         collectionobject.setGuid(guid);
         //collectionobject.setAltCatalogNumber(altCatalogNumber);
-        collectionobject.setGroupPermittedToView(groupPermittedToView);
         collectionobject.setDeaccessioned(deaccessioned);
         collectionobject.setCatalogNumber(catalogNumber);
         collectionobject.setCollectingEvent(collectingEvent);
@@ -1975,7 +1973,6 @@ public class DataBuilder
     {
         Locality locality = new Locality();
         locality.initialize();
-        locality.setGroupPermittedToView(groupPermittedToView);
         locality.setNamedPlace(namedPlace);
         locality.setRelationToNamedPlace(relationToNamedPlace);
         locality.setLocalityName(localityName);

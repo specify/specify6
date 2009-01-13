@@ -95,7 +95,6 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
     protected Double                latLongAccuracy;
     protected String                gml;
     protected String                datum;
-    protected Integer               groupPermittedToView;
     protected String                remarks;
     protected String                lat1text;   // The original value
     protected String                lat2text;   // The original value
@@ -159,7 +158,6 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
         latLongMethod = null;
         latLongAccuracy = null;
         datum = null;
-        groupPermittedToView = null;
         remarks = null;
 
         lat1text = null;
@@ -501,20 +499,6 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
     public void setDatum(String datum)
     {
         this.datum = datum;
-    }
-
-    /**
-     * * The name of the group that this record is visible to. (Default to public)
-     */
-    @Column(name = "GroupPermittedToView", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
-    public Integer getGroupPermittedToView()
-    {
-        return this.groupPermittedToView;
-    }
-
-    public void setGroupPermittedToView(Integer groupPermittedToView)
-    {
-        this.groupPermittedToView = groupPermittedToView;
     }
 
     /**

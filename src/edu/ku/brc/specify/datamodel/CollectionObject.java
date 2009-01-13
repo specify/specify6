@@ -108,7 +108,6 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     protected String                        catalogedDateVerbatim;
     protected String                        guid;
     protected String                        altCatalogNumber;
-    protected Integer                       groupPermittedToView;
     protected Boolean                       deaccessioned;
     protected String                        catalogNumber;
     protected Calendar                      inventoryDate;
@@ -191,7 +190,6 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
         catalogedDateVerbatim = null;
         guid                  = null;
         altCatalogNumber      = null;
-        groupPermittedToView  = null;
         deaccessioned         = null;
         catalogNumber         = null;
         objectCondition       = null;
@@ -542,18 +540,6 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     public void setAltCatalogNumber(String altCatalogNumber) 
     {
         this.altCatalogNumber = altCatalogNumber;
-    }
-
-    /**
-     *
-     */
-    @Column(name = "GroupPermittedToView", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
-    public Integer getGroupPermittedToView() {
-        return this.groupPermittedToView;
-    }
-
-    public void setGroupPermittedToView(Integer groupPermittedToView) {
-        this.groupPermittedToView = groupPermittedToView;
     }
 
     /**

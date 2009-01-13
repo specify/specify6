@@ -91,7 +91,6 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
     protected Short                 startTime;          // Minutes in 24 hours
     protected Short                 endTime;            // Minutes in 24 hours
     protected String                verbatimLocality;
-    protected Integer               groupPermittedToView;
     protected String                remarks;
     protected Integer               visibility;
     protected String                visibilitySetBy;
@@ -139,7 +138,6 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
         startTime = null;
         endTime = null;
         verbatimLocality = null;
-        groupPermittedToView = null;
         remarks = null;
         visibility = null;
         collectionObjects = new HashSet<CollectionObject>();
@@ -334,18 +332,6 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
     
     public void setVerbatimLocality(String verbatimLocality) {
         this.verbatimLocality = verbatimLocality;
-    }
-
-    /**
-     *      * The name of the group that this record is visible to.
-     */
-    @Column(name = "GroupPermittedToView")
-    public Integer getGroupPermittedToView() {
-        return this.groupPermittedToView;
-    }
-    
-    public void setGroupPermittedToView(Integer groupPermittedToView) {
-        this.groupPermittedToView = groupPermittedToView;
     }
 
     /**
@@ -570,7 +556,6 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
         obj.startTime = startTime;
         obj.endTime = endTime;
         obj.verbatimLocality = verbatimLocality;
-        obj.groupPermittedToView = groupPermittedToView;
         obj.remarks = remarks;
         obj.visibility = visibility;
         obj.locality = locality;
