@@ -932,8 +932,6 @@ public class ReportsBaseTask extends BaseTask
         }
         else
         {
-            if (reportId == null) { return; }
-
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
             boolean transOpen = false;
             try

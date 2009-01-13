@@ -136,7 +136,7 @@ import edu.ku.brc.util.Pair;
  */
 public class SpecifyAppContextMgr extends AppContextMgr
 {
-    private static final Logger  log = Logger.getLogger(SpecifyAppContextMgr.class);
+    protected static final Logger  log = Logger.getLogger(SpecifyAppContextMgr.class);
     
     // Virtual Directory Levels
     public static final String PERSONALDIR   = "Personal"; //$NON-NLS-1$
@@ -236,6 +236,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
     /**
      * @return the viewSetHash
      */
+    @Override
     public Hashtable<String, List<ViewSetIFace>> getViewSetHash()
     {
         return viewSetHash;
@@ -1031,6 +1032,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.AppContextMgr#setContext(java.lang.String, java.lang.String, boolean)
      */
+    @Override
     public CONTEXT_STATUS setContext(final String  databaseName,
                                      final String  userName,
                                      final boolean startingOver)
@@ -1559,6 +1561,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.AppContextMgr#getView(java.lang.String)
      */
+    @Override
     public ViewIFace getView(final String viewName)
     {
         return getView(null, viewName);
@@ -1587,6 +1590,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.AppResourceDefaultIFace#getView(java.lang.String, java.lang.String)
      */
+    @Override
     public ViewIFace getView(final String viewSetName, final String viewName)
     {
         if (StringUtils.isEmpty(viewName))
@@ -1626,6 +1630,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
      * @param appRes
      * @return
      */
+    @Override
     public boolean saveResource(final AppResourceIFace appRes)
     {
         if (appRes instanceof SpAppResource)
@@ -1674,6 +1679,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.AppContextMgr#getResource(java.lang.String)
      */
+    @Override
     public AppResourceIFace getResource(final String name)
     {
         DataProviderSessionIFace session = null;
@@ -1738,6 +1744,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.AppResourceDefaultMgr#getResourceAsDOM(java.lang.String)
      */
+    @Override
     public Element getResourceAsDOM(final String appResName)
     {
         try
@@ -1789,6 +1796,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.AppContextMgr#getResourceAsXML(java.lang.String)
      */
+    @Override
     public String getResourceAsXML(final AppResourceIFace appResource)
     {
         if (appResource != null && appResource instanceof SpAppResource)
@@ -1934,6 +1942,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.AppResourceDefaultMgr#getResourceByMimeType(java.lang.String)
      */
+    @Override
     public List<AppResourceIFace> getResourceByMimeType(final String mimeType)
     {
         List<AppResourceIFace> list = new ArrayList<AppResourceIFace>();
@@ -1995,15 +2004,17 @@ public class SpecifyAppContextMgr extends AppContextMgr
             DataProviderSessionIFace session = null;
             try
             {
-                session = DataProviderFactory.getInstance().createSession();
-                session.beginTransaction();
                 if (!appResDir.removeResource(appRes))
                 {
-                    session.rollback();
+                    //session.rollback();
                     log.error("Unable to remove AppResource '" + appResource + "' from directory '" + appResDirName + "'"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                     return false;
                 }
-                session.delete(appRes);
+                session = DataProviderFactory.getInstance().createSession();
+                session.beginTransaction();
+                /* actually, the appRes will be deleted when the appResDir is saved
+                session.delete(appRes); 
+                */
                 session.saveOrUpdate(appResDir);
                 session.commit();
                 session.flush();
@@ -2306,7 +2317,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 class Item {
                     public FormDataObjIFace data;
                     public Item(FormDataObjIFace d) { data = d; }
-                    public String toString() { return data.getIdentityTitle(); }
+                    @Override public String toString() { return data.getIdentityTitle(); }
                 }
                 
                 List<Item> items = null;
@@ -2603,7 +2614,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         Class<?> treeDefClass = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getTreeDefClass(view);
         if (treeDefClass != null)
         {
-            
+            //empty block
         }
         return true;
     }

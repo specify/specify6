@@ -112,7 +112,7 @@ public class RepResourcePropsPanel extends JPanel
         titleTxt.setVisible(false);
         
 //        builder.add(UIHelper.createLabel(UIRegistry.getResourceString("REP_LEVEL_LBL")), cc.xy(1,3));
-        levelTxt = UIHelper.createTextField("3");
+        levelTxt = UIHelper.createTextField("0");
         levelTxt.setEnabled(false);
 //        builder.add(levelTxt, cc.xy(3, 3));
         
