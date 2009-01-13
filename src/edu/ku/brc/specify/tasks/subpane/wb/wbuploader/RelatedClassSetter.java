@@ -215,14 +215,10 @@ public class RelatedClassSetter
                 }
                 catch (IllegalAccessException iaEx)
                 {
-                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RelatedClassSetter.class, iaEx);
                     throw new UploaderException(iaEx, UploaderException.ABORT_IMPORT);
                 }
                 catch (InvocationTargetException itEx)
                 {
-                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RelatedClassSetter.class, itEx);
                     throw new UploaderException(itEx, UploaderException.ABORT_IMPORT);
                 }
                  finally
@@ -267,8 +263,6 @@ public class RelatedClassSetter
 					.getId());
 		} catch (Exception ex) 
 		{
-    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RelatedClassSetter.class, ex);
 			throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
 		} finally 
 		{
@@ -289,8 +283,6 @@ public class RelatedClassSetter
 					.getId());
 		} catch (Exception ex) 
 		{
-    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RelatedClassSetter.class, ex);
 			throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
 		} finally 
 		{

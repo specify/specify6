@@ -185,8 +185,11 @@ public class XLSExport implements DataExport
         }
         catch (NumberFormatException ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(XLSExport.class, ex);
+            if (!StringUtils.isBlank(value))
+            {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(XLSExport.class, ex);
+            }
             valueSet = false;
         }
         

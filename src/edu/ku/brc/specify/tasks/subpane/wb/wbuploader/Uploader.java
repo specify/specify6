@@ -337,8 +337,6 @@ public class Uploader implements ActionListener, KeyListener
                     }
                     catch (CloneNotSupportedException ex)
                     {
-                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
                         log.error(ex);
                         continue;
                     }
@@ -502,8 +500,6 @@ public class Uploader implements ActionListener, KeyListener
             }
             catch (DirectedGraphException ex)
             {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
                 throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
             }
             // find the 'right' rel. ie: discard Agent ->> ModifiedByAgentID/CreatedByAgentID
@@ -568,8 +564,6 @@ public class Uploader implements ActionListener, KeyListener
                     }
                     catch (UploaderException ex)
                     {
-                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
                         throw ex;
                     }
                 }
@@ -741,8 +735,6 @@ public class Uploader implements ActionListener, KeyListener
                     }
                     catch (NumberFormatException e)
                     {
-                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, e);
                         genSpPresent = false;
                     }
                 }
@@ -884,8 +876,6 @@ public class Uploader implements ActionListener, KeyListener
         }
         catch (DirectedGraphException e)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, e);
             logDebug(e);
             throw new UploaderException(e, UploaderException.ABORT_IMPORT);
         }
@@ -931,8 +921,6 @@ public class Uploader implements ActionListener, KeyListener
             }
             catch (DirectedGraphException ex)
             {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
                 throw new UploaderException(ex);
             }
             parentTbl = rankTbl;
@@ -1006,8 +994,6 @@ public class Uploader implements ActionListener, KeyListener
                         }
                         catch (DirectedGraphException ex)
                         {
-                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
                             throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
                         }
                     }
@@ -1199,8 +1185,6 @@ public class Uploader implements ActionListener, KeyListener
                 }
                 catch (DirectedGraphException ex)
                 {
-                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
                     throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
                 }
             }
@@ -1210,14 +1194,10 @@ public class Uploader implements ActionListener, KeyListener
             }
             catch (ClassNotFoundException ex)
             {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
                 throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
             }
             catch (NoSuchMethodException ex)
             {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
                 throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
             }
         }
@@ -1251,8 +1231,6 @@ public class Uploader implements ActionListener, KeyListener
         }
         catch (DirectedGraphException ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
             throw new UploaderException(ex);
         }
     }
@@ -1315,8 +1293,6 @@ public class Uploader implements ActionListener, KeyListener
                 }
                 catch (Exception ex)
                 {
-                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
                     setOpKiller(ex);
                     return false;
                 }
@@ -1683,8 +1659,6 @@ public class Uploader implements ActionListener, KeyListener
         }
         catch (DirectedGraphException ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
             throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
         }
         
@@ -1705,8 +1679,6 @@ public class Uploader implements ActionListener, KeyListener
             }
             catch (ClassNotFoundException ex)
             {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
                 log.error(ex);
                 return null;
             }
@@ -1721,8 +1693,6 @@ public class Uploader implements ActionListener, KeyListener
             }
             catch (NoSuchMethodException ex)
             {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
                 log.error(ex);
                 return null;
             }
@@ -1990,7 +1960,7 @@ public class Uploader implements ActionListener, KeyListener
      * 
      * Sets up for upload.
      */
-    protected void prepareToUpload()
+    protected void prepareToUpload() throws UploaderException
     {
         if (currentOp != SUCCESS_PARTIAL)
         {
@@ -2237,8 +2207,6 @@ public class Uploader implements ActionListener, KeyListener
                         }
                         catch (ClassNotFoundException ex)
                         {
-                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
                             log.error(ex);
                             return null;
                         }
@@ -2253,8 +2221,6 @@ public class Uploader implements ActionListener, KeyListener
                         }
                         catch (NoSuchMethodException ex)
                         {
-                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
                             log.error(ex);
                             return null;
                         }
@@ -2270,8 +2236,6 @@ public class Uploader implements ActionListener, KeyListener
                 }
                 catch (Exception ex)
                 {
-                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
                     setOpKiller(ex);
                     return false;
                 }
@@ -3113,126 +3077,129 @@ public class Uploader implements ActionListener, KeyListener
      */
     public void uploadIt() 
     {
-        buildIdentifier();
-        setOpKiller(null);
-        prepareToUpload();
-
-        final UploaderTask uploadTask = new UploaderTask(true, "WB_CANCEL_UPLOAD_MSG")
+        try
         {
-            boolean success = false;
-            
-            @SuppressWarnings("synthetic-access")
-            @Override
-            public Object construct()
+            buildIdentifier();
+            setOpKiller(null);
+            prepareToUpload();
+
+            final UploaderTask uploadTask = new UploaderTask(true, "WB_CANCEL_UPLOAD_MSG")
             {
-                initProgressBar(0, uploadData.getRows(), true, 
-                        getResourceString("WB_UPLOAD_UPLOADING") + " " + getResourceString("WB_ROW"), false);
-                try
+                boolean success = false;
+            
+                @SuppressWarnings("synthetic-access")
+                @Override
+                public Object construct()
                 {
-                    for (rowUploading = 0; rowUploading < uploadData.getRows();)
+                    initProgressBar(0, uploadData.getRows(), true, 
+                        getResourceString("WB_UPLOAD_UPLOADING") + " " + getResourceString("WB_ROW"), false);
+                    try
                     {
-                        if (cancelled)
-                        {
-                            break;
-                        }
-                        logDebug("uploading row " + String.valueOf(rowUploading));
-                        
-                        if (rowUploading == 0)
-                        {
-                            showUploadProgress(1);  
-                        }
-                        for (UploadTable t : uploadTables)
+                        for (rowUploading = 0; rowUploading < uploadData.getRows();)
                         {
                             if (cancelled)
                             {
                                 break;
                             }
-                            try
+                            logDebug("uploading row " + String.valueOf(rowUploading));
+                        
+                            if (rowUploading == 0)
                             {
-                                if (wbSS.getWorkbench().getRow(rowUploading).getUploadStatus() != WorkbenchRow.UPLD_SUCCESS)
-                                {
-                                    uploadRow(t, rowUploading);
-                                }
-                                else
-                                {
-                                    throw new UploaderException(getResourceString("WB_UPLOAD_ROW_ALREADY_UPLOADED"), 
-                                            UploaderException.ABORT_ROW);
-                                }
+                                showUploadProgress(1);  
                             }
-                            catch (UploaderException ex)
+                            for (UploadTable t : uploadTables)
                             {
-                                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
-                                if (ex.getStatus() == UploaderException.ABORT_ROW)
+                                if (cancelled)
                                 {
-                                    logDebug(ex.getMessage());
-                                    abortRow(ex, rowUploading);
                                     break;
                                 }
-                                throw ex;
+                                try
+                                {
+                                    if (wbSS.getWorkbench().getRow(rowUploading).getUploadStatus() != WorkbenchRow.UPLD_SUCCESS)
+                                    {
+                                        uploadRow(t, rowUploading);
+                                    }
+                                    else
+                                    {
+                                        throw new UploaderException(getResourceString("WB_UPLOAD_ROW_ALREADY_UPLOADED"), 
+                                            UploaderException.ABORT_ROW);
+                                    }
+                                }
+                                catch (UploaderException ex)
+                                {
+                                    if (ex.getStatus() == UploaderException.ABORT_ROW)
+                                    {
+                                        logDebug(ex.getMessage());
+                                        abortRow(ex, rowUploading);
+                                        break;
+                                    }
+                                    throw ex;
+                                }
+                                updateObjectsCreated();
                             }
-                            updateObjectsCreated();
-                        }
 
-                        wbSS.getWorkbench().getRow(rowUploading).setUploadStatus(
+                            wbSS.getWorkbench().getRow(rowUploading).setUploadStatus(
                                 WorkbenchRow.UPLD_SUCCESS);
-                        rowUploading++;
-                        showUploadProgress(rowUploading);
+                            rowUploading++;
+                            showUploadProgress(rowUploading);
+                        }
+                        // But where is the best place to do this?
+                        //Potentially the longest step.
+                        //Need extra progress info...
+                        for (UploadTable t : uploadTables)
+                        {
+                            t.finishUpload(cancelled);
+                        }
                     }
-                    // But where is the best place to do this?
-                    //Potentially the longest step.
-                    //Need extra progress info...
-                    for (UploadTable t : uploadTables)
+                    catch (Exception ex)
                     {
-                        t.finishUpload(cancelled);
+                        setOpKiller(ex);
+                        return false;
+                    }
+                    success = !cancelled;
+                    return success;
+                }
+
+                @Override
+                public void finished()
+                {
+                    super.finished();
+                    statusBar.setText("");
+                    if (success)
+                    {
+                        setCurrentOp(Uploader.SUCCESS);
+                    }
+                    else
+                    {
+                        mainPanel.clearObjectsCreated();
+                        //undoUpload will clear opKiller, so save it and reassign, after call. (iffy?)
+                        Exception savedOpKiller = getOpKiller();
+                        undoUpload(false, false, undo);
+                        setOpKiller(savedOpKiller);
+
+                        if (!cancelled)
+                        {
+                            setCurrentOp(Uploader.FAILURE);
+                        }
                     }
                 }
-                catch (Exception ex)
-                {
-                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
-                    setOpKiller(ex);
-                    return false;
-                }
-                success = !cancelled;
-                return success;
-            }
 
-            @Override
-            public void finished()
+            };
+
+            UIRegistry.getStatusBar().setText(getResourceString(Uploader.UPLOADING));
+            uploadTask.start();
+            if (mainPanel == null)
             {
-                super.finished();
-                statusBar.setText("");
-                if (success)
-                {
-                    setCurrentOp(Uploader.SUCCESS);
-                }
-                else
-                {
-                    mainPanel.clearObjectsCreated();
-                    //undoUpload will clear opKiller, so save it and reassign, after call. (iffy?)
-                    Exception savedOpKiller = getOpKiller();
-                    undoUpload(false, false, undo);
-                    setOpKiller(savedOpKiller);
-
-                    if (!cancelled)
-                    {
-                        setCurrentOp(Uploader.FAILURE);
-                    }
-                }
+                initUI(Uploader.UPLOADING);
             }
-
-        };
-
-        UIRegistry.getStatusBar().setText(getResourceString(Uploader.UPLOADING));
-        uploadTask.start();
-        if (mainPanel == null)
-        {
-            initUI(Uploader.UPLOADING);
+            else
+            {
+                setCurrentOp(Uploader.UPLOADING);
+            }
         }
-        else
+        catch (UploaderException ex)
         {
-            setCurrentOp(Uploader.UPLOADING);
+            setOpKiller(ex);
         }
     }
 
@@ -3346,8 +3313,6 @@ public class Uploader implements ActionListener, KeyListener
                     }
                     catch (Exception ex)
                     {
-                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
                         setOpKiller(ex);
                         return false;
                     }
@@ -3613,8 +3578,6 @@ public class Uploader implements ActionListener, KeyListener
                 }
                 catch (Exception ex)
                 {
-                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
                     setOpKiller(ex);
                     return false;
                 }
@@ -3677,8 +3640,6 @@ public class Uploader implements ActionListener, KeyListener
         }
         catch (UploaderException ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Uploader.class, ex);
             logDebug(ex.getMessage() + " (" + t.getTable().getName() + ", row "
                     + Integer.toString(row) + ")");
             throw ex;

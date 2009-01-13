@@ -366,14 +366,10 @@ public class UploadTable implements Comparable<UploadTable>
         }
         catch (ClassNotFoundException ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UploadTable.class, ex);
             return null;
         }
         catch (Exception ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UploadTable.class, ex);
             throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
         }
     }
@@ -390,8 +386,6 @@ public class UploadTable implements Comparable<UploadTable>
         }
         catch (ClassNotFoundException cnfEx)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UploadTable.class, cnfEx);
             throw new UploaderException(cnfEx, UploaderException.ABORT_IMPORT);
         }
     }
@@ -408,8 +402,6 @@ public class UploadTable implements Comparable<UploadTable>
         }
         catch (NoSuchMethodException nsmEx)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UploadTable.class, nsmEx);
             throw new UploaderException(nsmEx, UploaderException.ABORT_IMPORT);
         }
     }
@@ -429,8 +421,10 @@ public class UploadTable implements Comparable<UploadTable>
 
     /**
      * Gets ready for an upload.
+     * @throws UploaderException
      */
-    public void prepareToUpload() 
+    @SuppressWarnings("unused")
+    public void prepareToUpload() throws UploaderException
     {
         uploadedRecs.clear();
         matchSetting.clear();
@@ -756,7 +750,7 @@ public class UploadTable implements Comparable<UploadTable>
         {
             if (!f.getField().isForeignKey()) //Foreign Keys get assigned later in process...
             {
-                if (StringUtils.isEmpty(f.getValue()) && f.isRequired()) 
+                if (StringUtils.isEmpty(f.getValue()) && f.isRequired() && f != autoAssignedField) 
                 { 
                     return false; 
                 }
@@ -1083,8 +1077,6 @@ public class UploadTable implements Comparable<UploadTable>
                         }
                         catch (Exception ex)
                         {
-                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UploadTable.class, ex);
                             throw new UploaderException(ex, UploaderException.INVALID_DATA);
                         }
                     }
@@ -1189,14 +1181,10 @@ public class UploadTable implements Comparable<UploadTable>
         }
         catch (IllegalArgumentException ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UploadTable.class, ex);
             throw new UploaderException(ex, UploaderException.INVALID_DATA);
         }
         catch (ParseException ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UploadTable.class, ex);
             throw new UploaderException(ex, UploaderException.INVALID_DATA);
         }
     }
@@ -1217,8 +1205,6 @@ public class UploadTable implements Comparable<UploadTable>
         }
         catch (NoSuchMethodException nsmEx)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UploadTable.class, nsmEx);
             // this should only happen for many-to-many relationships, in which cases the
             // field
             // actually gets handled via the parentSetters
@@ -1592,8 +1578,6 @@ public class UploadTable implements Comparable<UploadTable>
             }
             catch (Exception ex)
             {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UploadTable.class, ex);
                 throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
             }
             finally
@@ -1849,20 +1833,14 @@ public class UploadTable implements Comparable<UploadTable>
                 }
                 catch (InvocationTargetException ex)
                 {
-                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UploadTable.class, ex);
                     throw new UploaderException(ex, UploaderException.ABORT_ROW);
                 }
                 catch (IllegalAccessException ex)
                 {
-                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UploadTable.class, ex);
                     throw new UploaderException(ex, UploaderException.ABORT_ROW);
                 }
                 catch (ParseException ex)
                 {
-                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UploadTable.class, ex);
                     throw new UploaderException(ex, UploaderException.ABORT_ROW);
                 }
             }
@@ -2045,8 +2023,6 @@ public class UploadTable implements Comparable<UploadTable>
                     }
                     catch (Exception e)
                     {
-                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UploadTable.class, e);
                         if (hasChildren)
                         {
                             invalidValues.add(new UploadTableInvalidValue(null, this, fld, row, e));
@@ -2151,8 +2127,6 @@ public class UploadTable implements Comparable<UploadTable>
                                 }
                                 catch (Exception e)
                                 {
-                                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UploadTable.class, e);
                                     // ignore. assuming problem was already caught above.
                                 }
                             }
@@ -2249,38 +2223,26 @@ public class UploadTable implements Comparable<UploadTable>
             }
             catch (InstantiationException ieEx)
             {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UploadTable.class, ieEx);
                 throw new UploaderException(ieEx, UploaderException.ABORT_IMPORT);
             }
             catch (IllegalAccessException iaEx)
             {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UploadTable.class, iaEx);
                 throw new UploaderException(iaEx, UploaderException.ABORT_IMPORT);
             }
             catch (NoSuchMethodException ssmEx)
             {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UploadTable.class, ssmEx);
                 throw new UploaderException(ssmEx, UploaderException.ABORT_IMPORT);
             }
             catch (InvocationTargetException itEx)
             {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UploadTable.class, itEx);
                 throw new UploaderException(itEx, UploaderException.ABORT_IMPORT);
             }
             catch (IllegalArgumentException iaA)
             {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UploadTable.class, iaA);
                 throw new UploaderException(iaA, UploaderException.ABORT_IMPORT);
             }
             catch (ParseException peEx)
             {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UploadTable.class, peEx);
                 throw new UploaderException(peEx, UploaderException.ABORT_IMPORT);
             }
             recNum++;
@@ -2363,8 +2325,6 @@ public class UploadTable implements Comparable<UploadTable>
         }
         catch (Exception ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UploadTable.class, ex);
             if (tblTransactionOpen)
             {
                 tblSession.rollback();
@@ -2583,8 +2543,6 @@ public class UploadTable implements Comparable<UploadTable>
                     }
                     catch (ConstraintViolationException ex)
                     {
-                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UploadTable.class, ex);
                         // the delete may fail if another user has used or deleted uploaded
                         // records...
                         log.info(table.getName() + ":" + ex);
@@ -2595,8 +2553,6 @@ public class UploadTable implements Comparable<UploadTable>
                     }
                     catch (ObjectDeletedException ex)
                     {
-                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UploadTable.class, ex);
                         log.info(table.getName() + "." + key + ":" + ex);
                         if (opened && !committed)
                         {
@@ -2605,8 +2561,6 @@ public class UploadTable implements Comparable<UploadTable>
                     }
                     catch (Exception ex)
                     {
-                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UploadTable.class, ex);
                         log.info(table.getName() + ":" + ex);
                         if (opened && !committed)
                         {

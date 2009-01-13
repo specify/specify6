@@ -107,8 +107,6 @@ public class GraphBuilder
         }
         catch (DirectedGraphException ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(GraphBuilder.class, ex);
             throw ex;
         }
     }
@@ -183,8 +181,6 @@ public class GraphBuilder
         }
         catch (RuntimeException ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(GraphBuilder.class, ex);
             log.debug("relationship " + rel.getName() + "could not be added to database graph.");
             return null;
         }
@@ -201,8 +197,6 @@ public class GraphBuilder
             return schema.getByClassName(rel.getClassName()).getShortClassName().toLowerCase();
         } catch (RuntimeException ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(GraphBuilder.class, ex);
             return null;
         }
     }

@@ -1024,7 +1024,7 @@ public class QueryTask extends BaseTask
             ex.printStackTrace();
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryTask.class, ex);
-            throw new RuntimeException(ex);
+            ex.printStackTrace();
             
         }
         finally
@@ -1572,8 +1572,6 @@ public class QueryTask extends BaseTask
                             }
                             catch (Exception ex)
                             {
-                                UsageTracker.incrHandledUsageCount();
-                                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryTask.class, ex);
                                 // if there is no TreeDefItem for the rank then just skip it.
                                 if (ex instanceof TreeLevelQRI.NoTreeDefItemException)
                                 {
@@ -1582,7 +1580,9 @@ public class QueryTask extends BaseTask
                                 // else something is really messed up
                                 else
                                 {
-                                    throw new RuntimeException(ex);
+                                    UsageTracker.incrHandledUsageCount();
+                                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryTask.class, ex);
+                                    ex.printStackTrace();
                                 }
                             }
                         }
@@ -1593,7 +1593,6 @@ public class QueryTask extends BaseTask
                     UsageTracker.incrHandledUsageCount();
                     edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryTask.class, ex);
                     ex.printStackTrace();
-                    throw new RuntimeException(ex);
                 }
             }
 

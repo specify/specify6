@@ -654,8 +654,6 @@ public class QueryFieldPanel extends JPanel implements ActionListener
             }
             catch (Exception ex)
             {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryFieldPanel.class, ex);
                 throw new ParseException(getLabel() + " - " 
                         + String.format(UIRegistry.getResourceString("QB_PARSE_ERROR"), ex.getLocalizedMessage()), -1);
             }
@@ -890,8 +888,6 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                     }
                     catch (InvocationTargetException ex)
                     {
-                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryFieldPanel.class, ex);
                         if (ex.getTargetException() instanceof NumberFormatException)
                         {
                             String msg = ex.getTargetException().getLocalizedMessage();
@@ -920,8 +916,6 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                     }
                     catch (NumberFormatException ex)
                     {
-                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryFieldPanel.class, ex);
                         String msg = ex.getLocalizedMessage();
                         if (StringUtils.isBlank(msg))
                         {

@@ -382,8 +382,6 @@ public class MainFrameSpecify extends MainFrame
                     }
                     catch (org.hibernate.UnresolvableObjectException e)
                     {
-                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(MainFrameSpecify.class, e);
                         log.debug("Report has been deleted in Specify? (" + e + ")");
                     }
                 }

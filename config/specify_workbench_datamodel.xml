@@ -112,7 +112,7 @@
     <display objtitle="Collection Object" view="CollectionObject" dataobjformatter="CollectionObject"/>
     <field column="Cataloged Date" name="catalogedDate" type="calendar_date"/>
     <field column="Cataloged Date Verbatim" name="catalogedDateVerbatim" type="java.lang.String" length="32"/>
-    <field column="Catalog Number" name="catalogNumber" type="java.lang.Float"/>
+    <field column="Catalog Number" name="catalogNumber" type="java.lang.String"/>
     <field column="Field Number" name="fieldNumber" type="java.lang.String" length="50"/>
     <field column="Name" name="name" type="java.lang.String" length="64"/>
     <field column="Description" name="description" type="java.lang.String" length="255"/>

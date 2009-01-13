@@ -955,7 +955,7 @@ public class ReportsBaseTask extends BaseTask
                 {
                     session.rollback();
                 }
-                throw new RuntimeException(e);
+                e.printStackTrace();
             }
             finally
             {

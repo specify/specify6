@@ -176,8 +176,6 @@ public class ReportRepeatPanel extends JPanel
                     }
                     catch (NumberFormatException ex)
                     {
-                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ReportRepeatPanel.class, ex);
                         //Damn, no status bar 
                         //UIRegistry.getStatusBar().setErrorMessage(UIRegistry.getResourceString("REP_INVALID_REPEAT"));
                         UIRegistry.showLocalizedMsg("REP_INVALID_COUNT_TITLE", "REP_INVALID_REPEAT_COUNT_MSG");
@@ -247,8 +245,6 @@ public class ReportRepeatPanel extends JPanel
             }
             catch (NumberFormatException nfe)
             {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ReportRepeatPanel.class, nfe);
                 UIRegistry.showLocalizedMsg("REP_INVALID_COUNT_TITLE", "REP_INVALID_REPEAT_COUNT_MSG");
                 return false;
             }
