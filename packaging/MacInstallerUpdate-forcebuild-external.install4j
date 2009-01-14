@@ -265,16 +265,10 @@
             <serializedBean>
               <java class="java.beans.XMLDecoder">
                 <object class="com.install4j.runtime.beans.screens.LicenseScreen">
-                  <void property="displayedText">
-                    <string>&lt;html&gt;
-&lt;head&gt;
-&lt;title&gt;Test&lt;/title&gt;
-&lt;/head&gt;
-&lt;body&gt;
-Placeholder for the user-end license agreement.
-&lt;/body&gt;
-&lt;/html&gt;
-</string>
+                  <void property="displayedTextFile">
+                    <object class="com.install4j.api.beans.ExternalFile">
+                      <string>${installer:sys.contentDir}/license_agreement.html</string>
+                    </object>
                   </void>
                 </object>
               </java>

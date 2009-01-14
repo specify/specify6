@@ -239,6 +239,7 @@
 		<copy file="packaging/statistics.icns" todir="${installer.dir}" />
 		
 		<copy file="packaging/changelog.html" todir="${installer.dir}" />
+		<copy file="packaging/license_agreement.html" todir="${installer.dir}" />
 		<copy file="./packaging/SpecifyBigSplashBordered.png" todir="${installer.dir}" />
 		<rename src="${installer.dir}/SpecifyBigSplashBordered.png" dest="${installer.dir}/SpecifyBigSplash.png"/>
 		<copy file="./demo_files/Stratigraphy.csv" todir="${installer.dir}/config" />
