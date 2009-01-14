@@ -17,11 +17,13 @@ import static edu.ku.brc.ui.UIHelper.createButton;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.HeadlessException;
 import java.awt.SystemColor;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -31,9 +33,12 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 import javax.swing.WindowConstants;
+import javax.swing.plaf.ColorUIResource;
 
 import org.apache.commons.lang.StringUtils;
+import org.flexdock.plaf.resources.ColorResourceHandler;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.factories.ButtonBarFactory;
@@ -379,9 +384,22 @@ public class CustomDialog extends JDialog
 
         GradiantLabel titleBarLabel = new GradiantLabel(title, SwingConstants.CENTER);
         
-        titleBarLabel.setBGBaseColor(SystemColor.windowBorder);
-        titleBarLabel.setGradiants(UIHelper.makeLighter(SystemColor.windowBorder, 0.2),
-                                   UIHelper.makeDarker(SystemColor.windowBorder, 0.2));
+        Color borderColor;
+        Color textColor;
+        if (!UIHelper.isWindows())
+        {
+            borderColor = SystemColor.windowBorder;
+            textColor   = SystemColor.activeCaptionText;
+        } else
+        {
+            borderColor = (Color)Toolkit.getDefaultToolkit().getDesktopProperty("win.frame.activeCaptionColor");
+            textColor   = (Color)Toolkit.getDefaultToolkit().getDesktopProperty("win.frame.captionTextColor");
+            getMainPanel().setBorder(BorderFactory.createLineBorder(borderColor));
+        }
+        titleBarLabel.setTextColor(textColor);
+        titleBarLabel.setBGBaseColor(borderColor);
+        titleBarLabel.setGradiants(UIHelper.makeLighter(borderColor, 0.2),
+                                   UIHelper.makeDarker(borderColor, 0.2));
         
         getMainPanel().add(titleBarLabel, BorderLayout.NORTH);
     }
