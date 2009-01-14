@@ -429,7 +429,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
             super.setEnabled(enabled);
         }
 
-        setBackground(isRequired && isEnabled() ? requiredFieldColor.getColor() : bgColor);
+        setBackground(isRequired && isEnabled() ? requiredFieldColor.getColor() : Color.WHITE);//bgColor); // XXX Why doesn't work????
         
         // rods - 09/05/08 - (Bug 5858) need to hide the default value when disabled
         if (enabled)
