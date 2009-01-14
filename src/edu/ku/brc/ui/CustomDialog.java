@@ -384,18 +384,27 @@ public class CustomDialog extends JDialog
 
         GradiantLabel titleBarLabel = new GradiantLabel(title, SwingConstants.CENTER);
         
-        Color borderColor;
-        Color textColor;
-        if (!UIHelper.isWindows())
+        Color borderColor = SystemColor.windowBorder;
+        Color textColor   = SystemColor.activeCaptionText;
+        
+        if (UIHelper.isLinux())
         {
-            borderColor = SystemColor.windowBorder;
+            borderColor = SystemColor.activeCaptionBorder;
             textColor   = SystemColor.activeCaptionText;
-        } else
+            if (borderColor.getRed() == borderColor.getGreen() && borderColor.getGreen() == borderColor.getBlue())
+            {
+                borderColor = new Color(132, 170, 216);
+                textColor   = Color.WHITE;
+            }
+            getMainPanel().setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
+            
+        } else if (UIHelper.isWindows())
         {
             borderColor = (Color)Toolkit.getDefaultToolkit().getDesktopProperty("win.frame.activeCaptionColor");
             textColor   = (Color)Toolkit.getDefaultToolkit().getDesktopProperty("win.frame.captionTextColor");
             getMainPanel().setBorder(BorderFactory.createLineBorder(borderColor));
         }
+        
         titleBarLabel.setTextColor(textColor);
         titleBarLabel.setBGBaseColor(borderColor);
         titleBarLabel.setGradiants(UIHelper.makeLighter(borderColor, 0.2),
