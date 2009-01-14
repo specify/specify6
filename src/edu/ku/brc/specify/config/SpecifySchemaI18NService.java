@@ -17,11 +17,7 @@
  */
 package edu.ku.brc.specify.config;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.Locale;
-import java.util.Stack;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
@@ -34,7 +30,7 @@ import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
-import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 
 /**
  * This class gets all the L10N string from the database for a locale and populates the DBTableInfo etc structures.
@@ -50,9 +46,6 @@ public class SpecifySchemaI18NService extends SchemaI18NService
 {
     private static final Logger      log      = Logger.getLogger(SpecifySchemaI18NService.class);
     
-    protected Stack<Vector<String>>  recycler = new Stack<Vector<String>>();
-    protected Vector<Vector<String>> results  = new Vector<Vector<String>>();
-    
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.SchemaI18NService#loadWithLocale(java.lang.Byte, int, edu.ku.brc.dbsupport.DBTableIdMgr, java.util.Locale)
      */
@@ -66,18 +59,19 @@ public class SpecifySchemaI18NService extends SchemaI18NService
         String sql = "SELECT Name, IsHidden FROM  splocalecontainer WHERE " +
                      "SchemaType = " + schemaType +" AND DisciplineID = " + disciplineId;
 
-        retrieveString(sql);
+        Vector<Object[]> rows = BasicSQLUtils.query(sql);
 
-        for (Vector<String> p : results)
+        for (Object[] row : rows)
         {
-            DBTableInfo ti = mgr.getInfoByTableName(p.get(0));
+            DBTableInfo ti = mgr.getInfoByTableName(row[0].toString());
             if (ti != null)
             {
-                ti.setHidden(!p.get(1).equals("0"));
+                Boolean isHidden = (Boolean)row[1];
+                ti.setHidden(isHidden != null ? isHidden : false);
 
             } else
             {
-                log.error("Couldn't find table [" + p.get(0) + "]");
+                log.error("Couldn't find table [" + row[0] + "]");
             }
         }
         
@@ -85,29 +79,28 @@ public class SpecifySchemaI18NService extends SchemaI18NService
               "cn.SpLocaleContainerID = splocaleitemstr.SpLocaleContainerNameID where Language = '"+locale.getLanguage()+"' AND " +
               "cn.SchemaType = " + schemaType +" AND cn.DisciplineID = " + disciplineId;
 
-        retrieveString(sql);
-        
-        for (Vector<String> p : results)
+        rows = BasicSQLUtils.query(sql);
+        for (Object[] row : rows)
         {
-            DBTableInfo ti = mgr.getInfoByTableName(p.get(0));
+            DBTableInfo ti = mgr.getInfoByTableName(row[0].toString());
             if (ti != null)
             {
-                ti.setTitle(p.get(1));
-                ti.setAggregatorName(p.get(2));
+                ti.setTitle(row[1].toString());
+                ti.setAggregatorName(row[2] != null ? row[2].toString() : null);
                 
-                if (p.get(3) != null && p.get(4) != null)
+                if (row[3] != null && row[4] != null)
                 {
-                    if (!p.get(3).equals("0"))
+                    if ((Boolean)row[3])
                     {
-                        ti.setUiFormatter(p.get(4));
+                        ti.setUiFormatter(row[4].toString());
                     } else
                     {
-                        ti.setDataObjFormatter(p.get(4));
+                        ti.setDataObjFormatter(row[4].toString());
                     }
                 }
             } else
             {
-                log.error("Couldn't find table ["+p.get(0)+"]");
+                log.error("Couldn't find table ["+row[0]+"]");
             }
         }
         
@@ -115,18 +108,17 @@ public class SpecifySchemaI18NService extends SchemaI18NService
               "cn.SpLocaleContainerID = splocaleitemstr.SpLocaleContainerDescID where Language = '"+locale.getLanguage()+"' AND " +
               "cn.SchemaType = " + schemaType +" AND cn.DisciplineID = " + disciplineId;
         
-        retrieveString(sql);
-        
-        for (Vector<String> p : results)
+        rows = BasicSQLUtils.query(sql);
+        for (Object[] row : rows)
         {
-            DBTableInfo ti = mgr.getInfoByTableName(p.get(0));
+            DBTableInfo ti = mgr.getInfoByTableName(row[0].toString());
             if (ti != null)
             {
-                ti.setDescription(p.get(1));
+                ti.setDescription(row[1] != null ? row[1].toString() : null);
 
             } else
             {
-                log.error("Couldn't find table ["+p.get(0)+"]");
+                log.error("Couldn't find table ["+row[0]+"]");
             }
         }
         
@@ -138,40 +130,44 @@ public class SpecifySchemaI18NService extends SchemaI18NService
               " where splocaleitemstr.Language = '"+locale.getLanguage()+"' AND " +
               "cn.SchemaType = " + schemaType +" AND cn.DisciplineID = " + disciplineId + " order by cn.Name";
         log.debug(sql);
-        retrieveString(sql);
         
         String      name = "";
         DBTableInfo ti   = null;
-        for (Vector<String> p : results)
+        rows = BasicSQLUtils.query(sql);
+        for (Object[] row : rows)
         {
-            if (!name.equals(p.get(0)))
+            String nm = row[0].toString();
+            if (!name.equals(nm))
             {
-                ti = mgr.getInfoByTableName(p.get(0));
-                name = p.get(0);
+                ti = mgr.getInfoByTableName(nm);
+                name = nm;
             }
             
             if (ti != null)
             {
-                DBTableChildIFace tblChild = ti.getItemByName(p.get(1));
+                DBTableChildIFace tblChild = ti.getItemByName(row[1].toString());
                 if (tblChild != null)
                 {
-                    tblChild.setTitle(p.get(5));
-                    tblChild.setHidden(!p.get(6).equals("0"));
+                    tblChild.setTitle(row[5] != null ? row[5].toString() : null);
+                    Boolean isHidden = (Boolean)row[6];
+                    tblChild.setHidden(isHidden != null ? isHidden : false);
                     
                 } else
                 {
-                    log.error("Couldn't find field["+p.get(1)+"] for table ["+p.get(0)+"]");
+                    log.error("Couldn't find field["+row[1]+"] for table ["+row[0]+"]");
                 }
                 
                 if (tblChild instanceof DBFieldInfo)
                 {
-                    String  format     = p.get(2);
-                    boolean isUIFmt    = p.get(3) == null ? false : !p.get(3).equals("0");
-                    boolean isRequired = p.get(8) == null ? false : !p.get(8).equals("0");
+                    String  format       = row[2] == null ? null : row[2].toString();
+                    boolean isUIFmt      = row[3] == null ? false : (Boolean)row[3];
+                    String  pickListName = row[4] == null ? null : row[4].toString();
+                    String  webLinkName  = row[7] == null ? null : row[7].toString();
+                    boolean isRequired   = row[8] == null ? false : (Boolean)row[8];
                     
                     DBFieldInfo fieldInfo = (DBFieldInfo)tblChild;
-                    fieldInfo.setPickListName(p.get(4));
-                    fieldInfo.setWebLinkName(p.get(7));
+                    fieldInfo.setPickListName(pickListName);
+                    fieldInfo.setWebLinkName(webLinkName);
                     
                     if (!fieldInfo.isRequired() && isRequired)
                     {
@@ -194,10 +190,9 @@ public class SpecifySchemaI18NService extends SchemaI18NService
                         fieldInfo.setFormatStr(format);
                     }
                 }
-                
             } else
             {
-                log.error("Couldn't find table ["+p.get(0)+"]");
+                log.error("Couldn't find table ["+row[0]+"]");
             }
         }
 
@@ -208,128 +203,38 @@ public class SpecifySchemaI18NService extends SchemaI18NService
               " where splocaleitemstr.Language = '"+locale.getLanguage()+"' AND " +
               "cn.SchemaType = " + schemaType +" AND cn.DisciplineID = " + disciplineId + " order by cn.Name";
         
-        retrieveString(sql);
         
         name = "";
         ti   = null;
-        for (Vector<String> p : results)
+        rows = BasicSQLUtils.query(sql);
+        for (Object[] row : rows)
         {
-            if (!name.equals(p.get(0)))
+            String nm = row[0].toString();
+            if (!name.equals(nm))
             {
-                ti = mgr.getInfoByTableName(p.get(0));
-                name = p.get(0);
+                ti   = mgr.getInfoByTableName(nm);
+                name = nm;
             }
             
             if (ti != null)
             {
-                
-                DBTableChildIFace tblChild = ti.getItemByName(p.get(1));
+                DBTableChildIFace tblChild = ti.getItemByName(row[1].toString());
                 if (tblChild != null)
                 {
-                    tblChild.setDescription(p.get(2));
-                    tblChild.setHidden(!p.get(3).equals("0"));
+                    tblChild.setDescription(row[2] != null ? row[2].toString() : null);
+                    Boolean isHidden = (Boolean)row[3];
+                    tblChild.setHidden(isHidden != null ? isHidden : false);
                     
                 } else
                 {
-                    log.error("Couldn't find field["+p.get(1)+"] for table ["+p.get(0)+"]");
+                    log.error("Couldn't find field["+row[1]+"] for table ["+nm+"]");
                 }
                 
             } else
             {
-                log.error("Couldn't find table ["+p.get(0)+"]");
+                log.error("Couldn't find table ["+nm+"]");
             }
         }
-        
-        results.clear();
-        recycler.clear();
     }
     
-    /**
-     * Retrieves the results of the query and puts them into a Vector. The Vector for each row is either created new or grabbed from a recycler.
-     * @param sql the SQL to execute
-     */
-    protected void retrieveString(final String sql)
-    {
-        if (results.size() > 0)
-        {
-            recycler.addAll(results);
-            results.clear();
-        }
-        
-        log.debug(sql);
-        
-        Connection connection = null;
-        Statement stmt        = null;
-        ResultSet rs          = null;
-        try
-        {
-            connection = DBConnection.getInstance().createConnection();
-            stmt       = connection.createStatement();
-            rs         = stmt.executeQuery(sql);
-            
-            int cnt = rs.getMetaData().getColumnCount();
-            
-            if (rs.next())
-            {
-                do
-                {
-                    Vector<String> p;
-                    if (recycler.size() > 0)
-                    {
-                        p = recycler.pop();
-                        p.clear();
-                        
-                    } else
-                    {
-                        p = new Vector<String>();
-                    }
-                    for (int i=0;i<cnt;i++)
-                    {
-                        p.add(rs.getString(i+1));
-                    }
-                    results.add(p);
-                    
-                    /* DEBUG
-                    if (p.get(0).toLowerCase().startsWith("coll"))
-                    {
-                        for (String s : p)
-                        {
-                            System.out.print(s+", ");
-                        }
-                        System.out.println("");
-                    }*/
-                    
-                } while (rs.next());
-            }
-            
-        } catch (Exception ex)
-        {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifySchemaI18NService.class, ex);
-            ex.printStackTrace();
-            
-        } finally
-        {
-            try
-            {
-                if (rs != null)
-                {
-                    rs.close();
-                }
-                if (stmt != null)
-                {
-                    stmt.close();
-                }
-                if (connection != null)
-                {
-                    connection.close();
-                }
-            } catch (Exception e)
-            {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifySchemaI18NService.class, e);
-                e.printStackTrace();
-            }
-        }
-    }
 }
