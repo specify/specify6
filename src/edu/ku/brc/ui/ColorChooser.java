@@ -56,9 +56,7 @@ public class ColorChooser extends JButton implements AncestorListener, GetSetVal
     protected Color      color;
     protected JWindow    popup;
     protected ColorSelectionPanel colorPanel;
-    protected ColorChooser itself;
-    
-    
+    protected boolean    justLostFocus = false;
     
      /**
      * Creates a toolbar item with label and icon and their positions.
@@ -70,7 +68,6 @@ public class ColorChooser extends JButton implements AncestorListener, GetSetVal
         
         this.color   = color;
         visible_comp = this;
-        itself       = this;
         
         setBackground(color);
         setPreferredSize(new Dimension(16,16));
@@ -88,60 +85,76 @@ public class ColorChooser extends JButton implements AncestorListener, GetSetVal
         g.drawRect(0,0,size.width-1,size.height-1);
     }
 
-
+    /**
+     * 
+     */
     protected void init()
     {
         drop_down_comp = new ColorSelectionPanel();      
         drop_down_comp.addPropertyChangeListener("selectedColor",new PropertyChangeListener() {
             public void propertyChange(PropertyChangeEvent evt) 
             {
-                itself.hidePopup();
+                ColorChooser.this.hidePopup();
                 Color colorVal = (Color)evt.getNewValue();
                 setValue(colorVal, null);
             }
         });
-
         
-        addActionListener(new ActionListener()
-                {  public void actionPerformed(ActionEvent ae) { createColorPanelWindow(); } });
-            
+        addActionListener(new ActionListener() {  
+            public void actionPerformed(ActionEvent ae) 
+            { 
+                if (!justLostFocus && (popup == null || !popup.isVisible()))
+                {
+                    createColorPanelWindow();
+                }
+                justLostFocus = false;
+            } 
+        });
 
         addAncestorListener(this);
     }
     
+    /**
+     * 
+     */
     protected void createColorPanelWindow()
     {
-        // build popup window
-        //System.out.println(getDialog(this));
-        
-        Dialog parentDlg = getDialog(this);
-        if (parentDlg != null)
+        if (popup != null && popup.isVisible())
         {
-            popup = new JWindow(parentDlg);
+            hidePopup();
+            
         } else
         {
-            popup = new JWindow(getFrame(this));
-        }
-        
-        popup.getContentPane().add(drop_down_comp);
-        
-        popup.addWindowFocusListener(new WindowAdapter() 
-        {
-            @Override
-            public void windowLostFocus(WindowEvent evt) 
+            Dialog parentDlg = getDialog(this);
+            if (parentDlg != null)
             {
-                popup.setVisible(false);
+                popup = new JWindow(parentDlg);
+            } else
+            {
+                popup = new JWindow(getFrame(this));
             }
-        });
-        popup.pack();
-        
-        // show the popup window
-        Point pt = visible_comp.getLocationOnScreen();
-        pt.translate(visible_comp.getWidth()-popup.getWidth(),visible_comp.getHeight());
-        popup.setLocation(pt);
-        popup.toFront();
-        popup.setVisible(true);
-        popup.requestFocusInWindow();
+            
+            popup.getContentPane().add(drop_down_comp);
+            
+            popup.addWindowFocusListener(new WindowAdapter() 
+            {
+                @Override
+                public void windowLostFocus(WindowEvent evt) 
+                {
+                    justLostFocus = true;
+                    hidePopup();
+                }
+            });
+            popup.pack();
+            
+            // show the popup window
+            Point pt = visible_comp.getLocationOnScreen();
+            pt.translate(visible_comp.getWidth()-popup.getWidth(),visible_comp.getHeight());
+            popup.setLocation(pt);
+            popup.toFront();
+            popup.setVisible(true);
+            popup.requestFocusInWindow();
+        }
     }
 
     
@@ -178,7 +191,8 @@ public class ColorChooser extends JButton implements AncestorListener, GetSetVal
         hidePopup();
     }
     
-    public void ancestorMoved(AncestorEvent event){ 
+    public void ancestorMoved(AncestorEvent event)
+    { 
         if (event.getSource() != popup)
         {
             hidePopup();
@@ -190,6 +204,7 @@ public class ColorChooser extends JButton implements AncestorListener, GetSetVal
         if (popup != null && popup.isVisible()) 
         {
             popup.setVisible(false);
+            popup = null;
         }
     }
     
@@ -254,9 +269,9 @@ public class ColorChooser extends JButton implements AncestorListener, GetSetVal
                 public void actionPerformed(ActionEvent evt) {
                     
                     Color newColor = JColorChooser.showDialog(
-                            itself,
+                            ColorChooser.this,
                             "Choose Color",
-                            itself.getBackground());
+                            ColorChooser.this.getBackground());
                     if (newColor != null)
                     {
                         selectColor(newColor);
