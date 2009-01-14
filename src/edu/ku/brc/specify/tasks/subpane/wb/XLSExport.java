@@ -148,55 +148,18 @@ public class XLSExport implements DataExport
     }
     
     /**
-     * calls HSSFCell.setCellValue with the java type appropriate for the cell type.
+     * calls HSSFCell.setCellValue 
+     * 
+     * Since all data is treated as string data by the WB and is not validated until an upload is attempted,
+     * Validation and type-checking is no longer performed here since it could lead to loss of data 
+     * in the exported file.
      * 
      * @param cell
      * @param value
      */
     protected void setCellValue(final HSSFCell cell, final String value)
     {
-        int type = cell.getCellType();
-        
-        boolean valueSet = true;
-        try
-        {
-            if (type == HSSFCell.CELL_TYPE_NUMERIC)
-            {
-                cell.setCellValue(Double.parseDouble(value));
-            }
-            // parseBoolean returns true if value == "true" (ignoring case) else false.
-            // Seems like data could be lost so I am assigning the string unless value definitely
-            // seems
-            // to be boolean.
-            // We probably should add a new cell editor specifically for "boolean" to control the
-            // value.
-            // But we probably shouldn't even with bother with CELL_TYPE_BOOLEAN since Specify6
-            // booleans arent' true booleans anyway so
-            // why bother?
-            else if (type == HSSFCell.CELL_TYPE_BOOLEAN
-                    && (value == "true" || value == "false"))
-            {
-                cell.setCellValue(Boolean.parseBoolean(value));
-            }
-            else
-            {
-                valueSet = false;
-            }
-        }
-        catch (NumberFormatException ex)
-        {
-            if (!StringUtils.isBlank(value))
-            {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(XLSExport.class, ex);
-            }
-            valueSet = false;
-        }
-        
-        if (!valueSet)
-        {
-            cell.setCellValue(new HSSFRichTextString(value));
-        }
+    	cell.setCellValue(new HSSFRichTextString(value));
     }
     
     /**
