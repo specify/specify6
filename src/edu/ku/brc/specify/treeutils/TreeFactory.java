@@ -379,7 +379,7 @@ public class TreeFactory
             
         } else if (clazz.equals(Geography.class))
         {
-            sb.append(" WHERE CE.CollectionMemberID = COLMEMID AND NodeNumber > %d AND HighestChildNodeNumber <= %d");
+            sb.append(" WHERE CO.CollectionMemberID = COLMEMID AND NodeNumber > %d AND HighestChildNodeNumber <= %d");
             
         } else if (clazz.equals(GeologicTimePeriod.class))
         {
