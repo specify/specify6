@@ -22,7 +22,6 @@ import java.awt.HeadlessException;
 import java.util.List;
 
 import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
 
 /**
  * Choose an object from a list of Objects using their "toString"
@@ -68,7 +67,7 @@ public class ToggleButtonChooserDlg<T> extends CustomDialog
                                   final List<T> listItems,
                                   final ToggleButtonChooserPanel.Type uiType) throws HeadlessException
     {
-        this(parentFrame, title, null, listItems, null, OKCANCEL, uiType);
+        this(parentFrame, title, null, listItems, OKCANCEL, uiType);
     }
 
     /**
@@ -83,7 +82,7 @@ public class ToggleButtonChooserDlg<T> extends CustomDialog
                                   final String  desc, 
                                   final List<T> listItems) throws HeadlessException
     {
-        this(parentFrame, title, desc, listItems, null, OKCANCEL, ToggleButtonChooserPanel.Type.Checkbox);
+        this(parentFrame, title, desc, listItems, OKCANCEL, ToggleButtonChooserPanel.Type.Checkbox);
     }
 
     /**
@@ -99,13 +98,11 @@ public class ToggleButtonChooserDlg<T> extends CustomDialog
                                   final String    title, 
                                   final String    desc, 
                                   final List<T>   listItems, 
-                                  final ImageIcon icon, 
                                   final int       whichButtons,
                                   final ToggleButtonChooserPanel.Type uiType) throws HeadlessException
     {
         super(parentFrame, getResourceString(title), true, whichButtons, null);
         
-        this.icon   = icon;
         this.title  = title;
         
         panel = new ToggleButtonChooserPanel<T>(listItems, desc, uiType);

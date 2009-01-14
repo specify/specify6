@@ -2188,7 +2188,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
                     Statement updateStatement = newDBConn.createStatement();
                     strBuf.setLength(0);
-                    strBuf.append("INSERT INTO collection (CollectionID, DisciplineID, CollectionName, CollectionPrefix, Remarks, ");
+                    strBuf.append("INSERT INTO collection (CollectionID, DisciplineID, CollectionName, Code, Remarks, ");
                     strBuf.append("IsEmbeddedCollectingEvent, TimestampCreated, TimestampModified, CreatedByAgentID, ModifiedByAgentID, Version, UserGroupScopeId) VALUES (");
                     strBuf.append(curCollectionID + ",");
                     strBuf.append(newColObjdefID + ",");
@@ -5589,7 +5589,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 for (int i = 1; i <= cols; i++)
                 {
                     String colName = metaData.getColumnName(i);
-                    if (nameHash.get(colName) == null || usedFieldHash.get(colName) != null)
+                    if (nameHash.get(colName) == null || 
+                        usedFieldHash.get(colName) != null ||
+                        !colName.equals("RangeDesc"))
                     {
                         if (rows == 0)
                         {
@@ -5622,6 +5624,17 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                             value = "NULL";
                         }
 
+                    } else if (colName.equals("Range"))
+                    {
+                        String range = rs.getString(i);
+                        if (range != null)
+                        {
+                            hasData = true;
+                            value = range;
+                        } else
+                        {
+                            value = "NULL";
+                        }
                     } else
                     {
                         Object obj = rs.getObject(i);
@@ -5635,7 +5648,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     // log.debug(colName+" ["+value+"]");
 
                     if (valuesSQL.length() > 0)
+                    {
                         valuesSQL.append(",");
+                    }
                     valuesSQL.append(value);
                 }
 
@@ -5653,7 +5668,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     Statement updateStatement = newDBConn.createStatement();
                     BasicSQLUtils.removeForeignKeyConstraints(newDBConn,
                             BasicSQLUtils.myDestinationServerType);
-                    if (false)
+                    if (true)
                     {
                         log.info(insertSQL);
                     }

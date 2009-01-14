@@ -319,7 +319,7 @@ public class DBConnection
      */
     public void finalize()
     {
-        DataProviderFactory.getInstance().shutdown();
+        //DataProviderFactory.getInstance().shutdown();
         close();
     }
     

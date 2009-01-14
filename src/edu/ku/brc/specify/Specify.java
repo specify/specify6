@@ -173,6 +173,7 @@ import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.CustomFrame;
 import edu.ku.brc.ui.DefaultClassActionHandler;
 import edu.ku.brc.ui.GraphicsUtils;
 import edu.ku.brc.ui.IconManager;
@@ -688,11 +689,15 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             if (appImgIcon != null && appImgIcon.getIconWidth() == 32 && appImgIcon.getIconHeight() == 32)
             {
                 appIcon.setIcon(appImgIcon);
+                CustomDialog.setAppIcon(appImgIcon);
+                CustomFrame.setAppIcon(appImgIcon);
                 return;
             }
         }
         appImgIcon = IconManager.getImage("AppIcon", IconManager.IconSize.Std32); //$NON-NLS-1$
         appIcon.setIcon(appImgIcon);
+        CustomDialog.setAppIcon(appImgIcon);
+        CustomFrame.setAppIcon(appImgIcon);
     }
 
     /**

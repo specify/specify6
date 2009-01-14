@@ -122,8 +122,8 @@ public abstract class BaseTask extends edu.ku.brc.af.tasks.BaseTask
             {
                 Hashtable<String, PermissionOptionPersist> hashItem = new Hashtable<String, PermissionOptionPersist>();
                 hashItem.put("CollectionManager", new PermissionOptionPersist(name, "CollectionManager", true, true, true,true));
-                hashItem.put("Guest",             new PermissionOptionPersist(name, "Guest", true, true, true,true));
-                hashItem.put("DataEntry",        new PermissionOptionPersist(name, "DataEntry", true, true, true,true));
+                hashItem.put("Guest",             new PermissionOptionPersist(name, "Guest",             true, true, true,true));
+                hashItem.put("DataEntry",         new PermissionOptionPersist(name, "DataEntry",         true, true, true,true));
                 
                 Hashtable<String, Hashtable<String, PermissionOptionPersist>> mainHash = new Hashtable<String, Hashtable<String, PermissionOptionPersist>>();
                 mainHash.put(name, hashItem);

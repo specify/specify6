@@ -28,6 +28,7 @@ import org.dom4j.Element;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.af.core.db.AutoNumberIFace;
+import edu.ku.brc.af.ui.forms.formatters.GenericStringUIFieldFormatter;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.helpers.XMLHelper;

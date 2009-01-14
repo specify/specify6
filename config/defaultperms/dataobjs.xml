@@ -1,0 +1,2331 @@
+<hashtable>
+  <entry>
+    <string>agentgeography</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="agentgeography" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="agentgeography" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="agentgeography" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>inforequest</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="inforequest" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="inforequest" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="inforequest" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>loan</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="loan" type="Guest" view="false" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="loan" type="DataEntry" view="false" modify="false" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="loan" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>specifyuser</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="specifyuser" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="specifyuser" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="specifyuser" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>appraisal</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="appraisal" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="appraisal" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="appraisal" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>workbench</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="workbench" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="workbench" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="workbench" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>spprincipal</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="spprincipal" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="spprincipal" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="spprincipal" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>dnasequenceattachment</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="dnasequenceattachment" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="dnasequenceattachment" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="dnasequenceattachment" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>conservdescriptionattachment</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="conservdescriptionattachment" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="conservdescriptionattachment" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="conservdescriptionattachment" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>localitycitation</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="localitycitation" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="localitycitation" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="localitycitation" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>deaccession</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="deaccession" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="deaccession" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="deaccession" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>lithostrattreedefitem</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="lithostrattreedefitem" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="lithostrattreedefitem" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="lithostrattreedefitem" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>geographytreedef</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="geographytreedef" type="Guest" view="false" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="geographytreedef" type="DataEntry" view="false" modify="false" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="geographytreedef" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>loanagent</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="loanagent" type="Guest" view="false" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="loanagent" type="DataEntry" view="false" modify="false" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="loanagent" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>preparationattr</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="preparationattr" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="preparationattr" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="preparationattr" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>picklist</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="picklist" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="picklist" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="picklist" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>preptype</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="preptype" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="preptype" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="preptype" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>geologictimeperiodtreedefitem</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="geologictimeperiodtreedefitem" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="geologictimeperiodtreedefitem" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="geologictimeperiodtreedefitem" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>institution</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="institution" type="Guest" view="false" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="institution" type="DataEntry" view="false" modify="false" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="institution" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>autonumberingscheme</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="autonumberingscheme" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="autonumberingscheme" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="autonumberingscheme" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>accessionattachment</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="accessionattachment" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="accessionattachment" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="accessionattachment" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>borrow</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="borrow" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="borrow" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="borrow" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>collector</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="collector" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="collector" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="collector" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>deaccessionagent</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="deaccessionagent" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="deaccessionagent" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="deaccessionagent" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>accession</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="accession" type="Guest" view="false" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="accession" type="DataEntry" view="false" modify="false" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="accession" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>workbenchrowimage</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="workbenchrowimage" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="workbenchrowimage" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="workbenchrowimage" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>accessionagent</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="accessionagent" type="Guest" view="false" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="accessionagent" type="DataEntry" view="false" modify="false" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="accessionagent" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>repositoryagreementattachment</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="repositoryagreementattachment" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="repositoryagreementattachment" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="repositoryagreementattachment" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>lithostrattreedef</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="lithostrattreedef" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="lithostrattreedef" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="lithostrattreedef" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>collectionobjectattachment</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="collectionobjectattachment" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="collectionobjectattachment" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="collectionobjectattachment" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>taxoncitation</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="taxoncitation" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="taxoncitation" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="taxoncitation" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>geocoorddetail</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="geocoorddetail" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="geocoorddetail" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="geocoorddetail" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>storagetreedefitem</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="storagetreedefitem" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="storagetreedefitem" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="storagetreedefitem" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>author</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="author" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="author" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="author" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>spqueryfield</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="spqueryfield" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="spqueryfield" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="spqueryfield" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>conservevent</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="conservevent" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="conservevent" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="conservevent" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>gift</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="gift" type="Guest" view="false" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="gift" type="DataEntry" view="false" modify="false" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="gift" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>exchangeout</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="exchangeout" type="Guest" view="false" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="exchangeout" type="DataEntry" view="false" modify="false" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="exchangeout" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>spappresourcedir</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="spappresourcedir" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="spappresourcedir" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="spappresourcedir" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>collectionobjectcitation</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="collectionobjectcitation" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="collectionobjectcitation" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="collectionobjectcitation" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>attributedef</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="attributedef" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="attributedef" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="attributedef" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>borrowmaterial</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="borrowmaterial" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="borrowmaterial" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="borrowmaterial" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>spviewsetobj</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="spviewsetobj" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="spviewsetobj" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="spviewsetobj" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>fieldnotebook</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="fieldnotebook" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="fieldnotebook" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="fieldnotebook" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>spappresourcedata</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="spappresourcedata" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="spappresourcedata" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="spappresourcedata" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>accessionauthorization</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="accessionauthorization" type="Guest" view="false" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="accessionauthorization" type="DataEntry" view="false" modify="false" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="accessionauthorization" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>workbenchtemplatemappingitem</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="workbenchtemplatemappingitem" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="workbenchtemplatemappingitem" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="workbenchtemplatemappingitem" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>determinationcitation</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="determinationcitation" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="determinationcitation" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="determinationcitation" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>conserveventattachment</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="conserveventattachment" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="conserveventattachment" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="conserveventattachment" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>taxonattachment</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="taxonattachment" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="taxonattachment" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="taxonattachment" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>storage</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="storage" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="storage" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="storage" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>deaccessionpreparation</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="deaccessionpreparation" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="deaccessionpreparation" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="deaccessionpreparation" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>spexportschemaitem</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="spexportschemaitem" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="spexportschemaitem" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="spexportschemaitem" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>taxon</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="taxon" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="taxon" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="taxon" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>determination</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="determination" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="determination" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="determination" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>giftpreparation</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="giftpreparation" type="Guest" view="false" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="giftpreparation" type="DataEntry" view="false" modify="false" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="giftpreparation" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>spquery</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="spquery" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="spquery" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="spquery" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>permit</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="permit" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="permit" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="permit" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>splocalecontaineritem</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="splocalecontaineritem" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="splocalecontaineritem" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="splocalecontaineritem" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>permitattachment</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="permitattachment" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="permitattachment" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="permitattachment" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>loanpreparation</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="loanpreparation" type="Guest" view="false" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="loanpreparation" type="DataEntry" view="false" modify="false" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="loanpreparation" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>geologictimeperiodtreedef</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="geologictimeperiodtreedef" type="Guest" view="false" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="geologictimeperiodtreedef" type="DataEntry" view="false" modify="false" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="geologictimeperiodtreedef" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>splocaleitemstr</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="splocaleitemstr" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="splocaleitemstr" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="splocaleitemstr" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>spappresource</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="spappresource" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="spappresource" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="spappresource" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>preparation</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="preparation" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="preparation" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="preparation" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>workbenchrow</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="workbenchrow" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="workbenchrow" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="workbenchrow" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>taxontreedef</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="taxontreedef" type="Guest" view="false" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="taxontreedef" type="DataEntry" view="false" modify="false" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="taxontreedef" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>storagetreedef</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="storagetreedef" type="Guest" view="false" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="storagetreedef" type="DataEntry" view="false" modify="false" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="storagetreedef" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>discipline</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="discipline" type="Guest" view="false" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="discipline" type="DataEntry" view="false" modify="false" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="discipline" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>collectionobjectattribute</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="collectionobjectattribute" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="collectionobjectattribute" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="collectionobjectattribute" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>commonnametx</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="commonnametx" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="commonnametx" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="commonnametx" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>addressofrecord</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="addressofrecord" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="addressofrecord" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="addressofrecord" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>attachment</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="attachment" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="attachment" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="attachment" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>collectionobject</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="collectionobject" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="collectionobject" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="collectionobject" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>treatmentevent</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="treatmentevent" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="treatmentevent" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="treatmentevent" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>journal</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="journal" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="journal" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="journal" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>attachmenttag</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="attachmenttag" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="attachmenttag" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="attachmenttag" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>localitydetail</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="localitydetail" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="localitydetail" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="localitydetail" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>collectingtrip</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="collectingtrip" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="collectingtrip" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="collectingtrip" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>exchangein</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="exchangein" type="Guest" view="false" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="exchangein" type="DataEntry" view="false" modify="false" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="exchangein" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>borrowagent</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="borrowagent" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="borrowagent" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="borrowagent" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>localityattachment</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="localityattachment" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="localityattachment" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="localityattachment" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>localitynamealias</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="localitynamealias" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="localitynamealias" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="localitynamealias" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>division</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="division" type="Guest" view="false" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="division" type="DataEntry" view="false" modify="false" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="division" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>exsiccataitem</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="exsiccataitem" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="exsiccataitem" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="exsiccataitem" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>shipment</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="shipment" type="Guest" view="false" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="shipment" type="DataEntry" view="false" modify="false" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="shipment" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>lithostrat</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="lithostrat" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="lithostrat" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="lithostrat" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>taxontreedefitem</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="taxontreedefitem" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="taxontreedefitem" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="taxontreedefitem" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>borrowreturnmaterial</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="borrowreturnmaterial" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="borrowreturnmaterial" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="borrowreturnmaterial" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>fieldnotebookpageset</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="fieldnotebookpageset" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="fieldnotebookpageset" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="fieldnotebookpageset" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>geography</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="geography" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="geography" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="geography" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>workbenchdataitem</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="workbenchdataitem" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="workbenchdataitem" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="workbenchdataitem" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>collection</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="collection" type="Guest" view="false" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="collection" type="DataEntry" view="false" modify="false" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="collection" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>container</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="container" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="container" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="container" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>spreport</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="spreport" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="spreport" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="spreport" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>recordset</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="recordset" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="recordset" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="recordset" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>splocalecontainer</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="splocalecontainer" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="splocalecontainer" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="splocalecontainer" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>exsiccata</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="exsiccata" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="exsiccata" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="exsiccata" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>datatype</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="datatype" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="datatype" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="datatype" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>collectingeventattr</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="collectingeventattr" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="collectingeventattr" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="collectingeventattr" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>collectingeventattachment</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="collectingeventattachment" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="collectingeventattachment" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="collectingeventattachment" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>agentvariant</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="agentvariant" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="agentvariant" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="agentvariant" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>loanreturnpreparation</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="loanreturnpreparation" type="Guest" view="false" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="loanreturnpreparation" type="DataEntry" view="false" modify="false" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="loanreturnpreparation" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>fieldnotebookattachment</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="fieldnotebookattachment" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="fieldnotebookattachment" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="fieldnotebookattachment" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>agentattachment</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="agentattachment" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="agentattachment" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="agentattachment" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>geologictimeperiod</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="geologictimeperiod" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="geologictimeperiod" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="geologictimeperiod" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>collectionobjectattr</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="collectionobjectattr" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="collectionobjectattr" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="collectionobjectattr" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>attachmentmetadata</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="attachmentmetadata" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="attachmentmetadata" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="attachmentmetadata" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>agent</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="agent" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="agent" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="agent" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>conservdescription</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="conservdescription" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="conservdescription" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="conservdescription" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>collectionreltype</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="collectionreltype" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="collectionreltype" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="collectionreltype" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>repositoryagreement</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="repositoryagreement" type="Guest" view="false" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="repositoryagreement" type="DataEntry" view="false" modify="false" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="repositoryagreement" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>spfieldvaluedefault</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="spfieldvaluedefault" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="spfieldvaluedefault" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="spfieldvaluedefault" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>preparationattribute</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="preparationattribute" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="preparationattribute" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="preparationattribute" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>project</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="project" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="project" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="project" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>groupperson</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="groupperson" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="groupperson" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="groupperson" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>fieldnotebookpageattachment</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="fieldnotebookpageattachment" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="fieldnotebookpageattachment" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="fieldnotebookpageattachment" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>collectingeventattribute</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="collectingeventattribute" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="collectingeventattribute" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="collectingeventattribute" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>locality</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="locality" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="locality" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="locality" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>fieldnotebookpagesetattachment</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="fieldnotebookpagesetattachment" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="fieldnotebookpagesetattachment" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="fieldnotebookpagesetattachment" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>agentspecialty</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="agentspecialty" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="agentspecialty" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="agentspecialty" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>preparationattachment</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="preparationattachment" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="preparationattachment" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="preparationattachment" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>spexportschema</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="spexportschema" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="spexportschema" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="spexportschema" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>dnasequence</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="dnasequence" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="dnasequence" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="dnasequence" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>workbenchtemplate</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="workbenchtemplate" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="workbenchtemplate" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="workbenchtemplate" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>otheridentifier</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="otheridentifier" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="otheridentifier" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="otheridentifier" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>fieldnotebookpage</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="fieldnotebookpage" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="fieldnotebookpage" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="fieldnotebookpage" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>collectionrelationship</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="collectionrelationship" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="collectionrelationship" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="collectionrelationship" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>sppermission</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="sppermission" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="sppermission" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="sppermission" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>giftagent</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="giftagent" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="giftagent" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="giftagent" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>collectingevent</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="collectingevent" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="collectingevent" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="collectingevent" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>sptasksemaphore</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="sptasksemaphore" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="sptasksemaphore" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="sptasksemaphore" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>referencework</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="referencework" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="referencework" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="referencework" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>geographytreedefitem</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="geographytreedefitem" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="geographytreedefitem" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="geographytreedefitem" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>loanattachment</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="loanattachment" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="loanattachment" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="loanattachment" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>address</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="address" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="address" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="address" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+  <entry>
+    <string>paleocontext</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="paleocontext" type="Guest" view="true" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="paleocontext" type="DataEntry" view="true" modify="true" del="false" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="paleocontext" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+</hashtable>

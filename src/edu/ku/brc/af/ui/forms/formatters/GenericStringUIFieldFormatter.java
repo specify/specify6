@@ -4,16 +4,14 @@
  * [INSERT KU-APPROVED LICENSE TEXT HERE]
  *
  */
-package edu.ku.brc.specify.ui;
+package edu.ku.brc.af.ui.forms.formatters;
 
 import java.util.Vector;
 
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
-import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterField;
-import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
-import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
+import edu.ku.brc.specify.ui.BaseUIFieldFormatter;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -33,13 +31,13 @@ public class GenericStringUIFieldFormatter extends BaseUIFieldFormatter implemen
     /**
      * Constructs a string based non-formatter formatter.
      * @param name
-     * @param dataClass
+     * @param tableClass
      * @param fieldName
      * @param localizedTitle
      * @param uiDisplayLen
      */
     public GenericStringUIFieldFormatter(final String   name,
-                                         final Class<?> dataClass,
+                                         final Class<?> tableClass,
                                          final String   fieldName,
                                          final String   localizedTitle,
                                          final int      uiDisplayLen)
@@ -49,10 +47,10 @@ public class GenericStringUIFieldFormatter extends BaseUIFieldFormatter implemen
         this.name      = name;
         this.title     = localizedTitle;
         
-        DBTableInfo ti = DBTableIdMgr.getInstance().getByShortClassName(dataClass.getSimpleName());
+        DBTableInfo ti = DBTableIdMgr.getInstance().getByShortClassName(tableClass.getSimpleName());
         DBFieldInfo fi = ti.getFieldByName(fieldName);
         
-        this.dataClass              = dataClass;
+        this.dataClass              = tableClass;
         this.length                 = fi.getLength();
         this.uiLength               = uiDisplayLen;
         this.isNumericCatalogNumber = false;

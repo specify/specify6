@@ -126,7 +126,8 @@ public class LoanBusRules extends AttachmentOwnerBaseBusRules
             if (comp instanceof JButton)
             {
                 comp.setVisible(!isNewObj && isEdit);
-                comp.setEnabled(!loan.getIsClosed() && !allResolved);
+                Boolean isClosed = loan.getIsClosed();
+                comp.setEnabled(isClosed != null ? !loan.getIsClosed() : false && !allResolved);
                 
                 if (allResolved)
                 {

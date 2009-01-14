@@ -2388,7 +2388,6 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 "WB_SELECT_FIELD_TITLE", 
                 "WB_SELECT_FIELD", 
                 items, 
-                null, 
                 CustomDialog.OKCANCELHELP,
                 ToggleButtonChooserPanel.Type.RadioButton);
         

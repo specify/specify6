@@ -76,6 +76,8 @@ public class CustomFrame extends JFrame
     public static final int OKCANCELAPPLY      = OK_BTN | CANCEL_BTN | APPLY_BTN;
     public static final int OKCANCELAPPLYHELP  = OK_BTN | CANCEL_BTN | APPLY_BTN | HELP_BTN;
     
+    protected static  ImageIcon appIcon = null;
+
     // Data Members
     protected JButton           okBtn            = null;
     protected JButton           cancelBtn        = null;
@@ -129,6 +131,11 @@ public class CustomFrame extends JFrame
         
         this.whichBtns = whichBtns;
         this.contentPanel = contentPanel;
+        
+        if (appIcon != null)
+        {
+            setIconImage(appIcon.getImage());
+        }
     }
     
     /**
@@ -393,6 +400,22 @@ public class CustomFrame extends JFrame
         }
         
         super.setVisible(visible);
+    }
+
+    /**
+     * @return the appIcon
+     */
+    public static ImageIcon getAppIcon()
+    {
+        return appIcon;
+    }
+
+    /**
+     * @param appIcon the appIcon to set
+     */
+    public static void setAppIcon(ImageIcon appIcon)
+    {
+        CustomFrame.appIcon = appIcon;
     }
 
 }

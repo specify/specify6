@@ -446,7 +446,7 @@ public class FormCell implements Comparable<FormCellIFace>, Cloneable, FormCellI
         return formCell;
     }
     
-    protected void toXMLAttrs(final StringBuilder sb)
+    protected void toXMLAttrs(@SuppressWarnings("unused") final StringBuilder sb)
     {
         // no op
     }

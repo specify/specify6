@@ -33,12 +33,9 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-import javax.swing.UIManager;
 import javax.swing.WindowConstants;
-import javax.swing.plaf.ColorUIResource;
 
 import org.apache.commons.lang.StringUtils;
-import org.flexdock.plaf.resources.ColorResourceHandler;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.factories.ButtonBarFactory;
@@ -90,6 +87,8 @@ public class CustomDialog extends JDialog
     public static final int OKCANCELAPPLYHELP  = OK_BTN | CANCEL_BTN | APPLY_BTN | HELP_BTN;
     public static final int CANCELHELP         = CANCEL_BTN | HELP_BTN;
     
+    protected static  ImageIcon appIcon = null;
+    
     // Data Members
     protected JButton           okBtn            = null;
     protected JButton           cancelBtn        = null;
@@ -102,7 +101,6 @@ public class CustomDialog extends JDialog
     protected String            helpLabel        = null;
     protected String            applyLabel       = null;
 
-    protected ImageIcon         icon             = null;
     protected boolean           isCancelled      = true;
     protected boolean           closeOnApplyClk  = false;
     protected boolean           closeOnHelpClk   = false;
@@ -151,6 +149,11 @@ public class CustomDialog extends JDialog
         
         this.whichBtns    = whichBtns;
         this.contentPanel = contentPanel;
+        
+        if (appIcon != null)
+        {
+            setIconImage(appIcon.getImage());
+        }
     }
 
     /**
@@ -173,6 +176,11 @@ public class CustomDialog extends JDialog
         this.whichBtns    = whichBtns;
         this.contentPanel = contentPanel;
         this.defaultBtn = defaultBtn;
+        
+        if (appIcon != null)
+        {
+            setIconImage(appIcon.getImage());
+        }
     }
 
     /**
@@ -193,6 +201,11 @@ public class CustomDialog extends JDialog
         
         this.whichBtns    = whichBtns;
         this.contentPanel = contentPanel;
+        
+        if (appIcon != null)
+        {
+            setIconImage(appIcon.getImage());
+        }
     }
 
     /**
@@ -642,4 +655,21 @@ public class CustomDialog extends JDialog
     {
         // no op
     }
+
+    /**
+     * @return the appIcon
+     */
+    public static ImageIcon getAppIcon()
+    {
+        return appIcon;
+    }
+
+    /**
+     * @param appIcon the appIcon to set
+     */
+    public static void setAppIcon(ImageIcon appIcon)
+    {
+        CustomDialog.appIcon = appIcon;
+    }
+    
 }

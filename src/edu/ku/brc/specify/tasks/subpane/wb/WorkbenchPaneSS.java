@@ -1591,7 +1591,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         
         String title       = "GeoRefConv";
         String description = "GeoRefConvDesc";
-        ToggleButtonChooserDlg<String> dlg = new ToggleButtonChooserDlg<String>(mainFrame,title,description,outputFormats,null, CustomDialog.OKCANCEL, Type.RadioButton)
+        ToggleButtonChooserDlg<String> dlg = new ToggleButtonChooserDlg<String>(mainFrame,title,description,outputFormats, CustomDialog.OKCANCEL, Type.RadioButton)
         {
             
             @Override
@@ -2503,7 +2503,6 @@ public class WorkbenchPaneSS extends BaseSubPane
                                                                         "WB_CARRYFORWARD",
                                                                         "WB_CHOOSE_CARRYFORWARD", 
                                                                         items,
-                                                                        null,
                                                                         CustomDialog.OKCANCELHELP,
                                                                         ToggleButtonChooserPanel.Type.Checkbox);
         

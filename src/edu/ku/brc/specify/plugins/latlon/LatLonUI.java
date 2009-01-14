@@ -79,7 +79,7 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
     private static final Logger log = Logger.getLogger(UIPluginBase.class);
     
     protected final static String[] formatClass             = new String[] {"DDDDPanel", "DDMMMMPanel", "DDMMSSPanel"};
-    protected final static String[] formats                 = new String[] {"DDD.DDD", "DD:MM.MM", "DD MM SS"};
+    protected final static String[] formats                 = new String[] {"DDD.DDD", "DD_MM.MM", "DD_MM_SS"};
 
     protected final static String[] pointNames              = {"LatLonPoint", "LatLonLineLeft", "LatLonLineRight", "LatLonRectTopLeft", "LatLonRectBottomRight"};
     protected final static String[] typeNames               = {"LatLonPoint", "LatLonLine", "LatLonRect"};
@@ -193,9 +193,14 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
             pointImages[i] = IconManager.getIcon(pointNames[i], IconManager.IconSize.Std16);
         }
         
+        String[] formatLabels = new String[formats.length];
+        for (int i=0;i<formats.length;i++)
+        {
+            formatLabels[i] = getResourceString(formats[i]);
+        }
         cardPanel      = new JPanel(cardLayout);
-        formatSelector = createComboBox(formats);
-        latLonPanes    = new JComponent[formats.length];
+        formatSelector = createComboBox(formatLabels);
+        latLonPanes    = new JComponent[formatLabels.length];
         
         formatSelector.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae)

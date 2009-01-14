@@ -66,6 +66,7 @@ import edu.ku.brc.af.ui.db.PickListDBAdapterFactory;
 import edu.ku.brc.af.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.af.ui.db.TextFieldFromPickListTable;
 import edu.ku.brc.af.ui.db.TextFieldWithInfo;
+import edu.ku.brc.af.ui.forms.formatters.GenericStringUIFieldFormatter;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.af.ui.forms.persist.AltViewIFace;
@@ -346,6 +347,8 @@ public class ViewFactory
      */
     public static JComponent createFormattedTextField(final FormValidator validator,
                                                       final FormCellField cellField,
+                                                      final Class<?>      tableClass,
+                                                      final int           len,
                                                       final String        uiFormatterName,
                                                       final boolean       isViewOnly,
                                                       final boolean       isRequired,
@@ -367,8 +370,9 @@ public class ViewFactory
             if (formatter == null)
             {
                 String msg = "Field["+cellField.getName()+ "] is missing formatter by name ["+uiFormatterName+"]";
-                UIRegistry.showError(msg);
-                throw new RuntimeException(msg);
+                log.debug(msg);
+                //throw new RuntimeException(msg);
+                 formatter = new GenericStringUIFieldFormatter("Temp", tableClass, cellField.getName(), "", len);
             }
             
             if (formatter.isDate() || formatter.isNumeric())
@@ -420,10 +424,18 @@ public class ViewFactory
         
         if (isViewOnly)
         {
-            ValFormattedTextFieldSingle vtfs = new ValFormattedTextFieldSingle(uiFormatterName, 
-                                                                               isViewOnly, 
-                                                                               false, 
-                                                                               suggestedNumCols);
+            ValFormattedTextFieldSingle vtfs;
+            
+            UIFieldFormatterIFace formatter = UIFieldFormatterMgr.getInstance().getFormatter(uiFormatterName);
+            if (formatter == null)
+            {
+                formatter = new GenericStringUIFieldFormatter("Temp", tableClass, cellField.getName(), "", len);
+                vtfs = new ValFormattedTextFieldSingle(formatter, isViewOnly, false);
+                
+            } else
+            {
+                vtfs = new ValFormattedTextFieldSingle(uiFormatterName, isViewOnly, false, suggestedNumCols);
+            }
             changeTextFieldUIForDisplay(vtfs, cellField.getPropertyAsBoolean("transparent", false));
             return vtfs;
         }
@@ -1180,32 +1192,33 @@ public class ViewFactory
                     }
                 }
             }
-            
+
+            Class<?> fieldClass = childInfo != null ? childInfo.getDataClass() : null;
             String uiFormatName = cellField.getUIFieldFormatterName();
+            
             if (mode == AltViewIFace.CreationMode.EDIT && 
                 uiType == FormCellField.FieldType.text && 
-                childInfo != null)
+                fieldClass != null)
             {
-                Class<?> cls = childInfo.getDataClass();
-                if (cls == String.class)
+                if (fieldClass == String.class)
                 {
                 	// check whether there's a formatter defined for this field in the schema
                     if (fieldInfo.getFormatter() != null)
                     {
                     	uiFormatName = fieldInfo.getFormatter().getName();
-                        uiType =  FormCellField.FieldType.formattedtext;
+                        uiType       = FormCellField.FieldType.formattedtext;
                     }
                 }
-                else if (cls == Integer.class || 
-                		 cls == Long.class || 
-                		 cls == Byte.class || 
-                		 cls == Double.class || 
-                		 cls == Float.class || 
-                		 cls == BigDecimal.class)
+                else if (fieldClass == Integer.class || 
+                		 fieldClass == Long.class || 
+                		 fieldClass == Byte.class || 
+                		 fieldClass == Double.class || 
+                		 fieldClass == Float.class || 
+                		 fieldClass == BigDecimal.class)
                 {
                     //log.debug(cellField.getName()+"  is being changed to NUMERIC");
                     uiType =  FormCellField.FieldType.formattedtext;
-                    uiFormatName = "Numeric" + cls.getSimpleName();
+                    uiFormatName = "Numeric" + fieldClass.getSimpleName();
                 }
             }
 
@@ -1221,10 +1234,18 @@ public class ViewFactory
                     break;
                 
                 case formattedtext:
-                    bi.compToAdd = createFormattedTextField(validator, cellField, uiFormatName, mode == AltViewIFace.CreationMode.VIEW, isReq, cellField.getPropertyAsBoolean("alledit", false));
+                {
+                    Class<?> tableClass = null;
+                    try
+                    {
+                        tableClass = Class.forName(formViewDef.getClassName());
+                    } catch (Exception ex){}
+                    
+                    bi.compToAdd = createFormattedTextField(validator, cellField, tableClass, fieldInfo != null ? fieldInfo.getLength() : 0, uiFormatName, 
+                                                            mode == AltViewIFace.CreationMode.VIEW, isReq, cellField.getPropertyAsBoolean("alledit", false));
                     bi.doAddToValidator = validator == null; // might already added to validator
                     break;
-                    
+                }   
                 case label:
                     JLabel label = createLabel("", SwingConstants.LEFT);
                     bi.compToAdd = label;
