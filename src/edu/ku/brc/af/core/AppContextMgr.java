@@ -206,6 +206,12 @@ public abstract class AppContextMgr
     {
         this.hasContext = hasContext;
     }
+    
+    /**
+     * @param tableId the table id
+     * @return the default Taskable from a table id
+     */
+    public Taskable getTaskFromTableId(int tableId) { return null; }
 
     /**
      * Copies all the fields except the data.

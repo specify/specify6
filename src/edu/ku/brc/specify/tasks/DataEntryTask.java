@@ -72,6 +72,7 @@ import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
 import edu.ku.brc.specify.prefs.FormattingPrefsPanel;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
@@ -264,7 +265,7 @@ public class DataEntryTask extends BaseTask
         Vector<Object> dataObjList = new Vector<Object>();
         
         ViewIFace view = viewSetName == null ? SpecifyAppContextMgr.getInstance().getView(viewName) : 
-                                          AppContextMgr.getInstance().getView(viewSetName, viewName);
+                                               SpecifyAppContextMgr.getInstance().getView(viewSetName, viewName);
         if (view == null)
         {
             UIRegistry.showError("Couldn't find default form for ["+viewName+"]");
@@ -645,6 +646,9 @@ public class DataEntryTask extends BaseTask
     {
         SpecifyAppContextMgr appContextMgr = (SpecifyAppContextMgr)AppContextMgr.getInstance();
         
+        boolean  isUsingInteractions = isUsingInteractions();
+        Taskable interactionsTask    = TaskMgr.getTask("InteractionsTaskInit");
+
         for (DataEntryView dev : devList)
         {
             boolean isColObj = dev.getTableInfo() != null && dev.getTableInfo().getTableId() == CollectionObject.getClassTableId();
@@ -699,7 +703,17 @@ public class DataEntryTask extends BaseTask
                         
                         if (doRegister)
                         {
-                            ContextMgr.registerService(10, dev.getName(), tableInfo.getTableId(), cmdAction, this, DATA_ENTRY, tableInfo.getTitle(), true);
+                            // In the future we should check to see if Interactions is turned on
+                            // and if it isn't then 
+                            
+                            int      tblId = tableInfo.getTableId();
+                            Taskable task  = isUsingInteractions ? AppContextMgr.getInstance().getTaskFromTableId(tblId) : null;
+                            if (task == interactionsTask && !isUsingInteractions)
+                            {
+                                task = this;
+                            }
+                            cmdAction.setProperty(NavBoxAction.ORGINATING_TASK, task);
+                            ContextMgr.registerService(10, dev.getName(), tblId, cmdAction, task, DATA_ENTRY, tableInfo.getTitle(), true);
                         }
                         
                         if (dev.isSideBar())
@@ -744,12 +758,25 @@ public class DataEntryTask extends BaseTask
     }
     
     /**
+     * @return whether the Interactions task is being used.
+     */
+    protected boolean isUsingInteractions()
+    {
+        AppPreferences   remotePrefs         = AppPreferences.getRemote();
+        String           discipline          = AppContextMgr.getInstance().getClassObject(Discipline.class).getType();
+        return           remotePrefs.getBoolean(InteractionsTask.IS_USING_INTERACTIONS_PREFNAME+discipline, true);
+    }
+    
+    /**
      * Initializes the TableInfo data member.
      * @param list the list of DataEntryView
      */
     protected void initDataEntryViews(final Vector<DataEntryView> list,
                                       final boolean doRegister)
     {
+        boolean  isUsingInteractions = isUsingInteractions();
+        Taskable interactionsTask    = TaskMgr.getTask("InteractionsTaskInit");
+
         SpecifyAppContextMgr appContextMgr = (SpecifyAppContextMgr)AppContextMgr.getInstance();
         for (DataEntryView dev : list)
         {
@@ -764,7 +791,14 @@ public class DataEntryTask extends BaseTask
                 
                 if (doRegister)
                 {
-                    ContextMgr.registerService(10, dev.getName(), tableInfo.getTableId(), cmdAction, this, DATA_ENTRY, tableInfo.getTitle(), true);
+                    int      tblId = tableInfo.getTableId();
+                    Taskable task  = AppContextMgr.getInstance().getTaskFromTableId(tblId);
+                    if (task == interactionsTask && !isUsingInteractions)
+                    {
+                        task = this;
+                    }
+                    cmdAction.setProperty(NavBoxAction.ORGINATING_TASK, task);
+                    ContextMgr.registerService(10, dev.getName(), tblId, cmdAction, task, DATA_ENTRY, tableInfo.getTitle(), true);
                 }
 
             } else
@@ -1337,7 +1371,8 @@ public class DataEntryTask extends BaseTask
             
         } else if (cmdAction.isAction(EDIT_DATA))
         {
-            editData(this, cmdAction.getData(), null, cmdAction.getProperty("readonly") != null);
+            Taskable task = (Taskable)cmdAction.getProperty(NavBoxAction.ORGINATING_TASK);
+            editData(task != null ? task : this, cmdAction.getData(), null, cmdAction.getProperty("readonly") != null);
         }
         else if (cmdAction.isAction("ShowView"))
         {

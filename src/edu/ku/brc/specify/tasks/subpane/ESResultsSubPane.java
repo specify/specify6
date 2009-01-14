@@ -178,10 +178,15 @@ public class ESResultsSubPane extends BaseSubPane implements ExpressSearchResult
         }
     }
     
+    /**
+     * @param results
+     * @return
+     */
     protected ESResultsTablePanel createResultsTable(final QueryForIdResultsIFace results)
     {
         return new ESResultsTablePanel(this, results, results.shouldInstallServices(), results.isExpanded());
     }
+    
     /**
      * Removes all the panels.
      */

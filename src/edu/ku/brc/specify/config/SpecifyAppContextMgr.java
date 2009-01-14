@@ -76,15 +76,23 @@ import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.config.init.RegisterSpecify;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.Agent;
+import edu.ku.brc.specify.datamodel.Borrow;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
+import edu.ku.brc.specify.datamodel.ExchangeIn;
+import edu.ku.brc.specify.datamodel.ExchangeOut;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
+import edu.ku.brc.specify.datamodel.Gift;
+import edu.ku.brc.specify.datamodel.InfoRequest;
 import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.specify.datamodel.LithoStratTreeDef;
+import edu.ku.brc.specify.datamodel.Loan;
+import edu.ku.brc.specify.datamodel.Permit;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.PickListItem;
 import edu.ku.brc.specify.datamodel.SpAppResource;
@@ -233,15 +241,33 @@ public class SpecifyAppContextMgr extends AppContextMgr
         throw new RuntimeException("Virtual Directory name ["+virtualDirName+"] isn't found."); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
-    /**
-     * @return the viewSetHash
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.AppContextMgr#getViewSetHash()
      */
     @Override
     public Hashtable<String, List<ViewSetIFace>> getViewSetHash()
     {
         return viewSetHash;
     }
-
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.AppContextMgr#getTaskFromTableId(int)
+     */
+    @Override
+    public Taskable getTaskFromTableId(final int tableId)
+    {
+        String taskName =  tableId == Accession.getClassTableId() ||
+                            tableId == Permit.getClassTableId() ||
+                            tableId == Loan.getClassTableId() ||
+                            tableId == InfoRequest.getClassTableId() ||
+                            tableId == Gift.getClassTableId() ||
+                            tableId == ExchangeIn.getClassTableId() ||
+                            tableId == ExchangeOut.getClassTableId() ||
+                            tableId == Borrow.getClassTableId() ? "Interactions" : "Data_Entry";
+                
+        return TaskMgr.getTask(taskName);
+    }
+    
     /**
      * Return the DatabaseName
      * @return the DatabaseName
