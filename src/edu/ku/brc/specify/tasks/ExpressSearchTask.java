@@ -184,6 +184,16 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
         }
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#setEnabled(boolean)
+     */
+    @Override
+    public void setEnabled(boolean enabled)
+    {
+        super.setEnabled(enabled);
+        searchBox.setEnabled(enabled);
+    }
+
     /**
      * Returns true if the talk has been started and false if it hasn't.
      * @return true if the talk has been started and false if it hasn't.
@@ -197,6 +207,9 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
     /**
      * Check to see of the index has been run and then enables the express search controls.
      *
+     */
+    /**
+     * 
      */
     public void appContextHasChanged()
     {

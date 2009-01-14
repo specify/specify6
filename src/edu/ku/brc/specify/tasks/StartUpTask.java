@@ -16,6 +16,7 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
+import java.util.Vector;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -49,6 +50,7 @@ import edu.ku.brc.ui.UIRegistry;
 public class StartUpTask extends edu.ku.brc.af.tasks.StartUpTask
 {
     private static final String WELCOME_BTN_PREF = "StartupTask.OnTaskbar";
+    private static final String SPECIFY_SPLASH   = "SpecifySplash";
     
     private ToolBarDropDownBtn welcomeBtn;
     private int                indexOfTBB = 0;
@@ -72,10 +74,10 @@ public class StartUpTask extends edu.ku.brc.af.tasks.StartUpTask
         int height = 500;
         
         Image img = null;
-        ImageIcon bgImg = IconManager.getIcon("SpecifySplash");
+        ImageIcon bgImg = IconManager.getIcon(SPECIFY_SPLASH);
         if (bgImg.getIconWidth() > width || bgImg.getIconHeight() > height)
         {
-            img = GraphicsUtils.getScaledImage(IconManager.getIcon("SpecifySplash"), width, height, true);
+            img = GraphicsUtils.getScaledImage(bgImg, width, height, true);
         } else
         {
             img = bgImg.getImage();
@@ -94,7 +96,7 @@ public class StartUpTask extends edu.ku.brc.af.tasks.StartUpTask
      */
     public static SubPaneIFace createFullImageSplashPanel(final String title, final Taskable task)
     {        
-        return new SimpleDescPane(title, task, IconManager.getIcon("SpecifySplash"));
+        return new SimpleDescPane(title, task, IconManager.getIcon(SPECIFY_SPLASH));
     }
     
     /* (non-Javadoc)
@@ -103,7 +105,7 @@ public class StartUpTask extends edu.ku.brc.af.tasks.StartUpTask
     @Override
     public List<ToolBarItemDesc> getToolBarItems()
     {
-        List<ToolBarItemDesc> items = super.getToolBarItems();
+        toolbarItems = new Vector<ToolBarItemDesc>();
         welcomeBtn = createToolbarButton(getResourceString(STARTUP), "AppIcon", null);
         welcomeBtn.addActionListener(new ActionListener() {
             @Override
@@ -113,13 +115,13 @@ public class StartUpTask extends edu.ku.brc.af.tasks.StartUpTask
             }
         });
         
-        String ds = AppContextMgr.getInstance().getClassObject(Discipline.class).getType();
-        boolean hasWelcome = AppPreferences.getRemote().getBoolean(WELCOME_BTN_PREF+ds, true);
+        String  discipline = AppContextMgr.getInstance().getClassObject(Discipline.class).getType();
+        boolean hasWelcome = AppPreferences.getRemote().getBoolean(WELCOME_BTN_PREF+discipline, true);
         if (hasWelcome)
         {
-            items.add(new ToolBarItemDesc(welcomeBtn));
+            toolbarItems.add(new ToolBarItemDesc(welcomeBtn));
         }
-        return items;
+        return toolbarItems;
     }
 
     /**

@@ -102,7 +102,7 @@ public interface SubPaneIFace
     public abstract String getHelpTarget();
 
     /**
-     * Tells the panel it is about to be closed and destroyed and it can return "false" if it wats the processed stopped.
+     * Tells the panel it is about to be closed and destroyed and it can return "false" if it wants the processed stopped.
      * @return true means it was shutdown correctly, false means the shutdown process stop if it can
      */
     public abstract boolean aboutToShutdown();

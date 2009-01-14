@@ -49,6 +49,7 @@ import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.af.core.NavBoxMgr;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
+import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
@@ -56,6 +57,7 @@ import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.tasks.subpane.DroppableFormObject;
 import edu.ku.brc.af.tasks.subpane.DroppableTaskPane;
 import edu.ku.brc.af.tasks.subpane.FormPane;
+import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.af.tasks.subpane.FormPane.FormPaneAdjusterIFace;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
@@ -218,6 +220,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             {
                 SubPaneMgr.getInstance().addPane(starterPane);
             }
+            TaskMgr.disableAllEnabledTasks();
         }
     }
     
@@ -412,6 +415,18 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                                final String viewName, 
                                final boolean useJoinAndSpecCols)
     {
+        if (formPane != null)
+        {
+            if (!formPane.aboutToShutdown())
+            {
+                return;        
+            }
+            SubPaneMgr.getInstance().removePane(formPane);
+        }
+        formPane = null;
+        
+        TaskMgr.disableAllEnabledTasks();
+        
         UsageTracker.incrUsageCount("SS.EDT."+viewName);
         
         DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(clazz.getName());
@@ -483,6 +498,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                                             MultiView.RESULTSET_CONTROLLER,
                                             IconManager.getIcon(clazz.getSimpleName(), IconManager.IconSize.Std16));
                 starterPane = null;
+                TaskMgr.disableAllEnabledTasks();
             }
 
         } 
@@ -790,7 +806,19 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
     {
         return starterPane = StartUpTask.createFullImageSplashPanel(title, this);
     }
-
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.SubPaneMgrListener#subPaneRemoved(edu.ku.brc.af.ui.SubPaneIFace)
+     */
+    @Override
+    public void subPaneRemoved(final SubPaneIFace subPane)
+    {
+        super.subPaneRemoved(subPane);
+        if (subPane instanceof SimpleDescPane)
+        {
+            TaskMgr.reenableAllDisabledTasks();
+        }
+    }
     /**
      * @param key
      * @return

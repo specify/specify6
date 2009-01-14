@@ -73,9 +73,6 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
     /** The toolbar items provided by this task. */
     protected List<ToolBarItemDesc> toolBarItems;
     
-    /** The menu items provided by this task. */
-    protected List<MenuItemDesc> menuItems;
-    
     /** The class of {@link TreeDefIface} handled by this task. */
     protected Class<D> treeDefClass;
     protected Class<T> treeClass;
@@ -343,7 +340,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
      * 
 	 * @param defs a list of tree definitions handled by this task
 	 */
-	protected List<MenuItemDesc> createMenus()
+	protected Vector<MenuItemDesc> createMenus()
 	{
         Vector<MenuItemDesc> menus = new Vector<MenuItemDesc>();
         subMenu = new JMenu(menuItemText);

@@ -82,7 +82,8 @@ public class TaskMgr implements CommandListener
     
     protected Hashtable<String, Taskable>    tasks          = new Hashtable<String, Taskable>();
     protected Hashtable<String, Class<?>>    uiPluginHash   = new Hashtable<String,  Class<?>>();
-    //protected Hashtable<String, Taskable>   visTaskHash    = new Hashtable<String,  Taskable>();
+    
+    protected Vector<Taskable>               disabledTasks  = new Vector<Taskable>();
 
     /**
      * Protected Default Constructor for Singleton
@@ -715,5 +716,39 @@ public class TaskMgr implements CommandListener
         }
         return list;
     }
+    
+    /**
+     * Checks each task to see if it is currently enabled and then disables it.
+     * When 'reenableAllDisabledTasks' is called it sets each task  to be abled that 
+     * had been set disabled by this call.
+     *  
+     */
+    public static void disableAllEnabledTasks()
+    {
+        TaskMgr tm = getInstance();
+        if (tm.disabledTasks.size() == 0)
+        {
+            for (Taskable task : tm.getAllTasks())
+            {
+                if (task.isEnabled())
+                {
+                    tm.disabledTasks.add(task);
+                    task.setEnabled(false);
+                }
+            }
+        }
+    }
 
+    /**
+     * Re-Enables all the tasks that had been disabled by a call to 'disableAllEnabledTasks'
+     * This does not enable any tasks that had not be disabled by a call to 'disableAllEnabledTasks'.
+     */
+    public static void reenableAllDisabledTasks()
+    {
+        for (Taskable task : getInstance().disabledTasks)
+        {
+            task.setEnabled(true);
+        }
+        getInstance().disabledTasks.clear();
+    }
 }

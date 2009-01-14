@@ -137,7 +137,7 @@ public class SearchBox extends JPanel implements ActionListener, PropertyChangeL
      */
     public void setEnabled(final boolean enabled)
     {
-        searchText.setEditable(false);
+        searchText.setEnabled(enabled);
     }
     
     /**

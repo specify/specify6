@@ -165,9 +165,15 @@ public interface Taskable extends SecurityOptionIFace
     public abstract void setIconName(String iconName); 
 
     /**
-     * Sets whether the Task is available.
+     * Sets whether the Task is available. Disabling a task also disables
+     * the UI associated with the task.
      * @param enabled true/false
      */
     public abstract void setEnabled(boolean enabled);
+    
+    /**
+     * @return whether the task is enabled our not.
+     */
+    public abstract boolean isEnabled();
     
 }

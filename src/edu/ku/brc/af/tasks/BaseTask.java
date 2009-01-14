@@ -175,7 +175,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
         this.title    = title;
         this.iconName = name;
     }
-
+    
     /**
      * Remove self from ContextMgr.
      */
@@ -1200,6 +1200,15 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
         return popupMenu;
     }
 
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.Taskable#isEnabled()
+     */
+    @Override
+    public boolean isEnabled()
+    {
+        return isEnabled;
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.Taskable#setEnabled(boolean)
@@ -1207,6 +1216,8 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     @Override
     public void setEnabled(boolean enabled)
     {
+        this.isEnabled = enabled;
+        
         if (toolbarItems != null)
         {
             for (ToolBarItemDesc tbi : toolbarItems)
