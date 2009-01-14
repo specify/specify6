@@ -29,52 +29,16 @@
         <item title="Unique Genera" useprogress="true">
             <sql>
                 <tables><id>4</id></tables>            
-                <statement>
-                  <![CDATA[create temporary table Genera1 SELECT TaxonID FROM determination WHERE CollectionMemberID = COLMEMID AND determination.IsCurrent = true]]>
-                </statement>
-                <statement>
-                  <![CDATA[create temporary table Genera2 SELECT DISTINCT tax.TaxonID,tax.nodenumber FROM Genera1,taxon as tax WHERE tax.isaccepted <> 0 and tax.TaxonID = Genera1.TaxonID]]>
-                </statement>
-               <statement>
-                  <![CDATA[create temporary table Genera3 SELECT DISTINCT tx.TaxonID FROM Genera2, taxon as tx WHERE tx.rankid = 180 and Genera2.nodenumber between tx.nodenumber and tx.HighestChildNodeNumber]]>
-                </statement>
                 <statement row="1" col="1">
-                  <![CDATA[SELECT count(*) FROM Genera3]]>
-                </statement>
-                <statement>
-                  <![CDATA[drop table Genera1]]>
-                </statement>
-                <statement>
-                  <![CDATA[drop table Genera2]]>
-                </statement>
-                <statement>
-                  <![CDATA[drop table Genera3]]>
+                  <![CDATA[SELECT count(DISTINCT tx.TaxonID) FROM (SELECT DISTINCT tax.TaxonID,tax.nodenumber FROM (SELECT TaxonID FROM determination WHERE CollectionMemberID = COLMEMID AND determination.IsCurrent <> 0) as Genera1,taxon as tax WHERE tax.isaccepted <> 0 and tax.TaxonID = Genera1.TaxonID) as Genera2, taxon as tx WHERE tx.rankid = 180 and Genera2.nodenumber between tx.nodenumber and tx.HighestChildNodeNumber]]>
                 </statement>
             </sql>
         </item>
         <item title="Unique Species" useprogress="true">
             <sql>
-                <tables><id>4</id></tables>            
-                <statement>
-                  <![CDATA[create temporary table Species1 SELECT TaxonID FROM determination WHERE CollectionMemberID = COLMEMID AND determination.IsCurrent = true]]>
-                </statement>
-                <statement>
-                  <![CDATA[create temporary table Species2 SELECT DISTINCT tax.TaxonID,tax.nodenumber FROM Species1,taxon as tax WHERE tax.isaccepted <> 0 and tax.TaxonID = Species1.TaxonID]]>
-                </statement>
-               <statement>
-                  <![CDATA[create temporary table Species3 SELECT DISTINCT tx.TaxonID FROM Species2, taxon as tx WHERE tx.rankid = 220 and Species2.nodenumber between tx.nodenumber and tx.HighestChildNodeNumber]]>
-                </statement>
-                <statement row="1" col="1">
-                  <![CDATA[SELECT count(*) FROM Species3]]>
-                </statement>
-                <statement>
-                  <![CDATA[drop table Species1]]>
-                </statement>
-                <statement>
-                  <![CDATA[drop table Species2]]>
-                </statement>
-                <statement>
-                  <![CDATA[drop table Species3]]>
+                <tables><id>4</id></tables>  
+                <statement>          
+                  <![CDATA[SELECT count(DISTINCT tx.TaxonID) FROM (SELECT DISTINCT tax.TaxonID,tax.nodenumber FROM (SELECT TaxonID FROM determination WHERE CollectionMemberID = COLMEMID AND determination.IsCurrent <> 0) as Genera1,taxon as tax WHERE tax.isaccepted <> 0 and tax.TaxonID = Genera1.TaxonID) as Genera2, taxon as tx WHERE tx.rankid = 220 and Genera2.nodenumber between tx.nodenumber and tx.HighestChildNodeNumber]]>
                 </statement>
             </sql>
         </item>
