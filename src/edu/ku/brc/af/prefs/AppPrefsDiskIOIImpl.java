@@ -52,6 +52,16 @@ public class AppPrefsDiskIOIImpl implements AppPrefsIOIFace
         this.appPrefsMgr = appPrefsMgr;
     }
     
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.prefs.AppPreferences.AppPrefsIOIFace#isAvailable()
+     */
+    @Override
+    public boolean isAvailable()
+    {
+        return appPrefsMgr.getDirPath() == null || appPrefsMgr.getDirPath().length() == 0;
+    }
+
     /**
      * Check to make sure we have prefs.
      */
@@ -70,7 +80,7 @@ public class AppPrefsDiskIOIImpl implements AppPrefsIOIFace
     {
         checkForAppPrefs();
         
-        if (appPrefsMgr.getDirPath() == null || appPrefsMgr.getDirPath().length() == 0)
+        if (isAvailable())
         {
             throw new RuntimeException("The directory path for the prefs ["+appPrefsMgr.getDirPath()+"] ["+appPrefsMgr.getLocalFileName()+"] cannot be empty!"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         } 

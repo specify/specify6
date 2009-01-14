@@ -814,6 +814,14 @@ public class AppPreferences
             e.printStackTrace();
         }
     }
+    
+    /**
+     * @return whether the preferences are available. (Whether they have been setup).
+     */
+    public boolean isAvailable()
+    {
+        return appPrefsIO != null && appPrefsIO.isAvailable();
+    }
 
     //-------------------------------------------------------------------------
     //-- AppPrefsIOIFace Interface for performing Prefs IO
@@ -847,6 +855,11 @@ public class AppPreferences
          * Flushes the Prefs to disk or database.
          */
         public abstract void flush() throws BackingStoreException;
+        
+        /**
+         * @return whether the preferences are available. (Whether they have been setup).
+         */
+        public abstract boolean isAvailable();
         
     }
 

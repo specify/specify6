@@ -81,8 +81,16 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
         
         load();
     }
-
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.prefs.AppPreferences.AppPrefsIOIFace#isAvailable()
+     */
+    @Override
+    public boolean isAvailable()
+    {
+        return found;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.af.prefs.AppPreferences.AppPrefsIOIFace#exists(edu.ku.brc.af.prefs.AppPreferences)
      */

@@ -208,23 +208,27 @@ public class UsageTracker
      */
     public synchronized static void incrUsageCount(final String featureName)
     {
-        if (usageFile == null || usageProps == null)
+        AppPreferences appPrefs = AppPreferences.getLocalPrefs();
+
+        if (appPrefs.isAvailable())
         {
-            AppPreferences appPrefs          = AppPreferences.getLocalPrefs();
-            String         usagePrefName     = USAGE_PREFIX + featureName; //$NON-NLS-1$
-            int            currentUsageCount = appPrefs.getInt(usagePrefName, 0);
-            appPrefs.putInt(usagePrefName, ++currentUsageCount);
-            
-        } else
-        {
-            String currentUsageCountStr = usageProps.getProperty(featureName, null);
-            int    currentUsageCount    = 0;
-            if (currentUsageCountStr != null)
+            if (usageFile == null || usageProps == null)
             {
-                currentUsageCount = Integer.parseInt(currentUsageCountStr);
+                String         usagePrefName     = USAGE_PREFIX + featureName; //$NON-NLS-1$
+                int            currentUsageCount = appPrefs.getInt(usagePrefName, 0);
+                appPrefs.putInt(usagePrefName, ++currentUsageCount);
+                
+            } else
+            {
+                String currentUsageCountStr = usageProps.getProperty(featureName, null);
+                int    currentUsageCount    = 0;
+                if (currentUsageCountStr != null)
+                {
+                    currentUsageCount = Integer.parseInt(currentUsageCountStr);
+                }
+                currentUsageCount++;
+                usageProps.put(USAGE_PREFIX + featureName, Integer.toString(currentUsageCount));
             }
-            currentUsageCount++;
-            usageProps.put(USAGE_PREFIX + featureName, Integer.toString(currentUsageCount));
         }
     }
     
