@@ -741,9 +741,13 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
         dlg.setModal(true);
         UIHelper.centerAndShow(dlg);
         TreeDefItemStandardEntry selection = null;
-        if (!dlg.isCancelled())
+        if (dlg.getBtnPressed() == ChooseFromListDlg.OK_BTN)
         {
             selection = dlg.getSelectedObject();
+        }
+        else if (dlg.getBtnPressed() == ChooseFromListDlg.CANCEL_BTN)
+        {
+        	selection = new TreeDefItemStandardEntry("custom", -1);
         }
         dlg.dispose();
         return selection;
@@ -752,7 +756,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
     protected Integer getNewItemRank(final TreeDefItemStandardEntry stdLevel, final I parent, final I child)
     {
         Integer result = null;
-        if (stdLevel != null)
+        if (stdLevel != null && stdLevel.getRank() != -1)
         {
             result = stdLevel.getRank();
         }
@@ -812,6 +816,10 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
         final I origChild = parent.getChild();
 		final I newItem = (I)TreeFactory.createNewTreeDefItem(parent.getClass(),null,UIRegistry.getResourceString("TreeDefinitionEditor.46")); //$NON-NLS-1$
 		final TreeDefItemStandardEntry stdLevel = getNewItemStdLevel(parent, origChild);
+		if (stdLevel == null)
+		{
+			return;
+		}
 		final Integer rank = getNewItemRank(stdLevel, parent, origChild);
 		
 		if (rank == null)
