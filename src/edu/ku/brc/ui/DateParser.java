@@ -122,7 +122,11 @@ public class DateParser
             
             if (len == 10)
             {
-                type = isYearFirst ? DateFormatType.YYYY_AA_BB : DateFormatType.AA_BB_YYYY;
+                if ((dateStr.charAt(4) == sep && dateStr.charAt(7) == sep) || 
+                    (dateStr.charAt(2) == sep && dateStr.charAt(5) == sep))
+                {
+                    type = isYearFirst ? DateFormatType.YYYY_AA_BB : DateFormatType.AA_BB_YYYY;
+                }
                 
             } else if (len == 9)
             {
@@ -131,14 +135,21 @@ public class DateParser
                 char sepChar = dateStr.charAt(inx);
                 if (sepChar == sep)
                 {
-                    type = isYearFirst ? DateFormatType.YYYY_A_BB : DateFormatType.A_BB_YYYY;
+                    if ((dateStr.charAt(4) == sep && dateStr.charAt(6) == sep) || 
+                        (dateStr.charAt(1) == sep && dateStr.charAt(4) == sep))
+                    {
+                        type = isYearFirst ? DateFormatType.YYYY_A_BB : DateFormatType.A_BB_YYYY;
+                    }
                     
-                } else
+                } else if ((dateStr.charAt(4) == sep && dateStr.charAt(7) == sep) || 
+                           (dateStr.charAt(2) == sep && dateStr.charAt(4) == sep))
                 {
                     type = isYearFirst ? DateFormatType.YYYY_AA_B : DateFormatType.AA_B_YYYY;
                 }
                 
-            } else if (len == 8)
+            } else if (len == 8 && 
+                      ((dateStr.charAt(4) == sep && dateStr.charAt(6) == sep) || 
+                       (dateStr.charAt(1) == sep && dateStr.charAt(3) == sep)))
             {
                 return isYearFirst ? DateFormatType.YYYY_A_B : DateFormatType.A_B_YYYY;
             }
@@ -340,7 +351,6 @@ public class DateParser
         if (type != DateFormatType.Unknown)
         {
             return parseForDate(type, dateStr, isZeroMnOK, isZeroDyOK);
-            
         }
         dateError = DateErrorType.UnknownFormat;
         return null;
