@@ -1210,7 +1210,8 @@ public class ViewFactory
                     }
                 }
                 else if (fieldClass == Integer.class || 
-                		 fieldClass == Long.class || 
+                         fieldClass == Long.class || 
+                         fieldClass == Short.class || 
                 		 fieldClass == Byte.class || 
                 		 fieldClass == Double.class || 
                 		 fieldClass == Float.class || 
