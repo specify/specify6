@@ -83,6 +83,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
     private static final Logger log  = Logger.getLogger(ValFormattedTextFieldSingle.class);
 
     protected static ColorWrapper     valTextColor       = null;
+    protected static ColorWrapper     viewBGColor        = null;
     protected static ColorWrapper     requiredFieldColor = null;  
 
     protected UIValidatable.ErrorType     valState       = UIValidatable.ErrorType.Valid;
@@ -90,7 +91,6 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
     protected boolean                     isChanged      = false;
     protected boolean                     isNew          = false;
     protected boolean                     isViewOnly     = false;
-    protected Color                       bgColor        = null;
     protected boolean                     needsUpdating  = false;
     protected List<DocumentListener>      documentListeners = null;
 
@@ -253,6 +253,8 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
                 }
             });
         }
+        
+        setBackground(isRequired ? requiredFieldColor.getColor() : viewBGColor.getColor());
 
         if (!isViewOnlyArg)
         {
@@ -346,11 +348,11 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
      */
     public void initColors()
     {
-        bgColor = getBackground();
-        if (valTextColor == null || requiredFieldColor == null)
+        if (valTextColor == null || requiredFieldColor == null || viewBGColor == null)
         {
             valTextColor       = AppPrefsCache.getColorWrapper("ui", "formatting", "valtextcolor");
             requiredFieldColor = AppPrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");
+            viewBGColor        = AppPrefsCache.getColorWrapper("ui", "formatting", "viewfieldcolor");
         }
     }
 
@@ -360,7 +362,6 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
     public void setBackground(final Color bg)
     {
         super.setBackground(bg);
-        bgColor = bg;
     }
 
     /* (non-Javadoc)
@@ -429,7 +430,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
             super.setEnabled(enabled);
         }
 
-        setBackground(isRequired && isEnabled() ? requiredFieldColor.getColor() : Color.WHITE);//bgColor); // XXX Why doesn't work????
+        setBackground(isRequired && isEnabled() ? requiredFieldColor.getColor() : viewBGColor.getColor());
         
         // rods - 09/05/08 - (Bug 5858) need to hide the default value when disabled
         if (enabled)
@@ -597,7 +598,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
     {
         if (!isViewOnly)
         {
-            setBackground(isRequired && isEnabled() ? requiredFieldColor.getColor() : bgColor);
+            setBackground(isRequired && isEnabled() ? requiredFieldColor.getColor() : viewBGColor.getColor());
             this.isRequired = isRequired;
         }
     }
