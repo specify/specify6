@@ -21,9 +21,11 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import edu.ku.brc.ui.UIRegistry;
+
 /**
  * The main class used for generating 'thumbnails' of various types of files.
- * Thumbnailer provides a mechanism by which {@link ThumbnailGenerator}s can
+ * Thumbnailer provides a mechanism by which {@link ThumbnailGeneratorIFace}s can
  * be plugged in to provide thumbnailing capabilities for other types of files.
  *
  * @code_status Alpha
@@ -32,7 +34,7 @@ import org.xml.sax.SAXException;
 public class Thumbnailer
 {
 	/** A map of registered ThumbnailGenerators. */
-	protected Hashtable<String, ThumbnailGenerator> mimeTypeToGeneratorMap;
+	protected Hashtable<String, ThumbnailGeneratorIFace> mimeTypeToGeneratorMap;
 	
     /** The quality factor of the thumbnail output. */
 	protected float quality;
@@ -45,7 +47,7 @@ public class Thumbnailer
 	
 	public Thumbnailer()
 	{
-		mimeTypeToGeneratorMap = new Hashtable<String, ThumbnailGenerator>();
+		mimeTypeToGeneratorMap = new Hashtable<String, ThumbnailGeneratorIFace>();
 		
 		
 		quality = 1f;
@@ -54,7 +56,7 @@ public class Thumbnailer
 	}
 	
 	/**
-     * Registers all of the {@link ThumbnailGenerator}s described in the registry file.
+     * Registers all of the {@link ThumbnailGeneratorIFace}s described in the registry file.
      * 
 	 * @param generatorRegistryFile the XML file containing the thumbnail generator class names
 	 * @throws SAXException the file was not capable of being parsed
@@ -73,7 +75,7 @@ public class Thumbnailer
 			Node generatorNode = generatorNodes.item(i);
 			Node classNameNode = generatorNode.getAttributes().getNamedItem("class");
 			String generatorClassName = classNameNode.getNodeValue();
-			ThumbnailGenerator gen = Class.forName(generatorClassName).asSubclass(ThumbnailGenerator.class).newInstance();
+			ThumbnailGeneratorIFace gen = Class.forName(generatorClassName).asSubclass(ThumbnailGeneratorIFace.class).newInstance();
 			for(String supportedMimeType: gen.getSupportedMimeTypes())
 			{
 				registerThumbnailGenerator(supportedMimeType,gen);
@@ -82,13 +84,13 @@ public class Thumbnailer
 	}
 	
 	/**
-     * Registers the given {@link ThumbnailGenerator} with the system.
+     * Registers the given {@link ThumbnailGeneratorIFace} with the system.
      * 
 	 * @param mimeType the MIME type handled by the generator
 	 * @param generator the generator
 	 * @return the registered generator
 	 */
-	public ThumbnailGenerator registerThumbnailGenerator(String mimeType, ThumbnailGenerator generator)
+	public ThumbnailGeneratorIFace registerThumbnailGenerator(String mimeType, ThumbnailGeneratorIFace generator)
 	{
 		generator.setQuality(quality);
 		generator.setMaxHeight(maxHeight);
@@ -97,12 +99,12 @@ public class Thumbnailer
 	}
 	
 	/**
-     * Unregisters the {@link ThumbnailGenerator} that handles the given MIME type.
+     * Unregisters the {@link ThumbnailGeneratorIFace} that handles the given MIME type.
      * 
 	 * @param mimeType the MIME type to unregister
 	 * @return the unregistered generator, null if one was not registered
 	 */
-	public ThumbnailGenerator removeGenerator(String mimeType)
+	public ThumbnailGeneratorIFace removeGenerator(String mimeType)
 	{
 		return mimeTypeToGeneratorMap.remove(mimeType);
 	}
@@ -127,10 +129,13 @@ public class Thumbnailer
 		String mimeType = mimeMap.getContentType(originalFile);
         
         // find the appropriate thumbnail generator, if any
-		ThumbnailGenerator generator = mimeTypeToGeneratorMap.get(mimeType);
-		if(generator!=null)
+		ThumbnailGeneratorIFace generator = mimeTypeToGeneratorMap.get(mimeType);
+		if (generator != null)
 		{
-            generator.generateThumbnail(originalFile, outputFile, doHighQuality);
+            if (!generator.generateThumbnail(originalFile, outputFile, doHighQuality))
+            {
+                UIRegistry.getStatusBar().setLocalizedText("Thumbnailer.THMB_NO_CREATE" ,originalFile);
+            }
             return;
 		}
         
@@ -140,14 +145,14 @@ public class Thumbnailer
 	
 	/**
      * Sets the maximum width of any visual thumbnails generated.
-     * {@link ThumbnailGenerator#setMaxWidth(int)} is called on all registered
+     * {@link ThumbnailGeneratorIFace#setMaxWidth(int)} is called on all registered
      * generators.
      * 
 	 * @param maxWidth the maximum width
 	 */
 	public void setMaxWidth(int maxWidth)
 	{
-		Enumeration<ThumbnailGenerator> tgs = mimeTypeToGeneratorMap.elements();
+		Enumeration<ThumbnailGeneratorIFace> tgs = mimeTypeToGeneratorMap.elements();
 		while(tgs.hasMoreElements())
 		{
 			tgs.nextElement().setMaxWidth(maxWidth);
@@ -158,14 +163,14 @@ public class Thumbnailer
 
 	/**
      * Sets the maximum height of any visual thumbnails generated.
-     * {@link ThumbnailGenerator#setMaxHeight(int)} is called on all registered
+     * {@link ThumbnailGeneratorIFace#setMaxHeight(int)} is called on all registered
      * generators.
      * 
      * @param maxHeight the maximum width
 	 */
 	public void setMaxHeight(int maxHeight)
 	{
-		Enumeration<ThumbnailGenerator> tgs = mimeTypeToGeneratorMap.elements();
+		Enumeration<ThumbnailGeneratorIFace> tgs = mimeTypeToGeneratorMap.elements();
 		while(tgs.hasMoreElements())
 		{
 			tgs.nextElement().setMaxHeight(maxHeight);
@@ -176,15 +181,15 @@ public class Thumbnailer
 
 	/**
      * Sets the quality factor of any thumbnails generated.  Note that not
-     * all {@link ThumbnailGenerator}s make use of a quality factor.
-     * {@link ThumbnailGenerator#setQuality(float)} is called on all registered
+     * all {@link ThumbnailGeneratorIFace}s make use of a quality factor.
+     * {@link ThumbnailGeneratorIFace#setQuality(float)} is called on all registered
      * generators.
      * 
 	 * @param percent the quality factor
 	 */
 	public void setQuality(float percent)
 	{
-		Enumeration<ThumbnailGenerator> tgs = mimeTypeToGeneratorMap.elements();
+		Enumeration<ThumbnailGeneratorIFace> tgs = mimeTypeToGeneratorMap.elements();
 		while(tgs.hasMoreElements())
 		{
 			tgs.nextElement().setQuality(percent);

@@ -585,18 +585,6 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         adjustMenus();
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.tasks.BaseTask#doCommand(edu.ku.brc.ui.CommandAction)
-     */
-    @Override
-    public void doCommand(CommandAction cmdAction)
-    {
-        super.doCommand(cmdAction);
-
-        UIRegistry.getStatusBar().setText("");
-        
-    }
-    
     /**
      * Runs the query synchronously and filles the vector.
      * @param sqlStr the SQL string

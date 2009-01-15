@@ -15,7 +15,7 @@ import java.io.IOException;
  * @code_status Alpha
  * @author jstewart
  */
-public interface ThumbnailGenerator
+public interface ThumbnailGeneratorIFace
 {
 	/**
 	 * Sets the maximum width of any visual thumbnails created.
@@ -59,9 +59,10 @@ public interface ThumbnailGenerator
 	 * @param originalFile the path to the original
      * @param thumbnailFile the path to the output thumbnail
      * @param doHighQuality true creates a high quality thumbnail (slow), false a low resolution thumbnail (fast)
+     * @return true if thumbnail was create and false it is wasn't
 	 * @throws IOException if any IO errors occur during generation or storing the output
 	 */
-	public void generateThumbnail(String originalFile, 
-	                              String thumbnailFile,
-	                              boolean doHighQuality) throws IOException;
+	public boolean generateThumbnail(String originalFile, 
+	                                 String thumbnailFile,
+	                                 boolean doHighQuality) throws IOException;
 }

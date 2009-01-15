@@ -11,30 +11,28 @@ package edu.ku.brc.util.thumbnails;
  * @code_status Alpha
  * @author jstewart
  */
-public class TxtThumbnailGenerator implements ThumbnailGenerator
+public class TxtThumbnailGenerator implements ThumbnailGeneratorIFace
 {
 	public TxtThumbnailGenerator()
 	{
 		// do nothing
 	}
 	
-	/**
-	 *
-	 *
-	 * @see edu.ku.brc.util.thumbnails.ThumbnailGenerator#generateThumbnail(java.lang.String, java.lang.String)
-	 * @param originalFile
-	 * @param thumbnailFile
-     * @param doHighQuality true creates a high quality thumbnail (slow), false a low resolution thumbnail (fast)
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.util.thumbnails.ThumbnailGeneratorIFace#generateThumbnail(java.lang.String, java.lang.String, boolean)
 	 */
-	public void generateThumbnail(String originalFile, String thumbnailFile, boolean doHighQuality)
+	public boolean generateThumbnail(final String originalFile,
+	                                 final String thumbnailFile, 
+	                                 final boolean doHighQuality)
 	{
 		System.out.println("Not yet implemented");
+		return false;
 	}
 
 	/**
 	 *
 	 *
-	 * @see edu.ku.brc.util.thumbnails.ThumbnailGenerator#getSupportedMimeTypes()
+	 * @see edu.ku.brc.util.thumbnails.ThumbnailGeneratorIFace#getSupportedMimeTypes()
 	 * @return
 	 */
 	public String[] getSupportedMimeTypes()
@@ -45,10 +43,10 @@ public class TxtThumbnailGenerator implements ThumbnailGenerator
 	/**
 	 *
 	 *
-	 * @see edu.ku.brc.util.thumbnails.ThumbnailGenerator#setMaxHeight(int)
+	 * @see edu.ku.brc.util.thumbnails.ThumbnailGeneratorIFace#setMaxHeight(int)
 	 * @param maxHeight
 	 */
-	public void setMaxHeight(int maxHeight)
+	public void setMaxHeight(final int maxHeight)
 	{
 		// TODO Auto-generated method stub
 
@@ -57,10 +55,10 @@ public class TxtThumbnailGenerator implements ThumbnailGenerator
 	/**
 	 *
 	 *
-	 * @see edu.ku.brc.util.thumbnails.ThumbnailGenerator#setMaxWidth(int)
+	 * @see edu.ku.brc.util.thumbnails.ThumbnailGeneratorIFace#setMaxWidth(int)
 	 * @param maxWidth
 	 */
-	public void setMaxWidth(int maxWidth)
+	public void setMaxWidth(final int maxWidth)
 	{
 		// TODO Auto-generated method stub
 
@@ -69,10 +67,10 @@ public class TxtThumbnailGenerator implements ThumbnailGenerator
 	/**
 	 *
 	 *
-	 * @see edu.ku.brc.util.thumbnails.ThumbnailGenerator#setQuality(float)
+	 * @see edu.ku.brc.util.thumbnails.ThumbnailGeneratorIFace#setQuality(float)
 	 * @param percent
 	 */
-	public void setQuality(float percent)
+	public void setQuality(final float percent)
 	{
 		// TODO Auto-generated method stub
 
@@ -81,10 +79,10 @@ public class TxtThumbnailGenerator implements ThumbnailGenerator
 	/**
 	 *
 	 *
-	 * @see edu.ku.brc.util.thumbnails.ThumbnailGenerator#setMaxDuration(int)
+	 * @see edu.ku.brc.util.thumbnails.ThumbnailGeneratorIFace#setMaxDuration(int)
 	 * @param seconds
 	 */
-	public void setMaxDuration(int seconds)
+	public void setMaxDuration(final int seconds)
 	{
 		// ignored
 	}

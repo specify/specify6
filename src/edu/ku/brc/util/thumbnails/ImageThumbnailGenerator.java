@@ -25,7 +25,7 @@ import edu.ku.brc.ui.GraphicsUtils;
  * @code_status Alpha
  * @author jstewart
  */
-public class ImageThumbnailGenerator implements ThumbnailGenerator
+public class ImageThumbnailGenerator implements ThumbnailGeneratorIFace
 {
     /** The max width of the thumbnail output. */
 	protected int maxWidth;
@@ -89,28 +89,42 @@ public class ImageThumbnailGenerator implements ThumbnailGenerator
                                     final boolean doHighQuality) throws IOException
     {
         ByteArrayInputStream inputStr = new ByteArrayInputStream(originalImageData);
-        BufferedImage orig = ImageIO.read(inputStr);
-        
-        if (orig.getHeight() < maxHeight && orig.getWidth() < maxWidth)
+        if (inputStr != null)
         {
-            // there's no need to do anything since the original is already under the max size
-            return originalImageData;
+            BufferedImage orig = ImageIO.read(inputStr);
+            if (orig != null)
+            {
+                if (orig.getHeight() < maxHeight && orig.getWidth() < maxWidth)
+                {
+                    // there's no need to do anything since the original is already under the max size
+                    return originalImageData;
+                }
+                
+                byte[] scaledImgData = GraphicsUtils.scaleImage(orig, maxHeight, maxWidth, true, doHighQuality);
+                return scaledImgData;
+            }
         }
-        
-        byte[] scaledImgData = GraphicsUtils.scaleImage(orig, maxHeight, maxWidth, true, doHighQuality);
-        return scaledImgData;
+        return null;
     }
 	
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.util.thumbnails.ThumbnailGenerator#generateThumbnail(java.lang.String, java.lang.String, boolean)
 	 */
-	public void generateThumbnail(String originalFile, 
-	                              String thumbnailFile,
-	                              boolean doHighQuality) throws IOException
+	public boolean generateThumbnail(final String originalFile, 
+	                              final String thumbnailFile,
+	                              final boolean doHighQuality) throws IOException
 	{
         byte[] origData = FileUtils.readFileToByteArray(new File(originalFile));
-        byte[] thumb    = generateThumbnail(origData, doHighQuality);
-        FileUtils.writeByteArrayToFile(new File(thumbnailFile), thumb);
+        if (origData != null)
+        {
+            byte[] thumb = generateThumbnail(origData, doHighQuality);
+            if (thumb != null)
+            {
+                FileUtils.writeByteArrayToFile(new File(thumbnailFile), thumb);
+                return true;
+            }
+        }
+        return false;
 	}
 
 	/* (non-Javadoc)
