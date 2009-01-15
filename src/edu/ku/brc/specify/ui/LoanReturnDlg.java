@@ -126,6 +126,13 @@ public class LoanReturnDlg extends JDialog
     {
         this.loan = loan;
         
+        ImageIcon appIcon = IconManager.getIcon("AppIcon"); //$NON-NLS-1$
+        if (appIcon != null)
+        {
+            setIconImage(appIcon.getImage());
+        }
+
+        
     }
     
     public boolean createUI()

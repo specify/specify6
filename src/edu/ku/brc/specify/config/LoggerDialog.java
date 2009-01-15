@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -48,6 +49,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 
 /**
@@ -78,6 +80,12 @@ public class LoggerDialog extends JDialog implements ActionListener
     {
         super(frame);
         createUI();
+        
+        ImageIcon appIcon = IconManager.getIcon("AppIcon"); //$NON-NLS-1$
+        if (appIcon != null)
+        {
+            setIconImage(appIcon.getImage());
+        }
     }
     
     /**

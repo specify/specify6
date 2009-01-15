@@ -29,6 +29,7 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.AbstractListModel;
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -45,6 +46,7 @@ import org.apache.log4j.Logger;
 import com.jgoodies.forms.builder.ButtonBarBuilder;
 
 import edu.ku.brc.ui.DndDeletableListCellRenderer;
+import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -82,6 +84,13 @@ public class TrashCanDlg extends JDialog implements ActionListener, ListSelectio
         createUI();
         setLocationRelativeTo(UIRegistry.get(UIRegistry.FRAME));
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        
+        ImageIcon appIcon = IconManager.getIcon("AppIcon"); //$NON-NLS-1$
+        if (appIcon != null)
+        {
+            setIconImage(appIcon.getImage());
+        }
+
     }
 
     /**

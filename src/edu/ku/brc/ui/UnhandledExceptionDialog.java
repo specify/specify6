@@ -20,6 +20,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
@@ -92,6 +93,12 @@ public class UnhandledExceptionDialog extends JDialog
      */
     protected void createUI(final String message, final Throwable throwable)
     {
+        ImageIcon appIcon = IconManager.getIcon("AppIcon"); //$NON-NLS-1$
+        if (appIcon != null)
+        {
+            setIconImage(appIcon.getImage());
+        }
+
         //meg fixed merge from WB
         //setDefaultCloseOperation(HIDE_ON_CLOSE);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);

@@ -47,6 +47,7 @@ import java.util.Vector;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -195,6 +196,12 @@ public class DataImportDialog extends JDialog implements ActionListener
         myDisplayTable = new JTable();
         model = new PreviewTableModel();
         createUiForCSV();
+        
+        ImageIcon appIcon = IconManager.getIcon("AppIcon"); //$NON-NLS-1$
+        if (appIcon != null)
+        {
+            setIconImage(appIcon.getImage());
+        }
     }
     
     /**
@@ -213,6 +220,12 @@ public class DataImportDialog extends JDialog implements ActionListener
         myDisplayTable = null;
         model = new PreviewTableModel();
         createUiForXLS();
+        
+        ImageIcon appIcon = IconManager.getIcon("AppIcon"); //$NON-NLS-1$
+        if (appIcon != null)
+        {
+            setIconImage(appIcon.getImage());
+        }
 	}
 
     /**

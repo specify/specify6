@@ -23,6 +23,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -96,15 +97,18 @@ public class ProgressDialog extends JDialog
         
         setTitle(title);
         
-        
-        final JDialog dlg = this;
+        ImageIcon appIcon = IconManager.getIcon("AppIcon"); //$NON-NLS-1$
+        if (appIcon != null)
+        {
+            setIconImage(appIcon.getImage());
+        }
         
         if (closeBtn != null)
         {
             closeBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e)
                 {
-                    dlg.setVisible(false);
+                    ProgressDialog.this.setVisible(false);
                 }
             });
         }

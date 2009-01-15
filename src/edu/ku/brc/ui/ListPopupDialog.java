@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Vector;
 
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -103,6 +104,13 @@ public class ListPopupDialog extends JDialog
 				callback.cancelled();
 			}
 		});
+		
+        ImageIcon appIcon = IconManager.getIcon("AppIcon"); //$NON-NLS-1$
+        if (appIcon != null)
+        {
+            setIconImage(appIcon.getImage());
+        }
+
 	}
 	
 	public void setComboBoxCellRenderer(final ListCellRenderer renderer)

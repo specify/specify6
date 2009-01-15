@@ -24,6 +24,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
@@ -35,6 +36,8 @@ import javax.swing.JTextField;
 import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.ButtonBarBuilder;
+
+import edu.ku.brc.ui.IconManager;
 
 /**
  * (This needs to be converted to CustomDialog)
@@ -71,6 +74,13 @@ public class SaveRecordSetDlg extends JDialog
     {
         this.srcModel = srcModel;
         createUI(preSelectedRows);
+        
+        ImageIcon appIcon = IconManager.getIcon("AppIcon"); //$NON-NLS-1$
+        if (appIcon != null)
+        {
+            setIconImage(appIcon.getImage());
+        }
+
     }
     
     /**

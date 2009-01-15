@@ -183,6 +183,13 @@ public class ChooseFromListDlg<T> extends JDialog
 
         setLocationRelativeTo(frame);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        
+        ImageIcon appIcon = IconManager.getIcon("AppIcon"); //$NON-NLS-1$
+        if (appIcon != null)
+        {
+            setIconImage(appIcon.getImage());
+        }
+
     }
 
     /**

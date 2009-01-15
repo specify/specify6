@@ -17,6 +17,7 @@ import java.awt.event.KeyEvent;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
@@ -43,6 +44,7 @@ import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.tasks.subpane.ESResultsTablePanelIFace;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
 import edu.ku.brc.specify.ui.DBObjSearchDialog;
+import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -107,6 +109,12 @@ public class AgentSearchDialogES extends JDialog implements ActionListener, Expr
         createUI();
         setLocationRelativeTo(UIRegistry.get(UIRegistry.FRAME));
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        
+        ImageIcon appIcon = IconManager.getIcon("AppIcon"); //$NON-NLS-1$
+        if (appIcon != null)
+        {
+            setIconImage(appIcon.getImage());
+        }
     }
 
     /**

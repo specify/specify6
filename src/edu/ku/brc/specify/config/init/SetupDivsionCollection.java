@@ -14,6 +14,7 @@ import java.awt.event.ActionListener;
 import java.util.Properties;
 import java.util.Vector;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
@@ -38,7 +39,9 @@ import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.IconManager.IconSize;
 
 /**
  * (NOT IN USE)
@@ -104,6 +107,12 @@ public class SetupDivsionCollection extends JDialog
             }
         }
         };*/
+        
+        ImageIcon appIcon = IconManager.getIcon("AppIcon"); //$NON-NLS-1$
+        if (appIcon != null)
+        {
+            setIconImage(appIcon.getImage());
+        }
         
         HelpMgr.registerComponent(helpBtn, "ConfiguringDatabase");
         CellConstraints cc = new CellConstraints();

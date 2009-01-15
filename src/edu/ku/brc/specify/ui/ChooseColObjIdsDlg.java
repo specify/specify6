@@ -82,6 +82,12 @@ public class ChooseColObjIdsDlg extends JDialog implements ActionListener
         createUI();
         setLocationRelativeTo(UIRegistry.get(UIRegistry.FRAME));
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        
+        ImageIcon appIcon = IconManager.getIcon("AppIcon"); //$NON-NLS-1$
+        if (appIcon != null)
+        {
+            setIconImage(appIcon.getImage());
+        }
 
     }
 
