@@ -1727,7 +1727,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             statsTrackerTask.sendStats(false, false); // false means don't do it silently
             return;
         }
-        if (true)
+        if (false)
         {
             ExceptionTracker.getInstance().capture(Specify.class, new Exception("Hello"));
         }
@@ -1786,12 +1786,12 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         
         pb.add(iconLabel,      cc.xy(1, 1));
         pb.add(createLabel("<html>"+appName+" " + appVersion +  //$NON-NLS-1$ //$NON-NLS-2$
-                "<br><br>Biodiversity Research Center<br>University of Kansas<br>Lawrence, KS  USA 66045<br><br>" +  //$NON-NLS-1$
+                "<br><br>Department of Informatics<br>" +
+                "Biodiversity Research Center<br>University of Kansas<br>Lawrence, KS  USA 66045<br><br>" +  //$NON-NLS-1$
                 "www.specifysoftware.org<br>specify@ku.edu<br><br>" +  //$NON-NLS-1$
                 "<p>The Specify Software Project is<br>"+ //$NON-NLS-1$
-                "funded by the Biological Databases<br>"+ //$NON-NLS-1$
-                "and Informatics Program of the<br>"+ //$NON-NLS-1$
-                "U.S. National Science Foundation <br>(Award DBI-0446544)</P></html>"), cc.xy(3, 1)); //$NON-NLS-1$
+                "funded by the Advances in <br>Biological Informatics Program,<br>"+ //$NON-NLS-1$
+                "U.S. National Science Foundation <br>(Award DBI-0446544 and earlier awards).</P></html>"), cc.xy(3, 1)); //$NON-NLS-1$
         Color bg = getBackground();
         pb.add(new VerticalSeparator(bg.darker(), bg.brighter()), cc.xy(5, 1));
         pb.add(ipb.getPanel(), cc.xy(7, 1));
