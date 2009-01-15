@@ -138,8 +138,6 @@ public class HelpMgr
             return true;
         } catch (BadIDException e)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(HelpMgr.class, e);
             return false;
         }
     }
@@ -173,7 +171,8 @@ public class HelpMgr
                 CSH.setHelpIDString(component, idString);
             } else
             {
-                CSH.setHelpIDString(component, getDefaultID());
+                log.warn("No mapping for '" + idString + "'. Defaulting to '" + getDefaultID() + "'");
+            	CSH.setHelpIDString(component, getDefaultID());
             }
             component.addActionListener(new ActionListener()
             {
@@ -262,10 +261,9 @@ public class HelpMgr
             return Map.ID.create(id, hs);
         } catch (BadIDException e)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(HelpMgr.class, e);
             try
             {
+                log.warn("No mapping for '" + id + "'. Defaulting to '" + getDefaultID() + "'");
                 return Map.ID.create(getDefaultID(), hs);
             } catch (BadIDException e2)
             {
