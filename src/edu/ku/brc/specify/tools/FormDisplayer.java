@@ -138,8 +138,10 @@ public class FormDisplayer
     {
         if (true)
         {
-            setup();
-            createFormImagesIndexFile();
+            if (setup())
+            {
+                createFormImagesIndexFile();
+            }
             //return;
         }
         
@@ -150,21 +152,23 @@ public class FormDisplayer
         
         doAll = userChoice == JOptionPane.YES_OPTION ? true : false;
 
-        setup();
-        
-        SpecifyAppContextMgr appContext = (SpecifyAppContextMgr)AppContextMgr.getInstance();
-        
-        viewList = doAll ? appContext.getEntirelyAllViews() : appContext.getAllViews();
-        SwingUtilities.invokeLater(new Runnable() {
-
-            /* (non-Javadoc)
-             * @see java.lang.Runnable#run()
-             */
-            public void run()
-            {
-                showView();
-            }
-        });
+        if (setup())
+        {
+            
+            SpecifyAppContextMgr appContext = (SpecifyAppContextMgr)AppContextMgr.getInstance();
+            
+            viewList = doAll ? appContext.getEntirelyAllViews() : appContext.getAllViews();
+            SwingUtilities.invokeLater(new Runnable() {
+    
+                /* (non-Javadoc)
+                 * @see java.lang.Runnable#run()
+                 */
+                public void run()
+                {
+                    showView();
+                }
+            });
+        }
     }
     
     /**
@@ -433,7 +437,7 @@ public class FormDisplayer
     /**
      * 
      */
-    protected void setup()
+    protected boolean setup()
     {
         String pathStr = AppContextMgr.getInstance().getClassObject(Discipline.class) != null ? AppContextMgr.getInstance().getClassObject(Discipline.class).getType() : ""; //$NON-NLS-1$
         pathStr += "_" + UIHelper.getOSType().toString() + "_" + (doAll ? "all" : "user");//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -477,9 +481,9 @@ public class FormDisplayer
             
         } catch (IOException ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormDisplayer.class, ex);
             ex.printStackTrace();
+            JOptionPane.showMessageDialog(null, "You are missing the template that is needed to run this tool.");
+            return false;
         }
         
         if (StringUtils.isEmpty(mapTemplate))
@@ -490,7 +494,7 @@ public class FormDisplayer
         try
         {
             File srcDir = new File(getDefaultWorkingPath() + File.separator + "site"); //$NON-NLS-1$
-            for (File f: srcDir.listFiles())
+            for (File f : srcDir.listFiles())
             {
                 if (!f.getName().startsWith(".")) //$NON-NLS-1$
                 {
@@ -512,8 +516,9 @@ public class FormDisplayer
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormDisplayer.class, ex);
             ex.printStackTrace();
+            return false;
         }
-
+        return true;
     }
 
     
