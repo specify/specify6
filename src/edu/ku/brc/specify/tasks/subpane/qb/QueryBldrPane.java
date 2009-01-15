@@ -2551,7 +2551,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         result.add(bldQueryFieldPanel(container, null, null, container.getColumnDefStr(), saveBtn));
         for (SpQueryField fld : orderedFlds)
         {
-            System.out.println(fld.getFieldName());
         	FieldQRI fieldQRI = getFieldQRI(tblTree, fld, fld.getTableIds(), 0, ttHash);
             if (fieldQRI != null)
             {
