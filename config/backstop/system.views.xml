@@ -27,7 +27,8 @@
         </view>
         
         <view name="SendMail"
-            class="edu.ku.brc.specify.datamodel.TreeDefinitionIface"
+            class="java.util.Hashtable"
+            usedefbusrule="false"
             resourcelabels="false">
             <desc><![CDATA[New Tree Definition Data Entry Form]]></desc>
             <altviews>

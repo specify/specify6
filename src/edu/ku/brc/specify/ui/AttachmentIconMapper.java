@@ -61,25 +61,29 @@ public class AttachmentIconMapper implements ObjectIconMapper
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.ObjectIconMapper#getIcon(java.lang.Object)
      */
-    public ImageIcon getIcon(Object o)
+    public ImageIcon getIcon(final Object obj)
     {
-        final IconSize size = IconSize.Std32;
-        final Attachment a = (Attachment)o;
+        final IconSize   size        = IconSize.Std32;
+        final Attachment attatchment = (Attachment)obj;
 
-        ImageIcon cachedIcon = thumbnailCache.get(a);
-        if (cachedIcon!=null)
+        ImageIcon cachedIcon = thumbnailCache.get(attatchment);
+        if (cachedIcon != null)
         {
             return cachedIcon;
         }
         
         // try to get the thumbnail from the attachment storage location
-        File thumb = AttachmentUtils.getAttachmentManager().getThumbnail(a);
+        File thumb = AttachmentUtils.getAttachmentManager().getThumbnail(attatchment);
         if (thumb != null)
         {
-            ImageIcon icon = new ImageIcon(thumb.getAbsolutePath());
-            icon = IconManager.getScaledIcon(icon, IconSize.NonStd, size);
-            thumbnailCache.put(a, icon);
-            return icon;
+            if (thumb.exists())
+            {
+                ImageIcon icon = new ImageIcon(thumb.getAbsolutePath());
+                icon = IconManager.getScaledIcon(icon, IconSize.NonStd, size);
+                thumbnailCache.put(attatchment, icon);
+                return icon;
+            }
+            return IconManager.getIcon("BrokenImage");
         }
         
         // next, try to make a new thumbnail in a tmp directory
@@ -88,19 +92,19 @@ public class AttachmentIconMapper implements ObjectIconMapper
         boolean doGen = true;
         synchronized (thumbGenStarted)
         {
-            if (thumbGenStarted.contains(a))
+            if (thumbGenStarted.contains(attatchment))
             {
                 doGen = false;
             }
         }
 
-        final String origFilename = a.getOrigFilename();
-        if (origFilename!=null && doGen)
+        final String origFilename = attatchment.getOrigFilename();
+        if (origFilename != null && doGen)
         {
             // track the fact that we're starting a thumbnail gen thread
             synchronized (thumbGenStarted)
             {
-                thumbGenStarted.add(a);
+                thumbGenStarted.add(attatchment);
             }
             
             // start a thumbnail generator thread
@@ -109,7 +113,7 @@ public class AttachmentIconMapper implements ObjectIconMapper
                 @SuppressWarnings("synthetic-access")
                 public void run()
                 {
-                    log.debug("Starting thumb gen thread for " + a.getOrigFilename());
+                    log.debug("Starting thumb gen thread for " + attatchment.getOrigFilename());
                     Thumbnailer thumbnailGen = AttachmentUtils.getThumbnailer();
                     File thumbFile = null;
                     
@@ -117,9 +121,9 @@ public class AttachmentIconMapper implements ObjectIconMapper
                     {
                         thumbFile = File.createTempFile("sp6_thumb_", null);
                         thumbFile.deleteOnExit();
-                        log.debug("Generating thumb for " + a.getOrigFilename());
+                        log.debug("Generating thumb for " + attatchment.getOrigFilename());
                         thumbnailGen.generateThumbnail(origFilename, thumbFile.getAbsolutePath(), false);
-                        log.debug("Done generating thumb for " + a.getOrigFilename());
+                        log.debug("Done generating thumb for " + attatchment.getOrigFilename());
                     }
                     catch (IOException e)
                     {
@@ -129,12 +133,12 @@ public class AttachmentIconMapper implements ObjectIconMapper
                         thumbFile = null;
                     }
 
-                    if (thumbFile!=null)
+                    if (thumbFile != null)
                     {
                         ImageIcon icon = new ImageIcon(thumbFile.getAbsolutePath());
                         icon = IconManager.getScaledIcon(icon, IconSize.NonStd, size);
-                        log.debug("Caching thumb for " + a.getOrigFilename());
-                        thumbnailCache.put(a, icon);
+                        log.debug("Caching thumb for " + attatchment.getOrigFilename());
+                        thumbnailCache.put(attatchment, icon);
                     }
                 }
             };
@@ -144,7 +148,7 @@ public class AttachmentIconMapper implements ObjectIconMapper
         
         // based on the MIME type of the attachment, return the appropriate icon
         // TODO: this can easily be configured via an XML file instead of hard coding
-        String mimeType = a.getMimeType();
+        String mimeType = attatchment.getMimeType();
         
         if (mimeType == null)
         {

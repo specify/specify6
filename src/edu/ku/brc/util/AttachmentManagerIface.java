@@ -84,6 +84,11 @@ public interface AttachmentManagerIface
     public void setDirectory(File baseDir) throws IOException;
     
     /**
+     * @return the directory of the Attachment Manager
+     */
+    public File getDirectory();
+    
+    /**
      * Perform any internal cleanup needed before shutdown.
      */
     public void cleanup();

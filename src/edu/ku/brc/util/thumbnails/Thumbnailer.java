@@ -134,7 +134,7 @@ public class Thumbnailer
 		{
             if (!generator.generateThumbnail(originalFile, outputFile, doHighQuality))
             {
-                UIRegistry.getStatusBar().setLocalizedText("Thumbnailer.THMB_NO_CREATE" ,originalFile);
+                UIRegistry.getStatusBar().setLocalizedText("Thumbnailer.THMB_NO_CREATE", originalFile);
             }
             return;
 		}

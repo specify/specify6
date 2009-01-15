@@ -16,6 +16,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Locale;
@@ -250,7 +251,18 @@ public class SystemPrefs extends GenericPrefsPanel
                     
                 } else if (okChangeAttachmentPath(oldAttachmentPath, newAttachmentPath))
                 {
-                    localPrefs.put(ATTCH_PATH, newAttachmentPath);
+                    if (!oldAttachmentPath.equals(newAttachmentPath))
+                    {
+                        localPrefs.put(ATTCH_PATH, newAttachmentPath);
+                        try
+                        {
+                            AttachmentUtils.getAttachmentManager().setDirectory(new File(newAttachmentPath));
+                            
+                        } catch (IOException ex)
+                        {
+                            UIRegistry.showLocalizedError("SystemPrefs.ESA");
+                        }
+                    }
                     
                 } else
                 {

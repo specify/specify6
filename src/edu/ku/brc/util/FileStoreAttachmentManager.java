@@ -75,6 +75,15 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
     }
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.util.AttachmentManagerIface#getDirectory()
+     */
+    @Override
+    public File getDirectory()
+    {
+        return new File(this.baseDirectory);
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.util.AttachmentManagerIface#setStorageLocationIntoAttachment(edu.ku.brc.specify.datamodel.Attachment)
      */
     public void setStorageLocationIntoAttachment(final Attachment attachment)
