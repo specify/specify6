@@ -1734,7 +1734,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         
         CellConstraints cc  = new CellConstraints();
         PanelBuilder    pb  = new PanelBuilder(new FormLayout("p,20px,p,10px,p,10px,p", "f:p:g"));
-        PanelBuilder    ipb = new PanelBuilder(new FormLayout("p,2px,f:p:g", "p,4px,p,4px," + UIHelper.createDuplicateJGoodiesDef("p", "2px", 9)));
+        PanelBuilder    ipb = new PanelBuilder(new FormLayout("p,6px,f:p:g", "p,4px,p,4px," + UIHelper.createDuplicateJGoodiesDef("p", "2px", 9)));
         
         JLabel iconLabel = new JLabel(IconManager.getIcon("SpecifyLargeIcon"), SwingConstants.CENTER); //$NON-NLS-1$
         //iconLabel.setBorder(BorderFactory.createEmptyBorder(2, 0, 2, 8));
