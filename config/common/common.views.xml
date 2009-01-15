@@ -1651,7 +1651,7 @@
                 <row>
                     <cell type="subview" id="6" name="attachments" viewname="ObjectAttachment" initialize="btn=true;icon=DNASequenceAttachment;addsearch=true"/>
                 </row>
-                <row>
+                <!-- <row>
                     <cell type="panel" id="20" name="outerPanel2" coldef="f:p:g,0px,p,10px,p,f:p:g" rowdef="p" colspan="8">
                         <rows>
                             <row>
@@ -1661,7 +1661,7 @@
                             </row>
                         </rows>
                     </cell>
-                </row>                
+                </row> -->               
             </rows>
 	  </viewdef>
         
