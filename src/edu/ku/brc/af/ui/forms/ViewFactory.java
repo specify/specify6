@@ -872,7 +872,7 @@ public class ViewFactory
                 
                 Properties props = (Properties)cellField.getProperties().clone();
                 
-                log.debug(cellField.getName());
+                //log.debug(cellField.getName());
                 if (uiPlugin instanceof WebLinkButton)
                 {
                     //if (StringUtils.isNotEmpty((String)props.get("weblink")))
@@ -880,11 +880,11 @@ public class ViewFactory
                         DBTableInfo tInfo = DBTableIdMgr.getInstance().getByClassName(parent.getView().getClassName());
                         if (tInfo != null)
                         {
-                            log.debug(cellField.getName());
+                            //log.debug(cellField.getName());
                             DBFieldInfo fInfo = tInfo.getFieldByName(cellField.getName());
                             if (fInfo != null)
                             {
-                                log.debug(fInfo.getFormatStr() + " weblink: "+fInfo.getWebLinkName());
+                                //log.debug(fInfo.getFormatStr() + " weblink: "+fInfo.getWebLinkName());
                                 if (StringUtils.isEmpty((String)props.get("weblink")) && StringUtils.isNotEmpty(fInfo.getWebLinkName()))
                                 {
                                     props.put("weblink", fInfo.getWebLinkName());
