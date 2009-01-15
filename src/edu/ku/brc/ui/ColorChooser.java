@@ -156,7 +156,6 @@ public class ColorChooser extends JButton implements AncestorListener, GetSetVal
             popup.requestFocusInWindow();
         }
     }
-
     
     protected Frame getFrame(Component component) 
     {

@@ -576,7 +576,7 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
                     if (!baseFont.getFamily().equals(fontNames.getSelectedItem()) ||
                         baseFont.getSize() != fontSizes.getSelectedIndex()+BASE_FONT_SIZE)
                     {
-                        Font newDefFont = new Font((String)fontNames.getSelectedItem(), Font.PLAIN, fontSizes.getSelectedIndex()+BASE_FONT_SIZE);
+                        Font newDefFont = UIHelper.adjustFont(new Font((String)fontNames.getSelectedItem(), Font.PLAIN, fontSizes.getSelectedIndex()+BASE_FONT_SIZE));
                         UIRegistry.setBaseFont(newDefFont);
                         BaseTask.setToolbarBtnFont(newDefFont); // For ToolbarButtons
                         RolloverCommand.setDefaultFont(newDefFont);

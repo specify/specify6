@@ -316,7 +316,7 @@ public class StatsPane extends BaseSubPane
         int    descCol   = getAttr(boxElement, "desccol", -1); //$NON-NLS-1$
         int    valCol    = getAttr(boxElement, "valcol", -1); //$NON-NLS-1$
         String descTitle = getAttr(boxElement, "desctitle", " "); //$NON-NLS-1$ //$NON-NLS-2$
-        String title     = getAttr(boxElement, "title", " "); //$NON-NLS-1$ //$NON-NLS-2$
+        String title     = getAttr(boxElement, "title", ""); //$NON-NLS-1$ //$NON-NLS-2$
         String noresults = getAttr(boxElement, "noresults", null); //$NON-NLS-1$
         
         //log.debug("***** "+title+" *******");

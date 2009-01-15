@@ -43,6 +43,8 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -177,7 +179,10 @@ public class StatGroupTable extends JPanel
             setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
             CellConstraints cc = new CellConstraints();
 
-            builder.addSeparator(name, cc.xy(1,1));
+            if (StringUtils.isNotEmpty(name))
+            {
+                builder.addSeparator(name, cc.xy(1,1));
+            }
 
             builder.add(scrollPane != null ? scrollPane : table, cc.xy(1,2));
             builder.getPanel().setOpaque(false);

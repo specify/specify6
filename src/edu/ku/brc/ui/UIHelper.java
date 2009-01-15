@@ -258,6 +258,17 @@ public final class UIHelper
     {
         return sysBaseFont;
     }
+    
+    /**
+     * Check the font against the System base font.
+     * @param font the new font.
+     * @return the original System Base font if the family name and size matches. For some OSs the actual
+     * System Base Font is different than creating it.
+     */
+    public static Font adjustFont(final Font font)
+    {
+        return font.getFamily().equals(sysBaseFont.getFamily()) && sysBaseFont.getSize() == font.getSize() ? sysBaseFont : font;
+    }
 
     /**
      * @return the controlSize

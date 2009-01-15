@@ -14,6 +14,7 @@
  */
 package edu.ku.brc.af.core;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -24,8 +25,13 @@ import java.util.List;
 import javax.swing.JPopupMenu;
 import javax.swing.JSplitPane;
 
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.exceptions.ConfigurationException;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.CommandListener;
 import edu.ku.brc.ui.JTiledPanel;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.GhostActionable;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
@@ -43,8 +49,10 @@ import edu.ku.brc.ui.skin.SkinsMgr;
  *
 */
 @SuppressWarnings("serial") //$NON-NLS-1$
-public class NavBoxMgr extends JTiledPanel
+public class NavBoxMgr extends JTiledPanel implements CommandListener
 {
+    private static final String PREFS = "Preferences";
+    
     // Static Data Members
     private static final NavBoxMgr instance = new NavBoxMgr();
     
@@ -63,6 +71,8 @@ public class NavBoxMgr extends JTiledPanel
     {
        setLayout(layout);
        setBackground(getBGColor()); // XXX PREF ??
+       
+       CommandDispatcher.register(PREFS, this);
        
        trash = Trash.getInstance();
        
@@ -298,5 +308,54 @@ public class NavBoxMgr extends JTiledPanel
         {
             throw new ConfigurationException("Can't find an existing NavBox with name["+box.getName()+"] to remove."); //$NON-NLS-1$ //$NON-NLS-2$
         }
-    }    
+    }
+
+    
+    /**
+     * @param appPrefs
+     */
+    protected void prefsChanged(final AppPreferences appPrefs)
+    {
+        if (appPrefs == AppPreferences.getRemote())
+        {
+            AppPreferences ap = AppPreferences.getLocalPrefs();
+            String key      = "ui.formatting.controlSizes"; //$NON-NLS-1$
+            String fontName = ap.get(key+".FN", UIHelper.getSysBaseFont().getFamily());//$NON-NLS-1$
+            int    size     = ap.getInt(key+".SZ", UIHelper.getSysBaseFont().getSize());//$NON-NLS-1$
+            
+            Font font = UIHelper.adjustFont(new Font(fontName, Font.PLAIN, size));
+            
+            for (NavBoxIFace nb : list)
+            {
+                boolean changed = false;
+                for (NavBoxItemIFace nbi : nb.getItems())
+                {
+                    Font f = nbi.getUIComponent().getFont();
+                    if (font.getFamily().equals(f.getFamily()) && f.getSize() == font.getSize())
+                    {
+                        nbi.getUIComponent().setFont(font);
+                        changed = true;
+                    }
+                }
+                if (changed)
+                {
+                    nb.getUIComponent().validate();
+                }
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.CommandListener#doCommand(edu.ku.brc.ui.CommandAction)
+     */
+    @Override
+    public void doCommand(CommandAction cmdAction)
+    {
+        if (cmdAction.isType(PREFS))
+        {
+            prefsChanged((AppPreferences)cmdAction.getData());
+        }
+    }
+    
+    
 }

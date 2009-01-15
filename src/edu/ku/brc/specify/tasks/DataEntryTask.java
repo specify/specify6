@@ -651,6 +651,14 @@ public class DataEntryTask extends BaseTask
 
         for (DataEntryView dev : devList)
         {
+            ViewIFace view = appContextMgr.getView(null, dev.getView());
+            if (view != null)
+            {
+                DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
+                dev.setTableInfo(tableInfo);
+            }
+            
+            System.out.println(dev.getTableInfo()+"  "+(dev.getTableInfo() != null ? (dev.getTableInfo().getTableId()+"  "+CollectionObject.getClassTableId()) : ""));
             boolean isColObj = dev.getTableInfo() != null && dev.getTableInfo().getTableId() == CollectionObject.getClassTableId();
             
             ImageIcon iconImage = IconManager.getIcon(dev.getIconName(), IconManager.STD_ICON_SIZE);
@@ -677,7 +685,6 @@ public class DataEntryTask extends BaseTask
                 log.error("Icon ["+dev.getIconName()+"] could not be found.");
             }
             
-            ViewIFace view = appContextMgr.getView(null, dev.getView());
             if (view != null)
             {
                 DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(view.getClassName());

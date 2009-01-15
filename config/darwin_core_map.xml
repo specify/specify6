@@ -2,7 +2,7 @@
 <list>
     <field name="DateLastModified" table="collectionobject" field="" formatter=""/>
     <field name="InstitutionCode" table="institution" field="abbrev" formatter=""/>
-    <field name="CollectionCode" table="collection" field="collectionPrefix" formatter=""/>
+    <field name="CollectionCode" table="collection" field="code" formatter=""/>
     <field name="CatalogNumberText" table="collectionobject" field="catalogNumber" formatter=""/>
     <field name="CatalogNumberNumeric" table="" field="" formatter=""/>
     <field name="Collector" table="collectingevent" field="collectors" formatter="Collectors"/>

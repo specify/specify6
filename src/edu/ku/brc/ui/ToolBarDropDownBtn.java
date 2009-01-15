@@ -15,7 +15,9 @@
 package edu.ku.brc.ui;
 
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
@@ -25,9 +27,12 @@ import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
+import javax.swing.JToolBar;
 import javax.swing.UIManager;
 
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
+
+import edu.ku.brc.af.prefs.AppPreferences;
 
 /**
  * Toolbar button derived from DropDownBtn, this provides a way to set menu items.
@@ -38,9 +43,10 @@ import com.jgoodies.looks.plastic.PlasticLookAndFeel;
  *
  */
 @SuppressWarnings("serial")
-public class ToolBarDropDownBtn extends DropDownButton
+public class ToolBarDropDownBtn extends DropDownButton implements CommandListener
 {
     protected static Color hoverColor  = new Color(0, 0, 150, 100);
+    protected static final String PREFS = "Preferences";
 
     /**
      * Creates a toolbar item with label and icon and their positions.
@@ -48,12 +54,13 @@ public class ToolBarDropDownBtn extends DropDownButton
      * @param icon the icon
      * @param textPosition the position of the text as related to the icon
      */
-    public ToolBarDropDownBtn(final String label, 
+    public ToolBarDropDownBtn(final String    label, 
                               final ImageIcon icon, 
-                              final int textPosition, 
-                              final boolean addArrowBtn)
+                              final int       textPosition, 
+                              final boolean   addArrowBtn)
     {
         super(label, icon, null, textPosition, addArrowBtn);
+        CommandDispatcher.register(PREFS, this);
     }
 
     /**
@@ -63,14 +70,15 @@ public class ToolBarDropDownBtn extends DropDownButton
      * @param toolTip the toolTip
      * @param textPosition the position of the text as related to the icon
      */
-    public ToolBarDropDownBtn(final String label, 
+    public ToolBarDropDownBtn(final String    label, 
                               final ImageIcon icon, 
-                              final String toolTip, 
-                              final int textPosition, 
-                              final boolean addArrowBtn)
+                              final String    toolTip, 
+                              final int       textPosition, 
+                              final boolean   addArrowBtn)
     {
         super(label, icon, toolTip, textPosition, addArrowBtn);
         hoverBorder = emptyBorder;
+        CommandDispatcher.register(PREFS, this);
     }
 
     /**
@@ -88,6 +96,7 @@ public class ToolBarDropDownBtn extends DropDownButton
     {
         super(label, icon, vertTextPosition, menus);      
         hoverBorder = emptyBorder;
+        CommandDispatcher.register(PREFS, this);
     }
 
     /**
@@ -98,12 +107,13 @@ public class ToolBarDropDownBtn extends DropDownButton
     {
         super(icon, false);
         hoverBorder = emptyBorder;
+        CommandDispatcher.register(PREFS, this);
     }
     
     /**
      * @param hoverColor the hoverColor to set
      */
-    public static void setHoverColor(Color hoverColor)
+    public static void setHoverColor(final Color hoverColor)
     {
         ToolBarDropDownBtn.hoverColor = hoverColor;
     }
@@ -131,4 +141,64 @@ public class ToolBarDropDownBtn extends DropDownButton
             g2d.draw(rr);
         }
     }
+    
+    /**
+     * 
+     */
+    public void shutdown()
+    {
+        CommandDispatcher.unregister(PREFS, this);
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.DropDownButton#finalize()
+     */
+    @Override
+    protected void finalize() throws Throwable
+    {
+        super.finalize();
+        shutdown();
+    }
+
+    /**
+     * @param appPrefs
+     */
+    protected void prefsChanged(final AppPreferences appPrefs)
+    {
+        if (appPrefs == AppPreferences.getRemote())
+        {
+            AppPreferences ap = AppPreferences.getLocalPrefs();
+            String key      = "ui.formatting.controlSizes"; //$NON-NLS-1$
+            String fontName = ap.get(key+".FN", UIHelper.getSysBaseFont().getFamily());//$NON-NLS-1$
+            int    size     = ap.getInt(key+".SZ", UIHelper.getSysBaseFont().getSize());//$NON-NLS-1$
+            
+            mainBtn.setFont(UIHelper.adjustFont(new Font(fontName, Font.PLAIN, size)));
+            mainBtn.validate();
+            mainBtn.repaint();
+            
+            Container parent = getParent();
+            while (!(parent instanceof JToolBar) && parent != null)
+            {
+                parent = parent.getParent();
+            }
+            
+            if (parent != null)
+            {
+                parent.invalidate();
+            }
+        }
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#doCommand(edu.ku.brc.ui.CommandAction)
+     */
+    @Override
+    public void doCommand(final CommandAction cmdAction)
+    {
+        if (cmdAction.isType(PREFS))
+        {
+            prefsChanged((AppPreferences)cmdAction.getData());
+        }
+    }
+    
  }

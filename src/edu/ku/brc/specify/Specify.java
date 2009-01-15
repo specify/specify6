@@ -2046,10 +2046,10 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             defaultFont = labelFont;
         } else
         {
-            if (labelFont.getSize() == 13)
-            {
-                defaultFont = labelFont.deriveFont((float)labelFont.getSize()-2);
-            } else
+            //if (labelFont.getSize() == 13)
+            //{
+            //    defaultFont = labelFont.deriveFont((float)labelFont.getSize()-2);
+            //} else
             {
                 defaultFont = labelFont;
             }
@@ -2706,9 +2706,9 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                   setupDefaultFonts();
                   
                   String  key = "ui.formatting.controlSizes"; //$NON-NLS-1$
-                  String  fontName = AppPreferences.getLocalPrefs().get(key+".FN", null);
-                  Integer fontSize = AppPreferences.getLocalPrefs().getInt(key+".SZ", null);
-                  
+                  String  fontName = AppPreferences.getLocalPrefs().get(key+".FN", UIHelper.getSysBaseFont().getFamily());
+                  Integer fontSize = AppPreferences.getLocalPrefs().getInt(key+".SZ", UIHelper.getSysBaseFont().getSize());
+
                   Font newBaseFont = fontName != null && fontSize != null ? new Font(fontName, Font.PLAIN, fontSize) : sysBaseFont;
                   UIRegistry.setBaseFont(newBaseFont);
                       
