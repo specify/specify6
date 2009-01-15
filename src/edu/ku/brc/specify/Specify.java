@@ -2701,13 +2701,13 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                   AppPreferences localPrefs = AppPreferences.getLocalPrefs();
                   localPrefs.setDirPath(UIRegistry.getAppDataDir());
                   
-                  Font sysBaseFont = UIHelper.getSysBaseFont(); // forces loading of System Base Font before anything happens
+                  Font sysBaseFont = UIRegistry.getBaseFont(); // forces loading of System Base Font before anything happens
 
                   setupDefaultFonts();
                   
                   String  key = "ui.formatting.controlSizes"; //$NON-NLS-1$
-                  String  fontName = AppPreferences.getLocalPrefs().get(key+".FN", UIHelper.getSysBaseFont().getFamily());
-                  Integer fontSize = AppPreferences.getLocalPrefs().getInt(key+".SZ", UIHelper.getSysBaseFont().getSize());
+                  String  fontName = AppPreferences.getLocalPrefs().get(key+".FN", UIRegistry.getBaseFont().getFamily());
+                  Integer fontSize = AppPreferences.getLocalPrefs().getInt(key+".SZ", UIRegistry.getBaseFont().getSize());
 
                   Font newBaseFont = fontName != null && fontSize != null ? new Font(fontName, Font.PLAIN, fontSize) : sysBaseFont;
                   UIRegistry.setBaseFont(newBaseFont);

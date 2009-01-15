@@ -31,7 +31,6 @@ import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
 import edu.ku.brc.ui.JTiledPanel;
-import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.GhostActionable;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
@@ -320,10 +319,10 @@ public class NavBoxMgr extends JTiledPanel implements CommandListener
         {
             AppPreferences ap = AppPreferences.getLocalPrefs();
             String key      = "ui.formatting.controlSizes"; //$NON-NLS-1$
-            String fontName = ap.get(key+".FN", UIHelper.getSysBaseFont().getFamily());//$NON-NLS-1$
-            int    size     = ap.getInt(key+".SZ", UIHelper.getSysBaseFont().getSize());//$NON-NLS-1$
+            String fontName = ap.get(key+".FN", UIRegistry.getBaseFont().getFamily());//$NON-NLS-1$
+            int    size     = ap.getInt(key+".SZ", UIRegistry.getBaseFont().getSize());//$NON-NLS-1$
             
-            Font font = UIHelper.adjustFont(new Font(fontName, Font.PLAIN, size));
+            Font font = UIRegistry.adjustFont(new Font(fontName, Font.PLAIN, size));
             
             for (NavBoxIFace nb : list)
             {

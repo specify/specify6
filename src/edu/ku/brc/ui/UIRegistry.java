@@ -178,9 +178,6 @@ public class UIRegistry
     
     static 
     {
-        instance.baseFont = new JLabel("").getFont();
-        instance.baseFont = instance.baseFont.deriveFont(Font.PLAIN);
-        
         final KeyboardFocusManager focusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager(); 
         focusManager.addPropertyChangeListener( 
             new PropertyChangeListener() { 
@@ -1221,12 +1218,23 @@ public class UIRegistry
     }
     
     /**
+     * Check the font against the System base font.
+     * @param font the new font.
+     * @return the original System Base font if the family name and size matches. For some OSs the actual
+     * System Base Font is different than creating it.
+     */
+    public static Font adjustFont(final Font font)
+    {
+        return font.getFamily().equals(instance.baseFont.getFamily()) && instance.baseFont.getSize() == font.getSize() ? instance.baseFont : font;
+    }
+    
+    /**
      * Return the base font for the UI component.
      * @return the base font for the UI.
      */
     public static Font getBaseFont()
     {
-        return instance.baseFont;
+        return instance.baseFont != null ? instance.baseFont : UIHelper.createLabel("").getFont();
     }
     
     /**

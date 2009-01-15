@@ -23,7 +23,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GradientPaint;
 import java.awt.Graphics2D;
@@ -174,7 +173,6 @@ public final class UIHelper
     protected static Hashtable<String, Boolean> baseClassHash = new Hashtable<String, Boolean>();
     protected static CONTROLSIZE     controlSize     = CONTROLSIZE.regular;
     protected static boolean         isSecurityOn    = false;
-    protected static Font            sysBaseFont;
     
     private static final Color clrGlowInnerHi = new Color(253, 239, 175, 148);
     private static final Color clrGlowInnerLo = new Color(255, 209, 0);
@@ -183,9 +181,6 @@ public final class UIHelper
 
     static {
 
-        sysBaseFont = new JLabel("").getFont();
-        sysBaseFont = sysBaseFont.deriveFont(Font.PLAIN);
-        
         String osStr = System.getProperty("os.name");
         if (osStr.startsWith("Mac OS X"))
         {
@@ -251,25 +246,6 @@ public final class UIHelper
         return oSType == OSTYPE.Linux;
     }
     
-    /**
-     * @return the sysBaseFont
-     */
-    public static Font getSysBaseFont()
-    {
-        return sysBaseFont;
-    }
-    
-    /**
-     * Check the font against the System base font.
-     * @param font the new font.
-     * @return the original System Base font if the family name and size matches. For some OSs the actual
-     * System Base Font is different than creating it.
-     */
-    public static Font adjustFont(final Font font)
-    {
-        return font.getFamily().equals(sysBaseFont.getFamily()) && sysBaseFont.getSize() == font.getSize() ? sysBaseFont : font;
-    }
-
     /**
      * @return the controlSize
      */

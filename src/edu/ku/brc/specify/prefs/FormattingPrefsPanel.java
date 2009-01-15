@@ -396,7 +396,7 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
         resetDefFontBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
-                Font sysDefFont = UIHelper.getSysBaseFont();
+                Font sysDefFont = UIRegistry.getBaseFont();
                 ComboBoxModel model = fontNames.getModel();
                 for (int i=0;i<model.getSize();i++)
                 {
@@ -565,9 +565,9 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
                     AppPreferences.getLocalPrefs().remove(key+".FN");
                     AppPreferences.getLocalPrefs().remove(key+".SZ");
                     
-                    UIRegistry.setBaseFont(UIHelper.getSysBaseFont());
-                    BaseTask.setToolbarBtnFont(UIHelper.getSysBaseFont()); // For ToolbarButtons
-                    RolloverCommand.setDefaultFont(UIHelper.getSysBaseFont());
+                    UIRegistry.setBaseFont(UIRegistry.getBaseFont());
+                    BaseTask.setToolbarBtnFont(UIRegistry.getBaseFont()); // For ToolbarButtons
+                    RolloverCommand.setDefaultFont(UIRegistry.getBaseFont());
 
                     
                 } else
@@ -576,7 +576,7 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
                     if (!baseFont.getFamily().equals(fontNames.getSelectedItem()) ||
                         baseFont.getSize() != fontSizes.getSelectedIndex()+BASE_FONT_SIZE)
                     {
-                        Font newDefFont = UIHelper.adjustFont(new Font((String)fontNames.getSelectedItem(), Font.PLAIN, fontSizes.getSelectedIndex()+BASE_FONT_SIZE));
+                        Font newDefFont = UIRegistry.adjustFont(new Font((String)fontNames.getSelectedItem(), Font.PLAIN, fontSizes.getSelectedIndex()+BASE_FONT_SIZE));
                         UIRegistry.setBaseFont(newDefFont);
                         BaseTask.setToolbarBtnFont(newDefFont); // For ToolbarButtons
                         RolloverCommand.setDefaultFont(newDefFont);
