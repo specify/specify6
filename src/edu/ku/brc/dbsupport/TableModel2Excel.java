@@ -196,7 +196,8 @@ public class TableModel2Excel
                         // create a numeric cell
                         HSSFCell cell = row.createCell(cellnum);
                         
-                        cell.setCellValue(tableModel.getValueAt(rownum, cellnum).toString());
+                        Object dataVal = tableModel.getValueAt(rownum, cellnum);
+                        cell.setCellValue(dataVal != null ? dataVal.toString() : "");
 
                         // on every other row
                         cell.setCellStyle((rownum % 2) == 0 ? evenCellStyle : oddCellStyle);
