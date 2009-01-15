@@ -58,6 +58,7 @@ import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterField;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.ui.ColorWrapper;
+import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -76,7 +77,6 @@ import edu.ku.brc.ui.UIRegistry;
 @SuppressWarnings("serial")
 public class ValFormattedTextFieldSingle extends JTextField implements UIValidatable,
                                                                        GetSetValueIFace,
-                                                                       DocumentListener, 
                                                                        UIRegistry.UndoableTextIFace,
                                                                        AutoNumberableIFace
 {
@@ -317,7 +317,26 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
     
             document = new JFormattedDoc(this, formatter, requiredLength);
             setDocument(document);
-            document.addDocumentListener(this);
+            document.addDocumentListener(new DocumentAdaptor() {
+                @Override
+                protected void changed(DocumentEvent e)
+                {
+                    isChanged = true;
+                    if (formatter.isLengthOK(getText().length()))
+                    {
+                        setState(formatter.isValid(getText()) ? UIValidatable.ErrorType.Valid : UIValidatable.ErrorType.Error);
+                        repaint();
+                    }
+                    
+                    if (documentListeners != null)
+                    {
+                        for (DocumentListener dl : documentListeners)
+                        {
+                            dl.changedUpdate(null);
+                        }
+                    }
+                }
+            });
         }
     }
     
@@ -997,44 +1016,6 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
         }
         return val != null && val.isEmpty() ? null : val;
     }
-
-    //--------------------------------------------------------
-    // DocumentListener
-    //--------------------------------------------------------
-
-    private void changed()
-    {
-        isChanged = true;
-        if (formatter.isLengthOK(getText().length()))
-        {
-            setState(formatter.isValid(getText()) ? UIValidatable.ErrorType.Valid : UIValidatable.ErrorType.Error);
-            repaint();
-        }
-        
-        if (documentListeners != null)
-        {
-            for (DocumentListener dl : documentListeners)
-            {
-                dl.changedUpdate(null);
-            }
-        }
-    }
-
-    public void changedUpdate(DocumentEvent e)
-    {
-        changed();
-    }
-
-    public void insertUpdate(DocumentEvent e)
-    {
-        changed();
-    }
-
-    public void removeUpdate(DocumentEvent e)
-    {
-        changed();
-    }
-
 
     //-------------------------------------------------
     // JFormattedDoc

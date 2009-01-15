@@ -29,7 +29,6 @@ import java.awt.event.KeyEvent;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.text.Document;
 
 import org.apache.commons.lang.StringUtils;
@@ -38,6 +37,7 @@ import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
 import edu.ku.brc.af.prefs.AppPrefsChangeListener;
 import edu.ku.brc.ui.ColorWrapper;
+import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.UIHelper;
 
@@ -52,7 +52,6 @@ import edu.ku.brc.ui.UIHelper;
 @SuppressWarnings("serial")
 public class ValTextArea extends JTextArea implements UIValidatable,
                                                       GetSetValueIFace,
-                                                      DocumentListener,
                                                       AppPrefsChangeListener
 {
     protected UIValidatable.ErrorType valState  = UIValidatable.ErrorType.Valid;
@@ -124,7 +123,13 @@ public class ValTextArea extends JTextArea implements UIValidatable,
         }
         AppPrefsCache.addChangeListener("ui.formatting.requiredfieldcolor", this);
 
-        getDocument().addDocumentListener(this);
+        getDocument().addDocumentListener(new DocumentAdaptor() {
+            @Override
+            protected void changed(DocumentEvent e)
+            {
+                isChanged = true;
+            }
+        });
 
 
         addFocusListener(new FocusAdapter() {
@@ -305,26 +310,6 @@ public class ValTextArea extends JTextArea implements UIValidatable,
     public String getReason()
     {
         return null;
-    }
-
-    //--------------------------------------------------------
-    // DocumentListener
-    //--------------------------------------------------------
-
-
-    public void changedUpdate(DocumentEvent e)
-    {
-        isChanged = true;
-    }
-
-    public void insertUpdate(DocumentEvent e)
-    {
-        isChanged = true;
-    }
-
-    public void removeUpdate(DocumentEvent e)
-    {
-        isChanged = true;
     }
 
     //--------------------------------------------------------

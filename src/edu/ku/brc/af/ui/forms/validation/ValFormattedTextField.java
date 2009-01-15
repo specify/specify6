@@ -61,6 +61,7 @@ import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterField.FieldType;
 import edu.ku.brc.ui.ColorWrapper;
+import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -80,7 +81,6 @@ import edu.ku.brc.ui.UIRegistry;
 @SuppressWarnings("serial")
 public class ValFormattedTextField extends JPanel implements UIValidatable,
                                                              GetSetValueIFace,
-                                                             DocumentListener,
                                                              AutoNumberableIFace
 {
     //private static final Logger log  = Logger.getLogger(ValFormattedTextField.class);
@@ -376,7 +376,30 @@ s     * @param isViewOnly
                     
                     JFormattedDoc document = new JFormattedDoc(tf, formatter, f);
                     tf.setDocument(document);
-                    document.addDocumentListener(this);
+                    document.addDocumentListener(new DocumentAdaptor() {
+                        @Override
+                        protected void changed(DocumentEvent e)
+                        {
+                            isChanged = true;
+                            if (!shouldIgnoreNotifyDoc)
+                            {
+                                //validateState();
+                                if (changeListener != null)
+                                {
+                                    changeListener.stateChanged(new ChangeEvent(this));
+                                }
+                                
+                                if (documentListeners != null)
+                                {
+                                    for (DocumentListener dl : documentListeners)
+                                    {
+                                        dl.changedUpdate(null);
+                                    }
+                                }
+                            }
+                            currCachedValue = null;
+                        }
+                    });
                     documents.add(document);
 
                     addFocusAdapter(tf);
@@ -1033,49 +1056,6 @@ s     * @param isViewOnly
     public void setFromUIFmtOverride(boolean isFromUIFmtOverride)
     {
         this.isFromUIFmtOverride = isFromUIFmtOverride;
-    }
-    
-    //--------------------------------------------------------
-    // DocumentListener
-    //--------------------------------------------------------
-
-    protected void changeOccurred()
-    {
-        isChanged = true;
-        if (!shouldIgnoreNotifyDoc)
-        {
-            //validateState();
-            if (changeListener != null)
-            {
-                changeListener.stateChanged(new ChangeEvent(this));
-            }
-            
-            if (documentListeners != null)
-            {
-                for (DocumentListener dl : documentListeners)
-                {
-                    dl.changedUpdate(null);
-                }
-            }
-        }
-        
-                
-        currCachedValue = null;
-    }
-    
-    public void changedUpdate(DocumentEvent e)
-    {
-        changeOccurred();
-    }
-
-    public void insertUpdate(DocumentEvent e)
-    {
-        changeOccurred();
-    }
-
-    public void removeUpdate(DocumentEvent e)
-    {
-        changeOccurred();
     }
     
     //--------------------------------------------------------

@@ -53,7 +53,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.text.JTextComponent;
 
 import org.apache.commons.lang.StringUtils;
@@ -69,6 +68,7 @@ import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.specify.ui.LengthInputVerifier;
+import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
@@ -89,9 +89,7 @@ import edu.ku.brc.ui.dnd.GhostMouseInputAdapter;
  *
  */
 public class FormPane extends JPanel implements ResultSetControllerListener, 
-                                                GhostActionable,
-                                                DocumentListener,
-                                                ChangeListener
+                                                GhostActionable
 {
     private static final Logger log = Logger.getLogger(FormPane.class);
     
@@ -113,6 +111,8 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
     protected boolean            ignoreChanges     = false;
     protected boolean            changesInForm     = false;
     protected int                currentIndex      = -1;
+    protected DocumentAdaptor    docListener;
+    protected ChangeListener     changeListener    = null;
     
     protected InputPanel         selectedInputPanel = null;   
 
@@ -128,6 +128,8 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
     protected Dimension          initialSize       = null; 
     
     protected boolean            readOnly;
+    
+    
     /**
      * Creates a Pane for editing a Workbench as a form.
      * @param workbenchPane the workbench pane to be parented into
@@ -147,6 +149,22 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         buildUI();
         
         scrollPane = new JScrollPane(this, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        
+        docListener = new DocumentAdaptor() {
+            @Override
+            protected void changed(DocumentEvent e)
+            {
+                stateChange();
+            }
+        };
+        
+        changeListener = new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e)
+            {
+                stateChange();
+            }
+        };
     }
     
     /**
@@ -412,14 +430,14 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
             Component comp = panel.getComp();
             if (comp instanceof ValTextField)
             {
-                ((ValTextField)comp).getDocument().removeDocumentListener(this);
+                ((ValTextField)comp).getDocument().removeDocumentListener(docListener);
             } else if (comp instanceof ValTextArea)
             {
-                ((ValTextArea)comp).getDocument().removeDocumentListener(this);
+                ((ValTextArea)comp).getDocument().removeDocumentListener(docListener);
    
             } else if (comp instanceof ValCheckBox)
             {
-                ((ValCheckBox)comp).removeChangeListener(this);
+                ((ValCheckBox)comp).removeChangeListener(changeListener);
             }
             panel.cleanUp();
         }
@@ -431,13 +449,15 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         workbench          = null;
         controlPropsBtn    = null;
         firstComp          = null;
-        selectedInputPanel = null;   
+        selectedInputPanel = null;
         controlPropsDlg    = null;
-        scrollPane         = null; 
-        initialSize        = null; 
-        uiComps            = null; 
-        headers            = null; 
-        dropFlavors        = null; 
+        scrollPane         = null;
+        initialSize        = null;
+        uiComps            = null;
+        headers            = null;
+        dropFlavors        = null;
+        docListener        = null;
+        changeListener     = null;
     }
 
     /**
@@ -449,7 +469,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         ValTextArea textArea = new ValTextArea("", rows, len);
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
-        textArea.getDocument().addDocumentListener(this);
+        textArea.getDocument().addDocumentListener(docListener);
         JScrollPane taScrollPane = new JScrollPane(textArea);
         taScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
         taScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
@@ -585,7 +605,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
             //ValFormattedTextField txt = new ValFormattedTextField("Date"); 
             //txt.setColumns(columns == -1 ? DEFAULT_TEXTFIELD_COLS : columns);
             ValTextField txt = new ValTextField(columns);
-            txt.getDocument().addDocumentListener(this);
+            txt.getDocument().addDocumentListener(docListener);
             comp      = txt;
             focusComp = comp;
             
@@ -593,14 +613,14 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         else if (dbFieldType.equals(Boolean.class)) // strings
         {
             ValCheckBox checkBox = new ValCheckBox(caption, false, false);
-            checkBox.addChangeListener(this);
+            checkBox.addChangeListener(changeListener);
             comp      = checkBox;
             focusComp = comp;
         }
         else if (useTextField(fieldName, fieldType, fieldLength))
         {
             ValTextField txt = new ValTextField(columns);
-            txt.getDocument().addDocumentListener(this);
+            txt.getDocument().addDocumentListener(docListener);
             txt.setInputVerifier(new LengthInputVerifier(caption, fieldLength));
             comp      = txt;
             focusComp = comp;
@@ -656,14 +676,14 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         if (inputPanel.getComp() instanceof JTextField)
         {
             JTextField tf = (JTextField)inputPanel.getComp();
-            tf.getDocument().removeDocumentListener(this);
+            tf.getDocument().removeDocumentListener(docListener);
             fieldType = WorkbenchTemplateMappingItem.TEXTAREA;
             oldComp   = tf;
             rows      = DEFAULT_TEXTAREA_ROWS; 
         } else
         {
             JTextArea ta = (JTextArea)inputPanel.getComp();
-            ta.getDocument().removeDocumentListener(this);
+            ta.getDocument().removeDocumentListener(docListener);
             fieldType = WorkbenchTemplateMappingItem.TEXTFIELD;
             oldComp   = ta;
             rows      = DEFAULT_TEXTFIELD_ROWS; 
@@ -1094,10 +1114,10 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         return null; // this is not draggable
     }
     
-    //-----------------------------------------------
-    // DocumentListener Interface
-    //-----------------------------------------------
-    public void insertUpdate(DocumentEvent e) 
+    /**
+     * Helper method for setting state that changes were made.
+     */
+    protected void stateChange()
     {
         if (!ignoreChanges)
         {
@@ -1105,35 +1125,4 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
             workbenchPane.setChanged(true);
         }
     }
-    
-    public void removeUpdate(DocumentEvent e) 
-    {
-        if (!ignoreChanges)
-        {
-            changesInForm = true;
-            workbenchPane.setChanged(true);
-        }
-    }
-    
-    public void changedUpdate(DocumentEvent e) 
-    {
-        if (!ignoreChanges)
-        {
-            changesInForm = true;
-            workbenchPane.setChanged(true);
-        }
-    }
-
-    //-----------------------------------------------
-    // DocumentListener Interface
-    //-----------------------------------------------
-    public void stateChanged(ChangeEvent e)
-    {
-        if (!ignoreChanges)
-        {
-            changesInForm = true;
-            workbenchPane.setChanged(true);
-        }
-    }
-    
  }

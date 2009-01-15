@@ -43,6 +43,7 @@ import edu.ku.brc.af.ui.db.JAutoCompTextField;
 import edu.ku.brc.af.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterField;
 import edu.ku.brc.ui.ColorWrapper;
+import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -58,7 +59,6 @@ import edu.ku.brc.ui.UIRegistry;
 @SuppressWarnings("serial")
 public class ValTextField extends JAutoCompTextField implements UIValidatable,
                                                                 GetSetValueIFace,
-                                                                DocumentListener,
                                                                 AppPrefsChangeListener,
                                                                 UIRegistry.UndoableTextIFace
 {
@@ -158,6 +158,14 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
             {
                 isNew = false;
                 repaint();
+            }
+        });
+        
+        getDocument().addDocumentListener(new DocumentAdaptor() {
+            @Override
+            protected void changed(DocumentEvent e)
+            {
+                isChanged = true;
             }
         });
     }
@@ -464,27 +472,6 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
     public Object getValue()
     {
         return getText();
-    }
-
-
-    //--------------------------------------------------------
-    // DocumentListener
-    //--------------------------------------------------------
-
-
-    public void changedUpdate(DocumentEvent e)
-    {
-        isChanged = true;
-    }
-
-    public void insertUpdate(DocumentEvent e)
-    {
-        isChanged = true;
-    }
-
-    public void removeUpdate(DocumentEvent e)
-    {
-        isChanged = true;
     }
 
     //-------------------------------------------------

@@ -27,7 +27,6 @@ import java.awt.event.FocusEvent;
 
 import javax.swing.JPasswordField;
 import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.text.Document;
 
 import org.apache.commons.lang.StringUtils;
@@ -37,6 +36,7 @@ import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
 import edu.ku.brc.af.prefs.AppPrefsChangeListener;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.ui.ColorWrapper;
+import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.UIHelper;
 
@@ -51,7 +51,6 @@ import edu.ku.brc.ui.UIHelper;
 @SuppressWarnings("serial")
 public class ValPasswordField extends JPasswordField implements UIValidatable,
                                                                 GetSetValueIFace,
-                                                                DocumentListener,
                                                                 AppPrefsChangeListener
 {
     protected static ColorWrapper valtextcolor       = null;
@@ -66,35 +65,60 @@ public class ValPasswordField extends JPasswordField implements UIValidatable,
 
     protected String  defaultValue = null;
 
+    /**
+     * Constructor.
+     */
     public ValPasswordField()
     {
         super();
         init();
     }
 
-    public ValPasswordField(String arg0)
+    /**
+     * Constructor.
+     * @param text initial text
+     */
+    public ValPasswordField(String text)
     {
-        super(arg0);
+        super(text);
         init();
     }
 
-    public ValPasswordField(int arg0)
+    /**
+     * Constructor.
+     * @param cols number of columns
+     */
+    public ValPasswordField(int cols)
     {
-        super(arg0);
+        super(cols);
         init();
     }
 
-    public ValPasswordField(String arg0, int arg1)
+    /**
+     * Constructor.
+     * @param text initial text
+     * @param cols number of columns
+     */
+    public ValPasswordField(String text, int cols)
     {
-        super(arg0, arg1);
+        super(text, cols);
     }
 
-    public ValPasswordField(Document arg0, String arg1, int arg2)
+    /**
+     * Constructor.
+     * @param doc initial document
+     * @param text initial text
+     * @param cols number of columns
+     */
+    public ValPasswordField(Document doc, String text, int cols)
     {
-        super(arg0, arg1, arg2);
+        super(doc, text, cols);
         init();
     }
 
+    /**
+     * Setup colors and listeners.
+     */
     public void init()
     {
         setControlSize(this);
@@ -113,6 +137,14 @@ public class ValPasswordField extends JPasswordField implements UIValidatable,
             {
                 isNew = false;
                 repaint();
+            }
+        });
+        
+        getDocument().addDocumentListener(new DocumentAdaptor() {
+            @Override
+            protected void changed(DocumentEvent e)
+            {
+                isChanged = true;
             }
         });
     }
@@ -351,24 +383,6 @@ public class ValPasswordField extends JPasswordField implements UIValidatable,
         return this;
     }
 
-    //--------------------------------------------------------
-    // DocumentListener
-    //--------------------------------------------------------
-
-    public void changedUpdate(DocumentEvent e)
-    {
-        isChanged = true;
-    }
-
-    public void insertUpdate(DocumentEvent e)
-    {
-        isChanged = true;
-    }
-
-    public void removeUpdate(DocumentEvent e)
-    {
-        isChanged = true;
-    }
 
     //-------------------------------------------------
     // AppPrefsChangeListener
