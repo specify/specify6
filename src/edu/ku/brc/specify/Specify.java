@@ -335,7 +335,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
     public void startUp()
     {
     	log.debug("StartUp..."); //$NON-NLS-1$
-        
+    	
         // Adjust Default Swing UI Default Resources (Color, Fonts, etc) per Platform
         UIHelper.adjustUIDefaults();
         
@@ -500,9 +500,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
 //            e1.printStackTrace();
 //        }
         
-        // Setup base font AFTER setting Look and Feel
-        UIRegistry.setBaseFont((createLabel("")).getFont()); //$NON-NLS-1$
-
         log.info("Creating Database configuration "); //$NON-NLS-1$
 
         if (!isWorkbenchOnly)
@@ -2550,6 +2547,25 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
           log.error("Can't change L&F: ", e); //$NON-NLS-1$
       }
       
+      // Setup base font AFTER setting Look and Feel
+      Font defFont = (createLabel("")).getFont();
+      UIRegistry.setDefaultFont(defFont);
+
+      setupDefaultFonts();
+      
+      Font sysBaseFont = UIRegistry.getBaseFont(); // forces loading of System Base Font before anything happens
+
+      String  key = "ui.formatting.controlSizes"; //$NON-NLS-1$
+      String  fontName = AppPreferences.getLocalPrefs().get(key+".FN", UIRegistry.getBaseFont().getFamily());
+      Integer fontSize = AppPreferences.getLocalPrefs().getInt(key+".SZ", UIRegistry.getBaseFont().getSize());
+
+      Font newBaseFont = fontName != null && fontSize != null ? new Font(fontName, Font.PLAIN, fontSize) : sysBaseFont;
+      UIRegistry.setBaseFont(newBaseFont);
+          
+      SkinsMgr.getInstance().setSkin("Metal");
+      
+      BaseTask.setToolbarBtnFont(newBaseFont); // For ToolbarButtons
+      RolloverCommand.setDefaultFont(newBaseFont);
       
       ImageIcon helpIcon = IconManager.getIcon("AppIcon",IconSize.Std16); //$NON-NLS-1$
       HelpMgr.initializeHelp("SpecifyHelp", helpIcon.getImage()); //$NON-NLS-1$
@@ -2700,22 +2716,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                   // Load Local Prefs
                   AppPreferences localPrefs = AppPreferences.getLocalPrefs();
                   localPrefs.setDirPath(UIRegistry.getAppDataDir());
-                  
-                  Font sysBaseFont = UIRegistry.getBaseFont(); // forces loading of System Base Font before anything happens
-
-                  setupDefaultFonts();
-                  
-                  String  key = "ui.formatting.controlSizes"; //$NON-NLS-1$
-                  String  fontName = AppPreferences.getLocalPrefs().get(key+".FN", UIRegistry.getBaseFont().getFamily());
-                  Integer fontSize = AppPreferences.getLocalPrefs().getInt(key+".SZ", UIRegistry.getBaseFont().getSize());
-
-                  Font newBaseFont = fontName != null && fontSize != null ? new Font(fontName, Font.PLAIN, fontSize) : sysBaseFont;
-                  UIRegistry.setBaseFont(newBaseFont);
-                      
-                  SkinsMgr.getInstance().setSkin("Metal");
-                  
-                  BaseTask.setToolbarBtnFont(newBaseFont); // For ToolbarButtons
-                  RolloverCommand.setDefaultFont(newBaseFont);
                   
                   // Check to see if we should check for a new version
                   String VERSION_CHECK = "version_check.auto";

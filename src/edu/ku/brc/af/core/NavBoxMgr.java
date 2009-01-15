@@ -322,7 +322,7 @@ public class NavBoxMgr extends JTiledPanel implements CommandListener
             String fontName = ap.get(key+".FN", UIRegistry.getBaseFont().getFamily());//$NON-NLS-1$
             int    size     = ap.getInt(key+".SZ", UIRegistry.getBaseFont().getSize());//$NON-NLS-1$
             
-            Font font = UIRegistry.adjustFont(new Font(fontName, Font.PLAIN, size));
+            Font font = UIRegistry.adjustPerDefaultFont(new Font(fontName, Font.PLAIN, size));
             
             for (NavBoxIFace nb : list)
             {

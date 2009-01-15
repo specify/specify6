@@ -211,7 +211,8 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
         } catch (BackingStoreException ex)
         {
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PreferencesDlg.class, ex);
+            // XXX Should notify the user nicely
+            //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PreferencesDlg.class, ex);
             log.error(ex);
         }
         super.okButtonPressed();

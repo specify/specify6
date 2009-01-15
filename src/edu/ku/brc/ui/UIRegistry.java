@@ -140,6 +140,7 @@ public class UIRegistry
     protected Hashtable<String, Hashtable<String, JComponent>> uiItems = new Hashtable<String, Hashtable<String, JComponent>>();
 
     protected Font           baseFont           = null;
+    protected Font           defaultFont        = null;
 
     protected FileCache      longTermCache      = null;
     protected FileCache      shortTermCache     = null;
@@ -178,6 +179,9 @@ public class UIRegistry
     
     static 
     {
+        instance.baseFont = new JLabel("").getFont();
+        instance.baseFont = instance.baseFont.deriveFont(Font.PLAIN);
+    	
         final KeyboardFocusManager focusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager(); 
         focusManager.addPropertyChangeListener( 
             new PropertyChangeListener() { 
@@ -1197,22 +1201,25 @@ public class UIRegistry
      */
     protected static void adjustAllFonts(final Font oldBaseFont, final Font baseFontArg)
     {
-        int    fontSize    = baseFontArg.getSize();
-        int    oldFontSize = oldBaseFont.getSize();
-        String family      = baseFontArg.getFamily();
-        
-        UIDefaults uiDefaults = UIManager.getDefaults();
-        Enumeration<Object> e = uiDefaults.keys();
-        while (e.hasMoreElements())
-        {
-            Object key = e.nextElement();
-            if (key.toString().endsWith(".font"))
-            {
-                FontUIResource fontUIRes = (FontUIResource)uiDefaults.get(key);
-                if (fontSize != fontUIRes.getSize() || !family.equals(fontUIRes.getFamily()))
-                {
-                    UIManager.put(key, new FontUIResource(new Font(family, fontUIRes.getStyle(), fontSize + (fontUIRes.getSize() - oldFontSize))));
-                }
+    	if (oldBaseFont != null && baseFontArg != null)
+    	{
+	        int    fontSize    = baseFontArg.getSize();
+	        int    oldFontSize = oldBaseFont.getSize();
+	        String family      = baseFontArg.getFamily();
+	        
+	        UIDefaults uiDefaults = UIManager.getDefaults();
+	        Enumeration<Object> e = uiDefaults.keys();
+	        while (e.hasMoreElements())
+	        {
+	            Object key = e.nextElement();
+	            if (key.toString().endsWith(".font"))
+	            {
+	                FontUIResource fontUIRes = (FontUIResource)uiDefaults.get(key);
+	                if (fontSize != fontUIRes.getSize() || !family.equals(fontUIRes.getFamily()))
+	                {
+	                    UIManager.put(key, new FontUIResource(new Font(family, fontUIRes.getStyle(), fontSize + (fontUIRes.getSize() - oldFontSize))));
+	                }
+	            }
             }
         }
     }
@@ -1223,9 +1230,9 @@ public class UIRegistry
      * @return the original System Base font if the family name and size matches. For some OSs the actual
      * System Base Font is different than creating it.
      */
-    public static Font adjustFont(final Font font)
+    public static Font adjustPerDefaultFont(final Font font)
     {
-        return font.getFamily().equals(instance.baseFont.getFamily()) && instance.baseFont.getSize() == font.getSize() ? instance.baseFont : font;
+        return font.getFamily().equals(instance.defaultFont.getFamily()) && instance.defaultFont.getSize() == font.getSize() ? instance.defaultFont : font;
     }
     
     /**
@@ -1243,14 +1250,30 @@ public class UIRegistry
      */
     public static void setBaseFont(final Font newBaseFont)
     {
-        if (instance.baseFont != newBaseFont)
+        if (instance.baseFont != newBaseFont && instance.baseFont != null)
         {
             adjustAllFonts(instance.baseFont, newBaseFont);
         }
         instance.baseFont = newBaseFont;
     }
     
-    //---------------------------------------------------------------------------------
+    /**
+     * @param defaultFont the default font
+     */
+    public static void setDefaultFont(Font defaultFont) 
+    {
+    	instance.defaultFont = defaultFont;
+	}
+
+	/**
+     * @return the default font
+     */
+    public static Font getDefaultFont() 
+    {
+		return instance.defaultFont;
+	}
+
+	//---------------------------------------------------------------------------------
     //-- Glass Pane Buffered Image
     //---------------------------------------------------------------------------------
     protected static SoftReference<BufferedImage> glassPaneBufferedImageSR;
@@ -1508,7 +1531,7 @@ public class UIRegistry
     
     public static void setJavaDBDir(final String path)
     {
-    	log.debug("Setting JavaDB: "+path);
+        log.debug("Setting JavaDB: "+path);
         
         if (StringUtils.isNotEmpty(path))
         {
@@ -1518,8 +1541,8 @@ public class UIRegistry
     
     public static String getJavaDBPath()
     {
-    	log.debug("JavaDB: "+System.getProperty("derby.system.home"));
-    	return System.getProperty("derby.system.home");
+        log.debug("JavaDB: "+System.getProperty("derby.system.home"));
+        return System.getProperty("derby.system.home");
     }
     
     //---------------------------------------------------------

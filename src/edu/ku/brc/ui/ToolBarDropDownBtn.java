@@ -172,7 +172,7 @@ public class ToolBarDropDownBtn extends DropDownButton implements CommandListene
             String fontName = ap.get(key+".FN", UIRegistry.getBaseFont().getFamily());//$NON-NLS-1$
             int    size     = ap.getInt(key+".SZ", UIRegistry.getBaseFont().getSize());//$NON-NLS-1$
             
-            mainBtn.setFont(UIRegistry.adjustFont(new Font(fontName, Font.PLAIN, size)));
+            mainBtn.setFont(UIRegistry.adjustPerDefaultFont(new Font(fontName, Font.PLAIN, size)));
             mainBtn.validate();
             mainBtn.repaint();
             

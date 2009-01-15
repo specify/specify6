@@ -396,7 +396,7 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
         resetDefFontBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
-                Font sysDefFont = UIRegistry.getBaseFont();
+                Font sysDefFont = UIRegistry.getDefaultFont();
                 ComboBoxModel model = fontNames.getModel();
                 for (int i=0;i<model.getSize();i++)
                 {
@@ -542,7 +542,7 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
     {
         if (form.getValidator() == null || form.getValidator().hasChanged())
         {
-            super.savePrefs();
+            super.savePrefs(); // gets data from the UI
             
             Pair<String, ImageIcon> item = (Pair<String, ImageIcon>)disciplineCBX.getComboBox().getSelectedItem();
             if (item != null)
@@ -565,7 +565,7 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
                     AppPreferences.getLocalPrefs().remove(key+".FN");
                     AppPreferences.getLocalPrefs().remove(key+".SZ");
                     
-                    UIRegistry.setBaseFont(UIRegistry.getBaseFont());
+                    UIRegistry.setBaseFont(UIRegistry.getDefaultFont());
                     BaseTask.setToolbarBtnFont(UIRegistry.getBaseFont()); // For ToolbarButtons
                     RolloverCommand.setDefaultFont(UIRegistry.getBaseFont());
 
@@ -576,10 +576,10 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
                     if (!baseFont.getFamily().equals(fontNames.getSelectedItem()) ||
                         baseFont.getSize() != fontSizes.getSelectedIndex()+BASE_FONT_SIZE)
                     {
-                        Font newDefFont = UIRegistry.adjustFont(new Font((String)fontNames.getSelectedItem(), Font.PLAIN, fontSizes.getSelectedIndex()+BASE_FONT_SIZE));
-                        UIRegistry.setBaseFont(newDefFont);
-                        BaseTask.setToolbarBtnFont(newDefFont); // For ToolbarButtons
-                        RolloverCommand.setDefaultFont(newDefFont);
+                        Font newBaseFont = UIRegistry.adjustPerDefaultFont(new Font((String)fontNames.getSelectedItem(), Font.PLAIN, fontSizes.getSelectedIndex()+BASE_FONT_SIZE));
+                        UIRegistry.setBaseFont(newBaseFont);
+                        BaseTask.setToolbarBtnFont(newBaseFont); // For ToolbarButtons
+                        RolloverCommand.setDefaultFont(newBaseFont);
     
                         AppPreferences.getLocalPrefs().put(key+".FN", (String)fontNames.getSelectedItem());
                         AppPreferences.getLocalPrefs().putInt(key+".SZ", fontSizes.getSelectedIndex()+BASE_FONT_SIZE);
