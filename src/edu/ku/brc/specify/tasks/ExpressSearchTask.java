@@ -1409,12 +1409,16 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                  * returns false. I have added the !isQueryBuilderResults() condition because so far this problem has only
                  * occurred for the QueryBuilder and I don't know if the method for determining 'hasResults()'
                  * in the QueryBuilder results block below are applicable for all types of results.
+                 * 
+                 * We occasionally see this on a Virtual machine, more investigation is needed.
+                 * 
                  */
-                    displayNoResults("QB_NO_RESULTS");
+                    //displayNoResults("QB_NO_RESULTS");
                     results.complete();
+                    UIRegistry.showLocalizedError("QB_NO_RESULTS_UNK");
                     return;
                 }
-                
+
                 //Only execute this block for QueryBuilder results...
                 if (isQueryBuilderResults(results))
                 {
