@@ -8830,7 +8830,7 @@ that are destroyed.</text>
         <names>
           <str language="en" country="" variant="">
             <version>0</version>
-            <text>Loan Return Physical Objects</text>
+            <text>Loan Return Preparations</text>
           </str>
         </names>
         <descs/>
@@ -13239,7 +13239,7 @@ comparisons with previously cataloged specimens.</text>
         <names>
           <str language="en" country="" variant="">
             <version>0</version>
-            <text>Loan Physical Objects</text>
+            <text>Loan Preparations</text>
           </str>
         </names>
         <descs/>
@@ -14059,7 +14059,7 @@ incremented when a loan is made. </text>
         <names>
           <str language="en" country="" variant="">
             <version>0</version>
-            <text>Loan Return Physical Objects</text>
+            <text>Loan Return Preparations</text>
           </str>
         </names>
         <descs/>
@@ -14095,7 +14095,7 @@ incremented when a loan is made. </text>
     <names>
       <str language="en" country="" variant="">
         <version>0</version>
-        <text>Loan Physical Object</text>
+        <text>Loan Preparation</text>
       </str>
     </names>
     <descs>
@@ -14135,7 +14135,7 @@ incremented when a loan is made. </text>
         <names>
           <str language="en" country="" variant="">
             <version>0</version>
-            <text>Loan Physical Object</text>
+            <text>Loan Preparation</text>
           </str>
         </names>
         <descs/>
@@ -14259,7 +14259,7 @@ incremented when a loan is made. </text>
     <names>
       <str language="en" country="" variant="">
         <version>0</version>
-        <text>Loan Return Physical Object</text>
+        <text>Loan Return Preparation</text>
       </str>
     </names>
     <descs>
@@ -16614,7 +16614,7 @@ associate a collecting event with a specimen. </text>
         <version>0</version>
         <text>The permit transaction window is designed to hold information linked to legal paperwork 
 for permission from a government agency to collect a specimen or specimens. 
-Physical Object: A subdivision of a collection object that refers to the preparation meth</text>
+Preparation: A subdivision of a collection object that refers to the preparation meth</text>
       </str>
     </descs>
   </container>
@@ -16999,7 +16999,7 @@ Physical Object: A subdivision of a collection object that refers to the prepara
         <names>
           <str language="en" country="" variant="">
             <version>0</version>
-            <text>Loan Physical Objects</text>
+            <text>Loan Preparations</text>
           </str>
         </names>
         <descs/>
