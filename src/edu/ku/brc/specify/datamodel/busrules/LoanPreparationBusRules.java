@@ -9,6 +9,7 @@ package edu.ku.brc.specify.datamodel.busrules;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.SwingUtilities;
@@ -19,10 +20,13 @@ import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.TableViewObj;
 import edu.ku.brc.af.ui.forms.Viewable;
+import edu.ku.brc.af.ui.forms.validation.UIValidatable;
 import edu.ku.brc.af.ui.forms.validation.ValCheckBox;
 import edu.ku.brc.af.ui.forms.validation.ValSpinner;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.LoanPreparation;
+import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
@@ -40,6 +44,7 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
 {
     private final String CMDTYPE     = "Interactions";
     private final String ADD_TO_LOAN = "AddToLoan";
+    
     /**
      * 
      */
@@ -109,6 +114,19 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
         }
     }
     
+    /**
+     * @param obj data val object (might be null)
+     * @return the value or zero for null
+     */
+    private int getInt(final Object obj)
+    {
+        if (obj instanceof Integer)
+        {
+            return (Integer)obj;
+        }
+        return 0;
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BaseBusRules#afterFillForm(java.lang.Object)
      */
@@ -120,6 +138,7 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
         if (dataObj != null)
         {
             LoanPreparation loanPrep = (LoanPreparation)dataObj;
+            Preparation     prep     = loanPrep.getPreparation();
             
             Component comp = formViewObj.getControlByName("quantityReturned");
             if (comp instanceof ValSpinner)
@@ -129,17 +148,38 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
                 final ValSpinner quantity         = (ValSpinner)formViewObj.getControlByName("quantity");
                 final ValSpinner qtyResolved      = (ValSpinner)formViewObj.getControlByName("quantityResolved");
                 
-                quantity.setRange(0, loanPrep.getQuantity(), loanPrep.getQuantity());
+                String sql = "SELECT lp.Quantity, lp.QuantityResolved, lrp.Quantity, p.Count, p.PreparationID " +
+                             "FROM  loanpreparation AS lp " +
+                             "INNER JOIN loanreturnpreparation AS lrp ON lrp.LoanPreparationID = lp.LoanPreparationID " +
+                             "INNER JOIN preparation AS p ON lp.PreparationID = p.PreparationID " +
+                             "WHERE p.PreparationID = " + prep.getPreparationId();
+                int qQnt     = 0;
+                int qQntRes  = 0;
+                int qPrepCnt = 0;
+                Vector<Object[]> rows = BasicSQLUtils.query(sql);
+                for (Object[] cols : rows)
+                {
+                    qPrepCnt += getInt(cols[3]);
+                    
+                    if (getInt(cols[4]) != prep.getPreparationId())
+                    {
+                        qQnt     += getInt(cols[0]);
+                        qQntRes  += getInt(cols[1]);
+                    }
+                }
+                int availableQnt = qPrepCnt - (qQnt - qQntRes);
+                System.err.println("availableQnt "+availableQnt);
+                quantity.setRange(0, availableQnt, loanPrep.getQuantity());
                 
                 quantityReturned.setEnabled(!isNewObj);
-                int max = Math.max(loanPrep.getQuantity(), loanPrep.getQuantityResolved());
+                //int max = Math.max(loanPrep.getQuantity(), loanPrep.getQuantityResolved());
                 
-                quantityReturned.setRange(0, max, loanPrep.getQuantityReturned());
-                qtyResolved.setRange(0, max, loanPrep.getQuantityReturned());
+                quantityReturned.setRange(0, availableQnt, loanPrep.getQuantityReturned());
+                qtyResolved.setRange(0,      availableQnt, loanPrep.getQuantityResolved());
                 
                 formViewObj.getLabelFor(quantityReturned).setEnabled(!isNewObj);
                 
-                ValCheckBox isResolved = (ValCheckBox)formViewObj.getControlByName("isResolved");
+                final ValCheckBox isResolved = (ValCheckBox)formViewObj.getControlByName("isResolved");
                 isResolved.setEnabled(!isNewObj);
                 
                 ChangeListener cl = new ChangeListener()
@@ -147,7 +187,7 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
                     @Override
                     public void stateChanged(ChangeEvent e)
                     {
-                        quantitiesChanged(quantity, quantityReturned, qtyResolved);
+                        quantitiesChanged(quantity, quantityReturned, qtyResolved, isResolved);
                     }
                 };
                 quantity.addChangeListener(cl);
@@ -157,6 +197,19 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
         }
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#processBusinessRules(java.lang.Object, java.lang.Object, boolean)
+     */
+    @Override
+    public STATUS processBusinessRules(Object parentDataObj,
+                                       Object dataObj,
+                                       boolean isExistingObject)
+    {
+        reasonList.clear();
+
+        return super.processBusinessRules(parentDataObj, dataObj, isExistingObject);
+    }
+
     /**
      * @param quantity
      * @param quantityReturned
@@ -164,28 +217,43 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
      */
     private void quantitiesChanged(final ValSpinner quantity, 
                                    final ValSpinner quantityReturned, 
-                                   final ValSpinner qtyResolved)
+                                   final ValSpinner qtyResolved,
+                                   final ValCheckBox resolvedChkBx)
     {
         int qty    = (Integer)quantity.getValue();
         int qtyRet = (Integer)quantityReturned.getValue();
         int qtyRes = (Integer)qtyResolved.getValue();
         
         String errKey = null;
-        if (qty > qtyRes)
+        
+        //quantity.setState(qty > qtyRet || qty > qtyRes ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid);
+        
+        System.err.println(qty+"  "+qtyRet+"  "+qtyRes+"  ");
+        quantity.setState(UIValidatable.ErrorType.Valid);
+        quantityReturned.setState(UIValidatable.ErrorType.Valid);
+        qtyResolved.setState(UIValidatable.ErrorType.Valid);
+        
+        quantityReturned.setState(qtyRet > qty ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid);
+        
+        qtyResolved.setState(qtyRes > qty ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid);
+        
+        resolvedChkBx.setSelected(qty == qtyRes);
+        
+        
+        //quantityReturned.setState(qtyRet > qty ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid);
+            
+        
+        if (errKey != null)
         {
-            errKey = "LOAN_RET_QTY_GT_RES";
-        } else if (qtyRet > qtyRes)
-        {
-            errKey = "LOAN_RET_RET_GT_RES";
+            final String errorKey = errKey;
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run()
+                {
+                    //UIRegistry.displayErrorDlgLocalized(errorKey);
+                }
+            });
         }
-        final String errorKey = errKey;
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run()
-            {
-                UIRegistry.displayErrorDlgLocalized(errorKey);
-            }
-        });
     }
 
     /* (non-Javadoc)

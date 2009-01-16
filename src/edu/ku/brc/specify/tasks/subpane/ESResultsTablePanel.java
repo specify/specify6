@@ -12,7 +12,6 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package edu.ku.brc.specify.tasks.subpane;
 
 import static edu.ku.brc.ui.UIHelper.createButton;
@@ -23,14 +22,11 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
-import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -39,7 +35,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 
-import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JMenuItem;
@@ -51,8 +46,6 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.event.MouseInputListener;
-import javax.swing.plaf.basic.BasicTableUI;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -80,11 +73,11 @@ import edu.ku.brc.ui.DataFlavorTableExt;
 import edu.ku.brc.ui.GradiantButton;
 import edu.ku.brc.ui.GradiantLabel;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.TriangleButton;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.GhostActionable;
-import edu.ku.brc.ui.dnd.GhostMouseInputAdapter;
 
 /**
  * This is a single set of of results and is derived from a query where all the record numbers where
@@ -127,6 +120,12 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
     protected GradiantLabel            topTitleBar;
     protected JButton                  moreBtn;
     
+    protected JButton                  selectAllBtn   = UIHelper.createMiniI18NBtn("SELECTALL");
+    protected JButton                  deselectAllBtn = UIHelper.createMiniI18NBtn("DESELECTALL");
+    protected JButton                  moveToRSBtn    = UIHelper.createButton(IconManager.getIcon("Unmap"));
+    protected RolloverCommand          moveToRSCmd;
+    protected JPanel                   botBtnPanel;
+    
     protected PropertyChangeListener   propChangeListener = null;
 
     /**
@@ -143,7 +142,7 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
     {
         this(esrPane, results, installServices, isExpandedAtStartUp, true);
     }
-    
+     
     /**
      * Constructor of a results "table" which is really a panel
      * @param esrPane the parent
@@ -165,8 +164,8 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         this.bannerColor   = results.getBannerColor();
         this.isEditable    = results.isEditingEnabled();
         
-        table = new DragTable();
-        table.setUI(new MyTableUI());
+        table = new JTable();
+        //table.setUI(new MyTableUI());
         
         table.setShowVerticalLines(false);
         table.setRowSelectionAllowed(true);
@@ -217,8 +216,7 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         int          numCols = (installServices ? services.size() : 0) + (inclCloseBtn ? 1 : 0);
         colDef.append(UIHelper.createDuplicateJGoodiesDef("p", "0px", numCols)); // add additional col defs for services
         
-        FormLayout      formLayout = new FormLayout(colDef.toString(), "f:p:g");
-        PanelBuilder    builder    = new PanelBuilder(formLayout);
+        PanelBuilder    builder    = new PanelBuilder(new FormLayout(colDef.toString(), "f:p:g"));
         CellConstraints cc         = new CellConstraints();
 
         int col = 1;
@@ -264,7 +262,7 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         tablePane = new JPanel(new BorderLayout());
         tablePane.add(table.getTableHeader(), BorderLayout.PAGE_START);
         tablePane.add(table, BorderLayout.CENTER);
-        tablePane.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
+        //tablePane.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
         
         if (isEditable)
         {
@@ -287,6 +285,54 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         }
         
         add(tablePane, BorderLayout.CENTER);
+        
+        moveToRSCmd = new DragSelectedRowsBtn(IconManager.getIcon("Record_Set", IconManager.IconSize.Std16));
+        
+        PanelBuilder bottomBar = new PanelBuilder(new FormLayout("4px,p,4px,p,4px,p,f:p:g", "p"));
+        bottomBar.add(moveToRSCmd,    cc.xy(2,1));
+        bottomBar.add(selectAllBtn,   cc.xy(4,1));
+        bottomBar.add(deselectAllBtn, cc.xy(6,1));
+        botBtnPanel = bottomBar.getPanel();
+        
+        deselectAllBtn.setEnabled(false);
+        selectAllBtn.setEnabled(true);
+        moveToRSCmd.setEnabled(false);
+        
+        deselectAllBtn.setToolTipText(getResourceString("SELALLTOOLTIP"));
+        selectAllBtn.setToolTipText(getResourceString("DESELALLTOOLTIP"));
+        moveToRSCmd.setToolTipText(getResourceString("MOVEROWSTOOLTIP"));
+        
+        selectAllBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                table.selectAll(); 
+            }
+        });
+        
+        deselectAllBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                table.clearSelection();
+            }
+        });
+        
+        moveToRSCmd.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                RecordSetIFace src = (RecordSetIFace)moveToRSCmd.getData();
+                
+                RecordSetIFace recordSetFromDB = RecordSetTask.askForRecordSet(results.getTableId());
+                if (recordSetFromDB != null)
+                {
+                    CommandDispatcher.dispatch(new CommandAction(RecordSetTask.RECORD_SET, "Dropped", src, recordSetFromDB, null));
+                }
+            }
+        });
+        
+        add(botBtnPanel, BorderLayout.SOUTH);
 
         expandBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
@@ -363,19 +409,25 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         table.getSelectionModel().addListSelectionListener(new ListSelectionListener() 
         {
             public void valueChanged(ListSelectionEvent e)
+            {
+                if (!e.getValueIsAdjusting())
                 {
-                    if (propChangeListener != null)
+                    deselectAllBtn.setEnabled(table.getSelectedRowCount() > 0);
+                    selectAllBtn.setEnabled(table.getSelectedRowCount() != table.getRowCount());
+                    moveToRSCmd.setEnabled(table.getSelectedRowCount() > 0);
+                }
+                if (propChangeListener != null)
+                {
+                    if (!e.getValueIsAdjusting())
                     {
-                        if (!e.getValueIsAdjusting())
-                        {
-                            propChangeListener.propertyChange(new PropertyChangeEvent(this, "selection", table.getSelectedRowCount(), 0));
-    
-                        } else
-                        {
-                            propChangeListener.propertyChange(new PropertyChangeEvent(this, "selection", table.getSelectedRowCount(), 0));
-                        }
+                        propChangeListener.propertyChange(new PropertyChangeEvent(this, "selection", table.getSelectedRowCount(), 0));
+
+                    } else
+                    {
+                        propChangeListener.propertyChange(new PropertyChangeEvent(this, "selection", table.getSelectedRowCount(), 0));
                     }
-                }});
+                }
+            }});
         
         table.addMouseListener(new MouseAdapter() 
         {
@@ -413,6 +465,9 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
     	resultSetTableModel.startDataAcquisition();
     }
     
+    /**
+     * @return
+     */
     protected List<ServiceInfo> getServices()
     {
         List<ServiceInfo> services = new Vector<ServiceInfo>(ContextMgr.checkForServices(results.getTableId()));
@@ -430,6 +485,7 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         }
         return services;
     }
+    
     /**
      * @return
      */
@@ -535,6 +591,7 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         expandBtn.setToolTipText(isExpanded ? getResourceString("CollapseTBL") : getResourceString("ExpandTBL"));
 
         tablePane.setVisible(isExpanded);
+        botBtnPanel.setVisible(isExpanded);
 
         if (!showingAllRows && morePanel != null)
         {
@@ -892,63 +949,20 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
 
     
     //-------------------------------------------------------------
-    // Table Class to enbale DnD of rows using Ghosting.
+    // New RolloverCommand to enable DnD of rows using Ghosting.
     //-------------------------------------------------------------
-    class DragTable extends JTable implements GhostActionable
+    
+    class DragSelectedRowsBtn extends RolloverCommand implements GhostActionable
     {
-        protected GhostMouseInputAdapter mouseInputAdapter;
-        protected List<DataFlavor>       dataFlovars = new Vector<DataFlavor>();
-        protected BufferedImage          destImage   = null;
-        
         /**
          * 
          */
-        public DragTable()
+        public DragSelectedRowsBtn(final ImageIcon imgIcon)
         {
-            super();
+            super(null, imgIcon);
             
-            dataFlovars.add(new DataFlavorTableExt(RecordSetTask.class, "Record_Set", results.getTableId()));
+            dragFlavors.add(new DataFlavorTableExt(RecordSetTask.class, "Record_Set", results.getTableId()));
             createMouseInputAdapter();
-        }
-
-        /* (non-Javadoc)
-         * @see edu.ku.brc.ui.dnd.GhostActionable#createMouseInputAdapter()
-         */
-        public void createMouseInputAdapter()
-        {
-            mouseInputAdapter = new GhostMouseInputAdapter(UIRegistry.getGlassPane(), "action", this);
-            addMouseListener(mouseInputAdapter);
-            addMouseMotionListener(mouseInputAdapter);
-        }
-
-        /* (non-Javadoc)
-         * @see edu.ku.brc.ui.dnd.GhostActionable#doAction(edu.ku.brc.ui.dnd.GhostActionable)
-         */
-        public void doAction(GhostActionable source)
-        {
-            
-        }
-
-        /* (non-Javadoc)
-         * @see edu.ku.brc.ui.dnd.GhostActionable#getBufferedImage()
-         */
-        public BufferedImage getBufferedImage()
-        {
-            DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(results.getTableId());
-            if (tableInfo != null)
-            {
-                ImageIcon icon = tableInfo.getIcon(IconManager.STD_ICON_SIZE);
-                if (destImage == null)
-                {
-                    destImage = new BufferedImage(icon.getIconWidth(), icon.getIconHeight(), BufferedImage.TYPE_INT_RGB);
-                }
-                Graphics2D graphics2D = destImage.createGraphics();
-                graphics2D.drawImage(icon.getImage(), 0, 0, icon.getIconWidth(), icon.getIconHeight(), null);
-                graphics2D.dispose();
-                
-                return destImage;
-            }
-            return null;
         }
 
         /* (non-Javadoc)
@@ -993,132 +1007,6 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
             }
             return null;
         }
-
-        /* (non-Javadoc)
-         * @see edu.ku.brc.ui.dnd.GhostActionable#getDragDataFlavors()
-         */
-        public List<DataFlavor> getDragDataFlavors()
-        {
-            return dataFlovars;
-        }
-
-        /* (non-Javadoc)
-         * @see edu.ku.brc.ui.dnd.GhostActionable#getDropDataFlavors()
-         */
-        public List<DataFlavor> getDropDataFlavors()
-        {
-            return null;
-        }
-
-        /* (non-Javadoc)
-         * @see edu.ku.brc.ui.dnd.GhostActionable#getMouseInputAdapter()
-         */
-        public GhostMouseInputAdapter getMouseInputAdapter()
-        {
-            return mouseInputAdapter;
-        }
-
-        /* (non-Javadoc)
-         * @see edu.ku.brc.ui.dnd.GhostActionable#setActive(boolean)
-         */
-        public void setActive(boolean isActive)
-        {
-        }
-
-        /* (non-Javadoc)
-         * @see edu.ku.brc.ui.dnd.GhostActionable#setData(java.lang.Object)
-         */
-        public void setData(Object data)
-        {
-        }
-        
     }
     
-    // Taken from the Web
-    public class MyTableUI extends BasicTableUI
-    {
-        
-        protected MouseInputListener createMouseInputListener() {
-            return new MyMouseInputHandler();
-        }
-     
-        /* This class listens for selections on table rows. It prevents table row selections when mouse is dragged 
-         * (default behavior for multi-row interval selections) and instead fires row drag (DND) events.
-         * (This class taken from a Web example)
-         */
-        class MyMouseInputHandler extends MouseInputHandler {
-            
-            private boolean ignoreDrag = false;
-            private boolean doingDrag  = false;
-            
-            public void mousePressed(MouseEvent e) 
-            {
-                
-                // Cancel the selected area if the user
-                // clicks twice, otherwise if the user had
-                // selected all of the cells they couldn't
-                // de-select them with the mouse
-                if (e.getClickCount() == 2)
-                {
-                    table.clearSelection();
-                }
-                
-                // Always set this to true - it will be
-                // set if the user has clicked on a cell
-                // that is already selected.
-                ignoreDrag = true;
-                doingDrag  = false;
-                
-                // Found out whether the user has clicked
-                // on a cell that it is already selected
-                Point origin = e.getPoint();
-                int row    = table.rowAtPoint(origin);
-                int column = table.columnAtPoint(origin);
-                if (row != -1 && column != -1) 
-                {
-                    if (table.isCellSelected(row, column)) 
-                    {
-                        // The cell is selected, so we
-                        // need to ignore the mouse drag
-                        // events completely.
-                        ignoreDrag = true;
-     
-                    }
-                    else{
-                        // Only perform the usual mouse pressed
-                        // operation of the user has not clicked
-                        // on a cell that is already selected.
-                        super.mousePressed(e);                        
-                    }
-                }
-            }
-            
-            public void mouseDragged(MouseEvent e) 
-            {
-                if (!ignoreDrag)
-                {
-                    // We only call this method when a user has NOT clicked on a cell that is
-                    // already selected
-                    super.mouseDragged(e);
-                } else
-                {
-                    // Start a table row drag operation
-                    // table.getTransferHandler().exportAsDrag(table, e, DnDConstants.ACTION_COPY);
-                    doingDrag = true;
-                }
-            }    
-            
-            public void mouseReleased(MouseEvent e)
-            {
-                if (ignoreDrag && !doingDrag)
-                {
-                    // When clicking on an already selected row and releasing mouse => clear selection on table
-                    //table.clearSelection();
-                }
-                
-                super.mouseReleased(e);
-            }
-        }
-     
-    }
 }

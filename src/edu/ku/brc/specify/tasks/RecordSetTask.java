@@ -756,9 +756,20 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
                 if (srcRecordSet.getDbTableId().equals(dstRecordSet.getDbTableId()))
                 {
                     List<Integer> dstIdList = RecordSet.getIdList(dstRecordSet.getRecordSetId(), null);
-                    List<Integer> srcIdList = RecordSet.getIdList(srcRecordSet.getRecordSetId(), null);
+                    List<Integer> srcIdList;
+                    if (srcRecordSet.getRecordSetId() == null)
+                    {
+                        srcIdList = new Vector<Integer>();
+                        for (RecordSetItemIFace rsi : srcRecordSet.getOrderedItems())
+                        {
+                            srcIdList.add(rsi.getRecordId());
+                        }
+                    } else
+                    {
+                        srcIdList = RecordSet.getIdList(srcRecordSet.getRecordSetId(), null);
+                    }
                     
-                    boolean debug = false;
+                    boolean debug = true;
                     if (debug)
                     {
                         log.debug("Source:");
@@ -766,7 +777,7 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
                         {
                             log.debug(" "+id);
                         }                
-                        log.debug("\nDest:");
+                        log.debug("Dest:");
                         for (Integer id : dstIdList)
                         {
                             log.debug(" "+id);

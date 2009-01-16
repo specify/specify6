@@ -5407,18 +5407,22 @@ public class BuildSampleDatabase
         //yr = 2000 + (int)(rand.nextDouble() * 7);
         Loan closedLoan = createLoan(yr + "-001", loanDate1, currentDueDate1, originalDueDate1, 
                                      dateClosed1, Loan.CLOSED, null);
-        for (int i = 0; i < 7; ++i)
+        
+        Hashtable<Preparation, Boolean> usedPrepHash = new Hashtable<Preparation, Boolean>();
+        int cnt = 0;
+        while (cnt < 3)
         {
             Preparation p = getObjectByClass(preps, Preparation.class, rand.nextInt(preps.size()));
             int available = p.getLoanAvailable();
-            if (available < 1 || !p.getPrepType().getIsLoanable())
+            if (available < 1 || !p.getPrepType().getIsLoanable() && usedPrepHash.get(p) != null)
             {
                 // retry
-                i--;
                 continue;
             }
+            usedPrepHash.put(p, true);
+            
             int quantity = Math.max(1,rand.nextInt(available));
-            LoanPreparation lpo = DataBuilder.createLoanPreparation(quantity, null, null, null, 0, 0, p, closedLoan);
+            LoanPreparation lpo = DataBuilder.createLoanPreparation(quantity, null, null, null, quantity, quantity, p, closedLoan);
             
             lpo.setIsResolved(true);
             loanPhysObjs.add(lpo);
@@ -5428,10 +5432,12 @@ public class BuildSampleDatabase
             returnedDate.add(Calendar.DAY_OF_YEAR, 72); // make the returned date be a little while after the original loan
             
             LoanReturnPreparation lrpo = createLoanReturnPreparation(returnedDate, quantity, lpo, null, agents.get(0));
+            
             lpo.addReference(lrpo, "loanReturnPreparations");
             returns.add(lrpo);
 
             p.getLoanPreparations().add(lpo);
+            cnt++;
         }
         
         Calendar loanDate2 = Calendar.getInstance();
@@ -5443,20 +5449,21 @@ public class BuildSampleDatabase
         Calendar originalDueDate2 = currentDueDate2;
         Loan overdueLoan = createLoan(yr + "-001", loanDate2, currentDueDate2, originalDueDate2,  
                                       null, Loan.OPEN, null);
-        for (int i = 0; i < 5; ++i)
+        cnt = 0;
+        while (cnt < 3)
         {
             Preparation p = getObjectByClass(preps, Preparation.class, rand.nextInt(preps.size()));
             int available = p.getLoanAvailable();
             if (available < 1 || !p.getPrepType().getIsLoanable())
             {
                 // retry
-                i--;
                 continue;
             }
             int quantity = Math.max(1, rand.nextInt(available));
             LoanPreparation lpo = createLoanPreparation(quantity, null, null, null, 0, 0, p, overdueLoan);
             loanPhysObjs.add(lpo);
             p.getLoanPreparations().add(lpo);
+            cnt++;
         }
 
         Calendar loanDate3 = Calendar.getInstance();
@@ -5494,13 +5501,19 @@ public class BuildSampleDatabase
         
         // create some LoanReturnPreparations
         int startIndex = returns.size();
-        for (int i=startIndex;i<loanPhysObjs.size();i++)
+        for (int i=startIndex;i<newLoanLPOs.size();i++)
         {
-            LoanPreparation lpo = loanPhysObjs.get(i);
+            LoanPreparation lpo = newLoanLPOs.get(i);
         
             int    quantityLoaned   = lpo.getQuantity();
             int    quantityReturned = (i == (loanPhysObjs.size() - 1)) ? quantityLoaned : (short)rand.nextInt(quantityLoaned);
-            Calendar returnedDate     = Calendar.getInstance();
+            int    quantityResolved = quantityReturned;
+            
+            lpo.setQuantityReturned(quantityReturned);
+            lpo.setQuantityResolved(quantityResolved);
+            lpo.setIsResolved(quantityLoaned == quantityResolved);
+            
+            Calendar returnedDate   = Calendar.getInstance();
             
             returnedDate.setTime(lpo.getLoan().getLoanDate().getTime());
             // make the returned date be a little while after the original loan
@@ -5512,6 +5525,20 @@ public class BuildSampleDatabase
             lpo.setQuantityResolved(quantityReturned);
             lpo.setIsResolved(quantityLoaned == quantityReturned);
             returns.add(lrpo);
+            
+            boolean isRes = true;
+            for (LoanPreparation lp : lpo.getLoan().getLoanPreparations())
+            {
+                if (!lp.getIsResolved())
+                {
+                    isRes = false;
+                }
+            }
+            if (isRes)
+            {
+                lpo.getLoan().setIsClosed(true);
+            }
+            
             i++;
         }
         

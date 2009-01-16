@@ -1340,7 +1340,8 @@ public class ViewFactory
                                                            cellField.isReadOnly() || mode == AltViewIFace.CreationMode.VIEW);
                     if (validator != null)
                     {
-                        DataChangeNotifier dcn = validator.createDataChangeNotifer(cellField.getIdent(), spinner, null);
+                        DataChangeNotifier dcn = validator.createDataChangeNotifer(cellField.getIdent(), 
+                                spinner, validator.createValidator(spinner, UIValidator.Type.Changed));
                         spinner.addChangeListener(dcn);
                     }
                     bi.compToAdd = spinner;

@@ -532,6 +532,14 @@ public class DataEntryTask extends BaseTask
         }
     }
 
+    /**
+     * @param task
+     * @param name
+     * @param viewSetName
+     * @param viewName
+     * @param recordSet
+     * @return
+     */
     protected static FormPane createFormFor(final Taskable       task, 
                                             final String         name, 
                                             final String         viewSetName,
@@ -540,6 +548,7 @@ public class DataEntryTask extends BaseTask
     {
         return createFormFor(task, name, viewSetName, viewName, recordSet, false);
     }
+    
     /**
      * Create a form for a recordset.
      * @param task the task it belongs to
@@ -712,7 +721,7 @@ public class DataEntryTask extends BaseTask
                         {
                             // In the future we should check to see if Interactions is turned on
                             // and if it isn't then 
-                            log.debug("Registering: "+tableInfo.getTitle());
+                            //log.debug("Registering: "+tableInfo.getTitle());
                             
                             int      tblId = tableInfo.getTableId();
                             Taskable task  = isUsingInteractions ? AppContextMgr.getInstance().getTaskFromTableId(tblId) : null;

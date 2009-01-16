@@ -23,6 +23,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GradientPaint;
 import java.awt.Graphics2D;
@@ -1883,13 +1884,39 @@ public final class UIHelper
      * @param focusable whether the button can take focus
      * @return a icon btn
      */
-    public static JButton createButton(final String iconName, final String toolTip, IconManager.IconSize size, final boolean focusable)
+    public static JButton createButton(final String iconName, 
+                                       final String toolTip, 
+                                       IconManager.IconSize size, 
+                                       final boolean focusable)
     {
         JButton btn = new JButton(IconManager.getIcon(iconName, size));
         btn.setToolTipText(toolTip);
         btn.setFocusable(focusable);
         btn.setMargin(new Insets(1,1,1,1));
         btn.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+        return btn;
+    }
+    
+    /**
+     * @param key
+     * @return
+     */
+    public static  JButton createMiniI18NBtn(final String key)
+    {
+        JButton btn;
+        if (isMacOS())
+        {
+            btn = createButton(getResourceString(key));
+            btn.putClientProperty("JComponent.sizeVariant", CONTROLSIZE.mini.toString());
+            
+        } else
+        {
+            btn           = createButton(getResourceString(key));
+            Font defFont  = UIRegistry.getDefaultFont();
+            Font baseFont = UIRegistry.getDefaultFont();
+            Font btnFont  = baseFont.getSize() < defFont.getSize() ? baseFont : baseFont.deriveFont((float)defFont.getSize()-2f);
+            btn.setFont(btnFont);
+        }
         return btn;
     }
     
