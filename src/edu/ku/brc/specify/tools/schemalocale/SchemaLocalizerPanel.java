@@ -11,7 +11,6 @@ import static edu.ku.brc.ui.UIHelper.createButton;
 import static edu.ku.brc.ui.UIHelper.createCheckBox;
 import static edu.ku.brc.ui.UIHelper.createComboBox;
 import static edu.ku.brc.ui.UIHelper.createI18NFormLabel;
-import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIHelper.createList;
 import static edu.ku.brc.ui.UIHelper.createTextArea;
 import static edu.ku.brc.ui.UIHelper.createTextField;
@@ -117,7 +116,7 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
     
     // LocalizableContainerIFace Tables
     protected JList                     tablesList;
-    protected JTextArea                 tblDescText   = createTextArea();
+    protected JTextArea                 tblDescText   = createTextArea(5, 60);
     protected JTextField                tblNameText   = createTextField();
     protected JLabel                    tblDescLbl;
     protected JLabel                    tblNameLbl;
@@ -192,12 +191,12 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         tblSpellChkBtn               = createButton(getResourceString("SL_SPELL_CHECK"));
         JPanel      tpbbp            = ButtonBarFactory.buildCenteredBar(adjustButtonArray(new JButton[] {tblSpellChkBtn}));
         JScrollPane sp               = new JScrollPane(tblDescText, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        tblDescText.setRows(4);
+        //tblDescText.setRows(4);
         tblDescText.setLineWrap(true);
         tblDescText.setWrapStyleWord(true);
         // setting min and pref sizes to some bogus values so that textarea shrinks with dialog
-        tblDescText.setMinimumSize(new Dimension(50, 5));
-        tblDescText.setPreferredSize(new Dimension(50, 5));
+        //tblDescText.setMinimumSize(new Dimension(50, 5));
+        //tblDescText.setPreferredSize(new Dimension(50, 5));
         tblDescText.addKeyListener(new LengthWatcher(255));
         tblNameText.addKeyListener(new LengthWatcher(64));
         
@@ -220,10 +219,6 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         webLinkBtn = createButton("...");
         addWebLinkActionListener();
         
-        
-        String descStr  = getResourceString("SL_DESC") + ":";
-        String nameStr  = getResourceString("SL_NAME") + ":";
-        
         int y = 1;
         PanelBuilder topInner   = new PanelBuilder(new FormLayout("p,2px,f:p:g",
                                                                   "p,2px," + (includeHiddenUI ? "p,2px," : "") + "p,2px,p" +
@@ -231,7 +226,7 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
                                                                   ",6px,p,2px,p,2px,p"  // formatter, aggregator & weblink panel
                                                                   ));
         
-        topInner.add(tblDescLbl = createLabel(nameStr, SwingConstants.RIGHT), cc.xy(1, y));
+        topInner.add(tblDescLbl = createI18NFormLabel("SL_NAME", SwingConstants.RIGHT), cc.xy(1, y));
         topInner.add(tblNameText, cc.xy(3, y)); y += 2;
         
         if (includeHiddenUI)
@@ -239,7 +234,7 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
             topInner.add(tblHideChk, cc.xy(3, y)); y += 2;
         }
         
-        topInner.add(tblNameLbl = createLabel(descStr, SwingConstants.RIGHT), cc.xy(1, y)); 
+        topInner.add(tblNameLbl = createI18NFormLabel("SL_DESC", SwingConstants.RIGHT), cc.xy(1, y)); 
         topInner.add(sp,    cc.xy(3, y));   y += 2;
 
         topInner.add(tpbbp, cc.xywh(1, y, 3, 1)); y += 2;

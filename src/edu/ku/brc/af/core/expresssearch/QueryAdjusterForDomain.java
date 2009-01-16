@@ -142,10 +142,13 @@ public class QueryAdjusterForDomain
     {
         if (isNotEmpty(userInputStr))
         {
-            if (contains(userInputStr, ";") || //$NON-NLS-1$
-                contains(userInputStr.toLowerCase(), "select") || //$NON-NLS-1$
-                contains(userInputStr.toLowerCase(), "'") || //$NON-NLS-1$
-                (contains(userInputStr.toLowerCase(), "drop") && contains(userInputStr.toLowerCase(), "table"))) //$NON-NLS-1$ //$NON-NLS-2$
+            String uiStr = userInputStr.toLowerCase();
+            if (contains(uiStr, ";") || //$NON-NLS-1$
+                contains(uiStr, " from ") ||   //$NON-NLS-1$
+                contains(uiStr, "select ") ||   //$NON-NLS-1$
+                contains(uiStr, "update ") ||   //$NON-NLS-1$
+                contains(uiStr, "delete ") ||   //$NON-NLS-1$
+                (contains(uiStr, "drop ") && contains(uiStr, "table"))) //$NON-NLS-1$ //$NON-NLS-2$
             {
                 return false;
             }

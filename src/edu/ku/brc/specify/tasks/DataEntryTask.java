@@ -658,7 +658,7 @@ public class DataEntryTask extends BaseTask
                 dev.setTableInfo(tableInfo);
             }
             
-            System.out.println(dev.getTableInfo()+"  "+(dev.getTableInfo() != null ? (dev.getTableInfo().getTableId()+"  "+CollectionObject.getClassTableId()) : ""));
+            //System.out.println(dev.getTableInfo()+"  "+(dev.getTableInfo() != null ? (dev.getTableInfo().getTableId()+"  "+CollectionObject.getClassTableId()) : ""));
             boolean isColObj = dev.getTableInfo() != null && dev.getTableInfo().getTableId() == CollectionObject.getClassTableId();
             
             ImageIcon iconImage = IconManager.getIcon(dev.getIconName(), IconManager.STD_ICON_SIZE);
@@ -712,6 +712,7 @@ public class DataEntryTask extends BaseTask
                         {
                             // In the future we should check to see if Interactions is turned on
                             // and if it isn't then 
+                            log.debug("Registering: "+tableInfo.getTitle());
                             
                             int      tblId = tableInfo.getTableId();
                             Taskable task  = isUsingInteractions ? AppContextMgr.getInstance().getTaskFromTableId(tblId) : null;
@@ -720,7 +721,7 @@ public class DataEntryTask extends BaseTask
                                 task = this;
                             }
                             cmdAction.setProperty(NavBoxAction.ORGINATING_TASK, task);
-                            ContextMgr.registerService(10, dev.getName(), tblId, cmdAction, task, DATA_ENTRY, tableInfo.getTitle(), true);
+                            ContextMgr.registerService(10, dev.getName(), tblId, cmdAction, this, DATA_ENTRY, tableInfo.getTitle(), true);
                         }
                         
                         if (dev.isSideBar())
@@ -751,6 +752,9 @@ public class DataEntryTask extends BaseTask
         
                             viewsNavBox.add(nbi);
                         }
+                    } else
+                    {
+                        log.debug("Hidden: "+tableInfo.getTitle());
                     }
                 } else 
                 {
@@ -805,7 +809,7 @@ public class DataEntryTask extends BaseTask
                         task = this;
                     }
                     cmdAction.setProperty(NavBoxAction.ORGINATING_TASK, task);
-                    ContextMgr.registerService(10, dev.getName(), tblId, cmdAction, task, DATA_ENTRY, tableInfo.getTitle(), true);
+                    ContextMgr.registerService(10, dev.getName(), tblId, cmdAction, this, DATA_ENTRY, tableInfo.getTitle(), true);
                 }
 
             } else

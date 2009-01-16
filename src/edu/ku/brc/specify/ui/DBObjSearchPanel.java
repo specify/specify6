@@ -407,7 +407,7 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
                 
             } else
             {
-                UIRegistry.getStatusBar().setErrorMessage(getResourceString("ES_SUSPICIOUS_SQL"));
+                UIRegistry.getStatusBar().setLocalizedErrorMessage("ES_SUSPICIOUS_SQL");
                 return;
             }
             

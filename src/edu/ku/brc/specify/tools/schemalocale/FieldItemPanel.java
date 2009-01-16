@@ -10,6 +10,8 @@ import static edu.ku.brc.ui.UIHelper.adjustButtonArray;
 import static edu.ku.brc.ui.UIHelper.createButton;
 import static edu.ku.brc.ui.UIHelper.createCheckBox;
 import static edu.ku.brc.ui.UIHelper.createComboBox;
+import static edu.ku.brc.ui.UIHelper.createI18NButton;
+import static edu.ku.brc.ui.UIHelper.createI18NFormLabel;
 import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIHelper.createList;
 import static edu.ku.brc.ui.UIHelper.createTextArea;
@@ -18,7 +20,6 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.CardLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -108,6 +109,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
     protected final String SL_FORMAT   = getResourceString("SL_FORMAT");
     protected final String SL_WEBLINK  = getResourceString("SL_WEBLINK");
     protected final String SL_PICKLIST = getResourceString("SL_PICKLIST");
+    protected final String ELIPSES     = "...";
 
             
     protected LocalizableIOIFace        localizableIO = null;
@@ -127,7 +129,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
     
     // LocalizableItemIFace Fields
     protected JList            fieldsList;
-    protected JTextArea        fieldDescText = createTextArea();
+    protected JTextArea        fieldDescText = createTextArea(5, 60);
     protected JTextField       fieldNameText = createTextField();
     
     protected JLabel           fieldDescLbl;
@@ -232,20 +234,13 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
             }
         });
         
-        fieldDescText.setRows(5);
         fieldDescText.setLineWrap(true);
         fieldDescText.addKeyListener(new LengthWatcher(255));
         // setting min and pref sizes to some bogus values so that textarea shrinks with dialog
-        fieldDescText.setMinimumSize(new Dimension(50, 5));
-        fieldDescText.setPreferredSize(new Dimension(50, 5));
-        fieldDescText.setColumns(40);
         fieldNameText.addKeyListener(new LengthWatcher(64));
 
         CellConstraints cc = new CellConstraints();
         
-        String descStr  = getResourceString("SL_DESC") + ":";
-        String labelStr = getResourceString("SL_LABEL") + ":";
-
         int y = 1;
         
         JScrollPane fldsp = UIHelper.createScrollPane(fieldsList);
@@ -258,7 +253,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
                                                              "p,2px,p,2px,p,2px,p,2px,p,2px,p,2px,f:p:g"), this);
         
         pb.add(fldsp, cc.xywh(1, y, 1, 7+(isDBSchema ? 4 : 0)));
-        pb.add(fieldNameLbl = createLabel(labelStr, SwingConstants.RIGHT), cc.xy(3, y));
+        pb.add(fieldNameLbl = createI18NFormLabel("SL_LABEL", SwingConstants.RIGHT), cc.xy(3, y));
         pb.add(fieldNameText, cc.xywh(5, y, 6, 1));   y += 2;
         
         if (includeHiddenUI)
@@ -266,7 +261,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
             pb.add(fieldHideChk, cc.xy(5, y)); y += 2;
         }
        
-        pb.add(fieldDescLbl = createLabel(descStr, SwingConstants.RIGHT), cc.xy(3, y));
+        pb.add(fieldDescLbl = createI18NFormLabel("SL_DESC", SwingConstants.RIGHT), cc.xy(3, y));
         JScrollPane sp = new JScrollPane(fieldDescText, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         pb.add(sp,   cc.xywh(5, y, 6, 1));   y += 2;
         fieldDescText.setLineWrap(true);
@@ -278,12 +273,12 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
             fieldTypeTxt   = createLabel("");
             fieldLengthTxt = createLabel("");
             
-            pb.add(fieldTypeLbl   = createLabel(getResourceString("SL_TYPE") + ":", SwingConstants.RIGHT), cc.xy(3, y));
+            pb.add(fieldTypeLbl   = createI18NFormLabel("SL_TYPE", SwingConstants.RIGHT), cc.xy(3, y));
             pb.add(fieldTypeTxt,   cc.xy(5, y));  
             
             pb.add(fieldReqChk   = createCheckBox(getResourceString("SL_REQ")),   cc.xy(9, y)); y += 2;
             
-            pb.add(fieldLengthLbl = createLabel(getResourceString("SL_LENGTH") + ":", SwingConstants.RIGHT), cc.xy(3, y));
+            pb.add(fieldLengthLbl = createI18NFormLabel("SL_LENGTH", SwingConstants.RIGHT), cc.xy(3, y));
             pb.add(fieldLengthTxt, cc.xy(5, y));   y += 2;
             
             fieldTypeTxt.setBackground(Color.WHITE);
@@ -299,7 +294,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
             formatSwitcherCombo = createComboBox();
             fmtCardLayout       = new CardLayout();
             formatterPanel      = new JPanel(fmtCardLayout);
-            pb.add(formatLbl = createLabel(getResourceString("SL_FMTTYPE") + ":", SwingConstants.RIGHT), cc.xy(3, y));
+            pb.add(formatLbl = createI18NFormLabel("SL_FMTTYPE", SwingConstants.RIGHT), cc.xy(3, y));
             
             inner.add(formatSwitcherCombo, cc.xy(1,1));   
             inner.add(formatterPanel, cc.xy(3,1));
@@ -343,7 +338,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
             inner = new PanelBuilder(new FormLayout("max(p;150px),2px,min", "p"));
             
             formatCombo   = createComboBox(new DefaultComboBoxModel());
-            formatMoreBtn = createButton("...");
+            formatMoreBtn = createButton(ELIPSES);
             
             inner.add(formatCombo,   cc.xy(1, 1));   
             inner.add(formatMoreBtn, cc.xy(3, 1));
@@ -386,7 +381,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
             //--------------------------
             // WebLinks
             //--------------------------
-            webLinkMoreBtn = createButton("...");
+            webLinkMoreBtn = createButton(ELIPSES);
             webLinkMoreBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e)
                 {
@@ -454,7 +449,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
                 }
             }
         });
-        pickListMoreBtn = createButton("...");
+        pickListMoreBtn = createButton(ELIPSES);
         pickListMoreBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
@@ -475,14 +470,14 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
             
         } else
         {
-            pb.add(pickListLbl   = createLabel(SL_PICKLIST + ":", SwingConstants.RIGHT), cc.xy(3, y));
+            pb.add(pickListLbl   = createI18NFormLabel(SL_PICKLIST, SwingConstants.RIGHT), cc.xy(3, y));
             pb.add(pickListCBX,   cc.xy(5, y));
             pb.add(pickListMoreBtn,   cc.xy(7, y));   y += 2;
         }
         
-        nxtBtn         = createButton(getResourceString("SL_NEXT"));
-        nxtEmptyBtn    = createButton(getResourceString("SL_NEXT_EMPTY"));
-        fldSpellChkBtn = createButton(getResourceString("SL_SPELL_CHECK"));
+        nxtBtn         = createI18NButton("SL_NEXT");
+        nxtEmptyBtn    = createI18NButton("SL_NEXT_EMPTY");
+        fldSpellChkBtn = createI18NButton("SL_SPELL_CHECK");
         
         JPanel bbp = ButtonBarFactory.buildCenteredBar(adjustButtonArray(new JButton[] {nxtEmptyBtn, nxtBtn, fldSpellChkBtn}));
         bbp.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));

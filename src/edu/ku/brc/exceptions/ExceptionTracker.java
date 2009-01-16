@@ -20,7 +20,6 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.core.UsageTracker;
-import edu.ku.brc.af.tasks.StatsTrackerTask.ConnectionException;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -95,12 +94,12 @@ public class ExceptionTracker
             httpClient.executeMethod(postMethod);
             
             // get the server response
-            String responseString = postMethod.getResponseBodyAsString();
+            /*String responseString = postMethod.getResponseBodyAsString();
             
             if (StringUtils.isNotEmpty(responseString))
             {
                 System.err.println(responseString);
-            }
+            }*/
 
         }
         catch (Exception e)
@@ -108,7 +107,7 @@ public class ExceptionTracker
             e.printStackTrace();
             //UsageTracker.incrHandledUsageCount();
             //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ExceptionTracker.class, e);
-            throw new ConnectionException(e);
+            //throw new ConnectionException(e);
         }
     }
     

@@ -1120,9 +1120,9 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
         {
             if (statusBar != null)
             {
-                statusBar.setErrorMessage(getResourceString(msgKey));
+                statusBar.setLocalizedErrorMessage(msgKey);
             }
-            UIRegistry.writeTimedSimpleGlassPaneMsg(msgKey, Color.RED);
+            UIRegistry.writeTimedSimpleGlassPaneMsg(getResourceString(msgKey), Color.RED);
             
         } else
         {
