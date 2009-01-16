@@ -46,10 +46,10 @@ public class QBResultSetTableModel extends ResultSetTableModel
     
     protected boolean debugging = false;
     
-    protected QueryExecutor queryExecutor = new QueryExecutor();
-    protected AtomicBoolean loadingCache = new AtomicBoolean(false);
-    protected AtomicBoolean isPostSorted = new AtomicBoolean(false);
-    protected AtomicBoolean backgroundLoadsCancelled = new AtomicBoolean(false);
+    protected QueryExecutor queryExecutor;
+    protected AtomicBoolean loadingCache;
+    protected AtomicBoolean isPostSorted;
+    protected AtomicBoolean backgroundLoadsCancelled;
     
     protected boolean loadingCells = false;
     protected int bgTaskCount = 0;
