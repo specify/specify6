@@ -135,14 +135,14 @@ public class DeterminationBusRules extends BaseBusRules
             }
 
             
-            Component altTaxUsageComp     = formViewObj.getControlByName("nameUsage");
-            if (altTaxUsageComp instanceof ValComboBox)
+            Component nameUsageComp     = formViewObj.getControlByName("nameUsage");
+            if (nameUsageComp instanceof ValComboBox)
             {
                 //XXX this is probably not necessary anymore...
                 if (!checkedBlankUsageItem)
                 {
                     boolean fnd = false;
-                    PickListDBAdapterIFace items = (PickListDBAdapterIFace) ((ValComboBox) altTaxUsageComp)
+                    PickListDBAdapterIFace items = (PickListDBAdapterIFace) ((ValComboBox) nameUsageComp)
                             .getComboBox().getModel();
                     for (PickListItemIFace item : items.getPickList().getItems())
                     {
@@ -167,25 +167,17 @@ public class DeterminationBusRules extends BaseBusRules
                     }
                     checkedBlankUsageItem = true;
                 }
-                altTaxUsageComp.setEnabled(true);
+                nameUsageComp.setEnabled(true);
             }
 
-            final Component taxComp = formViewObj.getControlByName("taxon");
             final Component altNameComp = formViewObj.getControlByName("alternateName");
            
-            if (taxComp != null)
-            {
-                if (determination != null)
-                {
-                    ((ValComboBoxFromQuery) taxComp).getTextWithQuery().getTextField().setEditable(
-                            StringUtils.isBlank(determination.getNameUsage()));
-                }
-            }
             if (altNameComp != null)
             {
                 if (determination != null)
                 {
-                    ((JTextField) altNameComp).setEditable(determination.getTaxon() == null);
+                    //((JTextField) altNameComp).setEditable(determination.getTaxon() == null);
+                    altNameComp.setEnabled(determination.getTaxon() == null);
                 }
             }
         }
@@ -223,13 +215,17 @@ public class DeterminationBusRules extends BaseBusRules
      * Disables the taxon field when the alternateName field is non-empty.
      * Enables the taxon field when the alternateNameField is empty.
      */
-    protected void nameChanged(KeyEvent e, final Component taxComp, final Component altNameComp)
+    protected void nameChanged(KeyEvent e, final ValComboBoxFromQuery taxComp, final Component altNameComp)
     {
         if (e.getSource() != null)
         {
             if (e.getSource().equals(altNameComp))
             {
                 taxComp.setEnabled(StringUtils.isBlank(((JTextField )altNameComp).getText()));
+            }
+            else if (e.getSource().equals(taxComp))
+            {
+            	taxonChanged(taxComp, altNameComp);
             }
         }        
     }
@@ -348,6 +344,25 @@ public class DeterminationBusRules extends BaseBusRules
                 final ValComboBoxFromQuery parentCBX = (ValComboBoxFromQuery) taxonField;
                 final Component altNameComp = formViewObj.getControlByName("alternateName");
 
+                if (nameChangeKL == null)
+                {
+                    nameChangeKL = new KeyAdapter()
+                    {
+                        @Override
+                        public void keyTyped(final KeyEvent e)
+                        {
+                            SwingUtilities.invokeLater(new Runnable()
+                            {
+                                // @Override
+                                public void run()
+                                {
+                                    nameChanged(e, parentCBX, altNameComp);
+                                }
+                            });
+                        }
+                    };
+                }
+                
                 if (parentCBX != null)
                 {
                     parentCBX.addListSelectionListener(new ListSelectionListener()
@@ -360,28 +375,11 @@ public class DeterminationBusRules extends BaseBusRules
                             }
                         }
                     });
+                    addListenerIfNecessary(nameChangeKL, parentCBX);
                 }
 
                 if (altNameComp != null)
                 {
-                    if (nameChangeKL == null)
-                    {
-                        nameChangeKL = new KeyAdapter()
-                        {
-                            @Override
-                            public void keyTyped(final KeyEvent e)
-                            {
-                                SwingUtilities.invokeLater(new Runnable()
-                                {
-                                    // @Override
-                                    public void run()
-                                    {
-                                        nameChanged(e, parentCBX, altNameComp);
-                                    }
-                                });
-                            }
-                        };
-                    }
                     addListenerIfNecessary(nameChangeKL, altNameComp);
                 }
             }
@@ -402,7 +400,6 @@ public class DeterminationBusRules extends BaseBusRules
     protected void taxonChanged(final ValComboBoxFromQuery taxonComboBox, final Component altTaxName)
     {
         Object objInForm = formViewObj.getDataObj();
-        //log.debug("form data object = " + objInForm);
         if (objInForm == null)
         {
             return;
@@ -422,10 +419,12 @@ public class DeterminationBusRules extends BaseBusRules
             taxon = (Taxon )taxonComboBox.getValue();
         }
         
+        String activeTaxName = null;
+        
         // set the tree def for the object being edited by using the parent node's tree def
         if (taxon != null)
         {
-            if (!taxon.getIsAccepted())
+        	if (!taxon.getIsAccepted())
             {
                 PanelBuilder pb = new PanelBuilder(new FormLayout("5dlu, f:p:g, 5dlu", "7dlu, c:p, 2dlu, c:p, 10dlu"));
                 String msg1 = String.format(UIRegistry.getResourceString("DeterminationBusRule.SynChoiceMsg1"), 
@@ -448,7 +447,6 @@ public class DeterminationBusRules extends BaseBusRules
                     taxonComboBox.setValue(taxon, taxon.getFullName());
                 }
             }
-            String activeTaxName;
             if (taxon.getIsAccepted())
             {
                 activeTaxName = taxon.getFullName();
@@ -457,16 +455,17 @@ public class DeterminationBusRules extends BaseBusRules
             {
                 activeTaxName = taxon.getAcceptedParent().getFullName();
             }
-            Component activeTax = formViewObj.getControlByName("activeTaxon");
-            if (activeTax != null)
-            {
-                ((JTextField )activeTax).setText(activeTaxName);
-            }
         }
-        
+
+        Component activeTax = formViewObj.getControlByName("activeTaxon");
+        if (activeTax != null)
+        {
+            ((JTextField )activeTax).setText(activeTaxName);
+        }
+
         if (altTaxName != null)
         {
-            altTaxName.setEnabled(taxon == null);
+        	altTaxName.setEnabled(taxon == null);
         }
     }
 
