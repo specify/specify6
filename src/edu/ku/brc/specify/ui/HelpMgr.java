@@ -136,8 +136,13 @@ public class HelpMgr
         {
             Map.ID.create(id, hs);
             return true;
+            
         } catch (BadIDException e)
         {
+            // XXX REMOVE ME BEFORE RELEASE
+            // this used to find help that doesn't have a key word.
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(HelpMgr.class, e);
             return false;
         }
     }
