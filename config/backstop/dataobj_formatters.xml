@@ -301,11 +301,14 @@
         class="edu.ku.brc.specify.datamodel.Determination"
         default="true"
         >
-        <switch single="true">
-            <fields>
+        <switch single="false" field="isCurrent">
+            <fields value="true">
                 <field>activeTaxon.fullName</field>
-                <field sep=" - ">current</field>
+                <field sep=" (current)" format=" " type="boolean">isCurrent</field>
             </fields>
+            <fields value="false">
+            	<field>taxon.fullName</field>
+           	</fields>
         </switch>
     </format>
     

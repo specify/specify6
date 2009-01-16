@@ -321,6 +321,7 @@ public class HelpMgr
                 try
                 {
                     hb.setCurrentID(id);
+                    ((DefaultHelpBroker )hb).setActivationObject(FocusManager.getCurrentManager().getFocusOwner());
                     if (!hb.isDisplayed())
                     {
                         hb.setDisplayed(true);

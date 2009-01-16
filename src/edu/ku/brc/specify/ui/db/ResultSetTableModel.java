@@ -127,9 +127,19 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
         {
             statusBar = null;
         }
+        
+        initialize();
+        
         startDataAquisition(doSequentially);
     }
     
+    /**
+     * perform initializations which must be performed before startDataAcquisition() is called.
+     */
+    protected void initialize()
+    {
+    	//nothing to do here
+    }
     /**
      * @param doSequentially
      */
