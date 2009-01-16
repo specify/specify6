@@ -104,6 +104,7 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
     protected static final Cursor defCursor     = new Cursor(Cursor.DEFAULT_CURSOR);
 
     protected ExpressSearchResultsPaneIFace esrPane;
+    protected ResultSetTableModel     resultSetTableModel;
     protected JTable                   table;
     protected JPanel                   tablePane;
     protected TriangleButton           expandBtn;
@@ -338,7 +339,8 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         
         ResultSetTableModel rsm = createModel();
         rsm.setPropertyListener(this);
-
+        resultSetTableModel = rsm;
+        
         table.setRowSelectionAllowed(true);
         table.setModel(rsm);
 
@@ -406,6 +408,10 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         });
     }
     
+    public void startFilling()
+    {
+    	resultSetTableModel.startDataAcquisition();
+    }
     
     protected List<ServiceInfo> getServices()
     {
@@ -429,7 +435,7 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
      */
     protected ResultSetTableModel createModel()
     {
-        return new ResultSetTableModel(this, results);
+        return new ResultSetTableModel(this, results, false, false);
     }
     
     /**

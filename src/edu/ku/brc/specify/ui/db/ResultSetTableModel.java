@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Stack;
 import java.util.Vector;
 
+import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
 import org.apache.commons.lang.StringUtils;
@@ -80,7 +81,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
     protected Vector<String>              colNames    = new Vector<String>();
     protected int                         currentRow  = 0;
     protected QueryForIdResultsIFace      results;
-    
+    protected boolean                     doSequentially;
     protected int                         numColumns  = 0;
     protected Vector<Integer>             ids         = null;  // Must be initialized to null!
     protected Vector<Vector<Object>>      cache       = new Vector<Vector<Object>>();
@@ -116,10 +117,12 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
      */
     public ResultSetTableModel(final ESResultsTablePanelIFace parentERTP,
                                final QueryForIdResultsIFace results,
-                               final boolean doSequentially)
+                               final boolean doSequentially,
+                               final boolean doSelfStart)
     {
         this.parentERTP = parentERTP;
         this.results = results;
+        this.doSequentially = doSequentially;
         
         captionInfo = results.getVisibleCaptionInfo();
         
@@ -129,16 +132,30 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
         }
         
         initialize();
-        
-        startDataAquisition(doSequentially);
+      
+        if (doSelfStart)
+        {
+        	startDataAquisition(doSequentially);
+        }
     }
     
+    public ResultSetTableModel(final ESResultsTablePanelIFace parentERTP,
+            final QueryForIdResultsIFace results,
+            final boolean doSequentially)
+    {
+    	this(parentERTP, results, doSequentially, true);
+    }
     /**
      * perform initializations which must be performed before startDataAcquisition() is called.
      */
     protected void initialize()
     {
     	//nothing to do here
+    }
+    
+    public void startDataAcquisition()
+    {
+    	startDataAquisition(doSequentially);
     }
     /**
      * @param doSequentially

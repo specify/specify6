@@ -61,7 +61,7 @@ public class QBResultSetTableModel extends ResultSetTableModel
     public QBResultSetTableModel(final ESResultsTablePanelIFace parentERTP,
                                  final QueryForIdResultsIFace results)
     {
-    	super(parentERTP, results);
+    	super(parentERTP, results, false, false);
     }
     
     
