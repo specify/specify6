@@ -76,6 +76,7 @@ public class QBResultSetTableModel extends ResultSetTableModel
         isPostSorted = new AtomicBoolean(false);
         backgroundLoadsCancelled = new AtomicBoolean(false);
     }
+    
     /**
      * @return true while background cell-loading tasks are still running.
      */

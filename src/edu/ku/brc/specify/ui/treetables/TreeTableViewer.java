@@ -1669,6 +1669,12 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		return true;
 	}
 	
+	protected String getEditDialogContext(final Class<?> nodeClass)
+	{
+		//return "Query";
+		return null;
+	}
+	
 	/**
 	 * Display the form for editing node data.
 	 *
@@ -1699,6 +1705,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		                                                           closeBtnText, className, idFieldName, isEdit, options);
 		dialog.setModal(true);
 		dialog.setData(node);
+		dialog.setHelpContext(getEditDialogContext(node.getClass()));
 		
 		// build the dialog UI so I can adjust some of the controls
 		dialog.preCreateUI();

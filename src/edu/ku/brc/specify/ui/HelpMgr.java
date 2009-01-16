@@ -296,7 +296,11 @@ public class HelpMgr
     {
         String       helpTarget = null;
         
-        helpTarget = compHelpHash.get(FocusManager.getCurrentManager().getFocusOwner());
+        Component focusComp = FocusManager.getCurrentManager().getFocusOwner();
+        if (focusComp != null)
+        {
+        	helpTarget = compHelpHash.get(focusComp);
+        }
         if (helpTarget == null)
         {
             SubPaneIFace subPane    = SubPaneMgr.getInstance().getCurrentSubPane();
