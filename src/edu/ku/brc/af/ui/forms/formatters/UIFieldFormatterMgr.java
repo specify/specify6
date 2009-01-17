@@ -234,8 +234,7 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
             UIFieldFormatterIFace f = e.nextElement();
             // System.out.println("["+Date.class+"]["+f.getDataClass()+"]
             // "+f.getPartialDateType());
-            if ((Date.class == f.getDataClass() || 
-                 Date.class == f.getDataClass()) &&
+            if (Date.class == f.getDataClass() &&
                  f.getPartialDateType() == type)
             {
                 return f;

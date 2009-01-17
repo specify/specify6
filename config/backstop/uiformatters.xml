@@ -50,7 +50,15 @@
     <external>edu.ku.brc.specify.ui.CatalogNumberStringUIFieldFormatter</external>
   </format>
 
-  <format system="true" name="Date" class="java.util.Date" type="date" partialdate="Full">
+  <format system="true" name="Date" class="java.util.Date" type="date" partialdate="Full"/>
+  
+
+  <format system="true" name="SearchDate" class="java.util.Date" type="date" partialdate="Full">
+    <field type="year" size="4" value="YYYY"/>
+    <field type="separator" size="1" value="-"/>
+    <field type="numeric" size="2" value="MM"/>
+    <field type="separator" size="1" value="-"/>
+    <field type="numeric" size="2" value="DD"/>
   </format>
 
   <format system="true" name="GiftNumber" class="edu.ku.brc.specify.datamodel.Gift" fieldname="giftNumber" default="true">

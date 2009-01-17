@@ -27,6 +27,8 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -60,9 +62,11 @@ import edu.ku.brc.af.core.expresssearch.SearchTermField;
 import edu.ku.brc.af.ui.db.ERTICaptionInfo;
 import edu.ku.brc.af.ui.db.QueryForIdResultsIFace;
 import edu.ku.brc.af.ui.db.ViewBasedSearchQueryBuilderIFace;
+import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.ViewFactory;
 import edu.ku.brc.af.ui.forms.Viewable;
+import edu.ku.brc.af.ui.forms.persist.FormCellFieldIFace;
 import edu.ku.brc.af.ui.forms.persist.ViewIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -88,6 +92,8 @@ import edu.ku.brc.ui.UIRegistry;
 public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPaneIFace, PropertyChangeListener
 {
     private static final Logger log  = Logger.getLogger(DBObjSearchDialog.class);
+    
+    protected SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
     // Form Stuff
     protected ViewIFace      formView   = null;
@@ -420,7 +426,7 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
             {
                 Object value  = dataMap.get(captionInfo.getColName());
                 
-                log.debug("Column Name["+captionInfo.getColName()+"] Value["+value+"]");
+                //log.debug("Column Name["+captionInfo.getColName()+"] Value["+value+"]");
                 if (value != null)
                 {
                     String valStr = value.toString();
@@ -440,7 +446,38 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
                                         strBuf.append(" OR ");
                                     }
                                     
-                                    String clause = ESTermParser.createWhereClause(firstTerm, null, captionInfo.getColName());
+                                    String clause = null;
+                                    
+                                    if (captionInfo.getFieldInfo() != null && form instanceof FormViewObj)
+                                    {
+                                        FormViewObj fvo = (FormViewObj)form;
+                                        FormViewObj.FVOFieldInfo fInfo = fvo.getFieldInfoForName(captionInfo.getFieldInfo().getColumn());
+                                        if (fInfo != null)
+                                        {
+                                            if (fInfo.getFormCell() != null && fInfo.getFormCell().getPropertyAsBoolean("ispartial", false))
+                                            {
+                                                if (fInfo.getFormCell() instanceof FormCellFieldIFace)
+                                                {
+                                                    FormCellFieldIFace cif = (FormCellFieldIFace)fInfo.getFormCell();
+                                                    String             fmt = cif.getUIFieldFormatterName();
+                                                    if (StringUtils.isNotEmpty(fmt) && fmt.equals("SearchDate"))
+                                                    {
+                                                        clause = getDateClause(firstTerm, captionInfo.getColName());
+                                                    }
+                                                }
+                                                if (clause == null)
+                                                {
+                                                    firstTerm.setTerm(firstTerm.getTerm());
+                                                    firstTerm.setOption(SearchTermField.ENDS_WILDCARD);
+                                                }
+                                            }
+                                        }
+                                    } 
+                                    
+                                    if (clause == null)
+                                    {
+                                        clause = ESTermParser.createWhereClause(firstTerm, null, captionInfo.getColName());
+                                    }
                                     strBuf.append(clause);
                                     cnt++;
                                 }
@@ -488,6 +525,41 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
                }
            });
         }
+    }
+    
+    /**
+     * @param term
+     * @return
+     */
+    private String getDateClause(final SearchTermField term, final String columnName)
+    {
+        String termStr = term.getTerm();
+        if (termStr.length() >= 4)
+        {
+            try
+            {
+                String[] tokens = StringUtils.split(termStr, '-');
+                if (tokens.length == 1 || termStr.length() == 4)
+                {
+                    sdf.parse(termStr + "-01-01");
+                    return String.format(" YEAR(%s) = %s ", columnName, tokens[0]);
+                    
+                } else if (tokens.length == 2)
+                {
+    
+                    sdf.parse(termStr + "-01");
+                    return String.format(" (YEAR(%s) = %s AND MONTH(%s) = %s) ", columnName, tokens[0], columnName, tokens[1]);
+                    
+                } else if (tokens.length == 3)
+                {
+                    
+                    sdf.parse(termStr);
+                    return String.format(" %s = '%s' ", columnName, termStr);
+                        
+                }
+            } catch (ParseException ex) {}
+        }
+        return "";
     }
     
     /* (non-Javadoc)

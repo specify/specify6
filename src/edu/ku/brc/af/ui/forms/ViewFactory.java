@@ -442,6 +442,9 @@ public class ViewFactory
         // else
         ValFormattedTextField vtf = new ValFormattedTextField(uiFormatterName, isViewOnly, allEditOK);
         vtf.setEnabled(!cellField.isReadOnly());
+        vtf.setPartialOK(isPartialOK);
+        vtf.setRequired(isRequired);
+        vtf.setFromUIFmtOverride(isFromUIFmtOverride);
         return vtf;
     }
 

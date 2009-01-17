@@ -6,6 +6,9 @@
  */
 package edu.ku.brc.services.biogeomancer;
 
+import static edu.ku.brc.helpers.XMLHelper.getValue;
+import static edu.ku.brc.helpers.XMLHelper.readStrToDOM4J;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -16,7 +19,6 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
-import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.services.mapping.LocalityMapper;
 import edu.ku.brc.services.mapping.SimpleMapLocation;
 import edu.ku.brc.services.mapping.LocalityMapper.MapperListener;
@@ -42,7 +44,7 @@ public class BioGeomancer
      */
     public static int getResultsCount(final String bioGeomancerResponseString) throws Exception
     {
-        Element responseAsXml = XMLHelper.readStrToDOM4J(bioGeomancerResponseString);
+        Element responseAsXml = readStrToDOM4J(bioGeomancerResponseString);
         List<?> records = responseAsXml.selectNodes("//record"); //$NON-NLS-1$
         return (records != null) ? records.size() : 0;
     }
@@ -121,10 +123,10 @@ public class BioGeomancer
      * @throws Exception a network or XML parsing error
      */
     public static BioGeomancerQuerySummaryStruct getBioGeomancerResponses(final String id,
-                                                         final String country,
-                                                         final String adm1,
-                                                         final String adm2,
-                                                         final String localityString)
+                                                                          final String country,
+                                                                          final String adm1,
+                                                                          final String adm2,
+                                                                          final String localityString)
                                                         throws Exception
     {
         String responseStr = getBioGeomancerResponse(id, country, adm1, adm2, localityString);
@@ -143,7 +145,7 @@ public class BioGeomancer
     public static BioGeomancerQuerySummaryStruct parseBioGeomancerResponse(String bgResponse) throws Exception
     {
         // read the string into a DOM
-        Element root = XMLHelper.readStrToDOM4J(bgResponse);
+        Element root = readStrToDOM4J(bgResponse);
         Element summary = (Element)root.selectSingleNode("//summary"); //$NON-NLS-1$
         if (summary == null)
         {
@@ -153,19 +155,19 @@ public class BioGeomancer
         BioGeomancerQuerySummaryStruct querySummary = new BioGeomancerQuerySummaryStruct();
 
         // get all of the data from the summary section
-        querySummary.id                                  = XMLHelper.getValue(summary,"queryId"); //$NON-NLS-1$
-        querySummary.country                             = XMLHelper.getValue(summary,"queryCountry"); //$NON-NLS-1$
-        querySummary.adm1                                = XMLHelper.getValue(summary,"queryAdm1"); //$NON-NLS-1$
-        querySummary.adm2                                = XMLHelper.getValue(summary,"queryAdm2"); //$NON-NLS-1$
-        querySummary.localityStr                         = XMLHelper.getValue(summary,"queryString"); //$NON-NLS-1$
-        querySummary.countryBoundingBox                  = XMLHelper.getValue(summary,"countryBoundingBox"); //$NON-NLS-1$
-        querySummary.matchedRecordCount                  = XMLHelper.getValue(summary,"matchedRecordCount"); //$NON-NLS-1$
-        querySummary.boundingBox                         = XMLHelper.getValue(summary,"boundingBox"); //$NON-NLS-1$
-        querySummary.boundingBoxCentroid                 = XMLHelper.getValue(summary,"boundingBoxCentroid"); //$NON-NLS-1$
-        querySummary.boundingBoxCentroidErrorRadius      = XMLHelper.getValue(summary,"boundingBoxCentroidErrorRadius"); //$NON-NLS-1$
-        querySummary.boundingBoxCentroidErrorRadiusUnits = XMLHelper.getValue(summary,"boundingBoxCentroidErrorRadiusUnits"); //$NON-NLS-1$
-        querySummary.multiPointMatch                     = XMLHelper.getValue(summary,"multiPointMatch"); //$NON-NLS-1$
-        querySummary.weightedCentroid                    = XMLHelper.getValue(summary,"weightedCentroid"); //$NON-NLS-1$
+        querySummary.id                                  = getValue(summary,"queryId"); //$NON-NLS-1$
+        querySummary.country                             = getValue(summary,"queryCountry"); //$NON-NLS-1$
+        querySummary.adm1                                = getValue(summary,"queryAdm1"); //$NON-NLS-1$
+        querySummary.adm2                                = getValue(summary,"queryAdm2"); //$NON-NLS-1$
+        querySummary.localityStr                         = getValue(summary,"queryString"); //$NON-NLS-1$
+        querySummary.countryBoundingBox                  = getValue(summary,"countryBoundingBox"); //$NON-NLS-1$
+        querySummary.matchedRecordCount                  = getValue(summary,"matchedRecordCount"); //$NON-NLS-1$
+        querySummary.boundingBox                         = getValue(summary,"boundingBox"); //$NON-NLS-1$
+        querySummary.boundingBoxCentroid                 = getValue(summary,"boundingBoxCentroid"); //$NON-NLS-1$
+        querySummary.boundingBoxCentroidErrorRadius      = getValue(summary,"boundingBoxCentroidErrorRadius"); //$NON-NLS-1$
+        querySummary.boundingBoxCentroidErrorRadiusUnits = getValue(summary,"boundingBoxCentroidErrorRadiusUnits"); //$NON-NLS-1$
+        querySummary.multiPointMatch                     = getValue(summary,"multiPointMatch"); //$NON-NLS-1$
+        querySummary.weightedCentroid                    = getValue(summary,"weightedCentroid"); //$NON-NLS-1$
 
         // get each of the results records
         List<?> records = root.selectNodes("//record"); //$NON-NLS-1$
@@ -175,16 +177,16 @@ public class BioGeomancer
         {
             Element record = (Element)o;
             BioGeomancerResultStruct result = new BioGeomancerResultStruct();
-            result.country     = XMLHelper.getValue(record, "country"); //$NON-NLS-1$
-            result.adm1        = XMLHelper.getValue(record, "adm1"); //$NON-NLS-1$
-            result.adm2        = XMLHelper.getValue(record, "adm2"); //$NON-NLS-1$
-            result.featureName = XMLHelper.getValue(record, "featureName"); //$NON-NLS-1$
-            result.featureType = XMLHelper.getValue(record, "featureType"); //$NON-NLS-1$
-            result.gazetteer   = XMLHelper.getValue(record, "gazetteerSource"); //$NON-NLS-1$
-            result.coordinates = XMLHelper.getValue(record, "InterpretedCoordinates"); //$NON-NLS-1$
-            result.offset      = XMLHelper.getValue(record, "offsetVector"); //$NON-NLS-1$
-            result.boundingBox = XMLHelper.getValue(record, "boundingBox"); //$NON-NLS-1$
-            result.locality    = XMLHelper.getValue(record, "InterpretedString"); //$NON-NLS-1$
+            result.country     = getValue(record, "country"); //$NON-NLS-1$
+            result.adm1        = getValue(record, "adm1"); //$NON-NLS-1$
+            result.adm2        = getValue(record, "adm2"); //$NON-NLS-1$
+            result.featureName = getValue(record, "featureName"); //$NON-NLS-1$
+            result.featureType = getValue(record, "featureType"); //$NON-NLS-1$
+            result.gazetteer   = getValue(record, "gazetteerSource"); //$NON-NLS-1$
+            result.coordinates = getValue(record, "InterpretedCoordinates"); //$NON-NLS-1$
+            result.offset      = getValue(record, "offsetVector"); //$NON-NLS-1$
+            result.boundingBox = getValue(record, "boundingBox"); //$NON-NLS-1$
+            result.locality    = getValue(record, "InterpretedString"); //$NON-NLS-1$
             results[index++] = result;
         }
         querySummary.results = results;

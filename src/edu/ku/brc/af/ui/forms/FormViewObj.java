@@ -331,7 +331,10 @@ public class FormViewObj implements Viewable,
         {
             builder.getPanel().setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
         }
-        builder.getPanel().setBackground(bgColor);
+        if (bgColor != null)
+        {
+            builder.getPanel().setBackground(bgColor);
+        }
         
         this.options = options;
         boolean isSingleObj                = MultiView.isOptionOn(options, MultiView.IS_SINGLE_OBJ);
@@ -3584,12 +3587,21 @@ public class FormViewObj implements Viewable,
     }
 
     /**
-     * @param id
-     * @return
+     * @param id the id of the control
+     * @return the FVOFieldInfo object by ID
      */
     public FVOFieldInfo getFieldInfoForId(final String id)
     {
         return controlsById.get(id);
+    }
+
+    /**
+     * @param fName the name of the control
+     * @return the FVOFieldInfo object by name
+     */
+    public FVOFieldInfo getFieldInfoForName(final String fName)
+    {
+        return controlsByName.get(fName);
     }
 
     /* (non-Javadoc)
@@ -5808,7 +5820,7 @@ public class FormViewObj implements Viewable,
     //-------------------------------------------------
     // FieldInfo
     //-------------------------------------------------
-    class FVOFieldInfo implements Comparable<FVOFieldInfo>
+    public class FVOFieldInfo implements Comparable<FVOFieldInfo>
     {
         protected FormCellIFace formCell;
         protected MultiView     subView;

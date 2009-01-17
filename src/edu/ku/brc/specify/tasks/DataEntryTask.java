@@ -758,12 +758,8 @@ public class DataEntryTask extends BaseTask
                                 // When something is dropped on it
                                 nbb.addDropDataFlavor(new DataFlavorTableExt(RecordSetTask.class, RecordSetTask.RECORD_SET, tableInfo.getTableId()));//RecordSetTask.RECORDSET_FLAVOR);
                             }
-        
                             viewsNavBox.add(nbi);
                         }
-                    } else
-                    {
-                        log.debug("Hidden: "+tableInfo.getTitle());
                     }
                 } else 
                 {

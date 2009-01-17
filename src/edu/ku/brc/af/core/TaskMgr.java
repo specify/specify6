@@ -616,7 +616,7 @@ public class TaskMgr implements CommandListener
      */
     public static Class<?> getUIPluginClassForName(final String pluginName)
     {
-        log.debug("Looing up["+pluginName+"]["+instance.uiPluginHash.get(pluginName)+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        //log.debug("Looking up["+pluginName+"]["+instance.uiPluginHash.get(pluginName)+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         return instance.uiPluginHash.get(pluginName);
     }
     

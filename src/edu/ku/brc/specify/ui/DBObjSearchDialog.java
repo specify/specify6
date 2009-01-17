@@ -178,7 +178,7 @@ public class DBObjSearchDialog extends CustomDialog implements ViewBasedSearchDi
      * @see edu.ku.brc.ui.db.ViewBasedSearchDialogIFace#registerQueryBuilder(edu.ku.brc.ui.db.ViewBasedSearchQueryBuilderIFace)
      */
     //@Override
-    public void registerQueryBuilder(ViewBasedSearchQueryBuilderIFace builder)
+    public void registerQueryBuilder(final ViewBasedSearchQueryBuilderIFace builder)
     {
         if (panel != null)
         {
@@ -204,7 +204,7 @@ public class DBObjSearchDialog extends CustomDialog implements ViewBasedSearchDi
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.ViewBasedSearchDialogIFace#setMultipleSelection(boolean)
      */
-    public void setMultipleSelection(boolean isMultiple)
+    public void setMultipleSelection(final boolean isMultiple)
     {
         if (panel != null)
         {

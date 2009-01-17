@@ -6018,6 +6018,8 @@ public class BuildSampleDatabase
                 disp != DisciplineType.STD_DISCIPLINES.fish &&
                 isChoosen(disp, false))
             {
+                frame.setOverall(steps++);
+                
                 String method = null;
                 switch (disp)
                 {
@@ -7345,7 +7347,7 @@ public class BuildSampleDatabase
         }
         
         frame.setProcessPercent(true);
-        frame.setOverall(0, 9+(doingDerby ? 1 : 0));
+        frame.setOverall(0, 7+(doingDerby ? 1 : 0) + this.selectedChoices.size());
         frame.getCloseBtn().setVisible(false);
 
         

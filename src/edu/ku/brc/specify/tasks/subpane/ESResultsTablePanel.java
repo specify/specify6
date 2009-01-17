@@ -460,6 +460,9 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         });
     }
     
+    /**
+     * Start the Acquisition of data.
+     */
     public void startFilling()
     {
     	resultSetTableModel.startDataAcquisition();

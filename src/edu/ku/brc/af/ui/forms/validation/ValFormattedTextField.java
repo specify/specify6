@@ -95,6 +95,7 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
     protected boolean                     isNew          = false;
     protected boolean                     isViewOnly     = false;
     protected boolean                     isPartialOK    = false;
+    protected boolean                     isSearch       = false;
     protected Color                       bgColor        = null;
     
     protected JTextField                  viewtextField  = null;
@@ -176,10 +177,12 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
     /**
      * Constructor
      * @param formatterName the formatters name
-s     * @param isViewOnly
+     * @param isViewOnly
      * @param isAllEditable
      */
-    public ValFormattedTextField(final String formatterName, final boolean isViewOnly, final boolean isAllEditable)
+    public ValFormattedTextField(final String formatterName, 
+                                 final boolean isViewOnly, 
+                                 final boolean isAllEditable)
     {
         super();
 
@@ -510,41 +513,50 @@ s     * @param isViewOnly
             return viewtextField.getText();
         }
         
-        //if (currCachedValue == null)
-        //{
-            StringBuilder sb = new StringBuilder();
-            int inx = 0;
-            for (JComponent c : comps)
+        StringBuilder sb      = new StringBuilder();
+        int           inx     = 0;
+        String        prevStr = null;
+        for (JComponent c : comps)
+        {
+            String val = null;
+            if (c instanceof JLabel)
             {
-                String val = null;
-                if (c instanceof JLabel)
-                {
-                    if (!isPartialOK)
-                    {
-                        val = ((JLabel)c).getText();
-                    }
-                } else if (c instanceof JTextField)
-                {
-                    val = ((JTextField)c).getText();
-                    
-                } else if (c instanceof JPanel)
-                {
-                    JTextField tf = isAutoFmtOn ? viewTF : editTF;
-                    val = tf.getText();
-                }
+                val = ((JLabel)c).getText();
+                prevStr = val;
                 
-                if (val != null)
-                {
-                    sb.append(val);
-                }
-                if (!isPartialOK && StringUtils.isEmpty(val))
+            } else if (c instanceof JTextField)
+            {
+                val = ((JTextField)c).getText();
+                
+            } else if (c instanceof JPanel)
+            {
+                JTextField tf = isAutoFmtOn ? viewTF : editTF;
+                val = tf.getText();
+            }
+            
+            if (StringUtils.isEmpty(val))
+            {
+                if (!isPartialOK)
                 {
                     return null;
                 }
-                inx++;
+                if (prevStr != null)
+                {
+                    sb.setLength(sb.length() - prevStr.length());
+                }
+                break;
+                
+            } else
+            {
+                sb.append(val);
+                if (!(c instanceof JLabel))
+                {
+                    prevStr = null;
+                }
             }
-            currCachedValue = sb.toString();
-        //}
+            inx++;
+        }
+        currCachedValue = sb.toString();
         return currCachedValue;
     }
 
@@ -1010,13 +1022,13 @@ s     * @param isViewOnly
      */
     public Object getValue()
     {
-        if (formatter.isDate())
+        if (formatter.isDate() && !isPartialOK)
         {
             return UIHelper.getCalendar(getText(), formatter.getDateWrapper());
         }
         // else
         String val = getText();
-        if (formatter.isFromUIFormatter() && !isFromUIFmtOverride)
+        if (formatter.isFromUIFormatter() || isFromUIFmtOverride)
         {
             if (StringUtils.isNotEmpty(val))
             {
