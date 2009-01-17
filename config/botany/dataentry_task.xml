@@ -8,7 +8,6 @@
 	    <view sidebar="true"  name="Taxon"              view="Taxon"              iconname="Taxon"              tooltip=""/> 
 	    <view sidebar="true"  name="Agent"              view="Agent"              iconname="Agent"              tooltip=""/>    
 	    <view sidebar="true"  name="Geography"          view="Geography"          iconname="Geography"          tooltip=""/> 
-	    <view sidebar="true"  name="GeologicTimePeriod" view="GeologicTimePeriod" iconname="GeologicTimePeriod" tooltip=""/> 
 	    <view sidebar="false" name="Loan"               view="Loan"               iconname="Loan"               tooltip=""/>    
 		<view sidebar="false" name="Accession"          view="Accession"          iconname="Accession"          tooltip=""/>    
 		<view sidebar="false" name="Permit"             view="Permit"             iconname="Permit"             tooltip=""/>    
