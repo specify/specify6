@@ -310,6 +310,36 @@ public class NavigationTreeMgr
             }
         }
     }
+
+    /**
+     * Get discipline to which the group is attached.
+     * @param grpNode
+     * @return Discipline to which the group is attached. Null if node isn't from a group.
+     */
+    private Discipline getParentDiscipline(final DefaultMutableTreeNode grpNode)
+    {
+        Discipline parentDiscipline = null;
+        DefaultMutableTreeNode parent = (DefaultMutableTreeNode)grpNode.getParent();
+
+        while (parent != null)
+        {
+            if (parent.getUserObject() instanceof DataModelObjBaseWrapper)
+            {
+                DataModelObjBaseWrapper wrp = (DataModelObjBaseWrapper)parent.getUserObject();
+                System.out.println(wrp.getDataObj()+"  "+wrp.getDataObj());
+                
+                FormDataObjIFace obj = wrp.getDataObj();
+                
+                if (obj instanceof Discipline)
+                {
+                    parentDiscipline = (Discipline) obj;
+                }
+            }
+            parent = (DefaultMutableTreeNode) parent.getParent();
+        }
+        
+        return parentDiscipline;
+    }
     
 
     /**
@@ -322,35 +352,12 @@ public class NavigationTreeMgr
             return; // Nothing is selected or object type isn't relevant 
         }
         
-        DefaultMutableTreeNode parent = (DefaultMutableTreeNode)grpNode.getParent();
         
-        Discipline disp = null;
-        
-        while (parent != null)
-        {
-            if (parent.getUserObject() instanceof DataModelObjBaseWrapper)
-            {
-                DataModelObjBaseWrapper wrp = (DataModelObjBaseWrapper)parent.getUserObject();
-                System.out.println(wrp.getDataObj()+"  "+wrp.getDataObj());
-                
-                FormDataObjIFace obj = wrp.getDataObj();
-                
-                if (obj instanceof Discipline)
-                {
-                    disp = (Discipline)obj;
-                }
-            }
-            parent = (DefaultMutableTreeNode)parent.getParent();
-        }
-        
-        if (disp == null)
-        {
-            // error
-            return;
-        }
-        
-        final Division   division   = disp.getDivision();
-        final Discipline discipline = disp;
+        // discipline to which the user's being added
+        Discipline parentDiscipline = getParentDiscipline(grpNode);
+       
+        final Division   division   = parentDiscipline.getDivision();
+        final Discipline discipline = parentDiscipline;
         
         DataModelObjBaseWrapper parentWrp  = (DataModelObjBaseWrapper) (grpNode.getUserObject());
         if (!parentWrp.isGroup())
@@ -417,9 +424,9 @@ public class NavigationTreeMgr
         });
         
         Discipline currDiscipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
-        AppContextMgr.getInstance().setClassObject(Discipline.class, disp);
+        AppContextMgr.getInstance().setClassObject(Discipline.class, parentDiscipline);
         
-        // This is just an extra safety measure to make sure the current Disicpline gets set back
+        // This is just an extra safety measure to make sure the current Discipline gets set back
         try
         {
             dlg.setData(spUser);
@@ -430,6 +437,7 @@ public class NavigationTreeMgr
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(NavigationTreeMgr.class, ex);
             ex.printStackTrace();
+            
         } finally
         {
             AppContextMgr.getInstance().setClassObject(Discipline.class, currDiscipline);    
@@ -437,8 +445,6 @@ public class NavigationTreeMgr
         
         if (!dlg.isCancelled())
         {
-            addGroupToUser(group, spUser, currDiscipline); // XXX !!! I don't think this Discipline is the right one!
-            
             Agent userAgent = (Agent)cbx.getValue();
             spUser.getAgents().add(userAgent);
             userAgent.setSpecifyUser(spUser);
@@ -454,10 +460,16 @@ public class NavigationTreeMgr
                 busRules.initialize(dlg.getMultiView().getCurrentView());
                 busRules.beforeMerge(spUser, session);
                 busRules.beforeSave(spUser, session);
-                
+
                 session.saveOrUpdate(spUser);
                 session.saveOrUpdate(userAgent);
+
+                // get fresh copies of parentDiscipline and group to make Hibernate happy
+                Discipline localDiscipline = session.get(Discipline.class, parentDiscipline.getUserGroupScopeId()); 
+                SpPrincipal localGroup = session.get(SpPrincipal.class, group.getUserGroupId());
                 
+                addGroupToUser(localGroup, spUser, localDiscipline, session); 
+
                 session.commit();
                 
                 spUser = session.get(SpecifyUser.class, spUser.getId());
@@ -769,19 +781,10 @@ public class NavigationTreeMgr
     }
     
     /**
+     * Adds a group to the set users belong to.
+     * This version doesn't take a session as an argument. It creates its own session.
      * @param group
      * @param user
-     */
-    private final void addGroupToUser(final SpPrincipal group, 
-                                      final SpecifyUser user,
-                                      final Discipline  discipline)
-    {
-        addGroupToUser(group, new SpecifyUser[] { user }, discipline);
-    }
-    
-    /**
-     * @param group
-     * @param users
      */
     private final void addGroupToUser(final SpPrincipal   group, 
                                       final SpecifyUser[] users,
@@ -792,45 +795,7 @@ public class NavigationTreeMgr
         {
             session = DataProviderFactory.getInstance().createSession();
             session.beginTransaction();
-            for (SpecifyUser user : users) 
-            {
-                if (user.getId() != null)
-                {
-                    session.attach(user);
-                }
-                
-                session.attach(group);
-                if (user.getSpPrincipals() == null)
-                {
-                    user.setSpPrincipals(new HashSet<SpPrincipal>());
-                }
-                
-                SpPrincipal userPrincipal = DataBuilder.createUserPrincipal(user);
-                user.addUserToSpPrincipalGroup(userPrincipal);
-
-                user.getSpPrincipals().add(group);
-                group.getSpecifyUsers().add(user);
-                
-                Agent agentToClone = null;
-                for (Agent agent : user.getAgents())
-                {
-                    session.saveOrUpdate(agent);
-                    agentToClone = agent;
-                }
-                session.attach(discipline);
-                
-                Agent newAgent = (Agent)agentToClone.clone();
-                newAgent.getDisciplines().add(discipline);
-                discipline.getAgents().add(newAgent);
-                user.getAgents().add(newAgent);
-                
-                session.saveOrUpdate(agentToClone);
-                session.saveOrUpdate(discipline);
-                
-                session.saveOrUpdate(user);
-                session.saveOrUpdate(userPrincipal);
-                session.saveOrUpdate(group);
-            }
+            addGroupToUser(group, users, discipline, session);
             session.commit();
             
         } catch (final Exception e1)
@@ -847,6 +812,75 @@ public class NavigationTreeMgr
             {
                 session.close();
             }
+        }
+    }
+
+    /**
+     * 
+     * @param group
+     * @param user
+     * @param discipline
+     * @param session
+     * @throws Exception
+     */
+    private final void addGroupToUser(final SpPrincipal group, 
+            final SpecifyUser user,
+            final Discipline  discipline,
+            DataProviderSessionIFace session) throws Exception
+    {
+        addGroupToUser(group, new SpecifyUser[] { user }, discipline, session);
+    }
+    
+    /**
+     * @param group
+     * @param users
+     */
+    private final void addGroupToUser(final SpPrincipal   group, 
+                                      final SpecifyUser[] users,
+                                      final Discipline    discipline,
+                                      DataProviderSessionIFace session) throws Exception
+    {
+        for (SpecifyUser user : users) 
+        {
+            if (user.getId() != null)
+            {
+                session.attach(user);
+            }
+            
+            session.attach(group);
+            if (user.getSpPrincipals() == null)
+            {
+                user.setSpPrincipals(new HashSet<SpPrincipal>());
+            }
+            
+            SpPrincipal userPrincipal = DataBuilder.createUserPrincipal(user);
+            user.addUserToSpPrincipalGroup(userPrincipal);
+
+            user.getSpPrincipals().add(group);
+            group.getSpecifyUsers().add(user);
+            
+            Agent agentToClone = null;
+            for (Agent agent : user.getAgents())
+            {
+                session.saveOrUpdate(agent);
+                agentToClone = agent;
+            }
+            if (agentToClone == null)
+            {
+                log.error("Specify User created without an Agent!");
+            }
+            
+            Agent newAgent = (Agent)agentToClone.clone();
+            newAgent.getDisciplines().add(discipline);
+            discipline.getAgents().add(newAgent);
+            user.getAgents().add(newAgent);
+            
+            session.save(newAgent);
+            session.saveOrUpdate(discipline);
+            
+            session.saveOrUpdate(user);
+            session.saveOrUpdate(userPrincipal);
+            session.saveOrUpdate(group);
         }
     }
 }

@@ -397,7 +397,10 @@ public class SecurityAdminPane extends BaseSubPane
         }
         finally
         {
-            session.close();
+            if (session != null)
+            {
+                session.close();
+            }
         }
         
         DefaultTreeModel model = new FilteredTreeModel(root, null);
@@ -413,6 +416,7 @@ public class SecurityAdminPane extends BaseSubPane
      */
     private void addInstitutionsRecursively(DataProviderSessionIFace session, DefaultMutableTreeNode root)
     {
+        // XXX Room for performance improvement: fetch all tree in the same query using HQL with OUTER LEFT JOIN FETCH
         List<Institution> institutions = session.getDataList(Institution.class);
         Collections.sort(institutions, new ComparatorByStringRepresentation<Institution>()); 
         for (Institution institution : institutions)
