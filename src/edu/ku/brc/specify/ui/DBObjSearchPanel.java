@@ -509,8 +509,10 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
         
         if (true)
         {
-            etrb = new ESResultsTablePanel(this, results, false, true, false);
+            ESResultsTablePanel etrbPanel = new ESResultsTablePanel(this, results, false, true, false);
+            etrb = etrbPanel;
             etrb.setPropertyChangeListener(this);
+            etrbPanel.startFilling();
             
         } else
         {
