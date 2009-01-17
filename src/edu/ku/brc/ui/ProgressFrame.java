@@ -89,6 +89,7 @@ public class ProgressFrame extends JFrame
         closeBtn        = createButton("Cancel");
 
         processProgress.setStringPainted(true);
+        overallProgress.setStringPainted(true);
  
         desc.setHorizontalAlignment(SwingConstants.CENTER);
         builder.add( desc, cc.xywh(1,1,3,1));
