@@ -191,7 +191,7 @@ public class SpPermission /*extends DataModelObjBase*/implements java.io.Seriali
 	/**
 	 *
 	 */
-    @ManyToMany(cascade = {}, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = {}, fetch = FetchType.LAZY)
     @JoinTable(name = "spprincipal_sppermission", 
             joinColumns = { 
                 @JoinColumn(name = "SpPermissionID", 
@@ -200,7 +200,8 @@ public class SpPermission /*extends DataModelObjBase*/implements java.io.Seriali
                 @JoinColumn(name = "SpPrincipalID", 
                             unique = false, nullable = false, insertable = true, updatable = false) 
             }
-    )	public Set<SpPrincipal> getPrincipals()
+    )	
+    public Set<SpPrincipal> getPrincipals()
 	{
 		return this.principals;
 	}

@@ -141,6 +141,8 @@ public class AdminInfoSubPanelWrapper
 		        try
 		        {
 		            session  = DataProviderFactory.getInstance().createSession();
+		            // XXX: performance hit: all principal "family" is loaded one by one in separate queries
+		            // studying a way to avoid that...
 		            firstPrincipal = session.merge(firstPrincipal);
 		            userType = firstPrincipal.getPermissions().size() == 0 ? (user != null ? user.getUserType() : null) : null;
 		            

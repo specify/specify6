@@ -216,7 +216,7 @@ public class PermissionService
         DataProviderSessionIFace        session = DataProviderFactory.getInstance().createSession();
         try
         {
-        	List<?> perms = session.getDataList("SELECT pm FROM SpPermission as pm INNER JOIN pm.principals as pc WHERE pc.id = " + principalId);
+        	List<?> perms = session.getDataList("SELECT pm FROM SpPermission as pm INNER JOIN FETCH pm.principals as pc WHERE pc.id = " + principalId);
         	for (Object permObj : perms)
         	{
         		SpPermission perm = (SpPermission)permObj;
