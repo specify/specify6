@@ -883,10 +883,12 @@ public class TableViewObj implements Viewable,
             MultiView multiView = dialog.getMultiView();
             
             // Note: The 'real' parent is the parent of the current MultiView
-            // this is because the table's MultiView doesn;t have a validator.
+            // this is because the table's MultiView doesn't have a validator.
             MultiView realParent = mvParent.getMultiViewParent();
-            
-            realParent.addChildMV(multiView);
+            if (realParent != null)
+            {
+                realParent.addChildMV(multiView);
+            }
             
             multiView.addCurrentValidator();
             
@@ -927,7 +929,10 @@ public class TableViewObj implements Viewable,
             
             // OK, now unhook everything (MVs and the validators)
             multiView.removeCurrentValidator();
-            realParent.removeChildMV(multiView);
+            if (realParent != null)
+            {
+                realParent.removeChildMV(multiView);
+            }
             
             if (isEditing)
             {
