@@ -59,7 +59,7 @@ public class UserPrincipalHibernateService
         try
         {
             session = DataProviderFactory.getInstance().createSession();
-            String sql = "FROM SpPrincipal as pc INNER JOIN FETCH pc.permissions as perms WHERE GroupSubClass='" + UserPrincipal.class.getCanonicalName() + "' AND pc.name = '" + user.getName() + "'";
+            String sql = "FROM SpPrincipal as pc LEFT OUTER JOIN FETCH pc.permissions as perms WHERE GroupSubClass='" + UserPrincipal.class.getCanonicalName() + "' AND pc.name = '" + user.getName() + "'";
             log.debug(sql);
             final List<?> lister = session.getDataList(sql);
             principal = (SpPrincipal)lister.get(0);
