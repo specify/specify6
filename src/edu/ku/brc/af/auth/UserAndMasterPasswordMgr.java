@@ -199,15 +199,28 @@ public class UserAndMasterPasswordMgr
             String keyStr = null;
             if (isLocal)
             {
-                keyStr = Encryption.decrypt(masterKey, usersPassword);
+                try
+                {
+                    keyStr = Encryption.decrypt(masterKey, usersPassword);
+                    
+                } catch (Exception ex) // catch any exception
+                {
+                    return noUP;
+                }
                 
             } else
             {
                 keyStr = getResourceStringFromURL(masterKey, usersUserName, usersPassword);
                 if (StringUtils.isNotEmpty(keyStr))
                 {
-                    keyStr = Encryption.decrypt(keyStr, usersPassword);
-                    
+                    try
+                    {
+                        keyStr = Encryption.decrypt(keyStr, usersPassword);
+                        
+                    } catch (Exception ex) // catch any exception
+                    {
+                        return noUP;
+                    }
                 } else
                 {
                     return noUP;
