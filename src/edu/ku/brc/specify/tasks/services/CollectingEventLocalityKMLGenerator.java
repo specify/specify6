@@ -157,21 +157,30 @@ public class CollectingEventLocalityKMLGenerator
             String           label   = labels.get(i);
             FormDataObjIFace dataObj = dataObjs.get(i);
             
+            String kmlStr = null;
             if (dataObj instanceof CollectingEvent)
             {
-    			writer.write(generatePlacemark((CollectingEvent)dataObj, label));
+                kmlStr = generatePlacemark((CollectingEvent)dataObj, label);
     			isDoingCollectingEvents = true;
     			
             } else if (dataObj instanceof Locality)
             {
-                writer.write(generatePlacemark((Locality)dataObj, label));
-                
+                kmlStr = generatePlacemark((Locality)dataObj, label);
+            }
+            
+            if (kmlStr != null)
+            {
+                writer.write(kmlStr);
             }
 		}
 		
 		if (isDoingCollectingEvents)
 		{
-		    writer.write(generatePathForLocalities());
+		    String kmlStr = generatePathForLocalities();
+		    if (kmlStr != null)
+            {
+                writer.write(kmlStr);
+            }
 		}
 		
 		writer.write("</Document>\n");
@@ -187,23 +196,28 @@ public class CollectingEventLocalityKMLGenerator
 	 */
 	protected String generatePathForLocalities()
 	{
+	    int cnt = 0;
 		StringBuilder sb = new StringBuilder("<Placemark>\n");
 		sb.append("<LineString>\n");
 		sb.append("<coordinates>");
 		for( FormDataObjIFace dataObj : dataObjs )
 		{
 		    Locality loc = dataObj instanceof CollectingEvent ? ((CollectingEvent)dataObj).getLocality() : (Locality)dataObj;
-			sb.append(loc.getLongitude1());
-			sb.append(",");
-			sb.append(loc.getLatitude1());
-			sb.append(",");
-			sb.append("0.0\n");
+		    if (loc != null && loc.getLongitude1() != null && loc.getLatitude1() != null)
+		    {
+    			sb.append(loc.getLongitude1());
+    			sb.append(",");
+    			sb.append(loc.getLatitude1());
+    			sb.append(",");
+    			sb.append("0.0\n");
+    			cnt++;
+		    }
 		}
 		sb.append("</coordinates>\n");
 		sb.append("</LineString>\n");
 		sb.append("</Placemark>\n\n\n");
 
-		return sb.toString();
+		return cnt > 0 ? sb.toString() : null;
     }
 
     /**
@@ -215,13 +229,15 @@ public class CollectingEventLocalityKMLGenerator
      */
     protected String generatePlacemark(final Locality loc, final String label)
     {
+        if (loc == null || 
+            loc.getLatitude1() == null || 
+            loc.getLongitude1() == null)
+        {
+            return null;
+        }
         BigDecimal lat = loc.getLatitude1();
         BigDecimal lon = loc.getLongitude1();
         
-        if (lat == null || lon == null)
-        {
-            return "";
-        }
         // TODO Finishing implementing this method with Geography
         
         //Geography  geo = loc.getGeography(); 
@@ -286,9 +302,15 @@ public class CollectingEventLocalityKMLGenerator
      */
     protected String generatePlacemark(final CollectingEvent ce, final String label)
     {
+        if (ce == null || 
+            ce.getLocality() == null || 
+            ce.getLocality().getLatitude1() == null ||
+            ce.getLocality().getLongitude1() == null)
+        {
+            return null;
+        }
+        
 		// get all of the important information
-
-		// get storage information
 		Locality   loc = ce.getLocality();
         BigDecimal lat = loc.getLatitude1();
         BigDecimal lon = loc.getLongitude1();
@@ -440,7 +462,7 @@ public class CollectingEventLocalityKMLGenerator
 			
             if (StringUtils.isNotEmpty(primaryURL))
             {
-                String primaryURLStr   = String.format(primaryURL, tax.first, tax.second);
+                String primaryURLStr = String.format(primaryURL, tax.first, tax.second);
                 sb.append("<td><a style=\"color:"+linkTextColor+"\" href=\""+primaryURLStr+"\"><center>");
                 sb.append(primaryURLTitle);
                 sb.append("</a></center></td>\n");
