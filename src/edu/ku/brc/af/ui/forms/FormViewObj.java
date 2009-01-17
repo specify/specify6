@@ -3796,7 +3796,9 @@ public class FormViewObj implements Viewable,
         //log.debug("----------------- "+formViewDef.getName()+"----------------- ");
         if (delRecBtn != null)
         {
-            boolean enableDelBtn = dataObj != null && (businessRules == null || businessRules.okToEnableDelete(this.dataObj));// && list != null && list.size() > 0;
+            boolean enableDelBtn = dataObj != null && 
+                                   (dataObj instanceof FormDataObjIFace && ((FormDataObjIFace)dataObj).getId() != null) &&
+                                   (businessRules == null || businessRules.okToEnableDelete(this.dataObj));// && list != null && list.size() > 0;
             /*log.info(formViewDef.getName()+" Enabling The Del Btn: "+enableDelBtn);
             if (!enableDelBtn)
             {
@@ -5532,6 +5534,16 @@ public class FormViewObj implements Viewable,
         if (formValidator != null)
         {
             formValidator.updateValidationBtnUIState();
+            
+            // The Validator enabled the Delete Btn
+            // Now make sure the Delete Btn should still be enabled
+            if (delRecBtn != null && 
+                delRecBtn.isEnabled() &&
+                dataObj != null && 
+                (dataObj instanceof FormDataObjIFace && ((FormDataObjIFace)dataObj).getId() == null))
+            {
+                delRecBtn.setEnabled(false);
+            }
         }
     }
 
