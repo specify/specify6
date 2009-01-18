@@ -83,21 +83,33 @@ public class FishBaseInfoGetter extends HTTPGetter
         }
     }
 
+    /**
+     * @return
+     */
     public Element getDom()
     {
         return dom;
     }
 
+    /**
+     * @return
+     */
     public Image getImage()
     {
         return image;
     }
 
+    /**
+     * @param consumer
+     */
     public void setConsumer(FishBaseInfoGetterListener consumer)
     {
 		this.consumer = consumer;
 	}
 
+	/**
+	 * @return
+	 */
 	public String getImageURL()
     {
         return imageURL;

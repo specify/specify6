@@ -53,13 +53,15 @@ public class TreeViewerListHeader extends JPanel implements ListDataListener
 	protected Color textColor;
 	
 	protected Color bgs[];
+	
+	protected Font  font = null;
     
     protected HashMap<Integer, String> rankToNameMap = new HashMap<Integer, String>();
     
     protected boolean resizingColumns = false;
     protected Integer expandingRank;
-    protected int mostRecentX = -1;
-    protected int minColWidth = 50;
+    protected int     mostRecentX     = -1;
+    protected int     minColWidth     = 50;
 	
 	/**
 	 * Creates a header appropriate for labelling the columns of the given
@@ -241,11 +243,27 @@ public class TreeViewerListHeader extends JPanel implements ListDataListener
 			++i;
 
 			// draw text
-			Pair<Integer,Integer> textBounds = cellRenderer.getTextBoundsForRank(rank); 
+			//Pair<Integer,Integer> textBounds = cellRenderer.getTextBoundsForRank(rank); 
 			g.setColor(textColor);
-            String clippedName = GraphicsUtils.clipString(g.getFontMetrics(), rankName, textBounds.second-textBounds.first);
-            g.setFont(g.getFont().deriveFont(Font.BOLD));
-			g.drawString(clippedName,textBounds.first,getHeight()/2);
+            
+            Font gFont = g.getFont();
+            if (font == null)
+            {
+                font = gFont.deriveFont(Font.BOLD).deriveFont((float)gFont.getSize());
+            }
+            g.setFont(font);
+            
+            FontMetrics fm = g.getFontMetrics();
+            
+            // Now centers the Column header names
+            int    margin      = 4;
+            String clippedName = GraphicsUtils.clipString(g.getFontMetrics(), rankName, (colBounds.second - colBounds.first) - (2 * margin));
+            int    x           = ((colBounds.second - colBounds.first) - fm.stringWidth(clippedName)) / 2;
+            int    startX      = colBounds.first + x;
+
+            
+			g.drawString(clippedName, startX, getHeight() / 2);
+			g.setFont(gFont);
 		}
         
         g2.setColor(this.getBackground());
