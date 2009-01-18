@@ -36,6 +36,15 @@ public class BGMRecordSetProcessor extends GeoRefRecordSetProcessorBase implemen
     }
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.specify.rstools.GeoRefRecordSetProcessorBase#getGeoRefProviderName()
+     */
+    @Override
+    public String getGeoRefProviderName()
+    {
+        return "BioGeomancer";
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.specify.rstools.GeoRefRecordSetProcessorBase#processDataList(java.util.List, java.util.Properties)
      */
     @SuppressWarnings("unchecked")

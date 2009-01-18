@@ -10,6 +10,7 @@
 package edu.ku.brc.specify.rstools;
 
 import java.math.BigDecimal;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -30,6 +31,7 @@ import edu.ku.brc.services.biogeomancer.GeoCoordDataIFace;
 import edu.ku.brc.services.biogeomancer.GeoCoordProviderListenerIFace;
 import edu.ku.brc.services.biogeomancer.GeoCoordServiceProviderIFace;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.GeoCoordDetail;
@@ -51,12 +53,18 @@ public abstract class GeoRefRecordSetProcessorBase implements RecordSetToolsIFac
     private static final Logger log = Logger.getLogger(GeoRefRecordSetProcessorBase.class);
     
     /**
-     * 
+     * Constructor.
      */
     public GeoRefRecordSetProcessorBase()
     {
         
     }
+    
+    /**
+     * @return the name of the service that was used to Geo-Reference the locality.
+     */
+    public abstract String getGeoRefProviderName();
+    
     
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.exporters.RecordSetExporterIFace#exportList(java.util.List, java.util.Properties)
@@ -310,6 +318,10 @@ public abstract class GeoRefRecordSetProcessorBase implements RecordSetToolsIFac
                                 
                                 try
                                 {
+                                    gcDetail.setGeoRefDetBy(Agent.getUserAgent());
+                                    gcDetail.setGeoRefDetDate(Calendar.getInstance());
+                                    gcDetail.setGeoRefDetRef(getGeoRefProviderName());
+
                                     session.beginTransaction();
                                     session.saveOrUpdate(locality);
                                     session.commit();
