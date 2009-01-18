@@ -16,10 +16,9 @@ import javax.swing.tree.TreePath;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.af.auth.specify.principal.UserPrincipal;
-
 import edu.ku.brc.af.auth.specify.principal.AdminPrincipal;
 import edu.ku.brc.af.auth.specify.principal.GroupPrincipal;
+import edu.ku.brc.af.auth.specify.principal.UserPrincipal;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.expresssearch.ESTermParser;
@@ -152,6 +151,10 @@ public class NavigationTreeMgr
             session.beginTransaction();
             user.getSpPrincipals().remove(group);
             group.getSpecifyUsers().remove(user);
+            
+            // delete agent associated with the discipline
+            deleteUserAgentFromDiscipline(userNode, session);
+            
             session.commit();
             
             // remove child from tree
@@ -177,8 +180,37 @@ public class NavigationTreeMgr
     
     public boolean canDeleteUser(final DefaultMutableTreeNode userNode)
     {
-        // for now, we can always delete a user
-        return true;
+        DataProviderSessionIFace session = null;
+        boolean result = false;
+        try
+        {
+            session = DataProviderFactory.getInstance().createSession();
+            DataModelObjBaseWrapper wrapper = (DataModelObjBaseWrapper) userNode.getUserObject();
+            Object object = wrapper.getDataObj();
+            SpecifyUser user  = (SpecifyUser) object;
+            // We can delete a user if that's the only group it belongs to
+            // For now, to delete a user who belong to more group, the admin must 
+            //  search for the user, remove it from each group it belongs to, 
+            //  and then delete the user from the last group  
+            result = user.getAgents().size() == 1; 
+        } 
+        catch (final Exception e1)
+        {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(NavigationTreeMgr.class, e1);
+            session.rollback();
+            
+            e1.printStackTrace();
+            
+        } finally
+        {
+            if (session != null)
+            {
+                session.close();
+            }
+        }
+
+        return result;
     }
     
     /**
@@ -214,6 +246,10 @@ public class NavigationTreeMgr
                     session.delete(principal);
                 }
             }
+
+            // delete agent associated with the discipline
+            deleteUserAgentFromDiscipline(userNode, session);
+
             // remove user from groups
             user.getSpPrincipals().clear();
             session.saveOrUpdate(user);
@@ -242,6 +278,28 @@ public class NavigationTreeMgr
         }
     }
 
+    private void deleteUserAgentFromDiscipline(final DefaultMutableTreeNode userNode,
+                                               DataProviderSessionIFace session)
+        throws Exception
+    {
+        DataModelObjBaseWrapper wrapper = (DataModelObjBaseWrapper) userNode.getUserObject();
+        Object object = wrapper.getDataObj();
+        SpecifyUser user = (SpecifyUser) object;
+
+        Discipline discipline = session.get(Discipline.class, getParentDiscipline(userNode).getUserGroupScopeId());
+        for (Agent agent : discipline.getAgents())
+        {
+            SpecifyUser agentUser = agent.getSpecifyUser();
+            if (agentUser != null && user.getId().equals(agent.getSpecifyUser().getId()))
+            {
+                // found the agent: delete it
+                session.delete(agent);
+                discipline.getAgents().remove(agent);
+                break; // quit loop, we've already found and deleted the agent we were looking for
+            }
+        }
+    }
+    
     /**
      * Indicates whether we can delete this navigation tree item or not.
      * We can only delete an item if it doesn't have any children
