@@ -38,6 +38,8 @@ import edu.ku.brc.ui.UIHelper;
 
 
 /**
+ * XXX This needs to be moved into a Specify package or change the reference to Agent.
+ * 
  * @author rods
  *
  * @code_status Alpha

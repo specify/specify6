@@ -1729,9 +1729,16 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             ExceptionTracker.getInstance().capture(Specify.class, new Exception("Hello"));
         }
         
+        int baseNumRows = 9;
+        String serverName = AppPreferences.getLocalPrefs().get("login.servers_selected", null);
+        if (serverName != null)
+        {
+            baseNumRows++;
+        }
+        
         CellConstraints cc  = new CellConstraints();
         PanelBuilder    pb  = new PanelBuilder(new FormLayout("p,20px,p,10px,p,10px,p", "f:p:g"));
-        PanelBuilder    ipb = new PanelBuilder(new FormLayout("p,6px,f:p:g", "p,4px,p,4px," + UIHelper.createDuplicateJGoodiesDef("p", "2px", 9)));
+        PanelBuilder    ipb = new PanelBuilder(new FormLayout("p,6px,f:p:g", "p,4px,p,4px," + UIHelper.createDuplicateJGoodiesDef("p", "2px", baseNumRows)));
         
         JLabel iconLabel = new JLabel(IconManager.getIcon("SpecifyLargeIcon"), SwingConstants.CENTER); //$NON-NLS-1$
         //iconLabel.setBorder(BorderFactory.createEmptyBorder(2, 0, 2, 8));
@@ -1766,6 +1773,12 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         String isaNumber = RegisterSpecify.getISANumber();
         ipb.add(UIHelper.createI18NFormLabel("Specify.ISANUM"), cc.xy(1, y));
         ipb.add(UIHelper.createLabel(StringUtils.isNotEmpty(isaNumber) ? isaNumber : ""),cc.xy(3, y)); y += 2;
+        
+        if (serverName != null)
+        {
+            ipb.add(UIHelper.createI18NFormLabel("Specify.SERVER"), cc.xy(1, y));
+            ipb.add(UIHelper.createLabel(StringUtils.isNotEmpty(serverName) ? serverName : ""),cc.xy(3, y)); y += 2;
+        }
         
         if (StringUtils.contains(DBConnection.getInstance().getConnectionStr(), "mysql"))
         {

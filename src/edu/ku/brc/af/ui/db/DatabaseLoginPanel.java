@@ -545,7 +545,7 @@ public class DatabaseLoginPanel extends JTiledPanel
 
         formBuilder.add(extraPanelBlder.getPanel(), cc.xywh(1, y, 3, 1));
 
-        PanelBuilder outerPanel = new PanelBuilder(new FormLayout("p,3dlu,p:g", "p,2dlu,p,2dlu,p"), this); //$NON-NLS-1$ //$NON-NLS-2$
+        PanelBuilder outerPanel = new PanelBuilder(new FormLayout("p,3dlu,p:g", "t:p,2dlu,p,2dlu,p"), this); //$NON-NLS-1$ //$NON-NLS-2$
         JLabel icon; 
         if (StringUtils.isNotEmpty(iconName))
         {
@@ -557,7 +557,7 @@ public class DatabaseLoginPanel extends JTiledPanel
         }
         if (icon != null)
         {
-            icon.setBorder(BorderFactory.createEmptyBorder(2, 10, 2, 2));
+            icon.setBorder(BorderFactory.createEmptyBorder(20, 10, 2, 2));
         }
 
         formBuilder.getPanel().setBorder(BorderFactory.createEmptyBorder(2, 5, 0, 5));
@@ -737,7 +737,7 @@ public class DatabaseLoginPanel extends JTiledPanel
     }
 
     /**
-     * Indicates the login is OK and closes the dialog for the user to conitinue on
+     * Indicates the login is OK and closes the dialog for the user to continue on
      */
     protected void loginOK()
     {
