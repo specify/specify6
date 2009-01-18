@@ -572,7 +572,7 @@ public class NavigationTreeMgr
         
         SpPrincipal group = (SpPrincipal) parentWrp.getDataObj();
         
-        Discipline discipline = getParentOfClass(grpNode, Discipline.class);
+        final Discipline discipline = getParentOfClass(grpNode, Discipline.class);
         
         addGroupToUser(group, userArray, discipline);
         
@@ -795,7 +795,8 @@ public class NavigationTreeMgr
         {
             session = DataProviderFactory.getInstance().createSession();
             session.beginTransaction();
-            addGroupToUser(group, users, discipline, session);
+            Discipline localDiscipline = session.get(Discipline.class, discipline.getUserGroupScopeId()); 
+            addGroupToUser(group, users, localDiscipline, session);
             session.commit();
             
         } catch (final Exception e1)
