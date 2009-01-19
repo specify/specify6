@@ -1359,6 +1359,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     
      /**
       * Asks where the source of the COs should come from.
+      * (This needs to be moved to the BaseTask in specify package)
       * @return the source enum
       */
      public ASK_TYPE askSourceOfColObj()
@@ -1385,6 +1386,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
 
      
      /**
+      * (This needs to be moved to the BaseTask in specify package)
       * @return a RecordSet of newly entered Catalog Numbers
       */
      public RecordSetIFace askForCatNumbersRecordSet()

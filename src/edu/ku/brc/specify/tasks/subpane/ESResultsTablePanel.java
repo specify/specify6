@@ -266,12 +266,10 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         
         if (isEditable)
         {
-            PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g,p", "p"));
-            delRSItems = UIHelper.createI18NButton("RESTBL_DEL_ITEMS");
+            //delRSItems = UIHelper.createI18NButton("RESTBL_DEL_ITEMS");
+            delRSItems = UIHelper.createIconBtn("DelRec", "ESDelRowsTT", null);
             delRSItems.addActionListener(createRemoveItemAL());
             delRSItems.setEnabled(false);
-            pb.add(delRSItems, cc.xy(2,1));
-            tablePane.add(pb.getPanel(), BorderLayout.SOUTH);
             
             table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
                 public void valueChanged(ListSelectionEvent e)
@@ -288,10 +286,14 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         
         moveToRSCmd = new DragSelectedRowsBtn(IconManager.getIcon("Record_Set", IconManager.IconSize.Std16));
         
-        PanelBuilder bottomBar = new PanelBuilder(new FormLayout("4px,p,4px,p,4px,p,f:p:g", "p"));
+        PanelBuilder bottomBar = new PanelBuilder(new FormLayout("4px,p,4px,p,4px,p,"+(delRSItems != null ? "4px,p," : "")+"f:p:g", "p"));
         bottomBar.add(moveToRSCmd,    cc.xy(2,1));
         bottomBar.add(selectAllBtn,   cc.xy(4,1));
         bottomBar.add(deselectAllBtn, cc.xy(6,1));
+        if (delRSItems != null)
+        {
+            bottomBar.add(delRSItems, cc.xy(8,1));
+        }
         botBtnPanel = bottomBar.getPanel();
         
         deselectAllBtn.setEnabled(false);

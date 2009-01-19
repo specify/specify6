@@ -85,6 +85,8 @@ public class AskForNumbersDlg extends CustomDialog
         this.labelKey  = labelKey;
         this.dataClass = dataClass;
         this.fieldName = fieldName;
+        
+        this.helpContext = "AskForCatNumbers";
     }
 
     /* (non-Javadoc)

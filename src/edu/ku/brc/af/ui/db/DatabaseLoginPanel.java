@@ -360,7 +360,7 @@ public class DatabaseLoginPanel extends JTiledPanel
         
         if (masterUsrPwdProvider != null)
         {
-            editKeyInfoBtn = UIHelper.createIconBtn("Key", IconManager.IconSize.Std16, null, new ActionListener()
+            /*editKeyInfoBtn = UIHelper.createIconBtn("Key", IconManager.IconSize.Std16, null, new ActionListener()
             {
                 public void actionPerformed(ActionEvent e)
                 {
@@ -370,7 +370,21 @@ public class DatabaseLoginPanel extends JTiledPanel
                     }
                 }
             });
+            editKeyInfoBtn.setText("Configure Master Key...");
             editKeyInfoBtn.setEnabled(true);
+            */
+            editKeyInfoBtn = UIHelper.createI18NButton("CONFIG_MSTR_KEY");
+            editKeyInfoBtn.setIcon(IconManager.getIcon("Key", IconManager.IconSize.Std20));
+            editKeyInfoBtn.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    if (masterUsrPwdProvider != null)
+                    {
+                        masterUsrPwdProvider.editMasterInfo(username.getText());
+                    }
+                }
+            });
         }
 
         rememberUsernameCBX = createCheckBox(getResourceString("rememberuser")); //$NON-NLS-1$
@@ -513,51 +527,44 @@ public class DatabaseLoginPanel extends JTiledPanel
 
         // Layout the form
 
-        PanelBuilder formBuilder = new PanelBuilder(new FormLayout("p,3dlu,max(220px;p):g", UIHelper.createDuplicateJGoodiesDef("p", "2dlu", 9))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        CellConstraints cc = new CellConstraints();
+        PanelBuilder    formBuilder = new PanelBuilder(new FormLayout("p,3dlu,p:g", "p,2dlu,p,2dlu,p,2dlu,p,2dlu,p")); //$NON-NLS-1$ //$NON-NLS-2$
+        CellConstraints cc          = new CellConstraints();
         formBuilder.addSeparator(getResourceString("LOGINLABEL"), cc.xywh(1, 1, 3, 1)); //$NON-NLS-1$
 
-        int y = 3;
-        y = addLine("username", username, formBuilder, cc, y); //$NON-NLS-1$
-        y = addLine("password", password, formBuilder, cc, y); //$NON-NLS-1$
-        y = addLine("databases", databases, formBuilder, cc, y); //$NON-NLS-1$
-        y = addLine("servers", servers, formBuilder, cc, y); //$NON-NLS-1$
-        y = addLine(null, rememberUsernameCBX, formBuilder, cc, y);
+        addLine("username", username, formBuilder, cc, 3); //$NON-NLS-1$
+        addLine("password", password, formBuilder, cc, 5); //$NON-NLS-1$
+        formBuilder.add(moreBtn,                   cc.xy(1, 7));
         
+        PanelBuilder extraPanelBlder = new PanelBuilder(new FormLayout("p,3dlu,p:g",//$NON-NLS-1$ 
+                UIHelper.createDuplicateJGoodiesDef("p", "2dlu", 9))); //$NON-NLS-1$ //$NON-NLS-2$
+        
+        extraPanel = extraPanelBlder.getPanel();
+        extraPanel.setBorder(BorderFactory.createEmptyBorder(2, 2, 4, 2));
+
+        //extraPanelBlder.addSeparator("", cc.xywh(1, 1, 3, 1)); //$NON-NLS-1$
+        int y = 1;
+        y = addLine(null,        rememberUsernameCBX, extraPanelBlder, cc, y);
+        y = addLine("databases", databases,           extraPanelBlder, cc, y); //$NON-NLS-1$
+        y = addLine("servers",   servers,             extraPanelBlder, cc, y); //$NON-NLS-1$
+        
+        y = addLine("driver", dbDriverCBX, extraPanelBlder, cc, y); //$NON-NLS-1$
         if (editKeyInfoBtn != null)
         {
             PanelBuilder pb = new PanelBuilder(new FormLayout("p,f:p:g", "p"));
             pb.add(editKeyInfoBtn, cc.xy(1, 1));
-            y = addLine(null, pb.getPanel(), formBuilder, cc, y);
+            y = addLine(null, pb.getPanel(), extraPanelBlder, cc, y);
             pb.getPanel().setOpaque(false);
         }
-        
-        PanelBuilder extraPanelBlder = new PanelBuilder(new FormLayout("p,3dlu,max(220px;p):g", "p,2dlu,p,2dlu,p")); //$NON-NLS-1$ //$NON-NLS-2$
-        extraPanel = extraPanelBlder.getPanel();
-        extraPanel.setBorder(BorderFactory.createEmptyBorder(2, 2, 4, 2));
-
-        formBuilder.add(moreBtn, cc.xy(1, y));
-        y += 2;
-
-        extraPanelBlder.addSeparator(getResourceString("extratitle"), cc.xywh(1, 1, 3, 1)); //$NON-NLS-1$
-        addLine("driver", dbDriverCBX, extraPanelBlder, cc, 3); //$NON-NLS-1$
         extraPanel.setVisible(false);
 
-        formBuilder.add(extraPanelBlder.getPanel(), cc.xywh(1, y, 3, 1));
+        formBuilder.add(extraPanelBlder.getPanel(), cc.xywh(1, 9, 3, 1));
 
         PanelBuilder outerPanel = new PanelBuilder(new FormLayout("p,3dlu,p:g", "t:p,2dlu,p,2dlu,p"), this); //$NON-NLS-1$ //$NON-NLS-2$
-        JLabel icon; 
-        if (StringUtils.isNotEmpty(iconName))
-        {
-            icon = new JLabel(IconManager.getIcon(iconName));
-        }
-        else
-        {
-            icon = null;
-        }
+        JLabel icon = StringUtils.isNotEmpty(iconName) ? new JLabel(IconManager.getIcon(iconName)) : null;
+        
         if (icon != null)
         {
-            icon.setBorder(BorderFactory.createEmptyBorder(20, 10, 2, 2));
+            icon.setBorder(BorderFactory.createEmptyBorder(10, 10, 2, 2));
         }
 
         formBuilder.getPanel().setBorder(BorderFactory.createEmptyBorder(2, 5, 0, 5));
@@ -568,8 +575,8 @@ public class DatabaseLoginPanel extends JTiledPanel
         }
         JPanel btnPanel = ButtonBarFactory.buildOKCancelHelpBar(loginBtn, cancelBtn, helpBtn);
         outerPanel.add(formBuilder.getPanel(), cc.xy(3, 1));
-        outerPanel.add(btnPanel, cc.xywh(1, 3, 3, 1));
-        outerPanel.add(statusBar, cc.xywh(1, 5, 3, 1));
+        outerPanel.add(btnPanel,               cc.xywh(1, 3, 3, 1));
+        outerPanel.add(statusBar,              cc.xywh(1, 5, 3, 1));
         
         formBuilder.getPanel().setOpaque(false);
         outerPanel.getPanel().setOpaque(false);

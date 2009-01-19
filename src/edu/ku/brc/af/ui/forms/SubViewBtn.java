@@ -375,6 +375,8 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
             
         };
         
+        dlg.setHelpContext("SUBVIEW_FORM_HELP");
+        
         dlg.setCancelLabel(closeBtnTitle);
         frame     = dlg;
         multiView = frame.getMultiView();

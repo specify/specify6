@@ -303,6 +303,7 @@ public class UserAndMasterPasswordMgr
             dlg.setOkLabel(getResourceString("CONT"));
             dlg.setCancelLabel(getResourceString("BACK"));
         }
+        dlg.setHelpContext("MASTERPWD_MAIN");
         dlg.createUI();
         dlg.getOkBtn().setEnabled(false);
         urlLbl.setEnabled(false);  
@@ -621,6 +622,7 @@ public class UserAndMasterPasswordMgr
                 true,
                 MultiView.HIDE_SAVE_BTN | MultiView.DONT_ADD_ALL_ALTVIEWS | MultiView.USE_ONLY_CREATION_MODE |
                 MultiView.IS_EDITTING);
+        dlg.setHelpContext("CHANGE_PWD");
         dlg.setWhichBtns(CustomDialog.OK_BTN | CustomDialog.CANCEL_BTN);
         
         dlg.setFormAdjuster(new FormPane.FormPaneAdjusterIFace() {

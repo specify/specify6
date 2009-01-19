@@ -2099,6 +2099,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         editorDlg.setData(AppPreferences.getLocalPrefs());
         editorDlg.getMultiView().preValidate();
         editorDlg.setModal(true);
+        editorDlg.setHelpContext("WB_LABEL_PROPS");
         editorDlg.setVisible(true);
 
         if (!editorDlg.isCancelled())

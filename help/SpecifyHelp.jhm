@@ -15,12 +15,17 @@
 	
     <mapID target="specify"             url="http://www.specifysoftware.org" />
 	<mapID target="login"               url="SpecifyHelp/Login.html" />
-	<mapID target="SetupSpecifyDB"      url="SpecifyHelp/SetupSpecifyDB.html" />
+    <mapID target="SetupSpecifyDB"      url="SpecifyHelp/SetupSpecifyDB.html" />
+    <mapID target="MASTERPWD_MAIN"      url="SpecifyHelp/SetupSpecifyDB.html" />
+    <mapID target="MASTERPWD_GEN"       url="SpecifyHelp/SetupSpecifyDB.html" />
+    <mapID target="CHANGE_PWD"          url="SpecifyHelp/SetupSpecifyDB.html" />
+	
 		
 	<!-- Data Entry -->
 	<mapID target="Data_Entry"          url="SpecifyHelp/Data_Entry/Data_Entry.html" />
 	<mapID target="DataEntryConfigure"  url="SpecifyHelp/Data_Entry/DataEntryConfigure.html" />
-	<mapID target="SYNONIMIZE_NODE"     url="SpecifyHelp/Data_Entry/SynonimizeTreeNode.html" />
+    <mapID target="SYNONIMIZE_NODE"     url="SpecifyHelp/Data_Entry/SynonimizeTreeNode.html" />
+    <mapID target="SUBVIEW_FORM_HELP"     url="SpecifyHelp/Data_Entry/Data_Entry.html" />
 	
 	<!-- Query Builder -->
 	<mapID target="Query"                url="SpecifyHelp/QueryBuilder/QueryBuilder.html" />
@@ -34,7 +39,9 @@
 	<mapID target="InteractionsConfig"  url="SpecifyHelp/Interactions/InteractionsConfig.html" />
 	
 	<!-- Loans -->
-	<mapID target="LOAN_REVIEW"         url="SpecifyHelp/Interactions/LoanReview.html"/>
+    <mapID target="LOAN_REVIEW"         url="SpecifyHelp/Interactions/LoanReview.html"/>
+    <mapID target="AskForCatNumbers"    url="SpecifyHelp/Interactions/Interactions.html"/>
+	
 	
 	
 	<!-- Express Search Help -->

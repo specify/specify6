@@ -2310,7 +2310,7 @@ public class FormViewObj implements Viewable,
                 tryAgain = false;
                 dObj     = dataObj;
                 saveState = SAVE_STATE.StaleRecovery;
-                e.printStackTrace();
+                //e.printStackTrace();
                 
             } catch (ConstraintViolationException e)
             {
