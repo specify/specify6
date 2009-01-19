@@ -59,6 +59,9 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener
     protected JTextField stateField;
     protected JTextField countryField;
     
+    /**
+     * Constructor.
+     */
     public GeoLocateResultsDisplay()
     {
         super();

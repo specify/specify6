@@ -22,6 +22,13 @@ import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
+/**
+ * @author jds
+ *
+ * @code_status Alpha
+ *
+ *
+ */
 public class GeoLocateResultsChooser extends CustomDialog
 {
     protected GeoLocateResultsDisplay resultsDisplayPanel = new GeoLocateResultsDisplay();

@@ -28,7 +28,10 @@ public class GeoLocate
         boolean findWaterbody = false;
         
         // process result here
-        GeorefResultSet resultSet = port.georef2(country, state, county, localityString, hwyX, findWaterbody);
+        GeorefResultSet resultSet = port.georef2(country == null ? "" : country, 
+                                                 state   == null ? "" : state, 
+                                                 county  == null ? "" : county, 
+                                                 localityString, hwyX, findWaterbody);
         
         return resultSet;
     }

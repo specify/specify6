@@ -118,6 +118,10 @@ public class GeoCoordGeoLocateProvider implements GeoCoordServiceProviderIFace
                     String state   = item.getState();
                     String county  = item.getCounty();
                     
+                    country = country == null ? "" : country;
+                    state   = state   == null ? "" : state;
+                    county  = county  == null ? "" : county;
+                    
                     // make the web service request
                     log.info("Making call to GEOLocate web service: " + localityNameStr); //$NON-NLS-1$
                     final GeorefResultSet glResults = GeoLocate.getGeoLocateResults(country, state, county, localityNameStr);
