@@ -8,6 +8,7 @@ package edu.ku.brc.af.ui.weblink;
 
 import static edu.ku.brc.ui.UIHelper.createButton;
 import static edu.ku.brc.ui.UIHelper.createDuplicateJGoodiesDef;
+import static edu.ku.brc.ui.UIHelper.createFormLabel;
 import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIHelper.createTextField;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
@@ -21,6 +22,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Hashtable;
 import java.util.Properties;
+import java.util.Vector;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -206,7 +208,6 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
         catch (Exception e1)
         {
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WebLinkButton.class, e1);
             log.error("Failed to build URL", e1); //$NON-NLS-1$
             return;
         }
@@ -227,7 +228,6 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
         catch (URISyntaxException e)
         {
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WebLinkButton.class, e);
             log.error("Bad URL syntax: " + urlString, e); //$NON-NLS-1$
             return;
         }
@@ -240,7 +240,6 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
         catch (Exception e)
         {
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WebLinkButton.class, e);
             UIRegistry.showLocalizedError("WEBLNK_BAD", "\n"+uri);
             log.error("Failed to open URL: " + uri.toString(), e); //$NON-NLS-1$
             return;
@@ -301,7 +300,7 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
                         {
                             label = arg.getName();
                         }
-                        pb.add(createLabel(label+":", SwingConstants.RIGHT), cc.xy(1, y));
+                        pb.add(createFormLabel(label), cc.xy(1, y));
                         pb.add(txtField, cc.xy(3, y));
                         y += 2;
                     }
@@ -343,6 +342,8 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
 
             int possibleValues = 0;
             int numValues      = 0;
+            
+            Vector<String> missingList = null; // List of missing args
             
             Hashtable<String, String> backupPrompt = new Hashtable<String, String>();
             for (WebLinkDefArg arg : webLinkDef.getArgs())
@@ -391,6 +392,13 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
                     {
                         valueHash.put(name, textFieldValue);
                         numValues++;
+                    } else
+                    {
+                        if (missingList == null)
+                        {
+                            missingList = new Vector<String>();
+                        }
+                        missingList.add(name);
                     }
                 } else
                 {
@@ -400,6 +408,16 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
             
             if (possibleValues != numValues)
             {
+                if (!forToolTip)
+                {
+                    StringBuilder sb = new StringBuilder();
+                    for (String name : missingList)
+                    {
+                        sb.append(name);
+                        sb.append("\n");
+                    }
+                    UIRegistry.showLocalizedError("WEBLNK_MIS_FLD", "\n"+sb.toString());
+                }
                 return null;
             }
             
