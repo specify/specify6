@@ -108,7 +108,7 @@ public class AdminInfoSubPanelWrapper
 	    boolean hasChanged = false;
 		if (displayPanel instanceof ViewBasedDisplayPanel)
 		{
-			ViewBasedDisplayPanel panel = (ViewBasedDisplayPanel) displayPanel;
+            ViewBasedDisplayPanel panel = (ViewBasedDisplayPanel) displayPanel;
             panel.setData(null);
             panel.setData(dataObj);
 			
@@ -137,19 +137,17 @@ public class AdminInfoSubPanelWrapper
 			if (firstPrincipal != null && permissionEditors.size() > 0)
 			{
 			    String userType = null;
-			    DataProviderSessionIFace session = null;
+	            DataProviderSessionIFace session = null;
 		        try
 		        {
 		            session  = DataProviderFactory.getInstance().createSession();
-		            // XXX: performance hit: all principal "family" is loaded one by one in separate queries
-		            // studying a way to avoid that...
-		            session.update(firstPrincipal);
+		            session.attach(firstPrincipal);
 		            userType = firstPrincipal.getPermissions().size() == 0 ? (user != null ? user.getUserType() : null) : null;
 		            
 		        } catch (Exception ex)
 		        {
-    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AdminInfoSubPanelWrapper.class, ex);
+		            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+		            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AdminInfoSubPanelWrapper.class, ex);
 		            ex.printStackTrace();
 		            session.rollback();
 		            
