@@ -34,6 +34,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.exceptions.ExceptionItem;
@@ -108,7 +109,8 @@ public class SpecifyExceptionTracker extends ExceptionTracker
         
         stackTraceTA.setText(baos.toString());
         
-        Taskable currTask = TaskMgr.getInstance().getCurrentTask();
+        
+        Taskable currTask = SubPaneMgr.getInstance().getCurrentSubPane().getTask();
         taskCBX.setSelectedItem(currTask != null ? currTask : TaskMgr.getDefaultTaskable());
         
         pb.setDefaultDialogBorder();

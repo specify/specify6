@@ -321,6 +321,7 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
            LatLonUI latLonUI = parent.getCompById(llId);
            if (latLonUI != null)
            {
+               latLonUI.resetUI();
                String latStr = LatLonConverter.ensureFormattedString(lat1, null, LatLonConverter.FORMAT.DDDDDD, LatLonConverter.LATLON.Latitude);
                String lonStr = LatLonConverter.ensureFormattedString(lon1, null, LatLonConverter.FORMAT.DDDDDD, LatLonConverter.LATLON.Longitude);
                latLonUI.setLatLon(latStr, lonStr, null, null);

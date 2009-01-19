@@ -187,8 +187,6 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
             }
             catch (StaleStateException sse)
             {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(HibernateDataProviderSession.class, sse);
                 throw new StaleObjectException(sse);
             }
             return mergedObj;
@@ -322,14 +320,10 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
              
         } catch (SQLException ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(HibernateDataProviderSession.class, ex);
             reconnect = true;
             
         } catch (JDBCConnectionException ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(HibernateDataProviderSession.class, ex);
             reconnect = true;
         } finally
         {
@@ -346,8 +340,6 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
                 
             } catch (Exception ex)
             {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(HibernateDataProviderSession.class, ex);
                 //ignore
             }
         }
@@ -606,8 +598,6 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
                 
             } catch (StaleObjectStateException soe)
             {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(HibernateDataProviderSession.class, soe);
                 throw new StaleObjectException(soe);
             }
         } else

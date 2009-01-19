@@ -190,8 +190,6 @@ public class GeoCoordGeoLocateProvider implements GeoCoordServiceProviderIFace
                     }
                     catch (InterruptedException e)
                     {
-                        UsageTracker.incrHandledUsageCount();
-                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(GeoCoordGeoLocateProvider.class, e);
                         // ignore this query since results were not available
                         log.warn("Process cancelled by user",e); //$NON-NLS-1$
                         mapGrabExecServ.shutdown();

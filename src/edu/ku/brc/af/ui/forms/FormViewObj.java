@@ -2305,8 +2305,6 @@ public class FormViewObj implements Viewable,
                 
             } catch (StaleObjectException e) // was StaleObjectStateException
             {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormViewObj.class, e);
                 session.rollback();
                 recoverFromStaleObject("UPDATE_DATA_STALE", null);
                 tryAgain = false;
