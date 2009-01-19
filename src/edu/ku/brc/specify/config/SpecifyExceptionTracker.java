@@ -108,7 +108,8 @@ public class SpecifyExceptionTracker extends ExceptionTracker
         
         stackTraceTA.setText(baos.toString());
         
-        taskCBX.setSelectedItem(TaskMgr.getDefaultTaskable());
+        Taskable currTask = TaskMgr.getInstance().getCurrentTask();
+        taskCBX.setSelectedItem(currTask != null ? currTask : TaskMgr.getDefaultTaskable());
         
         pb.setDefaultDialogBorder();
         CustomDialog dlg = new CustomDialog((Frame)null, "Handled Exception", true, pb.getPanel())

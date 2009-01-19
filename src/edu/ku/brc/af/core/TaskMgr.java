@@ -79,6 +79,7 @@ public class TaskMgr implements CommandListener
     protected Hashtable<String, MenuElement> menuHash       = new Hashtable<String, MenuElement>();
     protected Element                        commandDOMRoot = null;
     protected Taskable                       defaultTask    = null;
+    protected Taskable                       currentTask    = null;
     
     protected Hashtable<String, Taskable>    tasks          = new Hashtable<String, Taskable>();
     protected Hashtable<String, Class<?>>    uiPluginHash   = new Hashtable<String,  Class<?>>();
@@ -113,6 +114,14 @@ public class TaskMgr implements CommandListener
     }
     
     /**
+     * @return the currentTask
+     */
+    public Taskable getCurrentTask()
+    {
+        return currentTask;
+    }
+
+    /**
      * Returns the number of tasks that provide UI.
      * @return Returns the number of tasks that provide UI.
      */
@@ -129,12 +138,15 @@ public class TaskMgr implements CommandListener
         if (instance.defaultTask != null)
         {
             instance.defaultTask.requestContext();
+            instance.currentTask = instance.defaultTask;
+            
         } else
         {
             Taskable startUpTask = ContextMgr.getTaskByName(getResourceString("TaskMgr.STARTUP")); //$NON-NLS-1$
             if (startUpTask != null)
             {
                 startUpTask.requestContext();
+                instance.currentTask = startUpTask;
                 
             } else
             {
@@ -142,6 +154,7 @@ public class TaskMgr implements CommandListener
                 if (arbitraryTaskable != null)
                 {
                     arbitraryTaskable.requestContext();
+                    instance.currentTask = startUpTask;
                 }
             }
             
