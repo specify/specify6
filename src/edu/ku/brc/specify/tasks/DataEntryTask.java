@@ -1004,12 +1004,14 @@ public class DataEntryTask extends BaseTask
         UsageTracker.incrUsageCount("DE.SHOW.MISC");
 
         DataEntryView deView = null;
-        if (miscViews.size() == 1)
-        {
-            deView = miscViews.get(0);
-            
-        } else
-        {
+        // Bug 6433
+        // I don't like commenting this out because it is good for usability.
+        //if (miscViews.size() == 1)
+        //{
+        //    deView = miscViews.get(0);
+        //    
+        //} else
+        //{
             ToggleButtonChooserDlg<DataEntryView> dlg = new ToggleButtonChooserDlg<DataEntryView>((Frame)UIRegistry.getTopWindow(), 
                     "DET_CHOOSE_TITLE", availMiscViews, ToggleButtonChooserPanel.Type.RadioButton);
             dlg.setUseScrollPane(true);
@@ -1018,7 +1020,7 @@ public class DataEntryTask extends BaseTask
             {
                 deView = dlg.getSelectedObject();
             }
-        }
+        //}
         
         if (deView != null)
         {
@@ -1162,7 +1164,7 @@ public class DataEntryTask extends BaseTask
                 "DataEntryConfigure",
                 "DET_CONFIGURE_VIEWS",
                 "DET_STANDARD",
-                "DET_MISC",
+                "DET_MISC_FORMS",
                 "DET_MOVE_TO_MISC_TT",
                 "DET_MOVE_TO_STD_TT");
         dlg.setVisible(true);
