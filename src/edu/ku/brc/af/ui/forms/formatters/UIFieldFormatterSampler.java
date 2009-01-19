@@ -94,8 +94,11 @@ public class UIFieldFormatterSampler implements SQLExecutionListener
 	protected void processSamples()
 	{
 		String sql = getSql();
-		SQLExecutionProcessor sqlProc = new SQLExecutionProcessor(this, sql);
-		sqlProc.start();
+		if (sql != null)
+		{
+		    SQLExecutionProcessor sqlProc = new SQLExecutionProcessor(this, sql);
+		    sqlProc.start();
+		}
 	}
 	
 	public void exectionDone(final SQLExecutionProcessor process, final java.sql.ResultSet rs)
@@ -130,15 +133,21 @@ public class UIFieldFormatterSampler implements SQLExecutionListener
 	
 	protected String getSql()
 	{
-		String tableName = fieldInfo.getTableInfo().getName().toLowerCase();
-		String fieldName = fieldInfo.getName();
-		String joins	 = tableName.equals("collectionobject")? "" : getJoins();
-		String sql = "SELECT " + tableName + "." + fieldName + " " + 
-					"FROM " + tableName + joins + " " +
-					"WHERE collectionobject.CollectionMemberID = COLMEMID";
-		sql = QueryAdjusterForDomain.getInstance().adjustSQL(sql);
-		//System.out.println(sql + "\n");
-		return sql;
+	    DBTableInfo tblInfo   = fieldInfo.getTableInfo();
+		String      tableName = tblInfo.getName();
+		if (tblInfo != null)
+		{
+		    DBFieldInfo colMemIdField = tblInfo.getFieldByColumnName("CollectionMemberID");
+    		String      fieldName     = fieldInfo.getName();
+    		String      joins	      = tableName.equals("collectionobject")? "" : getJoins();
+    		String      sql           = "SELECT " + tableName + "." + fieldName + " " + 
+    					                "FROM " + tableName + joins + " " +
+    					                (colMemIdField != null ? ("WHERE " + tableName + ".CollectionMemberID  = COLMEMID") : "");
+    		sql = QueryAdjusterForDomain.getInstance().adjustSQL(sql);
+    		//System.out.println(sql + "\n");
+    		return sql;
+		}
+		return null;
 	}
 	
 	protected String getJoins()
