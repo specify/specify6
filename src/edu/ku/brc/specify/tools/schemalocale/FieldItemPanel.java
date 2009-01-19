@@ -129,7 +129,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
     
     // LocalizableItemIFace Fields
     protected JList            fieldsList;
-    protected JTextArea        fieldDescText = createTextArea(5, 60);
+    protected JTextArea        fieldDescText = createTextArea(5, 40);
     protected JTextField       fieldNameText = createTextField();
     
     protected JLabel           fieldDescLbl;
@@ -234,7 +234,6 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
             }
         });
         
-        fieldDescText.setLineWrap(true);
         fieldDescText.addKeyListener(new LengthWatcher(255));
         // setting min and pref sizes to some bogus values so that textarea shrinks with dialog
         fieldNameText.addKeyListener(new LengthWatcher(64));
@@ -265,7 +264,6 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
         JScrollPane sp = new JScrollPane(fieldDescText, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         pb.add(sp,   cc.xywh(5, y, 6, 1));   y += 2;
         fieldDescText.setLineWrap(true);
-        fieldDescText.setRows(4);
         fieldDescText.setWrapStyleWord(true);
         
         if (isDBSchema)

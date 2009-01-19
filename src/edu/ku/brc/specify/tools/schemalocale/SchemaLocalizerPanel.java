@@ -16,7 +16,6 @@ import static edu.ku.brc.ui.UIHelper.createTextArea;
 import static edu.ku.brc.ui.UIHelper.createTextField;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
-import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -116,7 +115,7 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
     
     // LocalizableContainerIFace Tables
     protected JList                     tablesList;
-    protected JTextArea                 tblDescText   = createTextArea(5, 60);
+    protected JTextArea                 tblDescText   = createTextArea(5, 40);
     protected JTextField                tblNameText   = createTextField();
     protected JLabel                    tblDescLbl;
     protected JLabel                    tblNameLbl;

@@ -233,12 +233,12 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
         
         schemaLocPanel.getContainerList().setEnabled(true);
         
-        ImageIcon helpIcon = IconManager.getIcon("AppIcon",IconSize.Std16); //$NON-NLS-1$
-        HelpMgr.initializeHelp("SpecifyHelp", helpIcon.getImage()); //$NON-NLS-1$
-
         AppPreferences localPrefs = AppPreferences.getLocalPrefs();
         localPrefs.setDirPath(UIRegistry.getAppDataDir());
         
+        ImageIcon helpIcon = IconManager.getIcon("AppIcon",IconSize.Std16); //$NON-NLS-1$
+        HelpMgr.initializeHelp("SpecifyHelp", helpIcon.getImage()); //$NON-NLS-1$
+
         AppPrefsCache.setUseLocalOnly(true);
         SpecifyAppPrefs.loadColorAndFormatPrefs();
         
