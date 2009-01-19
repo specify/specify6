@@ -49,8 +49,8 @@ json-lib                                2.2.1
 ezmorph                                 1.0.4
 
 
-jfreechart								1.0.6
-	jcommon								1.0.12 dist w/ jfreechart
+jfreechart								1.0.12
+	jcommon								1.0.15 dist w/ jfreechart
 
 mail (JavaMail from Sun)				1.4
 jasper reports							3.0.0
