@@ -253,7 +253,7 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
                 
                 tabbedPane.removeAll();
                 cardSubPanes[i].add(panel1, BorderLayout.CENTER);
-                cardPanel.add(formats[i], cardSubPanes[i]);
+                cardPanel.add(formatLabels[i], cardSubPanes[i]);
                 
                 /*if (locality != null)
                 {
@@ -499,6 +499,7 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
         } else
         {
             JTabbedPane tabbedPane = (JTabbedPane)latLonPanes[formInx];
+            tabbedPane.removeAll();
             cardSubPanes[formInx].add(tabbedPane, BorderLayout.CENTER);
             panel.setBorder(null);
             
@@ -538,12 +539,16 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
         return LatLonUIIFace.LatLonType.LLPoint;
     }
     
-    //--------------------------------------------------------
-    // GetSetValueIFace Interface
-    //--------------------------------------------------------
+    /**
+     * Sets the input panel back to DDDDDD and to point.
+     */
+    public void resetUI()
+    {
+        botBtns[0].doClick();
+        formatSelector.setSelectedIndex(0);
+    }
     
     /**
-     * @param srcFormat
      * @param latStr1
      * @param lonStr1
      * @param latStr2
@@ -569,6 +574,11 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
             stateChanged(new ChangeEvent(this));
         }
     }
+    
+    //--------------------------------------------------------
+    // GetSetValueIFace Interface
+    //--------------------------------------------------------
+    
     
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.UIPluginBase#setValue(java.lang.Object, java.lang.String)
