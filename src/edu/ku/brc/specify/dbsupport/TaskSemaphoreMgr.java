@@ -9,7 +9,7 @@
  */
 package edu.ku.brc.specify.dbsupport;
 
-import static edu.ku.brc.ui.UIRegistry.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.*;
 
 import java.net.InetAddress;
 import java.sql.Timestamp;
@@ -269,12 +269,21 @@ public class TaskSemaphoreMgr
                         String      currMachineName = InetAddress.getLocalHost().toString();
                         String      dbMachineName   = semaphore.getMachineName();
                         
+                        //System.err.println("["+dbMachineName+"]["+currMachineName+"]["+user.getId()+"]["+semaphore.getOwner().getId()+"]");
                         if (StringUtils.isNotEmpty(dbMachineName) && StringUtils.isNotEmpty(currMachineName) && currMachineName.equals(dbMachineName) &&
                             semaphore.getOwner() != null && user != null && user.getId().equals(semaphore.getOwner().getId()))
                         {
-                            UIRegistry.showLocalizedError("SpTaskSemaphore.IN_USE_BY_YOU", title);
-                            return USER_ACTION.Cancel;
+                            int      options      = JOptionPane.YES_NO_OPTION;
+                            Object[] optionLabels = new String[] { getResourceString("SpTaskSemaphore.VIEWMODE"),  //$NON-NLS-1$
+                                                                   getResourceString("CANCEL")//$NON-NLS-1$
+                                                                 };
+                            int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
+                                    getLocalizedMessage("SpTaskSemaphore.IN_USE_BY_YOU", title),
+                                    getResourceString("SpTaskSemaphore.IN_USE_TITLE"),  //$NON-NLS-1$
+                                    options,
+                                    JOptionPane.QUESTION_MESSAGE, null, optionLabels, 0);
                             
+                            return userChoice == JOptionPane.NO_OPTION ? USER_ACTION.Cancel : USER_ACTION.ViewMode; // CHECKED
                         }
                         
                         String userStr = prevLockedBy != null ? prevLockedBy : semaphore.getOwner().getIdentityTitle();
@@ -437,7 +446,7 @@ public class TaskSemaphoreMgr
         SpecifyUser user = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
         String sqlStr = String.format("SELECT count(*) FROM sptasksemaphore WHERE TaskName = '%s' AND Scope = %d AND OwnerID = %d AND IsLocked <> 0", 
                                       name, scope.ordinal(), user.getId());
-        //System.err.println(sqlStr+"  ["+BasicSQLUtils.getCount(sqlStr)+"]");
+        System.err.println(sqlStr+"  ["+BasicSQLUtils.getCount(sqlStr)+"]");
         return BasicSQLUtils.getCount(sqlStr) > 0;
     }
     
