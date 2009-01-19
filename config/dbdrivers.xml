@@ -12,7 +12,7 @@ There are three types of connection strings:
 -->
 <databases>
     <db name="MySQL" driver="com.mysql.jdbc.Driver" dialect="org.hibernate.dialect.MySQLDialect">
-        <connection type="open">jdbc:mysql://SERVER/DATABASE</connection>
+        <connection type="open">jdbc:mysql://SERVER/DATABASE?autoReconnect=true</connection>
     </db>
     
     <!-- 
