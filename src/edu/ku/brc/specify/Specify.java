@@ -679,6 +679,9 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
      */
     protected void setAppIcon(final String imgEncoded)
     {
+        String appIconName      = "AppIcon";
+        String innerAppIconName = "InnerAppIcon";
+        
         ImageIcon appImgIcon = null;
         if (StringUtils.isNotEmpty(imgEncoded))
         {
@@ -688,13 +691,15 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                 appIcon.setIcon(appImgIcon);
                 CustomDialog.setAppIcon(appImgIcon);
                 CustomFrame.setAppIcon(appImgIcon);
+                IconManager.register(innerAppIconName, appImgIcon, null, IconManager.IconSize.Std32);
                 return;
             }
         }
-        appImgIcon = IconManager.getImage("AppIcon", IconManager.IconSize.Std32); //$NON-NLS-1$
+        appImgIcon = IconManager.getImage(appIconName, IconManager.IconSize.Std32); //$NON-NLS-1$
         appIcon.setIcon(appImgIcon);
         CustomDialog.setAppIcon(appImgIcon);
         CustomFrame.setAppIcon(appImgIcon);
+        IconManager.register(innerAppIconName, appImgIcon, null, IconManager.IconSize.Std32);
     }
 
     /**

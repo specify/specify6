@@ -45,6 +45,7 @@ import edu.ku.brc.af.ui.forms.validation.ValComboBox;
 import edu.ku.brc.helpers.ImageFilter;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.ui.GraphicsUtils;
+import edu.ku.brc.ui.IconEntry;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.UIHelper;
@@ -65,6 +66,8 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
     protected static final String iconPrefName            = "ui.formatting.user_icon_path"; //$NON-NLS-1$
     protected static final String iconImagePrefName       = "ui.formatting.user_icon_image"; //$NON-NLS-1$
     protected static final String iconImageDiscipPrefName = "ui.formatting.disciplineicon"; //$NON-NLS-1$
+    
+    protected final String INNER_APPICON_NAME = "InnerAppIcon";
     
     protected final int BASE_FONT_SIZE = 6;
 
@@ -351,14 +354,14 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
         final JLabel  appLabel        = form.getCompById("appIcon"); //$NON-NLS-1$
         final JButton resetDefFontBtn = form.getCompById("ResetDefFontBtn"); //$NON-NLS-1$
         
-        String    imgEncoded = AppPreferences.getRemote().get(iconImagePrefName, ""); //$NON-NLS-1$
-        ImageIcon appImgIcon = null;
+        String    imgEncoded      = AppPreferences.getRemote().get(iconImagePrefName, ""); //$NON-NLS-1$
+        ImageIcon innerAppImgIcon = null;
         if (StringUtils.isNotEmpty(imgEncoded))
         {
-            appImgIcon = GraphicsUtils.uudecodeImage("", imgEncoded); //$NON-NLS-1$
-            if (appImgIcon != null && appImgIcon.getIconWidth() != 32 || appImgIcon.getIconHeight() != 32)
+            innerAppImgIcon = GraphicsUtils.uudecodeImage("", imgEncoded); //$NON-NLS-1$
+            if (innerAppImgIcon != null && innerAppImgIcon.getIconWidth() != 32 || innerAppImgIcon.getIconHeight() != 32)
             {
-                appImgIcon = null;
+                innerAppImgIcon = null;
                 clearIconBtn.setEnabled(false);
             } else
             {
@@ -366,15 +369,15 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
             }
         }
         
-        if (appImgIcon == null)
+        if (innerAppImgIcon == null)
         {
-            appImgIcon = IconManager.getIcon("AppIcon"); //$NON-NLS-1$
+            innerAppImgIcon = IconManager.getIcon("AppIcon"); //$NON-NLS-1$
             clearIconBtn.setEnabled(false);
         } else
         {
             clearIconBtn.setEnabled(true);
         }
-        appLabel.setIcon(appImgIcon);
+        appLabel.setIcon(innerAppImgIcon);
         
         getIconBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
@@ -386,6 +389,14 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
         clearIconBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
+                ImageIcon appIcon = IconManager.getIcon("AppIcon");
+                IconEntry entry = IconManager.getIconEntryByName(INNER_APPICON_NAME);
+                entry.setIcon(appIcon);
+                if (entry.getIcons().get(IconManager.IconSize.Std32) != null)
+                {
+                    entry.getIcons().get(IconManager.IconSize.Std32).setImageIcon(appIcon);
+                }
+                
                 appLabel.setIcon(IconManager.getIcon("AppIcon")); //$NON-NLS-1$
                 clearIconBtn.setEnabled(false);
                 AppPreferences.getRemote().remove(iconImagePrefName);
@@ -464,19 +475,30 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
                     }
                 }
 
+                ImageIcon appIcon;
                 if (newIcon != null)
                 {
                     appLabel.setIcon(newIcon);
                     clearIconBtn.setEnabled(true);
                     String imgBufStr = GraphicsUtils.uuencodeImage(newAppIconName, newIcon);
                     AppPreferences.getRemote().put(iconImagePrefName, imgBufStr);
+                    appIcon = newIcon;
 
                 } else
                 {
-                    appLabel.setIcon(IconManager.getIcon("AppIcon")); //$NON-NLS-1$
+                    appIcon = IconManager.getIcon("AppIcon");
+                    appLabel.setIcon(appIcon); //$NON-NLS-1$
                     clearIconBtn.setEnabled(false);
                     AppPreferences.getRemote().remove(iconImagePrefName);
                 }
+                
+                IconEntry entry = IconManager.getIconEntryByName(INNER_APPICON_NAME);
+                entry.setIcon(appIcon);
+                if (entry.getIcons().get(IconManager.IconSize.Std32) != null)
+                {
+                    entry.getIcons().get(IconManager.IconSize.Std32).setImageIcon(appIcon);
+                }
+
                 //((FormViewObj)form).getMVParent().set
                 form.getValidator().dataChanged(null, null, null);
             }

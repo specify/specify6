@@ -106,7 +106,8 @@ public class StartUpTask extends edu.ku.brc.af.tasks.StartUpTask
     public List<ToolBarItemDesc> getToolBarItems()
     {
         toolbarItems = new Vector<ToolBarItemDesc>();
-        welcomeBtn = createToolbarButton(getResourceString(STARTUP), "AppIcon", null);
+        welcomeBtn = createToolbarButton(getResourceString(STARTUP), "InnerAppIcon", null);
+        
         welcomeBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e)
@@ -155,13 +156,7 @@ public class StartUpTask extends edu.ku.brc.af.tasks.StartUpTask
                     toolBar.repaint();
                 }
                 
-                ImageIcon icon = null;
-                String imgBufStr = AppPreferences.getRemote().get("ui.formatting.user_icon_image", null);
-                if (imgBufStr != null)
-                {
-                    icon = GraphicsUtils.uudecodeImage(null, imgBufStr);
-                }
-                welcomeBtn.setIcon(icon != null ? icon : IconManager.getIcon("AppIcon",IconManager.STD_ICON_SIZE));
+                welcomeBtn.setIcon(IconManager.getIcon("InnerAppIcon", IconManager.IconSize.Std24));
             }
         }
     }

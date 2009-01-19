@@ -283,6 +283,14 @@ public class IconEntry
         }
 
         /**
+         * @param iseImageIcon the iseImageIcon to set
+         */
+        public void setImageIcon(ImageIcon iseImageIcon)
+        {
+            this.iseImageIcon = iseImageIcon;
+        }
+
+        /**
          * @return the size
          */
         public IconSize getSize()
