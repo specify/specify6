@@ -10,11 +10,8 @@ import static edu.ku.brc.ui.UIHelper.createI18NButton;
 import static edu.ku.brc.ui.UIHelper.createI18NFormLabel;
 import static edu.ku.brc.ui.UIHelper.createPasswordField;
 import static edu.ku.brc.ui.UIHelper.createTextField;
-import static edu.ku.brc.ui.UIRegistry.displayErrorDlgLocalized;
-import static edu.ku.brc.ui.UIRegistry.displayInfoMsgDlgLocalized;
 import static edu.ku.brc.ui.UIRegistry.getFormattedResStr;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
-import static edu.ku.brc.ui.UIRegistry.getUserHomeDir;
 import static edu.ku.brc.ui.UIRegistry.loadAndPushResourceBundle;
 import static edu.ku.brc.ui.UIRegistry.popResourceBundle;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
@@ -24,7 +21,6 @@ import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
@@ -33,11 +29,9 @@ import java.net.URLConnection;
 import java.security.AccessController;
 import java.util.Hashtable;
 
-import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
@@ -48,7 +42,6 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -99,7 +92,6 @@ public class UserAndMasterPasswordMgr
     
     private static UserAndMasterPasswordMgr instance = null;
     
-    private boolean              errCreatingFile       = false;
     private char                 currEcho;
     private String               showPwdLabel;
     private String               hidePwdLabel;
@@ -149,7 +141,7 @@ public class UserAndMasterPasswordMgr
     /**
      * @param usersUserName
      */
-    public void setUsersUserName(String usersUserName)
+    public void setUsersUserName(final String usersUserName)
     {
         this.usersUserName = usersUserName;
         clear();
@@ -161,6 +153,19 @@ public class UserAndMasterPasswordMgr
     public void clear()
     {
         dbUsernameAndPassword = null;
+    }
+    
+    /**
+     * @return true if the Master has been setup, false if not.
+     */
+    public boolean hasMasterUsernameAndPassword()
+    {
+        Boolean isLocal = AppPreferences.getLocalPrefs().getBoolean(usersUserName+"_"+MASTER_LOCAL, false);
+        if (isLocal)
+        {
+            return AppPreferences.getLocalPrefs().get(usersUserName+"_"+MASTER_PATH, null) != null;
+        }
+        return true; // using network approaqch
     }
     
     /**
@@ -249,12 +254,12 @@ public class UserAndMasterPasswordMgr
     {
         loadAndPushResourceBundle("masterusrpwd");
         
-        FormLayout layout = new FormLayout("p, 2px, f:p:g, 4px, p", "p,2px,p,2dlu,p,2dlu,p");
+        FormLayout layout = new FormLayout("p, 2px, f:p:g, 4px, p", "p,2px,p,2px,p,2dlu,p,2dlu,p");
                  
-        layout.setRowGroups(new int[][] { { 1, 3, 5 } });
+        //layout.setRowGroups(new int[][] { { 1, 3, 5 } });
 
-        JPanel panel = new JPanel(layout);
-        panel.setBorder(BorderFactory.createEmptyBorder(14, 14, 14, 14));
+        PanelBuilder pb = new PanelBuilder(layout);
+        pb.setDefaultDialogBorder();
         
         ButtonGroup        group         = new ButtonGroup();
         final JRadioButton isNetworkRB   = new JRadioButton(getResourceString("IS_NET_BASED"));
@@ -263,26 +268,26 @@ public class UserAndMasterPasswordMgr
         group.add(isNetworkRB);
         group.add(isPrefBasedRB);
         
-        final JTextField keyTxt      = createTextField();
-        final JTextField urlTxt      = createTextField();
+        final JTextField keyTxt      = createTextField(35);
+        final JTextField urlTxt      = createTextField(35);
         final JLabel     keyLbl      = createI18NFormLabel("ENCRYPTED_USRPWD");
         final JLabel     urlLbl      = createI18NFormLabel("URL");
         final JButton    createBtn   = createI18NButton("CREATE_KEY");
-        final JButton    fileBtn     = createI18NButton("CREATE_FILE");
         
         CellConstraints cc = new CellConstraints(); 
         
         int y = 1;
-        panel.add(isPrefBasedRB, cc.xy(3, y)); y += 2;
-        panel.add(isNetworkRB,   cc.xy(3, y)); y += 2;
+        pb.add(createI18NFormLabel("MASTER_LOC"), cc.xywh(1, y, 1, 3));
+        pb.add(isPrefBasedRB, cc.xy(3, y)); y += 2;
+        pb.add(isNetworkRB,   cc.xy(3, y)); y += 2;
         
-        panel.add(keyLbl,    cc.xy(1, y)); 
-        panel.add(keyTxt,    cc.xy(3, y)); 
-        panel.add(createBtn, cc.xy(5, y));  y += 2;
+        pb.addSeparator("", cc.xyw(1, y, 5));  y += 2;
+        pb.add(keyLbl,    cc.xy(1, y)); 
+        pb.add(keyTxt,    cc.xy(3, y)); 
+        pb.add(createBtn, cc.xy(5, y));  y += 2;
         
-        panel.add(urlLbl,    cc.xy(1, y)); 
-        panel.add(urlTxt,    cc.xy(3, y)); 
-        panel.add(fileBtn,   cc.xy(5, y));  y += 2;
+        pb.add(urlLbl,    cc.xy(1, y)); 
+        pb.add(urlTxt,    cc.xy(3, y));  y += 2;
         
         boolean isEditMode = isLocal != null && StringUtils.isNotEmpty(masterPath);
         if (isEditMode)
@@ -297,7 +302,7 @@ public class UserAndMasterPasswordMgr
             }
         }
         
-        final CustomDialog dlg = new CustomDialog((Frame)null, getResourceString("MASTER_TITLE"), true, CustomDialog.OKCANCELHELP, panel);
+        final CustomDialog dlg = new CustomDialog((Frame)null, getResourceString("MASTER_TITLE"), true, CustomDialog.OKCANCELHELP, pb.getPanel());
         if (!isEditMode)
         {
             dlg.setOkLabel(getResourceString("CONT"));
@@ -308,11 +313,11 @@ public class UserAndMasterPasswordMgr
         dlg.getOkBtn().setEnabled(false);
         urlLbl.setEnabled(false);  
         urlTxt.setEnabled(false);
-        fileBtn.setEnabled(false);
         
-        DocumentListener dl = new DocumentListener()
+        DocumentListener dl = new DocumentAdaptor()
         {
-            protected void enableOK()
+            @Override
+            protected void changed(DocumentEvent e)
             {
                 if ((isPrefBasedRB.isSelected() && !keyTxt.getText().isEmpty()) || 
                     (isNetworkRB.isSelected() && !urlTxt.getText().isEmpty()))
@@ -320,12 +325,6 @@ public class UserAndMasterPasswordMgr
                     dlg.getOkBtn().setEnabled(true);
                 }
             }
-            @Override
-            public void changedUpdate(DocumentEvent e) { enableOK(); }
-            @Override
-            public void insertUpdate(DocumentEvent e) { enableOK(); }
-            @Override
-            public void removeUpdate(DocumentEvent e) { enableOK(); }
         };
         keyTxt.getDocument().addDocumentListener(dl);
         urlTxt.getDocument().addDocumentListener(dl);
@@ -340,7 +339,6 @@ public class UserAndMasterPasswordMgr
                 createBtn.setEnabled(!isNet);  
                 urlLbl.setEnabled(isNet);  
                 urlTxt.setEnabled(isNet);
-                fileBtn.setEnabled(isNet);  
                 dlg.getOkBtn().setEnabled(true);
             }
         };
@@ -363,42 +361,9 @@ public class UserAndMasterPasswordMgr
                 }
             }
         });
-        
-        fileBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                String[] keys = getUserNamePasswordKey();
-                String encryptedStr = encrypt(keys[0], keys[1], keys[3]);
-                if (encryptedStr != null)
-                {
-                    loadAndPushResourceBundle("masterusrpwd");
-                    String keyFilePath = getUserHomeDir() + File.separator +"specify.key";
-                    try
-                    {
-                        FileUtils.writeStringToFile(new File(keyFilePath), encryptedStr);
-                        dlg.getOkBtn().setEnabled(true);
-                        urlTxt.setText("");
-                        displayInfoMsgDlgLocalized("FILE_CREATED_AT", keyFilePath);
-                        
-                    } catch (IOException ex)
-                    {
-                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UserAndMasterPasswordMgr.class, ex);
-                        ex.printStackTrace();
-                        displayErrorDlgLocalized("FILE_NOT_CREATED", keyFilePath);
-                        
-                    }
-                    popResourceBundle();
-                    
-                    dlg.getOkBtn().setEnabled(true);
-                }
-            }
-        });
 
         popResourceBundle();
         
-        errCreatingFile = true;
         dlg.setVisible(true);
         
         if (!dlg.isCancelled())
@@ -413,10 +378,9 @@ public class UserAndMasterPasswordMgr
             }
             AppPreferences.getLocalPrefs().putBoolean(usersUserName+"_"+MASTER_LOCAL, !isNetworkRB.isSelected());
             AppPreferences.getLocalPrefs().put(usersUserName+"_"+MASTER_PATH, value);
-            errCreatingFile = false;
+            return true;
         }
-        
-        return errCreatingFile;
+        return false;
     }
     
     /**

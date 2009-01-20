@@ -151,8 +151,23 @@ public class DatabaseLoginPanel extends JTiledPanel
     //--------------------------------------------------------------------
     public interface MasterPasswordProviderIFace
     {
+        /**
+         * @return true if the Master Username and Password has been setup.
+         */
+        public abstract boolean hasMasterUserAndPwdInfo(final String username, final String password);
+        
+        /**
+         * @param username the user's username
+         * @param password the user's password
+         * @return the Master UserName and Password
+         */
         public abstract Pair<String, String> getUserNamePassword(String username, String password);
         
+        /**
+         * Shows UI for the user to set up the Master Username and Password
+         * @param username the user's username
+         * @return true if it was setup correctly
+         */
         public abstract boolean editMasterInfo(String username);
     }
     
@@ -790,6 +805,7 @@ public class DatabaseLoginPanel extends JTiledPanel
         databases.setEnabled(enable);
         servers.setEnabled(enable);
         rememberUsernameCBX.setEnabled(enable);
+        dbDriverCBX.setEnabled(enable);
         moreBtn.setEnabled(enable);
         
         if (editKeyInfoBtn != null)
@@ -835,6 +851,11 @@ public class DatabaseLoginPanel extends JTiledPanel
         isLoggingIn = true;
         log.debug("preparing to save"); //$NON-NLS-1$
         save();
+        
+        if (masterUsrPwdProvider != null && !masterUsrPwdProvider.hasMasterUserAndPwdInfo(getUserName(), getPassword()))
+        {
+            masterUsrPwdProvider.editMasterInfo(getUserName());
+        }
 
         final String name = getClass().getName();
         statusBar.setIndeterminate(name, true);
@@ -844,7 +865,7 @@ public class DatabaseLoginPanel extends JTiledPanel
 
         String basePrefName = getDatabaseName() + "." + getUserName() + "."; //$NON-NLS-1$ //$NON-NLS-2$
 
-        loginCount = AppPreferences.getLocalPrefs().getLong(basePrefName + "logincount", -1L); //$NON-NLS-1$
+        loginCount     = AppPreferences.getLocalPrefs().getLong(basePrefName + "logincount", -1L); //$NON-NLS-1$
         loginAccumTime = AppPreferences.getLocalPrefs().getLong(basePrefName + "loginaccumtime", -1L);//$NON-NLS-1$
                 
         if (loginCount != -1 && loginAccumTime != -1)

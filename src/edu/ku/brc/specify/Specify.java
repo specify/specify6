@@ -519,6 +519,18 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         DatabaseLoginPanel.MasterPasswordProviderIFace usrPwdProvider = new DatabaseLoginPanel.MasterPasswordProviderIFace()
         {
             @Override
+            public boolean hasMasterUserAndPwdInfo(final String username, final String password)
+            {
+                if (StringUtils.isNotEmpty(username) && StringUtils.isNotEmpty(password))
+                {
+                    UserAndMasterPasswordMgr.getInstance().setUsersUserName(username);
+                    UserAndMasterPasswordMgr.getInstance().setUsersPassword(password);
+                    return UserAndMasterPasswordMgr.getInstance().hasMasterUsernameAndPassword();
+                }
+                return false;
+            }
+
+            @Override
             public Pair<String, String> getUserNamePassword(final String username, final String password)
             {
                 UserAndMasterPasswordMgr.getInstance().setUsersUserName(username);
