@@ -1540,7 +1540,7 @@
             <rows>
             	<row>
                     <cell type="label" labelfor="13"/>
-                    <cell type="field" id="13" name="activeTaxon" uitype="text" readonly="true"/>
+                    <cell type="field" id="13" name="preferredTaxon" uitype="text" readonly="true"/>
                     <cell type="label" label=" "/>
                     <cell type="field" id="3" name="isCurrent" uitype="checkbox"/>
              	</row>
