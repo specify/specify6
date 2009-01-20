@@ -816,7 +816,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
         final I origChild = parent.getChild();
 		final I newItem = (I)TreeFactory.createNewTreeDefItem(parent.getClass(),null,UIRegistry.getResourceString("TreeDefinitionEditor.46")); //$NON-NLS-1$
 		final TreeDefItemStandardEntry stdLevel = getNewItemStdLevel(parent, origChild);
-		if (stdLevel == null)
+		if (stdLevel == null || stdLevel.getRank() == -1)
 		{
 			return;
 		}
