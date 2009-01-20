@@ -197,6 +197,7 @@ public class FormDisplayer
                     Class<?> dataCls = Class.forName(viewDef.getClassName());
                     if (dataCls != null)
                     {
+                        System.err.println(dataCls);
                         data = dataCls.newInstance();
                         if (data instanceof FormDataObjIFace)
                         {
@@ -206,9 +207,8 @@ public class FormDisplayer
                 }
             } catch (Exception ex)
             {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormDisplayer.class, ex);
-                
+                //edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormDisplayer.class, ex);
             }
             FormPane formPane = new FormPane(view.getName(), null, null, view.getName(), "edit", data, MultiView.IS_NEW_OBJECT | MultiView.HIDE_SAVE_BTN); //$NON-NLS-1$
             frame = new JFrame();

@@ -242,6 +242,7 @@ public class FieldNotebookPageSet extends DisciplineMember
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "pageSet")
     @Cascade( { CascadeType.ALL })
+    @OrderBy("pageNumber ASC")
     public Set<FieldNotebookPage> getPages()
     {
         return pages;

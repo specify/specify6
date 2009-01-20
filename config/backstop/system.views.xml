@@ -219,7 +219,7 @@
         </view>
 
         <view name="ViewProps"
-            class="edu.ku.brc.specify.datamodel.ViewIFace"
+            class="edu.ku.brc.specify.datamodel.SpView"
             resourcelabels="false">
             <desc><![CDATA[]]></desc>
             <altviews>

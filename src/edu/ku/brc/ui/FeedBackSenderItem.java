@@ -4,30 +4,35 @@
  * [INSERT KU-APPROVED LICENSE TEXT HERE]
  *
  */
-package edu.ku.brc.exceptions;
+package edu.ku.brc.ui;
+
+import java.util.Properties;
 
 /**
- * This represents a single Exception.
+ * This represents a single FeedBackItem. It was especially designed 
+ * for bug reporting but can used for other things.
+ * 
  * @author rod
  *
- * @code_status Alpha
+ * @code_status Beta
  *
  * Jan 10, 2009
  *
  */
-public class ExceptionItem
+public class FeedBackSenderItem
 {
-    protected String taskName;
-    protected String title;
-    protected String bug;
-    protected String comments;
-    protected String stackTrace;
-    protected String className;
+    protected String     taskName;
+    protected String     title;
+    protected String     bug;
+    protected String     comments;
+    protected String     stackTrace;
+    protected String     className;
+    protected Properties props = null;
     
     /**
      * 
      */
-    public ExceptionItem()
+    public FeedBackSenderItem()
     {
         super();
     }
@@ -40,7 +45,12 @@ public class ExceptionItem
      * @param stackTrace
      * @param className
      */
-    public ExceptionItem(String taskName, String title, String bug, String comments, String stackTrace, String className)
+    public FeedBackSenderItem(String taskName, 
+                              String title, 
+                              String bug, 
+                              String comments, 
+                              String stackTrace, 
+                              String className)
     {
         super();
         this.taskName = taskName;
@@ -145,6 +155,22 @@ public class ExceptionItem
     public void setClassName(String className)
     {
         this.className = className;
+    }
+
+    /**
+     * @return the props
+     */
+    public Properties getProps()
+    {
+        return props;
+    }
+
+    /**
+     * @param props the props to set
+     */
+    public void setProps(Properties props)
+    {
+        this.props = props;
     }
 
 }

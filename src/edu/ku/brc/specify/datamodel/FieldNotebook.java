@@ -250,6 +250,7 @@ public class FieldNotebook extends DisciplineMember
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "fieldNotebook")
     @Cascade( { CascadeType.ALL})
+    @OrderBy("startDate ASC")
     public Set<FieldNotebookPageSet> getPageSets()
     {
         return pageSets;

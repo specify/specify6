@@ -132,6 +132,7 @@ import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.DebugLoggerDialog;
 import edu.ku.brc.specify.config.DisciplineType;
+import edu.ku.brc.specify.config.FeedBackDlg;
 import edu.ku.brc.specify.config.LoggerDialog;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.config.SpecifyAppPrefs;
@@ -1297,6 +1298,22 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
 
         }
         
+        JCheckBoxMenuItem cbMenuItem = new JCheckBoxMenuItem("Security Activated"); //$NON-NLS-1$
+        menu.add(cbMenuItem);
+        cbMenuItem.setSelected(UIHelper.isSecurityOn());
+        cbMenuItem.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent ae)
+                    {
+                        boolean isOn = !UIHelper.isSecurityOn()   ;                 
+                        AppPreferences.getLocalPrefs().putBoolean("security", isOn);
+                        UIHelper.setSecurityOn(isOn);
+                        ((JMenuItem)ae.getSource()).setSelected(isOn);
+                    }});
+
+        //----------------------------------------------------
+        //-- Helper Menu
+        //----------------------------------------------------
+        
         JMenu helpMenu = UIHelper.createLocalizedMenu(mb, "Specify.HELP_MENU", "Specify.HELP_MNEU"); //$NON-NLS-1$ //$NON-NLS-2$
         HelpMgr.createHelpMenuItem(helpMenu, "Specify"); //$NON-NLS-1$
         helpMenu.addSeparator();
@@ -1340,6 +1357,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                 RegisterSpecify.register(true);
             }
         });
+        
         ttle = "Specify.SA_REG";//$NON-NLS-1$ 
         mneu = "Specify.SA_REG_MNEU";//$NON-NLS-1$ 
         desc = "Specify.SA_REG_DESC";//$NON-NLS-1$      
@@ -1352,20 +1370,22 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                 RegisterSpecify.registerISA();
             }
         });
+        
+        ttle = "Specify.FEEDBACK";//$NON-NLS-1$ 
+        mneu = "Specify.FB_MNEU";//$NON-NLS-1$ 
+        desc = "Specify.FB_DESC";//$NON-NLS-1$      
+        mi = UIHelper.createLocalizedMenuItem(helpMenu, ttle , mneu, desc,  true, null);
+        mi.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent ae)
+            {
+                FeedBackDlg feedBackDlg = new FeedBackDlg();
+                feedBackDlg.sendFeedback();
+            }
+        });
         helpMenu.addSeparator();
         
-        JCheckBoxMenuItem cbMenuItem = new JCheckBoxMenuItem("Security Activated"); //$NON-NLS-1$
-        menu.add(cbMenuItem);
-        cbMenuItem.setSelected(UIHelper.isSecurityOn());
-        cbMenuItem.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent ae)
-                    {
-                        boolean isOn = !UIHelper.isSecurityOn()   ;                 
-                        AppPreferences.getLocalPrefs().putBoolean("security", isOn);
-                        UIHelper.setSecurityOn(isOn);
-                        ((JMenuItem)ae.getSource()).setSelected(isOn);
-                    }});
-
                 
         if (UIHelper.getOSType() != UIHelper.OSTYPE.MacOSX)
         {

@@ -14,11 +14,6 @@ import static edu.ku.brc.ui.UIHelper.createTextArea;
 import static edu.ku.brc.ui.UIHelper.createTextField;
 
 import java.awt.Frame;
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Vector;
@@ -37,12 +32,12 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.Taskable;
-import edu.ku.brc.exceptions.ExceptionTracker;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.FeedBackSender;
 import edu.ku.brc.ui.FeedBackSenderItem;
 
 /**
@@ -53,16 +48,24 @@ import edu.ku.brc.ui.FeedBackSenderItem;
  * Jan 10, 2009
  *
  */
-public class SpecifyExceptionTracker extends ExceptionTracker
+public class FeedBackDlg extends FeedBackSender
 {
     /**
      * 
      */
-    public SpecifyExceptionTracker()
+    public FeedBackDlg()
     {
         super();
     }
-
+    
+    /**
+     * @return the url that the info should be sent to
+     */
+    protected String getSenderURL()
+    {
+        return "http://specify6-test.nhm.ku.edu/feedback.php";
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.exceptions.ExceptionTracker#getFeedBackSenderItem(java.lang.Class, java.lang.Exception)
      */
@@ -70,7 +73,7 @@ public class SpecifyExceptionTracker extends ExceptionTracker
     protected FeedBackSenderItem getFeedBackSenderItem(final Class<?> cls, final Exception exception)
     {
         CellConstraints cc = new CellConstraints();
-        PanelBuilder    pb = new PanelBuilder(new FormLayout("p,2px,p,f:p:g", "p,4px,p,4px,p,4px,p,2px,p,4px,p,2px,f:p:g"));
+        PanelBuilder    pb = new PanelBuilder(new FormLayout("p,2px,p,f:p:g", "p,4px,p,4px,p,4px,f:p:g"));
         
         //TreeSet<Taskable> treeSet    = new TreeSet<Taskable>(TaskMgr.getInstance().getAllTasks());
         Vector<Taskable>  taskItems  = new Vector<Taskable>(TaskMgr.getInstance().getAllTasks());
@@ -82,79 +85,35 @@ public class SpecifyExceptionTracker extends ExceptionTracker
             }
         });
         
-        final JComboBox         taskCBX    = createComboBox(taskItems);
-        final JTextField        titleTF    = createTextField();
-        final JTextField        bugTF      = createTextField();
-        final JTextArea         commentsTA = createTextArea(6, 60);
-        final JTextArea         stackTraceTA = createTextArea(15, 60);
+        final JComboBox  taskCBX    = createComboBox(taskItems);
+        final JTextField titleTF    = createTextField();
+        final JTextArea  commentsTA = createTextArea(15, 60);
         
         int y = 1;
-        pb.add(createFormLabel("Task"), cc.xy(1, y));
+        pb.add(createFormLabel("Component"), cc.xy(1, y));
         pb.add(taskCBX,                 cc.xy(3, y)); y += 2;
         
         pb.add(createFormLabel("Title"), cc.xy(1, y));
         pb.add(titleTF,                  cc.xyw(3, y, 2)); y += 2;
         
-        pb.add(createFormLabel("Bug #"), cc.xy(1, y));
-        pb.add(bugTF,                    cc.xy(3, y)); y += 2;
-        
         pb.add(createFormLabel("Comments"), cc.xy(1, y));     y += 2;
         pb.add(createScrollPane(commentsTA), cc.xyw(1, y, 4)); y += 2;
-        
-        pb.add(createFormLabel("Stack Trace"), cc.xy(1, y));     y += 2;
-        pb.add(createScrollPane(stackTraceTA), cc.xyw(1, y, 4)); y += 2;
-        
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        exception.printStackTrace(new PrintStream(baos));
-        
-        stackTraceTA.setText(baos.toString());
-        
         
         Taskable currTask = SubPaneMgr.getInstance().getCurrentSubPane().getTask();
         taskCBX.setSelectedItem(currTask != null ? currTask : TaskMgr.getDefaultTaskable());
         
         pb.setDefaultDialogBorder();
-        CustomDialog dlg = new CustomDialog((Frame)null, "Handled Exception", true, pb.getPanel())
-        {
-            
-            /* (non-Javadoc)
-             * @see edu.ku.brc.ui.CustomDialog#cancelButtonPressed()
-             */
-            @Override
-            protected void cancelButtonPressed()
-            {
-                String taskName = taskCBX.getSelectedItem() != null ? ((Taskable)taskCBX.getSelectedItem()).getName() : "No Task Name";
-                FeedBackSenderItem item = new FeedBackSenderItem(taskName, titleTF.getText(), bugTF.getText(), commentsTA.getText(), stackTraceTA.getText(), cls.getName());
-                NameValuePair[] pairs = createPostParameters(item);
-                
-                StringBuilder sb = new StringBuilder();
-                for (NameValuePair pair : pairs)
-                {
-                    if (!pair.getName().equals("bug"))
-                    {
-                        sb.append(pair.getName());
-                        sb.append(": ");
-                        if (pair.getName().equals("comments") || pair.getName().equals("stack_trace"))
-                        {
-                            sb.append("\n");
-                        }
-                        sb.append(pair.getValue());
-                        sb.append("\n");
-                    }
-                }
-                
-                StringSelection stsel  = new StringSelection(sb.toString());
-                Clipboard       sysClipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-                sysClipboard.setContents(stsel, stsel);
-            }
-        };
-        dlg.setCancelLabel("Copy To Clipboard");
+        CustomDialog dlg = new CustomDialog((Frame)null, "Feedback", true, pb.getPanel());
         
         centerAndShow(dlg);
         
-        String taskName = taskCBX.getSelectedItem() != null ? ((Taskable)taskCBX.getSelectedItem()).getName() : "No Task Name";
-        FeedBackSenderItem item = new FeedBackSenderItem(taskName, titleTF.getText(), bugTF.getText(), commentsTA.getText(), stackTraceTA.getText(), cls.getName());
-        return item;
+        if (!dlg.isCancelled())
+        {
+            String taskName = taskCBX.getSelectedItem() != null ? ((Taskable)taskCBX.getSelectedItem()).getName() : "No Task Name";
+            FeedBackSenderItem item = new FeedBackSenderItem(taskName, titleTF.getText(), "", commentsTA.getText(), "", cls != null ? cls.getName() : "");
+            return item;
+        }
+        return null;
     }
 
     /* (non-Javadoc)

@@ -141,7 +141,7 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
             Preparation     prep     = loanPrep.getPreparation();
             
             Component comp = formViewObj.getControlByName("quantityReturned");
-            if (comp instanceof ValSpinner)
+            if (comp instanceof ValSpinner && prep != null &&  prep.getPreparationId() != null)
             {
                 final boolean    isNewObj         = loanPrep.getId() == null;
                 final ValSpinner quantityReturned = (ValSpinner)comp;
