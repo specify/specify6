@@ -3907,7 +3907,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                                newFieldName.equals("Addendum") || 
                                newFieldName.equals("AlternateName") || 
                                newFieldName.equals("NameUsage") || 
-                               newFieldName.equals("ActiveTaxonID"))
+                               newFieldName.equals("PreferredTaxonID"))
                     {
                         str.append("NULL");
 

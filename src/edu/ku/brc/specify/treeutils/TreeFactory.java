@@ -307,7 +307,7 @@ public class TreeFactory
             sb.append("SELECT count(*) ");
             sb.append("FROM taxon AS TX INNER JOIN determination as DET ON TX.TaxonID = ");
             //Using 'ActiveTaxonID' means that counts for preferred taxa will include dets to their synonyms. 
-            sb.append("DET.ActiveTaxonID "); 
+            sb.append("DET.PreferredTaxonID "); 
             sb.append("INNER JOIN collectionobject ON DET.CollectionObjectID = collectionobject.CollectionObjectID ");
         }
         

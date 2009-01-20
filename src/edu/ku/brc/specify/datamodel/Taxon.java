@@ -1025,7 +1025,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
         //count all determinations 
         if (isAccepted)
         {
-            sql += "dt.ActiveTaxonID ";
+            sql += "dt.PreferredTaxonID ";
         }
         else
         {
