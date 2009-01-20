@@ -231,7 +231,17 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
             {
                 try
                 {
-                    session.saveOrUpdate(ce);
+                    Integer ceid = ce.getId();
+                    CollectingEvent newCe = null;
+                    if (ceid != null)
+                    {
+                    	newCe = session.get(CollectingEvent.class, ceid);
+                    }
+                    if (newCe == null) 
+                    {
+                    	newCe = ce;
+                    }
+                	session.saveOrUpdate(newCe);
                     
                 } catch (Exception ex)
                 {
