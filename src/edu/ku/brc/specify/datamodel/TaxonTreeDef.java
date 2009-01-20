@@ -137,8 +137,8 @@ public class TaxonTreeDef extends BaseTreeDef<Taxon, TaxonTreeDef, TaxonTreeDefI
             case KINGDOM: return UIRegistry.getResourceString("TaxonTreeDef.3"); //$NON-NLS-1$
             case SUBKINGDOM: return UIRegistry.getResourceString(UIRegistry.getResourceString("TaxonTreeDef.0"));  //$NON-NLS-1$
             case DIVISION: return UIRegistry.getResourceString(UIRegistry.getResourceString("TaxonTreeDef.1"));  //$NON-NLS-1$
-            case PHYLUM+1: return UIRegistry.getResourceString(UIRegistry.getResourceString("TaxonTreeDef.2"));  //$NON-NLS-1$
-            case SUBDIVISION: return UIRegistry.getResourceString(UIRegistry.getResourceString("TaxonTreeDef.3"));  //$NON-NLS-1$
+            case PHYLUM+1: return UIRegistry.getResourceString(UIRegistry.getResourceString("TaxonTreeDef.28"));  //$NON-NLS-1$
+            case SUBDIVISION: return UIRegistry.getResourceString(UIRegistry.getResourceString("TaxonTreeDef.29"));  //$NON-NLS-1$
             case SUBPHYLUM+1: return UIRegistry.getResourceString(UIRegistry.getResourceString("TaxonTreeDef.4"));  //$NON-NLS-1$
             case SUPERCLASS: return UIRegistry.getResourceString(UIRegistry.getResourceString("TaxonTreeDef.5"));  //$NON-NLS-1$
             case CLASS: return UIRegistry.getResourceString(UIRegistry.getResourceString("TaxonTreeDef.6"));  //$NON-NLS-1$

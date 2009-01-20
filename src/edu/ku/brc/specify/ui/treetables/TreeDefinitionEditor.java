@@ -732,12 +732,13 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
         }
         if (options.size() == 0)
         {
-            return null;
+            return new TreeDefItemStandardEntry("", -1);
         }
         //else
         ChooseFromListDlg<TreeDefItemStandardEntry> dlg = new ChooseFromListDlg<TreeDefItemStandardEntry>((Frame )UIRegistry.getTopWindow(),
-                UIRegistry.getResourceString("TreeDefinitionEditor.41"), ChooseFromListDlg.OKCANCEL, options); //$NON-NLS-1$
-        dlg.setCancelLabel(UIRegistry.getResourceString("TreeDefinitionEditor.42")); //$NON-NLS-1$
+                UIRegistry.getResourceString("TreeDefinitionEditor.41"), ChooseFromListDlg.OKCANCELAPPLY, options); //$NON-NLS-1$
+        dlg.setApplyLabel(UIRegistry.getResourceString("TreeDefinitionEditor.42")); //$NON-NLS-1$
+        dlg.setCloseOnApply(true);
         dlg.setModal(true);
         UIHelper.centerAndShow(dlg);
         TreeDefItemStandardEntry selection = null;
@@ -745,9 +746,9 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
         {
             selection = dlg.getSelectedObject();
         }
-        else if (dlg.getBtnPressed() == ChooseFromListDlg.CANCEL_BTN)
+        else if (dlg.getBtnPressed() == ChooseFromListDlg.APPLY_BTN)
         {
-        	selection = new TreeDefItemStandardEntry("custom", -1);
+        	selection = new TreeDefItemStandardEntry("", -1);
         }
         dlg.dispose();
         return selection;
@@ -816,7 +817,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
         final I origChild = parent.getChild();
 		final I newItem = (I)TreeFactory.createNewTreeDefItem(parent.getClass(),null,UIRegistry.getResourceString("TreeDefinitionEditor.46")); //$NON-NLS-1$
 		final TreeDefItemStandardEntry stdLevel = getNewItemStdLevel(parent, origChild);
-		if (stdLevel == null || stdLevel.getRank() == -1)
+		if (stdLevel == null)
 		{
 			return;
 		}
