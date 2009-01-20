@@ -70,7 +70,7 @@ public class Determination extends CollectionMember implements java.io.Serializa
      protected Float               number2;
      protected Boolean             yesNo1;
      protected Boolean             yesNo2;
-     protected Taxon               activeTaxon; //= taxon.acceptedTaxon or taxon
+     protected Taxon               preferredTaxon; //= taxon.acceptedTaxon or taxon
      protected Taxon               taxon;
      protected CollectionObject    collectionObject;
      protected Set<DeterminationCitation> determinationCitations;
@@ -119,7 +119,7 @@ public class Determination extends CollectionMember implements java.io.Serializa
         number2 = null;
         yesNo1 = null;
         yesNo2 = null;
-        activeTaxon = null;
+        preferredTaxon = null;
         taxon = null;
         collectionObject = null;
         determinationCitations = new HashSet<DeterminationCitation>();
@@ -465,35 +465,35 @@ public class Determination extends CollectionMember implements java.io.Serializa
         this.taxon = taxon;
         if (taxon == null || taxon.getIsAccepted())
         {
-            activeTaxon = taxon;
+        	preferredTaxon = taxon;
         }
         else
         {
-            activeTaxon = taxon.getAcceptedTaxon();
+        	preferredTaxon = taxon.getAcceptedTaxon();
         }        
     }
 
     /**
-     * @return the activeTaxon.
+     * @return the preferredTaxon.
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "ActiveTaxonID", unique = false, nullable = true, insertable = true, updatable = true)
-    public Taxon getActiveTaxon() 
+    @JoinColumn(name = "PreferredTaxonID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Taxon getPreferredTaxon() 
     {
-        return this.activeTaxon;
+        return this.preferredTaxon;
     }
 
     /**
-     * @param activeTaxon the activeTaxon to set.
+     * @param preferredTaxon the preferredTaxon to set.
      * 
      * This method should only be called by the taxon synonymization code.
      * 
      * setTaxon() should be used instead.
      */
     @SuppressWarnings("unused")
-    public void setActiveTaxon(Taxon activeTaxon)
+    public void setPreferredTaxon(Taxon preferredTaxon)
     {
-        this.activeTaxon = activeTaxon;
+        this.preferredTaxon = preferredTaxon;
     }
 
 

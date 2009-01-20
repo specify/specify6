@@ -119,8 +119,6 @@ public class DBConnection
             
         } catch (SQLException sqlEX)
         {
-            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DBConnection.class, sqlEX);
             log.error("Error in getConnection", sqlEX);
             if (sqlEX.getNextException() != null)
             {
@@ -132,8 +130,8 @@ public class DBConnection
                 
         } catch (Exception ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DBConnection.class, ex);
+//            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+//            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DBConnection.class, ex);
             log.error("Error in getConnection", ex);
             errMsg = ex.getMessage();
         }

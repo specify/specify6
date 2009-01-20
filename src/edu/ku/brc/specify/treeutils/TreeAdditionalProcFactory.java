@@ -110,7 +110,7 @@ public class TreeAdditionalProcFactory
             log.debug("Source:");
             for (Determination det : new Vector<Determination>(srcTaxon.getDeterminations()))
             {
-                det.setActiveTaxon(dstTaxon);
+                det.setPreferredTaxon(dstTaxon);
                 session.saveOrUpdate(det);
             }
             return true;
@@ -130,7 +130,7 @@ public class TreeAdditionalProcFactory
         {
             for (Determination det : new Vector<Determination>(srcTaxon.getDeterminations()))
             {
-                det.setActiveTaxon(srcTaxon);
+                det.setPreferredTaxon(srcTaxon);
                 session.saveOrUpdate(det);
             }
             return true;

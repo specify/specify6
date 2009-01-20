@@ -403,17 +403,17 @@ public class SelectPrepsDlg extends CustomDialog
         public String getTaxonName(final Determination deter)
         {
             String taxonName = null;
-            if (deter.getActiveTaxon() != null)
+            if (deter.getPreferredTaxon() != null)
             {
-                if (deter.getActiveTaxon().getFullName() == null)
+                if (deter.getPreferredTaxon().getFullName() == null)
                 {
-                    Taxon  parent = deter.getActiveTaxon().getParent();
+                    Taxon  parent = deter.getPreferredTaxon().getParent();
                     String genus  = parent.getFullName() == null ? parent.getName() : parent.getFullName();
-                    taxonName = genus + " " + deter.getActiveTaxon().getName(); //$NON-NLS-1$
+                    taxonName = genus + " " + deter.getPreferredTaxon().getName(); //$NON-NLS-1$
                     
                 } else
                 {
-                    taxonName = deter.getActiveTaxon().getFullName();
+                    taxonName = deter.getPreferredTaxon().getFullName();
                 }
             }
             return taxonName;

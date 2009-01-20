@@ -303,7 +303,7 @@
         >
         <switch single="false" field="isCurrent">
             <fields value="true">
-                <field>activeTaxon.fullName</field>
+                <field>preferredTaxon.fullName</field>
                 <field sep=" (current)" format=" " type="boolean">isCurrent</field>
             </fields>
             <fields value="false">

@@ -2886,7 +2886,7 @@ public class SpecifyExplorer extends HttpServlet
                                 {
                                     if (det.isCurrentDet())
                                     {
-                                        Taxon txn = det.getActiveTaxon();
+                                        Taxon txn = det.getPreferredTaxon();
                                         if (txn != null)
                                         {
                                             sb.append("<a href='SpecifyExplorer?cls=CollectionObject&id="+co.getCollectionObjectId()+"'>"+txn.getFullName()+"</a>");
@@ -3372,7 +3372,7 @@ public class SpecifyExplorer extends HttpServlet
         {
             if (det.isCurrentDet())
             {
-                return det.getActiveTaxon();
+                return det.getPreferredTaxon();
             }
         }
         return null;

@@ -360,7 +360,7 @@ public class CollectingEventLocalityKMLGenerator
 			{
 				if( d.isCurrentDet() )
 				{
-					Taxon t = d.getActiveTaxon();
+					Taxon t = d.getPreferredTaxon();
 					species = t.getName();
 					genus = t.getParent().getName();
 					break;

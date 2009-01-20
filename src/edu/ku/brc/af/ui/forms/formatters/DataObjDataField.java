@@ -215,7 +215,7 @@ public class DataObjDataField implements Cloneable
 			// XXX is it ok to get this info from static instance instead of cached version?
 			objFormatter = DataObjFieldFormatMgr.getInstance().getFormatter(dataObjFormatterName);
 		}
-
+		
 		String[] parts = name.split("\\.");
 		if (parts.length == 2)
 		{

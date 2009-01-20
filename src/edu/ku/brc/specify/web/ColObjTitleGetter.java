@@ -52,7 +52,7 @@ public class ColObjTitleGetter implements TitleGetterIFace
                     if (det.isCurrentDet())
                     {
                         UIFieldFormatterIFace fmt = field.getFormatter();
-                        return fmt.formatToUI(colObj.getCatalogNumber()) + " - " + det.getActiveTaxon().getFullName();
+                        return fmt.formatToUI(colObj.getCatalogNumber()) + " - " + det.getPreferredTaxon().getFullName();
                     }
                 }
             }

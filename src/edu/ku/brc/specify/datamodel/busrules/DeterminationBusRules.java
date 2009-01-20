@@ -112,13 +112,13 @@ public class DeterminationBusRules extends BaseBusRules
                     }
                 }
             }
-            Component activeTax = formViewObj.getControlByName("activeTaxon");
+            Component activeTax = formViewObj.getControlByName("preferredTaxon");
             if (activeTax != null)
             {
                 activeTax.setFocusable(false);
-                if (determination != null && determination.getActiveTaxon() != null)
+                if (determination != null && determination.getPreferredTaxon() != null)
                 {
-                    ((JTextField )activeTax).setText(determination.getActiveTaxon().getFullName());
+                    ((JTextField )activeTax).setText(determination.getPreferredTaxon().getFullName());
                 }
                 else
                 {
@@ -389,7 +389,7 @@ public class DeterminationBusRules extends BaseBusRules
     /**
      * @param taxonComboBox 
      * 
-     * Sets text for ActiveTaxon control to the selected taxon or it's accepted parent.
+     * Sets text for preferredTaxon control to the selected taxon or it's accepted parent.
      * 
      * If the selected taxon is not accepted, then a dialog pops up to confirm the choice
      * with an option to use the accepted parent instead.
@@ -457,7 +457,7 @@ public class DeterminationBusRules extends BaseBusRules
             }
         }
 
-        Component activeTax = formViewObj.getControlByName("activeTaxon");
+        Component activeTax = formViewObj.getControlByName("preferredTaxon");
         if (activeTax != null)
         {
             ((JTextField )activeTax).setText(activeTaxName);
