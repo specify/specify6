@@ -110,8 +110,15 @@ public class SpecifyExceptionTracker extends ExceptionTracker
         stackTraceTA.setText(baos.toString());
         
         
-        Taskable currTask = SubPaneMgr.getInstance().getCurrentSubPane().getTask();
-        taskCBX.setSelectedItem(currTask != null ? currTask : TaskMgr.getDefaultTaskable());
+        if (SubPaneMgr.getInstance().getCurrentSubPane() != null &&
+            SubPaneMgr.getInstance().getCurrentSubPane().getTask() != null)
+        {
+            Taskable currTask = SubPaneMgr.getInstance().getCurrentSubPane().getTask();
+            taskCBX.setSelectedItem(currTask != null ? currTask : TaskMgr.getDefaultTaskable());
+        } else
+        {
+            taskCBX.setSelectedItem(0);
+        }
         
         pb.setDefaultDialogBorder();
         CustomDialog dlg = new CustomDialog((Frame)null, "Handled Exception", true, pb.getPanel())
