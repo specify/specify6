@@ -157,7 +157,8 @@ public class NavigationTreeMgr
             group.getSpecifyUsers().remove(user);
             
             // delete agent associated with the discipline
-            deleteUserAgentFromDiscipline(userNode, session);
+            Discipline discipline = session.get(Discipline.class, getParentDiscipline(userNode).getUserGroupScopeId());
+            deleteUserAgentFromDiscipline(user, discipline, session);
             
             session.update(user);
             session.update(group);
@@ -240,6 +241,7 @@ public class NavigationTreeMgr
         {
             session = DataProviderFactory.getInstance().createSession();
             session.beginTransaction();
+            session.attach(user);
             // break the association between the user and all its agents, 
             // so the user can be later deleted
             user.getAgents().clear();
@@ -255,11 +257,11 @@ public class NavigationTreeMgr
             }
 
             // delete agent associated with the discipline
-            deleteUserAgentFromDiscipline(userNode, session);
+            Discipline discipline = session.get(Discipline.class, getParentDiscipline(userNode).getUserGroupScopeId());
+            deleteUserAgentFromDiscipline(user, discipline, session);
 
             // remove user from groups
             user.getSpPrincipals().clear();
-            session.saveOrUpdate(user);
             user.setModifiedByAgent(null);
             session.delete(user);
             session.commit();
@@ -285,19 +287,14 @@ public class NavigationTreeMgr
         }
     }
 
-    private void deleteUserAgentFromDiscipline(final DefaultMutableTreeNode userNode,
+    private void deleteUserAgentFromDiscipline(SpecifyUser              user,
+                                               Discipline               discipline,
                                                DataProviderSessionIFace session)
         throws Exception
     {
-        DataModelObjBaseWrapper wrapper = (DataModelObjBaseWrapper) userNode.getUserObject();
-        Object object = wrapper.getDataObj();
-        SpecifyUser user = (SpecifyUser) object;
-
-        Discipline discipline = session.get(Discipline.class, getParentDiscipline(userNode).getUserGroupScopeId());
         for (Agent agent : discipline.getAgents())
         {
-            SpecifyUser agentUser = agent.getSpecifyUser();
-            if (agentUser != null && user.getId().equals(agent.getSpecifyUser().getId()))
+            if (agent.getSpecifyUser() != null && user.getId().equals(agent.getSpecifyUser().getId()))
             {
                 // found the agent: delete it
                 session.delete(agent);
