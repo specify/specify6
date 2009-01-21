@@ -7,6 +7,8 @@
 package edu.ku.brc.specify.plugins;
 
 import static edu.ku.brc.ui.UIHelper.createComboBox;
+import static edu.ku.brc.ui.UIRegistry.loadAndPushResourceBundle;
+import static edu.ku.brc.ui.UIRegistry.popResourceBundle;
 
 import java.awt.CardLayout;
 import java.awt.Component;
@@ -77,6 +79,7 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
     protected String                  cellName         = null;
     protected boolean                 isDisplayOnly    = true;
     protected ChangeListener          changeListener   = null;
+    protected String                  title;
     
     protected Object                  dataObj          = null;
     protected String                  dateFieldName    = null;
@@ -108,7 +111,9 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
      */
     public PartialDateUI()
     {
-
+        loadAndPushResourceBundle("specify_plugins");
+        title = UIRegistry.getResourceString("PartialDateUI");
+        popResourceBundle();
     }
     
     /**
@@ -237,6 +242,33 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
             builder.add(cardPanel,      cc.xy(1,1));
         }
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#canCarryForward()
+     */
+    @Override
+    public boolean canCarryForward()
+    {
+        return true;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#getCarryForwardFields()
+     */
+    @Override
+    public String[] getCarryForwardFields()
+    {
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#getTitle()
+     */
+    @Override
+    public String getTitle()
+    {
+        return title;
+    }
     
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.UIPluginable#isNotEmpty()
@@ -341,6 +373,10 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
         } else if (dateTypeObj instanceof Short)
         {
             inx = ((Short)dateTypeObj).intValue();
+            dateTypeIsStr = false;
+        } else if (dateTypeObj instanceof Byte)
+        {
+            inx = ((Byte)dateTypeObj).intValue();
             dateTypeIsStr = false;
         }
         
