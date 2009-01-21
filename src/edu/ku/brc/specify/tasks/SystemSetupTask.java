@@ -643,10 +643,8 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                     dlg.setOkLabel(getResourceString("CLOSE"));
                     pane.getMultiView().setData(dataItems);
                     UIHelper.centerAndShow(dlg);
-                    
                 }
             }
-
         } 
     }
 
@@ -814,7 +812,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
     public void subPaneRemoved(final SubPaneIFace subPane)
     {
         super.subPaneRemoved(subPane);
-        if (subPane instanceof SimpleDescPane)
+        if (subPane instanceof SimpleDescPane || subPanes.size() == 0)
         {
             TaskMgr.reenableAllDisabledTasks();
         }
