@@ -518,7 +518,7 @@ Good: <cell type="field" name="FieldNum" ...>
             <desc><![CDATA[The Agent Search Form]]></desc>
             <enableRules/>
             
-            <columnDef>80px,3dlu,p,3dlu,80px,3dlu,p,3dlu,60px,3dlu,p,p:g</columnDef>
+            <columnDef>p,3dlu,p,3dlu,p,3dlu,p,3dlu,p,3dlu,p,p:g</columnDef>
             <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu</rowDef>
             
             <rows>
