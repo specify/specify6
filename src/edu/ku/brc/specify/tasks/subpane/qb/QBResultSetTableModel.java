@@ -167,8 +167,20 @@ public class QBResultSetTableModel extends ResultSetTableModel
 					{
 						break;
 					}
-					Vector<Object> row = new Vector<Object>(rowObj.getClass()
+					Vector<Object> row = null;
+					if (rowObj != null)
+					{
+						row = new Vector<Object>(rowObj.getClass()
 							.isArray() ? ((Object[]) rowObj).length : 1);
+					}
+					else if (!hasIds)
+					{
+						row = new Vector<Object>(1);
+					}
+					else
+					{
+						throw new RuntimeException("row object is null");
+					}
 					Integer id = null;
 					if (rowObj != null && rowObj.getClass().isArray()) 
 					{
