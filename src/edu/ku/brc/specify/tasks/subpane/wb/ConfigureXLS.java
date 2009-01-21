@@ -210,8 +210,6 @@ public class ConfigureXLS extends ConfigureExternalDataBase
         }
         catch (FileNotFoundException ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ConfigureXLS.class, ex);
             // There is no document summary information. 
             result = null;
         }

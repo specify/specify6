@@ -32,7 +32,7 @@ public class UploadResultSetTableModel extends ResultSetTableModel
     public UploadResultSetTableModel(final ESResultsTablePanelIFace parentERTP,
                                      final QueryForIdResultsIFace results)
     {
-        super(parentERTP, results);
+        super(parentERTP, results, false, false);
     }
     
     /* (non-Javadoc)

@@ -1988,12 +1988,12 @@ public class UploadTable implements Comparable<UploadTable>
         int seq = 0;
         boolean gotABlank = false;
         int blankSeq = 0;
-        UploadField blankFirstFld = null;
         
         //for Locality table only
         LatLonConverter.FORMAT llFmt = null;
         GeoRefConverter gc = new GeoRefConverter();
         Vector<UploadTableInvalidValue> invalidNulls = new Vector<UploadTableInvalidValue>();
+        Vector<Integer> invalidBlankSeqs = new Vector<Integer>();
         for (Vector<UploadField> flds : uploadFields)
         {
             boolean isBlank = true;
@@ -2055,7 +2055,7 @@ public class UploadTable implements Comparable<UploadTable>
                     }
                 }
             }
-            if (isBlank && !gotABlank && currFirstFld != null)
+            if (isBlank)
             /* 
              * Disallow situations where 1-many lists have 'holes' - eg. CollectorLastName2 is blank but CollectorLastName1 and -3 are not.
              * 
@@ -2063,14 +2063,20 @@ public class UploadTable implements Comparable<UploadTable>
             {
                 gotABlank = true;
                 blankSeq = seq;
-                if (blankFirstFld == null)
-                {
-                    blankFirstFld = currFirstFld;
-                }
             }
-            else if (gotABlank)
+            else if (!isBlank && gotABlank)
             {
-                addInvalidValueMsgForOneToManySkip(invalidValues, blankFirstFld, toString(), row, blankSeq);
+            	if (!invalidBlankSeqs.contains(blankSeq))
+            	{
+            		for (UploadField blankSeqFld : uploadFields.get(blankSeq))
+            		{
+            			if (blankSeqFld.getIndex() != -1)
+            			{
+            				addInvalidValueMsgForOneToManySkip(invalidValues, blankSeqFld, toString(), row, blankSeq);
+            			}            			
+            		}
+            		invalidBlankSeqs.add(blankSeq);
+            	}
             }
             
             if (!hasChildren && !isBlank && invalidNulls.size() != 0)
