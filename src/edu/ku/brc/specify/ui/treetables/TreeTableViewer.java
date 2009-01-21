@@ -2357,6 +2357,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 				return false;
 			}
 			
+			
             hideChildren(oldParentNode);
             hideChildren(droppedOnNode);
             // Removing the children of these nodes may have resulted in a node being removed from the model.

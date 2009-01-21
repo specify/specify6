@@ -23,6 +23,7 @@ import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.ui.forms.BusinessRulesIFace;
+import edu.ku.brc.af.ui.forms.BusinessRulesIFace.STATUS;
 import edu.ku.brc.dbsupport.CustomQueryListener;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
@@ -31,6 +32,7 @@ import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
+import edu.ku.brc.specify.datamodel.busrules.BaseTreeBusRules;
 import edu.ku.brc.specify.dbsupport.HibernateDataProviderSession;
 import edu.ku.brc.specify.ui.treetables.TreeNode;
 import edu.ku.brc.ui.UIRegistry;
@@ -748,6 +750,12 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         {
             throw new NullPointerException("'node' must already have a parent");
         }
+        BusinessRulesIFace busRules = DBTableIdMgr.getInstance().getBusinessRule(node);
+    	STATUS status = ((BaseTreeBusRules )busRules).checkForSiblingWithSameName(newParent, node, true);
+        if (status != STATUS.OK)
+        {
+        	return false;
+        }
 
         Session session = getNewSession();
         try
@@ -768,12 +776,12 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
             mergedNewParent.addChild(mergedNode);
             mergedNode.setParent(mergedNewParent);
             
-            BusinessRulesIFace busRules = DBTableIdMgr.getInstance().getBusinessRule(mergedNode);
+            //BusinessRulesIFace busRules = DBTableIdMgr.getInstance().getBusinessRule(mergedNode);
             HibernateDataProviderSession sessionWrapper = new HibernateDataProviderSession(session);
             
             if (busRules != null)
             {
-                busRules.beforeSave(mergedNode, sessionWrapper);
+            	busRules.beforeSave(mergedNode, sessionWrapper);
             }
             session.saveOrUpdate(mergedNode);
             

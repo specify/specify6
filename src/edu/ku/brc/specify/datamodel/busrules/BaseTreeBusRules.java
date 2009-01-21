@@ -15,6 +15,7 @@
 package edu.ku.brc.specify.datamodel.busrules;
 
 import java.awt.Component;
+import java.awt.Frame;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.List;
@@ -30,6 +31,10 @@ import javax.swing.event.ListSelectionListener;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
@@ -51,7 +56,10 @@ import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.treeutils.TreeDataService;
 import edu.ku.brc.specify.treeutils.TreeDataServiceFactory;
 import edu.ku.brc.specify.treeutils.TreeHelper;
+import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.GetSetValueIFace;
+import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author rod 
@@ -72,6 +80,8 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
                                        extends BaseBusRules
 {
     private static final Logger log = Logger.getLogger(BaseTreeBusRules.class);
+    
+    private DataProviderSessionIFace activeSession = null;
     
     /**
      * Constructor.
@@ -1006,5 +1016,99 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
         }
     }
 
+    @SuppressWarnings("unchecked")
+    protected boolean parentHasChildWithSameName(final Object parentDataObj, final Object dataObj)
+    {
+        if (dataObj instanceof Treeable<?,?,?>)
+        {
+        	Treeable<T, D, I> node = (Treeable<T,D,I> )dataObj;
+        	Treeable<T, D, I> parent = parentDataObj == null ? node.getParent() : (Treeable<T, D, I> )parentDataObj; 
+        	if (parent != null)
+        	{
+        		boolean closeSession = false;
+        		DataProviderSessionIFace session = activeSession;
+        		if (activeSession == null)
+        		{
+        			session = DataProviderFactory.getInstance().createSession();
+        			closeSession = true;
+        		}
+        		try
+        		{
+        			session.attach(parent);
+        			Set<T> siblings = parent.getChildren();
+        			for (T sibling : siblings)
+        			{
+        				if (sibling.getName().equals(node.getName()) && sibling.getIsAccepted() && sibling.getTreeId() != node.getTreeId())
+        				{
+        					return true;
+        				}
+        			}			
+        		}
+        		finally
+        		{
+        			if (closeSession)
+        			{
+        				session.close();
+        			}
+        			activeSession = null;
+        		}
+        	}
+    	}
+    	return false;
+    }
+    
+    @SuppressWarnings("unchecked")
+    public STATUS checkForSiblingWithSameName(final Object parentDataObj, final Object dataObj,
+    		final boolean isExistingObject)
+    {
+		STATUS result = STATUS.OK;
+		if (parentHasChildWithSameName(parentDataObj, dataObj)) 
+		{
+            PanelBuilder pb = new PanelBuilder(new FormLayout("15dlu, f:p:g, 20dlu", "5dlu, f:p:g, 5dlu"));
+            pb.add(UIHelper.createLabel(String.format(UIRegistry.getResourceString("BaseTreeBusRules.IDENTICALLY_NAMED_SIBLING_MSG"), 
+            		((Treeable<T,D,I> )dataObj).getParent().getName(), ((Treeable<T,D,I> )dataObj).getName())), new CellConstraints().xy(2, 2));
+			CustomDialog dlg = new CustomDialog(
+					(Frame) UIRegistry.getTopWindow(),
+					UIRegistry
+							.getResourceString("BaseTreeBusRules.IDENTICALLY_NAMED_SIBLING_TITLE"),
+					true,
+					CustomDialog.OKCANCELHELP,
+					pb.getPanel());
+			UIHelper.centerAndShow(dlg);
+			dlg.dispose();
+			if (dlg.getBtnPressed() != CustomDialog.OK_BTN) 
+			{
+				reasonList
+						.add(UIRegistry
+								.getResourceString("BaseTreeBusRules.IDENTICALLY_NAMED_SIBLING")); // XXX
+																									// i18n
+				result = STATUS.Error;
+			}
+		}
+		return result;
+    }
+
+    
+	@Override
+	public STATUS processBusinessRules(Object parentDataObj, Object dataObj,
+			boolean isExistingObject) {
+		return checkForSiblingWithSameName(parentDataObj, dataObj, isExistingObject);
+	}
+
+//	@Override
+//	public STATUS processBusinessRules(Object dataObj) {
+//		STATUS result = super.processBusinessRules(dataObj);
+//		if (result == STATUS.OK)
+//		{
+//			result = checkForSiblingWithSameName(null, dataObj, false);
+//		}
+//		return result;
+//	}
+
+	public void setActiveSession(final DataProviderSessionIFace session)
+	{
+		this.activeSession = session;
+	}
+    
     
 }
