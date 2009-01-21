@@ -256,9 +256,11 @@ public class NavigationTreeMgr
                 }
             }
 
-            // delete agent associated with the discipline
-            Discipline discipline = session.get(Discipline.class, getParentDiscipline(userNode).getUserGroupScopeId());
-            deleteUserAgentFromDiscipline(user, discipline, session);
+            // the code below deletes the agent associated with the user and the discipline
+            // it should probably be disabled so that the agent, and the link to its data is not lost.
+            // at very least, an admin should be asked whether to delete the agent, but that can be added later
+            // Discipline discipline = session.get(Discipline.class, getParentDiscipline(userNode).getUserGroupScopeId());
+            // deleteUserAgentFromDiscipline(user, discipline, session);
 
             // remove user from groups
             user.getSpPrincipals().clear();
