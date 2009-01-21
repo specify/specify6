@@ -355,6 +355,17 @@
             </altviews>
         </view>
         
+        <view name="GeoCoordDetail"
+            class="edu.ku.brc.specify.datamodel.GeoCoordDetail"
+            isinternal="true"
+            resourcelabels="false">
+            <desc><![CDATA[Locality form.]]></desc>
+            <altviews>
+                <altview name="GeoCoordDetail View" viewdef="GeoCoordDetail" mode="view"/>
+                <altview name="GeoCoordDetail Edit" viewdef="GeoCoordDetail" mode="edit" default="true"/>
+            </altviews>
+        </view>
+        
         <view name="Gift"
             class="edu.ku.brc.specify.datamodel.Gift"
             busrules="edu.ku.brc.specify.datamodel.busrules.GiftBusRules"
@@ -1546,15 +1557,15 @@
              	</row>
                 <row>
                     <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="taxon" uitype="querycbx" initialize="name=Taxon"/>
-                    
+                    <cell type="field" id="1" name="taxon" uitype="querycbx" initialize="name=Taxon" colspan="6"/>
+                </row>
+                <row>
                     <cell type="label" labelfor="8"/>
                     <cell type="field" id="8" name="qualifier" uitype="text"/>
                     
                     <cell type="label" labelfor="9"/>
                     <cell type="field" id="9" name="addendum" uitype="text"/>
-                </row>
- 				<row>
+                    
                     <cell type="label" labelfor="11"/>
                     <cell type="field" id="11" name="nameUsage" uitype="combobox" picklist="NameUsages"/>
                     
@@ -1939,6 +1950,27 @@
         
         <viewdef
             type="form"
+            name="GeoCoordDetail"
+            class="edu.ku.brc.specify.datamodel.GeoCoordDetail"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Sub Collecting Event]]></desc>
+            <columnDef>p,2px,p,5px,p,2px,p,5px,p,2px,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="geoRefDetBy" uitype="querycbx" initialize="name=Agent" />
+                    <cell type="label" labelfor="2"/>
+                    <cell type="field" id="2" name="geoRefDetDate" uitype="formattedtext" uifieldformatter="Date"/>
+                </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef
+            type="form"
             name="Gift"
             class="edu.ku.brc.specify.datamodel.Gift"
             gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
@@ -2178,12 +2210,7 @@
                     <cell type="label" labelfor="localityName"/>
                     <cell type="field" id="localityName" name="localityName" uitype="text" isrequired="true" colspan="10"/>
                 </row>
-                <row>
-                    <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="namedPlace" uitype="text" colspan="5"/>
-                    <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="relationToNamedPlace" uitype="text"/>
-                </row>
+                
                 <row>
                     <cell type="label" labelfor="geography"/>
                     <cell type="field" id="geography" name="geography" uitype="querycbx" initialize="name=Geography" isrequired="true" colspan="10"/>
@@ -2191,6 +2218,16 @@
                 <row>
                     <cell type="label" labelfor="5"/>
                     <cell type="field" id="5" name="this" uitype="plugin" initialize="name=LatLonUI" colspan="10"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="6"/>
+                    <cell type="field" id="6" name="latLongMethod" uitype="text"/>
+                </row>
+                <row>  
+                    <cell type="subview" id="7" name="geoCoordDetails" viewname="GeoCoordDetail" colspan="12"/> 
+                </row>
+                <row>
+                    <cell type="subview" id="8" name="localityDetails" viewname="LocalityDetail" colspan="12"/> 
                 </row>
                 <row>
                     <cell type="separator" label="Elevation" colspan="12"/>
@@ -2217,10 +2254,10 @@
                         </rows>
                     </cell>
                 </row>
-            <!--    
-                <row>
+                <!--    
+                    <row>
                     <cell type="subview" id="10" viewname="LocalityCitation" name="localityCitations" colspan="12"/>
-                </row> -->
+                    </row> -->
                 <row>
                     <cell type="separator" label="Attachments" colspan="12"/>
                 </row>
@@ -2263,6 +2300,32 @@
                     <cell type="label" labelfor="4"/>
                     <cell type="field" id="4" name="modifiedByAgent" uitype="querycbx" initialize="name=Agent;title=Agent"/>
                     </row> -->
+            </rows>
+        </viewdef>
+        
+        <viewdef
+            type="form"
+            name="LocalityDetail"
+            class="edu.ku.brc.specify.datamodel.LocalityDetail"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Sub Collecting Event]]></desc>
+            <columnDef>p,2px,p,5px,p,2px,p,5px,p,2px,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="section" uitype="text"/>
+                    
+                    <cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="township" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="2"/>
+                    <cell type="field" id="2" name="rangeDesc" uitype="textarea" colspan="12"/>
+                </row>
             </rows>
         </viewdef>
                 
