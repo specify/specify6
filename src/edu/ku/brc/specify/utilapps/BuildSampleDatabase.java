@@ -4830,6 +4830,7 @@ public class BuildSampleDatabase
         
         Locality forestStream;
         Locality lake;
+        Locality clintonLake;
         Locality farmpond;
         
         if (isVoucherCol)
@@ -4860,6 +4861,22 @@ public class BuildSampleDatabase
             lake.setLong2text("100.403180 deg W");
             lake.setLongitude2(new BigDecimal(-100.403180));
             
+            Geography douglasKS = null;
+            for (Object o : geos)
+            {
+                if (o instanceof Geography)
+                {
+                    Geography g = (Geography)o;
+                    if (g.getFullName().indexOf("Douglas") == 0)
+                    {
+                        douglasKS = g;
+                    }
+                }
+            }
+            clintonLake   = createLocality("Clinton Lake", douglasKS);
+            localities.add(clintonLake);
+            globalLocalities.add(clintonLake);
+            
             farmpond = createLocality("Shoal Creek at Schermerhorn Park, S of Galena at Rt. 26", (Geography)geos.get(11));
             localities.add(farmpond);
             globalLocalities.add(farmpond);
@@ -4879,6 +4896,7 @@ public class BuildSampleDatabase
             persist(forestStream);
             persist(lake);
             persist(farmpond);
+            persist(clintonLake);
         } else
         {
             forestStream = globalLocalities.get(0);
@@ -5058,7 +5076,8 @@ public class BuildSampleDatabase
                 default:
                     collector = collectorRod;break;
             }
-            CollectingEvent ce = createCollectingEvent(forestStream, calendar, stationFieldNumber, new Collector[]{collector});
+            Locality        loc = (Locality)globalLocalities.get(rand.nextInt(globalLocalities.size()));
+            CollectingEvent ce  = createCollectingEvent(loc, calendar, stationFieldNumber, new Collector[]{collector});
             //ce1.setStartDateVerbatim("19 Mar 1993, 11:56 AM");
             ceList.add(ce);
             dataObjects.add(ce);

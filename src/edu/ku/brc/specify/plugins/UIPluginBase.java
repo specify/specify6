@@ -41,17 +41,18 @@ public abstract class UIPluginBase extends JPanel implements GetSetValueIFace, U
 {
     protected Object         dataObj           = null;
     protected String         cellName          = null;
+    protected String         title             = null;  // suppose to be localized
     protected boolean        isViewMode        = true;
     protected Properties     properties        = null;
     protected FormViewObj    fvo               = null;
     protected Vector<ChangeListener> listeners = null;
     
     /**
-     * 
+     * Constructor.
      */
     public UIPluginBase()
     {
-        // no op
+        title = getClass().getSimpleName();
     }
 
     //-----------------------------------------
@@ -150,6 +151,33 @@ public abstract class UIPluginBase extends JPanel implements GetSetValueIFace, U
         dataObj = null;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#canCarryForward()
+     */
+    @Override
+    public boolean canCarryForward()
+    {
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#getCarryForwardFields()
+     */
+    @Override
+    public String[] getCarryForwardFields()
+    {
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#getTitle()
+     */
+    @Override
+    public String getTitle()
+    {
+        return title;
+    }
+
     /**
      * Notify all the change listeners.
      * @param e the change event or null

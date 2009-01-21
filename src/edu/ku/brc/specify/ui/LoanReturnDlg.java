@@ -14,7 +14,7 @@
  */
 package edu.ku.brc.specify.ui;
 
-import static edu.ku.brc.ui.UIHelper.createButton;
+import static edu.ku.brc.ui.UIHelper.*;
 import static edu.ku.brc.ui.UIHelper.createCheckBox;
 import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIHelper.setControlSize;
@@ -78,8 +78,10 @@ import edu.ku.brc.af.ui.forms.persist.FormCellFieldIFace;
 import edu.ku.brc.af.ui.forms.persist.FormCellIFace;
 import edu.ku.brc.af.ui.forms.persist.ViewIFace;
 import edu.ku.brc.af.ui.forms.validation.FormValidator;
+import edu.ku.brc.af.ui.forms.validation.UIValidatable;
 import edu.ku.brc.af.ui.forms.validation.UIValidator;
 import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
+import edu.ku.brc.af.ui.forms.validation.ValFormattedTextFieldSingle;
 import edu.ku.brc.af.ui.forms.validation.ValidationListener;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -118,6 +120,7 @@ public class LoanReturnDlg extends JDialog
     protected FormValidator          validator = new FormValidator(null);
     protected ValComboBoxFromQuery   agentCBX;
     protected boolean                isCancelled = true;
+    protected ValFormattedTextFieldSingle dateClosed;
     
     /**
      * @param loan the loan
@@ -135,6 +138,9 @@ public class LoanReturnDlg extends JDialog
         
     }
     
+    /**
+     * @return
+     */
     public boolean createUI()
     {
         DataProviderSessionIFace session = null;
@@ -158,7 +164,7 @@ public class LoanReturnDlg extends JDialog
             
             JPanel mainPanel = new JPanel();
             
-            Hashtable<CollectionObject, Vector<LoanPreparation>> colObjHash     = new Hashtable<CollectionObject, Vector<LoanPreparation>>();
+            Hashtable<CollectionObject, Vector<LoanPreparation>> colObjHash = new Hashtable<CollectionObject, Vector<LoanPreparation>>();
             for (LoanPreparation loanPrep : loan.getLoanPreparations())
             {
                 CollectionObject        colObj = loanPrep.getPreparation().getCollectionObject();
@@ -217,23 +223,33 @@ public class LoanReturnDlg extends JDialog
             okBtn = createButton(getResourceString("SAVE"));
             JButton cancel = createButton(getResourceString("CANCEL"));
             
+            PanelBuilder pb = new PanelBuilder(new FormLayout("p,2px,p,2px,p,2px,p,2px,p,2px,p", "p"));
+            
+            dateClosed = new ValFormattedTextFieldSingle("Date", false, false, 10);
+            dateClosed.setNew(true);
+            dateClosed.setValue(null, "");
+            dateClosed.setRequired(true);
+            validator.hookupTextField(dateClosed,
+                    "2",
+                    true,
+                    UIValidator.Type.Changed,  
+                    "", 
+                    false);
             summaryLabel = createLabel("");
-            JPanel p = new JPanel(new BorderLayout());
-            p.setBorder(BorderFactory.createEmptyBorder(5, 1, 5, 1));
-            p.add(summaryLabel, BorderLayout.CENTER);
-            
-            JPanel agentPanel = new JPanel(new BorderLayout());
-            agentPanel.add(createLabel(getResourceString("LOANRET_AGENT") + ":", SwingConstants.RIGHT), BorderLayout.WEST);
-            agentPanel.add(agentCBX = createAgentCombobox(), BorderLayout.CENTER);
-            p.add(agentPanel, BorderLayout.EAST);
-            
-            contentPanel.add(p, BorderLayout.NORTH);
+            pb.add(summaryLabel,                     cc.xy(1, 1));
+            pb.add(createI18NLabel("LOANRET_AGENT"), cc.xy(3, 1));
+            pb.add(agentCBX = createAgentCombobox(), cc.xy(5, 1));
+            pb.add(createI18NLabel("ON"),            cc.xy(7, 1));
+            pb.add(dateClosed,                       cc.xy(9, 1));
+
+            contentPanel.add(pb.getPanel(), BorderLayout.NORTH);
             contentPanel.add(new JScrollPane(mainPanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER));
             
-            p = new JPanel(new BorderLayout());
+            JPanel p = new JPanel(new BorderLayout());
             p.setBorder(BorderFactory.createEmptyBorder(5, 0, 2, 0));
             p.add(ButtonBarFactory.buildOKCancelApplyBar(okBtn, cancel, selectAllBtn), BorderLayout.CENTER);
             contentPanel.add(p, BorderLayout.SOUTH);
+            contentPanel.setBorder(BorderFactory.createEmptyBorder(4, 12, 2, 12));
             
             setContentPane(contentPanel);
             
@@ -319,7 +335,10 @@ public class LoanReturnDlg extends JDialog
                                                1, 1, 1, 1, "Changed", null, false);
         fcf.addProperty("name", "Agent");
         fcf.addProperty("title", getResourceString("LOANRET_AGENT_DO_RET_TITLE"));
-        return ViewFactory.createQueryComboBox(validator, fcf, true, true);
+        ValComboBoxFromQuery cbx = ViewFactory.createQueryComboBox(validator, fcf, true, true);
+        cbx.setAsNew(true);
+        cbx.setState(UIValidatable.ErrorType.Incomplete);
+        return cbx;
     }
     
     
@@ -522,6 +541,7 @@ public class LoanReturnDlg extends JDialog
         protected JSpinner    spinner; 
         protected JDialog     parent;
         protected int         quantityReturned;
+        protected int         quantityLoaned;
         protected int         maxValue = 0;
         protected boolean     unknownQuantity;
         protected JTextField  remarks;
@@ -532,7 +552,8 @@ public class LoanReturnDlg extends JDialog
          * @param parent the parent dialog
          * @param lpo the LoanPreparation being returned
          */
-        public PrepPanel(final JDialog parent, final LoanPreparation lpo)
+        public PrepPanel(final JDialog parent, 
+                         final LoanPreparation lpo)
         {
             super();
             this.prep   = lpo.getPreparation();
@@ -543,7 +564,7 @@ public class LoanReturnDlg extends JDialog
             //setBorder(BorderFactory.createCompoundBorder(new CurvedBorder(new Color(160,160,160)), getBorder()));
      
             PanelBuilder    pbuilder = new PanelBuilder(new FormLayout("max(120px;p),2px,max(50px;p),2px,p,2px,p,10px,p:g", "p,2px,p"), this);
-            CellConstraints cc      = new CellConstraints();
+            CellConstraints cc       = new CellConstraints();
             
             pbuilder.add(label = createLabel(prep.getPrepType().getName()), cc.xy(1,1));
             label.setOpaque(false);
@@ -552,10 +573,10 @@ public class LoanReturnDlg extends JDialog
             
             if (prep.getCount() !=  null)
             {
-                int quantityLoaned    = lpo.getQuantity();
-                quantityReturned      = lpo.getQuantityReturned();
+                quantityLoaned    = lpo.getQuantity();
+                quantityReturned  = lpo.getQuantityReturned();
                 
-                int quantityOut       = quantityLoaned - quantityReturned;
+                int quantityOut   = quantityLoaned - quantityReturned;
                 
                 if (quantityOut > 0 && !lpo.getIsResolved())
                 {
@@ -633,6 +654,15 @@ public class LoanReturnDlg extends JDialog
 
                 remarks = new RemarksText();
                 pbuilder.add(remarks, cc.xywh(1, 3, 9, 1));
+                
+                resolved.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        quantityReturned = quantityLoaned;
+                        spinner.setValue(quantityLoaned);
+                    }
+                });
             }
             
             if (spinner != null)
@@ -764,9 +794,30 @@ public class LoanReturnDlg extends JDialog
         {
             List<Loan> loans = new Vector<Loan>();
             
-            for (LoanPreparation loanPO : prep.getLoanPreparations())
+            DataProviderSessionIFace session = null;
+            try
             {
-                loans.add(loanPO.getLoan());
+                session = DataProviderFactory.getInstance().createSession();
+                
+                session.attach(prep);
+
+                for (LoanPreparation loanPO : prep.getLoanPreparations())
+                {
+                    loans.add(loanPO.getLoan());
+                }
+            } catch (Exception ex)
+            {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(LoanReturnDlg.class, ex);
+                // Error Dialog
+                ex.printStackTrace();
+                
+            } finally 
+            {
+                if (session != null)
+                {
+                    session.close();
+                }
             }
             
             ViewIFace view  = AppContextMgr.getInstance().getView("Loan");

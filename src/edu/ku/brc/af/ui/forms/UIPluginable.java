@@ -66,7 +66,6 @@ public interface UIPluginable
      */
     public abstract void addPropertyChangeListener(PropertyChangeListener l);
     
-    
     /**
      * Sets the parent FormViewObj, the parent that contains this plugin.
      * This caller should be guaranteeing that the FormViewObj is completely built.
@@ -78,5 +77,26 @@ public interface UIPluginable
      * @return whether the plugin has values
      */
     public abstract boolean isNotEmpty();
+    
+    /**
+     * @return whether this control has data that can be carried forward in a data form.
+     */
+    public abstract boolean canCarryForward();
+    
+    /**
+     * Returns an array containing the names of the fields that should be 
+     * carried forward because this plugin UI manipulates them when the plugin is passed 'this' as the field.
+     * If 'canCarryForward' returns false or used a field name from the data object 
+     * then this call can/should return null.
+     * 
+     * @return an array containing the names of the fields.
+     */
+    public abstract String[] getCarryForwardFields();
+    
+    /**
+     * @return a (localized) title of this type of UIPlugin. This is needed (mostly)
+     * for Carry Forward when there is no label describing it and the UI needs to refer to it.
+     */
+    public abstract String getTitle();
     
 }

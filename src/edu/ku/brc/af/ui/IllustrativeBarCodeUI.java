@@ -61,6 +61,10 @@ public class IllustrativeBarCodeUI extends JPanel implements GetSetValueIFace, U
         return 4;
     }
 
+    /**
+     * @param code
+     * @return
+     */
     private Color getColor(final char code)
     {
         switch (code)
@@ -73,6 +77,9 @@ public class IllustrativeBarCodeUI extends JPanel implements GetSetValueIFace, U
         return Color.WHITE;
     }
 
+    /**
+     * @param sequence
+     */
     public void setSequence(final String sequence)
     {
         for (int i=0;i<totals.length;i++)
@@ -91,6 +98,10 @@ public class IllustrativeBarCodeUI extends JPanel implements GetSetValueIFace, U
         repaint();
     }
     
+    /**
+     * @param code
+     * @return
+     */
     public int getTotal(final char code)
     {
         return totals[getIndex(code)];
@@ -174,6 +185,7 @@ public class IllustrativeBarCodeUI extends JPanel implements GetSetValueIFace, U
     //--------------------------------------------------------------------------------------------
     //-- UIPlugin
     //--------------------------------------------------------------------------------------------
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.UIPluginable#addChangeListener(javax.swing.event.ChangeListener)
      */
@@ -252,6 +264,33 @@ public class IllustrativeBarCodeUI extends JPanel implements GetSetValueIFace, U
         {
             setSequence(((DNASequence)value).getGeneSequence());
         }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#canCarryForward()
+     */
+    @Override
+    public boolean canCarryForward()
+    {
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#getCarryForwardFields()
+     */
+    @Override
+    public String[] getCarryForwardFields()
+    {
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#getTitle()
+     */
+    @Override
+    public String getTitle()
+    {
+        return "IllustrativeBarCode";
     }
 
 }

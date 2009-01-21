@@ -56,6 +56,7 @@ import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.plugins.UIPluginBase;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 import edu.ku.brc.util.LatLonConverter.FORMAT;
 import edu.ku.brc.util.LatLonConverter.LATLON;
@@ -100,7 +101,8 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
     protected JComboBox                formatSelector;
     protected LatLonUIIFace.LatLonType currentType;
     protected boolean                  stateChangeOK = true;
-    
+    protected String[]                 fieldNames;
+
     protected Hashtable<BorderedRadioButton, LatLonUIIFace.LatLonType> selectedTypeHash = new Hashtable<BorderedRadioButton, LatLonUIIFace.LatLonType>();
     
     protected ImageIcon[]           pointImages;
@@ -139,7 +141,11 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
      */
     public LatLonUI()
     {
+        super();
+        
         loadAndPushResourceBundle("specify_plugins");
+        
+        title = UIRegistry.getResourceString("LatLonUI");
         
         typeNamesLabels = new String[typeNamesKeys.length];
         typeToolTips    = new String[typeToolTipKeys.length];
@@ -161,6 +167,14 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
         }
         
         popResourceBundle();
+        
+        fieldNames = new String[] {"latitude1",   "longitude1", 
+                                   "latitude2",   "longitude2", 
+                                   "lat1text",    "long1text", 
+                                   "lat2text",    "long2text", 
+                                   "latLongType", "originalLatLongUnit", 
+                                   "srcLatLongUnit", 
+                                   };
     }
     
     /**
@@ -741,11 +755,29 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
     {
         
     }
-
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.plugins.UIPluginBase#canCarryForward()
+     */
+    @Override
+    public boolean canCarryForward()
+    {
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.plugins.UIPluginBase#getCarryForwardFields()
+     */
+    @Override
+    public String[] getCarryForwardFields()
+    {
+        return fieldNames;
+    }
+    
     //--------------------------------------------------------
     // UIValidatable Interface
     //--------------------------------------------------------
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.validation.UIValidatable#cleanUp()
      */

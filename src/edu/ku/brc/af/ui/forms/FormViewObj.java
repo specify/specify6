@@ -818,7 +818,7 @@ public class FormViewObj implements Viewable,
             
             fieldInfo.setFieldInfo(fi);
                     
-            //log.debug(fieldName);
+            log.debug(fieldName);
 
             // Start by assuming it is OK to be added
             boolean isOK = true;
@@ -842,11 +842,17 @@ public class FormViewObj implements Viewable,
                         {
                             isOK = false;
                         }
+                    } else
+                    {
+                        System.out.println("Skipping "+infoBase);
                     }
                 }
+            } else
+            {
+                System.out.println("Skipping "+fieldInfo.getFormCell());
             }
             
-            // At this point we have weeded out any "fields" and we need to get a label for the field
+            // At this point we have weeded out any readonly/autoinc "fields" and we need to get a label for the field
             // And weed out any SubViews.
             if (isOK)
             {
@@ -860,6 +866,8 @@ public class FormViewObj implements Viewable,
                         label = ((FormCellLabel)labelInfo.getFormCell()).getLabel();
                     }
                 }
+                
+                log.error("Couldn't find field ["+fieldName+"] in ["+ti.getTitle()+"]");
                 
                 // Now we go get the DBFieldInfo and DBRelationshipInfo and check to make
                 // that the field or Relationship is still a candidate for CF
@@ -909,10 +917,17 @@ public class FormViewObj implements Viewable,
                                 }
                             }
                             
+                        } else if (fieldInfo.getUiPlugin() != null)
+                        {
+                            if (StringUtils.isNotEmpty(label))
+                            {
+                                label = fieldInfo.getUiPlugin().getTitle();
+                            }
+                            isOK = fieldInfo.getUiPlugin().canCarryForward();
                         } else
                         {
                             log.error("Couldn't find field ["+fieldName+"] in ["+ti.getTitle()+"]");
-                            isOK = false;
+                            isOK = false;  
                         }
                     }
                     
@@ -934,6 +949,10 @@ public class FormViewObj implements Viewable,
             @Override
             public int compare(FVOFieldInfo o1, FVOFieldInfo o2)
             {
+                if (o1.getLabel() == null || o2.getLabel() == null)
+                {
+                    return 1;
+                }
                 return o1.getLabel().compareTo(o2.getLabel());
             }
         });

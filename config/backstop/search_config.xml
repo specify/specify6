@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+
+  Last Id for ExpressSearch 29
+  Last Id for Other Search  125
+
+ -->
 <searches>
     <!-- ************************************** -->
     <!--      These are for Express Search      -->
@@ -108,7 +114,6 @@
                 <join tableid="4" primary="true">taxon.TaxonID</join>
                 <join tableid="2">locality.LocalityID</join>
                 <join tableid="1">collectionobject.CollectionObjectID</join>
-                <!-- <join tableid="88">determinationstatus.DeterminationStatusID</join>-->
                 <join tableid="3">geography.GeographyID</join>
             </joins>
             <detailView icon="Taxon">
@@ -369,7 +374,7 @@
         <table id="13" tableid="1" indexed="false" name="CEToCO" priority="1" color="30, 144, 144">
             <joins>
                 <join tableid="10" primary="true">collectingevent.CollectingEventID</join>
-                <!--  <join tableid="1">collectionobject.CollectionObjectID</join> -->
+                <join tableid="1">collectionobject.CollectionObjectID</join>
             </joins>
             <detailView icon="ColEvent">
                 <sql>
@@ -389,6 +394,39 @@
                     <caption tableid="1" col="CatalogNumber" formatter="CatalogNumber"/>
                     <caption tableid="10" col="StartDate"/>
                     <caption tableid="10" col="EndDate"/>
+                </captions>
+            </detailView>
+        </table>
+        
+        <table id="29" tableid="1" indexed="false" name="LocToCO" priority="1" color="30, 144, 144">
+            <joins>
+                <join tableid="2" primary="true">locality.LocalityID</join>
+                <join tableid="10">collectingevent.CollectingEventID</join>
+                <join tableid="1">collectionobject.CollectionObjectID</join>
+            </joins>
+            <detailView icon="CollectionObject">
+                <sql>
+                    <![CDATA[SELECT 
+ collectionobject.CollectionObjectID, 
+ collectionobject.CatalogNumber, 
+ collectingevent.StartDate, 
+ locality.LocalityName, 
+ locality.Latitude1, 
+ locality.Longitude1,
+ %s 
+ FROM 
+ locality
+ INNER JOIN collectingevent ON locality.LocalityID = collectingevent.LocalityID
+ INNER JOIN collectionobject ON collectingevent.CollectingEventID = collectionobject.CollectingEventID
+ WHERE locality.DisciplineID = DSPLNID AND %s ORDER BY StartDate]]>
+                </sql>
+                <captions>
+                    <caption tableid="1" col="CollectionObjectID" visible="false"/>
+                    <caption tableid="1" col="CatalogNumber" formatter="CatalogNumber"/>
+                    <caption tableid="10" col="StartDate"/>
+                    <caption tableid="2" col="LocalityName"/>
+                    <caption tableid="2" col="Latitude1"/>
+                    <caption tableid="2" col="Longitude1"/>
                 </captions>
             </detailView>
         </table>

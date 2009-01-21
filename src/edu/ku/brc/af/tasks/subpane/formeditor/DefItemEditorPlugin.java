@@ -80,6 +80,33 @@ public class DefItemEditorPlugin extends JPanel implements GetSetValueIFace, UIP
         });
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#canCarryForward()
+     */
+    @Override
+    public boolean canCarryForward()
+    {
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#getCarryForwardFields()
+     */
+    @Override
+    public String[] getCarryForwardFields()
+    {
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#getTitle()
+     */
+    @Override
+    public String getTitle()
+    {
+        return "DefItemEditorPlugin";
+    }
+
     protected void edit()
     {
         int maxCols = 0;

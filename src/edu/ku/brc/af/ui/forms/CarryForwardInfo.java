@@ -161,6 +161,53 @@ public class CarryForwardInfo
     }
     
     /**
+     * Clones the field/object.
+     * @param fieldName the name of the field
+     * @param fieldDataValue the old field value
+     * @param newData the new parent object the field is being set into.
+     */
+    private void cloneCFField(final String fieldName,
+                              final Object fieldDataValue,
+                              final Object newData)
+    {
+        try
+        {
+            Object data = ((FormDataObjIFace)fieldDataValue).clone();
+            setter.setFieldValue(newData, fieldName, data);
+            
+        } catch (Exception ex)
+        {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(CarryForwardInfo.class, ex);
+            ex.printStackTrace();
+        }
+    }
+    
+    /**
+     * checks to see if the data can be set or cloned.
+     * @param businessRules the business rules
+     * @param fieldName the field name
+     * @param fieldDataValue the old data
+     * @return whether the data can be or should be cloned
+     */
+    private boolean isFieldClonable(final BusinessRulesIFace businessRules,
+                                    final String fieldName,
+                                    final Object fieldDataValue)
+    {
+        if (fieldDataValue != null && 
+            businessRules != null && 
+            businessRules.shouldCloneField(fieldName))
+        {
+            if (isClonable(fieldDataValue))
+            {
+                return true;
+            }
+            UIRegistry.showError("A request has been made to Clone an object ["+fieldDataValue.getClass().getSimpleName()+"] and it doesn't implement Clone\nPlease ask engineering to do that.");
+        }
+        return false;
+    }
+    
+    /**
      * Sets the Value (ManyToOne) or Clones it like a OneToOne.
      * @param businessRules the rules
      * @param carryFwdData the carry forward object
@@ -172,34 +219,41 @@ public class CarryForwardInfo
                                        final FVOFieldInfo       fvoFieldInfo,
                                        final Object             newData)
     {
-        String fieldName      = fvoFieldInfo.getFormCell().getName();
-        Object fieldDataValue = getter.getFieldValue(carryFwdData, fieldName);
+        String fieldName = fvoFieldInfo.getFormCell().getName();
         
-        //System.err.println(fieldName);
-        
-        if (fieldDataValue != null && 
-            businessRules != null && 
-            businessRules.shouldCloneField(fieldName))
+        if (fieldName.equals("this") && 
+            fvoFieldInfo.getComp() instanceof UIPluginable &&
+            ((UIPluginable)fvoFieldInfo.getComp()).canCarryForward())
         {
-            if (isClonable(fieldDataValue))
+            String[] fieldNames = ((UIPluginable)fvoFieldInfo.getComp()).getCarryForwardFields();
+            if (fieldNames != null)
             {
-                try
+                for (String fldName : fieldNames)
                 {
-                    fieldDataValue = ((FormDataObjIFace)fieldDataValue).clone();
+                    Object fieldDataValue = getter.getFieldValue(carryFwdData, fldName);
                     
-                } catch (Exception ex)
-                {
-                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(CarryForwardInfo.class, ex);
-                    ex.printStackTrace();
+                    if (isFieldClonable(businessRules, fldName, fieldDataValue))
+                    {
+                        cloneCFField(fldName, fieldDataValue, newData);
+                    } else
+                    {
+                        setter.setFieldValue(newData, fldName, fieldDataValue);
+                    }
                 }
+            }
+            return;
+            
+        } else 
+        {
+            Object fieldDataValue = getter.getFieldValue(carryFwdData, fieldName);
+            if (isFieldClonable(businessRules, fieldName, fieldDataValue))
+            {
+                cloneCFField(fieldName, fieldDataValue, newData);
             } else
             {
-                UIRegistry.showError("A request has been made to Clone an object ["+fieldDataValue.getClass().getSimpleName()+"] and it doesn't implement Clone\nPlease ask engineering to do that.");
-                return;
+                setter.setFieldValue(newData, fieldName, fieldDataValue);
             }
         }
-        setter.setFieldValue(newData, fieldName, fieldDataValue);
     }
     
     /**

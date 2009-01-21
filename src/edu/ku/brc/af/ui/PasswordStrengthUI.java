@@ -368,6 +368,33 @@ public class PasswordStrengthUI extends JPanel implements UIPluginable, GetSetVa
     }
 
     /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#canCarryForward()
+     */
+    @Override
+    public boolean canCarryForward()
+    {
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#getCarryForwardFields()
+     */
+    @Override
+    public String[] getCarryForwardFields()
+    {
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#getTitle()
+     */
+    @Override
+    public String getTitle()
+    {
+        return "Password Strength";
+    }
+    
+    /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.UIPluginable#addChangeListener(javax.swing.event.ChangeListener)
      */
     @Override

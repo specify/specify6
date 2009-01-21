@@ -1,13 +1,13 @@
 /*
-     * Copyright (C) 2008  The University of Kansas
-     *
-     * [INSERT KU-APPROVED LICENSE TEXT HERE]
-     *
-     */
-/**
- * 
+ * Copyright (C) 2008  The University of Kansas
+ *
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
+ *
  */
 package edu.ku.brc.specify.plugins;
+
+import static edu.ku.brc.ui.UIRegistry.loadAndPushResourceBundle;
+import static edu.ku.brc.ui.UIRegistry.popResourceBundle;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -70,6 +70,7 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
     protected boolean                isViewMode  = false;
     protected boolean                doGeoLocate = false;
     
+    protected String                 title       = null;
     protected String                 llId        = null;
     protected String                 geoId       = null;
     protected String                 locId       = null;
@@ -81,10 +82,16 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
      */
     public LocalityGeoRefPlugin()
     {
+        loadAndPushResourceBundle("specify_plugins");
+        
+        title = UIRegistry.getResourceString("LocalityGeoRefPlugin");
+        
+        popResourceBundle();
+        
         locality = null;
         
         addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent arg0)
+            public void actionPerformed(ActionEvent e)
             {
                 sendToGeoRefTool();
             }
@@ -98,6 +105,33 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
         CommandDispatcher.register(PREFERENCES, this);
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#canCarryForward()
+     */
+    @Override
+    public boolean canCarryForward()
+    {
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#getCarryForwardFields()
+     */
+    @Override
+    public String[] getCarryForwardFields()
+    {
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#getTitle()
+     */
+    @Override
+    public String getTitle()
+    {
+        return title;
+    }
+
     /**
      * Dispatches processing command to the provider.
      */
