@@ -2009,7 +2009,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         if (StringUtils.isNotEmpty(install4JStr))
         {
             appVersion = install4JStr;
-            title = appName + " Alpha " + appVersion; //$NON-NLS-1$
+            title = appName + " Beta " + appVersion; //$NON-NLS-1$
         } else
         {
             title = appName + " " + appVersion + "  - " + appBuildVersion; //$NON-NLS-1$ //$NON-NLS-2$
