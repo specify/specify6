@@ -40,6 +40,17 @@
         </view>
     </views>
     
+    <view name="Locality"
+        class="edu.ku.brc.specify.datamodel.Locality"
+        busrules="edu.ku.brc.specify.datamodel.busrules.LocalityBusRules"
+        isinternal="false"
+        resourcelabels="false">
+        <desc><![CDATA[Locality form.]]></desc>
+        <altviews>
+            <altview name="Locality View" viewdef="Locality" mode="view"/>
+            <altview name="Locality Edit" viewdef="Locality" mode="edit" default="true"/>
+        </altviews>
+    </view>
     
     <viewdefs>
         <viewdef
@@ -64,7 +75,7 @@
                     <cell type="field" id="2" name="collection.collectionName" uitype="dsptextfield"/>
                     
                     <cell type="label" labelfor="13"/>
-                    <cell type="field" id="13" name="countAmt" uitype="text"/>
+                    <cell type="field" id="13" name="text1" uitype="text"/>
                 </row>
                 <!-- 
     			<row>
@@ -95,10 +106,10 @@
                     <cell type="label" labelfor="7"/>
                     <cell type="field" id="7" name="collectingEvent" uitype="querycbx" formatname="CollectingEventDetail" initialize="name=CollectingEvent" colspan="12"/>
                 </row> 
- 	          <row>
+ 	        <!--  <row>
                     <cell type="label" labelfor="20"/>
                     <cell type="field" id="20" name="appraisal" uitype="querycbx" initialize="name=Appraisal;title=Appraisal" colspan="12"/>
-                </row>
+                </row> -->
                 <row>
                     <cell type="subview" viewname="Preparation" id="8" name="preparations" defaulttype="table" colspan="12"/>
                 </row>
@@ -161,10 +172,6 @@
                     <cell type="field" id="4" name="locality" uitype="querycbx" initialize="name=Locality;title=Locality" colspan="10"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="7"/>
-                    <cell type="field" id="7" name="collectingTrip" uitype="querycbx" initialize="name=CollectingTrip" colspan="10"/>
-                </row>
-                <row>
                     <cell type="label" labelfor="6"/>
                     <cell type="field" id="6" name="remarks" uitype="textarea" colspan="10" cols="50"/>
                 </row>
@@ -215,6 +222,73 @@
                 <row>
                     <cell type="label" labelfor="5"/>
                     <cell type="subview" viewname="Collectors" id="5" name="collectors" colspan="10"/>
+                </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef
+            type="form"
+            name="Locality"
+            class="edu.ku.brc.specify.datamodel.Locality"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Locality]]></desc>
+            <columnDef>p,2px,p,5px,p,2px,p,5px,p,2px,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+            <enableRules>
+                <rule id="georef"><![CDATA[localityName.isNotEmpty() && geography.isNotEmpty()]]></rule>
+            </enableRules>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="localityName"/>
+                    <cell type="field" id="localityName" name="localityName" uitype="text" isrequired="true" colspan="10"/>
+                </row>
+                
+                <row>
+                    <cell type="label" labelfor="geography"/>
+                    <cell type="field" id="geography" name="geography" uitype="querycbx" initialize="name=Geography" isrequired="true" colspan="10"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="5"/>
+                    <cell type="field" id="5" name="this" uitype="plugin" initialize="name=LatLonUI" colspan="10"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="6"/>
+                    <cell type="field" id="6" name="latLongMethod" uitype="text"/>
+                </row>
+                <row>
+                    
+                    <cell type="subview" id="7" name="geoCoordDetails" viewname="GeoCoordDetail" colspan="12"/> 
+                </row>
+                <row>
+                    <cell type="subview" id="8" name="localityDetails" viewname="LocalityDetail" colspan="12"/> 
+                </row>
+                
+                <row>
+                    <cell type="separator" label="Plugins" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="panel" id="outerPanel" name="outerPanel" coldef="p,f:p:g,p,f:p:g,p,f:p:g" rowdef="p" colspan="12">
+                        <rows>
+                            <row>
+                                <cell type="label" label=" "/>
+                                <cell type="field" id="georef" name="this" uitype="plugin" initialize="name=LocalityGeoRef;title=Geo Ref;geoid=geography;locid=localityName;llid=5" colspan="1"/>
+                                <cell type="field" id="ge" name="this" uitype="plugin" initialize="name=LocalityGoogleEarth;title=Google Earth;watch=5" colspan="1"/>
+                            </row>
+                        </rows>
+                    </cell>
+                </row>
+                <!--    
+                    <row>
+                    <cell type="subview" id="10" viewname="LocalityCitation" name="localityCitations" colspan="12"/>
+                    </row> -->
+                <row>
+                    <cell type="separator" label="Attachments" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="localityAttachments" colspan="12" initialize="btn=true;icon=LocalityAttachment"/>
                 </row>
             </rows>
         </viewdef>
