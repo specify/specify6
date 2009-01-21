@@ -149,11 +149,18 @@ public class NavigationTreeMgr
         {
             session = DataProviderFactory.getInstance().createSession();
             session.beginTransaction();
+            
+            session.attach(user);
+            session.attach(group);
+            
             user.getSpPrincipals().remove(group);
             group.getSpecifyUsers().remove(user);
             
             // delete agent associated with the discipline
             deleteUserAgentFromDiscipline(userNode, session);
+            
+            session.update(user);
+            session.update(group);
             
             session.commit();
             
@@ -934,12 +941,8 @@ public class NavigationTreeMgr
             discipline.getAgents().add(newAgent);
             user.getAgents().add(newAgent);
             
-            session.save(newAgent);
-            session.saveOrUpdate(discipline);
-            
-            session.saveOrUpdate(user);
-            session.saveOrUpdate(userPrincipal);
-            session.saveOrUpdate(group);
+            // no need to save or update any objects because they all got associated with persistent objects
+            // that's enough to make them persistent as well
         }
     }
 }

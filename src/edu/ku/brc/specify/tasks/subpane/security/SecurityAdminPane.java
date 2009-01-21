@@ -439,24 +439,20 @@ public class SecurityAdminPane extends BaseSubPane
         TreeSet<Division> divisions = new TreeSet<Division>(institution.getDivisions()); 
         for (Division division : divisions)
         {
-            // sort disciplines
-            if (true)
+            TreeSet<Discipline> disciplines = new TreeSet<Discipline>(division.getDisciplines()); 
+            for (Discipline discipline : disciplines)
             {
-                TreeSet<Discipline> disciplines = new TreeSet<Discipline>(division.getDisciplines()); 
-                for (Discipline discipline : disciplines)
-                {
-                    DefaultMutableTreeNode discNode = new DefaultMutableTreeNode(new DataModelObjBaseWrapper(discipline));
-                    instNode.add(discNode);
-                    addCollectionsRecursively(session, discNode, discipline);
-                    addGroup(session, discNode, discipline);
-                }
-            } else
-            {
-                // The code below is to add divisions when these are to be visible (in a future release)
-                DefaultMutableTreeNode divNode = new DefaultMutableTreeNode(new DataModelObjBaseWrapper(division));
-                instNode.add(divNode);
-                addDisciplinesRecursively(session, divNode, division);
+                DefaultMutableTreeNode discNode = new DefaultMutableTreeNode(new DataModelObjBaseWrapper(discipline));
+                instNode.add(discNode);
+                addCollectionsRecursively(session, discNode, discipline);
+                addGroup(session, discNode, discipline);
             }
+//            {
+//                // The code below is to add divisions when these are to be visible (in a future release)
+//                DefaultMutableTreeNode divNode = new DefaultMutableTreeNode(new DataModelObjBaseWrapper(division));
+//                instNode.add(divNode);
+//                addDisciplinesRecursively(session, divNode, division);
+//            }
         }
     }
 
@@ -465,7 +461,6 @@ public class SecurityAdminPane extends BaseSubPane
      * @param divNode
      * @param division
      */
-    @SuppressWarnings("unused")  // will be used eventually when divisions can have more than one discipline 
     private void addDisciplinesRecursively(final DataProviderSessionIFace session, final DefaultMutableTreeNode divNode, final Division division)
     {
         // sort disciplines
