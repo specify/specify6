@@ -371,8 +371,6 @@ public class BuildSampleDatabase
             
         } catch (MissingResourceException ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BuildSampleDatabase.class, ex);
             Locale.setDefault(Locale.ENGLISH);
             UIRegistry.setResourceLocale(Locale.ENGLISH);
         }
@@ -864,8 +862,6 @@ public class BuildSampleDatabase
             
         } catch (Exception ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BuildSampleDatabase.class, ex);
             ex.printStackTrace();
         }
         return colMethods;
@@ -3054,8 +3050,6 @@ public class BuildSampleDatabase
 
         } catch (Exception ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BuildSampleDatabase.class, ex);
             ex.printStackTrace();
             return null;
         }
@@ -4583,8 +4577,6 @@ public class BuildSampleDatabase
                 
             } catch (Exception ex)
             {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BuildSampleDatabase.class, ex);
                 log.error(ex);
             }
     
@@ -4638,8 +4630,6 @@ public class BuildSampleDatabase
             }
         } catch (Exception ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BuildSampleDatabase.class, ex);
             ex.printStackTrace();
             return;
         }
@@ -4661,7 +4651,6 @@ public class BuildSampleDatabase
             
         } catch (Exception ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BuildSampleDatabase.class, ex);
             // XXX Error dialog
             ex.printStackTrace();
@@ -5701,8 +5690,6 @@ public class BuildSampleDatabase
                 }
                 catch (IOException e)
                 {
-                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BuildSampleDatabase.class, e);
                     log.error("Unable to add card image to workbench row", e);
                 }
             }
@@ -5898,8 +5885,6 @@ public class BuildSampleDatabase
             }
             catch (Exception e)
             {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BuildSampleDatabase.class, e);
                 log.error("Could not create attachments", e);
             }
         
@@ -6062,6 +6047,7 @@ public class BuildSampleDatabase
                     break;
                 }
                 DisciplineType dType = DisciplineType.getDiscipline(disp);
+                log.debug("Building "+dType.getName());
                 if (XMLHelper.getConfigDir(dType.getName()+ File.separator + "taxon_init.xml").exists())
                 {
                     createGenericCollection(dType, institution, user,  getChoice(disp, false), method);
@@ -6675,13 +6661,10 @@ public class BuildSampleDatabase
         {
             try
             {
-                
                 session.saveOrUpdate(o);
                 
             } catch (Exception ex)
             {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BuildSampleDatabase.class, ex);
                 UIRegistry.showError(ex.toString());
                 ex.printStackTrace();
                 throw new RuntimeException(ex);
@@ -6733,8 +6716,6 @@ public class BuildSampleDatabase
             
         } catch (Exception ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BuildSampleDatabase.class, ex);
             UIRegistry.showError(ex.toString());
             ex.printStackTrace();
             throw new RuntimeException(ex);
@@ -6817,8 +6798,6 @@ public class BuildSampleDatabase
             
         } catch (IOException ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BuildSampleDatabase.class, ex);
             ex.printStackTrace();
         }
     }
@@ -6843,8 +6822,6 @@ public class BuildSampleDatabase
                         
                     } catch (IOException ex)
                     {
-                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BuildSampleDatabase.class, ex);
                         log.error(ex);
                     }
                 }
@@ -7009,8 +6986,6 @@ public class BuildSampleDatabase
                 } catch (Exception ex)
                 {
                     ex.printStackTrace();
-                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BuildSampleDatabase.class, ex);
                 }
                 
                 return null;
@@ -7068,12 +7043,7 @@ public class BuildSampleDatabase
                             log.debug(dropSQl);
                             stmt.executeUpdate(dropSQl);
                             
-                        } catch (Exception ex)
-                        {
-                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BuildSampleDatabase.class, ex);
-                            
-                        }
+                        } catch (Exception ex) { }
                     }
                     rs.close();
                     
@@ -7099,8 +7069,6 @@ public class BuildSampleDatabase
                 }
             } catch (SQLException ex)
             {
-                edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BuildSampleDatabase.class, ex);
                 ex.printStackTrace();
                 
             } finally
@@ -7117,8 +7085,6 @@ public class BuildSampleDatabase
                     }
                 } catch (SQLException ex1)
                 {
-                    edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BuildSampleDatabase.class, ex1);
                     ex1.printStackTrace();
                 }
             }
@@ -7298,8 +7264,6 @@ public class BuildSampleDatabase
             
         } catch (Exception ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BuildSampleDatabase.class, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7512,6 +7476,7 @@ public class BuildSampleDatabase
                 }
                 catch(Exception e)
                 {
+                    e.printStackTrace();
                     try
                     {
                         rollbackTx();
@@ -7599,7 +7564,6 @@ public class BuildSampleDatabase
             
         } catch (Exception ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BuildSampleDatabase.class, ex);
             System.err.println(ex); // XXX Error Dialog
         }
@@ -7878,8 +7842,6 @@ public class BuildSampleDatabase
             
         } catch (IOException ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BuildSampleDatabase.class, ex);
             ex.printStackTrace();
         }
         
@@ -7918,7 +7880,6 @@ public class BuildSampleDatabase
             }
         } catch (Exception ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BuildSampleDatabase.class, ex);
             ex.printStackTrace();
             
@@ -7942,8 +7903,6 @@ public class BuildSampleDatabase
             
         } catch (MissingResourceException ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BuildSampleDatabase.class, ex);
             Locale.setDefault(Locale.ENGLISH);
             UIRegistry.setResourceLocale(Locale.ENGLISH);
         }
@@ -7959,8 +7918,6 @@ public class BuildSampleDatabase
         }
         catch (Exception e)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BuildSampleDatabase.class, e);
             e.printStackTrace();
         }
         
