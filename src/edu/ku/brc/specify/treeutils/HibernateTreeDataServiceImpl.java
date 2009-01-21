@@ -731,7 +731,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
     }
     
     @SuppressWarnings("unchecked")
-    public synchronized boolean moveTreeNode(final T node, final T newParent)
+    public synchronized int moveTreeNode(final T node, final T newParent)
     {
         //log.debug("Moving ["+nodeDebugInfo(node)+"] to ["+nodeDebugInfo(newParent)+"]");
         
@@ -742,7 +742,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         
         if( node.getParent() == newParent )
         {
-            return false;
+            return ERROR;
         }
         
         T oldParent = node.getParent();
@@ -754,7 +754,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
     	STATUS status = ((BaseTreeBusRules )busRules).checkForSiblingWithSameName(newParent, node, true);
         if (status != STATUS.OK)
         {
-        	return false;
+        	return CANCELLED;
         }
 
         Session session = getNewSession();
@@ -918,7 +918,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
                     if (retVal == false)
                     {
                         tx.rollback();
-                        return false;
+                        return ERROR;
                     }
                 }
                 catch (Exception e)
@@ -926,7 +926,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
                     edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                     edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(HibernateTreeDataServiceImpl.class, e);
                     tx.rollback();
-                    return false;
+                    return ERROR;
                 }
             }
             boolean success = commitTransaction(session, tx); // NOTE: Closes open session
@@ -935,7 +935,14 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
                 success &= busRules.afterSaveCommit(mergedNode, null);
             }
             
-            return success;
+            if (success)
+            {
+            	return SUCCESS;
+            }
+            else
+            {
+            	return ERROR;
+            }
             
         } catch (Exception ex)
         {
@@ -950,7 +957,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
                 session.close();
             }
         }
-        return false;
+        return ERROR;
     }
     
     /**

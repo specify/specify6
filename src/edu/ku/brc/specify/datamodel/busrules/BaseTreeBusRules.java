@@ -81,7 +81,7 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
 {
     private static final Logger log = Logger.getLogger(BaseTreeBusRules.class);
     
-    private DataProviderSessionIFace activeSession = null;
+    private boolean processedRules = false;
     
     /**
      * Constructor.
@@ -484,7 +484,8 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
         }
         else
         {
-            GetSetValueIFace parentField = (GetSetValueIFace) formViewObj
+            processedRules = false;
+        	GetSetValueIFace parentField = (GetSetValueIFace) formViewObj
                     .getControlByName("parent");
             Component comp = formViewObj.getControlByName("definitionItem");
             if (comp instanceof ValComboBox)
@@ -1025,13 +1026,7 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
         	Treeable<T, D, I> parent = parentDataObj == null ? node.getParent() : (Treeable<T, D, I> )parentDataObj; 
         	if (parent != null)
         	{
-        		boolean closeSession = false;
-        		DataProviderSessionIFace session = activeSession;
-        		if (activeSession == null)
-        		{
-        			session = DataProviderFactory.getInstance().createSession();
-        			closeSession = true;
-        		}
+        		DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         		try
         		{
         			session.attach(parent);
@@ -1046,11 +1041,7 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
         		}
         		finally
         		{
-        			if (closeSession)
-        			{
-        				session.close();
-        			}
-        			activeSession = null;
+        			session.close();
         		}
         	}
     	}
@@ -1065,8 +1056,17 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
 		if (parentHasChildWithSameName(parentDataObj, dataObj)) 
 		{
             PanelBuilder pb = new PanelBuilder(new FormLayout("15dlu, f:p:g, 20dlu", "5dlu, f:p:g, 5dlu"));
+            String parentName;
+            if (parentDataObj == null) 
+            {
+            	parentName = ((Treeable<T,D,I> )dataObj).getParent().getName(); 
+            }
+            else
+            {
+            	parentName = ((Treeable<T,D,I> )parentDataObj).getName();
+            }
             pb.add(UIHelper.createLabel(String.format(UIRegistry.getResourceString("BaseTreeBusRules.IDENTICALLY_NAMED_SIBLING_MSG"), 
-            		((Treeable<T,D,I> )dataObj).getParent().getName(), ((Treeable<T,D,I> )dataObj).getName())), new CellConstraints().xy(2, 2));
+            		parentName, ((Treeable<T,D,I> )dataObj).getName())), new CellConstraints().xy(2, 2));
 			CustomDialog dlg = new CustomDialog(
 					(Frame) UIRegistry.getTopWindow(),
 					UIRegistry
@@ -1092,23 +1092,39 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
 	@Override
 	public STATUS processBusinessRules(Object parentDataObj, Object dataObj,
 			boolean isExistingObject) {
-		return checkForSiblingWithSameName(parentDataObj, dataObj, isExistingObject);
+		if (!processedRules && dataObj instanceof Treeable)
+		{	
+			STATUS result = checkForSiblingWithSameName(parentDataObj, dataObj, isExistingObject);
+			if (result == STATUS.OK)
+			{
+				processedRules = true;
+			}
+			return result;
+		}
+		else
+		{
+			return STATUS.OK;
+		}
 	}
 
-//	@Override
-//	public STATUS processBusinessRules(Object dataObj) {
-//		STATUS result = super.processBusinessRules(dataObj);
-//		if (result == STATUS.OK)
-//		{
-//			result = checkForSiblingWithSameName(null, dataObj, false);
-//		}
-//		return result;
-//	}
-
-	public void setActiveSession(final DataProviderSessionIFace session)
-	{
-		this.activeSession = session;
+	@Override
+	public STATUS processBusinessRules(Object dataObj) {
+		STATUS result = STATUS.OK;
+		if (!processedRules)
+		{
+			result = super.processBusinessRules(dataObj);
+			if (result == STATUS.OK)
+			{
+				result = checkForSiblingWithSameName(null, dataObj, false);
+			}
+		}
+		else
+		{
+			processedRules = false;
+		}
+		return result;
 	}
+
     
     
 }

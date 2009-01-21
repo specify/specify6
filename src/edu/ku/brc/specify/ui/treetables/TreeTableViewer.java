@@ -2365,8 +2365,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             // no longer be in the model at all.
 			
             // do the DB work to reparent the nodes
-            boolean changed = dataService.moveTreeNode(child, newParent);
-            if (!changed)
+            int moveResult = dataService.moveTreeNode(child, newParent);
+            if (moveResult == ERROR)
             {
                 String msg = getResourceString("TTV_UNKOWN_MOVE_ERROR");
                 statusBar.setErrorMessage(msg);
@@ -2387,7 +2387,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                 showChildren(newParentNode);
             }
             
-			return changed;
+			return moveResult != ERROR;
 		}
 		return false;
 	}

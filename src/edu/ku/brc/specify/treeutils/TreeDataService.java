@@ -30,6 +30,11 @@ public interface TreeDataService <T extends Treeable<T,D,I>,
 									D extends TreeDefIface<T,D,I>,
 									I extends TreeDefItemIface<T,D,I>>
 {
+	
+	public final static int SUCCESS = 0;
+	public final static int CANCELLED = 1;
+	public final static int ERROR = 2;
+	
 	/**
      * Finds a tree node in the given tree with the given name.
      * 
@@ -152,8 +157,10 @@ public interface TreeDataService <T extends Treeable<T,D,I>,
      * @param node the node to be moved
      * @param newParent the new parent node
      * @throws Exception when anything prevents the transaction from success
+     * 
+     * return SUCCESS, CANCEL or ERROR.
      */
-    public boolean moveTreeNode(T node, T newParent);
+    public int moveTreeNode(T node, T newParent);
     
     /**
      * Creates a logical link between two nodes.  This link's meaning is dependent on the type, T.  Some
