@@ -446,6 +446,16 @@
                 <altview name="LocalityCitation Edit" viewdef="LocalityCitation" mode="edit" default="true"/>
             </altviews>
         </view>
+        
+        <view name="LocalityDetail"
+            class="edu.ku.brc.specify.datamodel.LocalityDetail"
+            resourcelabels="false">
+            <desc><![CDATA[LocalityDetail form.]]></desc>
+            <altviews>
+                <altview name="LocalityDetail View" viewdef="LocalityDetail" mode="view"/>
+                <altview name="LocalityDetail Edit" viewdef="LocalityDetail" mode="edit" default="true"/>
+            </altviews>
+        </view>
                 
         <view name="LocalitySubForm"
             class="edu.ku.brc.specify.datamodel.Locality"
@@ -2310,7 +2320,7 @@
             gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
-            <desc><![CDATA[Sub Collecting Event]]></desc>
+            <desc><![CDATA[LocalityDetail subform for Locality]]></desc>
             <columnDef>p,2px,p,5px,p,2px,p,5px,p,2px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             
