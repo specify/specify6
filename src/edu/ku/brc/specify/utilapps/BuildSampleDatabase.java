@@ -7008,9 +7008,9 @@ public class BuildSampleDatabase
                     
                 } catch (Exception ex)
                 {
+                    ex.printStackTrace();
                     edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                     edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BuildSampleDatabase.class, ex);
-                    ex.printStackTrace();
                 }
                 
                 return null;
