@@ -66,7 +66,7 @@ import edu.ku.brc.ui.dnd.ShadowFactory;
  * This class is used mostly in NavBoxes.<br>
  * <B><I>NOTE:</I></B> doAction is called if the Rbtn is clicked OR something is dropped on it (a Ghost drop).
  
- * @code_status Alpha
+ * @code_status Beta
  **
  * @author rods
  *
@@ -703,6 +703,10 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
         if (icon != null)
         {
             imgIcon = icon;
+            if (iconLabel != null)
+            {
+                iconLabel.setIcon(imgIcon);
+            }
             repaint();
         }
     }
