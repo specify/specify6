@@ -511,8 +511,6 @@ public class NavigationTreeMgr
         if (!dlg.isCancelled())
         {
             Agent userAgent = (Agent)cbx.getValue();
-            spUser.getAgents().add(userAgent);
-            userAgent.setSpecifyUser(spUser);
             
             DataProviderSessionIFace session = null;
             try
@@ -526,15 +524,30 @@ public class NavigationTreeMgr
                 busRules.beforeMerge(spUser, session);
                 busRules.beforeSave(spUser, session);
 
-                session.saveOrUpdate(spUser);
-                session.saveOrUpdate(userAgent);
+                // persist newly created user and agent
+                session.save(spUser);
 
                 // get fresh copies of parentDiscipline and group to make Hibernate happy
-                Discipline localDiscipline = session.get(Discipline.class, parentDiscipline.getUserGroupScopeId()); 
+                Discipline localDiscipline = session.get(Discipline.class, parentDiscipline.getUserGroupScopeId());
                 SpPrincipal localGroup = session.get(SpPrincipal.class, group.getUserGroupId());
-                
-                addGroupToUser(localGroup, spUser, localDiscipline, session); 
 
+                // link user to its group
+                spUser.getSpPrincipals().add(localGroup);
+                localGroup.getSpecifyUsers().add(spUser);
+
+                // link agent to user
+                session.attach(userAgent);
+                spUser.getAgents().add(userAgent);
+                userAgent.setSpecifyUser(spUser);
+
+                // create a JAAS principal and associate it with the user
+                SpPrincipal userPrincipal = DataBuilder.createUserPrincipal(spUser);
+                session.save(userPrincipal);
+                spUser.addUserToSpPrincipalGroup(userPrincipal);
+                
+                // link newly create agent to discipline
+                userAgent.getDisciplines().add(localDiscipline);
+                localDiscipline.getAgents().add(userAgent);
                 session.commit();
                 
                 spUser = session.get(SpecifyUser.class, spUser.getId());
