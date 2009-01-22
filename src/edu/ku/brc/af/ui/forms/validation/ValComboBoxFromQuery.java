@@ -1045,6 +1045,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         if (textWithQuery.getTextField() != null)
         {
             textWithQuery.setText("");
+            textWithQuery.setPrevEnteredText(null);
         }
         valState = isRequired ? UIValidatable.ErrorType.Incomplete : UIValidatable.ErrorType.Valid;
         repaint();
