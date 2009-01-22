@@ -2764,8 +2764,6 @@ public class FormViewObj implements Viewable,
                     
                 } catch (org.hibernate.HibernateException ex)
                 {
-                    edu.ku.brc.af.core.UsageTracker.incrHQLUsageCount();
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormViewObj.class, ex);
                     // we could check the type to make sure it was a "dirty colleciton" error
                     // but for now I am not.
                     attachFailed = true;
