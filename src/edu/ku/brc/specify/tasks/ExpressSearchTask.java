@@ -667,15 +667,21 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
         SearchTableConfig searchTableConfig = config.getSearchTableConfigById(recordSet.getDbTableId());
         if (searchTableConfig != null)
         {
-            ESResultsSubPane esrPane = new ESResultsSubPane(getResourceString("RecordSet"), this, true);
-            
-            Hashtable<String, QueryForIdResultsSQL> resultsForJoinsHash = new Hashtable<String, QueryForIdResultsSQL>();
-            QueryForIdResultsHQL results = new QueryForIdResultsHQL(searchTableConfig, new Color(255, 158, 6), recordSet);
-            results.setEditable(true);
-            results.setExpanded(true);
-            //results.setShouldInstallServices(false);
-            displayResults(esrPane, results, resultsForJoinsHash);
-            addSubPaneToMgr(esrPane);
+            SubPaneIFace sp = SubPaneMgr.getInstance().getSubPaneByName(recordSet.getName());
+            if (sp != null)
+            {
+                SubPaneMgr.getInstance().showPane(sp);
+            } else
+            {
+                ESResultsSubPane esrPane = new ESResultsSubPane(recordSet.getName(), this, true);
+                esrPane.setIcon(IconManager.getIcon("Record_Set", IconManager.IconSize.Std16));
+                Hashtable<String, QueryForIdResultsSQL> resultsForJoinsHash = new Hashtable<String, QueryForIdResultsSQL>();
+                QueryForIdResultsHQL results = new QueryForIdResultsHQL(searchTableConfig, new Color(255, 158, 6), recordSet);
+                results.setEditable(true);
+                results.setExpanded(true);
+                displayResults(esrPane, results, resultsForJoinsHash);
+                addSubPaneToMgr(esrPane);
+            }
         }
     }
 

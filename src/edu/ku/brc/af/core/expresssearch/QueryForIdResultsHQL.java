@@ -45,8 +45,9 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
 
     protected SearchTableConfig     searchTableConfig;
     protected Color                 bannerColor;
-    protected Vector<Integer>       recIds       = new Vector<Integer>();
+    protected Vector<Integer>       recIds                = new Vector<Integer>();
     protected String                searchTerm;
+    protected String                title                 = null; // if set it overrides the title from the SearchTableConfig
     
     protected String                overrideSQL           = null;
     protected List<ERTICaptionInfo> captions              = null; 
@@ -188,7 +189,16 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
     @Override
     public String getTitle()
     {
-        return searchTableConfig.getTableInfo().getTitle();
+        return title != null ? title : searchTableConfig.getTableInfo().getTitle();
+    }
+    
+    /**
+     * Sets a title that overrides the title coming from the SearchTableConfig
+     * @param title the new title
+     */
+    public void setTitle(final String title)
+    {
+        this.title = title;
     }
 
     /* (non-Javadoc)
