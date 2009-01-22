@@ -10,11 +10,14 @@ import java.awt.Desktop;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 
 import javax.activation.FileTypeMap;
 import javax.activation.MimetypesFileTypeMap;
+
+import org.apache.commons.io.FileUtils;
 
 import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.specify.datamodel.ObjectAttachmentIFace;
@@ -34,6 +37,14 @@ public class AttachmentUtils
     protected static Thumbnailer            thumbnailer;
     
     /**
+     * @return the manager
+     */
+    public static AttachmentManagerIface getAttachmentManager()
+    {
+        return attachMgr;
+    }
+
+    /**
      * @param mgr sets the manager
      */
     public static void setAttachmentManager(final AttachmentManagerIface mgr)
@@ -50,11 +61,13 @@ public class AttachmentUtils
     }
     
     /**
-     * @return the manager
+     * The location of the directory in preferences may not exist.
+     * 
+     * @return whether there is an attachment manager.
      */
-    public static AttachmentManagerIface getAttachmentManager()
+    public static boolean isAvailable()
     {
-        return attachMgr;
+        return attachMgr != null;
     }
     
     /**
@@ -63,6 +76,50 @@ public class AttachmentUtils
     public static Thumbnailer getThumbnailer()
     {
         return thumbnailer;
+    }
+    
+    /**
+     * @return whether the AttachmentManger can be used.
+     */
+    protected static boolean isAttachLocOK()
+    {
+        if (attachMgr != null)
+        {
+            return true;
+            
+        } else
+        {
+            UIRegistry.showLocalizedError("AttachmentUtils.NOT_AVAIL");
+        }
+        return false;
+    }
+    
+    /**
+     * @param attachmentLocation
+     * @return
+     */
+    public static boolean isAttachmentDirMounted(final File attachmentLocation)
+    {
+        try
+        {
+            if (attachmentLocation.exists() && attachmentLocation.isDirectory())
+            {
+                File tmpFile = new File(attachmentLocation.getAbsoluteFile() + File.separator + System.currentTimeMillis() + System.getProperty("user.name"));
+                if (tmpFile.createNewFile())
+                {
+                    // I don't think I need this anymore
+                    FileOutputStream fos = FileUtils.openOutputStream(tmpFile);
+                    fos.write(1);
+                    fos.close();
+                    tmpFile.delete();
+                    return true;
+                }
+            }
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return false;
     }
     
     /**
@@ -80,12 +137,17 @@ public class AttachmentUtils
                     throw new IllegalArgumentException("Passed object must be an Attachment or ObjectAttachmentIFace");
                 }
                 
-                
                 Attachment attachment = (source instanceof Attachment) ? (Attachment)source : ((ObjectAttachmentIFace<?>)source).getAttachment();
                 File original = null;
-                if (attachment.getId()!= null)
+                if (attachment.getId() != null)
                 {
-                    original = attachMgr.getOriginal(attachment);
+                    if (isAttachLocOK())
+                    {
+                        original = attachMgr.getOriginal(attachment);
+                    } else
+                    {
+                        return;
+                    }
                 }
                 else
                 {

@@ -39,6 +39,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.sql.Timestamp;
 import java.util.Locale;
 import java.util.MissingResourceException;
@@ -115,6 +116,7 @@ import edu.ku.brc.af.ui.forms.FormHelper;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.ResultSetController;
+import edu.ku.brc.af.ui.forms.ViewFactory;
 import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.af.ui.forms.persist.ViewLoader;
@@ -383,13 +385,21 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             SystemPrefs.changeSplashImage();
         }
         
-        AttachmentManagerIface attachMgr = null;
-        
+        AttachmentManagerIface attachMgr          = null;
+        File                   attachmentLocation = null;
         File location = UIRegistry.getAppDataSubDir("AttachmentStorage", true); //$NON-NLS-1$
         try
         {
             String path = localPrefs.get(ATTACHMENT_PATH_PREF, null);
-            attachMgr = new FileStoreAttachmentManager(path != null ? new File(path) : location);
+            attachmentLocation = path != null ? new File(path) : location;
+            if (!AttachmentUtils.isAttachmentDirMounted(attachmentLocation))
+            {
+                UIRegistry.showLocalizedError("AttachmentUtils.LOC_BAD", location.getAbsolutePath());
+                
+            } else
+            {
+                attachMgr = new FileStoreAttachmentManager(attachmentLocation);
+            }
             
             if (path == null)
             {
@@ -560,6 +570,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
     public static void setUpSystemProperties()
     {
         // Name factories
+        System.setProperty(ViewFactory.factoryName,                     "edu.ku.brc.specify.config.SpecifyViewFactory");        // Needed by ViewFactory //$NON-NLS-1$
         System.setProperty(AppContextMgr.factoryName,                   "edu.ku.brc.specify.config.SpecifyAppContextMgr");      // Needed by AppContextMgr //$NON-NLS-1$
         System.setProperty(AppPreferences.factoryName,                  "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");         // Needed by AppReferences //$NON-NLS-1$
         System.setProperty("edu.ku.brc.ui.ViewBasedDialogFactoryIFace", "edu.ku.brc.specify.ui.DBObjDialogFactory");            // Needed By UIRegistry //$NON-NLS-1$ //$NON-NLS-2$
@@ -764,8 +775,15 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
      */
     public void doPreferences()
     {
-        PreferencesDlg dlg = new PreferencesDlg(false);
-        dlg.setVisible(true);
+        AppContextMgr acm        = AppContextMgr.getInstance();
+        if (AppContextMgr.getInstance().hasContext())
+        {
+            PreferencesDlg dlg = new PreferencesDlg(false);
+            dlg.setVisible(true);
+        } else
+        {
+            UIRegistry.showLocalizedMsg("Specify.NOTAVAIL");
+        }
     }
 
     /**
@@ -1766,6 +1784,9 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             ExceptionTracker.getInstance().capture(Specify.class, new Exception("Hello"));
         }
         
+        AppContextMgr acm        = AppContextMgr.getInstance();
+        boolean       hasContext = acm.hasContext();
+        
         int baseNumRows = 9;
         String serverName = AppPreferences.getLocalPrefs().get("login.servers_selected", null);
         if (serverName != null)
@@ -1780,56 +1801,58 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         JLabel iconLabel = new JLabel(IconManager.getIcon("SpecifyLargeIcon"), SwingConstants.CENTER); //$NON-NLS-1$
         //iconLabel.setBorder(BorderFactory.createEmptyBorder(2, 0, 2, 8));
         
-        DBTableIdMgr  tdb = DBTableIdMgr.getInstance();
-        AppContextMgr acm = AppContextMgr.getInstance();
-        
-        int y = 1;
-        ipb.addSeparator(getResourceString("Specify.SYS_INFO"), cc.xyw(1, y, 3)); y += 2;
-        
-        ipb.add(UIHelper.createI18NFormLabel("Specify.DB"), cc.xy(1, y));
-        ipb.add(UIHelper.createLabel(databaseName),   cc.xy(3, y)); y += 2;
-        
-        ipb.add(UIHelper.createFormLabel(tdb.getTitleForId(Institution.getClassTableId())), cc.xy(1, y));
-        ipb.add(UIHelper.createLabel(acm.getClassObject(Institution.class).getName()),      cc.xy(3, y)); y += 2;
-        
-        ipb.add(UIHelper.createFormLabel(tdb.getTitleForId(Division.getClassTableId())), cc.xy(1, y));
-        ipb.add(UIHelper.createLabel(acm.getClassObject(Division.class).getName()),      cc.xy(3, y)); y += 2;
-        
-        ipb.add(UIHelper.createFormLabel(tdb.getTitleForId(Discipline.getClassTableId())), cc.xy(1, y));
-        ipb.add(UIHelper.createLabel(acm.getClassObject(Discipline.class).getName()),      cc.xy(3, y)); y += 2;
-        
-        ipb.add(UIHelper.createFormLabel(tdb.getTitleForId(Collection.getClassTableId())), cc.xy(1, y));
-        ipb.add(UIHelper.createLabel(acm.getClassObject(Collection.class).getCollectionName()),cc.xy(3, y)); y += 2;
-        
-        ipb.add(UIHelper.createI18NFormLabel("Specify.BLD"), cc.xy(1, y));
-        ipb.add(UIHelper.createLabel(appBuildVersion),cc.xy(3, y)); y += 2;
-        
-        ipb.add(UIHelper.createI18NFormLabel("Specify.REG"), cc.xy(1, y));
-        ipb.add(UIHelper.createI18NLabel(RegisterSpecify.hasInstitutionRegistered() ? "Specify.HASREG" : "Specify.NOTREG"),cc.xy(3, y)); y += 2;
-        
-        String isaNumber = RegisterSpecify.getISANumber();
-        ipb.add(UIHelper.createI18NFormLabel("Specify.ISANUM"), cc.xy(1, y));
-        ipb.add(UIHelper.createLabel(StringUtils.isNotEmpty(isaNumber) ? isaNumber : ""),cc.xy(3, y)); y += 2;
-        
-        if (serverName != null)
+        if (hasContext)
         {
-            ipb.add(UIHelper.createI18NFormLabel("Specify.SERVER"), cc.xy(1, y));
-            ipb.add(UIHelper.createLabel(StringUtils.isNotEmpty(serverName) ? serverName : ""),cc.xy(3, y)); y += 2;
-        }
-        
-        if (StringUtils.contains(DBConnection.getInstance().getConnectionStr(), "mysql"))
-        {
-            Vector<Object[]> list = BasicSQLUtils.query("select version() as ve");
-            if (list != null && list.size() > 0)
+            DBTableIdMgr  tdb = DBTableIdMgr.getInstance();
+            
+            int y = 1;
+            ipb.addSeparator(getResourceString("Specify.SYS_INFO"), cc.xyw(1, y, 3)); y += 2;
+            
+            ipb.add(UIHelper.createI18NFormLabel("Specify.DB"), cc.xy(1, y));
+            ipb.add(UIHelper.createLabel(databaseName),   cc.xy(3, y)); y += 2;
+            
+            ipb.add(UIHelper.createFormLabel(tdb.getTitleForId(Institution.getClassTableId())), cc.xy(1, y));
+            ipb.add(UIHelper.createLabel(acm.getClassObject(Institution.class).getName()),      cc.xy(3, y)); y += 2;
+            
+            ipb.add(UIHelper.createFormLabel(tdb.getTitleForId(Division.getClassTableId())), cc.xy(1, y));
+            ipb.add(UIHelper.createLabel(acm.getClassObject(Division.class).getName()),      cc.xy(3, y)); y += 2;
+            
+            ipb.add(UIHelper.createFormLabel(tdb.getTitleForId(Discipline.getClassTableId())), cc.xy(1, y));
+            ipb.add(UIHelper.createLabel(acm.getClassObject(Discipline.class).getName()),      cc.xy(3, y)); y += 2;
+            
+            ipb.add(UIHelper.createFormLabel(tdb.getTitleForId(Collection.getClassTableId())), cc.xy(1, y));
+            ipb.add(UIHelper.createLabel(acm.getClassObject(Collection.class).getCollectionName()),cc.xy(3, y)); y += 2;
+            
+            ipb.add(UIHelper.createI18NFormLabel("Specify.BLD"), cc.xy(1, y));
+            ipb.add(UIHelper.createLabel(appBuildVersion),cc.xy(3, y)); y += 2;
+            
+            ipb.add(UIHelper.createI18NFormLabel("Specify.REG"), cc.xy(1, y));
+            ipb.add(UIHelper.createI18NLabel(RegisterSpecify.hasInstitutionRegistered() ? "Specify.HASREG" : "Specify.NOTREG"),cc.xy(3, y)); y += 2;
+            
+            String isaNumber = RegisterSpecify.getISANumber();
+            ipb.add(UIHelper.createI18NFormLabel("Specify.ISANUM"), cc.xy(1, y));
+            ipb.add(UIHelper.createLabel(StringUtils.isNotEmpty(isaNumber) ? isaNumber : ""),cc.xy(3, y)); y += 2;
+            
+            if (serverName != null)
             {
-                ipb.add(UIHelper.createFormLabel("MySQL Version"), cc.xy(1, y));
-                ipb.add(UIHelper.createLabel(list.get(0)[0].toString()),cc.xy(3, y)); y += 2;
+                ipb.add(UIHelper.createI18NFormLabel("Specify.SERVER"), cc.xy(1, y));
+                ipb.add(UIHelper.createLabel(StringUtils.isNotEmpty(serverName) ? serverName : ""),cc.xy(3, y)); y += 2;
             }
+            
+            if (StringUtils.contains(DBConnection.getInstance().getConnectionStr(), "mysql"))
+            {
+                Vector<Object[]> list = BasicSQLUtils.query("select version() as ve");
+                if (list != null && list.size() > 0)
+                {
+                    ipb.add(UIHelper.createFormLabel("MySQL Version"), cc.xy(1, y));
+                    ipb.add(UIHelper.createLabel(list.get(0)[0].toString()),cc.xy(3, y)); y += 2;
+                }
+            }
+    
+            
+            ipb.add(UIHelper.createFormLabel("Java Version"), cc.xy(1, y));
+            ipb.add(UIHelper.createLabel(System.getProperty("java.version")),cc.xy(3, y)); y += 2;
         }
-
-        
-        ipb.add(UIHelper.createFormLabel("Java Version"), cc.xy(1, y));
-        ipb.add(UIHelper.createLabel(System.getProperty("java.version")),cc.xy(3, y)); y += 2;
         
         pb.add(iconLabel,      cc.xy(1, 1));
         pb.add(createLabel("<html>"+appName+" " + appVersion +  //$NON-NLS-1$ //$NON-NLS-2$
@@ -1840,8 +1863,12 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                 "funded by the Advances in <br>Biological Informatics Program,<br>"+ //$NON-NLS-1$
                 "U.S. National Science Foundation <br>(Award DBI-0446544 and earlier awards).</P></html>"), cc.xy(3, 1)); //$NON-NLS-1$
         Color bg = getBackground();
-        pb.add(new VerticalSeparator(bg.darker(), bg.brighter()), cc.xy(5, 1));
-        pb.add(ipb.getPanel(), cc.xy(7, 1));
+        
+        if (hasContext)
+        {
+            pb.add(new VerticalSeparator(bg.darker(), bg.brighter()), cc.xy(5, 1));
+            pb.add(ipb.getPanel(), cc.xy(7, 1));
+        }
         
         pb.setDefaultDialogBorder();
         String title = getResourceString("Specify.ABOUT");//$NON-NLS-1$

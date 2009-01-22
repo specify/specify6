@@ -27,6 +27,8 @@ import java.awt.Component;
 import java.awt.Insets;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -66,6 +68,7 @@ import edu.ku.brc.af.ui.db.PickListDBAdapterFactory;
 import edu.ku.brc.af.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.af.ui.db.TextFieldFromPickListTable;
 import edu.ku.brc.af.ui.db.TextFieldWithInfo;
+import edu.ku.brc.af.ui.forms.SubViewBtn.DATA_TYPE;
 import edu.ku.brc.af.ui.forms.formatters.GenericStringUIFieldFormatter;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
@@ -78,6 +81,7 @@ import edu.ku.brc.af.ui.forms.persist.FormCellLabel;
 import edu.ku.brc.af.ui.forms.persist.FormCellPanel;
 import edu.ku.brc.af.ui.forms.persist.FormCellSeparatorIFace;
 import edu.ku.brc.af.ui.forms.persist.FormCellSubView;
+import edu.ku.brc.af.ui.forms.persist.FormCellSubViewIFace;
 import edu.ku.brc.af.ui.forms.persist.FormRowIFace;
 import edu.ku.brc.af.ui.forms.persist.FormViewDef;
 import edu.ku.brc.af.ui.forms.persist.FormViewDefIFace;
@@ -125,10 +129,13 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class ViewFactory
 {
+    public static final String factoryName = "edu.ku.brc.af.ui.forms.ViewFactory"; //$NON-NLS-1$
+    
     // Statics
     private static final Logger log = Logger.getLogger(ViewFactory.class);
-    private static final ViewFactory  instance = new ViewFactory();
     private static final String LF = "\\" + "n";
+    
+    private static  ViewFactory  instance = null;
     
     // Data Members
     protected static ColorWrapper     viewFieldColor    = null;
@@ -144,15 +151,6 @@ public class ViewFactory
     protected ViewFactory()
     {
         // do nothing
-    }
-
-    /**
-     * Returns the singleton for the ViewSetMgr.
-     * @return the singleton for the ViewSetMgr
-     */
-    public static ViewFactory getInstance()
-    {
-        return instance;
     }
 
     /**
@@ -941,6 +939,29 @@ public class ViewFactory
         return null;
     }
     
+    /**
+     * @param mvParent
+     * @param subviewDef
+     * @param view
+     * @param dataType
+     * @param options
+     * @param props
+     * @param classToCreate
+     * @param mode
+     * @return
+     */
+    protected SubViewBtn createSubViewBtn(final MultiView            mvParent,
+                                          final FormCellSubViewIFace subviewDef,
+                                          final ViewIFace            view,
+                                          final DATA_TYPE            dataType,
+                                          final int                  options,
+                                          final Properties           props,
+                                          final Class<?>             classToCreate,
+                                          final AltViewIFace.CreationMode mode)
+    {
+        return new SubViewBtn(mvParent, subviewDef, view, dataType, options, props, classToCreate, mode);
+    }
+    
     //----------------------------------------------------------------------------------------------------------------
     //-- 
     //----------------------------------------------------------------------------------------------------------------
@@ -1637,7 +1658,7 @@ public class ViewFactory
                                 dataType = cellSubView.getName().equals("this") ? SubViewBtn.DATA_TYPE.IS_THIS : SubViewBtn.DATA_TYPE.IS_SET;
                             }
                             
-                            SubViewBtn subViewBtn = new SubViewBtn(parent, cellSubView, subView, dataType, options, props, getClassToCreate(parent, cell), mode);
+                            SubViewBtn subViewBtn = getInstance().createSubViewBtn(parent, cellSubView, subView, dataType, options, props, getClassToCreate(parent, cell), mode);
                             subViewBtn.setHelpContext(props.getProperty("hc", null));
                             
                             bi.doAddToValidator   = false;
@@ -2434,7 +2455,7 @@ public class ViewFactory
 
         if (altView != null)
         {
-            Viewable viewable = instance.buildViewable(view, altView, multiView, options, bgColor);
+            Viewable viewable = getInstance().buildViewable(view, altView, multiView, options, bgColor);
             if (viewable != null)
             {
                 if (data != null)
@@ -2467,4 +2488,43 @@ public class ViewFactory
     {
         ViewFactory.isFormTransparent = isFormTransparent;
     }
+    
+    /**
+     * Returns the singleton for the ViewSetMgr.
+     * @return the singleton for the ViewSetMgr
+     */
+    public static ViewFactory getInstance()
+    {
+        if (instance != null)
+        {
+            return instance;
+            
+        }
+        // else
+        String factoryNameStr = AccessController.doPrivileged(new PrivilegedAction<String>() {
+                public String run() {
+                    return System.getProperty(factoryName);
+                    }
+                });
+            
+        if (factoryNameStr != null) 
+        {
+            try 
+            {
+                instance = (ViewFactory)Class.forName(factoryNameStr).newInstance();
+                return instance;
+                 
+            } catch (Exception e) 
+            {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AppContextMgr.class, e);
+                InternalError error = new InternalError("Can't instantiate ViewFactory factory " + factoryNameStr); //$NON-NLS-1$
+                error.initCause(e);
+                throw error;
+            }
+        }
+        return instance = new ViewFactory();
+    }
+
+
 }

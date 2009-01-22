@@ -51,7 +51,9 @@ import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.ui.IconEntry;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.AttachmentManagerIface;
 import edu.ku.brc.util.AttachmentUtils;
+import edu.ku.brc.util.FileStoreAttachmentManager;
 
 /**
  * @author rod
@@ -256,7 +258,13 @@ public class SystemPrefs extends GenericPrefsPanel
                         localPrefs.put(ATTCH_PATH, newAttachmentPath);
                         try
                         {
-                            AttachmentUtils.getAttachmentManager().setDirectory(new File(newAttachmentPath));
+                            if (AttachmentUtils.getAttachmentManager() == null)
+                            {
+                                AttachmentUtils.setAttachmentManager(new FileStoreAttachmentManager(new File(newAttachmentPath)));
+                            } else
+                            {
+                                AttachmentUtils.getAttachmentManager().setDirectory(new File(newAttachmentPath));
+                            }
                             
                         } catch (IOException ex)
                         {
@@ -444,13 +452,15 @@ public class SystemPrefs extends GenericPrefsPanel
             }
         } else
         {
-            File newDir = new File(newPath);
-            return newDir.exists();
+            return AttachmentUtils.isAttachmentDirMounted(new File(newPath));
         }
         
         return true;
     }
     
+    /**
+     * 
+     */
     public static void resetSplashImage()
     {
         IconEntry entry      = IconManager.getIconEntryByName("SpecifySplash");
