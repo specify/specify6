@@ -288,6 +288,7 @@ public class SpecifyDBConverter
                     } catch (Exception ex)
                     {
                         ex.printStackTrace();
+                        System.exit(1);
                     }
                     return null;
                 }
@@ -1193,9 +1194,9 @@ public class SpecifyDBConverter
                 
                 
                 // MySQL Only ???
-                String sql = "UPDATE determination SET activetaxonid = CASE WHEN " +
-                "(SELECT acceptedid FROM taxon WHERE taxon.taxonid = determination.taxonid) IS NULL " +
-                "THEN determination.taxonid ELSE (SELECT acceptedid FROM taxon WHERE taxon.taxonid = determination.taxonid) END";
+                String sql = "UPDATE determination SET PreferredTaxonID = CASE WHEN " +
+                "(SELECT AcceptedID FROM taxon WHERE taxon.TaxonID = determination.TaxonID) IS NULL " +
+                "THEN determination.TaxonID ELSE (SELECT AcceptedID FROM taxon WHERE taxon.TaxonID = determination.TaxonID) END";
                 System.out.println(sql);
                 BasicSQLUtils.setSkipTrackExceptions(true);
                 BasicSQLUtils.update(sql);

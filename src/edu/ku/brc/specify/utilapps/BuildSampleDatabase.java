@@ -7764,7 +7764,7 @@ public class BuildSampleDatabase
         
         boolean hideGenericFields = true;
         
-        loadFieldsToHideHash();
+        //loadFieldsToHideHash();
         
         for (SpLocaleContainer table : schemaLocalizer.getSpLocaleContainers())
         {

@@ -3,7 +3,7 @@
   <box name="Statistics" title="Statistics">
       <!-- Collection Manager Stats -->
       <item name="Top Five Species" title="Top Five Species" type="Pie Chart" icon="Pie Chart"/>
-      <item name="ItemsCatalogedLast10Years" title="Cataloged Last 5 Years" type="Bar Chart" icon="Bar Chart"/>
+      <item name="ItemsCatalogedLast10Years" title="Cataloged Last 10 Years" type="Bar Chart" icon="Bar Chart"/>
       <item name="Specimens by Country" title="Specimens by Country" type="Bar Chart" icon="Bar Chart"/>
   </box>
 </boxes>

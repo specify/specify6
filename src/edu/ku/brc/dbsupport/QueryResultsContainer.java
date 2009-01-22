@@ -104,7 +104,10 @@ public class QueryResultsContainer implements QueryResultsContainerIFace, SQLExe
                             int row = qrdo.getRow();
                             if (row-1 == prvRow)
                             {
-                                resultSet.next();
+                                if (!resultSet.next())
+                                {
+                                    break;
+                                }
                                 
                             } else if (row != prvRow) 
                             {
@@ -116,9 +119,11 @@ public class QueryResultsContainer implements QueryResultsContainerIFace, SQLExe
                 }
             } catch (Exception ex)
             {
+                ex.printStackTrace();
                 edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryResultsContainer.class, ex);
                 log.error(ex);
+
             }
         }
     }

@@ -196,7 +196,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                 }
             }
             
-            // remove non-english locales
+             // remove non-english locales
             if (false)
             {
                 if (discipline == null)
@@ -243,6 +243,50 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                 }
             }
             
+            if (true)
+            {
+                if (discipline == null)
+                {
+                    Hashtable<String, Boolean> fieldsToHideHash = new Hashtable<String, Boolean>();
+                    String[] fields = { "version", 
+                            "timestampCreated", 
+                            "timestampModified", 
+                            "createdByAgent", 
+                            "modifiedByAgent", 
+                            "collectionMemberId", 
+                            "visibility", 
+                            "visibilitySetBy"};
+
+                    for (String fieldName : fields)
+                    {
+                        fieldsToHideHash.put(fieldName, true);
+                    }
+                    
+                    for (DisciplineBasedContainer dbc : containers)
+                    {
+                        for (SpLocaleContainerItem sci : dbc.getItems())
+                        {
+                            String nm = sci.getName();
+                            if (fieldsToHideHash.get(nm) != null)
+                            {
+                                sci.setIsHidden(true);
+                            } else if (nm.startsWith("yesNo"))
+                            {
+                                sci.setIsHidden(true);
+                            } else if (nm.startsWith("text") && StringUtils.isNumeric(nm.substring(nm.length()-1, nm.length())))
+                            {
+                                //System.out.println(nm);
+                                sci.setIsHidden(true);
+                            } else if (nm.startsWith("number") && StringUtils.isNumeric(nm.substring(nm.length()-1, nm.length())))
+                            {
+                                System.out.println(nm);
+                                sci.setIsHidden(true);
+                            }
+                        }
+                    }
+                }
+            }
+
             if (containers != null)
             {
                 for (SpLocaleContainer ct : containers)
