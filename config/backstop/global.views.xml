@@ -1218,6 +1218,14 @@
                     <cell type="label" labelfor="commonName"/>
                     <cell type="field" id="commonName" uitype="text" name="commonName" colspan="3"/>
                 </row>
+                <row>
+                    <cell type="label" labelfor="source"/>
+                    <cell type="field" id="source" uitype="text" name="source" colspan="3"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="author"/>
+                    <cell type="field" id="author" uitype="text" name="author" colspan="3"/>
+                </row>      
                 <!-- 
                 <row>
                     <cell type="label" labelfor="author"/>
