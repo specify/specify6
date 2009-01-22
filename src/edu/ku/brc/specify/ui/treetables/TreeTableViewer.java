@@ -325,7 +325,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 				{
 					isInitialized = true;
 					
-					UIRegistry.writeGlassPaneMsg(getResourceString("TTV_OpeningTreeViewer"), 24);
+					UIRegistry.writeGlassPaneMsg(getResourceString(isEditMode ? "TTV_OpeningTreeEditor" : "TTV_OpeningTreeViewer"), 24);
 		            SwingWorker bgThread = new SwingWorker()
 		            {
 		                @SuppressWarnings({ "unchecked", "synthetic-access" })

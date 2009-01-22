@@ -167,10 +167,10 @@ public class TreePrefs extends GenericPrefsPanel
          * @param tdi
          * @param fillerClass
          */
-        public void fill(final String fillerId,
+        public void fill(final String                   fillerId,
                          final DataProviderSessionIFace session, 
-                         final TreeDefIface<T,D,I> tdi,
-                         final Class<?> fillerClass)
+                         final TreeDefIface<T,D,I>      tdi,
+                         final Class<?>                 fillerClass)
         {
             this.id    = fillerId;
             this.clazz = fillerClass;
