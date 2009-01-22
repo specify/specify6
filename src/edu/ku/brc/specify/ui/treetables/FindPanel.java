@@ -29,6 +29,7 @@ import edu.ku.brc.specify.tasks.DualViewSearchable;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.MultiStateToggleButton;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.IconManager.IconSize;
 
 public class FindPanel extends JPanel implements TimingTarget
@@ -43,6 +44,8 @@ public class FindPanel extends JPanel implements TimingTarget
     protected MultiStateToggleButton whereToggleButton;
     
     protected int        mode;
+    protected boolean	 hasBeenContracted   = false;
+    
     protected Dimension  prefSize;
     protected Dimension  contractedSize;
     protected boolean    animationInProgress = false;
@@ -184,7 +187,11 @@ public class FindPanel extends JPanel implements TimingTarget
         }
         
         shrinking = true;
-
+        if (!hasBeenContracted)
+        {
+        	UIRegistry.displayInfoMsgDlgLocalized("FindPanel.RESTORE_HINT");
+        	hasBeenContracted = true;
+        }
         // start animation to shrink the panel
         Animator expander = new Animator(300,this);
         expander.start();
