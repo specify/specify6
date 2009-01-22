@@ -601,18 +601,28 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                     addChildToSelectedNode(lists[0]);
                 }
             });
-    
-            editNode0 = new JButton(icon_editNode);
-            editNode0.setSize(20,20);
-            editNode0.setToolTipText("Edit Selected Node"); //XXX i18n
-            editNode0.addActionListener(new ActionListener()
+        }
+        
+        editNode0 = new JButton(icon_editNode);
+        editNode0.setSize(20,20);
+        if (isEditMode)
+        {
+        	editNode0.setToolTipText("TreeTableViewer.EditSelectedNode"); 
+        }
+        else
+        {
+        	editNode0.setToolTipText("TreeTableViewer.ViewSelectedNode");
+        }
+        editNode0.addActionListener(new ActionListener()
+        {
+        	public void actionPerformed(ActionEvent ae)
             {
-                public void actionPerformed(ActionEvent ae)
-                {
-                    editSelectedNode(lists[0]);
-                }
-            });
-    
+        		editSelectedNode(lists[0]);
+            }
+        });
+        
+        if (isEditMode)
+        {
             deleteNode0 = new JButton(icon_delNode);
             deleteNode0.setSize(20,20);
             //XXX i18n            
@@ -644,14 +654,14 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         buttonPanel0.add(Box.createRigidArea(new Dimension(20,20)));
         
         // tree editing buttons
+        JLabel editLabel0 = createLabel(isEditMode ? getResourceString("EDIT") : getResourceString("VIEW"));
+        editLabel0.setSize(32,editLabel0.getHeight());
+        buttonPanel0.add(editLabel0);
+        editLabel0.setAlignmentX(Component.CENTER_ALIGNMENT);
+        buttonPanel0.add(editNode0);
+        editNode0.setAlignmentX(Component.CENTER_ALIGNMENT);
         if (isEditMode)
         {
-            JLabel editLabel0 = createLabel(getResourceString("EDIT"));
-            editLabel0.setSize(32,editLabel0.getHeight());
-            buttonPanel0.add(editLabel0);
-            editLabel0.setAlignmentX(Component.CENTER_ALIGNMENT);
-            buttonPanel0.add(editNode0);
-            editNode0.setAlignmentX(Component.CENTER_ALIGNMENT);
             buttonPanel0.add(newChild0);
             newChild0.setAlignmentX(Component.CENTER_ALIGNMENT);
             buttonPanel0.add(deleteNode0);
@@ -670,7 +680,10 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         if (isEditMode)
         {
             allButtons.add(newChild0);
-            allButtons.add(editNode0);
+        }
+        allButtons.add(editNode0);
+        if (isEditMode)
+        {
             allButtons.add(deleteNode0);
         }
  
@@ -754,18 +767,26 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                     addChildToSelectedNode(lists[1]);
                 }
             });
-            
-            editNode1 = new JButton(icon_editNode);
-            editNode1.setSize(20,20);
-            editNode1.setToolTipText("Edit Selected Node");
-            editNode1.addActionListener(new ActionListener()
+        }
+        editNode1 = new JButton(icon_editNode);
+        editNode1.setSize(20,20);
+        if (isEditMode)
+        {
+        	editNode1.setToolTipText(getResourceString("TreeTableViewer.EditSelectedNode"));
+        }
+        else
+        {
+        	editNode1.setToolTipText(getResourceString("TreeTableViewer.EditSelectedNode"));
+        }
+        editNode1.addActionListener(new ActionListener()
+        {
+        	public void actionPerformed(ActionEvent ae)
             {
-                public void actionPerformed(ActionEvent ae)
-                {
-                    editSelectedNode(lists[1]);
-                }
-            });
-    
+                editSelectedNode(lists[1]);
+            }
+        });
+        if (isEditMode)
+        {
             deleteNode1 = new JButton(icon_delNode);
             deleteNode1.setSize(20,20);
             deleteNode1.setToolTipText("Delete Selected Node");
@@ -795,15 +816,15 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 
         buttonPanel1.add(Box.createRigidArea(new Dimension(20,20)));
         
+        JLabel editLabel1 = createLabel(isEditMode ? getResourceString("EDIT") : getResourceString("VIEW"));
+        editLabel1.setSize(32,editLabel1.getHeight());
+        buttonPanel1.add(editLabel1);
+        editLabel1.setAlignmentX(Component.CENTER_ALIGNMENT);
+        buttonPanel1.add(editNode1);
+        editNode1.setAlignmentX(Component.CENTER_ALIGNMENT);
         if (isEditMode)
         {
             // tree editing buttons
-            JLabel editLabel1 = createLabel("Edit");
-            editLabel1.setSize(32,editLabel1.getHeight());
-            buttonPanel1.add(editLabel1);
-            editLabel1.setAlignmentX(Component.CENTER_ALIGNMENT);
-            buttonPanel1.add(editNode1);
-            editNode1.setAlignmentX(Component.CENTER_ALIGNMENT);
             buttonPanel1.add(newChild1);
             newChild1.setAlignmentX(Component.CENTER_ALIGNMENT);
             buttonPanel1.add(deleteNode1);
@@ -822,7 +843,10 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         if (isEditMode)
         {
             allButtons.add(newChild1);
-            allButtons.add(editNode1);
+        }
+        allButtons.add(editNode1);
+        if (isEditMode)
+        {
             allButtons.add(deleteNode1);
         }
  
@@ -1689,7 +1713,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	    String      viewName      = TreeFactory.getAppropriateViewName(node);
 		Frame       parentFrame   = (Frame)UIRegistry.get(UIRegistry.FRAME);
 		String      displayName   = "NODE_EDIT_DISPLAY_NAME";
-        boolean     isEdit        = true;
+        boolean     isEdit        = isEditMode;
 		String      closeBtnText  = (isEdit) ? getResourceString("SAVE") : getResourceString("CLOSE");
 		String      className     = node.getClass().getName();
         DBTableInfo nodeTableInfo = DBTableIdMgr.getInstance().getInfoById(node.getTableId());
@@ -1699,7 +1723,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		{
 		    options |= MultiView.IS_NEW_OBJECT;
 		}
-		
 		// create the form dialog
 		ViewBasedDisplayDialog dialog = new ViewBasedDisplayDialog(parentFrame, null, viewName, displayName, title, 
 		                                                           closeBtnText, className, idFieldName, isEdit, options);
@@ -1741,9 +1764,13 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		Integer parentIdBefore              = (node.getParent() != null) ? node.getParent().getTreeId() : null;
         final Integer acceptedNodeIdBefore  = (node.getAcceptedParent() != null) ? node.getAcceptedParent().getTreeId() : null;
 		
-        // NOTE: Because of when the combobox gets set we need to call the validatSr here
-        // so the it all get validated correctly.
-        dialog.getMultiView().getCurrentView().getValidator().validateForm();
+        if (isEdit)
+        {
+        	// NOTE: Because of when the combobox gets set we need to call the validatSr here
+        	// so the it all get validated correctly.
+        
+        	dialog.getMultiView().getCurrentView().getValidator().validateForm();
+        }
         
 		dialog.pack();
 		// show the dialog (which allows all user edits to happen)
@@ -1764,7 +1791,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         log.debug("acceptedNodeIdBefore: " + acceptedNodeIdBefore);
 		
 		// the dialog has been dismissed by the user
-		if (dialog.getBtnPressed() == ViewBasedDisplayIFace.OK_BTN)
+		if (dialog.getBtnPressed() == ViewBasedDisplayIFace.OK_BTN && isEdit)
 		{
 		    final FormViewObj fvo = dialog.getMultiView().getCurrentViewAsFormViewObj();
 		    if (fvo != null)
@@ -2002,10 +2029,10 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         if (sourceList == lists[0])
         {
             popupMenu.setNewEnabled(canAddChild && nonNullSelection);
+            editNode0.setEnabled(nonNullSelection);
             if (isEditMode)
             {
                 newChild0.setEnabled(canAddChild && nonNullSelection);
-                editNode0.setEnabled(nonNullSelection);
             }
             subtree0.setEnabled(!isVisibleRoot && nonNullSelection);
             toParent0.setEnabled(!isVisibleRoot && nonNullSelection);
@@ -2020,10 +2047,10 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         else
         {
             popupMenu.setNewEnabled(canAddChild && nonNullSelection); 
+            editNode1.setEnabled(nonNullSelection);
             if (isEditMode)
             {
                 newChild1.setEnabled(canAddChild && nonNullSelection);
-                editNode1.setEnabled(nonNullSelection);
             }
             subtree1.setEnabled(!isVisibleRoot && nonNullSelection);
             toParent1.setEnabled(!isVisibleRoot && nonNullSelection);

@@ -58,9 +58,9 @@ public class TreeNodePopupMenu extends JPopupMenu
         selectionSensativeButtons.add(find);
         
         
+        edit     = new JMenuItem(isEditMode ? getResourceString("TTV_EDITING") : getResourceString("TTV_VIEWING"));
         if (isEditMode)
         {
-            edit     = new JMenuItem(getResourceString("TTV_EDITING"));
             delete   = new JMenuItem(getResourceString("TTV_DELETE"));
             unSyn    = new JMenuItem(getResourceString("TTV_UNSYN"));
             newChild = new JMenuItem(getResourceString("TTV_NEW_CHILD"));
@@ -71,7 +71,6 @@ public class TreeNodePopupMenu extends JPopupMenu
             selectionSensativeButtons.add(unSyn);
         } else
         {
-            edit     = null;
             delete   = null;
             unSyn    = null;
             newChild = null;
@@ -103,15 +102,16 @@ public class TreeNodePopupMenu extends JPopupMenu
         this.add(subtree);
         this.add(find);
 
+		edit.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent ae)
+			{
+				ttv.editSelectedNode(list);
+			}
+		});
+        this.add(edit);
 		if (isEditMode)
 		{
-    		edit.addActionListener(new ActionListener()
-    		{
-    			public void actionPerformed(ActionEvent ae)
-    			{
-    				ttv.editSelectedNode(list);
-    			}
-    		});
     
     		delete.addActionListener(new ActionListener()
     		{
@@ -136,7 +136,6 @@ public class TreeNodePopupMenu extends JPopupMenu
     				ttv.addChildToSelectedNode(list);
     			}
     		});
-            this.add(edit);
             this.add(delete);
             this.add(newChild);
             this.add(unSyn);
