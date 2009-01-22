@@ -83,11 +83,10 @@ public class BasicSQLUtils
     // A map used to map a New Column name to an object that can either get or convert the value.
     protected static Hashtable<String, BasicSQLUtilsMapValueIFace> columnValueMapper = new Hashtable<String, BasicSQLUtilsMapValueIFace>();
     
-    protected static Connection dbConn = null;  // (it may be shared so don't close)
-    
-    protected static ProgressFrame   frame = null;
-    
-    protected static boolean ignoreMySQLduplicates = true;
+    protected static Connection    dbConn = null;  // (it may be shared so don't close)
+    protected static ProgressFrame frame = null;
+    protected static boolean       ignoreMySQLduplicates = true;
+    protected static boolean       skipTrackExceptions   = false;
     
     // Missing Mapping File
     protected static PrintWriter missingPW;
@@ -120,6 +119,14 @@ public class BasicSQLUtils
     public static void setShowErrors(final int showErrors)
     {
         BasicSQLUtils.showErrors = showErrors;
+    }
+
+    /**
+     * @param skipTrackExceptions the skipTrackExceptions to set
+     */
+    public static void setSkipTrackExceptions(boolean skipTrackExceptions)
+    {
+        BasicSQLUtils.skipTrackExceptions = skipTrackExceptions;
     }
 
     /**
@@ -467,6 +474,7 @@ public class BasicSQLUtils
     }
 
     /**
+     * @param conn
      * @param sql
      * @return
      */
@@ -495,9 +503,12 @@ public class BasicSQLUtils
 
         } catch (SQLException ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BasicSQLUtils.class, ex);
             ex.printStackTrace();
+            if (!skipTrackExceptions)
+            {
+                edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BasicSQLUtils.class, ex);
+            }
             
         } finally
         {
@@ -511,6 +522,54 @@ public class BasicSQLUtils
         }
 
         return list;
+    }
+
+    
+    /**
+     * @param sql
+     * @return
+     */
+    public static int update(final String sql)
+    {
+        return update(null, sql);
+    }
+
+    /**
+     * @param conn
+     * @param sql
+     * @return
+     */
+    public static int update(final Connection conn, final String sql)
+    {
+        Statement stmt = null;
+        try
+        {
+            Connection connection = conn != null ? conn : (dbConn != null ? dbConn : DBConnection.getInstance().getConnection());
+
+            stmt = connection.createStatement();
+            return stmt.executeUpdate(sql);
+
+        } catch (SQLException ex)
+        {
+            ex.printStackTrace();
+            if (!skipTrackExceptions)
+            {
+                edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BasicSQLUtils.class, ex);
+            }
+            
+        } finally
+        {
+            if (stmt != null)
+            {
+                try
+                {
+                    stmt.close();
+                } catch (Exception ex) {}
+            }
+        }
+
+        return -1;
     }
 
     /**

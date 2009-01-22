@@ -1191,6 +1191,15 @@ public class SpecifyDBConverter
                     localSession.close();
                 }
                 
+                
+                // MySQL Only ???
+                String sql = "UPDATE determination SET activetaxonid = CASE WHEN " +
+                "(SELECT acceptedid FROM taxon WHERE taxon.taxonid = determination.taxonid) IS NULL " +
+                "THEN determination.taxonid ELSE (SELECT acceptedid FROM taxon WHERE taxon.taxonid = determination.taxonid) END";
+                System.out.println(sql);
+                BasicSQLUtils.setSkipTrackExceptions(true);
+                BasicSQLUtils.update(sql);
+                
                 //------------------------------------------------
                 // Localize Schema and make form fields visible
                 //------------------------------------------------

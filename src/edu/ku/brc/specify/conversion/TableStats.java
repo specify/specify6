@@ -65,14 +65,21 @@ public class TableStats
     
     public void compareStats()
     {
-        double rowsDiff = oldTable.getNumRows() > 0 ? newTable.getNumRows() / oldTable.getNumRows() * 100.0 : 0.0;
-        double sizeDiff = oldTable.getSize() > 0    ? newTable.getSize()    / oldTable.getSize()    * 100.0 : 0.0;
-        
-        System.out.println("Table "+oldTable.getName()+" "+newTable.getName());
-        System.out.println("Rows  "+oldTable.getNumRows()+"  "+oldTable.getNumRows()+" "+(String.format("%5.2f", new Object[] {rowsDiff})));
-        System.out.println("Size  "+oldTable.getSize()+"  "+oldTable.getSize()+" "+(String.format("%5.2f", new Object[] {sizeDiff})));
-        
-        System.out.println(oldTable.conn.hashCode() +" " + newTable.conn.hashCode());
+        if (oldTable.hasStats() && newTable.hasStats())
+        {
+            double rowsDiff = oldTable.getNumRows() > 0 ? newTable.getNumRows() / oldTable.getNumRows() * 100.0 : 0.0;
+            double sizeDiff = oldTable.getSize() > 0    ? newTable.getSize()    / oldTable.getSize()    * 100.0 : 0.0;
+            
+            System.out.println("Table "+oldTable.getName()+" "+newTable.getName());
+            System.out.println("Rows  "+oldTable.getNumRows()+"  "+oldTable.getNumRows()+" "+(String.format("%5.2f", new Object[] {rowsDiff})));
+            System.out.println("Size  "+oldTable.getSize()+"  "+oldTable.getSize()+" "+(String.format("%5.2f", new Object[] {sizeDiff})));
+            
+            System.out.println(oldTable.conn.hashCode() +" " + newTable.conn.hashCode());
+ 
+        } else
+        {
+            System.out.println(String.format("No Stats for %s, %s", oldTable.getName(), newTable.getName()));
+        }
     }
     
     
@@ -82,9 +89,10 @@ public class TableStats
     protected class SingleTable 
     {
         protected Connection conn;
-        protected String name;
-        protected int    size;
-        protected int    numRows;
+        protected String     name;
+        protected int        size;
+        protected int        numRows;
+        protected boolean    hasStats = false;
         
         
         public SingleTable(Connection conn, String name)
@@ -104,6 +112,14 @@ public class TableStats
             this.numRows = numRows;
         }
         
+        /**
+         * @return the hasStats
+         */
+        public boolean hasStats()
+        {
+            return hasStats;
+        }
+
         public void collectStats()
         {
             if (conn != null)
@@ -134,21 +150,35 @@ public class TableStats
         
         public void readTables() throws SQLException
         {
-            Statement st = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
-            ResultSet rs = st.executeQuery("show table status");
-            rs.first();
-            do
+            try
             {
-                String tableName = rs.getString(getColNameIndex(rs, "Name"));
-                
-                if (tableName.equals(name))
+                Statement st = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+                ResultSet rs = st.executeQuery("show table status");
+                if (rs.first())
                 {
-                    numRows = BasicSQLUtils.getNumRecords(conn, name);//rs.getInt(getColNameIndex(rs, "Rows"));
-                    size    = rs.getInt(getColNameIndex(rs, "Data_length"));
+                    do
+                    {
+                        String tableName = rs.getString(getColNameIndex(rs, "Name"));
+                        
+                        if (tableName.equals(name))
+                        {
+                            numRows = BasicSQLUtils.getNumRecords(conn, name);//rs.getInt(getColNameIndex(rs, "Rows"));
+                            size    = rs.getInt(getColNameIndex(rs, "Data_length"));
+                            
+                            break;
+                        }
+                    } while (rs.next());
+                    hasStats = true;
                     
-                    break;
+                } else
+                {
+                    System.err.println("Couldn't get Table Stats for Table ["+name+"]");
                 }
-            } while (rs.next());
+                
+            } catch (Exception ex)
+            {
+                System.err.println("Couldn't get Table Stats for Table ["+name+"]");
+            }
         }
         
         public String getName()
