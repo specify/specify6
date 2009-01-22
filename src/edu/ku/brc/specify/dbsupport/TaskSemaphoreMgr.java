@@ -17,6 +17,7 @@ import java.sql.Timestamp;
 import javax.swing.JOptionPane;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -44,6 +45,8 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class TaskSemaphoreMgr
 {
+    private static final Logger log = Logger.getLogger(TaskSemaphoreMgr.class);
+    
     public enum SCOPE       {Global, Discipline, Collection}
     public enum USER_ACTION {OK, Error, Cancel, ViewMode, Override}
     
@@ -511,8 +514,12 @@ public class TaskSemaphoreMgr
             
         } else
         {
+            // Changing to just an error message for Bug 6478
+            // I think it was a timing issue. I wasn't able to
+            // reproduce it.
+            log.error("Try to unlock when there is no lock.");
             // error
-            throw new RuntimeException("No lock!");
+            //throw new RuntimeException("No lock!");
         }
         
         semaphore.setIsLocked(doLock);
