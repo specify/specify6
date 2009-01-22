@@ -39,6 +39,7 @@ import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.specify.Specify;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * Help System Wrapper to make it easier to start and load help.
@@ -141,8 +142,9 @@ public class HelpMgr
         {
             // XXX REMOVE ME BEFORE RELEASE
             // this used to find help that doesn't have a key word.
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(HelpMgr.class, e);
+            JOptionPane.showMessageDialog(null, "No mapping for '" + id + "'");
+//            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+//            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(HelpMgr.class, e);
             return false;
         }
     }
@@ -177,7 +179,18 @@ public class HelpMgr
             } else
             {
                 log.warn("No mapping for '" + idString + "'. Defaulting to '" + getDefaultID() + "'");
-            	CSH.setHelpIDString(component, getDefaultID());
+            	
+                CSH.setHelpIDString(component, getDefaultID());                
+            }
+            if (!isGoodID(idString))
+            {
+                component.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent ae)
+                    {
+                        UIRegistry.displayErrorDlg("No mapping for '" + idString + "'");
+                    }
+                }); 
             }
             component.addActionListener(new ActionListener()
             {
@@ -268,7 +281,9 @@ public class HelpMgr
         {
             try
             {
-                log.warn("No mapping for '" + id + "'. Defaulting to '" + getDefaultID() + "'");
+                //XXX remove before release.
+            	UIRegistry.displayErrorDlg("No mapping for '" + id + "'. Defaulting to '" + getDefaultID() + "'");
+            	log.warn("No mapping for '" + id + "'. Defaulting to '" + getDefaultID() + "'");
                 return Map.ID.create(getDefaultID(), hs);
             } catch (BadIDException e2)
             {
@@ -337,8 +352,8 @@ public class HelpMgr
                     }
                 } catch (InvalidHelpSetContextException e)
                 {
-                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(HelpMgr.class, e);
+                	edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                	edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(HelpMgr.class, e);
                     helpless();
                 }
             }
