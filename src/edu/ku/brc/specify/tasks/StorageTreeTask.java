@@ -111,7 +111,7 @@ public class StorageTreeTask extends BaseTreeTask<Storage, StorageTreeDef, Stora
         }
         
         sql = "SELECT co.CollectionObjectID FROM storage as st INNER JOIN container as cn ON st.StorageID = cn.StorageID " +
-              "INNER JOIN collectionobjects co ON co.ContainerID = cn.ContainerID " +
+              "INNER JOIN CollectionObject co ON co.ContainerID = cn.ContainerID " +
               "WHERE st.StorageID = "+storage.getStorageId()+" AND co.CollectionMemberID = COLMEMID";
         
         fillLisWithIds(sql, idList);
