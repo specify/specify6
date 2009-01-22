@@ -2002,9 +2002,20 @@ public final class UIHelper
      */
     public static JScrollPane createScrollPane(final JComponent content)
     {
+        return createScrollPane(content, false);
+    }
+    
+    /**
+     * Creates a JScrollPane with the Vertical SrcollBar hint to be platform specific.
+     * @param content the component inside the ScrollPane
+     * @param makeHorzAsNeeded set the horizontal to be as needed
+     * @return the ScrollPane
+     */
+    public static JScrollPane createScrollPane(final JComponent content, final boolean makeHorzAsNeeded)
+    {
         return new JScrollPane(content, 
                                isMacOS() ? ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS : ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, 
-                               ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+                                       makeHorzAsNeeded ? ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED : ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
     }
     
     /**

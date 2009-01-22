@@ -99,7 +99,7 @@ public class SpecifyExceptionTracker extends ExceptionTracker
         pb.add(bugTF,                    cc.xy(3, y)); y += 2;
         
         pb.add(createFormLabel("Comments"), cc.xy(1, y));     y += 2;
-        pb.add(createScrollPane(commentsTA), cc.xyw(1, y, 4)); y += 2;
+        pb.add(createScrollPane(commentsTA, true), cc.xyw(1, y, 4)); y += 2;
         
         pb.add(createFormLabel("Stack Trace"), cc.xy(1, y));     y += 2;
         pb.add(createScrollPane(stackTraceTA), cc.xyw(1, y, 4)); y += 2;
