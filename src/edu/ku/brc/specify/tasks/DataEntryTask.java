@@ -15,6 +15,7 @@
 package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.specify.ui.DBObjDialogFactory.isLockOK;
+import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Color;
@@ -904,6 +905,31 @@ public class DataEntryTask extends BaseTask
                 
                 stdViews  = dataEntryXML.getStd();
                 miscViews = dataEntryXML.getMisc();
+                
+                SpecifyAppContextMgr acm = (SpecifyAppContextMgr)AppContextMgr.getInstance();
+                for (DataEntryView dev : stdViews)
+                {
+                    if (StringUtils.isEmpty(dev.getToolTip()))
+                    {
+                        ViewIFace view = acm.getView(dev.getView());
+                        if (view != null)
+                        {
+                            dev.setToolTip(getLocalizedMessage("DET_OPEN_VIEW", view.getObjTitle()));
+                        }
+                    }
+                }
+                
+                for (DataEntryView dev : miscViews)
+                {
+                    if (StringUtils.isEmpty(dev.getToolTip()))
+                    {
+                        ViewIFace view = acm.getView(dev.getView());
+                        if (view != null)
+                        {
+                            dev.setToolTip(getLocalizedMessage("DET_OPEN_VIEW", view.getObjTitle()));
+                        }
+                    }
+                }
                 
                 // FOR DEBUGGING - Verify View Names
                 /*
