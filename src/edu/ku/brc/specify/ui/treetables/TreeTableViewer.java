@@ -522,6 +522,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         Icon icon_syncViews  = IconManager.getIcon("TTV_SyncViews", IconManager.IconSize.Std16);
         Icon icon_newChild   = IconManager.getIcon("TTV_NewChild",  IconManager.IconSize.Std16);
         Icon icon_editNode   = IconManager.getIcon("TTV_EditNode",  IconManager.IconSize.Std16);
+        Icon icon_viewNode   = IconManager.getIcon("ViewForm16",  IconManager.IconSize.Std16);
         Icon icon_delNode    = IconManager.getIcon("TTV_DelNode",   IconManager.IconSize.Std16);
         Icon icon_toParent   = IconManager.getIcon("TTV_ToParent",  IconManager.IconSize.Std16);
         icon_split      = IconManager.getIcon("TTV_SplitViewMode",  IconManager.IconSize.Std16);
@@ -603,7 +604,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             });
         }
         
-        editNode0 = new JButton(icon_editNode);
+        editNode0 = new JButton(isEditMode ? icon_editNode : icon_viewNode);
         editNode0.setSize(20,20);
         if (isEditMode)
         {
@@ -654,10 +655,13 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         buttonPanel0.add(Box.createRigidArea(new Dimension(20,20)));
         
         // tree editing buttons
-        JLabel editLabel0 = createLabel(isEditMode ? getResourceString("EDIT") : getResourceString("VIEW"));
-        editLabel0.setSize(32,editLabel0.getHeight());
-        buttonPanel0.add(editLabel0);
-        editLabel0.setAlignmentX(Component.CENTER_ALIGNMENT);
+        if (isEditMode)
+        {
+        	JLabel editLabel0 = createLabel(getResourceString("EDIT"));
+        	editLabel0.setSize(32,editLabel0.getHeight());
+        	buttonPanel0.add(editLabel0);
+        	editLabel0.setAlignmentX(Component.CENTER_ALIGNMENT);
+        }
         buttonPanel0.add(editNode0);
         editNode0.setAlignmentX(Component.CENTER_ALIGNMENT);
         if (isEditMode)
@@ -768,7 +772,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                 }
             });
         }
-        editNode1 = new JButton(icon_editNode);
+        editNode1 = new JButton(isEditMode ? icon_editNode : icon_viewNode);
         editNode1.setSize(20,20);
         if (isEditMode)
         {
@@ -816,11 +820,14 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 
         buttonPanel1.add(Box.createRigidArea(new Dimension(20,20)));
         
-        JLabel editLabel1 = createLabel(isEditMode ? getResourceString("EDIT") : getResourceString("VIEW"));
-        editLabel1.setSize(32,editLabel1.getHeight());
-        buttonPanel1.add(editLabel1);
-        editLabel1.setAlignmentX(Component.CENTER_ALIGNMENT);
-        buttonPanel1.add(editNode1);
+        if (isEditMode)
+        {
+        	JLabel editLabel1 = createLabel(getResourceString("EDIT"));
+        	editLabel1.setSize(32,editLabel1.getHeight());
+        	buttonPanel1.add(editLabel1);
+        	editLabel1.setAlignmentX(Component.CENTER_ALIGNMENT);
+        	buttonPanel1.add(editNode1);
+        }
         editNode1.setAlignmentX(Component.CENTER_ALIGNMENT);
         if (isEditMode)
         {
