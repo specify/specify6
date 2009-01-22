@@ -65,7 +65,7 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
     protected int                                             tableId;
     protected String                                          iconName;
     protected List<SortElement>                               sortElements = null;
-    
+    protected boolean 										  filterDups = false;							
     protected Vector<Vector<Object>>                          cache = null;
     protected boolean                                         recIdsLoaded = false;
     protected boolean                                         hasIds = true;
@@ -448,18 +448,69 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
         return ExpressSearchTask.RESULTS_THRESHOLD;
     }    
 
+    /**
+     * @param sortElements the sortElements to set.
+     */
     public void setSort(final List<SortElement> sortElements)
     {
         this.sortElements = sortElements;
     }
 
+    /**
+     * @param filterDups the filterDups to set
+     */
+    public void setFilterDups(boolean filterDups)
+    {
+    	this.filterDups = filterDups;
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.db.QueryForIdResultsIFace#cacheFilled(java.util.Vector)
      */
     @Override
     public void cacheFilled(final Vector<Vector<Object>> cacheData)
     {
-        if (sortElements != null)
+    	if (filterDups && cacheData.size() > 1)
+        {
+        	List<SortElement> dupSorts = new LinkedList<SortElement>();
+        	for (int c = 0; c < cacheData.get(0).size(); c++)
+        	{
+        		dupSorts.add(new SortElement(c, SortElement.ASCENDING));
+        	}
+        	//Sort the rows by all columns, then iterate list and remove identical rows.
+			ResultRowComparator comparator = new ResultRowComparator(dupSorts);
+        	Collections.sort(cacheData, comparator);
+			int r = 0;
+			LinkedList<Vector<Object>> rowsToDelete = new LinkedList<Vector<Object>>();
+			while (r < cacheData.size())
+			{
+				Vector<Object> row = cacheData.get(r);
+				r++;
+				boolean go = true;
+				while (r < cacheData.size() && go)
+				{
+					Vector<Object> nextRow = cacheData.get(r);
+					if (comparator.compare(row, nextRow) == 0)
+					{
+						rowsToDelete.add(nextRow);
+						r++;
+					}
+					else
+					{
+						go = false;
+					}
+				}
+			}
+			//It is probably possible (and probably more efficient) 
+			//to eliminate this step by using an iterator  and deleting 
+			//in the loop above (if the iterator supports deletion).
+			for (Vector<Object> toDelete : rowsToDelete)
+			{
+				cacheData.remove(toDelete);
+			}
+        }
+        
+    	if (sortElements != null)
         {
             Collections.sort(cacheData, new ResultRowComparator(sortElements));
         }

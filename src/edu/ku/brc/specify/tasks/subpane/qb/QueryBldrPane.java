@@ -1755,6 +1755,16 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         qri.setCaptions((List<ERTICaptionInfo> )captions);
         qri.setExpanded(true);
         qri.setHasIds(!distinct);
+        boolean hasTreeLevels = false;
+        for (ERTICaptionInfo caption : captions)
+        {
+        	if (caption instanceof ERTICaptionInfoTreeLevel)
+        	{
+        		hasTreeLevels = true;
+        		break;
+        	}
+        }
+        qri.setFilterDups(distinct && hasTreeLevels);
         runningResults.set(qri);
         doneTime.set(-1);
         
