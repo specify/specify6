@@ -400,7 +400,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         {
             log.warn("Problems setting the FileStoreAttachmentManager at ["+location+"]"); //$NON-NLS-1$ //$NON-NLS-2$
             // TODO RELEASE -  Instead of exiting we need to disable Attachments
-            throw new RuntimeException("Problems setting the FileStoreAttachmentManager at ["+location+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+            //throw new RuntimeException("Problems setting the FileStoreAttachmentManager at ["+location+"]"); //$NON-NLS-1$ //$NON-NLS-2$
         }
         
         AttachmentUtils.setAttachmentManager(attachMgr);
