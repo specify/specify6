@@ -100,16 +100,19 @@ public class DeterminationBusRules extends BaseBusRules
             Component currentComp     = formViewObj.getControlByName("isCurrent");
             if (determination != null && determination.getDeterminationId() == null && currentComp != null)
             {
-                if (determination.getCollectionObject().getDeterminations().size() == 1)
+                if (determination.getCollectionObject() != null) //It should never be non null, but, currently, it does happen.
                 {
-                    if (currentComp instanceof ValCheckBox)
-                    {
-                        ((ValCheckBox )currentComp).setSelected(true);
-                    }
-                    else
-                    {
-                        log.error("IsCurrent not set to true because form control is of unexpected type: " + currentComp.getClass().getName());
-                    }
+                	if (determination.getCollectionObject().getDeterminations().size() == 1)
+                	{
+                		if (currentComp instanceof ValCheckBox)
+                		{
+                			((ValCheckBox )currentComp).setSelected(true);
+                		}
+                		else
+                		{
+                			log.error("IsCurrent not set to true because form control is of unexpected type: " + currentComp.getClass().getName());
+                		}
+                	}
                 }
             }
             Component activeTax = formViewObj.getControlByName("preferredTaxon");
