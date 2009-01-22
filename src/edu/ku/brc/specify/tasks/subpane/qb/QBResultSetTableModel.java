@@ -177,16 +177,24 @@ public class QBResultSetTableModel extends ResultSetTableModel
 					{
 						row = new Vector<Object>(1);
 					}
-					else
-					{
-						throw new RuntimeException("row object is null");
-					}
+					
 					Integer id = null;
-					if (rowObj != null && rowObj.getClass().isArray()) 
+					if (rowObj != null) 
 					{
 						int col = 0;
 						Iterator<ERTICaptionInfo> cols = captions.iterator();
-						for (Object colObj : (Object[]) rowObj) {
+						Object[] values;
+						if (rowObj.getClass().isArray())
+						{
+							values = (Object[] )rowObj;
+						}
+						else
+						{
+							values = new Object[1];
+							values[0] = rowObj;
+						}
+						for (Object colObj : values) 
+						{
 							if (col == 0) {
 								if (hasIds) // Does this mean
 								{
