@@ -701,14 +701,10 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
         }
         catch (NumberFormatException ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchRow.class, ex);
             //ignore
         }
         catch (Exception ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchRow.class, ex);
             //ignore;
         }
         return null;
@@ -736,14 +732,10 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
         }
         catch (NumberFormatException ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchRow.class, ex);
             //ignore
         }
         catch (Exception ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchRow.class, ex);
             //ignore;
         }
         return null;
