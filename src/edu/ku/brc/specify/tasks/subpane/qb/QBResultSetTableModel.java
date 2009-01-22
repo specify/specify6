@@ -195,19 +195,14 @@ public class QBResultSetTableModel extends ResultSetTableModel
 						}
 						for (Object colObj : values) 
 						{
-							if (col == 0) {
+							if (col == 0 && hasIds) {
 								if (hasIds) // Does this mean
 								{
 									id = (Integer) colObj;
 									if (debugging)
 										log.debug("*** 1 Adding id[" + colObj
 												+ "]");
-								} else 
-								{
-									// log.error("First Column must be Integer
-									// id! ["+colObj+"]");
-									row.add(cols.next().processValue(colObj));
-								}
+								} 
 							} else 
 							{
 								ERTICaptionInfo erti = cols.next();
