@@ -236,8 +236,8 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
                 
             } catch (IOException ex)
             {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AppPrefsDBIOIImpl.class, ex);
+                //edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AppPrefsDBIOIImpl.class, ex);
                 throw new BackingStoreException(ex);
             }
         } else
