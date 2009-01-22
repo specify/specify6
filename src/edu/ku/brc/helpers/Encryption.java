@@ -254,11 +254,14 @@ public class Encryption
         try
         {
             return new String(Encryption.decrypt(Encryption.reverseHEXStr(str), key.toCharArray()));
-
+            
+        } catch (javax.crypto.BadPaddingException bpex)
+        {
+            log.debug("Error decrypting password."); // XXX FIXME Probably want to display a dialog here //$NON-NLS-1$
+            return null;
+            
         } catch (Exception ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(Encryption.class, ex);
             log.error("Error decrypting password."); // XXX FIXME Probably want to display a dialog here //$NON-NLS-1$
             return str;
         }

@@ -188,8 +188,7 @@ public class UserAndMasterPasswordMgr
         Boolean isLocal   = AppPreferences.getLocalPrefs().getBoolean(usersUserName+"_"+MASTER_LOCAL, null);
         String  masterKey = AppPreferences.getLocalPrefs().get(usersUserName+"_"+MASTER_PATH, null);
         
-        if (isLocal == null ||
-            StringUtils.isEmpty(masterKey))
+        if (isLocal == null || StringUtils.isEmpty(masterKey))
         {
             if (!askForInfo(null, null))
             {
@@ -207,6 +206,10 @@ public class UserAndMasterPasswordMgr
                 try
                 {
                     keyStr = Encryption.decrypt(masterKey, usersPassword);
+                    if (keyStr == null)
+                    {
+                        return noUP;
+                    }
                     
                 } catch (Exception ex) // catch any exception
                 {
