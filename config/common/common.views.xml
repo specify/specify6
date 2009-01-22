@@ -668,7 +668,7 @@
                     <cell type="field" id="3" name="type" uitype="combobox" picklist="AccessionType"/>
                     
                     <cell type="label" labelfor="4"/>
-                    <cell type="field" id="4" name="division" uitype="combobox" picklist="Division"/>
+                    <cell type="field" id="4" name="divisionCBX" uitype="combobox" ignore="true"/>
                     
                 </row>
                 <row>
@@ -676,7 +676,7 @@
                     <cell type="field" id="5" name="dateAccessioned" uitype="formattedtext" uifieldformatter="Date" default="today"/>
                     
                     <cell type="label" labelfor="6"/>
-                    <cell type="field" id="6" name="dateReceived" uitype="formattedtext" uifieldformatter="Date" default="today"/>
+                    <cell type="field" id="6" name="dateReceived" uitype="formattedtext" uifieldformatter="Date" default="today" isrequired="true"/>
                 </row>
                 <!--  <row>
                     <cell type="label" labelfor="99"/>

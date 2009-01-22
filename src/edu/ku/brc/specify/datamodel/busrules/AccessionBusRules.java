@@ -22,15 +22,23 @@ package edu.ku.brc.specify.datamodel.busrules;
 
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 
+import java.awt.Component;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Hashtable;
 
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
+
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.UsageTracker;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.forms.DraggableRecordIdentifier;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.FormViewObj;
+import edu.ku.brc.af.ui.forms.validation.ValComboBox;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -125,15 +133,34 @@ public class AccessionBusRules extends AttachmentOwnerBaseBusRules
     {
         super.afterFillForm(dataObj);
         
-        if (!(viewable instanceof FormViewObj))
+        if (!(viewable instanceof FormViewObj) || dataObj == null)
         {
             return;
         }
         
+        Accession accession = (Accession)dataObj;
+        
+        DBTableInfo divisionTI = DBTableIdMgr.getInstance().getInfoById(Division.getClassTableId());
         FormViewObj fvo = (FormViewObj)viewable;
-        if (fvo.isFieldAutoNumberedByName("accessionNumber"))
+        JLabel label = (JLabel)fvo.getLabelFor("4");
+        if (label != null)
         {
+            label.setText(divisionTI.getTitle()+":");
+        }
+        
+        Component divComp = fvo.getControlById("4");
+        if (divComp instanceof ValComboBox)
+        {
+            ValComboBox cbx = (ValComboBox)divComp;
+            DefaultComboBoxModel model = (DefaultComboBoxModel)cbx.getModel();
+            model.removeAllElements();
+            model.addElement(accession.getDivision());
+            cbx.getComboBox().setSelectedIndex(0);
             
+        } else
+        {
+            JTextField tf = (JTextField)divComp;
+            tf.setText(accession.getDivision().getName());
         }
     }
 

@@ -51,7 +51,6 @@ import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.ui.IconEntry;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.util.AttachmentManagerIface;
 import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.FileStoreAttachmentManager;
 

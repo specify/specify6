@@ -136,7 +136,11 @@ public final class FormHelper
         {
             FormDataObjIFace formDataObj = (FormDataObjIFace)newDataClass.newInstance();
             formDataObj.initialize();
-            
+            BusinessRulesIFace br = DBTableIdMgr.getInstance().getBusinessRule(newDataClass);
+            if (br != null)
+            {
+                br.addChildrenToNewDataObjects(formDataObj);
+            }
             CommandDispatcher.dispatch(new CommandAction("Data", "NewObjDataCreated", formDataObj));
             
             return formDataObj;
