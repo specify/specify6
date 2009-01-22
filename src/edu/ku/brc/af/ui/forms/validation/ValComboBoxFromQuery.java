@@ -653,7 +653,6 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         if (isNewObject)
         {
             newDataObj = FormHelper.createAndNewDataObj(tableInfo.getClassObj());
-            newDataObj.initialize();
             
             // Now get the setter for an object and set the value they typed into the combobox and place it in
             // the first field name

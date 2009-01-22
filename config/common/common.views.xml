@@ -793,7 +793,7 @@
                     <cell type="field" id="3" name="type" uitype="combobox" picklist="AccessionType"/>
                     
                     <cell type="label" labelfor="4"/>
-                    <cell type="field" id="4" name="division" uitype="combobox" picklist="Division"/>
+                    <cell type="field" id="4" name="divisionCBX" uitype="combobox" ignore="true"/>
                     
                 </row>
                 <row>
