@@ -291,7 +291,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#okToDelete(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace, edu.ku.brc.ui.forms.BusinessRulesOkDeleteIFace)
      */
     @Override
-    public void okToDelete(final Object dataObj,
+    public void okToDelete(final Object dataObjArg,
                            final DataProviderSessionIFace sessionArg,
                            final BusinessRulesOkDeleteIFace deletable)
     {
@@ -300,10 +300,11 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
         boolean isOK = true;
         if (deletable != null)
         {
+            Object dataObj = dataObjArg;
             DataProviderSessionIFace session = sessionArg != null ? sessionArg : DataProviderFactory.getInstance().createSession();
             try
             {
-                session.attach(dataObj);
+                dataObj = session.merge(dataObj);
     
                 CollectionObject colObj = (CollectionObject)dataObj;
                 
@@ -354,7 +355,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
             
         } else
         {
-            super.okToDelete(dataObj, sessionArg, deletable);
+            super.okToDelete(dataObjArg, sessionArg, deletable);
         }
     }
 
