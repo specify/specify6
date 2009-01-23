@@ -1177,10 +1177,18 @@ public class TemplateEditor extends CustomDialog
      */
     protected void adjustMappings()
     {
-        Set<Integer> tblsMapped = getTblsMapped();
-        if (tblsMapped.size() == 2  
-                && tblsMapped.contains(DBTableIdMgr.getInstance().getByClassName(Taxon.class.getName()).getTableId())
-                && tblsMapped.contains(DBTableIdMgr.getInstance().getByClassName(Determination.class.getName()).getTableId()))
+        boolean doTaxOnlyRemap = true;
+        for (Integer tblId : getTblsMapped())
+        {
+        	if (!(tblId.equals(DBTableIdMgr.getInstance().getByClassName(Taxon.class.getName()).getTableId())
+        			|| tblId.equals(DBTableIdMgr.getInstance().getByClassName(Determination.class.getName()).getTableId())
+        			|| tblId.equals(4000)))
+        	{
+        		doTaxOnlyRemap = false;
+        		break;
+        	}
+        }
+        if (doTaxOnlyRemap)
         {
             log.debug("remapping for taxon-only import");
             TableInfo taxaOnly = null;
@@ -1196,7 +1204,8 @@ public class TemplateEditor extends CustomDialog
 
             if (taxaOnly == null)
             {
-                throw new RuntimeException("Couldn't find Taxon Only table info.");
+                log.warn("couldn't find taxon-only table in workbench schema");
+                return;
             }
             for (int m=0; m<mapModel.getSize(); m++)
             {
@@ -1207,9 +1216,11 @@ public class TemplateEditor extends CustomDialog
                     fldName = fldName.substring(0, fldName.length()-1);
                 }
                 FieldInfo newInfo = null;
+                System.out.println("re-mapping " + fldName);
                 for (FieldInfo fi : taxaOnly.getFieldItems())
                 {
-                    if (fi.getFieldInfo().getName().equals(fldName))
+                    System.out.println("  checking " + fi.getFieldInfo().getName());
+                	if (fi.getFieldInfo().getName().equalsIgnoreCase(fldName))
                     {
                         newInfo = fi;
                         break;
@@ -1217,7 +1228,8 @@ public class TemplateEditor extends CustomDialog
                 }   
                 if (newInfo == null)
                 {
-                    throw new RuntimeException("Couldn't find Taxon Only field info.");
+                    log.warn("Couldn't find Taxon Only field info for " + fldName);
+                    continue;
                 }             
                 
                 fmp.setFieldInfo(newInfo);
