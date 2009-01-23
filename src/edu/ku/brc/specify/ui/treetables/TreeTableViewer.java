@@ -24,7 +24,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -1301,11 +1300,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         	wholeTree0.setEnabled(listModel.getVisibleRoot().getRank() > 0);
         	wholeTree1.setEnabled(listModel.getVisibleRoot().getRank() > 0);
         
-            int rank = (selectedNode != null) ? selectedNode.getRank() : listModel.getVisibleRoot().getRank(); 
-            List<Integer> ranks = listModel.getVisibleRanks();
-            boolean isLowestRoot = rank == ranks.get(ranks.size()-1);
-            subtree0.setEnabled(!isLowestRoot && (selectedNode == null || selectedNode.getRank() != childNode.getRank()));
-            subtree1.setEnabled(!isLowestRoot && (selectedNode == null || selectedNode.getRank() != childNode.getRank()));
+        	enableSubTreeButtons();
+        	
         	updateAllUI();
         }
     }
@@ -1332,6 +1328,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             wholeTree0.setEnabled(false);
             wholeTree1.setEnabled(false);
         }
+        
+        enableSubTreeButtons();
         
         updateAllUI();
     }
@@ -2098,7 +2096,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             {
                 newChild0.setEnabled(canAddChild && nonNullSelection);
             }
-            subtree0.setEnabled(!isVisibleRoot && !isLowestRoot);
+            enableSubTreeButtons();
             toParent0.setEnabled(!isVisibleRoot);
 
             // turn these off until the bg thread can find out if user can delete this node
@@ -2116,7 +2114,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             {
                 newChild1.setEnabled(canAddChild && nonNullSelection);
             }
-            subtree1.setEnabled(!isVisibleRoot && !isLowestRoot);
+            enableSubTreeButtons();
             toParent1.setEnabled(!isVisibleRoot && nonNullSelection);
             
             // turn these off until the bg thread can find out if user can delete this node
@@ -2686,6 +2684,35 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	}
 	
 	/**
+	 * enable/disable the subtree buttons depending on current state of viewer.
+	 */
+	protected void enableSubTreeButtons()
+	{
+		enableSubTreeButton(subtree0, lists[0]);
+		enableSubTreeButton(subtree1, lists[1]);
+	}
+	
+	/**
+	 * @param btn
+	 * @param list
+	 * 
+	 * enable/disable a subtree button depending on current state of viewer.
+	 */
+	protected void enableSubTreeButton(final JButton btn, final JList list)
+	{
+		TreeNode root = listModel.getVisibleRoot();
+		TreeNode selected = (TreeNode )list.getSelectedValue();
+		if (root == selected)
+		{
+			btn.setEnabled(false);
+			return;
+		}
+		TreeNode testNode = selected != null ? selected : root;
+		List<Integer> ranks =  listModel.getVisibleRanks();
+		int lowestRank = ranks.get(ranks.size()-1).intValue();
+		btn.setEnabled(lowestRank != testNode.getRank());
+	}
+	/**
 	 * @param e
 	 */
 	@SuppressWarnings("unchecked")
@@ -2717,6 +2744,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             if (listModel.showingChildrenOf(treeNode))
             {
                 hideChildren(treeNode);
+                enableSubTreeButtons();
             }
             else
             {
@@ -2726,6 +2754,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                     TreeNode firstChild = childrenShown.get(0);
                     int listIndex = (list == lists[0]) ? 0 : 1;
                     scrollToShowNode(firstChild, listIndex);
+                    enableSubTreeButtons();
                 }
             }
 		}
