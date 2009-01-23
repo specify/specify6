@@ -24,6 +24,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -546,7 +547,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         {
             public void actionPerformed(ActionEvent ae)
             {
-                showSubtreeOfSelection(lists[0]);
+                //showSubtreeOfSelection(lists[0]);
+            	zoomInOneLevel(lists[0]);
             }
         });
         
@@ -1269,6 +1271,45 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         updateAllUI();
 	}
 	
+    /**
+     * @param list
+     */
+    public synchronized void zoomInOneLevel(final JList list)
+    {
+        TreeNode selectedNode = (TreeNode)list.getSelectedValue();
+        
+        TreeNode visibleRoot = listModel.getVisibleRoot();
+    	
+        if (visibleRoot.hasChildren && 
+        		(selectedNode == null || selectedNode.getRank() > visibleRoot.getRank()))
+        {
+        	TreeNode childNode; 
+        	if (selectedNode != null && selectedNode.getParentId() == visibleRoot.getId())
+        	{
+        		childNode = selectedNode;
+        	}
+        	else
+        	{
+        		childNode = listModel.getFirstChild(visibleRoot);
+        	}
+        	listModel.setVisibleRoot(childNode);
+        
+        	// I doubled this call b/c Swing wasn't doing this unless I put it in here twice
+        	list.setSelectedValue(selectedNode, true);
+        	list.setSelectedValue(selectedNode, true);
+        
+        	wholeTree0.setEnabled(listModel.getVisibleRoot().getRank() > 0);
+        	wholeTree1.setEnabled(listModel.getVisibleRoot().getRank() > 0);
+        
+            int rank = (selectedNode != null) ? selectedNode.getRank() : listModel.getVisibleRoot().getRank(); 
+            List<Integer> ranks = listModel.getVisibleRanks();
+            boolean isLowestRoot = rank == ranks.get(ranks.size()-1);
+            subtree0.setEnabled(!isLowestRoot && (selectedNode == null || selectedNode.getRank() != childNode.getRank()));
+            subtree1.setEnabled(!isLowestRoot && (selectedNode == null || selectedNode.getRank() != childNode.getRank()));
+        	updateAllUI();
+        }
+    }
+
     /**
      * @param list
      */
@@ -2042,7 +2083,10 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         boolean nonNullSelection = (selectedNode != null);
         boolean canAddChild      = (selectedNode != null) ? (selectedNode.getRank() < getHighestPossibleNodeRank()) : false;
         boolean isVisibleRoot    = (selectedNode != null) ? (selectedNode.getId() == listModel.getVisibleRoot().getId()) : false;
-
+        int rank = nonNullSelection ? selectedNode.getRank() : listModel.getVisibleRoot().getRank(); 
+        List<Integer> ranks = listModel.getVisibleRanks();
+        boolean isLowestRoot = rank == ranks.get(ranks.size()-1);
+        
         popupMenu.setSelectionSensativeButtonsEnabled(nonNullSelection);
         
         // disable the buttons so the user can't click them until the background task verifies if they should be enabled
@@ -2054,8 +2098,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             {
                 newChild0.setEnabled(canAddChild && nonNullSelection);
             }
-            subtree0.setEnabled(!isVisibleRoot && nonNullSelection);
-            toParent0.setEnabled(!isVisibleRoot && nonNullSelection);
+            subtree0.setEnabled(!isVisibleRoot && !isLowestRoot);
+            toParent0.setEnabled(!isVisibleRoot);
 
             // turn these off until the bg thread can find out if user can delete this node
             if (isEditMode)
@@ -2072,7 +2116,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             {
                 newChild1.setEnabled(canAddChild && nonNullSelection);
             }
-            subtree1.setEnabled(!isVisibleRoot && nonNullSelection);
+            subtree1.setEnabled(!isVisibleRoot && !isLowestRoot);
             toParent1.setEnabled(!isVisibleRoot && nonNullSelection);
             
             // turn these off until the bg thread can find out if user can delete this node

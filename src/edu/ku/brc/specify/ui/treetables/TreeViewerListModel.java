@@ -170,6 +170,20 @@ public class TreeViewerListModel extends AbstractListModel
         return false;
     }
     
+    public synchronized TreeNode getFirstChild(TreeNode parent)
+    {
+    	int nodeIndex = nodes.indexOf(parent);
+    	for (int i = nodeIndex+1; i < nodes.size(); ++i)
+    	{
+            TreeNode n = nodes.get(i);
+            if (parent.getId() == n.getParentId())
+            {
+                return n;
+            }
+        }
+        return null;
+    }
+    
     public synchronized TreeNode getNodeById(long id)
     {
         for (TreeNode t: nodes)
