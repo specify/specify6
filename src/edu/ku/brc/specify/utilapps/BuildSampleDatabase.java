@@ -7570,39 +7570,7 @@ public class BuildSampleDatabase
         return new Properties();
     }
     
-    /**
-     * 
-     */
-    protected static void loadFieldsToHideHash()
-    {
-        if (fieldsToHideHash.size() == 0)
-        {
-            String[] fields = { "version", 
-                                "timestampCreated", 
-                                "timestampModified", 
-                                "createdByAgent", 
-                                "modifiedByAgent", 
-                                "collectionMemberId", 
-                                "visibility", 
-                                "visibilitySetBy"};
-            
-            for (String fieldName : fields)
-            {
-                fieldsToHideHash.put(fieldName, true);
-            }
-        }
-        
-        if (fieldsToSkipHash.size() == 0)
-        {
-            String[] fields = { "paleocontext", "text1"};
-            for (int i = 0;i<fields.length;i++)
-            {
-                fieldsToSkipHash.put(fields[i]+"_"+fields[i+1], true);
-                i++;
-            }
-        }
-    }
-    
+   
     /**
      * @param tableName
      * @param memoryItem
@@ -7624,15 +7592,6 @@ public class BuildSampleDatabase
         newItem.setWebLinkName(memoryItem.getWebLinkName());
         newItem.setIsHidden(memoryItem.getIsHidden());
         newItem.setIsRequired(memoryItem.getIsRequired());
-
-        if (fieldsToSkipHash.get(tableName+"_"+itemName) == null && 
-                (fieldsToHideHash.get(itemName) != null || 
-                itemName.startsWith("text") ||
-                itemName.startsWith("number") ||
-                itemName.startsWith("yesNo")))
-        {
-            newItem.setIsHidden(true);
-        }
 
         for (SpLocaleItemStr nm : memoryItem.getNames())
         {

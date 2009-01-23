@@ -243,7 +243,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                 }
             }
             
-            if (true)
+            if (false)
             {
                 if (discipline == null)
                 {
