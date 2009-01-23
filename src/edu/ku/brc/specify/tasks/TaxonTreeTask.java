@@ -102,6 +102,9 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
         {
             final TreeNodePopupMenu popup = ttv.getPopupMenu();
             // install custom popup menu items
+            
+            //Removing ITIS link now. Possibly will link to COL in future releases.
+            /*
             JMenuItem getITIS = new JMenuItem("View ITIS Page");
             getITIS.addActionListener(new ActionListener()
             {
@@ -129,7 +132,7 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
                     }
                 }
             });
-            popup.add(getITIS, true);
+            popup.add(getITIS, true);*/
 
             JMenuItem getDeters = new JMenuItem(getResourceString("TTV_ASSOC_COS"));
             getDeters.addActionListener(new ActionListener()
