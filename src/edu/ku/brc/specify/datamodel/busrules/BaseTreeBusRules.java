@@ -1033,7 +1033,7 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
         			Set<T> siblings = parent.getChildren();
         			for (T sibling : siblings)
         			{
-        				if (sibling.getName().equals(node.getName()) && sibling.getIsAccepted() && sibling.getTreeId() != node.getTreeId())
+        				if (sibling.getName().equals(node.getName()) && sibling.getIsAccepted() && !sibling.getTreeId().equals(node.getTreeId()))
         				{
         					return true;
         				}
