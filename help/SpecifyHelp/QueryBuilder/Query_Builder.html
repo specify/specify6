@@ -1,0 +1,339 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<link href="../main2.css" rel="stylesheet" type="text/css" media="screen"></link>
+<title>Importing a Taxon Tree</title>
+</head>
+
+<BODY BGCOLOR=#ffffff>
+ <table width="100%" border="0" background="../../images/topbar.png">
+  <tr>
+    <td>&nbsp;</td>
+  </tr>
+</table>
+<h2><strong> <img src="../../images/query2_32x32.png" width="32" height="32" /> Query</strong> Builder </h2>
+<p>A query is a precise request for information retrieval. The Query Builder (Search in 5.0) in Specify 6 puts the power of the search criteria into the hands of the user by offering condition rows for the fields within Specify. </p>
+<p>Open the Query Builder by clicking the <img src="../../images/query20x20.png" width="20" height="20" /> (Query icon) on the Task Bar.</p>
+<p>The Sidebar displays a list of frequently used tables to begin the query configuration. Less common tables are found by clicking  <span class="MichaelsChanges"><img src="../../images/more_tables.png" width="20" height="20" />***(This is a broken image for me)*** </span>(More Tables)  in the sidebar and choosing a table from the pop-up dialog. </p>
+<p>A <strong><a name="query_creators"></a>Query Creators  Configuration</strong> tool gives access to less frequently used tables and also allows the Sidebar and More Tables lists to be interchanged and rearranged:</p>
+<p>Right-button-click an open section of the sidebar to activate the Context Menu.</p>
+<p>Choose <em>Configure</em><em> Query Creators</em> to open the Configure New Queries dialog.</p>
+<ul>
+  <li>Use the <img src="../../images/ReorderUp16x16.png" alt="b" width="16" height="16" />,and <img src="../../images/ReorderDown16x16.png" alt="b" width="16" height="16" /> (reorder) buttons to change the order in which the forms appear in the Sidebar and More Forms list.</li>
+  <li>Use the <img src="../../images/Map16x16.png" alt="b" width="16" height="16" />, and <img src="../../images/Unmap16x16.png" alt="b" width="16" height="16" />icon (move) buttons to move a Sidebar item to the Extra Forms list and vise versa. </li>
+  <li>Click the <img src="../../images/add.png" alt="b" width="16" height="16" />(add) button for a list of additional forms that can be moved into either the Sidebar or More Forms list.</li>
+  <li>Click the <img src="../../images/delete.png" alt="b" width="16" height="16" />(delete) button to remove forms from either the Sidebar or More Forms list; this will put them back into the master list.</li>
+</ul>
+<p><em><strong>Note:</strong></em> deleting a table from either the Sidebar or More Tables will place it back in the master list which is accessed by the <img src="../../images/add.png" alt="add" width="16" height="16" /> (add) button.</p>
+<p>&nbsp;</p>
+<p>Choose a table from this Sidebar list to begin building the query. </p>
+<p><em><strong>Note:</strong></em> Because of the way Specify combines related information almost every field can be found from within most tables. This will determine the data elements to be returned i.e. searching from Collection Objects (CO) will return CO records. </p>
+<p>A list of fields available in the chosen table, as well as other related  tables, appears in a list box at the top of the Query Workspace. </p>
+<p>To display fields in other tables, simply click  a table in the list box. Fields and other related tables  display in a new list box.</p>
+<p>Choose fields and/or tables for the query from within the appropriate list boxes by either selecting the field/table and clicking the <img src="../../images/add.png" alt="add" width="16" height="16" />(add) button or double clicking on the table/field.</p>
+<p>There is no limit on the number of fields added to a query, but larger, more complex queries will take a longer amount of time to run. </p>
+<p>Specify 6 does not include default fields in a query as was found in Specify 5. For a column to appear in the results it must first be represented by a field in the query. Users that wish to always see a particular set of columns in their query results are encouraged to create a query with those fields and save the query. When creating a future query simply click on the saved query first, then add to it to create the new query.</p>
+<p>Also different from Specify 5, Specify 6 offers a grid view of results only. </p>
+<p>&nbsp;</p>
+<p><strong>Tables </strong></p>
+<p>Select a table to be part of the search criteria by double clicking it in the list box.  Tables are either formatted or aggregated, depending on their relationship to the primary Table, and do not offer any other search criteria. Most tables in Specify have a default format and aggregate setting. Formats and aggregates can be edited, created or deleted  in <em>System &gt; Schema Configuration</em>.</p>
+<p><strong><img src="../../images/SingleKid.png" alt="many-to-one" width="16" height="16" /> Many-to-One</strong></p>
+<p>A relationship involving a primary and related table in which many primary records are linked to a single related record in the related table. For example, many Collection Object records might be linked to the same Locality record because they were all found at the same location.</p>
+<p>Tables with a many-to-one relationship are designated by an icon (<strong><img src="../../images/SingleKid.png" width="16" height="16" />). </strong>Tables with many-to-one relationships are formatted to be represented by at least one field. Most tables are represented by only one field, (Collection Object shows the Catalog Number), but some are best represented by more than one field (Agent may be formatted to display last name, first name, middle initial). Query results use this format when returning results. </p>
+<p><strong><img src="../../images/MultiKid.png" alt="one-to-many" width="16" height="16" /> One-to-Many</strong></p>
+<p>A relationship involving a primary and related table in which many related records are linked to a single primary record in the related table. For example, several Collection Object records would be linked to a single record in the Collection Event table because all those specimens were collected during the same event.</p>
+<p>Tables with a one-to-many relationship  are designated by an icon (<strong><img src="../../images/MultiKid.png" width="16" height="16" />)</strong> and return aggregated data. For example, a Collection Object can have many Preparations. The results of a query of Collection Objects with Preparations will return Preparations aggregated together in one column, separated by colons or semi colons. </p>
+<p>When returning aggregated data, it is possible that a field may first be formatted.</p>
+<p>&nbsp;</p>
+<p><strong>Query Expressions</strong></p>
+<p>Create Query Expressions to narrow the results. </p>
+<p><img src="../../images/query_criteria.png" width="1187" height="48" /></p>
+<p><em><strong>Note:</strong></em> Not all fields include Criteria. For instance; a Check Box does not have searchable Criteria and needs only an Operator.</p>
+<p>&nbsp;</p>
+<table width="65%" border="1" cellspacing="2" cellpadding="6">
+  <tr>
+    <td width="23%"><u><strong>Heading</strong></u></td>
+    <td width="23%"><u><strong>Choices</strong></u></td>
+    <td width="77%"><u><strong>Result</strong></u></td>
+    <td width="77%"><u><strong>Available for Field Type</strong></u></td>
+  </tr>
+  <tr>
+    <td>Not</td>
+    <td>&nbsp;</td>
+    <td>Switches the operator into its opposite. (example not =)</td>
+    <td>All</td>
+  </tr>
+  <tr>
+    <td>Operator</td>
+    <td>&nbsp;</td>
+    <td>Finds all contents for which the selected field is Yes, No or Empty.</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>=</td>
+    <td>Finds records for which the selected field is equal to the specified criterion.</td>
+    <td>Number, Date, Text</td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>&gt;</td>
+    <td>Finds all records for which the selected field is greater than the specified criterion.</td>
+    <td>Number, Date</td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>&lt;</td>
+    <td>Finds all records for which the selected field is less than the specified criterion.</td>
+    <td>Number, Date</td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>&gt; =</td>
+    <td>Finds all records for which the selected field is greater than or equal to the specified criterion.</td>
+    <td>Number, Date</td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>&lt; =</td>
+    <td>Finds all records for which the selected field is less than or equal to the specified criterion.</td>
+    <td>Number, Date</td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>Between</td>
+    <td>Finds all records for which the selected field is between the specified criterion.</td>
+    <td>Number, Date</td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>In</td>
+    <td>Finds all records for which the selected field is included in the list of criterion. (example criterion; Northern, North, No. or 32, 35, 36, 39)</td>
+    <td>Number, Text</td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>Like</td>
+    <td>Allows a  wildcard character (*). Finds all records for which the selected field matches the specified pattern expression. (example; *ist)</td>
+    <td>Text</td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>Contains</td>
+    <td>Finds all records for which the selected field contains a specified character sequence. </td>
+    <td>Text</td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>Empty</td>
+    <td>It is important to note that Empty is a Condition and not the same as a blank Condition. </td>
+    <td>Number, Check Box,  Text</td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>True</td>
+    <td>The field is a Boolean (Check Box) and is True.</td>
+    <td>Check Box</td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>False</td>
+    <td>The field is a Boolean (Check Box) and is False.</td>
+    <td>Check Box </td>
+  </tr>
+  <tr>
+    <td>Criteria</td>
+    <td>&nbsp;</td>
+    <td>Criterion is entered into this box, if there is more than one (Between) each must be separated by a comma. The Query Builder is case sensitive, so enter criteria as it appears in the field. </td>
+    <td>Date, Number, Text</td>
+  </tr>
+  <tr>
+    <td>Sort</td>
+    <td>&nbsp;</td>
+    <td>Allows the results to be sorted.</td>
+    <td>All</td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td><img src="../../images/graydot.gif" alt="" width="16" height="16" /></td>
+    <td>Do not sort.</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td><img src="../../images/up.png" width="16" height="16" /></td>
+    <td>Sort in descending order.</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td><img src="../../images/down.png" width="16" height="16" /></td>
+    <td>Sort in ascending order.</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>Show</td>
+    <td>&nbsp;</td>
+    <td>Includes the field in the results. </td>
+    <td>All</td>
+  </tr>
+  <tr>
+    <td>Prompt</td>
+    <td>&nbsp;</td>
+    <td>This will provide a 'prompt' dialog which allows the Query Expression to be customized each time a Report is run on the Query. </td>
+    <td>All</td>
+  </tr>
+  <tr>
+    <td>Always</td>
+    <td>&nbsp;</td>
+    <td><p>Includes the Query Condition when running a Report by dropping a Record Set onto it (in the Report Sidebar). If 'Always' is not checked then the resulting Report will include all record ID's rather than only those matching the Query Condition. This is particularly useful when searching Prep Types and Current Determinations. </p>    </td>
+    <td>All</td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<h4>Using Wild Cards</h4>
+<p>The operator Like allows a search to be restricted to a specific pattern of letters or symbols or both in a designated field. The wildcard character is an asterisk (*).</p>
+<table width="75%" border="1" cellspacing="2" cellpadding="6">
+  <tr>
+    <td width="21%">*Clinton</td>
+    <td width="79%">Returns any string with Clinton at the end.</td>
+  </tr>
+  <tr>
+    <td>Clinton*</td>
+    <td><p>Returns any string that begins with Clinton.</p></td>
+  </tr>
+  <tr>
+    <td>*Clinton*</td>
+    <td>Returns any string that includes Clinton anywhere in the string.</td>
+  </tr>
+</table>
+<p>When it is necessary to use an asterisk (*) as part of the search criteria preceed it with a &quot;\&quot;. For example; when it is desired to find Cli*nton enter the search criteria as *Cli\*nton*.</p>
+<h4>&nbsp;</h4>
+<h4><strong>Other</strong> Controls</h4>
+<table width="75%" border="1" cellspacing="2" cellpadding="6">
+  <tr>
+    <td><u><strong>Side Icons</strong></u></td>
+    <td><u><strong>Function</strong></u></td>
+    <td><u><strong>Result</strong></u></td>
+  </tr>
+  <tr>
+    <td width="19%"><img src="../../images/ReorderDown16x16.png" alt="" width="16" height="16" /></td>
+    <td width="16%">Reorder Down</td>
+    <td width="65%">Move the field down in order. The order determines how they will display in the results window.</td>
+  </tr>
+  <tr>
+    <td><img src="../../images/ReorderUp16x16.png" alt="" width="16" height="16" /></td>
+    <td>Reorder Up</td>
+    <td>Move the field up in order. The order determines how they will display in the results window.</td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<table width="75%" border="1" cellspacing="2" cellpadding="6">
+  <tr>
+    <td width="16%"><u><strong>Bottom Controls</strong></u></td>
+    <td width="65%"><u><strong>Result</strong></u></td>
+  </tr>
+  
+  <tr>
+    <td>Search Synonyms checkbox</td>
+    <td>Includes synonyms in the query and query results.</td>
+  </tr>
+  <tr>
+    <td>Distinct checkbox</td>
+    <td>Returns unique results only.</td>
+  </tr>
+  <tr>
+    <td>Count checkbox</td>
+    <td>Gives a count of the results in a pop up dialog. For large queries the count will return before the full results. If only a count was desired then click the Cancel button on the dialog the cancel the rest of the results. </td>
+  </tr>
+  <tr>
+    <td>Search button</td>
+    <td>Engages the query.</td>
+  </tr>
+  <tr>
+    <td>Save / Save As toggle button</td>
+    <td>Click the Save button to save the query as the same name or click the <img src="../../images/Down16x16.png" width="16" height="16" /> (toggle) button to choose Save As and rename the query. Saved queries appear in the Sidebar and can be reused.</td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<p><em><strong>Note:</strong></em> Saving a Query is different from saving the Query results. The results of a Query are saved as a Record Set. </p>
+<p>&nbsp;</p>
+<p><strong>Query Results</strong></p>
+<p>Query results display as a grid in a Query Results window. They are designated by a green (<img src="../../images/query_colors.png" width="20" height="20" />) results bar.</p>
+<p>Results can be manipulated and utilized in various ways using the icons on the results bar.</p>
+<span class="MichaelsChanges">
+<table width="600" border="1" cellspacing="2" cellpadding="6">
+  <tr>
+    <td width=40 align="center"><img src="../../images/record_set.png" alt="Record Set" width="25" height="25" /></td>
+    <td width="524">Create a Record Set.</td>
+  </tr>
+  <tr>
+    <td><div align="center"><img src="../../images/data_entry.png" width="25" height="25" /></div></td>
+    <td>Open records; 
+      <ul>
+        <li class="style1">To open a specific result record, first choose the record then click on the icon.</li>
+        <li class="style1">To open select records, select them by Command+Click (for Mac) or Ctrl+Click (for PC) each record, then clicking on the icon.</li>
+        <li class="style1">To open all the records, select the icon without choosing a specific record.</li>
+    </ul></td>
+  </tr>
+  <tr>
+    <td><div align="center"><img src="../../images/printer.png" width="26" height="24" /></div></td>
+    <td> Print the results Grid.</td>
+  </tr>
+  <tr>
+    <td><div align="center"><img src="../../images/ExportExcelTemplate16x16.png" width="25" height="25" /></div></td>
+    <td>Export the grid to MS Excel.</td>
+  </tr>
+</table></span>
+<p><em><strong>Note:</strong></em> Individual records opened from the Query results will open in View  mode. To edit the records click the <img src="../../images/view_form_20x20.png" width="20" height="20" /> (Edit) button.</p>
+<p><em><strong>Note:</strong></em> Queries can be used to run Reports in SpecifyiReport. Please refer to <a href="reports.html">Reports</a>.</p>
+<p>&nbsp;</p>
+<p><strong>Configure or Import/Export </strong><strong>Queries</strong></p>
+<p>Right-button-Click on the Sidebar to open the Query Context Menu:</p>
+<table width="47%" border="1" cellspacing="2" cellpadding="6">
+  <tr>
+    <td width="24%"><div align="center"><u><strong>Menu Option</strong></u></div></td>
+    <td width="76%"><u><strong>Result</strong></u></td>
+  </tr>
+  <tr>
+    <td><div align="center">Configure Query Creators</div></td>
+    <td>Opens a Configuration tool for adding, removing or reordering the primary tables in either the Sidebar  or  More Tables lists. This is explained <a href="#query_creators"> Query Creators Configuration</a>.</td>
+  </tr>
+  <tr>
+    <td><div align="center">Configure Queries</div></td>
+    <td>Opens a Configuration tool for including the saved Queries in either the Sidebar or More Queries lists. This configuration tool works the same as <a href="#query_creators">Query Creators Configuration</a> above.</td>
+  </tr>
+  <tr>
+    <td><p align="center">Import Queries</p>    </td>
+    <td>Opens a file directory to find the Query in the local file system.</td>
+  </tr>
+  <tr>
+    <td><div align="center">Export Queries</div></td>
+    <td>Opens a save dialog to save the Query in a location on the local file system.</td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<p><strong>Import / Export Query</strong></p>
+<p>Queries are imported and exported as a group of queries contained in a file. Even when only one query is being exported, Specify writes the query to a file. </p>
+<p>The exported query file will be saved as an xml file.</p>
+<p><u>Import</u></p>
+<ol>
+  <li>Right-button-Click in the Sidebar, then choose <em>Import Queries</em> in the context menu.</li>
+  <li>Choose the file from the resulting file menu dialog</li>
+  <li>Choose the queries to import from the resulting dialog list (of queries contained in the import file).</li>
+</ol>
+<p><em><strong>Note:</strong></em> When importing queries that have the same name as existing queries, Specify will simply add a number (2) to the import query name.</p>
+<p>&nbsp;</p>
+<p>Export</p>
+<p>To export a Query: </p>
+<ol>
+  <li>Right-button-Click in the Sidebar, then choose <em>Export Queries</em> in the context menu.</li>
+  <li>Choose the queries to export from the resulting dialog list and click the <em>Save</em> button.</li>
+  <li>Name the file and choose a storage location for the file in the resulting file menu dialog, then click the <em>Save</em> button.</li>
+</ol>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+</BODY>
+</html>

@@ -1,13 +1,237 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
-<HTML>
-<HEAD>
-<TITLE>
-Data Entry Overview
-</TITLE>
-</HEAD>
-<BODY BGCOLOR="#ffffff">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<link href="../main2.css" rel="stylesheet" type="text/css" media="screen"/></link>
+<title>Data Entry</title>
+</head>
 
+<body bgcolor="#ffffff">
+<table width="100%" border="0" background="../../images/topbar.png">
+  <tr>
+    <td>&nbsp;</td>
+  </tr>
+</table>
+<h2><img src="../../images/data_entry.png" width="20" height="20"> Data Entry</h2>
 
+<p>Access Data Entry forms by clicking the <img src="../../images/data_entry.png" width="20" height="20"> (Data Entry) button. A list of forms will appear in the Sidebar.</p>
+<p>Each discipline has access to a specific set of forms for viewing, entering and editing data. Specify ships with the most frequently used forms listed on the Sidebar. Less common forms are found by clicking <img src="../../images/more_forms.png" alt="more forms" width="32" height="32"> (More Forms)  in the sidebar and choosing a form from the pop-up dialog. </p>
+<p>A <strong>Form Configuration</strong>  tool gives access to less frequently used forms and also allows the Sidebar and More Forms lists to be interchanged and rearranged:</p>
+<p>Right-button-click an open section of the sidebar to activate the <img src="../../images/configure_box.png" width="110" height="27"> button.</p>
+<ul>
+  <li>Use the <img src="../../images/ReorderUp16x16.png" width="16" height="16">,and <img src="../../images/ReorderDown16x16.png" width="16" height="16"> (reorder) buttons to change the order in which the forms appear in the Sidebar and More Forms list.</li>
+  <li>Use the <img src="../../images/Map16x16.png" width="16" height="16">, and <img src="../../images/Unmap16x16.png" width="16" height="16"> icon (move) buttons to move a Sidebar item to the Extra Forms list and vise versa. </li>
+  <li>Click the <img src="../../images/add.png" width="16" height="16">(add) button for a list of additional forms that can be moved into either the Sidebar or More Forms list.</li>
+  <li>Click the <img src="../../images/delete.png" width="16" height="16">(delete) button to remove forms from either the Sidebar or More Forms list; this will put them back into the master list.</li>
+</ul>
+<p><em><strong>Note:</strong></em> Deleting a form from either the Sidebar or Extra Forms will place it back in the master list which is accessed by the <img src="../../images/add.png" alt="add" width="16" height="16"> (add) button.</p>
+<p>&nbsp;</p>
+<h3><u>Unique Forms</u></h3>
+<h4>Form vs Tree</h4>
+<p>Specify represents Taxon, Geography, Storage, Lithostratigraphy and Chronostratigraphy  data as both trees and  forms.  When entering data using a form, keep in mind that Carry Forward is not available for the Parent field and entering Children via the tree  can save time and energy.</p>
+<p><em><strong>Note:</strong></em> Tables can not be edited simultaneously in both the Tree and Form mode, or by multiple users. For example, if a user is editing the Taxon Tree and wants to open a Taxon Form it will open as <em>View Only</em>. In addition, if another user tries to open either the Taxon Tree (or Taxon Form) a dialog will pop-up stating that the Tree is locked and will open in <em>View Only </em>mode.</p>
+<p>&nbsp;</p>
+<h4>Determinations Form</h4>
+<p>The Determinations form includes many fields that may not be immediately recognizable.</p>
+<table width="100%" border="1" cellspacing="2" cellpadding="6">
+  <tr>
+    <td width="150"><div align="center"><u><strong>Field Label</strong></u></div></td>
+    <td><div align="center"><u><strong>Field Usage</strong></u></div></td>
+  </tr>
+  <tr>
+    <td><div align="center"><strong>Active Taxon</strong></div></td>
+    <td>This is a view only field that represents the preferred name of any synonym entered into the determined taxon field.  If a preferred name is entered into the determined taxon name field then this will represent a duplication of that name.</td>
+  </tr>
+  <tr>
+    <td><div align="center"><strong>Current</strong></div></td>
+    <td><p>Signifies the Current  Determination of the Collection Object.</p>
+    <p> Current Determination is a Required Field but only one  can exist for each Collection Object. Therefore;  to change the Current Determination one must first open the old Determination and uncheck the Current box. </p></td>
+  </tr>
+  <tr>
+    <td> <div align="center"><strong>Taxon</strong></div></td>
+    <td><p>This field is the determined name of the specimen in question.</p>
+    <p>Names can be chosen from a Query Combo Box, or added to the Table. Synonymized names are included in the Query Combo Box, but if chosen a prompt will indicate that the name is a synonymy and ask which name to use.</p>
+    <p>This field operates as an &ldquo;either/or&rdquo; condition with Alternate Name; both cannot be entered in a single Determination. </p></td>
+  </tr>
+  <tr>
+    <td><div align="center"><strong>Qualifier</strong></div></td>
+    <td>A term to qualify the identification of the taxon name when doubts have arisen as to its identity or as a comparison to a given name (e.g. &quot;cf.&quot; or &quot;aff.&quot;).</td>
+  </tr>
+  <tr>
+    <td><div align="center"><strong>Name Usage</strong></div></td>
+    <td>A free text suffix element added to the taxon name to indicate a concept or citation for that name. For example, Sensu Latu. </td>
+  </tr>
+  <tr>
+    <td><div align="center"><strong>Addendum</strong></div></td>
+    <td>A free text suffix element added to the taxon name to indicate a concept or citation for that name.</td>
+  </tr>
+  <tr>
+    <td><p align="center"><strong>Alternate Name</strong></p>    </td>
+    <td>A free text field for insertion of a name (scientific or common) not recognized in the taxon tree authority.  This field operates as an &ldquo;either/or&rdquo; condition with Active taxon; both cannot be entered in a single Determination. </td>
+  </tr>
+  <tr>
+    <td><div align="center"><strong>Alt. Name</strong></div></td>
+    <td>This field is available for Taxon that may be used in a different way than the Determined Taxon or is not part of the Taxon Authority File. </td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><strong>Locality Form</strong></p>
+<p>The Locality form introduces unique lat/long information represented by a set of icons.</p>
+<ul>
+  <li>Choose a latitude/longitude format from the Combo Box</li>
+</ul>
+<table width="350" border="1" cellspacing="2" cellpadding="6">
+  <tr>
+    <td width="100">DDD.DDD</td>
+    <td width="250">Decimal/Degrees</td>
+  </tr>
+  <tr>
+    <td>DD:MM.MM</td>
+    <td>Degrees/Decimal/Minutes</td>
+  </tr>
+  <tr>
+    <td>DD MM.SS</td>
+    <td>Degree/Decimal/Seconds</td>
+  </tr>
+</table>
+<ul><li>Click the appropriate icon(s)</li>
+</ul>
+<table border="1" cellspacing="2" cellpadding="6">
+  <tr>
+    <td><u><strong>Top Icon</strong></u></td>
+    <td><u><strong>Bottom Icon</strong></u></td>
+    <td><u><strong>Explanation</strong></u></td>
+  </tr>
+  <tr>
+    <td><div align="center"><img src="../../images/Point-2-16x16.png" alt="" width="16" height="16"></div></td>
+    <td>&nbsp;</td>
+    <td>Single Point</td>
+  </tr>
+  <tr>
+    <td><div align="center"><img src="../../images/Two-Points-2-Both-16x16.png" alt="" width="16" height="16"></div></td>
+    <td>&nbsp;</td>
+    <td><p>Beginning/Ending Point on a Line </p>
+    <p><em><strong>Note:</strong></em> this requires latitude and longitudes for both points</p></td>
+  </tr>
+  <tr>
+    <td><div align="center"></div></td>
+    <td><div align="center"><img src="../../images/LatLonLineLeft16x16.png" width="16" height="16"></div></td>
+    <td>Beginning Point</td>
+  </tr>
+  <tr>
+    <td><div align="center"></div></td>
+    <td><div align="center"><img src="../../images/LatLonLineRight16x16.png" width="16" height="16"></div></td>
+    <td>End Point</td>
+  </tr>
+  <tr>
+    <td><div align="center"><img src="../../images/Lat-Lon-Both-3-16x16.png" alt="" width="16" height="16"></div></td>
+    <td><div align="center"></div></td>
+    <td><p>Beginning/Ending Point on a Bounding Box</p>
+    <p><em><strong>Note:</strong></em> this requires latitude and longitudes for both points</p></td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td><div align="center"><img src="../../images/LatLonRectLeft16x16.png" width="16" height="16"></div></td>
+    <td>Beginning Point</td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td><div align="center"><img src="../../images/LatLonRectRight16x16.png" width="16" height="16"></div></td>
+    <td>End Point</td>
+  </tr>
+</table>
+<ul>
+  <li>Type the appropriate degrees for latitude and longitude</li>
+  <li>Choose either North (N) or South (S) for latitude</li>
+  <li>Choose either East (E) or West (W) for longitude</li>
+</ul>
+<p>When a lat/long is entered the format is captured and displayed in the (Source) field. This field remains constant when formats are changed, but if the lat/long numbers are changed then the (Source) field will update to the new lat/long entry.</p>
+<p>Specify  does not do versioning and does not keep a verbatim field!</p>
+<p>&nbsp;</p>
+<p><strong>Agents </strong></p>
+<p>An Agent is not limited to single individuals, the <em>Agent Type</em> field on the Agent form allows an agent to be the following:</p>
+<table width="100%" border="1" cellspacing="2" cellpadding="6">
+  <tr>
+    <td width="23%"><div align="center"><u><strong>Agent Type</strong></u></div></td>
+    <td width="77%"><div align="center"><u><strong>Usage</strong></u></div></td>
+  </tr>
+  <tr>
+    <td><div align="center"><strong>Person</strong></div></td>
+    <td>This is an individual with first, middle and last name, abbreviation, email and multiple addresses and attachments.</td>
+  </tr>
+  <tr>
+    <td><div align="center"><strong>Organization</strong></div></td>
+    <td>This is often an Institution with name, abbreviation, email and multiple addresses and attachments.</td>
+  </tr>
+  <tr>
+    <td><div align="center"><strong>Group </strong></div></td>
+    <td>Using a group option allows multiple agents to associated with one name entity. This type of Agent includes name, abbreviation, email and links to individual Agents that are a part of the group. This option is useful when it is necessary to search by the group name.</td>
+  </tr>
+  <tr>
+    <td><div align="center"><strong>Other</strong></div></td>
+    <td>Other is used when the other three options do not apply. Name and attachments are the only fields for this agent type.</td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<p>It is also important to note that Agents are shared throughout a Discipline. In other words, if a Discipline has two collections (A and B) and collection A creates an Agent, that Agent will also be in Collection B.</p>
+<h3><strong><u>Attachments</u></strong></h3>
+<h4>Add Attachment</h4>
+<p>Many tables in Specify 6 allow  Attachments. Specify copies the attached file to the specified Attachment path. To create or alter the Attachment path, go to:</p>
+<ul>
+  <li>For Mac: <em>Specify &gt; Preferences &gt; Sytem &gt; Attachment Storage Location. </em> </li>
+  <li>For PC and Linux: Choose <em>Edit &gt; Preferences &gt; Sytem &gt; Attachment Storage Location</em>.</li>
+</ul>
+<p><em><strong>Note:</strong></em> if the attached file is an image, Specify also creates and stores an icon for the image in the Attachment Storage Location.</p>
+<p>Accepted Attachment files include:</p>
+<ul>
+  <li>text 
+  <li>audio 
+  <li>binary 
+  <li>pdf 
+  <li>image 
+    
+  (jpg, png, gif)
+  <li>html 
+  <li>spreadsheet</li>
+</ul>
+<p>Attach files to a record by clicking the Attachment icon (<img src="../../images/collection_object_attachment.png" alt="" width="34" height="20">) on the form. An Attachment sub form will open.</p>
+<ol>
+  <li>Click the <img src="../../images/add.png" width="16" height="16"> (add) button.</li>
+  <li>Click the Browse button  and use the file system dialog to find the path to the file.</li>
+  <li>Type a name in the Title text box. Specify will use the file name as a default title if this box is left blank.</li>
+  <li>Click the Accept button.</li>
+  <li>Click the <img src="../../images/add.png" alt="" width="16" height="16"> (add) button to add another attachment, or click Done to close the sub form. </li>
+</ol>
+<p><em><strong>Note:</strong></em> If a table does not have an attachment ico<span>n, i</span>t does not accept attachments.</p>
+<p>&nbsp;</p>
+<h4>View/Edit Attachment</h4>
+<p>Once Attachments have been saved to a record they can be viewed/edited  in  form, grid, or icon mode. Each mode allows different functions.</p>
+<p>Choose a mode by clicking the <img src="../../images/Down16x16.png" width="16" height="16">(expand) icon and selecting a mode. </p>
+<p><img src="../../images/form_editor20x20.png" width="20" height="20"> Form Mode </p>
+<ul>
+  <li>Use the Navigation Control to view each Attachment.</li>
+  <li>Click the<img src="../../images/add.png" width="16" height="16"> (add) button to add an Attachment.</li>
+  <li>Click the <img src="../../images/delete.png" width="16" height="16"> (delete) button to delete and Attachment.</li>
+  <li>Click the Browse button to change an Attachment path.</li>
+  <li>Edit the Title of an Attachment in the Title text box.</li>
+</ul>
+<p>&nbsp;</p>
+<p><img src="../../images/icon_view.png" width="20" height="20"> Icon Mode</p>
+<ul>
+  <li>Click the<img src="../../images/add.png" alt="add" width="16" height="16"> (add) button to add an Attachment.</li>
+  <li>Click the <img src="../../images/delete.png" alt="delete" width="16" height="16"> (delete) button to delete and Attachment.</li>
+  <li>Click the <img src="../../images/Edit-2-16x16.png" alt="edit" width="16" height="16"> (edit) button to edit the Attachment path in the Form Mode.</li>
+  <li>Double Click the Attachment Icon to open the Attachment in its native application.</li>
+</ul>
+<p>&nbsp;</p>
+<p><img src="../../images/grid_editor_20x20.png" width="20" height="20"> Grid Mode </p>
+<ul>
+  <li>Click the<img src="../../images/add.png" alt="add" width="16" height="16"> (add) button to add an Attachment.</li>
+  <li>Click the <img src="../../images/delete.png" alt="delete" width="16" height="16"> (delete) button to delete and Attachment.</li>
+  <li>Click the <img src="../../images/Edit-2-16x16.png" width="16" height="16"> (edit) button to edit the Attachment path in the Form Mode.</li>
+  <li>Click the <img src="../../images/ReorderUp16x16.png" width="16" height="16"> <img src="../../images/ReorderDown16x16.png" width="16" height="16"> (reorder) icons to reorder the Attachments.</li>
+</ul>
+<p>&nbsp;</p>
 
-</BODY>
-</HTML>
+</body>
+</html>

@@ -1,0 +1,261 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<link href="../main2.css" rel="stylesheet" type="text/css" media="screen"></link>
+<title>Taxon Tree About</title>
+<style type="text/css">
+<!--
+..style1 {
+	color: #000000
+}
+-->
+</style>
+</head>
+
+<body bgcolor="#ffffff">
+<table width="100%" border="0" background="../../images/topbar.png">
+  <tr>
+    <td>&nbsp;</td>
+  </tr>
+</table>
+<h2><strong>About the Tree</strong>s</h2>
+<p>Specify 6 stores various table data in heirarchical tree format. These include Taxon, Geography, Storage, Chronostratigraphy and Lithostratigraphy. These tables are also included in the form system, but the tree offers a more broad, visual glimpse of the data. Data can be edited and entered using both the form and tree system.</p>
+<p>Each of these trees can be built 3 ways:</p>
+<ul>
+  <li>Manually by adding adding one record at a time.</li><br />
+  <li>Dynamically from an existinguser database. This may include a conversion from Specify 5, which the Specify team can help with, or imported through the WorkBench. </li>
+  <br />
+  <li>Dynamically by downloading and importing an authority file from an authority source.</li>
+</ul>
+<p>&nbsp;</p>
+<p>Specify has preloaded some tree data from the following authority sources. </p>
+<table border="1" cellspacing="2" cellpadding="6">
+  <tr>
+    <td><div align="center"><strong><u>Tree</u></strong></div></td>
+    <td><u><strong>Specify Ships With</strong></u></td>
+  </tr>
+  <tr>
+    <td><div align="left"><strong>Taxon</strong></div></td>
+    <td>Catalog of Life</td>
+  </tr>
+  <tr>
+    <td><div align="left"><strong>Geography</strong></div></td>
+    <td>Getty Thesaurus of Geographic Names</td>
+  </tr>
+  
+  <tr>
+    <td><div align="left"><strong>Chronostratigraphy</strong></div></td>
+    <td>Geological Society of America</td>
+  </tr>
+</table>
+<p>Although it is possible to enter trees in their entirety from within Specify 6, the Specify project does not recommend building  large trees  manually. </p>
+<p>&nbsp;</p>
+<h3><a name="TreeDef">Specify Tree Terminology</h3>
+<p>The various trees show  relationships in a hierarchical structure. All hierarchies are referred to as <strong>ranks</strong>. All nodes immediately under a rank are referred to as <strong>children</strong>. Any node with a child is referred to as a <strong>parent</strong>.</p>
+<p>Ranks are shown in columns on the tree.<em><strong> </strong></em>Tree column colors  can be set in <em>Preferences &gt; Tree</em>. See also <em><a href="../Prefs/Prefs.html">Preferences</a></em></p>
+<p>&nbsp;</p>
+<h3>Using Trees</h3>
+<p>Open a tree by choosing <em>Data Entry,</em> in the tool bar, and clicking on the tree name in the Sidebar.</p>
+<p>Tree ranks are defined using the Tree Definition tool; <em>System &gt; Collection Setup &gt; (table name) Tree &gt; Tree Definition. </em>Before adding nodes to an empty tree, the Tree Definition must be completed. </p>
+<p>Only one user may edit  a tree, tree definition or the related data entry form at the same time. Simultaneous editing of a tree, tree definition or data form is also not permitted by a single user. Trees and forms will still be available for viewing, searching or querying. In order for a second user to use the tree or form, the first user must close the affected tab. </p>
+<p>When a tree definition is open and the same user opens a tree the tree definition does not need to be closed, the tree will display in the  tree sub pane.</p>
+<p><em><strong>Note:</strong></em> In the event that a tree becomes locked and the user of that tree can not be located, (which may occur due to improper shutdowns of the application), trees can be unlocked in <em>System &gt; Configuration &gt; (table name) Tree &gt; Unlock Tree Editing</em>.</p>
+<p>&nbsp;</p>
+<h3> <u>Tree Tools</u></h3>
+<p><b>Expand a Node</b></p>
+<p>Click the <img src="../../images/forward.png" alt="expand" width="16" height="16" /> (expand) icon to expand nodes on the tree.</p>
+<p>&nbsp;</p>
+<h4>Expand a Tree Column</h4>
+<ol>
+  <li>Mouse over the header column until a crossbar appears.</li>
+  <li>Right-click and drag to expand the column.</li>
+</ol>
+<p>&nbsp;</p>
+<h4>Toolbar Items</h4>
+<table width=600 border="1" cellspacing="2" cellpadding="6">
+  <tr>
+    <td><div align="center"><u><strong>Button</strong></u></div></td>
+    <td><div align="center"><u><strong>Definition</strong></u></div></td>
+    <td><div align="center"><u><strong>Result</strong></u></div></td>
+  </tr>
+  <tr>
+    <td width="14%"><div align="center"><img src="../../images/ExpandChildren32x32.png" alt="expand child" width="16" height="16" /></div></td>
+    <td width="24%">Show Subtree </td>
+    <td width="62%">Closes all nodes higher than the selected node.</td>
+  </tr>
+  <tr>
+    <td><div align="center"><img src="../../images/ExpandParent32x32.png" width="16" height="16" /></div></td>
+    <td>Show Parent 's Subtree</td>
+    <td>Opens the parent node.</td>
+  </tr>
+  <tr>
+    <td><div align="center"><img src="../../images/undo.png" alt="undo" width="16" height="16" /></div></td>
+    <td>Select Parent</td>
+    <td>Selects the parent.</td>
+  </tr>
+  <tr>
+    <td><div align="center"><img src="../../images/Split-Window-Horiz-2-16x16.png" alt="split-view" width="16" height="16" /></div></td>
+    <td>Split Screen</td>
+    <td>Creates two simultaneous mirror images of the tree. This allows different sections of the tree to be viewed and edited, which is useful when trees are large. Changes made to one of the trees will be updated in the second tree.</td>
+  </tr>
+  <tr>
+    <td><div align="center"><img src="../../images/Single-View-1-16x16.png" alt="single view" width="16" height="16" /></div></td>
+    <td>Single Screen</td>
+    <td>Reverts the tree display to a  single screen.</td>
+  </tr>
+  <tr>
+    <td><div align="center"><img src="../../images/Edit-2-16x16.png" alt="edit" width="16" height="16" /></div></td>
+    <td>Edit Node</td>
+    <td>Opens a form for editing the node.</td>
+  </tr>
+  <tr>
+    <td><div align="center"><img src="../../images/add.png" alt="add" width="16" height="16" /></div></td>
+    <td>Add Child</td>
+    <td>Opens a form for adding a child to the selected parent.</td>
+  </tr>
+  <tr>
+    <td><div align="center"><img src="../../images/delete.png" alt="delete" width="16" height="16" /></div></td>
+    <td>Delete Child</td>
+    <td>Deletes the child. Active (parent) nodes can not be deleted.</td>
+  </tr>
+  <tr>
+    <td><div align="center"><img src="../../images/sync.png" alt="sync view" width="16" height="16" /></div></td>
+    <td>Sync Split Screens</td>
+    <td>Syncs the split screen views to display the same section of the tree on each screen.</td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<p><strong><em>Note:</em></strong> Nodes on specific trees can only be deleted if:</p>
+<table  border="1" cellspacing="2" cellpadding="6" width="600">
+  <tr>
+    <td width="30%"><div align="center"><strong><u>Tree</u></strong></div></td>
+    <td><u><strong></strong></u></td>
+  </tr>
+  <tr>
+    <td><div align="center"><strong>Taxon</strong></div></td>
+    <td><ul>
+      <li> not used in a Determination.</li>
+      <li>not included in a Taxon citation.</li>
+      <li>not a parent node of a Hybrid.</li>
+      <li>not a preferred name of a Synonym.</li>
+      <li>not a parent Node.</li>
+    </ul></td>
+  </tr>
+  <tr>
+    <td><div align="center"><strong>Geography</strong></div></td>
+    <td><ul>
+      <li>not used in a Locality.</li>
+      <li>not a preferred name of a Synonym.</li>
+      <li>not a parent Node.</li>
+    </ul></td>
+  </tr>
+  <tr>
+    <td><div align="center"><strong>Storage</strong></div></td>
+    <td><ul>
+      <li>not used in a Preparation.</li>
+      <li>not a preferred name of a Synonym.</li>
+      <li>not a parent Node.</li>
+    </ul></td>
+  </tr>
+  <tr>
+    <td><div align="center"><strong>Chronostratigraphy</strong></div></td>
+    <td><ul>
+      <li>not used in a Paleo Context.</li>
+      <li>not a preferred name of a Synonym.</li>
+      <li>not a parent Node.</li>
+    </ul></td>
+  </tr>
+  <tr>
+    <td><div align="center"><strong>Lithostratigraphy</strong></div></td>
+    <td><ul>
+      <li>not used in a Paleo Context.</li>
+      <li>not a preferred name of a Synonym.</li>
+      <li>not a parent Node.</li>
+    </ul></td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<p><em><strong>Note:</strong></em> Any edits/additions to large trees may take several minutes to save. </p>
+<p>&nbsp;</p>
+<h3><a name="drag_drop">Dragging and Dropping</a></h3>
+<p>Nodes can be dragged and dropped within the tree module to move or synonymize nodes. When the screen is split, nodes can be dragged and dropped within the same screen or into the opposite screen. A highlight box will appear around any nodes that can accept the node being dragged. Once the node is dropped onto the accepting node a dialog will appear allowing the user to:</p>
+<p><strong>Reparent</strong> a node (and its children) to a new parent. Enforced ranks may not be skipped. This option is only available when dragging BETWEEN ranks.</p>
+<p><strong>Synonymize</strong> the node.   To undo a synonymy right-click on the node and choose <em>Undo Synonymy</em> in the context menu. Synonyms are differentiated from non-synonyms by their text color. Synonym text color can be set in <em><a href="trees.html">Preferences</a></em>. Synonyms are also shows as a tool tip on the node. This option is only available when dragging  WITHIN a rank.</p>
+<p><em><strong>Note:</strong></em> Synonymys created in the Taxon tree are captured in the Active Taxon field on the Determinations form.</p>
+<p>Select <strong>Cancel</strong> on the dialog to place the node back in its original position.</p>
+<p>&nbsp;</p>
+<h3>Collection Object Counts</h3>
+<p>Counts of collection objects associated with each node can be enabled for all trees. This feature requires data processing and therefore is not enabled by default. Enable Collection Object Counts  on a tree by choosing <em>Preferences &gt; Tree</em>. See also <em><a href="trees.html">Preferences</a></em></p>
+<p>Counts are displayed next to the Node as two numbers (<strong>X</strong>,<strong>Y</strong>):</p>
+<ul>
+  <li><strong>X</strong> represents the number of Collection Objects for the Node only. </li>
+  <li><strong>Y</strong> represents the number of Collection Objects for the Rank and all nodes beneath it. </li>
+</ul>
+<p>&nbsp;</p>
+<p><strong>More Options</strong></p>
+<p>A right-mouse click offers the following choices:</p>
+<table width=600 border="1" cellspacing="2" cellpadding="6">
+  <tr>
+    <td width="25%"><div align="center"><u><strong>Option</strong></u></div></td>
+    <td width="75%"><u><strong>Result</strong></u></td>
+  </tr>
+  <tr>
+    <td><div align="center"><strong>Show Subtree</strong></div></td>
+    <td>Closes all nodes higher than the selected node.</td>
+  </tr>
+  <tr>
+    <td><div align="center"><strong>Find Next</strong></div></td>
+    <td>Finds the next usage of the exact name. For instance, Johnson may be used as the name of a county in different states. This would find the next 'Johnson' in the Geography tree.</td>
+  </tr>
+  <tr>
+    <td><div align="center"><strong>Edit ... (View)</strong></div></td>
+    <td>Opens the relevant data form for that node. When editing the tree, the Edit option will appear, when viewing the tree, the View option will appear.</td>
+  </tr>
+  <tr>
+    <td><div align="center"><strong>Delete</strong></div></td>
+    <td>Deletes the node. See the table above for deletion requirements.</td>
+  </tr>
+  <tr>
+    <td><div align="center"><strong>Add Child </strong></div></td>
+    <td>Opens a <a href="data_entry.html">form</a> for adding a child. </td>
+  </tr>
+  <tr>
+    <td><div align="center"><strong>Undo Synonymy</strong></div></td>
+    <td>Restores the node as a preferred taxon name.</td>
+  </tr>
+  <tr>
+    <td><div align="center"><strong>Associated Collection Objects</strong></div></td>
+    <td>Opens any associated Collection Objects in  Collection Object forms.</td>
+  </tr>
+</table>
+<p><em><strong>Note:</strong></em> The Taxon Tree also includes an option to View an ITIS page.</p>
+<p>&nbsp;</p>
+<h3>Find</h3>
+<p>Click Cntl+F to open the Find tool (which opens under the Tree Subpane). This is particularly useful to expand the tree to the end Nodes. The arrow icons  refer to the view that is appropriate for the search. </p>
+<table width="75%" border="1" cellspacing="2" cellpadding="6">
+  <tr>
+    <td width="14%"><div align="center"><u><strong>Button</strong></u></div></td>
+    <td width="16%"><div align="center"><u><strong>Name</strong></u></div></td>
+    <td width="70%"><u><strong>Result</strong></u></td>
+  </tr>
+  <tr>
+    <td><div align="center"><img src="../../images/up.png" alt="up" width="16" height="16" /></div></td>
+    <td>Upper</td>
+    <td>Searches the upper tree.</td>
+  </tr>
+  <tr>
+    <td><div align="center"><img src="../../images/down.png" alt="down" width="16" height="16" /></div></td>
+    <td>Lower</td>
+    <td>Searches the lower tree.</td>
+  </tr>
+  <tr>
+    <td><div align="center"><img src="../../images/down.png" alt="down" width="16" height="16" /><img src="../../images/up.png" alt="up" width="16" height="16" /></div></td>
+    <td>Upper and Lower</td>
+    <td>Searches both trees.</td>
+  </tr>
+</table>
+<p>If only one screen is open, it is best to choose <img src="../../images/up.png" alt="up" width="16" height="16" />(top view). </p>
+<p>Find a node by typing a single term into the Find text box and clicking the <em>Find</em> button. Full taxon names are not accepted.</p>
+<p>Click the Next button to find the next usage of the word in the tree. For instance, Johnson may be used as the name of a county in different states. This would find the next 'Johnson' in the Geography tree.</p>
+</body>
+</html>

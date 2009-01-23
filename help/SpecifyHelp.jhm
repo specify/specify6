@@ -5,13 +5,11 @@
 
 <map version="1.0">
 <!--
-	<mapID target="Interactions"        url="SpecifyHelp/Interactions/Interactions.html" />
 	<mapID target="Labels"              url="SpecifyHelp/Labels/Labels.html" />
 	<mapID target="login"               url="SpecifyHelp/login.html" />
 	<mapID target="Reports"             url="SpecifyHelp/Reports/Reports.html" />
 	<mapID target="Search"              url="SpecifyHelp/Search/Search.html" />
-	<mapID target="Startup"             url="SpecifyHelp/Startup/Startup.html" />
-	-->
+-->
 	
     <mapID target="specify"             url="http://www.specifysoftware.org" />
 	<mapID target="login"               url="SpecifyHelp/Login.html" />
@@ -19,23 +17,29 @@
     <mapID target="MASTERPWD_MAIN"      url="SpecifyHelp/SetupSpecifyDB.html" />
     <mapID target="MASTERPWD_GEN"       url="SpecifyHelp/SetupSpecifyDB.html" />
     <mapID target="CHANGE_PWD"          url="SpecifyHelp/SetupSpecifyDB.html" />
+	<mapID target="Startup"             url="SpecifyHelp/Startup/Startup.html" />
 	
 		
-	<!-- Data Entry -->
-	<mapID target="Data_Entry"          url="SpecifyHelp/Data_Entry/Data_Entry.html" />
-	<mapID target="DataEntryConfigure"  url="SpecifyHelp/Data_Entry/DataEntryConfigure.html" />
-    <mapID target="SYNONIMIZE_NODE"     url="SpecifyHelp/Data_Entry/SynonimizeTreeNode.html" />
-    <mapID target="SUBVIEW_FORM_HELP"     url="SpecifyHelp/Data_Entry/Data_Entry.html" />
-	
+    <!-- Data Entry -->
+    <mapID target="Using_Forms"         url="SpecifyHelp/Data_Entry/Using_Forms.html" />
+    <mapID target="DataEntryConfigure"  url="SpecifyHelp/Data_Entry/Data_Entry.html" />
+    <mapID target="SUBVIEW_FORM_HELP"   url="SpecifyHelp/Data_Entry/Using_Forms.html" />
+    
+    <!-- Trees -->
+    <mapID target="Trees_About"         url="SpecifyHelp/Trees/Trees_About.html" />
+    <mapID target="TreeDef"             url="SpecifyHelp/Trees/Trees_About.html#TreeDef" />
+    <mapID target="SYNONIMIZE_NODE"     url="SpecifyHelp/Trees/Trees_About.html#drag_drop" />
+    
 	<!-- Query Builder -->
 	<mapID target="Query"                url="SpecifyHelp/QueryBuilder/QueryBuilder.html" />
-	<mapID target="QBNewQueryConfig"     url="SpecifyHelp/QueryBuilder/NewQueryConfig.html" />
-	<mapID target="QBSavedQueriesConfig" url="SpecifyHelp/QueryBuilder/SavedQueriesConfig.html" />
+	<mapID target="QBNewQueryConfig"     url="SpecifyHelp/QueryBuilder/QueryBuilder.html#query_creators" />
+	<mapID target="QBSavedQueriesConfig" url="SpecifyHelp/QueryBuilder/QueryBuilder.html#saved_queries" />
 	
 	
 	<!-- Other Tasks -->
-	<mapID target="Tools"               url="SpecifyHelp/Export/Export.html" />
+	<mapID target="Plugins"             url="SpecifyHelp/Export/Plugins.html" />
 	<mapID target="Statistics"          url="SpecifyHelp/Statistics/Statistics.html" />
+    <mapID target="Interactions"        url="SpecifyHelp/Interactions/Interactions.html" />
 	<mapID target="InteractionsConfig"  url="SpecifyHelp/Interactions/InteractionsConfig.html" />
 	
 	<!-- Loans -->
@@ -43,13 +47,14 @@
     <mapID target="AskForCatNumbers"    url="SpecifyHelp/Interactions/Interactions.html"/>
 	
 	
-	
-	<!-- Express Search Help -->
-	<mapID target="Express_Search"          url="SpecifyHelp/Express_Search/Express_Search.html" />
-	<mapID target="ESTellMeMore"            url="SpecifyHelp/Express_Search/TellMeMore.html"/>
-	<mapID target="ESConfigSerachFields"    url="SpecifyHelp/Express_Search/ConfigSearchFields.html"/>
-	<mapID target="ESConfigResultsOrdering" url="SpecifyHelp/Express_Search/ConfigResultsOrdering.html"/>
-	<mapID target="ESConfigRelatedTables"   url="SpecifyHelp/Express_Search/ConfigRelatedTables.html"/>
+	<!-- Simple Search Help -->
+    <mapID target="Simple_Search"           url="SpecifyHelp/Simple_Search/Simple_Search.html" />
+    <mapID target="Express_Search"          url="SpecifyHelp/Simple_Search/Simple_Search.html" />
+	<mapID target="ESTellMeMore"            url="SpecifyHelp/Simple_Search/Simple_Search.html#ss_results"/>
+    <mapID target="Simple_Search_Config"    url="SpecifyHelp/Simple_Search/Simple_Search_Config.html#searchfields"/>
+    <mapID target="ESConfigSearchFields"    url="SpecifyHelp/Simple_Search/Simple_Search.html#searchfields"/>
+	<mapID target="ESConfigResultsOrdering" url="SpecifyHelp/Simple_Search/Simple_Search.html#results_ordering"/>
+	<mapID target="ESConfigRelatedTables"   url="SpecifyHelp/Simple_Search/Simple_Search.html#related_tables"/>
 	
 	<!-- Search Help -->
 	<mapID target="CBXQSearch"              url="SpecifyHelp/Search/CBXQSearch.html"/>
@@ -62,8 +67,10 @@
 	<mapID target="SL_TOOLS_HELP_CONTEXT"   url="SpecifyHelp/System/SchemaLocTools.html"/>
 	<mapID target="WEBLNK_EDITOR"           url="SpecifyHelp/System/WebLinksEditor.html"/>
 	<mapID target="WEBLNK_ARGS_EDITOR"      url="SpecifyHelp/System/WebLinksArgsEditor.html"/>
-	<mapID target="PL_ITEM_EDITOR"          url="SpecifyHelp/System/PickListItemEditor.html"/>
-	<mapID target="PL_HELP_CONTEXT"         url="SpecifyHelp/System/PickListEditor.html"/>
+	
+	<mapID target="PL_ITEM_EDITOR"          url="SpecifyHelp/PickList/PickListItemEditor.html"/>
+    <mapID target="PL_HELP_CONTEXT"         url="SpecifyHelp/PickList/PickListEditor.html"/>
+    <mapID target="Pick_List"               url="SpecifyHelp/PickList/Pick_List.html"/>
 	
 	<mapID target="DOF_LIST_EDITOR"         url="SpecifyHelp/System/DataObjFmtListEditor.html"/>
 	<mapID target="DOF_EDITOR"              url="SpecifyHelp/System/DataObjFmtEditor.html"/>
@@ -124,13 +131,15 @@
 	<mapID target="WorkbenchBGM"               url="SpecifyHelp/Workbench/BioGiomancer.html"/>
 	
 	<!-- Preferences -->
-	<mapID target="PrefsSystem"                url="SpecifyHelp/Prefs/System.html"/>
+    <mapID target="PreferencesOverview"        url="SpecifyHelp/Prefs/Prefs.html"/>
+    <mapID target="PrefsSystem"                url="SpecifyHelp/Prefs/System.html"/>
 	<mapID target="PrefsEMail"                 url="SpecifyHelp/Prefs/EMail.html"/>
 	<mapID target="PrefsFormatting"            url="SpecifyHelp/Prefs/Formatting.html"/>
-	<mapID target="PrefsMisc"                  url="SpecifyHelp/Prefs/Misc.html"/>
+	<mapID target="PrefsMisc"                  url="SpecifyHelp/Prefs/Taskbar.html"/>
 	<mapID target="PrefsTree"                  url="SpecifyHelp/Prefs/Tree.html"/>
 	<mapID target="PrefsGoogleEarth"           url="SpecifyHelp/Prefs/GoogleEarth.html"/>
 	<mapID target="PrefsLogin"                 url="SpecifyHelp/Prefs/Login.html"/>
+	<mapID target="PrefsMySQL"                 url="SpecifyHelp/Prefs/MySQL.html"/>
 	
 	
 	<!--

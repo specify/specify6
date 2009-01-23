@@ -16,34 +16,40 @@
       <tocitem text="Statistics" target="Statistics"/>
       <tocitem text="Search" target="Search"/>
 -->
-          <tocitem text="Preferences" target="PreferencesOverview">
+          <!-- <tocitem text="Introduction" target="Intro"/> -->
+		  
+		  <tocitem text="Preferences" target="PreferencesOverview">
           	<tocitem text="EMail" target="PrefsEMail"/>
           	<tocitem text="Formatting" target="PrefsFormatting"/>
           	<tocitem text="GoogleEarth" target="PrefsGoogleEarth"/>
-          	<tocitem text="Misc" target="PrefsMisc"/>
+          	<tocitem text="Task Bar" target="PrefsMisc"/>
           	<tocitem text="System" target="PrefsSystem"/>
           	<tocitem text="Tree" target="PrefsTree"/>
+			<tocitem text="Login" target="PrefsLogin"/>
 	      </tocitem>
 	      
-	      <tocitem text="Data Entry" target="Data_Entry">
-          	<tocitem text="Data Entry Configuration" target="DataEntryConfigure"/>
+	      <tocitem text="Form System" target="Using_Forms">
+		    <!-- <tocitem text="Data Entry" target="Using_Forms"/>  -->
+          	<tocitem text="Interactions" target="Interactions">
+          	    <tocitem text="Configuration" target="InteractionsConfig"/>
+          	</tocitem>
+			<tocitem text="Pick List" target="Pick_List"/>
+	      </tocitem>
+		  
+		  <tocitem text="Trees" target="Trees_About">
+		    <tocitem text="Tree Definitions" target="TreeDef"/>
 	      </tocitem>
 	      
-	      <tocitem text="Express Search" target="Express_Search">
-          	<tocitem text="Configuring Search Fields" target="ESConfigSerachFields"/>
-          	<tocitem text="Configuring Results Ordering" target="ESConfigResultsOrdering"/>
-          	<tocitem text="Configuring Related Tables" target="ESConfigRelatedTables"/>
+	      <tocitem text="Simple Search" target="Simple_Search">
+          	<tocitem text="Configuring Simple Search" target="Simple_Search_Config"/>
           	<tocitem text="Tell Me More" target="ESTellMeMore"/>
 	      </tocitem>
 	      
 	      <tocitem text="Query Builder" target="Query">
-          	<tocitem text="New Query Configuration" target="QBNewQueryConfig"/>
-          	<tocitem text="Saved Queries Configuration" target="QBSavedQueriesConfig"/>
+		   <tocitem text="Record Sets" target="Record_Set"/>
 	      </tocitem>
 	      
-          <tocitem text="Statistics" target="Statistics"/>
-          <tocitem text="Tools" target="Tools"/>
-          
+          <tocitem text="Plugins" target="Plugins"/>
 	      
           <tocitem text="WorkBench" target="WorkbenchOverview">
           

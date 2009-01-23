@@ -1,19 +1,57 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
-<HTML>
-<HEAD>
-<TITLE>Tree Preferences</TITLE>
-</HEAD>
-<BODY BGCOLOR="#ffffff">
-Tree Preferences<br>
-This panel is used to configure the various tree within Specify.
-<p>
-Restore Expansion State will expand (show the nodes) of a given tree to the previous "expanded" state when it was last opened. 
-If it is turned off the tree will first be shown in a collapsed state.
-</p>
-<p>
-Each tree can have it's own alternating colors and the level the collection counts start can also be set. 
-Note that the higher node you select in a tree for the counts will impact performance. For example, if the Taxon counts where set to 'Kingdom' then Specify must calculate
-all the collection counts from that point in the tree on down.
-</p>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<link href="../main2.css" rel="stylesheet" type="text/css" media="screen"></link>
+<title>Tree</title>
+</head>
+
+<BODY BGCOLOR=#ffffff>
+<table width="100%" border="0" background="../../images/topbar.png">
+  <tr>
+    <td>&nbsp;</td>
+  </tr>
+</table>
+<h2><img src="../../images/Tree-32x32.png" alt="" /> Trees</h2>
+<ul>
+  <li>For Mac: Choose<em> Specify &gt; Preferences &gt; Trees. </em>
+  <li>For Windows and Linux: Choose <em>Edit &gt; Preferences &gt; Trees</em>.</li>
+</ul>
+<p><span class="MichaelsChanges">This page is used</span> to customize the appropriate Trees in Specify 6.</p>
+<table width="100%" border="1" cellspacing="2" cellpadding="6">
+  <tr>
+    <td width="23%"><div align="center"><u><strong>Tree Preference</strong></u></div></td>
+    <td width="42%"><div align="center"><u><strong>Result</strong></u></div></td>
+    <td width="35%"><div align="center"><u><strong>Action</strong></u></div></td>
+  </tr>
+  <tr>
+    <td><div align="center"><strong>Restore Epansion State</strong></div></td>
+    <td>Trees will open to the last node that was selected. If the tree is expanded, but no node is selected the tree will open to the default setting.</td>
+    <td>Check the box.</td>
+  </tr>
+  <tr>
+    <td><div align="center"><strong>Show Counts Below</strong></div></td>
+    <td>Determines the level at which counts are shown in the trees. Counts display next to the corresponding node as two numbers (X,Y). X refers to the number of Collection Objects for the node only. Y refers to the number of Collection Objects for the node (parent) and all nodes beneath it (children). </td>
+    <td>Choose a Rank from the drop down menu.</td>
+  </tr>
+  <tr>
+    <td><div align="center"><strong>Column Color #1</strong></div></td>
+    <td>Changes the background color of odd columns of the tree.</td>
+    <td>Click the color square and choose a color from the resulting tile box.</td>
+  </tr>
+  <tr>
+    <td><div align="center"><strong>Column Color #2</strong></div></td>
+    <td>Changes the background color of even columns of the tree.</td>
+    <td>Click the color square and choose a color from the resulting tile box.</td>
+  </tr>
+  <tr>
+    <td><div align="center"><strong>Synonymy Color</strong></div></td>
+    <td>Changes the color of synonymized Tree nodes. </td>
+    <td>Click the color square and choose a color from the resulting tile box.</td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<h2>&nbsp;</h2>
+<h2>&nbsp;</h2>
+<p>&nbsp;</p>
 </BODY>
-</HTML>
+</html>
