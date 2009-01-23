@@ -293,6 +293,11 @@
         <serializedBean>
           <java class="java.beans.XMLDecoder">
             <object class="com.install4j.runtime.beans.applications.InstallerApplication">
+              <void property="customHeaderImage">
+                <object class="com.install4j.api.beans.ExternalFile">
+                  <string>../src/edu/ku/brc/specify/images/specify60.png</string>
+                </object>
+              </void>
               <void property="customPngIcon16File">
                 <object class="com.install4j.api.beans.ExternalFile">
                   <string>../InstallerFiles/specify16.png</string>
@@ -503,7 +508,21 @@
           <screen name="" id="361" beanClass="com.install4j.runtime.beans.screens.FinishedScreen" enabled="true" commentSet="false" comment="" rollbackBarrier="false" backButton="2" finishScreen="true">
             <serializedBean>
               <java class="java.beans.XMLDecoder">
-                <object class="com.install4j.runtime.beans.screens.FinishedScreen" />
+                <object class="com.install4j.runtime.beans.screens.FinishedScreen">
+                  <void property="bannerBackground">
+                    <object class="java.awt.Color">
+                      <int>255</int>
+                      <int>255</int>
+                      <int>255</int>
+                      <int>255</int>
+                    </object>
+                  </void>
+                  <void property="bannerImageFile">
+                    <object class="com.install4j.api.beans.ExternalFile">
+                      <string>../src/edu/ku/brc/specify/images/specify128.png</string>
+                    </object>
+                  </void>
+                </object>
               </java>
             </serializedBean>
             <condition />
