@@ -666,7 +666,7 @@ public class RegisterSpecify
             PanelBuilder    pb = new PanelBuilder(new FormLayout("p,2px,f:p:g", "p,10px,p"));
             pb.add(UIHelper.createI18NFormLabel("SpReg.ISA_ENT"), cc.xy(1, 1));
             pb.add(textField, cc.xy(3, 1));
-            pb.add(UIHelper.createI18NFormLabel("SpReg.ISA_EXPL"), cc.xyw(1, 3, 3));
+            pb.add(UIHelper.createI18NLabel("SpReg.ISA_EXPL"), cc.xyw(1, 3, 3));
             pb.setDefaultDialogBorder();
             
             CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), isaTitle, true, pb.getPanel());
