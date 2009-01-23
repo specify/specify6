@@ -322,7 +322,7 @@
                 </row>
                 <row>
                     <cell type="command" id="clearcache" name="clearcache" label="CACHE_CLR" commandtype="ClearCache" action="ClearCache"/>
-                    <!-- <cell type="label" labelfor="clearcache" label="Clears Long Term, Short Term and Reports Cache" /> -->
+                    <cell type="label" label="CACHE_DESC" />
                 </row>
                 <!--<row>
                     <cell type="label" labelfor="" label="" />

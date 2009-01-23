@@ -1101,8 +1101,10 @@ public class UIRegistry
 	            try
 	            {
 	                instance.longTermCache = new FileCache("longTerm.Cache");
+	                
 	                // set the cache size to 20 MB
 	                instance.longTermCache.setMaxCacheSize(20000);
+	                
 	            } catch (Exception ex)
 	            {
 	                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();

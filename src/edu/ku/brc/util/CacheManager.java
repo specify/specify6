@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2007  The University of Kansas
+ *
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
+ *
+ */
 package edu.ku.brc.util;
 
 import java.util.Vector;
@@ -7,6 +13,7 @@ import org.apache.log4j.Logger;
 /**
  * 
  * @author jstewart
+ * 
  * @code_status Alpha
  */
 public class CacheManager
@@ -15,21 +22,33 @@ public class CacheManager
     
     protected Vector<DataCacheIFace> registeredCaches;
     
+    /**
+     * 
+     */
     public CacheManager()
     {
         this.registeredCaches = new Vector<DataCacheIFace>();
     }
     
-    public void registerCache(DataCacheIFace cache)
+    /**
+     * @param cache
+     */
+    public void registerCache(final DataCacheIFace cache)
     {
         registeredCaches.add(cache);
     }
     
-    public void unregisterCache(DataCacheIFace cache)
+    /**
+     * @param cache
+     */
+    public void unregisterCache(final DataCacheIFace cache)
     {
         registeredCaches.remove(cache);
     }
     
+    /**
+     * 
+     */
     public void shutdown()
     {
         synchronized (registeredCaches)
@@ -52,6 +71,9 @@ public class CacheManager
         registeredCaches.removeAllElements();
     }
     
+    /**
+     * 
+     */
     public void clearAll()
     {
         synchronized (registeredCaches)

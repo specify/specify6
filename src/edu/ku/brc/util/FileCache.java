@@ -76,7 +76,7 @@ public class FileCache implements DataCacheIFace
 	 * @param mappingFilename the name of the mapping file, not including path
 	 * @throws IOException if the default cache directory doesn't exist
 	 */
-	public FileCache(String mappingFilename) throws IOException
+	public FileCache(final String mappingFilename) throws IOException
 	{
 		this(defaultPath, mappingFilename);
 	}
@@ -89,7 +89,7 @@ public class FileCache implements DataCacheIFace
 	 * @param mappingFilename the name of the mapping file, not including path
 	 * @throws IOException if the given directory doesn't exist
 	 */
-	public FileCache(String dir, String mappingFilename) throws IOException
+	public FileCache(final String dir, final String mappingFilename) throws IOException
 	{
 		this.mappingFilename = mappingFilename;
 		init(dir);
@@ -101,7 +101,7 @@ public class FileCache implements DataCacheIFace
 	 * @param dir the directory in which to place the cached files and the mapping files
 	 * @throws IOException if the given directory doesn't exist
 	 */
-	protected void init( String dir ) throws IOException
+	protected void init(final String dir) throws IOException
 	{
 		cacheDir = new File(dir);
 		if( !cacheDir.exists() )
@@ -137,7 +137,7 @@ public class FileCache implements DataCacheIFace
         }
     }
     
-    public synchronized void clearItem(String key)
+    public synchronized void clearItem(final String key)
     {
         String filename = (String)handleToFilenameHash.get(key);
         removeCacheItem(filename);
@@ -160,7 +160,7 @@ public class FileCache implements DataCacheIFace
 	 * @see #getPrefix()
 	 * @param prefix the prefix
 	 */
-	public void setPrefix(String prefix)
+	public void setPrefix(final String prefix)
 	{
 		this.prefix = prefix;
 	}
@@ -182,7 +182,7 @@ public class FileCache implements DataCacheIFace
 	 * @see #getSuffix()
 	 * @param suffix the suffix
 	 */
-	public void setSuffix(String suffix)
+	public void setSuffix(final String suffix)
 	{
 		this.suffix = suffix;
 	}
@@ -430,7 +430,7 @@ public class FileCache implements DataCacheIFace
      * @param key the cache file handle
      * @return true if a file was purged, false otherwise
      */
-    protected synchronized boolean purgeCacheFile(String key)
+    protected synchronized boolean purgeCacheFile(final String key)
     {
         if (key==null)
         {
@@ -473,7 +473,7 @@ public class FileCache implements DataCacheIFace
 	 * @param key the "handle" used to retrieve this cached data item in the future
 	 * @param item the File to be cached
 	 */
-	protected synchronized void cacheNewItem( String key, File item )
+	protected synchronized void cacheNewItem(final String key, final File item )
 	{
         long currentTime = System.currentTimeMillis();
 		handleToAccessTimeHash.setProperty(key, Long.toString(currentTime));
@@ -497,7 +497,7 @@ public class FileCache implements DataCacheIFace
 	 * 
 	 * @param filename the name of the cache file to be deleted
 	 */
-	protected synchronized void removeCacheItem( String filename )
+	protected synchronized void removeCacheItem(final String filename )
 	{
 		File f = new File(filename);
 		long size = f.length();
@@ -515,7 +515,7 @@ public class FileCache implements DataCacheIFace
 	 * @return a "handle" used to retrieve the cached data in the future
 	 * @throws IOException an error occurred while storing the data to disk
 	 */
-	public String cacheData( byte[] data ) throws IOException
+	public String cacheData(final byte[] data ) throws IOException
 	{
 		String key = UUID.randomUUID().toString();
 		cacheData(key, data);
@@ -529,7 +529,7 @@ public class FileCache implements DataCacheIFace
 	 * @param data the data to be cached
 	 * @throws IOException an error occurred while storing the data to disk
 	 */
-	public void cacheData( String key, byte[] data ) throws IOException
+	public void cacheData(final String key, final byte[] data ) throws IOException
 	{
 		File f = createCacheFile();
 		FileOutputStream fos = new FileOutputStream(f);
@@ -547,7 +547,7 @@ public class FileCache implements DataCacheIFace
 	 * @return a handle used to retrieve the cached data in the future
 	 * @throws IOException an error occurred while storing the data to disk
 	 */
-	public String cacheFile( File f ) throws IOException
+	public String cacheFile(final File f ) throws IOException
 	{
 		cacheFile(f.getName(),f);
 		return f.getName();
@@ -560,7 +560,7 @@ public class FileCache implements DataCacheIFace
 	 * @param f the file to cache
 	 * @throws IOException an error occurred while storing the data to disk
 	 */
-	public void cacheFile( String key, File f ) throws IOException
+	public void cacheFile(final String key, final File f ) throws IOException
 	{
 		File cachedFile = createCacheFile();
 		FileUtils.copyFile(f,cachedFile);
@@ -576,7 +576,7 @@ public class FileCache implements DataCacheIFace
 	 * @throws HttpException a network error occurred while grabbing the web resource
 	 * @throws IOException an error occurred while writing the resource to a cache file
 	 */
-	public String cacheWebResource( String url ) throws HttpException, IOException
+	public String cacheWebResource(final String url ) throws HttpException, IOException
 	{
         HttpClient httpClient = new HttpClient();
 		GetMethod get = new GetMethod(url);
@@ -606,7 +606,7 @@ public class FileCache implements DataCacheIFace
 	 * @throws HttpException a network error occurred while grabbing the web resource
 	 * @throws IOException an error occurred while writing the resource to a cache file
 	 */
-	public void refreshCachedWebResource( String key ) throws HttpException, IOException
+	public void refreshCachedWebResource(final String key ) throws HttpException, IOException
 	{
 		cacheWebResource(key);
 	}
@@ -617,7 +617,7 @@ public class FileCache implements DataCacheIFace
 	 * @param key the handle to the cached file
 	 * @return the cached File, or null if no such file exists
 	 */
-	public File getCacheFile( String key )
+	public File getCacheFile(final String key )
 	{
 		String filename = handleToFilenameHash.getProperty(key);
 		if( filename == null )
@@ -648,7 +648,7 @@ public class FileCache implements DataCacheIFace
      * @param key the key for the cached item
      * @return the last time the item was accessed
      */
-    public long getLastAccessTime( String key )
+    public long getLastAccessTime(final String key )
     {
         String accessTimeString = handleToAccessTimeHash.getProperty(key);
         if (accessTimeString == null)
