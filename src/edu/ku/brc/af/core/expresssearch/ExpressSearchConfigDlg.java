@@ -84,7 +84,7 @@ public class ExpressSearchConfigDlg extends CustomDialog
     public static String ASCENDING  = null;
     public static String DESCENDING = null;
     
-    protected static final String[] TAB_HELP_CONTEXT = {"ESConfigSerachFields", "ESConfigResultsOrdering", "ESConfigRelatedTables"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    protected static final String[] TAB_HELP_CONTEXT = {"ESConfigSearchFields", "ESConfigResultsOrdering", "ESConfigRelatedTables"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     
     protected JTabbedPane                    tabbedPane;
     protected JList                          tableList;
