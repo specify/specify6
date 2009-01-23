@@ -429,20 +429,20 @@ public class DeterminationBusRules extends BaseBusRules
         {
         	if (!taxon.getIsAccepted())
             {
-                PanelBuilder pb = new PanelBuilder(new FormLayout("5dlu, f:p:g, 5dlu", "7dlu, c:p, 2dlu, c:p, 10dlu"));
+                PanelBuilder pb = new PanelBuilder(new FormLayout("5dlu, f:p:g, 5dlu", "7dlu, c:p, 5dlu, c:p, 10dlu"));
                 String msg1 = String.format(UIRegistry.getResourceString("DeterminationBusRule.SynChoiceMsg1"), 
                         taxon.getFullName(), taxon.getAcceptedParent().getFullName());
                 String msg2 = String.format(UIRegistry.getResourceString("DeterminationBusRule.SynChoiceMsg2"),
-                        taxon.getAcceptedParent().getFullName());
+                        taxon.getFullName(), taxon.getAcceptedParent().getFullName());
                 CellConstraints cc = new CellConstraints();
                 pb.add(UIHelper.createLabel(msg1), cc.xy(2, 2));
                 pb.add(UIHelper.createLabel(msg2), cc.xy(2, 4));
-                String formTitle = UIRegistry.getResourceString("INFORMATION");
+                String formTitle = UIRegistry.getResourceString("DeterminationBusRules.SYNONYM_INFORMATION");
                 CustomDialog cd = new CustomDialog((Frame)UIRegistry.getTopWindow(), formTitle, true, 
                         CustomDialog.OKCANCELHELP, pb.getPanel());
                 cd.setModal(true);
-                cd.setOkLabel(UIRegistry.getResourceString("YES"));
-                cd.setCancelLabel(UIRegistry.getResourceString("NO"));
+                cd.setOkLabel(UIRegistry.getResourceString("DeterminationBusRules.Change"));
+                cd.setCancelLabel(UIRegistry.getResourceString("DeterminationBusRules.Keep"));
                 UIHelper.centerAndShow(cd);
                 if (cd.getBtnPressed() == CustomDialog.OK_BTN)
                 {

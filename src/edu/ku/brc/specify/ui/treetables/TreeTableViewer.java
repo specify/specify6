@@ -109,6 +109,13 @@ import edu.ku.brc.util.Pair;
  * @code_status Gamma
  * @author jstewart
  */
+/**
+ * @author Administrator
+ *
+ * @param <T>
+ * @param <D>
+ * @param <I>
+ */
 @SuppressWarnings("serial")
 public class TreeTableViewer <T extends Treeable<T,D,I>,
 								D extends TreeDefIface<T,D,I>,
@@ -1095,7 +1102,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 
         statusBar.setText(null);
 		// display a form for filling in child data
-		showEditDialog(newT, "New Node Form", true);
+        
+		showEditDialog(newT, "New Node Form", true, null);
 	}
 
 	public void unSynSelectedNode(final JList list)
@@ -1113,46 +1121,41 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         
         log.debug("Node selected for Un-synonymize: " + node);
 
+        TreeNode nodeParent = listModel.getNodeById(node.getParentId());
+        TreeNode acceptedNodeParent = null;
+        if (acceptedNode != null)
+        {
+        	acceptedNodeParent = listModel.getNodeById(acceptedNode.getParentId());
+        }
+        hideChildren(nodeParent);
+        if (acceptedNodeParent != null && acceptedNodeParent != nodeParent)
+        {
+        	hideChildren(acceptedNodeParent);
+        }
+
         String statusMsg = dataService.unSynonymize(nodeRecord);
         node.setAcceptedParentId(null);
         node.setAcceptedParentFullName(null);
         
-        T synParent = nodeRecord.getParent();
-        T acceptedNodeParent = null;
-        
-        node.setCalcCount(false);
-        node.setCalcCount2(false);
-        node.setHasCalcCount(false);
-        node.setHasCalcCount2(false);
         if (acceptedNode != null)
         {
-            acceptedNode.setCalcCount(false);
-            acceptedNode.setCalcCount2(false);
-            acceptedNode.setHasCalcCount(false);
-            acceptedNode.setHasCalcCount2(false);
-            
-            T acceptedRecord = getRecordForNode(acceptedNode);
-            acceptedNodeParent = acceptedRecord.getParent();
-            
             acceptedNode.removeSynonym(node.getId());
         }
         
-        
-        Vector<TreeNode> draggedChildren = new Vector<TreeNode>();
-        Vector<TreeNode> droppedChildren = new Vector<TreeNode>();
-        if (acceptedNodeParent == null || synParent.getTreeId().equals(acceptedNodeParent.getTreeId()))
+        Vector<TreeNode> bogusity = new Vector<TreeNode>(1);
+        bogusity.add(nodeParent);
+        nodeParent.setHasCalcCount(false);
+        nodeParent.setHasCalcCount2(false);
+        showCounts(getRecordForNode(nodeParent), bogusity);
+        showChildren(nodeParent);
+        if (acceptedNodeParent != null && acceptedNodeParent != nodeParent)
         {
-            draggedChildren.add(node);
-            if (acceptedNodeParent != null)
-            draggedChildren.add(acceptedNode);
-            showCounts(synParent, draggedChildren);
-        }
-        else if (acceptedNodeParent != null)
-        {
-            draggedChildren.add(node);
-            droppedChildren.add(acceptedNode);
-            showCounts(synParent, draggedChildren);
-            showCounts(acceptedNodeParent, droppedChildren);
+        	bogusity.clear();
+        	bogusity.add(acceptedNodeParent);
+        	acceptedNodeParent.setHasCalcCount(false);
+        	acceptedNodeParent.setHasCalcCount2(false);
+        	showCounts(getRecordForNode(acceptedNodeParent), bogusity);
+        	showChildren(acceptedNodeParent);
         }
         
         UIRegistry.displayStatusBarText(statusMsg);
@@ -1232,14 +1235,14 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	@SuppressWarnings("unchecked")
 	public void editSelectedNode(final JList list)
 	{
-		Object selection = list.getSelectedValue();
+		TreeNode selection = (TreeNode )list.getSelectedValue();
 		if ( selection == null )
 		{
 			return;
 		}
 		
-        T nodeRecord = getRecordForNode((TreeNode)selection);
-		showEditDialog(nodeRecord, "Edit Node Values", false);
+        T nodeRecord = getRecordForNode(selection);
+		showEditDialog(nodeRecord, "Edit Node Values", false, selection);
 	}
 
 	/**
@@ -1713,7 +1716,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	 * @param title the title of the dialog window
      * @param isNewObject indicates that the object is new
      */
-    protected void showEditDialog(final T node, final String title, final boolean isNewObject)
+    protected void showEditDialog(final T node, final String title, final boolean isNewObject, final TreeNode treeNode)
 	{
 	    // TODO: double check these choices
 	    // gather all the info needed to create a form in a dialog
@@ -1781,6 +1784,12 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         
 		dialog.pack();
 		// show the dialog (which allows all user edits to happen)
+		final boolean hidTreeNodeChildren = treeNode != null && isEdit && listModel.parentHasChildrenAfterNode(treeNode, treeNode);
+		if (hidTreeNodeChildren)
+		{
+			hideChildren(treeNode);
+		}
+		
 		dialog.setVisible(true);
 		
 		// see what important stuff was modified
@@ -1952,6 +1961,10 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                             editedNode.setFullName(mergedNode.getFullName());
                             editedNode.setRank(mergedNode.getRankId());
                             listModel.nodeValuesChanged(editedNode);
+                            if (hidTreeNodeChildren)
+                            {
+                            	showChildren(treeNode);
+                            }
                         }
                         
                         if (acceptedAfter && acceptedNodeIdBefore != null)
@@ -2310,6 +2323,14 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                 return false;
             }
             
+            TreeNode draggedNodeParent = listModel.getNodeById(draggedNode.getParentId());
+            TreeNode droppedNodeParent = listModel.getNodeById(droppedOnNode.getParentId());
+            hideChildren(draggedNodeParent);
+            if (droppedNodeParent != draggedNodeParent)
+            {
+            	hideChildren(droppedNodeParent);
+            }
+            
 			String statusMsg = dataService.synonymize(draggedRecord, droppedRecord);
             draggedNode.setAcceptedParentId(droppedOnNode.getId());
             
@@ -2345,31 +2366,21 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             
             draggedNode.setAcceptedParentFullName(droppedOnNode.getFullName());
             droppedOnNode.getSynonymIdsAndNames().add(new Pair<Integer,String>(draggedNode.getId(),draggedNode.getFullName()));
-            draggedNode.setCalcCount(false);
-            droppedOnNode.setCalcCount(false);
-            draggedNode.setCalcCount2(false);
-            droppedOnNode.setCalcCount2(false);
-            draggedNode.setHasCalcCount(false);
-            droppedOnNode.setHasCalcCount(false);
-            draggedNode.setHasCalcCount2(false);
-            droppedOnNode.setHasCalcCount2(false);
             
-            T draggedParent = draggedRecord.getParent();
-            T droppedParent = droppedRecord.getParent();
-            Vector<TreeNode> draggedChildren = new Vector<TreeNode>();
-            Vector<TreeNode> droppedChildren = new Vector<TreeNode>();
-            if (droppedParent.getTreeId().equals(draggedParent.getTreeId()))
+            Vector<TreeNode> bogusity = new Vector<TreeNode>(1);
+            bogusity.add(draggedNodeParent);
+            draggedNodeParent.setHasCalcCount(false);
+            draggedNodeParent.setHasCalcCount2(false);
+            showCounts(getRecordForNode(draggedNodeParent), bogusity);
+            showChildren(draggedNodeParent);
+            if (droppedNodeParent != draggedNodeParent)
             {
-                draggedChildren.add(draggedNode);
-                draggedChildren.add(droppedOnNode);
-                showCounts(draggedParent, draggedChildren);
-            }
-            else
-            {
-                draggedChildren.add(draggedNode);
-                droppedChildren.add(droppedOnNode);
-                showCounts(draggedParent, draggedChildren);
-                showCounts(droppedParent, droppedChildren);
+            	droppedNodeParent.setHasCalcCount(false);
+            	droppedNodeParent.setHasCalcCount2(false);
+            	bogusity.clear();
+            	bogusity.add(droppedNodeParent);
+            	showCounts(getRecordForNode(droppedNodeParent), bogusity);
+            	showChildren(droppedNodeParent);
             }
             updateAllUI();
 			if (statusMsg != null)
