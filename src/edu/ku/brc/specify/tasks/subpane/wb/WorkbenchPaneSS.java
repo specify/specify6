@@ -1954,7 +1954,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             selectedRows.add(row);
         }
         
-        CommandAction command = new CommandAction(PluginsTask.TOOLS, PluginsTask.EXPORT_LIST);
+        CommandAction command = new CommandAction(PluginsTask.PLUGINS, PluginsTask.EXPORT_LIST);
         command.setData(selectedRows);
         command.setProperty("tool", ExportToFile.class);
         
@@ -2191,7 +2191,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         }
         
         // get an icon URL that is specific to the current context
-        CommandAction command = new CommandAction(PluginsTask.TOOLS,PluginsTask.EXPORT_LIST);
+        CommandAction command = new CommandAction(PluginsTask.PLUGINS,PluginsTask.EXPORT_LIST);
         command.setData(selectedRows);
         command.setProperty("tool",           GoogleEarthExporter.class);
         command.setProperty("description",    workbench.getRemarks() != null ? workbench.getRemarks() : "");

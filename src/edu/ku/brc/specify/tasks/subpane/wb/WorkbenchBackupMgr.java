@@ -146,7 +146,7 @@ public class WorkbenchBackupMgr
             props.setProperty("mimetype", ExportFileConfigurationFactory.XLS_MIME_TYPE);
             props.setProperty("fileName", backupName);
  
-            CommandAction command = new CommandAction(PluginsTask.TOOLS, PluginsTask.EXPORT_LIST);
+            CommandAction command = new CommandAction(PluginsTask.PLUGINS, PluginsTask.EXPORT_LIST);
             command.setProperty("tool", ExportToFile.class);
             command.setProperty("statusmsgkey", "WB_BACKUP_TO");
             command.setProperty("statusdonemsgkey", "WB_BACKUP_TO_DONE");

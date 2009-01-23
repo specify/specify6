@@ -188,7 +188,7 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
                 List<GeoCoordDataIFace> items = new Vector<GeoCoordDataIFace>();
                 items.add(geoCoordData);
                 
-                CommandAction command = new CommandAction(PluginsTask.TOOLS, PluginsTask.EXPORT_LIST);
+                CommandAction command = new CommandAction(PluginsTask.PLUGINS, PluginsTask.EXPORT_LIST);
                 command.setData(items);
                 command.setProperty("tool", doGeoLocate ? GeoLocateRecordSetProcessor.class : BGMRecordSetProcessor.class);
                 command.setProperty("listener", this);

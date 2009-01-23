@@ -1126,7 +1126,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
 
        if (workbench != null)
        {
-           CommandAction command = new CommandAction(PluginsTask.TOOLS, PluginsTask.EXPORT_LIST);
+           CommandAction command = new CommandAction(PluginsTask.PLUGINS, PluginsTask.EXPORT_LIST);
            command.setProperty("tool", ExportToFile.class);
            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
            try
@@ -1197,7 +1197,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         // The command may have been clicked on so ask for one
         if (workbenchTemplate != null)
         {
-            CommandAction command = new CommandAction(PluginsTask.TOOLS, PluginsTask.EXPORT_LIST);
+            CommandAction command = new CommandAction(PluginsTask.PLUGINS, PluginsTask.EXPORT_LIST);
             command.setProperty("tool", ExportToFile.class);
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
             try

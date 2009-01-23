@@ -129,7 +129,7 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
         JStatusBar statusBar = getStatusBar();
         if (items.size() > 0)
         {
-            CommandAction command = new CommandAction(PluginsTask.TOOLS,PluginsTask.EXPORT_LIST);
+            CommandAction command = new CommandAction(PluginsTask.PLUGINS,PluginsTask.EXPORT_LIST);
             command.setData(items);
             command.setProperty("tool", GoogleEarthExporter.class);
             statusBar.setText(getResourceString("WB_OPENING_GOOGLE_EARTH"));

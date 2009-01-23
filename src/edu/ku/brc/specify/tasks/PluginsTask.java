@@ -93,7 +93,7 @@ public class PluginsTask extends BaseTask
     public static String GE_BALLOON_PRIMARY_URL_TITLE_STR   = "fb";
     public static String GE_BALLOON_SECONDARY_URL_TITLE_STR = "ad";
 
-    public static final String TOOLS = "Plugins";
+    public static final String PLUGINS = "Plugins";
 
     public static final String EXPORT_RS     = "ExportRecordSet";
     public static final String EXPORT_LIST   = "ExportList";
@@ -117,9 +117,9 @@ public class PluginsTask extends BaseTask
      */
     public PluginsTask()
     {
-        super(TOOLS, getResourceString("Plugins"));
+        super(PLUGINS, getResourceString("Plugins"));
         
-        CommandDispatcher.register(TOOLS, this);
+        CommandDispatcher.register(PLUGINS, this);
         CommandDispatcher.register(PreferencesDlg.PREFERENCES, this);
     }
     
@@ -185,7 +185,7 @@ public class PluginsTask extends BaseTask
             }
 
             
-            CommandAction cmdAction = new CommandAction(TOOLS, EXPORT_JTABLE);
+            CommandAction cmdAction = new CommandAction(PLUGINS, EXPORT_JTABLE);
             ContextMgr.registerService(30, EXPORT_JTABLE, -1, cmdAction, this, "ExportExcel16", getResourceString("EXPORT_GRID_TT"));
             
             readToolRegistry();
@@ -219,7 +219,7 @@ public class PluginsTask extends BaseTask
                 {
                     if (tool.isVisible())
                     {
-                        cmdAction = new CommandAction(TOOLS, EXPORT_RS);
+                        cmdAction = new CommandAction(PLUGINS, EXPORT_RS);
                         cmdAction.setProperty("tool", tool);
                         NavBoxItemIFace nbi = makeDnDNavBtn(navBox, tool.getName(), tool.getIconName(), cmdAction, null, true, false); // true means make it draggable
                         RolloverCommand roc = (RolloverCommand)nbi;
@@ -645,7 +645,7 @@ public class PluginsTask extends BaseTask
     @Override
     public void doCommand(final CommandAction cmdAction)
     {
-        if (cmdAction.isType(TOOLS))
+        if (cmdAction.isType(PLUGINS))
         {
             if (cmdAction.isAction(EXPORT_RS))
             {
