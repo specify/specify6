@@ -531,6 +531,7 @@ public class NavigationTreeMgr
                 localDiscipline.getAgents().add(userAgent);
                 session.commit();
                 
+                spUsers.add(spUser);
                 spUser = session.get(SpecifyUser.class, spUser.getId());
                 
             } catch (final Exception e1)

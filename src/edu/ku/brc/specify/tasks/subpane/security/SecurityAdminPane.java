@@ -699,7 +699,9 @@ public class SecurityAdminPane extends BaseSubPane
          */
         public Filter(final String patternStr)
         {
-            this.patternStr = patternStr.replaceAll("\\*", ".*");
+            // add wildcards at both ends of pattern
+            // (?i) flags turns on case-insensitive search
+            this.patternStr = "(?i).*" + patternStr + ".*";
             try 
             {
                 p = Pattern.compile(this.patternStr);
@@ -726,7 +728,6 @@ public class SecurityAdminPane extends BaseSubPane
             
             m = p.matcher(subject);
             return m.matches();
-            //return Pattern.matches(patternStr, subject);
         }
     }
     
