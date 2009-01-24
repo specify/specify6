@@ -16,8 +16,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -92,6 +94,7 @@ public class SecurityAdminPane extends BaseSubPane
 
     private JTree                                       tree;
     private JPanel                                      infoCards;
+    private Set<SpecifyUser>                           spUsers;
     private Hashtable<String, AdminInfoSubPanelWrapper> infoSubPanels;
     private Hashtable<String, EditorPanel>              editorPanels        = new Hashtable<String, EditorPanel>();
     private AdminInfoSubPanelWrapper                    currentDisplayPanel = null;
@@ -337,7 +340,7 @@ public class SecurityAdminPane extends BaseSubPane
             }
         }
         
-        navTreeMgr = new NavigationTreeMgr(tree);
+        navTreeMgr = new NavigationTreeMgr(tree, spUsers);
         
         // create object that will control the creation of popups
         // constructor will take care of hooking up right listeners to the tree.
@@ -386,7 +389,7 @@ public class SecurityAdminPane extends BaseSubPane
 
         try
         {
-            // include all institutions
+            // include all institutions, and inner objects recursively
             addInstitutionsRecursively(session, root);
         }
         catch (Exception ex)
@@ -416,6 +419,9 @@ public class SecurityAdminPane extends BaseSubPane
      */
     private void addInstitutionsRecursively(DataProviderSessionIFace session, DefaultMutableTreeNode root)
     {
+        // initialize hash of users that will be used to avoid creation of multiple instances of the same persisted user
+        spUsers = new HashSet<SpecifyUser>();
+        
         // XXX Room for performance improvement: fetch all tree in the same query using HQL with OUTER LEFT JOIN FETCH
         List<Institution> institutions = session.getDataList(Institution.class);
         Collections.sort(institutions, new ComparatorByStringRepresentation<Institution>()); 
@@ -511,6 +517,9 @@ public class SecurityAdminPane extends BaseSubPane
             TreeSet<SpecifyUser> users = new TreeSet<SpecifyUser>(group.getSpecifyUsers());
             for (SpecifyUser user : users) 
             {
+                // save user into user list
+                spUsers.add(user);
+                
                 user.getSpPrincipals().size();
                 DefaultMutableTreeNode userNode = new DefaultMutableTreeNode(new DataModelObjBaseWrapper(user));
                 groupNode.add(userNode);

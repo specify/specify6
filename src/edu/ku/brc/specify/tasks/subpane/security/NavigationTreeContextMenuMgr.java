@@ -378,13 +378,7 @@ public class NavigationTreeContextMenuMgr extends MouseAdapter implements TreeSe
 
         public void actionPerformed(ActionEvent e)
         {
-            DefaultMutableTreeNode  node  = (DefaultMutableTreeNode) getClickedObject().getLastPathComponent();
-            DataModelObjBaseWrapper wrp   = (DataModelObjBaseWrapper) node.getUserObject();
-            SpPrincipal             group = (SpPrincipal) wrp.getDataObj();
-            AddExistingUserDlg      dlg   = new AddExistingUserDlg(null, group);
-            dlg.setVisible(true);
-            SpecifyUser[] user = dlg.getSelectedUsers();
-            getTreeMgr().addExistingUser((DefaultMutableTreeNode) getClickedObject().getLastPathComponent(), user);
+            getTreeMgr().addExistingUser((DefaultMutableTreeNode) getClickedObject().getLastPathComponent());
         }
     }
 

@@ -5,6 +5,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -39,17 +40,21 @@ public class AddExistingUserDlg extends CustomDialog
 {
     private JList userList;
     private SpPrincipal group;
+    private Set<SpecifyUser> spUsers;
     
     /**
      * @param parentDlg
      * @param group
      */
-    public AddExistingUserDlg(final CustomDialog parentDlg, final SpPrincipal group) 
+    public AddExistingUserDlg(final CustomDialog parentDlg, 
+                              final SpPrincipal  group,
+                              final Set<SpecifyUser> spUsers) 
     {
         super(parentDlg, getResourceString("SecuritySummaryDlg.DLG_TITLE"), true, OKCANCELHELP, null);
         helpContext = "SECURITY_SUMMARY";
         
         this.group = group;
+        this.spUsers = spUsers;
     }
     
     /* (non-Javadoc)
@@ -87,16 +92,18 @@ public class AddExistingUserDlg extends CustomDialog
      */
     private JList createUserList()
     {
+        // sort set of users into a list
+        List<SpecifyUser> userList = new ArrayList<SpecifyUser>(spUsers);
+        Collections.sort(userList, new ComparatorByStringRepresentation<SpecifyUser>());
+
         DefaultListModel listModel = new DefaultListModel();
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try
         {
-            List<SpecifyUser> users = session.getDataList(SpecifyUser.class);
-            Collections.sort(users, new ComparatorByStringRepresentation<SpecifyUser>());
             session.attach(group);
             session.refresh(group);
             Set<Integer> userIdList = getUserIdsFromGroup(group);
-            for (SpecifyUser user : users)
+            for (SpecifyUser user : userList)
             {
                 if (!userIdList.contains(user.getId()))
                 {

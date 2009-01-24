@@ -48,6 +48,9 @@ import javax.security.auth.Subject;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Cascade;
 
+import edu.ku.brc.af.auth.specify.principal.AdminPrincipal;
+import edu.ku.brc.af.auth.specify.principal.GroupPrincipal;
+
 /**
  * 
  */
@@ -585,6 +588,8 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
     @Transient
     public String getIdentityTitle()
     { 
+        // debug
+        //if (name != null) return name  + " - HC: " + this.hashCode();
         if (name != null) return name;
         return super.getIdentityTitle();
     }
@@ -597,6 +602,27 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
     {
         if (name != null) return name;
         return super.getIdentityTitle();       
+    }
+    
+    /**
+     * Counts the actual number of user groups this user belongs to.
+     * That's not the same thing as counting the principals, because in JAAS a principal may be
+     * a single user or a group. 
+     * @return the actual number of user groups this user belongs to.
+     */
+    @Transient
+    public int getUserGroupCount() 
+    {
+        int count = 0;
+        for (SpPrincipal principal : getSpPrincipals())
+        {
+            if (GroupPrincipal.class.getCanonicalName().equals(principal.getGroupSubClass()) ||
+                    AdminPrincipal.class.getCanonicalName().equals(principal.getGroupSubClass()))
+            {
+                ++count;
+            }
+        }
+        return count;
     }
     
     //----------------------------------------------------------------------
