@@ -11,7 +11,7 @@
 	<mapID target="Search"              url="SpecifyHelp/Search/Search.html" />
 -->
 	
-    <mapID target="specify"             url="http://www.specifysoftware.org" />
+    <mapID target="specify"             url="http://specify6.specifysoftware.org" />
 	<mapID target="login"               url="SpecifyHelp/Login.html" />
     <mapID target="SetupSpecifyDB"      url="SpecifyHelp/SetupSpecifyDB.html" />
     <mapID target="MASTERPWD_MAIN"      url="SpecifyHelp/SetupSpecifyDB.html" />
@@ -89,7 +89,7 @@
 	<mapID target="Workbench"                  url="SpecifyHelp/Workbench/Overview.html"/>
 	<mapID target="WorkbenchOverview"          url="SpecifyHelp/Workbench/Overview.html"/>
 	
-	<mapID target="WorkbenchExamples" url="SpecifyHelp/Workbench/ExampleFiles.html"/>
+	<mapID target="WorkbenchExamples"          url="SpecifyHelp/Workbench/ExampleFiles.html"/>
 	
 	<mapID target="WorkbenchTechnicalNotes"    url="SpecifyHelp/Workbench/TechnicalNotes.html"/>
 	<mapID target="WorkbenchRequirements"      url="SpecifyHelp/Workbench/Requirements.html"/>
