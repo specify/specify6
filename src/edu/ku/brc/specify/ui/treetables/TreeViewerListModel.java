@@ -382,6 +382,12 @@ public class TreeViewerListModel extends AbstractListModel
         fireContentsChanged(this,0,visibleSize-1);
     }
     
+    /**
+     * @param node
+     * @return index for node if node is visible.
+     * 
+     * getElementAt(indexOf(node)) == node
+     */
     public synchronized int indexOf(TreeNode node)
     {
         int i = nodes.indexOf(node);
@@ -392,5 +398,22 @@ public class TreeViewerListModel extends AbstractListModel
             return i - visRootIndex;
         }
         return -1;
+    }
+    
+    /**
+     * @return the total number of nodes (visible and invisible).
+     */
+    public int getNodeCount()
+    {
+    	return nodes.size();
+    }
+    
+    /**
+     * @param index
+     * @return node at index.
+     */
+    public TreeNode getNode(int index)
+    {
+    	return nodes.get(index);
     }
 }

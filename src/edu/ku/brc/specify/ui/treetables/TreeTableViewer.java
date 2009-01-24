@@ -1742,10 +1742,59 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		return true;
 	}
 	
-	protected String getEditDialogContext(final Class<?> nodeClass)
+	/**
+	 * @param nodeClass
+	 * @return help context appropriate for the tree's nodeClass
+	 */
+	protected String getEditDialogHelpContext(final Class<?> nodeClass)
 	{
 		//return "Query";
 		return null;
+	}
+	
+	/**
+	 * @param treeNode
+	 * 
+	 * Update synonym names for relevant nodes.
+	 */
+	protected void updateSynonymNames(final TreeNode treeNode)
+	{
+		//execute in background just in case (unlikely case) of large number of synonyms.
+		new SwingWorker()
+		{
+			public Object construct()
+			{
+				Set<Pair<Integer, String>> syns = treeNode.getSynonymIdsAndNames();
+				if (treeNode.getAcceptedParentId() == null)
+				{
+					for (Pair<Integer, String> syn : syns)
+					{
+						TreeNode synNode = listModel.getNodeById(syn.getFirst());
+						if (synNode != null)
+						{
+							synNode.setAcceptedParentFullName(treeNode.getFullName());
+						}
+					}
+				}
+				else
+				{
+					TreeNode senior = listModel.getNodeById(treeNode.getAcceptedParentId());
+					if (senior != null)
+					{
+						Set<Pair<Integer, String>> seniorjuniors = senior.getSynonymIdsAndNames();
+						for (Pair<Integer, String> junior : seniorjuniors)
+						{
+							if (junior.getFirst().equals(treeNode.getId()))
+							{
+								junior.setSecond(treeNode.getFullName());
+								break;
+							}
+						}
+					}
+				}
+				return null;
+			}
+		}.start();		
 	}
 	
 	/**
@@ -1777,7 +1826,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		                                                           closeBtnText, className, idFieldName, isEdit, options);
 		dialog.setModal(true);
 		dialog.setData(node);
-		dialog.setHelpContext(getEditDialogContext(node.getClass()));
+		dialog.setHelpContext(getEditDialogHelpContext(node.getClass()));
 		
 		// build the dialog UI so I can adjust some of the controls
 		dialog.preCreateUI();
@@ -2003,6 +2052,10 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                             if (hidTreeNodeChildren)
                             {
                             	showChildren(treeNode);
+                            }
+                            if (nameChanged)
+                            {
+                            	updateSynonymNames(treeNode);
                             }
                         }
                         
