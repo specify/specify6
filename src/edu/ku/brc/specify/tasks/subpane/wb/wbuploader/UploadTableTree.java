@@ -409,7 +409,7 @@ public class UploadTableTree extends UploadTable
         {
             try
             {
-                getTreeDef().updateAllNodes((DataModelObjBase)getTreeRoot());
+                getTreeDef().updateAllNodeNumbers((DataModelObjBase)getTreeRoot());
             }
             catch (Exception ex)
             {
@@ -622,7 +622,7 @@ public class UploadTableTree extends UploadTable
             //System.out.println("HEY! uncomment TreeDef upload sets.");
             try
             {
-                getTreeDef().updateAllNodes((DataModelObjBase)getTreeRoot());
+                getTreeDef().updateAllNodeNumbers((DataModelObjBase)getTreeRoot());
             }
             catch (Exception ex)
             {

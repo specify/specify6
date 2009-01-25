@@ -31,7 +31,7 @@ import edu.ku.brc.specify.datamodel.Treeable;
  * Base class for background tree structure tasks.
  * 
  */
-public abstract class NodeNumberWorker<T extends Treeable<T, D, I>, D extends TreeDefIface<T, D, I>, I extends TreeDefItemIface<T, D, I>>
+public abstract class TreeTraversalWorker<T extends Treeable<T, D, I>, D extends TreeDefIface<T, D, I>, I extends TreeDefItemIface<T, D, I>>
         extends SwingWorker<Boolean, Object>
 {
     
@@ -43,12 +43,12 @@ public abstract class NodeNumberWorker<T extends Treeable<T, D, I>, D extends Tr
     int                                progressPerCent;
     protected final D                  treeDef;
 
-    protected DataProviderSessionIFace nodeNumberSession = null;
+    protected DataProviderSessionIFace traversalSession = null;
 
     /**
      * @param treeDef
      */
-    public NodeNumberWorker(final D treeDef)
+    public TreeTraversalWorker(final D treeDef)
     {
         super();
         this.treeDef = treeDef;
@@ -147,7 +147,7 @@ public abstract class NodeNumberWorker<T extends Treeable<T, D, I>, D extends Tr
             catch (HibernateException ex)
             {
                 edu.ku.brc.af.core.UsageTracker.incrHQLUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(NodeNumberWorker.class, ex);
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TreeTraversalWorker.class, ex);
                 //continue
             }
             T result = rootDefItem.getTreeEntries().iterator().next();
@@ -180,4 +180,15 @@ public abstract class NodeNumberWorker<T extends Treeable<T, D, I>, D extends Tr
     {
         return treeDef.getName();
     }
+    
+    /**
+     * Creates query used to retrieve children.
+     */
+    protected void buildChildrenQuery()
+    {
+        String childrenSQL = "select " + getNodeKeyFldName() + " from " + getNodeTblName()
+                + " where " + getNodeParentFldName() + " =:parentArg  order by name";
+        childrenQuery = traversalSession.createQuery(childrenSQL, true);
+    }
+
 }

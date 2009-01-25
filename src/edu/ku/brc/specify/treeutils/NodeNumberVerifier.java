@@ -26,7 +26,7 @@ import edu.ku.brc.specify.datamodel.Treeable;
  * by walking tree to root for every node in a tree.
  */
 public class NodeNumberVerifier<T extends Treeable<T, D, I>, D extends TreeDefIface<T, D, I>, I extends TreeDefItemIface<T, D, I>>
-        extends NodeNumberWorker<T, D, I>
+        extends TreeTraversalWorker<T, D, I>
 {
     /**
      * @param treeDef
@@ -44,7 +44,7 @@ public class NodeNumberVerifier<T extends Treeable<T, D, I>, D extends TreeDefIf
     @Override
     public Boolean doInBackground()
     {
-        nodeNumberSession = DataProviderFactory.getInstance().createSession();
+        traversalSession = DataProviderFactory.getInstance().createSession();
         try
         {
             buildVerificationQueries();
@@ -63,7 +63,7 @@ public class NodeNumberVerifier<T extends Treeable<T, D, I>, D extends TreeDefIf
         }
         finally
         {
-            nodeNumberSession.close();
+            traversalSession.close();
         }
 
     }
@@ -139,7 +139,7 @@ public class NodeNumberVerifier<T extends Treeable<T, D, I>, D extends TreeDefIf
         String childrenSQL = "select " + getNodeKeyFldName() + ", nodenumber from "
                 + getNodeTblName() + " where " + getNodeParentFldName()
                 + " =:parentArg  order by name";
-        childrenQuery = nodeNumberSession.createQuery(childrenSQL, true);
+        childrenQuery = traversalSession.createQuery(childrenSQL, true);
     }
 
     /**
@@ -154,7 +154,7 @@ public class NodeNumberVerifier<T extends Treeable<T, D, I>, D extends TreeDefIf
                 + " where "
                 + ":descendantArg between nodenumber and highestchildnodenumber  and :descendantArg <> nodenumber and "
                 + getNodeTreeFldName() + "=" + treeDef.getTreeDefId() + " order by rankId desc";
-        ancestorQuery = nodeNumberSession.createQuery(ancestorSQL, true);
+        ancestorQuery = traversalSession.createQuery(ancestorSQL, true);
     }
 
     /**

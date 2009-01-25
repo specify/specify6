@@ -82,9 +82,20 @@ public interface TreeDefIface<N extends Treeable<N,D,I>,
 	public void setNodeNumbersAreUpToDate(boolean arg);
 	
 	/**
+	 * @param rootObj
+	 * @throws Exception
+	 * 
 	 * Walks the entire tree and assigns node numbers for every item.
 	 */
-	public void updateAllNodes(DataModelObjBase rootObj) throws Exception;
+	public void updateAllNodeNumbers(DataModelObjBase rootObj) throws Exception;
+	
+	/**
+	 * @param rootObj
+	 * @throws Exception
+	 * 
+	 * Walks the entire tree and builds the FullName for every item.
+	 */
+	public void updateAllFullNames(DataModelObjBase rootObj) throws Exception;
 	
 	/**
 	 * @return true if node numbers are to be kept up to date at all times.

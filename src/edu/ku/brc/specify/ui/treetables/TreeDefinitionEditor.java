@@ -424,6 +424,47 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
     // Methods to handle the editing of an existing TreeDefinitionItemIface object.
     /////////////////////////////////////////////////////////////////////////////////////////
     
+    protected boolean equalsWithNullChecks(final Object obj1, final Object obj2)
+    {
+    	if (obj1 == null && obj2 == null)
+    	{
+    		return true;
+    	}
+    	if (obj1 == null && obj2 != null)
+    	{
+    		return false;
+    	}
+    	if (obj1 != null && obj2 == null)
+    	{
+    		return false;
+    	}
+    	return obj1.equals(obj2);
+    }
+    /**
+     * @param before
+     * @param after
+     * @return true if changes to after require FullNames in the tree to be updated.
+     */
+    protected boolean needToRebuildFullNames(final I before, final I after)
+    {
+        if (!equalsWithNullChecks(before.getIsInFullName(), after.getIsInFullName()))
+        {
+        	return true;
+        }
+        if (!equalsWithNullChecks(before.getTextBefore(), after.getTextBefore()))
+        {
+        	return after.getIsInFullName();
+        }
+        if (!equalsWithNullChecks(before.getTextAfter(), after.getTextAfter()))
+        {
+        	return after.getIsInFullName();
+        }
+        if (!equalsWithNullChecks(before.getFullNameSeparator(), after.getFullNameSeparator()))
+        {
+        	return after.getIsInFullName();
+        }
+        return false;
+    }
     /**
      * @param index index of item to edit
      */
@@ -484,7 +525,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
         int options = MultiView.HIDE_SAVE_BTN;
         
         // create the form dialog
-        String title = getResourceString("TreeDefEditDialogTitle"); //$NON-NLS-1$
+        String title = getResourceString("TreeRankEditDialogTitle"); //$NON-NLS-1$
         ViewBasedDisplayDialog dialog = new ViewBasedDisplayDialog(parentFrame, null, viewName, displayName, title, 
                                                                    closeBtnText, className, idFieldName, isEdit, options);
         dialog.setModal(true);
@@ -507,34 +548,34 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                 public Object construct()
                 {
                     // determine if the change can be made without requiring tree node changes
-                    List<String> nodesToChange = getNodesThatMustBeFixedBeforeEdit(beforeItem, defItem);
-                    if (nodesToChange != null && nodesToChange.size() > 0)
-                    {
-                        StringBuilder message = new StringBuilder("<html><h3><center>"); //$NON-NLS-1$
-                        message.append(getResourceString("TDE_CantMakeChange")); //$NON-NLS-1$
-                        message.append("</center></h3><ul>"); //$NON-NLS-1$
-                        for (String node: nodesToChange)
-                        {
-                            message.append("<li>" + node); //$NON-NLS-1$
-                        }
-                        message.append("</ul></html>"); //$NON-NLS-1$
-                        JLabel label = createLabel(""); //$NON-NLS-1$
-                        label.setText(message.toString());
-                        Window w = UIRegistry.getMostRecentWindow();
-                        JFrame parent = null;
-                        if (w instanceof JFrame)
-                        {
-                            parent = (JFrame)w;
-                        }
-
-                        CustomDialog errorDialog = new CustomDialog(parent,getResourceString("Error"),true,CustomDialog.OK_BTN, new JScrollPane(label)); //$NON-NLS-1$
-                        errorDialog.createUI();
-                        errorDialog.setSize(650, 200);
-                        errorDialog.setVisible(true);
-                        
-                        success = false;
-                        return success;
-                    }
+//                    List<String> nodesToChange = getNodesThatMustBeFixedBeforeEdit(beforeItem, defItem);
+//                    if (nodesToChange != null && nodesToChange.size() > 0)
+//                    {
+//                        StringBuilder message = new StringBuilder("<html><h3><center>"); //$NON-NLS-1$
+//                        message.append(getResourceString("TDE_CantMakeChange")); //$NON-NLS-1$
+//                        message.append("</center></h3><ul>"); //$NON-NLS-1$
+//                        for (String node: nodesToChange)
+//                        {
+//                            message.append("<li>" + node); //$NON-NLS-1$
+//                        }
+//                        message.append("</ul></html>"); //$NON-NLS-1$
+//                        JLabel label = createLabel(""); //$NON-NLS-1$
+//                        label.setText(message.toString());
+//                        Window w = UIRegistry.getMostRecentWindow();
+//                        JFrame parent = null;
+//                        if (w instanceof JFrame)
+//                        {
+//                            parent = (JFrame)w;
+//                        }
+//
+//                        CustomDialog errorDialog = new CustomDialog(parent,getResourceString("Error"),true,CustomDialog.OK_BTN, new JScrollPane(label)); //$NON-NLS-1$
+//                        errorDialog.createUI();
+//                        errorDialog.setSize(650, 200);
+//                        errorDialog.setVisible(true);
+//                        
+//                        success = false;
+//                        return success;
+//                    }
                         
                     // save the node and update the tree viewer appropriately
                     DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
@@ -575,6 +616,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                                 throw new Exception("Business rules processing failed"); //$NON-NLS-1$
                             }
                         }
+                        
                         session.commit();
                         
                         notifyApplication(mergedItem, EDITED_ITEM);
@@ -611,6 +653,21 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                     // now refresh the tree viewer
                     if (success)
                     {
+                    	//XXX fullname rebuild after commit in this worker's session, in a different session!?!?
+//                    	if (needToRebuildFullNames(beforeItem, defItem))
+//                        {
+//                        	try
+//                        	{
+//                        		displayedDef.updateAllFullNames(null);
+//                        	}
+//                        	catch (Exception ex)
+//                        	{
+//                                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+//                                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TreeDefinitionEditor.class, ex);
+//                                UIRegistry.showLocalizedError("UNRECOVERABLE_DB_ERROR"); //$NON-NLS-1$
+//                                log.error("Error while updating full names.  Full may not correspond to tree definition.", ex); //$NON-NLS-1$
+//                        	}
+//                        }
                         tableModel.set(index, mergedItem);
                     }
                     
@@ -859,7 +916,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
         int options = MultiView.HIDE_SAVE_BTN | MultiView.IS_NEW_OBJECT;
         
         // create the form dialog
-        String title = getResourceString("TreeDefEditDialogTitle"); //$NON-NLS-1$
+        String title = getResourceString("TreeRankEditDialogTitle"); //$NON-NLS-1$
         ViewBasedDisplayDialog dialog = new ViewBasedDisplayDialog(parentFrame, null, viewName, displayName, title, 
                                                                    closeBtnText, className, idFieldName, isEdit, options);
         dialog.setModal(true);

@@ -275,7 +275,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 
 	    try
 	    {
-	        treeDef.updateAllNodes(null);
+	        treeDef.updateAllNodeNumbers(null);
 	    }
 	    catch (Exception ex)
 	    {

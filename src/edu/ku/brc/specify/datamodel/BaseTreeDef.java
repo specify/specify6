@@ -32,6 +32,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable;
+import edu.ku.brc.specify.treeutils.FullNameRebuilder;
 import edu.ku.brc.specify.treeutils.NodeNumberer;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.JStatusBar;
@@ -356,12 +357,122 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
         return 1000; //plenty of space for inserts?
     }
 
+    
     /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.TreeDefIface#updateAllFullNames(edu.ku.brc.specify.datamodel.DataModelObjBase)
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+	public void updateAllFullNames(DataModelObjBase rootObj) throws Exception 
+	{
+        final FullNameRebuilder<N,D,I> renamer = new FullNameRebuilder<N,D,I>((D )this);
+        final JStatusBar nStatusBar = UIRegistry.getStatusBar();
+//        final ProgressDialog progDlg = nStatusBar != null ? null :
+//            new ProgressDialog(UIRegistry.getResourceString("BaseTreeDef.UPDATING_TREE_DLG"), false, false);
+        if (nStatusBar != null)
+        {
+            nStatusBar.setProgressRange(renamer.getProgressName(), 0, 100);
+        }
+//        else
+//        {
+//            progDlg.setModal(true);
+//            progDlg.setProcess(0,100);
+//            progDlg.setProcessPercent(true);
+//            progDlg.setDesc(String.format(UIRegistry.getResourceString("BaseTreeDef.UPDATING_TREE"), getName()));
+//            renamer.setProgDlg(progDlg);
+//        }
+        
+        renamer.addPropertyChangeListener(
+                new PropertyChangeListener() {
+                    public  void propertyChange(final PropertyChangeEvent evt) {
+                        if ("progress".equals(evt.getPropertyName())) 
+                        {
+                            if (nStatusBar != null)
+                            {
+                                nStatusBar.setValue(renamer.getProgressName(), (Integer )evt.getNewValue());
+                            }
+//                            else
+//                            {
+//                                progDlg.setProcess((Integer )evt.getNewValue());
+//                            }
+                        }
+                    }
+                });
+
+        boolean ok = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).displayAgentsLoggedInDlg("BaseTreeDef.TREE_UPDATE_DENIED_TITLE", "BaseTreeDef.OTHER_USERS");
+        if (!ok)
+        {
+            return;
+        }
+
+//        setRenumberingNodes(true);
+//        setNodeNumbersAreUpToDate(false);
+        
+//        if (!isRenumberingNodes || nodeNumbersAreUpToDate)
+//        {
+//            //locking issues will hopefully have been made apparent to user during the preceding setXXX calls. 
+//            UIRegistry.showLocalizedError("BaseTreeDef.UnableToUpdate");
+//            setRenumberingNodes(false);
+//            return;
+//        }
+            
+        //useGlassPane avoids issues when simpleglasspane is already displayed. no help for normal glass pane yet.
+        boolean useGlassPane = !UIRegistry.isShowingGlassPane() && nStatusBar != null;
+        try
+        {
+            if (useGlassPane)
+            {
+                UIRegistry.writeSimpleGlassPaneMsg(getLocalizedMessage("BaseTreeDef.UPDATING_FULLNAMES", getName()), 24);
+            }
+            else if (nStatusBar != null)
+            {
+                UIRegistry.displayLocalizedStatusBarText("BaseTreeDef.UPDATING_FULLNAMES", getName());
+            }
+            renamer.execute();
+//            if (progDlg != null)
+//            {
+//                UIHelper.centerAndShow(progDlg);
+//            }
+//            setNodeNumbersAreUpToDate(renamer.get());
+        }
+        catch (Exception ex)
+        {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BaseTreeDef.class, ex);
+            log.error(ex);
+            UIRegistry.showLocalizedError("BaseTreeDef.UnableToRename");
+            return;
+        }
+        finally
+        {
+            //setRenumberingNodes(false);
+            if (useGlassPane)
+            {
+                UIRegistry.clearSimpleGlassPaneMsg();
+            }
+            else if (nStatusBar != null)
+            {
+                UIRegistry.displayStatusBarText("");
+            }
+            if (nStatusBar != null)
+            {
+                nStatusBar.setProgressDone(renamer.getProgressName());
+            }
+//            else
+//            {
+//                progDlg.processDone();
+//                progDlg.setVisible(false);
+//                progDlg.dispose();
+//            }
+        }
+	}
+
+	/* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.TreeDefIface#updateAllNodes(edu.ku.brc.specify.datamodel.DataModelObjBase)
      */
     @Override
     @SuppressWarnings("unchecked")
-    public void updateAllNodes(final DataModelObjBase rootObj) throws Exception
+    public void updateAllNodeNumbers(final DataModelObjBase rootObj) throws Exception
     {
         final NodeNumberer<N,D,I> nodeNumberer = new NodeNumberer<N,D,I>((D )this);
         final JStatusBar nStatusBar = UIRegistry.getStatusBar();
@@ -574,7 +685,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
                 UIHelper.centerAndShow(dlg);
                 if (dlg.getBtnPressed() == CustomDialog.OK_BTN)
                 {
-                    updateAllNodes(null);
+                    updateAllNodeNumbers(null);
                     result = nodeNumbersAreUpToDate;                    
                 }
                 else
