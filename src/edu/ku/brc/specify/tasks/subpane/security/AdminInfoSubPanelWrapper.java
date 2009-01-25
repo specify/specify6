@@ -197,20 +197,20 @@ public class AdminInfoSubPanelWrapper
         session.update(principal);
         
         // debugging for now
-//        for (PermissionPanelEditor editor : permissionEditors)
-//        {
-//            editor.savePermissions(session);            
-//        }
-//        
-//        for (SpPermission perm : new ArrayList<SpPermission>(principal.getPermissions()))
-//        {
-//            if (StringUtils.isEmpty(perm.getActions()))
-//            {
-//                principal.getPermissions().remove(perm);
-//                perm.getPrincipals().remove(principal);
-//                session.delete(perm);
-//            }
-//        }
+        for (PermissionPanelEditor editor : permissionEditors)
+        {
+            editor.savePermissions(session);            
+        }
+        
+        for (SpPermission perm : new ArrayList<SpPermission>(principal.getPermissions()))
+        {
+            if (StringUtils.isEmpty(perm.getActions()))
+            {
+                principal.getPermissions().remove(perm);
+                perm.getPrincipals().remove(principal);
+                session.delete(perm);
+            }
+        }
     }
     
     /**
