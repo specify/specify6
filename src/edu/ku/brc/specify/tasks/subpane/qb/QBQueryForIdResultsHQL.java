@@ -545,4 +545,13 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
     {
         return queryBuilder.getQuery().getName();
     }
+
+	/**
+	 * @return the filterDups
+	 */
+	public boolean isFilterDups() 
+	{
+		return filterDups;
+	}
+    
 }

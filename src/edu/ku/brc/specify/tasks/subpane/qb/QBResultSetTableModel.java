@@ -46,10 +46,10 @@ public class QBResultSetTableModel extends ResultSetTableModel
     
     protected boolean debugging = false;
     
-    protected QueryExecutor queryExecutor;
-    protected AtomicBoolean loadingCache;
-    protected AtomicBoolean isPostSorted;
-    protected AtomicBoolean backgroundLoadsCancelled;
+    protected final QueryExecutor queryExecutor = new QueryExecutor();
+    protected final AtomicBoolean loadingCache = new AtomicBoolean(false);
+    protected final AtomicBoolean isPostProcessed = new AtomicBoolean(false);
+    protected final AtomicBoolean backgroundLoadsCancelled = new AtomicBoolean(false);
     
     protected boolean loadingCells = false;
     protected int bgTaskCount = 0;
@@ -63,20 +63,7 @@ public class QBResultSetTableModel extends ResultSetTableModel
     {
     	super(parentERTP, results, false, false);
     }
-    
-    
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.db.ResultSetTableModel#initialize()
-     */
-    @Override
-    protected void initialize()
-    {
-        queryExecutor = new QueryExecutor();
-        loadingCache = new AtomicBoolean(false);
-        isPostSorted = new AtomicBoolean(false);
-        backgroundLoadsCancelled = new AtomicBoolean(false);
-    }
-    
+            
     /**
      * @return true while background cell-loading tasks are still running.
      */
@@ -124,7 +111,7 @@ public class QBResultSetTableModel extends ResultSetTableModel
                             jpa.getDataObjects(), cls));
                     bgTaskCount--;
                 }
-                if (!isPostSorted.get())
+                if (!isPostProcessed.get())
                 {
                     fireTableCellUpdated(row, col);
                 }
@@ -152,8 +139,9 @@ public class QBResultSetTableModel extends ResultSetTableModel
 				if (debugging)
 					log.debug("loading cache");
 				loadingCache.set(true);
-				isPostSorted.set(((QBQueryForIdResultsHQL) results)
-						.isPostSorted());
+				isPostProcessed.set(((QBQueryForIdResultsHQL) results)
+						.isPostSorted() || ((QBQueryForIdResultsHQL) results)
+						.isFilterDups());
 
 				int maxTableRows = results.getMaxTableRows();
 				int rowNum = 0;
