@@ -575,6 +575,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                         
                         success = false;
                         return success;
+                    	
                     }
                         
                     // save the node and update the tree viewer appropriately
@@ -616,6 +617,20 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                                 throw new Exception("Business rules processing failed"); //$NON-NLS-1$
                             }
                         }
+//                    	if (needToRebuildFullNames(beforeItem, defItem))
+//                    	{
+//                    		try
+//                    		{
+//                    			displayedDef.updateAllFullNames(null, session, defItem.getRankId());
+//                    		}
+//                    		catch (Exception ex)
+//                    		{
+//                              edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+//                              edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TreeDefinitionEditor.class, ex);
+//                              UIRegistry.showLocalizedError("UNRECOVERABLE_DB_ERROR"); //$NON-NLS-1$
+//                              log.error("Error while updating full names.  Full may not correspond to tree definition.", ex); //$NON-NLS-1$
+//                    		}
+//                    	}
                         
                         session.commit();
                         

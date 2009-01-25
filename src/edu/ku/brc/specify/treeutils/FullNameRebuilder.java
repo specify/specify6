@@ -3,9 +3,11 @@
  */
 package edu.ku.brc.specify.treeutils;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
@@ -19,14 +21,19 @@ public class FullNameRebuilder<T extends Treeable<T, D, I>, D extends TreeDefIfa
 	extends TreeTraversalWorker<T,D,I> {
 
     protected QueryIFace updateNodeQuery = null;
-
+    protected final int minRank;
+    protected final boolean ownsSession;
+    protected FullNameBuilder<T,D,I> fullNameBuilder;
 
 	/**
 	 * @param treeDef
 	 */
-	public FullNameRebuilder(final D treeDef) 
+	public FullNameRebuilder(final D treeDef, final DataProviderSessionIFace traversalSession, final int minRank) 
 	{
 		super(treeDef);
+		this.traversalSession = traversalSession;
+		this.ownsSession = traversalSession == null;
+		this.minRank = minRank;
 	}
 
 	/* (non-Javadoc)
@@ -35,15 +42,25 @@ public class FullNameRebuilder<T extends Treeable<T, D, I>, D extends TreeDefIfa
 	@Override
 	public Boolean doInBackground() throws Exception 
 	{
-        traversalSession = DataProviderFactory.getInstance().createSession();
+        if (ownsSession)
+        {
+        	traversalSession = DataProviderFactory.getInstance().createSession();
+        }
         try
         {
-            traversalSession.beginTransaction();
+            if (ownsSession)
+            {
+            	traversalSession.beginTransaction();
+            }
             buildQueries();
             T root = getTreeRoot();
             initProgress();
-            rebuildFullNames(root.getTreeId());
-            traversalSession.commit();
+            fullNameBuilder = new FullNameBuilder<T,D,I>(treeDef);
+            rebuildFullNames(new NodeInfo(root.getTreeId(), root.getRankId(), root.getName()), new LinkedList<NodeInfo>());
+            if (ownsSession)
+            {
+            	traversalSession.commit();
+            }
             return true;
         }
         catch (Exception e)
@@ -54,7 +71,10 @@ public class FullNameRebuilder<T extends Treeable<T, D, I>, D extends TreeDefIfa
         }
         finally
         {
-            traversalSession.close();
+            if (ownsSession)
+            {
+            	traversalSession.close();
+            }
         }
 	}
     /**
@@ -65,18 +85,31 @@ public class FullNameRebuilder<T extends Treeable<T, D, I>, D extends TreeDefIfa
      * 
      * recursively walks tree and builds full names.
      */
-    protected void rebuildFullNames(int nodeId) throws Exception
+    protected void rebuildFullNames(NodeInfo node, LinkedList<NodeInfo> parents) throws Exception
     {
-        List<?> children = getChildIds(nodeId);
-        T node = traversalSession.get(this.treeDef.getNodeClass(), nodeId);
-        writeNode(nodeId, TreeHelper.generateFullname(node));
-        traversalSession.evict(node);
-        node = null;
+        List<?> children = getChildrenInfo(node);
+        if (node.getRank() >= minRank)
+        {
+        	writeNode(node.getId(), fullNameBuilder.buildFullName(node, parents));
+        }
+        parents.addLast(node);
         for (Object child : children)
         {
-            rebuildFullNames((Integer) child);
+            Object[] childInfo = (Object[] )child;
+        	rebuildFullNames(new NodeInfo((Integer )childInfo[0], (Integer )childInfo[2], (String )childInfo[1]),
+        			parents);
         }
+        parents.removeLast();
         incrementProgress();
+    }
+    /**
+     * @param parentId
+     * @return list of NodeInfo objects for children of parentId.
+     */
+    protected List<?> getChildrenInfo(final NodeInfo node)
+    {
+        childrenQuery.setParameter("parentArg", node.getId());
+        return childrenQuery.list();
     }
 
     /**
@@ -113,15 +146,55 @@ public class FullNameRebuilder<T extends Treeable<T, D, I>, D extends TreeDefIfa
     {
         updateNodeQuery.setParameter("keyArg", nodeId);
         updateNodeQuery.setParameter("fnArg", fullName);
-        // nodeNumberSession.beginTransaction();
-        try
-        {
-            updateNodeQuery.executeUpdate();
-        }
-        finally
-        {
-            // nodeNumberSession.commit();
-        }
+        updateNodeQuery.executeUpdate();
     }
 
+    /**
+     * Creates query used to retrieve children.
+     */
+    @Override
+    protected void buildChildrenQuery()
+    {
+        String childrenSQL = "select " + getNodeKeyFldName() + ", " + getNodeTblName() + ".Name, RankId from " + getNodeTblName()
+                + " where " + getNodeParentFldName() + " =:parentArg  order by name";
+        childrenQuery = traversalSession.createQuery(childrenSQL, true);
+    }
+
+    public class NodeInfo
+    {
+    	protected final int id;
+    	protected final int rank;
+    	protected final String name;
+    	
+    	public NodeInfo(final int id, final int rank, final String name)
+    	{
+    		this.id = id;
+    		this.rank = rank;
+    		this.name = name;
+    	}
+
+    	/**
+    	 * @return the id
+    	 */
+    	public int getId() 
+    	{
+    		return id;
+    	}
+
+    	/**
+    	 * @return the rank
+    	 */
+    	public int getRank() 
+    	{
+    		return rank;
+    	}
+
+    	/**
+    	 * @return the name
+    	 */
+    	public String getName() 
+    	{
+    		return name;
+    	}
+    }    	
 }

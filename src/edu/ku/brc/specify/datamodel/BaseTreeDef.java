@@ -363,9 +363,10 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
      */
     @Override
     @SuppressWarnings("unchecked")
-	public void updateAllFullNames(DataModelObjBase rootObj) throws Exception 
+	public void updateAllFullNames(DataModelObjBase rootObj, DataProviderSessionIFace session,
+			int minRank) throws Exception 
 	{
-        final FullNameRebuilder<N,D,I> renamer = new FullNameRebuilder<N,D,I>((D )this);
+        final FullNameRebuilder<N,D,I> renamer = new FullNameRebuilder<N,D,I>((D )this, session, minRank);
         final JStatusBar nStatusBar = UIRegistry.getStatusBar();
 //        final ProgressDialog progDlg = nStatusBar != null ? null :
 //            new ProgressDialog(UIRegistry.getResourceString("BaseTreeDef.UPDATING_TREE_DLG"), false, false);
@@ -429,6 +430,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
                 UIRegistry.displayLocalizedStatusBarText("BaseTreeDef.UPDATING_FULLNAMES", getName());
             }
             renamer.execute();
+            renamer.get();
 //            if (progDlg != null)
 //            {
 //                UIHelper.centerAndShow(progDlg);
