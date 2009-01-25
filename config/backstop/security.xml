@@ -66,7 +66,7 @@
         </UserGroup>
         
         <UserGroup     name="Data Entry"
-                    userType="CollectionManager">
+                    userType="Guest">
 
             <Permissions>
                 <Permission name="View.*" actions="view,add,modify"/>
@@ -100,7 +100,7 @@
         
         <UserGroup     name="Data Entry"
                     spPrincipalClass="edu.ku.brc.af.auth.specify.principal.GroupPrincipal"
-                    userType="CollectionManager">
+                    userType="Guest">
 
             <Permissions>
                 <Permission name="View.*" actions="view,add,modify"/>
