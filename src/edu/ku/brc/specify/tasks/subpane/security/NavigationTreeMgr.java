@@ -143,12 +143,8 @@ public class NavigationTreeMgr
             session = DataProviderFactory.getInstance().createSession();
             session.beginTransaction();
             
-            session.attach(user);
-            session.attach(group);
-            
+            session.update(user);
             user.getSpPrincipals().remove(group);
-            group.getSpecifyUsers().remove(user);
-            
             session.commit();
             
             // remove child from tree
@@ -193,10 +189,10 @@ public class NavigationTreeMgr
         try
         {
             session = DataProviderFactory.getInstance().createSession();
-            session.attach(user);
+            session.update(user);
             // XXX do we need a session here? 
-            // We need it in the next call to get SpPrincipals, but not sure if they will be
-            // already loaded when we get here. 
+            // We need it in the next call to get SpPrincipals, but they have probably been 
+            // loaded by then. Notice we don't attach the user to the session anywhere in this code... 
 
             // We can delete a user if that's the only group it belongs to
             result = user.getUserGroupCount() == 1; 
@@ -649,15 +645,13 @@ public class NavigationTreeMgr
             session = DataProviderFactory.getInstance().createSession();
             session.beginTransaction();
 
-            // Attach group to hibernate session. 
-            session.attach(group);
+            // TODO: add user agent to discipline 
             //discipline = session.merge(discipline);
             
             // add users to group
             for (SpecifyUser specifyUser : userArray)
             {
-                session.attach(specifyUser);
-                group.getSpecifyUsers().add(specifyUser);
+                session.update(specifyUser);
                 specifyUser.getSpPrincipals().add(group);
 
                 // add first user agent to discipline (if not already there)

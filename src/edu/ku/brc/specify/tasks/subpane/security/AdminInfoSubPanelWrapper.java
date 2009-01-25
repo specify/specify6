@@ -102,99 +102,84 @@ public class AdminInfoSubPanelWrapper
      * @param secondObject
      * @return whether new data was set (usually from setting defaults)
      */
-    public boolean setData(final Object dataObj, 
-                           final Object secondObject)
+    public boolean setData(final DataModelObjBaseWrapper firstWrp, 
+                           final DataModelObjBaseWrapper secondWrp)
     {
         boolean hasChanged = false;
-        if (displayPanel instanceof ViewBasedDisplayPanel)
+        if (!(displayPanel instanceof ViewBasedDisplayPanel))
         {
-            ViewBasedDisplayPanel panel = (ViewBasedDisplayPanel) displayPanel;
-            panel.setData(null);
-            panel.setData(dataObj);
-            
-            SpecifyUser user = null;
-            
-            // set permissions table if appropriate according to principal (user or usergroup)
-            SpPrincipal firstPrincipal = null;
-            if (dataObj instanceof SpecifyUser)
-            {
-                user      = (SpecifyUser) dataObj;
-                firstPrincipal = UserPrincipalHibernateService.getUserPrincipalBySpecifyUser(user);
-                
-            } else if (dataObj instanceof SpPrincipal)
-            {
-                firstPrincipal = (SpPrincipal) dataObj;
-            }
-
-            // get user principal
-            SpPrincipal secondPrincipal = null;
-            if (secondObject instanceof SpecifyUser)
-            {
-                user            = (SpecifyUser) secondObject;
-                secondPrincipal = UserPrincipalHibernateService.getUserPrincipalBySpecifyUser(user);
-            }
-
-            if (firstPrincipal != null && permissionEditors.size() > 0)
-            {
-                String userType = null;
-                DataProviderSessionIFace session = null;
-                try
-                {
-                    session  = DataProviderFactory.getInstance().createSession();
-                    session.attach(firstPrincipal);
-                    userType = firstPrincipal.getPermissions().size() == 0 ? (user != null ? user.getUserType() : null) : null;
-                    
-                } catch (Exception ex)
-                {
-                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AdminInfoSubPanelWrapper.class, ex);
-                    ex.printStackTrace();
-                    session.rollback();
-                    
-                } finally
-                {
-                    if (session != null)
-                    {
-                        session.close();
-                    }
-                }
-                
-                if (userType != null)
-                {
-                    Object[] options = { 
-                            getResourceString("ADMININFO_SET_DEF"), 
-                            getResourceString("NO")
-                          };
-                    int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
-                                                                 getResourceString("ADMININFO_SUBPNL"), 
-                                                                 getResourceString("ADMININFO_SUBPNL_TITLE"), 
-                                                                 JOptionPane.YES_NO_OPTION,
-                                                                 JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-                    if (userChoice != JOptionPane.YES_OPTION)
-                    {
-                        userType = null;
-                    } else
-                    {
-                        hasChanged = true;
-                    }
-                }
-                
-                Hashtable<String, SpPermission> existingPerms = PermissionService.getExistingPermissions(firstPrincipal.getId());
-                Hashtable<String, SpPermission> overrulingPerms = null;
-                if (secondPrincipal != null)
-                {
-                    overrulingPerms = PermissionService.getExistingPermissions(secondPrincipal.getId());
-                }
-                
-                principal           = firstPrincipal;
-                overrulingPrincipal = secondPrincipal;
-
-                for (PermissionPanelEditor editor : permissionEditors)
-                {
-                    editor.updateData(firstPrincipal, secondPrincipal, existingPerms, overrulingPerms, userType);
-                }
-            }
+            // let's quit as soon as possible
+            return false;
         }
+        
+        Object firstObj = firstWrp.getDataObj();
+        Object secondObj = (secondWrp != null)? secondWrp.getDataObj() : null;
+        
+        ViewBasedDisplayPanel panel = (ViewBasedDisplayPanel) displayPanel;
+        panel.setData(null);
+        panel.setData(firstWrp.getDataObj());
+        
+        SpecifyUser user = null;
+        
+        // set permissions table if appropriate according to principal (user or usergroup)
+        SpPrincipal firstPrincipal = null;
+        SpPrincipal secondPrincipal = null;
+        if (firstObj instanceof SpecifyUser)
+        {
+            user            = (SpecifyUser) firstObj;
+            firstPrincipal  = user.getUserPrincipal();
+            secondPrincipal = (SpPrincipal) secondObj; // must be the user group
+            
+        } else if (firstObj instanceof SpPrincipal)
+        {
+            // first object is just a user group 
+            firstPrincipal = (SpPrincipal) firstObj;
+        }
+
+        if (firstPrincipal == null || permissionEditors.size() == 0)
+        {
+            return false;
+        }
+
+        String userType = (user != null)? user.getUserType() : null;
+//            
+//        // turned off for debugging
+//        if (1==0 && userType != null)
+//        {
+//            Object[] options = { 
+//                    getResourceString("ADMININFO_SET_DEF"), 
+//                    getResourceString("NO")
+//                  };
+//            int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
+//                                                         getResourceString("ADMININFO_SUBPNL"), 
+//                                                         getResourceString("ADMININFO_SUBPNL_TITLE"), 
+//                                                         JOptionPane.YES_NO_OPTION,
+//                                                         JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+//            if (userChoice != JOptionPane.YES_OPTION)
+//            {
+//                userType = null;
+//            } 
+//            else
+//            {
+//                hasChanged = true;
+//            }
+//        }
+        
+        Hashtable<String, SpPermission> existingPerms = PermissionService.getExistingPermissions(firstPrincipal.getId());
+        Hashtable<String, SpPermission> overrulingPerms = null;
+        if (secondPrincipal != null)
+        {
+            overrulingPerms = PermissionService.getExistingPermissions(secondPrincipal.getId());
+        }
+        
+        principal           = firstPrincipal;
+        overrulingPrincipal = secondPrincipal;
+
+        for (PermissionPanelEditor editor : permissionEditors)
+        {
+            editor.updateData(firstPrincipal, secondPrincipal, existingPerms, overrulingPerms, userType);
+        }
+
         return hasChanged;
     }
 
@@ -208,31 +193,24 @@ public class AdminInfoSubPanelWrapper
         
         Object obj = mv.getData();
         
-        obj = session.merge(obj);
-        obj = session.saveOrUpdate(obj);
+        session.update(obj);
+        session.update(principal);
         
-        principal = session.merge(principal);
-        
-        if (overrulingPrincipal != null)
-        {
-            overrulingPrincipal = session.merge(overrulingPrincipal);
-        }
-
-        for (PermissionPanelEditor editor : permissionEditors)
-        {
-            editor.savePermissions(session);            
-        }
-        
-        for (SpPermission perm : new ArrayList<SpPermission>(principal.getPermissions()))
-        {
-            if (StringUtils.isEmpty(perm.getActions()))
-            {
-                principal.getPermissions().remove(perm);
-                perm.getPrincipals().remove(principal);
-                session.delete(perm);
-            }
-        }
-        session.saveOrUpdate(principal);
+        // debugging for now
+//        for (PermissionPanelEditor editor : permissionEditors)
+//        {
+//            editor.savePermissions(session);            
+//        }
+//        
+//        for (SpPermission perm : new ArrayList<SpPermission>(principal.getPermissions()))
+//        {
+//            if (StringUtils.isEmpty(perm.getActions()))
+//            {
+//                principal.getPermissions().remove(perm);
+//                perm.getPrincipals().remove(principal);
+//                session.delete(perm);
+//            }
+//        }
     }
     
     /**

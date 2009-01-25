@@ -50,6 +50,7 @@ import org.hibernate.annotations.Cascade;
 
 import edu.ku.brc.af.auth.specify.principal.AdminPrincipal;
 import edu.ku.brc.af.auth.specify.principal.GroupPrincipal;
+import edu.ku.brc.af.auth.specify.principal.UserPrincipal;
 
 /**
  * 
@@ -623,6 +624,27 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
             }
         }
         return count;
+    }
+    
+    /**
+     * Returns the user principal, that is, that principal that is from the sub-class UserPrincipal.
+     * This principal represents the user (as opposed as a user group) in JAAS 
+     * @return the user principal
+     */
+    @Transient
+    public SpPrincipal getUserPrincipal()
+    {
+        for (SpPrincipal principal : getSpPrincipals())
+        {
+            if (UserPrincipal.class.getCanonicalName().equals(principal.getGroupSubClass()))
+            {
+                return principal;
+            }
+        }
+        
+        // Data inconsistency: we shouldn't really get here 
+        // because every user must have its own UserPrincipal
+        return null;
     }
     
     //----------------------------------------------------------------------

@@ -792,8 +792,7 @@ public class SecurityAdminPane extends BaseSubPane
         if (panelWrapper != null)
         {
             currentDisplayPanel = panelWrapper;
-            if (currentDisplayPanel.setData(objWrapperArg.getDataObj(), secondObjWrapperArg != null ? secondObjWrapperArg.getDataObj() : null) && 
-                currentEditorPanel != null)
+            if (currentDisplayPanel.setData(objWrapperArg, secondObjWrapperArg) && currentEditorPanel != null)
             {
                 currentEditorPanel.setHasChanged(true);
             }
@@ -967,7 +966,7 @@ public class SecurityAdminPane extends BaseSubPane
             
            if (refreshObj)
            {
-               refreshTreeNode();
+               refreshTreeNode(session);
            }
            
         } catch (Exception ex)
@@ -990,36 +989,11 @@ public class SecurityAdminPane extends BaseSubPane
     /**
      * 
      */
-    protected void refreshTreeNode()
+    protected void refreshTreeNode(DataProviderSessionIFace session)
     {
-        
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        try
+        if (currentDisplayPanel.setData(objWrapper, secondObjWrapper) && currentEditorPanel != null)
         {
-            FormDataObjIFace dbObj        = objWrapper.getDataObj();
-            FormDataObjIFace refreshedObj = (FormDataObjIFace)session.get(dbObj.getDataClass(), dbObj.getId());
-            objWrapper.setDataObj(refreshedObj);
-            
-            if (secondObjWrapper != null)
-            {
-                dbObj = secondObjWrapper.getDataObj();
-                if (dbObj != null)
-                {
-                    refreshedObj = (FormDataObjIFace)session.get(dbObj.getDataClass(), dbObj.getId());
-                    secondObjWrapper.setDataObj(refreshedObj);
-                }
-            }
-            
-            if (currentDisplayPanel.setData(objWrapper.getDataObj(), 
-                                        secondObjWrapper != null ? secondObjWrapper.getDataObj() : null) && 
-                currentEditorPanel != null)
-            {
-                currentEditorPanel.setHasChanged(true);
-            }
-        } 
-        finally
-        {
-            session.close();
+            currentEditorPanel.setHasChanged(true);
         }
     }
     
