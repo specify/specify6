@@ -38,9 +38,6 @@ public class LithoStratTreeTask extends BaseTreeTask<LithoStrat,LithoStratTreeDe
         treeClass        = LithoStrat.class;
         treeDefClass     = LithoStratTreeDef.class;
         
-        menuItemText     = getResourceString("LithoStratMenu");
-        menuItemMnemonic = getResourceString("LithoStratMnemonic");
-        starterPaneText  = getResourceString("LithoStratStarterPaneText");
         commandTypeString = LITHO;
         
         businessRules = new LithoStratBusRules();

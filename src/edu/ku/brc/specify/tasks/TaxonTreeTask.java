@@ -10,7 +10,6 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.net.URI;
 import java.util.Vector;
 
 import javax.persistence.Transient;
@@ -29,7 +28,6 @@ import edu.ku.brc.specify.ui.treetables.TreeTableViewer;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.util.AttachmentUtils;
 
 /**
  * Task that handles the UI for viewing taxonomy data.
@@ -51,9 +49,6 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
         treeClass         = Taxon.class;
         treeDefClass      = TaxonTreeDef.class;
         
-        menuItemText      = getResourceString("TaxonMenu");
-        menuItemMnemonic  = getResourceString("TaxonMnemonic");
-        starterPaneText   = getResourceString("TaxonStarterPaneText");
         commandTypeString = TAXON;
         
         initialize();

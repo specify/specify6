@@ -14,6 +14,7 @@
  */
 package edu.ku.brc.af.core;
 
+import java.awt.Component;
 import java.util.List;
 
 import javax.swing.JComponent;
@@ -26,6 +27,14 @@ import javax.swing.JComponent;
  * @code_status Complete
  * 
  * @author rods
+ *
+ */
+/**
+ * @author rod
+ *
+ * @code_status Alpha
+ *
+ * Jan 26, 2009
  *
  */
 public interface NavBoxIFace
@@ -78,6 +87,12 @@ public interface NavBoxIFace
      * @return the list of NavBoxItemIfaces
      */
     public List<NavBoxItemIFace> getItems();
+    
+    /**
+     * @param nbi
+     * @return
+     */
+    public Component add(NavBoxItemIFace nbi);
     
     /**
      * Removes an item from the box.

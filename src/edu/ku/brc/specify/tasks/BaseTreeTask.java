@@ -8,39 +8,38 @@ package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
 
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.auth.PermissionSettings;
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.MenuItemDesc;
+import edu.ku.brc.af.core.NavBox;
+import edu.ku.brc.af.core.NavBoxIFace;
+import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.core.UsageTracker;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
-import edu.ku.brc.af.prefs.AppPreferences;
-import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.af.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.SwingWorker;
-import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
@@ -50,6 +49,9 @@ import edu.ku.brc.specify.ui.treetables.TreeDefinitionEditor;
 import edu.ku.brc.specify.ui.treetables.TreeTableViewer;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.RolloverCommand;
+import edu.ku.brc.ui.ToolBarDropDownBtn;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -69,9 +71,19 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
 							        extends BaseTask
 {
     protected static final Logger log = Logger.getLogger(BaseTreeTask.class);
+    protected static DataFlavor TREE_DEF_FLAVOR = new DataFlavor(TreeDefIface.class,TreeDefIface.class.getName());
+
+    public static final String OPEN_TREE        = "OpenTree";
+    public static final String EDIT_TREE_DEF    = "EditTreeDef";
+
     
     /** The toolbar items provided by this task. */
-    protected List<ToolBarItemDesc> toolBarItems;
+    protected static Vector<ToolBarItemDesc> treeToolBarItems = null;
+    
+    protected NavBox                  treeNavBox       = null;
+    protected NavBox                  treeDefNavBox    = null;
+    protected NavBox                  unlockNavBox     = null;
+    protected Vector<NavBoxIFace>     extendedNavBoxes = new Vector<NavBoxIFace>();
     
     /** The class of {@link TreeDefIface} handled by this task. */
     protected Class<D> treeDefClass;
@@ -83,19 +95,15 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
     protected boolean isOpeningTree        = false;
     protected SubPaneIFace visibleSubPane;
     
-    protected JMenu subMenu;
-    protected JMenuItem showTreeMenuItem;
-    protected JMenuItem editTreeMenuItem;
-    protected JMenuItem editDefMenuItem;
-    
-    protected String menuItemText;
-    protected String menuItemMnemonic;
-    protected String starterPaneText;
     protected String commandTypeString;
     
     protected BusinessRulesIFace businessRules = null;
-
     
+    protected Action treeEditAction    = null;
+    protected Action treeDefEditAction = null;
+    protected Action unlockAction      = null;
+    
+
 	/**
      * Constructor.
      * 
@@ -107,6 +115,8 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
 		super(name, title);
 		
         CommandDispatcher.register(DataEntryTask.DATA_ENTRY, this);
+        
+        setIconName("TreePref");
 	}
 
 	/* (non-Javadoc)
@@ -118,10 +128,10 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         if (!isInitialized)
         {
             isInitialized = true;
+            
+            TreeTaskMgr.getInstance().add(this);
 
             currentDef   = getCurrentTreeDef();
-            navBoxes     = Collections.emptyList();
-            toolBarItems = Collections.emptyList();
             menuItems    = createMenus();
 
             if (commandTypeString != null)
@@ -129,12 +139,116 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
                 CommandDispatcher.register(commandTypeString,this);
             }
             
-            if (currentDef != null)
+            treeNavBox    = new NavBox(getResourceString("BaseTreeTask.EditTrees"));
+            treeDefNavBox = new NavBox(getResourceString("BaseTreeTask.TreeDefs"));
+            unlockNavBox  = new NavBox(getResourceString("BaseTreeTask.UNLOCK"));
+            
+            navBoxes.add(treeNavBox);
+            navBoxes.add(treeDefNavBox);
+            navBoxes.add(unlockNavBox);
+            
+            if (isTreeOnByDefault())
             {
-                shortDesc = getResourceString("TASK.SHRTDESC." + currentDef.getClass().getSimpleName());
+                DBTableInfo treeTI = DBTableIdMgr.getInstance().getByClassName(getTreeClass().getName());
+                DBTableInfo tdTI   = DBTableIdMgr.getInstance().getByClassName(getTreeDefClass().getName());
+                
+                PermissionSettings treePerms = treeTI.getPermissions();
+                PermissionSettings tdPerms   = tdTI.getPermissions();
+                
+                if (UIHelper.isSecurityOn())
+                {
+                    System.out.println(treeTI.getTitle()+ " "+treePerms.toString());
+                    if (treePerms.canView())
+                    {
+                        treeEditAction = createActionForTreeEditing(treeTI.getTitle(), treePerms.canModify());                        
+                    } 
+                    
+                    if (tdPerms.canView() && tdPerms.canModify())
+                    {
+                        treeDefEditAction = createActionForTreeDefEditing(treeTI.getTitle());
+                        unlockAction      = createActionForTreeUnlocking(treeTI.getTitle(), true);
+                    } 
+                } else
+                {
+                    treeEditAction    = createActionForTreeEditing(treeTI.getTitle(), true);
+                    treeDefEditAction = createActionForTreeDefEditing(treeTI.getTitle());
+                    unlockAction      = createActionForTreeUnlocking(treeTI.getTitle(), true);
+                }
             }
         }
 	}
+	
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#getNavBoxes()
+     */
+    @Override
+    public List<NavBoxIFace> getNavBoxes()
+    {
+        extendedNavBoxes.clear();
+        extendedNavBoxes.addAll(navBoxes);
+
+        /*RecordSetTask rsTask = (RecordSetTask)ContextMgr.getTaskByClass(RecordSetTask.class);
+
+        List<NavBoxIFace> nbs = rsTask.getNavBoxes();
+        if (nbs != null)
+        {
+            extendedNavBoxes.addAll(nbs);
+        }*/
+
+        return extendedNavBoxes;
+
+    }
+
+    /**
+     * Loads the appropriate tree NavBtns into the UI.
+     */
+    protected void loadTreeNavBoxes()
+    {
+        treeNavBox.clear();
+        treeDefNavBox.clear();
+        unlockNavBox.clear();
+        
+        if (UIHelper.isSecurityOn())
+        {
+            if (!DBTableIdMgr.getInstance().getByShortClassName(treeClass.getSimpleName()).getPermissions().canView())
+            {
+                return;
+            }
+        }
+        
+        if (isTreeOnByDefault())
+        {
+            TreeTaskMgr.getInstance().fillNavBoxes(treeNavBox, treeDefNavBox, unlockNavBox);
+            for (NavBoxItemIFace nbi : treeNavBox.getItems())
+            {
+                ((RolloverCommand)nbi.getUIComponent()).addDropDataFlavor(null);
+            }
+        } 
+    }
+    
+    /**
+     * @return
+     */
+    public Action getTreeEditAction()
+    {
+        return treeEditAction;
+    }
+    
+    /**
+     * @return
+     */
+    public Action getTreeDefEditAction()
+    {
+        return treeDefEditAction;
+    }
+    
+    /**
+     * @return
+     */
+    public Action getTreeUnlockAction()
+    {
+        return unlockAction;
+    }
     
     /**
      * @return the Class for the Tree Def
@@ -200,6 +314,43 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
     	        bgWorker.start();
             }
     	}
+    }
+    
+    /**
+     * Creates an ActionListener for Editing the tree.
+     * @param isEditMode whether it is in edit mode
+     * @return the AL
+     */
+    protected Action createActionForTreeUnlocking(final String titleArg, final boolean isEditMode)
+    {
+        return new AbstractAction()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                String lockName     = treeDefClass.getSimpleName();
+                String formLockName = lockName + "Form";
+                
+                UsageTracker.incrUsageCount("TD.UNLOCK."+treeDefClass.getSimpleName());
+
+                if (TaskSemaphoreMgr.isLocked(titleArg, formLockName, TaskSemaphoreMgr.SCOPE.Discipline))
+                {
+                    TaskSemaphoreMgr.unlock(titleArg, formLockName, TaskSemaphoreMgr.SCOPE.Discipline);
+                } else
+                {
+                    // Show Dialog ?? or Taskbar message ??
+                    log.warn(titleArg + " form was not locked.");
+                }
+                
+                if (TaskSemaphoreMgr.isLocked(titleArg, lockName, TaskSemaphoreMgr.SCOPE.Discipline))
+                {
+                    TaskSemaphoreMgr.unlock(titleArg, lockName, TaskSemaphoreMgr.SCOPE.Discipline);
+                } else
+                {
+                    // Show Dialog ?? or Taskbar message ??
+                    log.warn(titleArg + " was not locked.");
+                }
+            }
+        };
     }
     
     /**
@@ -314,28 +465,6 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
     }
     
     /**
-     * Enables / Disables the menus depending on the discipline.
-     */
-    protected void adjustMenus()
-    {
-        String clsName    = treeDefClass.getSimpleName();
-        String discipline = AppContextMgr.getInstance().getClassObject(Discipline.class).getType();
-        
-        String prefName = "Trees.Menu." + discipline + "." + clsName;
-        
-        boolean isMenuEnabled = AppPreferences.getRemote().getBoolean(prefName, isTreeOnByDefault(), true);
-        subMenu.setEnabled(isMenuEnabled);
-    }
-	
-	/**
-	 * @return the text for the menu or NavBox Button
-	 */
-	public String getMenuItemText()
-    {
-        return menuItemText;
-    }
-
-    /**
      * Creates a simple menu item that brings this task into context.
      * 
 	 * @param defs a list of tree definitions handled by this task
@@ -343,61 +472,6 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
 	protected Vector<MenuItemDesc> createMenus()
 	{
         Vector<MenuItemDesc> menus = new Vector<MenuItemDesc>();
-        subMenu = new JMenu(menuItemText);
-        
-        MenuItemDesc treeSubMenuMI = new MenuItemDesc(subMenu, "Specify.SYSTEM_MENU/Specify.COLSETUP_MENU");
-        treeSubMenuMI.setPosition(MenuItemDesc.Position.Bottom);
-        menus.add(treeSubMenuMI);
-        
-        boolean hasPermissionToEdit = true;
-        
-        final String tabtitle = UIRegistry.getResourceString(name);
-        
-        Action treeEditAction = createActionForTreeEditing(tabtitle, hasPermissionToEdit);
-        UIRegistry.registerAction("TreeEditing_"+treeClass.getSimpleName(), treeEditAction);
-        
-        // XXX SECURITY - Check to see if they can edit the tree def
-        Action treeDefEditAction = createActionForTreeDefEditing(tabtitle);
-        editDefMenuItem = new JMenuItem(getResourceString("TTV_EDIT_DEF_MENU_ITEM"));
-        editDefMenuItem.addActionListener(treeDefEditAction);
-        UIRegistry.registerAction("TreeDefEditing_"+treeDefClass.getSimpleName(), treeDefEditAction);
-        subMenu.add(editDefMenuItem);
-
-        
-        // XXX SECURITY - Check to see if they can edit the tree def
-        ActionListener treeDefClearLockAction = new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                String lockName     = treeDefClass.getSimpleName();
-                String formLockName = lockName + "Form";
-                
-                UsageTracker.incrUsageCount("TD.UNLOCK."+treeDefClass.getSimpleName());
-
-                if (TaskSemaphoreMgr.isLocked(tabtitle, formLockName, TaskSemaphoreMgr.SCOPE.Discipline))
-                {
-                    TaskSemaphoreMgr.unlock(tabtitle, formLockName, TaskSemaphoreMgr.SCOPE.Discipline);
-                } else
-                {
-                    // Show Dialog ?? or Taskbar message ??
-                    log.warn(tabtitle + " form was not locked.");
-                }
-                
-                if (TaskSemaphoreMgr.isLocked(tabtitle, lockName, TaskSemaphoreMgr.SCOPE.Discipline))
-                {
-                    TaskSemaphoreMgr.unlock(tabtitle, lockName, TaskSemaphoreMgr.SCOPE.Discipline);
-                } else
-                {
-                    // Show Dialog ?? or Taskbar message ??
-                    log.warn(tabtitle + " was not locked.");
-                }
-            }
-        };
-        JMenuItem treeDefClearLockMI = new JMenuItem(getResourceString("TTV_UNLOCK_MENU_ITEM"));
-        treeDefClearLockMI.addActionListener(treeDefClearLockAction);
-        subMenu.add(treeDefClearLockMI);
-        
-        adjustMenus();
         
         return menus;
 	}
@@ -433,6 +507,19 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         return null;
     }
 
+    
+    /**
+     * Opens a {@link SubPaneIFace} for viewing/editing a {@link TreeDefIface} object.
+     */
+    public TreeDefinitionEditor<T,D,I> openTreeDefEditor(D treeDef)
+    {
+       ContextMgr.requestContext(this);
+        String tabName = getResourceString("TreeDefEditor") + ": " + treeDef.getName();
+        TreeDefinitionEditor<T,D,I> defEditor = new TreeDefinitionEditor<T,D,I>(treeDef, tabName, this, true);
+        addSubPaneToMgr(defEditor);
+        return defEditor;
+    }
+    
     /**
      * Opens a {@link SubPaneIFace} for viewing/editing the current {@link TreeDefIface} object.
      * @param isEditMode whether it is in edit mode or not
@@ -537,7 +624,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
     {
         // This starter pane will only be visible for a brief moment while the tree loads.
         // It doesn't need to be fancy.
-        return starterPane = new SimpleDescPane(title, this, starterPaneText);
+        return starterPane = StartUpTask.createFullImageSplashPanel(title, this);
     }
 
 	/* (non-Javadoc)
@@ -546,7 +633,18 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
 	@Override
 	public List<ToolBarItemDesc> getToolBarItems()
 	{
-        return toolBarItems;
+	    if (treeToolBarItems == null)
+	    {
+	        treeToolBarItems = new Vector<ToolBarItemDesc>();
+    
+            String label     = getResourceString("BaseTreeTask.Trees");
+            String hint     = getResourceString("tree_hint");
+            ToolBarDropDownBtn btn = createToolbarButton(label, iconName, hint);
+            treeToolBarItems.add(new ToolBarItemDesc(btn));
+	    }
+        toolbarItems = treeToolBarItems;
+        
+        return toolbarItems;
 	}
 	
     /* (non-Javadoc)
@@ -577,13 +675,19 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
      * @see edu.ku.brc.af.tasks.BaseTask#doProcessAppCommands(edu.ku.brc.ui.CommandAction)
      */
     @Override
-    protected void doProcessAppCommands(CommandAction cmdAction)
+    protected void doProcessAppCommands(final CommandAction cmdAction)
     {
         super.doProcessAppCommands(cmdAction);
         
         currentDef = getCurrentTreeDef();
-        adjustMenus();
+        
+        if (cmdAction.isAction(APP_RESTART_ACT) || cmdAction.isAction(APP_START_ACT))
+        {
+            loadTreeNavBoxes();
+        }
     }
+    
+    
 
     /**
      * Runs the query synchronously and filles the vector.

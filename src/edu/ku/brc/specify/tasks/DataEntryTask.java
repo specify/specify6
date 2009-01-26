@@ -29,7 +29,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
-import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.SwingUtilities;
 
@@ -125,7 +124,6 @@ public class DataEntryTask extends BaseTask
     // Data Members
     protected Vector<NavBoxIFace> extendedNavBoxes = new Vector<NavBoxIFace>();
     protected NavBox              viewsNavBox      = null;
-    protected NavBox              treeNavBox       = null;
     
     protected Vector<DataEntryView> stdViews       = null;
     protected Vector<DataEntryView> miscViews      = null;
@@ -150,7 +148,6 @@ public class DataEntryTask extends BaseTask
         
         // Do this here instead of in initialize because the static method will need to access the icon mapping first
         viewsNavBox = new NavBox(getResourceString("CreateAndUpdate"));
-        treeNavBox  = new NavBox(getResourceString("DataEntryTask.Trees"));
     }
 
     /* (non-Javadoc)
@@ -169,49 +166,8 @@ public class DataEntryTask extends BaseTask
             //NavBox navBox = new NavBox(getResourceString("Actions"));
             //navBox.add(NavBox.createBtn(getResourceString("Series_Processing"), name, IconManager.STD_ICON_SIZE));
             //navBoxes.add(navBox);
-            
-            loadTreeNavBoxes();
-            if (treeNavBox.getItems().size() > 0)
-            {
-                navBoxes.add(treeNavBox);
-            }
-           
         }
         isShowDefault = true;
-    }
-    
-    /**
-     * Loads the appropriate tree NavBtns into the UI.
-     */
-    protected void loadTreeNavBoxes()
-    {
-        // Add Tree NavBoxes
-        createTreeEditNB((BaseTreeTask<?,?,?>)TaskMgr.getTask(TaxonTreeTask.TAXON));
-        createTreeEditNB((BaseTreeTask<?,?,?>)TaskMgr.getTask(GeographyTreeTask.GEOGRAPHY));
-        createTreeEditNB((BaseTreeTask<?,?,?>)TaskMgr.getTask(LithoStratTreeTask.LITHO));
-        createTreeEditNB((BaseTreeTask<?,?,?>)TaskMgr.getTask(GtpTreeTask.GTP));
-        createTreeEditNB((BaseTreeTask<?,?,?>)TaskMgr.getTask(StorageTreeTask.STORAGE));
-    }
-    
-    /**
-     * @param treeTask
-     */
-    private void createTreeEditNB(final BaseTreeTask<?,?,?> treeTask)
-    {
-        if (UIHelper.isSecurityOn())
-        {
-            if (!DBTableIdMgr.getInstance().getByShortClassName(treeTask.getTreeClass().getSimpleName()).getPermissions().canView())
-            {
-                return;
-            }
-        }
-        
-        if (treeTask != null && treeTask.isTreeOnByDefault())
-        {
-            Action treeEditAction = UIRegistry.getAction("TreeEditing_" + treeTask.getTreeClass().getSimpleName());
-            NavBoxItemIFace nbi = NavBox.createBtnWithTT(treeTask.getMenuItemText(), "TreePref", "", IconManager.STD_ICON_SIZE, treeEditAction);
-            treeNavBox.add(nbi);
-        } 
     }
     
     /**
@@ -1513,9 +1469,6 @@ public class DataEntryTask extends BaseTask
         {
             viewsNavBox.clear();
             initializeViewsNavBoxFromXML();
-            
-            treeNavBox.clear();
-            loadTreeNavBoxes();
         }
     }
 

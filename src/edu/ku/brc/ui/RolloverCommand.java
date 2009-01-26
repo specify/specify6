@@ -28,6 +28,7 @@ import java.awt.RenderingHints;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
@@ -211,6 +212,15 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
           };
         addMouseListener(mouseInputAdapter);
         addMouseMotionListener(mouseInputAdapter);
+        
+        addFocusListener(new FocusAdapter()
+        {
+            public void focusLost(FocusEvent e)
+            {
+                repaint();
+            }
+
+        });
     }
 
     /* (non-Javadoc)

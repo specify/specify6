@@ -54,9 +54,6 @@ public class GeographyTreeTask extends BaseTreeTask<Geography,GeographyTreeDef,G
         treeClass         = Geography.class;
         treeDefClass      = GeographyTreeDef.class;
         
-        menuItemText      = getResourceString("GeographyMenu");
-        menuItemMnemonic  = getResourceString("GeographyMnemonic");
-        starterPaneText   = getResourceString("GeographyStarterPaneText");
         commandTypeString = GEOGRAPHY;
         
         businessRules     = new GeographyBusRules();

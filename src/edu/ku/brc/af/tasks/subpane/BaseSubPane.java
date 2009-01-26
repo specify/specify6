@@ -155,7 +155,7 @@ public class BaseSubPane extends JTiledPanel implements SubPaneIFace, Printable
         }
         
         
-        System.out.println(pf.getPaper().getImageableWidth()+", "+pf.getPaper().getImageableHeight());
+        //System.out.println(pf.getPaper().getImageableWidth()+", "+pf.getPaper().getImageableHeight());
         double imgWidth  = pf.getImageableWidth();
         double imgHeight = pf.getImageableHeight();
         

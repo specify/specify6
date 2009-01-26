@@ -52,9 +52,6 @@ public class StorageTreeTask extends BaseTreeTask<Storage, StorageTreeDef, Stora
         treeClass         = Storage.class;
         treeDefClass      = StorageTreeDef.class;
         
-        menuItemText      = getResourceString("StorageMenu");
-        menuItemMnemonic  = getResourceString("StorageMnemonic");
-        starterPaneText   = getResourceString("StorageStarterPaneText");
         commandTypeString = STORAGE;
         
         businessRules     = new StorageBusRules();

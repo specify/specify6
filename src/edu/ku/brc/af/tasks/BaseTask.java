@@ -332,7 +332,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
      * @param dropFlavor
      * @return
      */
-    protected NavBoxItemIFace makeDnDNavBtn(final NavBox        navBox,
+    public static  NavBoxItemIFace makeDnDNavBtn(final NavBox        navBox,
                                             final String        labelText,
                                             final String        iconNameArg,
                                             final CommandAction cmdAction,
@@ -357,7 +357,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
      * @param addSorted
      * @return
      */
-    protected NavBoxItemIFace makeDnDNavBtn(final NavBox        navBox,
+    public static  NavBoxItemIFace makeDnDNavBtn(final NavBox        navBox,
                                             final String        labelText,
                                             final String        iconNameArg,
                                             final CommandAction cmdAction,
@@ -379,7 +379,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
      * @param addSorted
      * @return
      */
-    protected NavBoxItemIFace makeDnDNavBtn(final NavBox        navBox,
+    public static  NavBoxItemIFace makeDnDNavBtn(final NavBox        navBox,
                                             final String        labelText,
                                             final String        iconNameArg,
                                             final String        toolTip,
@@ -403,7 +403,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
      * @param addSorted
      * @return
      */
-    protected NavBoxItemIFace makeDnDNavBtn(final NavBox        navBox,
+    public static NavBoxItemIFace makeDnDNavBtn(final NavBox        navBox,
                                             final String        labelText,
                                             final String        iconNameArg,
                                             final String        toolTip,

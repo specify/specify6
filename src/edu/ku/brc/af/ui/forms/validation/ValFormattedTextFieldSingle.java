@@ -116,6 +116,9 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
     protected Insets                      inner;
     
     protected BigDecimalValidator         bdValidator         = null;
+    
+    // Current Text From Document
+    private String curText = "";
 
     
     /**
@@ -399,12 +402,12 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
     {
         super.paint(g);
 
-        String text = getText();
+        //String curText = getText();
 
-        if (!isViewOnly && needsUpdating && isEnabled() && text != null && text.length() < bgStr.length() )
+        if (!isViewOnly && needsUpdating && isEnabled() && curText != null && curText.length() < bgStr.length() )
         {
             FontMetrics fm   = g.getFontMetrics();
-            int          w   = fm.stringWidth(text);
+            int          w   = fm.stringWidth(curText);
             pnt = new Point(inner.left+w, inner.top + fm.getAscent());
 
             Rectangle r = g.getClipBounds();
@@ -417,7 +420,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
             g.setClip(x, y, ww, hh);            
             
             g.setColor(textColor);
-            g.drawString(bgStr.substring(text.length(), bgStr.length()), pnt.x, pnt.y);
+            g.drawString(bgStr.substring(curText.length(), bgStr.length()), pnt.x, pnt.y);
             
             g.setClip(r.x, r.y, r.width, r.height); // reset clip
         }
@@ -1040,7 +1043,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
             super();
             this.textField    = textField;
             this.docFormatter = formatter;
-            this.docLimit        = limit;
+            this.docLimit     = limit;
             this.docFields    = new UIFieldFormatterField[limit];
             int inx = 0;
             for (UIFieldFormatterField f : docFormatter.getFields())
@@ -1147,6 +1150,8 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
             }
             isReplacingSameSize = text.length() == length;
             super.replace(offset, length, text, attrs);
+            
+            curText = getText(0, getLength());
         }
 
         /* (non-Javadoc)
@@ -1173,13 +1178,14 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
             {
                 int l = formatter.isNumeric() || formatter.isDate() || isReplacingSameSize ? len : this.getLength()-offset;
                 super.remove(offset, l);
-                    
+                curText = getText(0, getLength());
+                
                 validateState();
 
             } catch (BadLocationException ex)
             {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ValFormattedTextFieldSingle.class, ex);
+                //edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ValFormattedTextFieldSingle.class, ex);
                 throw new RuntimeException(ex);
             }
         }
@@ -1221,7 +1227,8 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
 
                     //valState = offset + str.length() < requiredLength ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
                     super.insertString(offset, str, attr);
-
+                    curText = getText(0, getLength());
+                    
                 } else
                 {
                     //valState = UIValidatable.ErrorType.Error;
@@ -1278,6 +1285,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
                 //valState = offset + str.length() < requiredLength ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
 
                 super.insertString(offset, str, attr);
+                curText = getText(0, getLength());
                 
                 String text = textField.getText();
                 if (text != null && text.length() < docLimit)
