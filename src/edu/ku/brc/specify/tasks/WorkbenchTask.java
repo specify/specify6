@@ -656,19 +656,8 @@ public class WorkbenchTask extends BaseTask
     @Override
     public SubPaneIFace getStarterPane()
     {
-
-        PanelBuilder    display = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g", "f:p:g,p,150px,f:p:g"));
-        CellConstraints cc      = new CellConstraints();
-
-        display.add(new JLabel(IconManager.getIcon("SpecifySplash")), cc.xy(2, 2));
         doingStarterPane = true;
-        
-        if (UIHelper.getOSType() != UIHelper.OSTYPE.MacOSX)
-        {
-            display.getPanel().setBackground(Color.WHITE);
-        }
-        
-        return starterPane = new SimpleDescPane(title, this, display.getPanel());
+        return starterPane = StartUpTask.createFullImageSplashPanel(title, this);
     }
     
     /* (non-Javadoc)
