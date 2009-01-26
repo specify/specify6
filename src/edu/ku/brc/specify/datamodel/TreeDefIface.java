@@ -122,10 +122,17 @@ public interface TreeDefIface<N extends Treeable<N,D,I>,
     /**
      * The rank id of the level of the tree that items below it can be synonymized to. For example,
      * all ranks below Species can be synonymized up to Species, but not above. A call to this for the
-     * Taxon tree would return the Species Rank Id. Returning a '-1' means it doesn't matter.
+     * Taxon tree would return the Species Rank Id. 
+     * Returning '-1' means it doesn't matter.
      * @return the rank id of the level of the tree that items below it can be synonymized to.
      */
     public int getSynonymizedLevel();
+    
+    /**
+     * 
+     * @return true if synonymy is supported
+     */
+    public boolean isSynonymySupported();
     
     /**
      * @return a List of 'Standard' levels for the tree in order from lowest rank to highest.

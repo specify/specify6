@@ -748,4 +748,15 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
         }
         return result;
     }
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.datamodel.TreeDefIface#isSynonymySupported()
+	 */
+	@Override
+	public boolean isSynonymySupported() 
+	{
+		return false;
+	}
+    
+    
 }

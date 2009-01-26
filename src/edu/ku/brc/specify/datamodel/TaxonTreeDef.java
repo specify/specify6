@@ -392,6 +392,17 @@ public class TaxonTreeDef extends BaseTreeDef<Taxon, TaxonTreeDef, TaxonTreeDefI
     public int getSynonymizedLevel()
     {
         return TaxonTreeDef.GENUS;
-    }    
+    }
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.datamodel.BaseTreeDef#isSynonymySupported()
+	 */
+	@Override
+	@Transient
+	public boolean isSynonymySupported() 
+	{
+		return true;
+	}    
+    
     
 }

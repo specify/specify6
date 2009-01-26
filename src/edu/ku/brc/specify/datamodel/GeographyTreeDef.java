@@ -402,6 +402,16 @@ public class GeographyTreeDef extends BaseTreeDef<Geography, GeographyTreeDef, G
         result.add(new TreeDefItemStandardEntry(UIRegistry.getResourceString("GeographyTreeDef.12"), 400)); //$NON-NLS-1$
         return result;
     }
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.datamodel.BaseTreeDef#isSynonymySupported()
+	 */
+	@Override
+	@Transient
+	public boolean isSynonymySupported() 
+	{
+		return true;
+	}
     
     
 }

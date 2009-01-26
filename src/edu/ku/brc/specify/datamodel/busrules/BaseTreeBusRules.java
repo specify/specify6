@@ -42,6 +42,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
@@ -55,6 +56,7 @@ import edu.ku.brc.af.ui.forms.validation.ValTextField;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
+import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemStandardEntry;
@@ -694,6 +696,7 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
      * 
      * return true if acceptedParent and accepted fields should be enabled on data forms.
      */
+    @SuppressWarnings("unchecked")
     protected boolean canAccessSynonymy(final T dataObj)
     {
         if (dataObj == null)
@@ -714,18 +717,43 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
         TreeDefIface<?,?,?> def = dataObj.getDefinition();
         if (def == null)
         {
-            return false; //??? 
+            def = ((SpecifyAppContextMgr )AppContextMgr.getInstance()).getTreeDefForClass((Class<? extends Treeable<?,?,?>> )dataObj.getClass()); 
         }
+        
+        if (!def.isSynonymySupported())
+        {
+        	return false;
+        }
+        
         return defItem.getRankId() >= def.getSynonymizedLevel();
     }
     
+    /**
+     * @param dataObj
+     * @param rank
+     * @return true if the rank is synonymizable according to the relevant TreeDefinition
+     * 
+     * For use when dataObj's rank has not yet been assigned or updated.
+     */
+    @SuppressWarnings("unchecked")
     protected boolean canAccessSynonymy(final T dataObj, final int rank)
     {
-        TreeDefIface<?,?,?> def = dataObj.getDefinition();
-        if (def == null)
+        if (dataObj == null)
         {
-            return false; //??? 
+            return false; //??
         }
+        
+        if (dataObj.getChildren().size() > 0)
+        {
+            return false;
+        }
+        TreeDefIface<?,?,?> def =  ((SpecifyAppContextMgr )AppContextMgr.getInstance()).getTreeDefForClass((Class<? extends Treeable<?,?,?>> )dataObj.getClass()); 
+        
+        if (!def.isSynonymySupported())
+        {
+        	return false;
+        }
+        
         return rank >= def.getSynonymizedLevel();
     }
     /**

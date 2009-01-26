@@ -97,6 +97,7 @@ import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.DragDropCallback;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
@@ -2263,7 +2264,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                                            final TreeNode droppedOnNode, 
                                            final TreeNode draggedNode)
     {
-        boolean isSynonymizeOK = isSynonymizeOK(droppedOnNode, draggedNode, treeDef.getSynonymizedLevel());
+        boolean isSynonymizeOK = treeDef.isSynonymySupported() && isSynonymizeOK(droppedOnNode, draggedNode, treeDef.getSynonymizedLevel());
         boolean isMoveOK      = isMoveOK(droppedOnNode, draggedNode);
         
         if (treeDef.getSynonymizedLevel() == -1)
@@ -2590,13 +2591,19 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		{
 		    listModel.setDropLocationNode(null);
 	        setStatusBarText(null);
-	        repaint();
+	        if (UIHelper.getOSType() != UIHelper.OSTYPE.Windows) //repaints here cause mouse jitters in Windows
+	        {
+	        	repaint(); 
+	        }
 			return false;
 		}
 
 		//log.debug(dragged + " is being dragged over " + droppedOn);
 		
-		repaint(); // this schedules a repaint
+        if (UIHelper.getOSType() != UIHelper.OSTYPE.Windows)//repaints here cause mouse jitters in Windows
+        {
+        	repaint();
+        }
 		
 		//log.debug("determining if request to synonymize node " + dragged + " to node " + droppedOn + " is acceptable");
         // this is a request to make a node relationship (e.g. synonym on a Taxon record)
@@ -2618,7 +2625,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         String msg = "";
         
         // Check to see if it can be Synonmized
-        boolean isOK = isSynonymizeOK(droppedOnNode, draggedNode, treeDef.getSynonymizedLevel());
+        boolean isOK = treeDef.isSynonymySupported() && isSynonymizeOK(droppedOnNode, draggedNode, treeDef.getSynonymizedLevel());
 		if (isOK)
 		{
 		    listModel.setDropLocationNode(droppedOn);
