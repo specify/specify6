@@ -12,8 +12,6 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -61,7 +59,6 @@ import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.af.ui.SearchBox;
 import edu.ku.brc.af.ui.db.JAutoCompTextField;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayPanel;
-import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.Viewable;
@@ -102,13 +99,6 @@ public class SecurityAdminPane extends BaseSubPane
     private String                                      currentTitle        = null;
     private JAutoCompTextField                          searchText;
 
-    private JButton[] navToolbarBtns;
-    private JButton delBtn;
-    private JButton addDiscBtn;
-    private JButton addCollBtn;
-    private JButton addGrpBtn;
-    private JButton addUserBtn;
-    
     // manages creation and deletion of items on the navigation tree
     private NavigationTreeMgr navTreeMgr;
 
@@ -198,54 +188,6 @@ public class SecurityAdminPane extends BaseSubPane
         return navigationPanel;
     }
 
-    /**
-     * @return
-     */
-    private JPanel createAddDeleteNavToolbarPanel()
-    {
-        final int numBtns = 3;
-        
-        final PanelBuilder toolbarPB = new PanelBuilder(new FormLayout(UIHelper.createDuplicateJGoodiesDef("p", "2px", numBtns), "p"));
-        final CellConstraints cc = new CellConstraints();
-        
-        ActionListener btnAL = new ActionListener()
-        {
-            public void actionPerformed(ActionEvent ae)
-            {
-                if      (ae.getSource().equals(addDiscBtn)) { addDiscipline(); }
-                else if (ae.getSource().equals(addCollBtn)) { addCollection(); }
-                else if (ae.getSource().equals(addUserBtn)) { addUser(); }
-                else if (ae.getSource().equals(addGrpBtn))  { addGroup(); }
-            }
-        };
-        
-        IconManager.IconSize sz = IconManager.IconSize.NonStd;
-        delBtn     = UIHelper.createButton(IconManager.getIcon("MinusSign", IconManager.IconSize.Std16));
-        addUserBtn = UIHelper.createButton(IconManager.getIcon("add-person", sz));
-        addGrpBtn  = UIHelper.createButton(IconManager.getIcon("add-group", sz));
-        addCollBtn = UIHelper.createButton(IconManager.getIcon("add-collection", sz));
-        addDiscBtn = UIHelper.createButton(IconManager.getIcon("add-discipline", sz));
-        
-        navToolbarBtns = new JButton[numBtns];
-        navToolbarBtns[0] = delBtn;
-        navToolbarBtns[1] = addUserBtn;
-        navToolbarBtns[2] = addGrpBtn;
-        if (numBtns == 5)
-        {
-            navToolbarBtns[3] = addCollBtn;
-            navToolbarBtns[4] = addDiscBtn;
-        }
-        
-        int x = 1;
-        for (JButton btn : navToolbarBtns)
-        {
-            btn.addActionListener(btnAL);
-            toolbarPB.add(btn, cc.xy(x, 1));
-            x += 2;
-        }
-        
-        return toolbarPB.getPanel();
-    }
     /**
      * Adds a new discipline to the selected institution in the table model.
      * Also adds an anonymous division as the parent of the discipline.
@@ -536,11 +478,7 @@ public class SecurityAdminPane extends BaseSubPane
         createNavigationTree();
         //JList userList = createUserList();
         
-        JPanel addDeleteNavToolbarPanel = createAddDeleteNavToolbarPanel();
-        
-        String helpStr = "<html>To add an existing user to a group, just " +
-                "right-click on the group and choose 'add existing user' " +
-                "and select the user to add.</html>"; // I18N
+        String helpStr = getResourceString("ADD_USER_HINT");
         JLabel userDnDHelp = UIHelper.createLabel(helpStr);
         
         // adding the tree as f:p:g makes it grow too large
@@ -549,7 +487,6 @@ public class SecurityAdminPane extends BaseSubPane
         final CellConstraints cc = new CellConstraints();
 
         final PanelBuilder tbRightPB = new PanelBuilder(new FormLayout("f:p:g,p", "p"));
-        tbRightPB.add(addDeleteNavToolbarPanel, cc.xy(2, 1));
         
         JScrollPane sp = new JScrollPane(tree, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         mainPB.add(sp,                        cc.xy(1, 1));
@@ -1043,32 +980,6 @@ public class SecurityAdminPane extends BaseSubPane
         boolean isDiscipline  = (objWrapperArg != null)? objWrapperArg.isDiscipline()  : false;
         boolean isCollection  = (objWrapperArg != null)? objWrapperArg.isCollection()  : false;
         boolean isGroup       = (objWrapperArg != null)? objWrapperArg.isGroup()       : false;
-        
-        delBtn.setEnabled(
-                hasPermissionToDelete && 
-                objWrapperArg != null && 
-                !isInstitution &&
-                !isCollection );
-        
-        addDiscBtn.setEnabled(
-                hasPermissionToAdd &&
-                objWrapperArg != null && 
-                isInstitution );
-        
-        addCollBtn.setEnabled(
-                hasPermissionToAdd &&
-                objWrapperArg != null && 
-                isDiscipline);
-        
-        addGrpBtn. setEnabled(
-                hasPermissionToAdd &&
-                objWrapperArg != null && 
-                (isInstitution || isDiscipline || isCollection));
-
-        addUserBtn.setEnabled(
-                hasPermissionToAdd &&
-                objWrapperArg != null && 
-                isGroup);
     }
 
     /* (non-Javadoc)

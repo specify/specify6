@@ -9,6 +9,8 @@
  */
 package edu.ku.brc.specify.tasks.subpane.security;
 
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -44,7 +46,7 @@ public class EditorPanel extends JPanel implements ChangeListener,
      */
     public EditorPanel(final SecurityAdminPane sap)
     {
-        saveBtn = UIHelper.createButton("Save"); // I18N
+        saveBtn = UIHelper.createButton(getResourceString("SAVE"));
         saveBtn.setEnabled(false);
         
         saveBtn.addActionListener(new ActionListener() {
