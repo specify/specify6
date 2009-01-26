@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<install4j version="4.1.5" transformSequenceNumber="2">
+<install4j version="4.2" transformSequenceNumber="2">
   <directoryPresets config="../InstallerFiles" />
-  <application name="Specify" distributionSourceDir="" applicationId="5397-6897-2502-8965" mediaDir="../Media" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}_Beta" compression="6" lzmaCompression="false" pack200Compression="false" excludeSignedFromPacking="true" keepModificationTimes="false" shortName="Specify" publisher="Biodiversity Research Center, University of Kansas" publisherWeb="http://www.specifysoftware.org" version="6.2.09" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="true" macSignature="????" installerName="" javaMinVersion="1.6" javaMaxVersion="1.6" allowBetaVM="false" jdkMode="runtimeJre" jdkName="">
-    <languages skipLanguageSelection="false">
+  <application name="Specify" distributionSourceDir="" applicationId="5397-6897-2502-8965" mediaDir="../Media" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}_Beta" compression="6" lzmaCompression="false" pack200Compression="false" excludeSignedFromPacking="true" keepModificationTimes="false" missingFilesStrategy="warn" shortName="Specify" publisher="Biodiversity Research Center, University of Kansas" publisherWeb="http://www.specifysoftware.org" version="6.2.09" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="true" macSignature="????" installerName="" javaMinVersion="1.6" javaMaxVersion="1.6" allowBetaVM="false" jdkMode="runtimeJre" jdkName="">
+    <languages skipLanguageSelection="false" languageSelectionInPrincipalLanguage="false">
       <principalLanguage id="en" customLocalizationFile="" />
       <additionalLanguages />
     </languages>
@@ -31,7 +31,7 @@
   </files>
   <launchers>
     <launcher name="Specify" id="19" external="false" excludeFromMenu="false" menuName="" icnsFile="../InstallerFiles/specify.icns" pngIcon16File="../InstallerFiles/specify16.png" pngIcon32File="../InstallerFiles/specify32.png" macServiceDependencies="" swtApp="false" fileset="">
-      <executable name="Specify" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker">
+      <executable name="Specify" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
       <splashScreen show="true" autoOff="true" alwaysOnTop="false" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" java6SplashScreen="false">
@@ -58,7 +58,7 @@
       </customScript>
     </launcher>
     <launcher name="SpecifyBuilder" id="22" external="false" excludeFromMenu="false" menuName="" icnsFile="../InstallerFiles/specify.icns" pngIcon16File="../InstallerFiles/spbuilder16.png" pngIcon32File="../InstallerFiles/spbuilder32.png" macServiceDependencies="" swtApp="false" fileset="">
-      <executable name="SpecifyBuilder" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker">
+      <executable name="SpecifyBuilder" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
       <splashScreen show="true" autoOff="true" alwaysOnTop="false" width="0" height="0" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" java6SplashScreen="false">
@@ -84,7 +84,7 @@
       </customScript>
     </launcher>
     <launcher name="SchemaLocalizer" id="242" external="false" excludeFromMenu="false" menuName="" icnsFile="../InstallerFiles/specify.icns" pngIcon16File="../InstallerFiles/specify16.png" pngIcon32File="../InstallerFiles/specify32.png" macServiceDependencies="" swtApp="false" fileset="">
-      <executable name="SchemaLocalizer" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker">
+      <executable name="SchemaLocalizer" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
       <splashScreen show="true" autoOff="true" alwaysOnTop="false" width="0" height="0" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" java6SplashScreen="false">
@@ -110,7 +110,7 @@
       </customScript>
     </launcher>
     <launcher name="SpecifyiReport" id="317" external="false" excludeFromMenu="false" menuName="" icnsFile="../InstallerFiles/specify.icns" pngIcon16File="../InstallerFiles/spireport16.png" pngIcon32File="../InstallerFiles/spireport32.png" macServiceDependencies="" swtApp="false" fileset="">
-      <executable name="SpecifyiReport" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker">
+      <executable name="SpecifyiReport" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
       <splashScreen show="true" autoOff="true" alwaysOnTop="false" width="0" height="0" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" java6SplashScreen="false">
@@ -136,7 +136,7 @@
       </customScript>
     </launcher>
     <launcher name="SpecifyDBConverter" id="667" external="false" excludeFromMenu="false" menuName="" icnsFile="../InstallerFiles/specify.icns" pngIcon16File="../InstallerFiles/specify16.png" pngIcon32File="../InstallerFiles/specify32.png" macServiceDependencies="" swtApp="false" fileset="">
-      <executable name="SpecifyDBConverter" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker">
+      <executable name="SpecifyDBConverter" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
       <splashScreen show="true" autoOff="true" alwaysOnTop="false" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" java6SplashScreen="false">
@@ -162,7 +162,7 @@
       </customScript>
     </launcher>
     <launcher name="ConvertVerifier" id="669" external="false" excludeFromMenu="false" menuName="" icnsFile="../InstallerFiles/specify.icns" pngIcon16File="../InstallerFiles/specify16.png" pngIcon32File="../InstallerFiles/specify32.png" macServiceDependencies="" swtApp="false" fileset="">
-      <executable name="ConvertVerifier" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker">
+      <executable name="ConvertVerifier" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
       <splashScreen show="true" autoOff="true" alwaysOnTop="false" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" java6SplashScreen="false">
@@ -188,7 +188,7 @@
       </customScript>
     </launcher>
     <launcher name="SpecifyDBSetupWizard" id="748" external="false" excludeFromMenu="false" menuName="" icnsFile="../InstallerFiles/specify.icns" pngIcon16File="../InstallerFiles/spwizard16.png" pngIcon32File="../InstallerFiles/spwizard32.png" macServiceDependencies="" swtApp="false" fileset="">
-      <executable name="SpecifyDBSetupWizard" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="../" singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker">
+      <executable name="SpecifyDBSetupWizard" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="../" singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
       <splashScreen show="true" autoOff="true" alwaysOnTop="false" width="0" height="0" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" java6SplashScreen="false">
@@ -214,7 +214,7 @@
       </customScript>
     </launcher>
     <launcher name="Specify1G" id="827" external="false" excludeFromMenu="false" menuName="" icnsFile="../InstallerFiles/specify.icns" pngIcon16File="../InstallerFiles/specify16.png" pngIcon32File="../InstallerFiles/specify32.png" macServiceDependencies="" swtApp="false" fileset="">
-      <executable name="Specify" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker">
+      <executable name="Specify" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
       <splashScreen show="true" autoOff="true" alwaysOnTop="false" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" java6SplashScreen="false">
@@ -241,7 +241,7 @@
       </customScript>
     </launcher>
     <launcher name="BackupAndRestore" id="907" external="false" excludeFromMenu="false" menuName="" icnsFile="../InstallerFiles/specify.icns" pngIcon16File="../InstallerFiles/spbackup16.png" pngIcon32File="../InstallerFiles/spbackup32.png" macServiceDependencies="" swtApp="false" fileset="">
-      <executable name="BackupAndRestore" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker">
+      <executable name="BackupAndRestore" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
       <splashScreen show="true" autoOff="true" alwaysOnTop="false" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" java6SplashScreen="false">
@@ -268,7 +268,7 @@
       </customScript>
     </launcher>
     <launcher name="Register" id="986" external="false" excludeFromMenu="false" menuName="" icnsFile="../InstallerFiles/specify.icns" pngIcon16File="../InstallerFiles/spstatistics16x16.png" pngIcon32File="../InstallerFiles/spstatistics32x32.png" macServiceDependencies="" swtApp="false" fileset="">
-      <executable name="Register" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker">
+      <executable name="Register" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
       <splashScreen show="true" autoOff="true" alwaysOnTop="false" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" java6SplashScreen="false">
@@ -316,9 +316,6 @@
                 <object class="com.install4j.api.beans.ExternalFile">
                   <string>../InstallerFiles/specify32.png</string>
                 </object>
-              </void>
-              <void property="frameHeight">
-                <int>500</int>
               </void>
               <void property="frameWidth">
                 <int>600</int>
@@ -489,31 +486,6 @@
             </actions>
             <formComponents />
           </screen>
-          <screen name="" id="600" beanClass="com.install4j.runtime.beans.screens.CustomizableInfoScreen" enabled="true" commentSet="false" comment="" rollbackBarrier="false" backButton="2" finishScreen="false">
-            <serializedBean>
-              <java class="java.beans.XMLDecoder">
-                <object class="com.install4j.runtime.beans.screens.CustomizableInfoScreen">
-                  <void property="displayedTextFile">
-                    <object class="com.install4j.api.beans.ExternalFile">
-                      <string>${installer:sys.contentDir}/changelog.html</string>
-                    </object>
-                  </void>
-                  <void property="subTitle">
-                    <string>Specify ${compiler:sys.version} Beta includes the following changes:</string>
-                  </void>
-                  <void property="title">
-                    <string>New This Release</string>
-                  </void>
-                </object>
-              </java>
-            </serializedBean>
-            <condition />
-            <validation />
-            <preActivation />
-            <postActivation />
-            <actions />
-            <formComponents />
-          </screen>
           <screen name="" id="10" beanClass="com.install4j.runtime.beans.screens.FinishedScreen" enabled="true" commentSet="false" comment="" rollbackBarrier="false" backButton="2" finishScreen="true">
             <serializedBean>
               <java class="java.beans.XMLDecoder">
@@ -539,35 +511,6 @@
             <preActivation />
             <postActivation />
             <actions>
-              <group name="" id="393" beanClass="com.install4j.runtime.beans.groups.ActionGroup" enabled="true" commentSet="false" comment="">
-                <serializedBean>
-                  <java class="java.beans.XMLDecoder">
-                    <object class="com.install4j.runtime.beans.groups.ActionGroup">
-                      <void property="conditionExpression">
-                        <object class="com.install4j.api.beans.ScriptProperty">
-                          <void property="value">
-                            <string>context.getBooleanVariable("executeBuilder")</string>
-                          </void>
-                        </object>
-                      </void>
-                    </object>
-                  </java>
-                </serializedBean>
-                <beans>
-                  <action name="" id="394" beanClass="com.install4j.runtime.beans.actions.finish.ExecuteLauncherAction" enabled="true" commentSet="false" comment="" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
-                    <serializedBean>
-                      <java class="java.beans.XMLDecoder">
-                        <object class="com.install4j.runtime.beans.actions.finish.ExecuteLauncherAction">
-                          <void property="launcherId">
-                            <string>22</string>
-                          </void>
-                        </object>
-                      </java>
-                    </serializedBean>
-                    <condition>!context.isUnattended()</condition>
-                  </action>
-                </beans>
-              </group>
               <action name="" id="180" beanClass="com.install4j.runtime.beans.actions.finish.ExecuteLauncherAction" enabled="true" commentSet="false" comment="" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
                 <serializedBean>
                   <java class="java.beans.XMLDecoder">
@@ -600,29 +543,6 @@
                 </serializedBean>
                 <initScript />
               </formComponent>
-              <formComponent name="Rebuild Database" id="392" beanClass="com.install4j.runtime.beans.formcomponents.CheckboxComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
-                <serializedBean>
-                  <java class="java.beans.XMLDecoder">
-                    <object class="com.install4j.runtime.beans.formcomponents.CheckboxComponent">
-                      <void property="checkboxText">
-                        <string>Rebuild Database</string>
-                      </void>
-                      <void property="coupledComponentIds">
-                        <void method="add">
-                          <string>181</string>
-                        </void>
-                      </void>
-                      <void property="inverseCoupling">
-                        <boolean>true</boolean>
-                      </void>
-                      <void property="variableName">
-                        <string>executeBuilder</string>
-                      </void>
-                    </object>
-                  </java>
-                </serializedBean>
-                <initScript />
-              </formComponent>
             </formComponents>
           </screen>
         </screens>
@@ -630,7 +550,13 @@
       <application name="" id="uninstaller" beanClass="com.install4j.runtime.beans.applications.UninstallerApplication" enabled="true" commentSet="false" comment="" customIcnsFile="" customIcoFile="">
         <serializedBean>
           <java class="java.beans.XMLDecoder">
-            <object class="com.install4j.runtime.beans.applications.UninstallerApplication" />
+            <object class="com.install4j.runtime.beans.applications.UninstallerApplication">
+              <void property="customHeaderImage">
+                <object class="com.install4j.api.beans.ExternalFile">
+                  <string>../src/edu/ku/brc/specify/images/specify60.png</string>
+                </object>
+              </void>
+            </object>
           </java>
         </serializedBean>
         <startup>
@@ -716,6 +642,11 @@
         <serializedBean>
           <java class="java.beans.XMLDecoder">
             <object class="com.install4j.runtime.beans.applications.CustomApplication">
+              <void property="customHeaderImage">
+                <object class="com.install4j.api.beans.ExternalFile">
+                  <string>../src/edu/ku/brc/specify/images/specify60.png</string>
+                </object>
+              </void>
               <void property="customPngIcon16File">
                 <object class="com.install4j.api.beans.ExternalFile">
                   <string>${compiler:sys.install4jHome}/resource/updater_16.png</string>
@@ -1202,6 +1133,31 @@ if (wizardContext != null) {
                     <condition />
                   </action>
                 </actions>
+                <formComponents />
+              </screen>
+              <screen name="" id="1064" beanClass="com.install4j.runtime.beans.screens.CustomizableInfoScreen" enabled="true" commentSet="false" comment="" rollbackBarrier="false" backButton="2" finishScreen="false">
+                <serializedBean>
+                  <java class="java.beans.XMLDecoder">
+                    <object class="com.install4j.runtime.beans.screens.CustomizableInfoScreen">
+                      <void property="displayedTextFile">
+                        <object class="com.install4j.api.beans.ExternalFile">
+                          <string>../InstallerFiles/changelog.html</string>
+                        </object>
+                      </void>
+                      <void property="subTitle">
+                        <string>Specify ${compiler:sys.version} Beta includes the following changes:</string>
+                      </void>
+                      <void property="title">
+                        <string>New This Release</string>
+                      </void>
+                    </object>
+                  </java>
+                </serializedBean>
+                <condition />
+                <validation />
+                <preActivation />
+                <postActivation />
+                <actions />
                 <formComponents />
               </screen>
               <screen name="Finish" id="116" beanClass="com.install4j.runtime.beans.screens.BannerFormScreen" enabled="true" commentSet="false" comment="" rollbackBarrier="false" backButton="2" finishScreen="true">
