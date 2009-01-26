@@ -226,9 +226,6 @@
             <desc><![CDATA[Taxon data entry form.]]></desc>
             <altviews>
                 <altview name="Taxon Children View" viewdef="TaxonSubform" mode="view"/>
-                <!--
-                <altview name="Taxon Children Table View" viewdef="TaxonSubform Table" mode="view" default="true"/>
-				-->
             </altviews>
         </view>
         
@@ -251,9 +248,6 @@
             <desc><![CDATA[Geography data entry form.]]></desc>
             <altviews>
                 <altview name="Geography Children View" viewdef="GeographySubform" mode="view"/>
-                <!--
-                <altview name="Geography Children Table View" viewdef="GeographySubform Table" mode="view" default="true"/>
-				-->
             </altviews>
         </view>
         
@@ -276,9 +270,6 @@
             <desc><![CDATA[Storage data entry form.]]></desc>
             <altviews>
                 <altview name="Storage Children View" viewdef="StorageSubform" mode="view"/>
-                <!--
-                <altview name="Storage Children Table View" viewdef="StorageSubform Table" mode="view" default="true"/>
-				-->
             </altviews>
         </view>
         
@@ -325,9 +316,6 @@
             <desc><![CDATA[GeologicTimePeriod data entry form.]]></desc>
             <altviews>
                 <altview name="GeologicTimePeriod Children View" viewdef="GeologicTimePeriodSubform" mode="view"/>
-                <!--
-                <altview name="GeologicTimePeriod Children Table View" viewdef="GeologicTimePeriodSubform Table" mode="view" default="true"/>
-				-->
             </altviews>
         </view>
         
@@ -340,6 +328,17 @@
             <altviews>
                 <altview name="LithoStrat View" viewdef="LithoStrat" mode="view"/>
                 <altview name="LithoStrat Edit" viewdef="LithoStrat" mode="edit" default="true"/>
+            </altviews>
+        </view>
+        
+        <view name="LithoStratSubform"
+            class="edu.ku.brc.specify.datamodel.LithoStrat"
+            busrules="edu.ku.brc.specify.datamodel.busrules.LithoStratBusRules"
+            isinternal="true"
+            resourcelabels="false">
+            <desc><![CDATA[Lithostrat subform.]]></desc>
+            <altviews>
+                <altview name="LithoStratSubform View" viewdef="LithoStratSubform" mode="view"/>
             </altviews>
         </view>
         
@@ -1366,14 +1365,6 @@
                 	<cell type="field" id="definitionItem" isrequired="true" uitype="combobox" name="definitionItem"/>
                 </row>
                 <row>
-                	<cell type="label" label=" "/>
-                	<cell type="field" id="isAccepted" uitype="checkbox" name="isAccepted" default="true" isrequired="true"/>
-                </row>
-                <row>
-                	<cell type="label" labelfor="acceptedParent" label="ACCEPTEDPARENT"/>
-                	<cell type="field" id="acceptedParent" isrequired="true" uitype="querycbx" initialize="name=Storage;title=Storage;editbtn=false;newbtn=false" name="acceptedParent"/>
-                </row>
-                <row>
                     <cell type="subview" viewname="StorageSubform" id="children" name="children" colspan="3"/>
                 </row>
             </rows>
@@ -1413,14 +1404,6 @@
                 	<cell type="field" id="definitionItem" isrequired="true" uitype="combobox" name="definitionItem" colspan="5"/>
                 </row>
                 <row>
-                    <cell type="label" label=" "/>
-                    <cell type="field" id="isAccepted" uitype="checkbox" name="isAccepted" default="true" isrequired="true" colspan="3"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="acceptedGeologicTimePeriod" label="ACCEPTEDPARENT"/>
-                    <cell type="field" id="acceptedGeologicTimePeriod" isrequired="true" uitype="querycbx" initialize="name=GeologicTimePeriod;title=GeologicTimePeriod;editbtn=false;newbtn=false" name="acceptedGeologicTimePeriod" colspan="5"/>
-                </row>
-                <row>
                     <cell type="label" labelfor="startPeriod"/>
                 	<cell type="field" id="startPeriod" uitype="text" name="startPeriod"/>
                     <cell type="label" labelfor="startUncertainty"/>
@@ -1437,7 +1420,7 @@
                     <cell type="field" id="isBioStrat" uitype="checkbox" label="##" name="isBioStrat"/>
                 </row>                
                 <row>
-                    <cell type="subview" viewname="GeographySubform" id="children" name="children" colspan="7"/>
+                    <cell type="subview" viewname="GeologicTimePeriodSubform" id="children" name="children" colspan="7"/>
                 </row>
             </rows>
         </viewdef>
@@ -1476,14 +1459,6 @@
                     <cell type="field" id="definitionItem" isrequired="true" uitype="combobox" name="definitionItem" colspan="5"/>
                 </row>
                 <row>
-                    <cell type="label" label=" "/>
-                    <cell type="field" id="isAccepted" uitype="checkbox" name="isAccepted" default="true" isrequired="true" colspan="3"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="acceptedGeologicTimePeriod" label="ACCEPTEDPARENT"/>
-                    <cell type="field" id="acceptedGeologicTimePeriod" isrequired="true" uitype="querycbx" initialize="name=GeologicTimePeriod;title=GeologicTimePeriod;editbtn=false;newbtn=false" name="acceptedGeologicTimePeriod" colspan="5"/>
-                </row>
-                <row>
                     <cell type="label" labelfor="startPeriod"/>
                     <cell type="field" id="startPeriod" uitype="text" name="startPeriod"/>
                     <cell type="label" labelfor="startUncertainty"/>
@@ -1500,7 +1475,7 @@
                     <cell type="field" id="isBioStrat" uitype="checkbox" label="##" name="isBioStrat" readonly="true"/>
                 </row>                
                 <row>
-                    <cell type="subview" viewname="GeographySubform" id="children" name="children" colspan="7"/>
+                    <cell type="subview" viewname="GeologicTimePeriodSubform" id="children" name="children" colspan="7"/>
                 </row>
             </rows>
         </viewdef>
@@ -1539,12 +1514,7 @@
                 	<cell type="field" id="definitionItem" isrequired="true" uitype="combobox" name="definitionItem" colspan="5"/>
                 </row>
                 <row>
-                    <cell type="label" label=" "/>
-                    <cell type="field" id="isAccepted" uitype="checkbox" name="isAccepted" default="true" isrequired="true" colspan="3"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="acceptedLithoStrat" label="ACCEPTEDPARENT"/>
-                    <cell type="field" id="acceptedLithoStrat" isrequired="true" uitype="querycbx" initialize="name=LithoStrat;title=LithoStrat;editbtn=false;newbtn=false" name="acceptedLithoStrat" colspan="5"/>
+                    <cell type="subview" viewname="LithoStratSubform" id="children" name="children" colspan="7"/>
                 </row>
             </rows>
         </viewdef>
@@ -1638,47 +1608,24 @@
         </viewdef>
         
         <viewdef
-            name="TaxonSubform Table"
-            type="formtable"
-            class="edu.ku.brc.specify.datamodel.Taxon"
+            name="LithoStratSubform"
+            type="form"
+            class="edu.ku.brc.specify.datamodel.LithoStrat"
             gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
-            <desc><![CDATA[Taxon children table view.]]></desc>
-            <definition>TaxonSubform</definition>
-        </viewdef>
-
-        <viewdef
-            name="GeographySubform Table"
-            type="formtable"
-            class="edu.ku.brc.specify.datamodel.Geography"
-            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            <desc><![CDATA[New LithoStrat Node Form]]></desc>
+            <enableRules>
+            </enableRules>
+            <columnDef>100px,3dlu,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
             
-            <desc><![CDATA[Geography children table view.]]></desc>
-            <definition>GeographySubform</definition>
-        </viewdef>
-
-        <viewdef
-            name="StorageSubform Table"
-            type="formtable"
-            class="edu.ku.brc.specify.datamodel.Storage"
-            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
-            
-            <desc><![CDATA[Storage children table view.]]></desc>
-            <definition>StorageSubform</definition>
-        </viewdef>
-
-        <viewdef
-            name="GeologicTimePeriodSubform Table"
-            type="formtable"
-            class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
-            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
-            
-            <desc><![CDATA[GeologicTimePeriod children table view.]]></desc>
-            <definition>GeologicTimePeriodSubform</definition>
+            <rows>
+                <row>
+                    <cell type="label" labelfor="fullName"/>
+                    <cell type="field" id="fullName" uitype="text" cols="16" name="fullName"/> 
+                </row>
+            </rows>
         </viewdef>
 
         <viewdef
