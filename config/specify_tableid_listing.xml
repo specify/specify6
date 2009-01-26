@@ -231,7 +231,7 @@
             <display view="LoanItems" dataobjformatter="LoanPreparation" newobjdlg="LoanItemsDisplay"/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.LoanReturnPreparation" abbrev="lrpo" id="55" searchable="true">
-            <businessrule>edu.ku.brc.specify.datamodel.busrules.LoanPreparationBusRules</businessrule>          
+            <!-- <businessrule>edu.ku.brc.specify.datamodel.busrules.LoanReturnPreparationBusRules</businessrule>    -->        
         </table>
         <table name="edu.ku.brc.specify.datamodel.Locality" abbrev="loc" id="2" workbench="true" searchable="true">
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.LocalityBusRules</businessrule>

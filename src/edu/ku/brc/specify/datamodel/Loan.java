@@ -166,6 +166,36 @@ public class Loan extends DisciplineMember implements AttachmentOwnerIFace<LoanA
         addressOfRecord = null;
     }
     // End Initializer
+    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#forceLoad()
+     */
+    @Override
+    public void forceLoad()
+    {
+        super.forceLoad();
+        
+        for (LoanPreparation lp : loanPreparations)
+        {
+            lp.forceLoad();
+        }
+        
+        for (Shipment shipment : shipments)
+        {
+            shipment.forceLoad();
+        }
+        
+        for (LoanAgent loanAgent : loanAgents)
+        {
+            loanAgent.forceLoad();
+        }
+        for (LoanAttachment loanAtt : loanAttachments)
+        {
+            loanAtt.forceLoad();
+        }
+    }
+
 
     // Property accessors
 

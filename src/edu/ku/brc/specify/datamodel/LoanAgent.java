@@ -93,6 +93,17 @@ public class LoanAgent extends CollectionMember implements java.io.Serializable 
     }
     // End Initializer
 
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#forceLoad()
+     */
+    @Override
+    public void forceLoad()
+    {
+        agent.getId();
+        loan.getId();
+    }
+    
     // Property accessors
 
     /**
@@ -198,5 +209,6 @@ public class LoanAgent extends CollectionMember implements java.io.Serializable 
     {
         return 53;
     }
+
 
 }

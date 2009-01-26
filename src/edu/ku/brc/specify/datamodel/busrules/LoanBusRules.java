@@ -37,8 +37,10 @@ import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.ui.forms.DraggableRecordIdentifier;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.MultiView;
+import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.validation.UIValidatable;
 import edu.ku.brc.af.ui.forms.validation.ValFormattedTextFieldSingle;
+import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.Accession;
@@ -69,6 +71,78 @@ public class LoanBusRules extends AttachmentOwnerBaseBusRules
     }
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#initialize(edu.ku.brc.af.ui.forms.Viewable)
+     */
+    @Override
+    public void initialize(Viewable viewableArg)
+    {
+        super.initialize(viewableArg);
+        
+        Component closedComp = formViewObj.getControlByName("isClosed");
+        if (closedComp instanceof JCheckBox)
+        {
+            ((JCheckBox)closedComp).addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e)
+                {
+                    if (((JCheckBox)e.getSource()).isSelected())
+                    {
+                        Component dateComp = formViewObj.getControlByName("dateClosed");
+                        if (dateComp != null && dateComp instanceof ValFormattedTextFieldSingle)
+                        {
+                            ValFormattedTextFieldSingle loanDateComp = (ValFormattedTextFieldSingle)dateComp;
+                            //System.out.println("["+loanDateComp.getText()+"]");
+                            if (StringUtils.isEmpty(loanDateComp.getText()))
+                            {
+                                DateWrapper scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
+                                loanDateComp.setText(scrDateFormat.format(Calendar.getInstance()));
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#beforeFormFill()
+     */
+    @Override
+    public void beforeFormFill()
+    {
+        Loan loan = (Loan)formViewObj.getDataObj();
+        
+        if (formViewObj != null && loan != null)
+        {
+            formViewObj.setSkippingAttach(true);
+            
+            if (formViewObj.getSession() == null && loan.getId() != null)
+            {
+                DataProviderSessionIFace session = null;
+                try
+                {
+                    session = DataProviderFactory.getInstance().createSession();    
+                    session.attach(loan);
+                    loan.forceLoad();
+                }
+                catch (Exception ex)
+                {
+                    //UsageTracker.incrHandledUsageCount();
+                    //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataEntryTask.class, ex);
+                    //log.error(ex);
+                    ex.printStackTrace();
+                    
+                } finally
+                {
+                    if (session != null)
+                    {
+                        session.close();
+                    }
+                }
+            }
+        }
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BaseBusRules#afterFillForm(java.lang.Object)
      */
     @Override
@@ -76,6 +150,8 @@ public class LoanBusRules extends AttachmentOwnerBaseBusRules
     {
         if (formViewObj != null && formViewObj.getDataObj() instanceof Loan)
         {
+            formViewObj.setSkippingAttach(true);
+
             MultiView mvParent = formViewObj.getMVParent();
             Loan      loan     = (Loan)formViewObj.getDataObj();
             boolean   isNewObj = MultiView.isOptionOn(mvParent.getOptions(), MultiView.IS_NEW_OBJECT);
@@ -85,30 +161,6 @@ public class LoanBusRules extends AttachmentOwnerBaseBusRules
             if (comp instanceof JCheckBox)
             {
                 ((JCheckBox)comp).setVisible(isEdit);
-            }
-            
-            Component closedComp = formViewObj.getControlByName("isClosed");
-            if (closedComp instanceof JCheckBox)
-            {
-                ((JCheckBox)closedComp).addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e)
-                    {
-                        if (((JCheckBox)e.getSource()).isSelected())
-                        {
-                            Component dateComp = formViewObj.getControlByName("dateClosed");
-                            if (dateComp != null && dateComp instanceof ValFormattedTextFieldSingle)
-                            {
-                                ValFormattedTextFieldSingle loanDateComp = (ValFormattedTextFieldSingle)dateComp;
-                                //System.out.println("["+loanDateComp.getText()+"]");
-                                if (StringUtils.isEmpty(loanDateComp.getText()))
-                                {
-                                    DateWrapper scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
-                                    loanDateComp.setText(scrDateFormat.format(Calendar.getInstance()));
-                                }
-                            }
-                        }
-                    }
-                });
             }
             
             boolean allResolved = true;

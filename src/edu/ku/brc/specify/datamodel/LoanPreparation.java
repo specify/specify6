@@ -110,6 +110,20 @@ public class LoanPreparation extends CollectionMember implements java.io.Seriali
     }
     // End Initializer
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#forceLoad()
+     */
+    @Override
+    public void forceLoad()
+    {
+        super.forceLoad();
+        
+        for (LoanReturnPreparation lrp : getLoanReturnPreparations())
+        {
+            lrp.forceLoad();
+        }
+    }
+
     // Property accessors
 
     /**

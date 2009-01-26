@@ -1331,7 +1331,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
                 {
                     plCbxModel.removeAllElements();
                     plCbxModel.addElement(pickListNone);
-                    int inx = 0;
+                    int inx = 1;
                     for (PickList pl : pickLists)
                     {
                         if (pl.getType() == PickListIFace.PL_WHOLE_TABLE)

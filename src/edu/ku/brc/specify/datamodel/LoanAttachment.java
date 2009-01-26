@@ -39,7 +39,7 @@ public class LoanAttachment extends DataModelObjBase implements ObjectAttachment
                                                                 Comparable<LoanAttachment>
 {
     protected Integer    loanAttachmentId;
-    protected Loan     loan;
+    protected Loan       loan;
     protected Attachment attachment;
     protected Integer    ordinal;
     protected String     remarks;
@@ -67,7 +67,17 @@ public class LoanAttachment extends DataModelObjBase implements ObjectAttachment
         attachment.initialize();
         ordinal            = null;
     }
-
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#forceLoad()
+     */
+    @Override
+    public void forceLoad()
+    {
+        attachment.getId();
+        loan.getId();
+    }
+    
     @Id
     @GeneratedValue
     @Column(name = "LoanAttachmentID")

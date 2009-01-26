@@ -207,6 +207,7 @@ public class FormViewObj implements Viewable,
     protected FormLayout                    formLayout;
     protected PanelBuilder                  builder;
 
+    protected boolean                       isSkippingAttach = false; // Indicates whether to skip before setting data into the form
     protected FormValidator                 formValidator   = null;
     protected Object                        parentDataObj   = null;
     protected Object                        dataObj         = null;
@@ -4191,6 +4192,25 @@ public class FormViewObj implements Viewable,
     }
 
     /**
+     * 
+     * @return true skip session.attach, false do it
+     */
+    public boolean isSkippingAttach()
+    {
+        return isSkippingAttach;
+    }
+
+    /**
+     * Set this to true if you do not want the form to do an attach before filling in the entire form
+     * 
+     * @param isSkippingAttach true skip session.attach, false do it
+     */
+    public void setSkippingAttach(boolean isSkippingAttach)
+    {
+        this.isSkippingAttach = isSkippingAttach;
+    }
+
+    /**
      * Fill the form with data, indicate whether the form should be reset because the data is new.
      * @param doResetAfterFill tells the form to be reset after filling, as if it was new data.
      * 
@@ -4216,7 +4236,7 @@ public class FormViewObj implements Viewable,
             businessRules.beforeFormFill();
         }
         
-        if (dataObj != null && dataObj instanceof FormDataObjIFace && ((FormDataObjIFace)dataObj).getId() != null)
+        if (!isSkippingAttach && dataObj != null && dataObj instanceof FormDataObjIFace && ((FormDataObjIFace)dataObj).getId() != null)
         {
             if (mvParent == null || mvParent.isTopLevel() || forceCreateSession)
             {
@@ -4232,64 +4252,36 @@ public class FormViewObj implements Viewable,
                     mvParent.setSession(session);   
                 }
                 
-                if (true)
+                try
                 {
+                    session.attach(dataObj);
+                    //((FormDataObjIFace)dataObj).forceLoad();
+                }
+                catch (HibernateException ex)
+                {
+                    edu.ku.brc.af.core.UsageTracker.incrHQLUsageCount();
+                    //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormViewObj.class, ex);
+                    
+                    //Oh No!
+                    //take the drastic measures in the unreachable else block below...
+                    Object beforeSaveDataObj = dataObj;
                     try
                     {
-                        session.attach(dataObj);
-                        //((FormDataObjIFace)dataObj).forceLoad();
-                    }
-                    catch (HibernateException ex)
-                    {
-                        edu.ku.brc.af.core.UsageTracker.incrHQLUsageCount();
-                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormViewObj.class, ex);
-                        //Oh No!
-                        //take the drastic measures in the unreachable else block below...
-                        Object beforeSaveDataObj = dataObj;
-                        try
-                        {
-                            dataObj = session.merge(dataObj);
-                        }
-                        catch (Exception ex2)
-                        {
-                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormViewObj.class, ex2);
-                            throw new RuntimeException(ex2);
-                        }
-                        replaceDataObjInList(beforeSaveDataObj, dataObj);
-                        if (origDataSet != null)
-                        {
-                            origDataSet.remove(beforeSaveDataObj);
-                            origDataSet.add(dataObj);
-                        }
-                    }
-                } else
-                {
-                    try
-                    {
-                        Object beforeSaveDataObj = dataObj;
                         dataObj = session.merge(dataObj);
-                        replaceDataObjInList(beforeSaveDataObj, dataObj);
-                        if (origDataSet != null)
-                        {
-                            origDataSet.remove(beforeSaveDataObj);
-                            origDataSet.add(dataObj);
-                        }
-                    } catch (Exception ex)
+                    }
+                    catch (Exception ex2)
                     {
                         edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormViewObj.class, ex);
-                        new RuntimeException(ex);
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormViewObj.class, ex2);
+                        throw new RuntimeException(ex2);
+                    }
+                    replaceDataObjInList(beforeSaveDataObj, dataObj);
+                    if (origDataSet != null)
+                    {
+                        origDataSet.remove(beforeSaveDataObj);
+                        origDataSet.add(dataObj);
                     }
                 }
-                
-                /*if (origDataSet != null)
-                {
-                    for (Object o : origDataSet)
-                    {
-                        session.attach(o);
-                    }
-                } */
             }
         }
         
@@ -4387,13 +4379,6 @@ public class FormViewObj implements Viewable,
             {
                 Component comp = fieldInfo.getComp();
                 
-                /*String nm = fieldInfo.getFormCell().getName();
-                if (nm.equals("division"))
-                {
-                    int x = 0;
-                    x++;
-                }*/
-
                 Object data = null;
 
                 // This is for panels that use in layout but have no data
@@ -4422,16 +4407,7 @@ public class FormViewObj implements Viewable,
                             throw new RuntimeException("formatName ["+dataObjFormatName+"] only works on a single value.");
                         }
                         
-                        Object[] values;
-                        // 02/13/08 - ignore means ignore
-                        //if (fieldInfo.getFormCell().isIgnoreSetGet())
-                        //{
-                        //    defaultDataArray[0] = defaultValue;
-                        //    values              = defaultDataArray;
-                        //} else
-                        //{
-                            values = UIHelper.getFieldValues(cellField.getFieldNames(), dataObj, dg);
-                        //}
+                        Object[] values = UIHelper.getFieldValues(cellField.getFieldNames(), dataObj, dg);
                         
                         setDataIntoUIComp(comp, DataObjFieldFormatMgr.getInstance().format(values[0], dataObjFormatName), defaultValue);
 
@@ -4517,10 +4493,10 @@ public class FormViewObj implements Viewable,
                     {
                         edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                         edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormViewObj.class, ex);
+                        
                         log.error("FieldCell["+fieldInfo.getFormCell().getName()+" data["+dataObj+"]");
                         throw new RuntimeException(ex);
                     }
-                    //data = dg != null ? dg.getFieldValue(dataObj, fieldInfo.getName()) : null;
                     
                     if (data != null)
                     {
@@ -4563,21 +4539,13 @@ public class FormViewObj implements Viewable,
                     }
                 }
             }
-        }/* else
-        {
-            log.debug("******************* No Data!");
-        }*/
+        }
         
-        //log.debug(formViewDef.getName());
-
         // Adjust the formValidator now that all the data is in the controls
         if (doResetAfterFill && formValidator != null)
         {
             formValidator.reset(MultiView.isOptionOn(options, MultiView.IS_NEW_OBJECT));
-
-            //listFieldChanges();
         }
-        
         
         if (businessRules != null)
         {

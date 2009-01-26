@@ -88,12 +88,12 @@ public class LoanReturnPreparation extends CollectionMember implements java.io.S
     {
         super.init();
         loanReturnPreparationId = null;
-        returnedDate = null;
-        quantity = null;
-        remarks = null;
-        loanPreparation = null;
-        deaccessionPreparation = null;
-        receivedBy = null;
+        returnedDate            = null;
+        quantity                = null;
+        remarks                 = null;
+        loanPreparation         = null;
+        deaccessionPreparation  = null;
+        receivedBy              = null;
     }
     // End Initializer
 

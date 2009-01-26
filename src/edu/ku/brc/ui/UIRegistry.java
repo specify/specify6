@@ -2062,7 +2062,7 @@ public class UIRegistry
         public void undoableEditHappened(UndoableEditEvent e) 
         {
             //Remember the edit and update the menus.
-            if (undoManager != null)
+            /*if (undoManager != null)
             {
                 undoManager.addEdit(e.getEdit());
             }
@@ -2073,7 +2073,7 @@ public class UIRegistry
             if (redoAction != null)
             {
                 redoAction.updateRedoState();
-            }
+            }*/
         }
     }
     
