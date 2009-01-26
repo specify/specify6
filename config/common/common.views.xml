@@ -1573,44 +1573,44 @@
             <!-- <rowDef>p,2dlu,p,2dlu,p,2dlu,p:g,2dlu</rowDef>  -->
             <rowDef auto="true" cell="p" sep="2px"/>
             <rows>
-            	<row>
+                <row>
                     <cell type="label" labelfor="13"/>
-                    <cell type="field" id="13" name="preferredTaxon" uitype="text" readonly="true"/>
+                    <cell type="field" id="13" name="preferredTaxon" uitype="text" readonly="true" colspan = "5"/>
                     <cell type="label" label=" "/>
                     <cell type="field" id="3" name="isCurrent" uitype="checkbox"/>
-             	</row>
-                <row>
-                    <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="taxon" uitype="querycbx" initialize="name=Taxon" colspan="6"/>
                 </row>
                 <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="taxon" uitype="querycbx" initialize="name=Taxon" colspan="5"/>
                     <cell type="label" labelfor="8"/>
                     <cell type="field" id="8" name="qualifier" uitype="text"/>
-                    
                     <cell type="label" labelfor="9"/>
-                    <cell type="field" id="9" name="addendum" uitype="text"/>
+                    <cell type="field" id="9" name="addendum" uitype="text"/>            
                     
+                </row>
+                <row>
+                    <cell type="label" labelfor="10"/>
+                    <cell type="field" id="10" name="alternateName" uitype="text" colspan = "5"/>              
                     <cell type="label" labelfor="11"/>
                     <cell type="field" id="11" name="nameUsage" uitype="combobox" picklist="NameUsages"/>
                     
-                    <cell type="label" labelfor="10"/>
-                    <cell type="field" id="10" name="alternateName" uitype="text"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="6"/>
                     <cell type="field" id="6" name="typeStatusName" uitype="combobox" picklist="TypeStatus"/>
                     
                     <cell type="label" labelfor="5"/>
-                    <cell type="field" id="5" name="determiner" uitype="querycbx" initialize="name=Agent"/>
-
+                    <cell type="field" id="5" name="determiner" uitype="querycbx" initialize="name=Agent"  />
+                    
                     <cell type="label" labelfor="7"/>
                     <cell type="field" id="7" uitype="plugin" name="this" initialize="name=PartialDateUI;df=determinedDate;tp=determinedDatePrecision" uifieldformatter="Date"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="12"/>
-                    <cell type="field" id="12" name="remarks" uitype="textarea" colspan="14" cols="50"/>
+                    <cell type="field" id="12" name="remarks" uitype="textarea" colspan="12" cols="50"/>
                 </row>
             </rows>
+            
         </viewdef>
         
 	  <viewdef 
