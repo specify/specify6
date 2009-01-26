@@ -938,7 +938,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
             // rods - 09/05/08 - (Bug 5858) need to hide the default value when disabled
             // so I added 'isEnabled()' below
             //
-            data = isEnabled() && StringUtils.isNotEmpty(defaultValue) && formatter.getAutoNumber() == null ? defaultValue : "";
+            data = isEnabled() && StringUtils.isNotEmpty(defaultValue) && formatter.getAutoNumber() == null && isNew ? defaultValue : "";
             needsUpdating = true;
         }
         
