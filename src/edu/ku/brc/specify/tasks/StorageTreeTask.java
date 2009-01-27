@@ -99,7 +99,7 @@ public class StorageTreeTask extends BaseTreeTask<Storage, StorageTreeDef, Stora
         
         Vector<Integer> idList = new Vector<Integer>();
         
-        fillLisWithIds(sql, idList);
+        fillListWithIds(sql, idList);
         
         // Get the Collection Objects from the Preparations
         for (Integer id : idList)
@@ -111,7 +111,7 @@ public class StorageTreeTask extends BaseTreeTask<Storage, StorageTreeDef, Stora
               "INNER JOIN CollectionObject co ON co.ContainerID = cn.ContainerID " +
               "WHERE st.StorageID = "+storage.getStorageId()+" AND co.CollectionMemberID = COLMEMID";
         
-        fillLisWithIds(sql, idList);
+        fillListWithIds(sql, idList);
         for (Integer id : idList)
         {
             duplicateHash.put(id, true);

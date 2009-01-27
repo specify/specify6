@@ -694,7 +694,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
      * @param sqlStr the SQL string
      * @param list the list to fill
      */
-    protected void fillLisWithIds(final String sqlStr, final Vector<Integer> list)
+    protected void fillListWithIds(final String sqlStr, final Vector<Integer> list)
     {
         list.clear();
         

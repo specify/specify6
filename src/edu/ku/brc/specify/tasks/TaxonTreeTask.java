@@ -71,13 +71,13 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
     {
         // The old way using Hibernate relationships was too slow, 
         // so instead I am using straight SQL it is a lot faster.
-        String sql = "SELECT co.CollectionObjectID FROM taxon as tx INNER JOIN determination as dt ON tx.TaxonID = dt.TaxonID " +
+        String sql = "SELECT co.CollectionObjectID FROM taxon as tx INNER JOIN determination as dt ON tx.TaxonID = dt.PreferredTaxonID " +
                      "INNER JOIN collectionobject as co ON dt.CollectionObjectID = co.CollectionObjectID " +
                      "WHERE tx.TaxonID = "+taxon.getId()+" AND co.CollectionMemberID = COLMEMID";
         
         Vector<Integer> list = new Vector<Integer>();
         
-        fillLisWithIds(sql, list);
+        fillListWithIds(sql, list);
         
         for (Integer id : list)
         {
