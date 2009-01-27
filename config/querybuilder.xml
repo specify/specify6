@@ -119,32 +119,15 @@
       		<alias name="Agent" field="technicalContacts" />
       		<table name="SpPrincipal" field="userGroups"/>
       	</table>
-      	<table name="ConservDescription" field="conservDescriptions"> 
-      		<table name="ConservDescriptionAttachment" field="conservDescriptionAttachments">
-      			<alias name="Attachment"/>
-      		</table>
-      		<table name="ConservEvent" field="events"/>
-      	</table>
-      	<table name="Container" field="container" />
-      	<table name="Container" field="containerOwner" />
+      	<alias name="ConservDescription" field="conservDescriptions" /> 
+      	<!-- table name="Container" field="container" /-->
+      	<!-- table name="Container" field="containerOwner" /-->
       	<alias name="Agent" field="createdByAgent" />
       	<table name="DNASequence" field="dnaSequences">
       			<alias name="Agent" field="sequencer" /> 
       	</table>
       	
-      	<table name="FieldNotebookPage" field="fieldNotebookPage" >
-      		<table name="FieldNotebookPageSet" field="pageSet">
-      			<table name="FieldNotebookPageSetAttachment" field="attachments">
-      				<alias name="Attachment"/>
-      			</table>
-      			<table name="FieldNotebook" >
-      				<table name="FieldNotebookAttachment" field="attachments" >	
-      					<alias name="Attachment"/>
-      				</table>
-      				<alias name="Agent" field="ownerAgent" />
-      			</table>
-      		</table>  
-      	</table>
+      	<alias name="FieldNotebookPage" field="fieldNotebookPage" />
       	
       	<!-- <table name="CollectionRelationship" field="leftSideRels" /> -->
       	<alias name="Agent" field="modifiedByAgent" />
@@ -159,11 +142,28 @@
     </table>
      -->
     
+    <table name="ConservDescription" >
+      	<alias name="Agent" field="createdByAgent" />
+      	<alias name="Agent" field="modifiedByAgent" />
+    	<alias name="CollectionObject" />
+        <table name="ConservDescriptionAttachment" field="conservDescriptionAttachments">
+        	<alias name="Attachment"/>
+        </table>
+    	<table name="ConservEvent" field="events" />
+    </table>
+    
+    <!-- table name="Container" >
+      	<alias name="Agent" field="createdByAgent" />
+      	<alias name="Agent" field="modifiedByAgent" />
+    </table-->
+    
     <table name="Deaccession">
       <table name="DeaccessionAgent" field="deaccessionAgents" >
       	<alias name="Agent"/>
       </table>
       <alias name="DeaccessionPreparation" field="deaccessionPreparations" />
+      	<alias name="Agent" field="createdByAgent" />
+      	<alias name="Agent" field="modifiedByAgent" />
     </table>
 
 	<table name="DeaccessionPreparation">
@@ -201,12 +201,43 @@
      	<alias name="Shipment" field="shipments" />    	
     </table>
     
+    <table name="FieldNotebook" >
+    	<table name="FieldNotebookAttachment" field="attachments" >	
+      		<alias name="Attachment"/>
+      	</table>
+      	<alias name="Agent" field="ownerAgent" />
+      	<alias name="Agent" field="createdByAgent" />
+      	<alias name="Agent" field="modifiedByAgent" />    	
+      	<alias name="FieldNotebookPageSet" field="pageSets" />			
+    </table>
+
+    <table name="FieldNotebookPage" >
+    	<table name="FieldNotebookPageAttachment" field="attachments">
+     		<alias name="Attachment"/>
+      	</table>
+      	<alias name="FieldNotebookPageSet" field="pageSet" />
+      	<alias name="Agent" field="createdByAgent" />
+      	<alias name="Agent" field="modifiedByAgent" />
+      	<alias name="CollectionObject" field="collectionObjects" />    	      	
+    </table>
+
+	<table name="FieldNotebookPageSet">
+    	<table name="FieldNotebookPageSetAttachment" field="attachments">
+     		<alias name="Attachment"/>
+      	</table>
+      	<alias name="FieldNotebook" />
+      	<alias name="FieldNotebookPage" field="pages"/>
+      	<alias name="Agent" field="createdByAgent" />
+      	<alias name="Agent" field="modifiedByAgent" />    	      	
+      	<alias name="Agent" field="sourceAgent" />    	      	
+	</table>
+	    
     <table name="Geography">
       	<alias name="Agent" field="createdByAgent" />
       	<!-- alias name="Geography" field="acceptedChildren" /-->
       	<!-- alias name="Geography" field="children" /-->
       	<alias name="Geography" field="acceptedGeography" />
-      	<alias name="Geography" field="parent" />
+      	<!-- <alias name="Geography" field="parent" /-->
       	<alias name="Locality" field="localities" />
       	<alias name="Agent" field="modifiedByAgent" />    	
     </table>
@@ -227,6 +258,12 @@
       	<alias name="Agent" field="createdByAgent" />
       	<alias name="Agent" field="modifiedByAgent" />   
       	<table name="Recordset" field="recordSets" /> 	    
+    </table>
+    
+    <table name="Journal" >
+      	<alias name="Agent" field="createdByAgent" />
+      	<alias name="Agent" field="modifiedByAgent" />   
+      	<alias name="ReferenceWork" field="referenceWorks"/>
     </table>
     
     <table name="Loan">
@@ -290,6 +327,7 @@
         <table name="PreparationAttribute"/>
         <alias name="CollectionObject"/>
         <alias name="LoanPreparation" field="loanPreparations"/>
+        <alias name="Storage"/>
       	<alias name="Agent" field="createdByAgent" />
       	<alias name="Agent" field="modifiedByAgent" />
     </table>
@@ -302,7 +340,7 @@
     </table>
     
     <table name="ReferenceWork">
-        <table name="Journal"/>
+        <alias name="Journal"/>
         <table name="Author" field="authors">
             <alias name="Agent"/>
         </table>
@@ -346,8 +384,14 @@
       	<alias name="Loan" />
     </table>
     
+    <table name="Storage" >
+      	<alias name="Agent" field="createdByAgent" />
+      	<alias name="Agent" field="modifiedByAgent" />
+      	<alias name="Preparation" field="preparations" />
+    </table>
+    
     <table name="Taxon">
-    	<alias name="Taxon" field="parent" />
+    	<!-- alias name="Taxon" field="parent" /-->
     	<alias name="Taxon" field="acceptedTaxon" />
         <table name="TaxonAttachment" field="taxonAttachments">
            	<alias name="Attachment"/>
