@@ -31,9 +31,19 @@
     <mapID target="SYNONIMIZE_NODE"     url="SpecifyHelp/Trees/Trees_About.html#drag_drop" />
     
 	<!-- Query Builder -->
-	<mapID target="Query"                url="SpecifyHelp/QueryBuilder/QueryBuilder.html" />
-	<mapID target="QBNewQueryConfig"     url="SpecifyHelp/QueryBuilder/QueryBuilder.html#query_creators" />
-	<mapID target="QBSavedQueriesConfig" url="SpecifyHelp/QueryBuilder/QueryBuilder.html#saved_queries" />
+	<mapID target="Query"                		url="SpecifyHelp/QueryBuilder/QueryBuilder.html" />
+	<mapID target="QB"		 		            url="SpecifyHelp/QueryBuilder/NonFile.html" />
+	<mapID target="QBSave"		 		        url="SpecifyHelp/QueryBuilder/NonFile.html" />
+	<mapID target="QBTooManyRecordsForSort"     url="SpecifyHelp/QueryBuilder/NonFile.html" />
+	<mapID target="QBFieldRemovedAndReports"    url="SpecifyHelp/QueryBuilder/NonFile.html" />
+	<mapID target="QBImport"                    url="SpecifyHelp/QueryBuilder/NonFile.html" />
+	<mapID target="QBExport"                    url="SpecifyHelp/QueryBuilder/NonFile.html" />
+	<mapID target="QBUndeletableReps"           url="SpecifyHelp/QueryBuilder/NonFile.html" />
+	<mapID target="QBNewQueryConfig"     		url="SpecifyHelp/QueryBuilder/QueryBuilder.html#query_creators" />
+	<mapID target="QBSavedQueriesConfig" 		url="SpecifyHelp/QueryBuilder/QueryBuilder.html#saved_queries" />
+	
+	<!-- Reports -->
+	<mapID target="RunReportSettings"	 url="SpecifyHelp/NonFile.html" />
 	
 	
 	<!-- Other Tasks -->

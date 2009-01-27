@@ -1202,7 +1202,8 @@ public class QueryTask extends BaseTask
             if (query.getReports().size() > 0)
             {
                 CustomDialog cd = new CustomDialog((Frame )UIRegistry.getTopWindow(), UIRegistry.getResourceString("REP_CONFIRM_DELETE_TITLE"),
-                        true, CustomDialog.OK_BTN, new QBReportInfoPanel(query, UIRegistry.getResourceString("QB_UNDELETABLE_REPS")));
+                        true, CustomDialog.OKHELP, new QBReportInfoPanel(query, UIRegistry.getResourceString("QB_UNDELETABLE_REPS")));
+                cd.setHelpContext("QBUndeletableReps");
                 UIHelper.centerAndShow(cd);
                 cd.dispose();
                 return false;
@@ -1673,11 +1674,12 @@ public class QueryTask extends BaseTask
                 getResourceString("QY_IMPORT_QUERIES"),
                 getResourceString("QY_SEL_QUERIES_IMP"),
                 queries,
-                CustomDialog.OKCANCEL,
+                CustomDialog.OKCANCELHELP,
                 ToggleButtonChooserPanel.Type.Checkbox);
         
         dlg.setAddSelectAll(true);
         dlg.setUseScrollPane(true);
+        dlg.setHelpContext("QBImport");
         UIHelper.centerAndShow(dlg);
         List<SpQuery> queriesList = dlg.getSelectedObjects();
         if (queriesList == null || queriesList.size() == 0)
@@ -1742,10 +1744,11 @@ public class QueryTask extends BaseTask
                     getResourceString("QY_EXPORT_QUERIES"),
                     getResourceString("QY_SEL_QUERIES_EXP"),
                     list,
-                    CustomDialog.OKCANCEL,
+                    CustomDialog.OKCANCELHELP,
                     ToggleButtonChooserPanel.Type.Checkbox);
             dlg.setAddSelectAll(true);
             dlg.setUseScrollPane(true);
+            dlg.setHelpContext("QBExport");
             UIHelper.centerAndShow(dlg);
             selectedList = dlg.getSelectedObjects();
         }

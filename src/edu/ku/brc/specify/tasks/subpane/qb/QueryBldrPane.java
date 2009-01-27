@@ -465,10 +465,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         JPanel bottom = new JPanel(new BorderLayout());
         bottom.add(outer.getPanel(), BorderLayout.EAST);
         JButton helpBtn = createButton(UIRegistry.getResourceString("HELP"));
-        if (ContextMgr.getCurrentContext() != null)
-        {
-            HelpMgr.registerComponent(helpBtn, ContextMgr.getCurrentContext().getName());
-        }
+        HelpMgr.registerComponent(helpBtn, "QB");
         bottom.add(helpBtn, BorderLayout.WEST);
         add(bottom, BorderLayout.SOUTH);
 
@@ -1520,7 +1517,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     pane = rpp;
                 }
                 CustomDialog cd = new CustomDialog((Frame) UIRegistry.getTopWindow(), UIRegistry
-                        .getResourceString("QB_GET_REPORT_CONTENTS_TITLE"), true, pane);
+                        .getResourceString("QB_GET_REPORT_CONTENTS_TITLE"), true, CustomDialog.OKCANCELHELP,
+                        pane);
+                cd.setHelpContext("RepRunSettings");
                 UIHelper.centerAndShow(cd);
                 go = !cd.isCancelled();
                 cd.dispose();
@@ -1717,6 +1716,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                             true,
                             CustomDialog.OKHELP,
                             pb.getPanel());
+                    dlg.setHelpContext("QBTooManyRecordsForSort");
                     UIHelper.centerAndShow(dlg);
                     dlg.dispose();
                 }
@@ -1951,7 +1951,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 pane.add(nameText, cc.xy(4, 2));
                 CustomDialog cd = new CustomDialog((Frame)UIRegistry.getTopWindow(), 
                         saveAs ? UIRegistry.getResourceString("QB_SAVE_Q_AS_TITLE") : UIRegistry.getResourceString("QB_SAVE_Q_TITLE"), 
-                        true, pane.getPanel());
+                        true, CustomDialog.OKCANCELHELP, pane.getPanel());
+                cd.setHelpContext("QBSave");
                 UIHelper.centerAndShow(cd);
                 if (!cd.isCancelled())
                 {
@@ -2451,7 +2452,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         if (query.getReports().size() > 0)
         {
             CustomDialog cd = new CustomDialog((Frame )UIRegistry.getTopWindow(), UIRegistry.getResourceString("REP_CONFIRM_DELETE_TITLE"),
-                    true, new QBReportInfoPanel(query, UIRegistry.getResourceString("QB_USED_BY_REP_FLD_DELETE_CONFIRM")));
+                    true, CustomDialog.OKCANCELHELP,
+                    new QBReportInfoPanel(query, UIRegistry.getResourceString("QB_USED_BY_REP_FLD_DELETE_CONFIRM")));
+            cd.setHelpContext("QBFieldRemovedAndReports");
             UIHelper.centerAndShow(cd);
             cd.dispose();
             if (cd.isCancelled())
