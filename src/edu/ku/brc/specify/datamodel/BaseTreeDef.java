@@ -17,6 +17,7 @@ import java.beans.PropertyChangeListener;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.persistence.Transient;
 import javax.swing.JLabel;
 
 import org.apache.log4j.Logger;
@@ -753,6 +754,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
 	 * @see edu.ku.brc.specify.datamodel.TreeDefIface#isSynonymySupported()
 	 */
 	@Override
+	@Transient
 	public boolean isSynonymySupported() 
 	{
 		return false;
