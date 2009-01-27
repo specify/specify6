@@ -2180,18 +2180,21 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     {
         if  (Treeable.class.isAssignableFrom(tblInfo.getClassObj()))
         {
-        	if (alias.getName().startsWith("accepted"))
+        	if (alias.getField() != null && alias.getField().startsWith("accepted"))
         	{
         		TableTree parent = alias.getParent();
         		int loop = 0;
         		while (parent != null)
         		{
-        			if (parent.getTableInfo().getTableId() == tblInfo.getTableId())
+        			if (parent.getTableInfo() != null && parent.getTableInfo().getTableId() == tblInfo.getTableId())
         			{
-        				if(++loop > 2)
+        				if (parent.getField() != null && alias.getField().startsWith("accepted"))
         				{
-        					return false;
-        				}        					
+        					if(++loop > 1)
+        					{
+        						return false;
+        					}
+        				}
         			}
         			else
         			{
