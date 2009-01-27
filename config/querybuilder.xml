@@ -149,7 +149,7 @@
       	<!-- <table name="CollectionRelationship" field="leftSideRels" /> -->
       	<alias name="Agent" field="modifiedByAgent" />
       	<table name="OtherIdentifier" field="otherIdentifiers" />
-      	<table name="Project" field="projects" />
+      	<alias name="Project" field="projects" />
       	<table name="CollectionRelationship" field="rightSideRels" />
       	<table name="TreatmentEvent" field="treatmentEvents" />
     </table>
@@ -201,6 +201,16 @@
      	<alias name="Shipment" field="shipments" />    	
     </table>
     
+    <table name="Geography">
+      	<alias name="Agent" field="createdByAgent" />
+      	<!-- alias name="Geography" field="acceptedChildren" /-->
+      	<!-- alias name="Geography" field="children" /-->
+      	<alias name="Geography" field="acceptedGeography" />
+      	<alias name="Geography" field="parent" />
+      	<alias name="Locality" field="localities" />
+      	<alias name="Agent" field="modifiedByAgent" />    	
+    </table>
+    
     <table name="Gift">
    		<alias name="AddressOfRecord"/>
       	<alias name="Agent" field="createdByAgent" />
@@ -247,7 +257,7 @@
     </table>
     
     <table name="Locality">
-    	<table name="Geography"/>
+    	<alias name="Geography"/>
         <table name="LocalityDetail" field="localityDetails"/>
         <table name="LocalityNameAlias" field="localityNameAliass"/>
         <table name="LocalityAttachment" field="localityAttachments">
@@ -284,6 +294,13 @@
       	<alias name="Agent" field="modifiedByAgent" />
     </table>
         
+    <table name="Project">
+      	<alias name="Agent" field="agent" />
+      	<alias name="CollectionObject" field="collectionObjects" />
+      	<alias name="Agent" field="createdByAgent" />
+      	<alias name="Agent" field="modifiedByAgent" />
+    </table>
+    
     <table name="ReferenceWork">
         <table name="Journal"/>
         <table name="Author" field="authors">
@@ -330,6 +347,8 @@
     </table>
     
     <table name="Taxon">
+    	<alias name="Taxon" field="parent" />
+    	<alias name="Taxon" field="acceptedTaxon" />
         <table name="TaxonAttachment" field="taxonAttachments">
            	<alias name="Attachment"/>
         </table>

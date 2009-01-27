@@ -2178,7 +2178,32 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      */
     protected static boolean isCyclicable(final TableTree alias, final DBTableInfo tblInfo)
     {
-        return Treeable.class.isAssignableFrom(tblInfo.getClassObj());
+        if  (Treeable.class.isAssignableFrom(tblInfo.getClassObj()))
+        {
+        	if (alias.getName().startsWith("accepted"))
+        	{
+        		TableTree parent = alias.getParent();
+        		int loop = 0;
+        		while (parent != null)
+        		{
+        			if (parent.getTableInfo().getTableId() == tblInfo.getTableId())
+        			{
+        				if(++loop > 2)
+        				{
+        					return false;
+        				}        					
+        			}
+        			else
+        			{
+        				break;
+        			}
+        			parent = parent.getParent();
+        		}
+        	}
+        	return true;
+        }
+        
+        return false;
             //special conditions... (may be needed. For example for Determination and Taxon, but on the other hand
             //Determination <-> Taxon behavior seems ok for now.
             
