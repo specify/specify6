@@ -85,7 +85,6 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
     protected String                  dateFieldName    = null;
     protected String                  dateTypeName     = null;
     
-    protected Calendar                date             = null;
     protected UIFieldFormatter.PartialDateEnum dateType       = UIFieldFormatter.PartialDateEnum.Full;
     protected UIFieldFormatter.PartialDateEnum origDateType   = UIFieldFormatter.PartialDateEnum.Full;
     protected boolean                 dateTypeIsStr    = false;
@@ -96,6 +95,7 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
     protected CardLayout              cardLayout  = new CardLayout();
     protected JPanel                  cardPanel;
     protected UIValidatable           currentUIV  = null;
+    protected ActionListener          comboBoxAL  = null;
     
     // UIValidatable && UIPluginable
     protected UIValidatable.ErrorType valState    = UIValidatable.ErrorType.Valid;
@@ -207,12 +207,11 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
         JComponent typDisplayComp = null;
         if (!isDisplayOnly)
         {
-            typDisplayComp = formatSelector;
-            formatSelector.addActionListener(new ActionListener() {
+            comboBoxAL = new ActionListener() {
                 public void actionPerformed(ActionEvent ae)
                 {
                     JComboBox cbx       = (JComboBox)ae.getSource();
-                    Object    dataValue = isDateChanged ? ((GetSetValueIFace)currentUIV).getValue() : date;
+                    Object    dataValue = isDateChanged ? ((GetSetValueIFace)currentUIV).getValue() : Calendar.getInstance();
                     
                     currentUIV = uivs[cbx.getSelectedIndex()];
                     
@@ -228,7 +227,9 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
                         changeListener.stateChanged(new ChangeEvent(PartialDateUI. this));
                     }
                 }
-            });
+            };
+            typDisplayComp = formatSelector;
+            formatSelector.addActionListener(comboBoxAL);
         }
         
         PanelBuilder    builder = new PanelBuilder(new FormLayout((typDisplayComp != null ? "p, 2px, f:p:g" : "f:p:g"), "p"), this);
@@ -258,7 +259,7 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
     @Override
     public String[] getCarryForwardFields()
     {
-        return null;
+        return new String[] { dateFieldName, dateTypeName};
     }
 
     /* (non-Javadoc)
@@ -288,6 +289,11 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
      */
     public Object getValue()
     {
+        Object fieldVal = null;
+        if (currentUIV != null)
+        {
+            fieldVal = ((GetSetValueIFace)currentUIV).getValue();
+        }
         if (!isDisplayOnly &&
             dataObj != null && 
             StringUtils.isNotEmpty(dateFieldName) &&
@@ -296,8 +302,8 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
         {
             verifyGetterSetters();
             
-            setter.setFieldValue(dataObj, dateFieldName, ((GetSetValueIFace)currentUIV).getValue());
-            setter.setFieldValue(dataObj, dateTypeName, formatSelector.getSelectedIndex());
+            setter.setFieldValue(dataObj, dateFieldName, fieldVal != null && StringUtils.isNotEmpty(fieldVal.toString()) ? fieldVal : null);
+            setter.setFieldValue(dataObj, dateTypeName, formatSelector.getSelectedIndex()+1); // Need to add one because the first value is None
         }
         return dataObj;
     }
@@ -352,6 +358,8 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
             return;
         }
         
+        Calendar date = null;
+
         Object dateObj = getter.getFieldValue(value, dateFieldName);
         if (dateObj == null && StringUtils.isNotEmpty(defaultValue) && defaultValue.equals("today"))
         {
@@ -378,7 +386,12 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
         {
             inx = ((Byte)dateTypeObj).intValue();
             dateTypeIsStr = false;
+        } else 
+        {
+            inx = 1;
         }
+        
+        inx--; // need to subtract one because the first item is "None"
         
         currentUIV = uivs[inx];
         if (currentUIV != null)
@@ -389,7 +402,9 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
         }
         
         dateType = UIFieldFormatter.PartialDateEnum.values()[inx+1];
+        formatSelector.removeActionListener(comboBoxAL);
         formatSelector.setSelectedIndex(inx);
+        formatSelector.addActionListener(comboBoxAL);
         cardLayout.show(cardPanel, formatSelector.getModel().getElementAt(inx).toString());
     }
 
@@ -536,6 +551,18 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
         }
         isChanged     = false;
         isDateChanged = false;
+        dataObj       = null;
+        
+        formatSelector.setSelectedIndex(0); // None is zero, Full is 1
+        
+        for (JTextField tf : textFields)
+        {
+            if (tf != null)
+            {
+                tf.setText("");
+            }
+        }
+        
     }
 
     /* (non-Javadoc)
