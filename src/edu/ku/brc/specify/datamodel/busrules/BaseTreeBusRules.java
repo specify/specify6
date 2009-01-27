@@ -305,7 +305,7 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
             	boolean canSynonymize = false;
             	if (canAccessSynonymy(formNode, rank))
                 {
-                    canSynonymize = formNode.getDefinition()
+                    canSynonymize = formNode.getDefinition() != null && formNode.getDefinition()
                     	.getSynonymizedLevel() <= rank
                     	&& formNode.getDescendantCount() == 0;
 
@@ -596,9 +596,9 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
                 if (parentField instanceof ValComboBoxFromQuery)
                 {
                     final ValComboBoxFromQuery parentCBX = (ValComboBoxFromQuery) parentField;
-                    if (parentCBX != null && rankComboBox != null)
+                    if (parentCBX != null && rankComboBox != null && nodeInForm != null)
                     {
-                        parentCBX.registerQueryBuilder(new TreeableSearchQueryBuilder(nodeInForm,
+                    	parentCBX.registerQueryBuilder(new TreeableSearchQueryBuilder(nodeInForm,
                                 rankComboBox, true));
                     }
                 }
