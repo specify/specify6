@@ -11,6 +11,7 @@ import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 
+@SuppressWarnings("serial")
 public class YesNoCellRenderer extends DefaultTableCellRenderer
 {
     public final String YES = getResourceString("YES");

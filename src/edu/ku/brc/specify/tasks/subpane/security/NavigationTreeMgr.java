@@ -4,7 +4,6 @@ import static edu.ku.brc.ui.UIRegistry.getMostRecentWindow;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Frame;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -637,7 +636,7 @@ public class NavigationTreeMgr
             return; // selection isn't a suitable parent for a group
         }
         
-        Discipline discipline = getParentOfClass(grpNode, Discipline.class);
+        //Discipline discipline = getParentOfClass(grpNode, Discipline.class);
         
         DataProviderSessionIFace session = null;
         try
@@ -703,7 +702,7 @@ public class NavigationTreeMgr
         return lastUserNode;
     }
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( { "unchecked", "unused" })
     private <T> T getParentOfClass(final  DefaultMutableTreeNode node, final Class<?> cls)
     {
         DefaultMutableTreeNode parent = node;

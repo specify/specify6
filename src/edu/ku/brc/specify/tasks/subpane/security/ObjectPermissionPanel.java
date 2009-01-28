@@ -29,6 +29,7 @@ import edu.ku.brc.af.core.PermissionIFace;
  * Oct 21, 2008
  *
  */
+@SuppressWarnings("serial")
 public class ObjectPermissionPanel extends JPanel implements PermissionEditorIFace
 {
     protected BasicPermisionPanel[] panels = new BasicPermisionPanel[3];

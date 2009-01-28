@@ -2,10 +2,7 @@ package edu.ku.brc.specify.tasks.subpane.security;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Font;
 
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;

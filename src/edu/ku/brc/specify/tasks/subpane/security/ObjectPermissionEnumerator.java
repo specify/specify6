@@ -134,10 +134,10 @@ public class ObjectPermissionEnumerator extends PermissionEnumerator
      * @param targetId
      * @param existingPerms
      */
-    private void addCustomPermissions(@SuppressWarnings("unused")final ObjectPermissionEditorRow wrapper, 
-                                      @SuppressWarnings("unused")final String taskName, 
-                                      @SuppressWarnings("unused")final Integer targetId, 
-                                      @SuppressWarnings("unused")final Hashtable<String, SpPermission> existingPerms)
+    private void addCustomPermissions(final ObjectPermissionEditorRow wrapper, 
+                                      final String taskName, 
+                                      final Integer targetId, 
+                                      final Hashtable<String, SpPermission> existingPerms)
     {
         // TODO: add custom permissions to wrapper
     }

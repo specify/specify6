@@ -6,52 +6,22 @@
  */
 package edu.ku.brc.specify.tasks.subpane.security;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
-
-import org.apache.commons.io.FileUtils;
-
-import com.thoughtworks.xstream.XStream;
 
 import edu.ku.brc.af.auth.SecurityOption;
 import edu.ku.brc.af.auth.SecurityOptionIFace;
 import edu.ku.brc.af.core.PermissionIFace;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
-import edu.ku.brc.specify.datamodel.Accession;
-import edu.ku.brc.specify.datamodel.AccessionAgent;
-import edu.ku.brc.specify.datamodel.AccessionAttachment;
-import edu.ku.brc.specify.datamodel.AccessionAuthorization;
 import edu.ku.brc.specify.datamodel.AttributeDef;
 import edu.ku.brc.specify.datamodel.AutoNumberingScheme;
 import edu.ku.brc.specify.datamodel.CollectingEventAttr;
-import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttr;
 import edu.ku.brc.specify.datamodel.CollectionRelType;
 import edu.ku.brc.specify.datamodel.CollectionRelationship;
-import edu.ku.brc.specify.datamodel.Discipline;
-import edu.ku.brc.specify.datamodel.Division;
-import edu.ku.brc.specify.datamodel.ExchangeIn;
-import edu.ku.brc.specify.datamodel.ExchangeOut;
-import edu.ku.brc.specify.datamodel.GeographyTreeDef;
-import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
-import edu.ku.brc.specify.datamodel.Gift;
-import edu.ku.brc.specify.datamodel.GiftAgent;
-import edu.ku.brc.specify.datamodel.GiftPreparation;
-import edu.ku.brc.specify.datamodel.Institution;
-import edu.ku.brc.specify.datamodel.LithoStratTreeDef;
-import edu.ku.brc.specify.datamodel.Loan;
-import edu.ku.brc.specify.datamodel.LoanAgent;
-import edu.ku.brc.specify.datamodel.LoanPreparation;
-import edu.ku.brc.specify.datamodel.LoanReturnPreparation;
 import edu.ku.brc.specify.datamodel.PreparationAttr;
-import edu.ku.brc.specify.datamodel.RepositoryAgreement;
-import edu.ku.brc.specify.datamodel.Shipment;
-import edu.ku.brc.specify.datamodel.StorageTreeDef;
-import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.tasks.BaseTask;
 import edu.ku.brc.specify.tasks.PermissionOptionPersist;

@@ -48,6 +48,7 @@ import edu.ku.brc.util.ComparatorByStringRepresentation;
  * Oct 21, 2008
  *
  */
+@SuppressWarnings("serial")
 public class IndvPanelPermEditor extends JPanel implements PermissionPanelContainerIFace
 {
     //private static final Logger log = Logger.getLogger(IndvPanelPermEditor.class);

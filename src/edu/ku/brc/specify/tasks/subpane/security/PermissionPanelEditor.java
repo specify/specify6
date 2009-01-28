@@ -39,6 +39,7 @@ import edu.ku.brc.specify.datamodel.SpPrincipal;
  * Oct 21, 2008
  *
  */
+@SuppressWarnings("serial")
 public class PermissionPanelEditor extends JPanel
 {
     protected JPanel     cardPanel    = new JPanel();

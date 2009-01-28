@@ -103,8 +103,10 @@ public class SecurityAdminPane extends BaseSubPane
     private NavigationTreeMgr navTreeMgr;
 
     
-    private boolean hasPermissionToAdd    = false;
     private boolean hasPermissionToModify = false;
+    @SuppressWarnings("unused")
+    private boolean hasPermissionToAdd    = false;
+    @SuppressWarnings("unused")
     private boolean hasPermissionToDelete = false;
     
     private DataModelObjBaseWrapper objWrapper       = null;
@@ -167,7 +169,7 @@ public class SecurityAdminPane extends BaseSubPane
         DocumentListener searchDL = new DocumentAdaptor()
         {
             @Override
-            protected void changed(@SuppressWarnings("unused") DocumentEvent e)
+            protected void changed(DocumentEvent e)
             { 
                 FilteredTreeModel model = (FilteredTreeModel) tree.getModel();
                 Filter filter = (StringUtils.isNotEmpty(searchText.getText())) ? new Filter(searchText.getText()) : null;
@@ -188,43 +190,6 @@ public class SecurityAdminPane extends BaseSubPane
         return navigationPanel;
     }
 
-    /**
-     * Adds a new discipline to the selected institution in the table model.
-     * Also adds an anonymous division as the parent of the discipline.
-     */
-    private void addDiscipline()
-    {
-        // get parent institution from tree selection
-        navTreeMgr.addNewDiscipline((DefaultMutableTreeNode) tree.getLastSelectedPathComponent());
-    }
-
-    /**
-     * Adds a new collection to the selected discipline in the table model. 
-     */
-    private void addCollection()
-    {
-        // get parent institution from tree selection
-        navTreeMgr.addNewCollection((DefaultMutableTreeNode) tree.getLastSelectedPathComponent());
-    }
-
-    /**
-     * Adds a new user to the selected group in the table model. 
-     */
-    private void addUser()
-    {
-        // get parent group node from tree selection and add user to it
-        navTreeMgr.addNewUser((DefaultMutableTreeNode) tree.getLastSelectedPathComponent());
-    }
-    
-    /**
-     * Adds a new group to the selected institution, discipline, or collection in the table model. 
-     */
-    private void addGroup()
-    {
-        // get parent (scope) of the group from tree selection
-        navTreeMgr.addNewGroup((DefaultMutableTreeNode) tree.getLastSelectedPathComponent());
-    }
-    
     /**
      * 
      */
@@ -409,6 +374,7 @@ public class SecurityAdminPane extends BaseSubPane
      * @param divNode
      * @param division
      */
+    @SuppressWarnings("unused")
     private void addDisciplinesRecursively(final DataProviderSessionIFace session, final DefaultMutableTreeNode divNode, final Division division)
     {
         // sort disciplines
@@ -444,7 +410,7 @@ public class SecurityAdminPane extends BaseSubPane
      * @param node
      * @param scope
      */
-    private void addGroup(@SuppressWarnings("unused")DataProviderSessionIFace session, 
+    private void addGroup(DataProviderSessionIFace session, 
                           final DefaultMutableTreeNode node, 
                           final UserGroupScope scope)
     {
@@ -976,10 +942,6 @@ public class SecurityAdminPane extends BaseSubPane
      */
     private void updateUIEnabled(final DataModelObjBaseWrapper objWrapperArg)
     {
-        boolean isInstitution = (objWrapperArg != null)? objWrapperArg.isInstitution() : false;
-        boolean isDiscipline  = (objWrapperArg != null)? objWrapperArg.isDiscipline()  : false;
-        boolean isCollection  = (objWrapperArg != null)? objWrapperArg.isCollection()  : false;
-        boolean isGroup       = (objWrapperArg != null)? objWrapperArg.isGroup()       : false;
     }
 
     /* (non-Javadoc)
