@@ -88,19 +88,19 @@
                     <cell type="field" id="5" uitype="plugin" name="this" initialize="name=PartialDateUI;df=catalogedDate;tp=catalogedDatePrecision" uifieldformatter="Date"/>
     		    </row>
     			<row>
-    			    <cell type="subview" viewname="Determination" id="6" name="determinations" colspan="13" rows="5" initialize="noscrollbars=true;bgcolor=245,245,245;border=line;bordercolor=169,169,169;"/>
+    			    <cell type="subview" viewname="Determination" id="6" name="determinations" colspan="13" rows="5" initialize="noscrollbars=true"/>
     			</row>
     		    <row></row>
     		    <row>
-    		        <cell type="subview" id="26" name="collectingEvent" viewname="CollectingEventSub" colspan="13" initialize="noscrollbars=true;bgcolor=245,245,245;border=line;bordercolor=169,169,169;"/>
+    		        <cell type="subview" id="26" name="collectingEvent" viewname="CollectingEventSub" colspan="13" initialize="noscrollbars=true"/>
     		    </row>
     		    <row></row><row></row><row></row>
     			<row>
-    			    <cell type="subview" viewname="Preparation" id="8" name="preparations" defaulttype="table" colspan="13" initialize="noscrollbars=true;bgcolor=245,245,245;border=line;bordercolor=169,169,169;"/>
+    			    <cell type="subview" viewname="Preparation" id="8" name="preparations" defaulttype="table" colspan="13" initialize="noscrollbars=true"/>
     			</row>
     		    <row></row><row></row><row></row>
     		    <row>
-    		        <cell type="subview" viewname="BirdAttributes" id="19" name="collectionObjectAttribute" colspan="13" initialize="noscrollbars=true;bgcolor=245,245,245;border=line;bordercolor=169,169,169;"/>
+    		        <cell type="subview" viewname="BirdAttributes" id="19" name="collectionObjectAttribute" colspan="13" initialize="noscrollbars=true"/>
     		    </row>
     		    <row></row><row></row><row></row>
     		    <row>
