@@ -10,36 +10,28 @@ import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 
+/**
+ * Table cell renderer for the table created by the GeneralPermissionEditor class.
+ * 
+ * @author Ricardo
+ *
+ */
+@SuppressWarnings("serial")
 public class GeneralPermissionTableCellRenderer extends
         DefaultTableCellRenderer
 {
-    public Font normalFont;
-    public Font boldFont;
-
-    private JLabel adminLabel;
-    private JCheckBox checkbox;
+    private GeneralPermissionTableCheckBox customCheckbox;
     
     /**
-     * 
+     * Default constructor.
      */
     public GeneralPermissionTableCellRenderer()
     {
         super();
         setHorizontalAlignment(SwingConstants.CENTER);
-        
-        normalFont = getFont();
-        boldFont   = normalFont.deriveFont(Font.BOLD);
-
-        adminLabel = new JLabel("Always (Admin)");
-        adminLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        adminLabel.setForeground(Color.LIGHT_GRAY);
-        adminLabel.setFont(normalFont);
-        
-        checkbox = new JCheckBox();
-        checkbox.setForeground(Color.BLACK);
-        checkbox.setBackground(Color.WHITE);
-        checkbox.setHorizontalAlignment(SwingConstants.CENTER);
-        adminLabel.setFont(normalFont);
+        customCheckbox = new GeneralPermissionTableCheckBox(null);
+        customCheckbox.setBackground(Color.WHITE);
+        customCheckbox.setHorizontalAlignment(SwingConstants.CENTER);
     }
 
     @Override
@@ -48,26 +40,12 @@ public class GeneralPermissionTableCellRenderer extends
     {
         if (value instanceof GeneralPermissionTableCellValueWrapper)
         {
-            // it's a wrapper object that supports displaying of overriding
-            // permissions
-            // JLabel label = (JLabel)super.getTableCellRendererComponent(table,
-            // new Boolean(true), isSelected, hasFocus, row, column);
+            // it's a wrapper object that supports displaying of overriding permissions
             GeneralPermissionTableCellValueWrapper wrapper = (GeneralPermissionTableCellValueWrapper) value;
-            
-            if (wrapper.isAdmin()) 
-            {
-                return adminLabel;
-            }
-
-            String text = "";
-            if (wrapper.isOverriden())
-            {
-                text = "(" + wrapper.getOverrulingPermissionText() + ")";
-            }
-            checkbox.setText(text);
-            checkbox.setSelected(wrapper.getPermissionActionValue());
-            return checkbox;
+            wrapper.prepareComponent(customCheckbox);
+            return customCheckbox;
         }
+
         return null;
     }
 }

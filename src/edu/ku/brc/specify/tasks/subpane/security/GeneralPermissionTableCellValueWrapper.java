@@ -120,4 +120,31 @@ public class GeneralPermissionTableCellValueWrapper
     {
         return admin;
     }
+    
+    /**
+     * Prepare an instance of our custom JCheckBox to be returned by the table cell renderer and editor.
+     *  
+     * @param customCheckbox
+     */
+    public void prepareComponent(GeneralPermissionTableCheckBox customCheckbox)
+    {
+        if (isAdmin()) 
+        {
+            customCheckbox.setText("Always (Admin)");
+            customCheckbox.setEnabled(false);
+        }
+        else if (isOverriden())
+        {
+            customCheckbox.setText("(" + getOverrulingPermissionText() + ")");
+            customCheckbox.setEnabled(false);
+        }
+        else
+        {
+            customCheckbox.setText("");
+            customCheckbox.setEnabled(true);
+        }
+
+        // finally, put itself inside the checkbox
+        customCheckbox.setCellValue(this);
+    }
 }
