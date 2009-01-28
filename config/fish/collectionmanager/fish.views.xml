@@ -194,7 +194,7 @@
                 </row>
                 <row>
                     <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectingEventAttachments" initialize="btn=true;icon=CollectingEventAttachment"/>
-                    <cell type="subview" id="8" name="collectingEventAttribute" viewname="CollectingEventAttribute" initialize="btn=true"/> 
+                 <!--   <cell type="subview" id="8" name="collectingEventAttribute" viewname="CollectingEventAttribute" initialize="btn=true"/> -->
                 </row>
 
             </rows>
@@ -266,7 +266,7 @@
                     <cell type="label" labelfor="7" label="Vegetation"/>
                     <cell type="field" id="7" name="text7" uitype="text"/>
                     <cell type="label" labelfor="8" label="Habitat Type"/>
-                    <cell type="field" id="8" name="text8" uitype="text"/>
+                    <cell type="field" id="8" name="text8" uitype="combobox" picklist="HabitatType"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="9" label="Remarks"/>

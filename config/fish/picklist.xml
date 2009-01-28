@@ -30,6 +30,18 @@
       <picklistitem title="hook &amp; line" value="hook &amp; line"/>
     </items>
   </picklist>
+  <picklist name="HabitatType" issystem="true" type="0" readonly="true" sizelimit="8">
+    <items>
+      <picklistitem title="Reef" value="reef"/>
+      <picklistitem title="Sand" value="sand"/>
+      <picklistitem title="Rock" value="rock"/>
+      <picklistitem title="Sand/Rock Interface" value="sand/rock interface"/>
+      <picklistitem title="Vegetation" value="vegetation"/>
+      <picklistitem title="Open Water" value="open water"/>
+      <picklistitem title="Riffle" value="riffle"/>
+      <picklistitem title="Pelagic" value="Pelagic"/>
+    </items>
+  </picklist>
   <picklist name="CollObjPrepMeth" issystem="true" type="0" readonly="true" sizelimit="5">
     <items>
       <picklistitem title="EtOH" value="EtOH"/>
