@@ -1002,7 +1002,7 @@
 
                     <cell type="label" labelfor="21"/>
                     <cell type="field" id="21" name="originalDueDate" uitype="formattedtext" uifieldformatter="Date"/>
-                    <cell type="field" id="20" name="yesNo1" uitype="checkbox" initialize="editable=true" label="Extension Granted"/>
+                    <cell type="field" id="20" name="yesNo1" uitype="checkbox" initialize="editable=true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="5"/>
@@ -1056,7 +1056,7 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[BorrowMaterial viewing form.]]></desc>
-            <columnDef>125px,4px,p,10px,p,4px,p,10px,p,4px,p,p:g</columnDef>
+            <columnDef>p,4px,p,10px,p,4px,p,10px,p,4px,p,p:g</columnDef>
             <columnDef os="mac">p,4px,p,10px,p,4px,p,10px,p,4px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="1dlu"/>
             
@@ -2110,28 +2110,28 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Loan viewing form.]]></desc>
-            <columnDef>85px,4px,p,10px,p,4px,75px,5px,p,4px,p,p:g</columnDef>
-            <columnDef os="mac">110px,4px,p,80px,p,4px,p,5px,p,4px,p,p:g</columnDef>
+            <columnDef>p,4px,p,10px,p,4px,75px,5px,p,4px,p,p:g</columnDef>
+            <columnDef os="mac">p,4px,p,80px,p,4px,p,5px,p,4px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="1dlu"/>
             
             <rows>
                 <row>
                     <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="loanNumber" uitype="formattedtext" isrequired="true"/>
+                    <cell type="field" id="1" name="loanNumber" uitype="formattedtext"/>
                     <cell type="field" id="2" name="isClosed" uitype="checkbox" initialize="editable=true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="loanDate" uitype="formattedtext" uifieldformatter="Date" isrequired="true" default="today"/>
+                    <cell type="field" id="3" name="loanDate" uitype="formattedtext" uifieldformatter="Date" default="today"/>
+                    <cell type="label" labelfor="12"/>
+                    <cell type="field" id="12" name="currentDueDate" uitype="formattedtext" uifieldformatter="Date"/>
                     <cell type="label" labelfor="4"/>
                     <cell type="field" id="4" name="dateClosed" uitype="formattedtext" uifieldformatter="Date"/>
-                    <cell type="label" labelfor="12"/>
-                    <cell type="field" id="12" name="currentDueDate" uitype="formattedtext" uifieldformatter="Date" isrequired="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="21"/>
                     <cell type="field" id="21" name="originalDueDate" uitype="formattedtext" uifieldformatter="Date"/>
-                    <cell type="field" id="20" name="yesNo1" uitype="checkbox" initialize="editable=true" label="Extension Granted"/>
+                    <cell type="field" id="20" name="yesNo1" uitype="checkbox" initialize="editable=true"/>
                 </row>
                 <row>
                      <cell type="label" labelfor="5"/>
