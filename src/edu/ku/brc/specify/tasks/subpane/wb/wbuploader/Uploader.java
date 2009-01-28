@@ -87,7 +87,7 @@ import edu.ku.brc.util.Pair;
  */
 public class Uploader implements ActionListener, KeyListener
 {
-    private static boolean                       debugging                    = false;
+    private static boolean                       debugging                    = true;
 
     // Phases in the upload process...
     protected final static String                INITIAL_STATE                = "WB_UPLOAD_INITIAL_STATE";
@@ -405,6 +405,21 @@ public class Uploader implements ActionListener, KeyListener
         return null;
     }
 
+    /**
+     * @param name
+     * @return UploadTable named name.
+     */
+    public UploadTable getUploadTableByName(final String name)
+    {
+    	for (UploadTable result : uploadTables)
+    	{
+    		if (result.getTable().getName().equals(name))
+    		{
+    			return result;
+    		}
+    	}
+    	return null;
+    }
     /**
      * @throws UploaderException
      * 
@@ -3148,7 +3163,7 @@ public class Uploader implements ActionListener, KeyListener
                         //Need extra progress info...
                         for (UploadTable t : uploadTables)
                         {
-                            t.finishUpload(cancelled);
+                        	t.finishUpload(cancelled);
                         }
                     }
                     catch (Exception ex)

@@ -83,7 +83,7 @@ import edu.ku.brc.util.GeoRefConverter.GeoRefFormat;
  */
 public class UploadTable implements Comparable<UploadTable>
 {
-    private static boolean                          debugging               = false;
+    private static boolean                          debugging               = true;
     //if true then 'Undos' are accomplished with sql delete statements. This is safe
     //if modification to the database is prevented while uploading.
     private static boolean                          doRawDeletes            = true;
@@ -1983,6 +1983,40 @@ public class UploadTable implements Comparable<UploadTable>
                         name, seq+1))));
     }
     
+    /**
+     * @param row
+     * @param uploadData
+     * @return true if all the fields corresponding directly to columns in the dataset are blank,
+     */
+    protected boolean isBlankRow(int row, UploadData uploadData)
+    {
+        int seq = 0;
+    	for (Vector<UploadField> flds : uploadFields)
+        {
+            for (UploadField fld : flds)    
+        	{
+            	if (fld.getIndex() != -1)
+            	{
+            		fld.setValue(uploadData.get(row, fld.getIndex()));
+                    if (!isBlankVal(fld, seq, row, uploadData))
+                    {
+                    	return false;
+                    }
+            	}
+        	}
+            seq++;
+        }
+        return true;
+    }
+    
+    /**
+     * @param row
+     * @param uploadData
+     * @param invalidValues
+     * 
+     * Validates user-entered fields for the row.
+     * Validation issues are added to invalidValues vector.
+     */
     protected void validateRowValues(int row, UploadData uploadData, Vector<UploadTableInvalidValue> invalidValues)
     {
         int seq = 0;
@@ -2010,10 +2044,13 @@ public class UploadTable implements Comparable<UploadTable>
                     isBlank &= isBlankVal(fld, seq, row, uploadData);
                     try
                     {
-                        if (!tblClass.equals(PrepType.class) && invalidNull(fld, uploadData, row, seq)) 
+                        if (invalidNull(fld, uploadData, row, seq)) 
                         { 
-                            throw new Exception(
-                                getResourceString("WB_UPLOAD_FIELD_MUST_CONTAIN_DATA")); 
+                        	if (!tblClass.equals(PrepType.class) || !Uploader.currentUpload.getUploadTableByName("Preparation").isBlankRow(row, uploadData))
+                        	{
+                        		throw new Exception(
+                        				getResourceString("WB_UPLOAD_FIELD_MUST_CONTAIN_DATA")); 
+                        	}
                         }       
                         if (!pickListCheck(fld))
                         {
