@@ -31,6 +31,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
@@ -60,6 +61,9 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.db.DBFieldInfo;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.af.ui.forms.FormViewObj;
@@ -69,10 +73,6 @@ import edu.ku.brc.af.ui.forms.persist.ViewIFace;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Loan;
-import edu.ku.brc.specify.datamodel.LoanPreparation;
-import edu.ku.brc.specify.datamodel.Preparation;
-import edu.ku.brc.specify.datamodel.PreparationHolderIFace;
-import edu.ku.brc.specify.datamodel.PreparationsProviderIFace;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.CustomDialog;
@@ -94,25 +94,27 @@ public class SelectPrepsDlg extends CustomDialog
 {
     protected ColorWrapper              requiredfieldcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     protected List<CollectionObject>    colObjs;
-    protected PreparationsProviderIFace prepProvider;
     protected List<ColObjPanel>         colObjPanels = new Vector<ColObjPanel>();
     protected JLabel                    summaryLabel;
-    protected int                       totalCntLoanablePreps = 0;
-    protected Hashtable<Integer, PreparationHolderIFace> prepToLoanPrepHash = new Hashtable<Integer, PreparationHolderIFace>();
+    
+    protected Hashtable<Integer, String>     prepTypeHash;
+    protected Hashtable<Integer, ColObjInfo> coToPrepHash;
     
     /**
      * @param colObjs
      * @param prepProvider
      */
-    public SelectPrepsDlg(final List<CollectionObject>    colObjs, 
-                          final PreparationsProviderIFace prepProvider,
-                          final String                    title)
+    public SelectPrepsDlg(final Hashtable<Integer, ColObjInfo> coToPrepHash,
+                             final Hashtable<Integer, String>     prepTypeHash,
+                             final String         title)
     {
         super((Frame)UIRegistry.getTopWindow(), getLocalizedMessage("LoanSelectPrepsDlg.CREATE_FR_PREP", title),//$NON-NLS-1$
                 true, OKCANCELAPPLYHELP, null);
-        this.colObjs      = colObjs;
-        this.prepProvider = prepProvider;
+        
+        this.coToPrepHash = coToPrepHash;
+        this.prepTypeHash = prepTypeHash;
     }
+
         
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.CustomDialog#createUI()
@@ -124,37 +126,8 @@ public class SelectPrepsDlg extends CustomDialog
         
         super.createUI();
         
-        if (prepProvider != null)
-        {
-            prepToLoanPrepHash = new Hashtable<Integer, PreparationHolderIFace>();
-            for (PreparationHolderIFace lp : prepProvider.getPreparations())
-            {
-                prepToLoanPrepHash.put(lp.getPreparation().getId(), lp);
-            }
-        }
         
-        Vector<CollectionObject> availCOsToLoan = new Vector<CollectionObject>();
-        for (CollectionObject co : colObjs)
-        {
-            if (co.getDeterminations().size() == 0 || getCurrentDetermination(co) != null)
-            {
-                int cntLoanablePreps = 0;
-                for (Preparation prep : co.getPreparations())
-                {
-                    if (prep.getPrepType().getIsLoanable())
-                    {
-                        cntLoanablePreps++;
-                    }
-                }
-                if (cntLoanablePreps > 0)
-                {
-                    availCOsToLoan.add(co);
-                }
-                totalCntLoanablePreps += cntLoanablePreps;
-            }
-        }
-        
-        String rowDef = UIHelper.createDuplicateJGoodiesDef("p", "1px,p,4px", (colObjs.size()*2)-1) + ",10px,p"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        String rowDef = UIHelper.createDuplicateJGoodiesDef("p", "1px,p,4px", (coToPrepHash.size()*2)-1) + ",10px,p"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         PanelBuilder    pbuilder = new PanelBuilder(new FormLayout("f:p:g", rowDef)); //$NON-NLS-1$
         CellConstraints cc       = new CellConstraints();
         
@@ -174,11 +147,21 @@ public class SelectPrepsDlg extends CustomDialog
             }
         };
         
-        Collections.sort(availCOsToLoan);
+        DBTableInfo colObjTI = DBTableIdMgr.getInstance().getInfoById(CollectionObject.getClassTableId());
+        DBFieldInfo colObjFI = colObjTI.getFieldByColumnName("CatalogNumber");
+        
+        Vector<ColObjInfo> coList = new Vector<ColObjInfo>(coToPrepHash.values());
+        Collections.sort(coList, new Comparator<ColObjInfo>() {
+            @Override
+            public int compare(ColObjInfo o1, ColObjInfo o2)
+            {
+                return o1.getCatNo().compareTo(o2.getCatNo());
+            }
+        });
         
         int i = 0;
         int y = 1;
-        for (CollectionObject co : availCOsToLoan)
+        for (ColObjInfo colObjInfo : coList)
         {
             if (i > 0)
             {
@@ -186,7 +169,8 @@ public class SelectPrepsDlg extends CustomDialog
             }
             y += 2;
             
-            ColObjPanel panel = new ColObjPanel(this, co);
+            colObjInfo.setCatNo((String)colObjFI.getFormatter().formatToUI(colObjInfo.getCatNo()));
+            ColObjPanel panel = new ColObjPanel(this, colObjInfo);
             colObjPanels.add(panel);
             panel.addActionListener(al, cl);
             pbuilder.add(panel, cc.xy(1,y));
@@ -220,31 +204,6 @@ public class SelectPrepsDlg extends CustomDialog
         size.width += 20;
         size.height = size.height > 500 ? 500 : size.height;
         setSize(size);
-    }
-    
-    /**
-     * @return whether there is at least one prep that can be loaned.
-     */
-    public boolean hasAvaliblePrepsToLoan()
-    {
-        return totalCntLoanablePreps > 0;
-    }
-    
-    /**
-     * Returns the current Determination for a Collection Object
-     * @param colObj the collection object
-     * @return the current Determination
-     */
-    protected Determination getCurrentDetermination(final CollectionObject colObj)
-    {
-        for (Determination d : colObj.getDeterminations())
-        {
-            if (d.isCurrentDet())
-            {
-                return d;
-            }
-        }
-        return null;
     }
     
     /**
@@ -285,9 +244,9 @@ public class SelectPrepsDlg extends CustomDialog
      * Returns a Hashtable of Preparation to Count.
      * @return a Hashtable of Preparation to Count.
      */
-    public Hashtable<Preparation, Integer> getPreparationCounts()
+    public Hashtable<Integer, Integer> getPreparationCounts()
     {
-        Hashtable<Preparation, Integer> hash = new Hashtable<Preparation, Integer>();
+        Hashtable<Integer, Integer> hash = new Hashtable<Integer, Integer>();
         
         for (ColObjPanel colObjPanel : colObjPanels)
         {
@@ -297,7 +256,7 @@ public class SelectPrepsDlg extends CustomDialog
                 {
                     if (pp.getCount() > 0)
                     {
-                        hash.put(pp.getPreparation(), pp.getCount());
+                        hash.put(pp.getPrepId(), pp.getCount());
                     }
                 }
             }
@@ -310,7 +269,7 @@ public class SelectPrepsDlg extends CustomDialog
     //------------------------------------------------------------------------------------------
     class ColObjPanel extends JPanel
     {
-        protected CollectionObject  colObj;
+        protected ColObjInfo        colObjInfo;
         protected JCheckBox         checkBox;
         protected Vector<PrepPanel> panels = new Vector<PrepPanel>();       
         protected JDialog           dlgParent;
@@ -318,11 +277,12 @@ public class SelectPrepsDlg extends CustomDialog
         /**
          * @param colObj
          */
-        public ColObjPanel(final JDialog dlgParent, final CollectionObject colObj)
+        public ColObjPanel(final JDialog    dlgParent, 
+                           final ColObjInfo colObjInfo)
         {
             super();
-            this.dlgParent = dlgParent;
-            this.colObj    = colObj;
+            this.dlgParent  = dlgParent;
+            this.colObjInfo = colObjInfo;
             
             setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
             //setBorder(BorderFactory.createCompoundBorder(new CurvedBorder(new Color(160,160,160)), getBorder()));
@@ -331,25 +291,8 @@ public class SelectPrepsDlg extends CustomDialog
             PanelBuilder    pbuilder = new PanelBuilder(new FormLayout("f:p:g", "p,5px,p"), this); //$NON-NLS-1$ //$NON-NLS-2$
             CellConstraints cc      = new CellConstraints();
      
-            String taxonName = null;
-            for (Determination deter : colObj.getDeterminations())
-            {
-                if (deter.isCurrentDet())
-                {
-                    taxonName = getTaxonName(deter);
-                    break;
-                }
-            }
-            
-            String descr;
-            if (StringUtils.isNotEmpty(taxonName))
-            {
-                descr = String.format(getResourceString("LoanSelectPrepsDlg.TITLE_PAIR"), colObj.getIdentityTitle(), taxonName); //$NON-NLS-1$
-                descr = StringUtils.stripToEmpty(descr);
-            } else
-            {
-                descr = getResourceString("LoanSelectPrepsDlg.NO_DET"); //$NON-NLS-1$
-            }
+            String descr = String.format(getResourceString("LoanSelectPrepsDlg.TITLE_PAIR"), colObjInfo.getCatNo(), colObjInfo.getTaxonName()); //$NON-NLS-1$
+            descr = StringUtils.stripToEmpty(descr);
             
             pbuilder.add(checkBox = createCheckBox(descr), cc.xy(1,1));
             //builder.add(createLabel(String.format("%6.0f", new Object[]{colObj.getCatalogNumber()})), cc.xy(1,1));
@@ -365,20 +308,10 @@ public class SelectPrepsDlg extends CustomDialog
             
             Color[] colors = new Color[] { new Color(255,255,255), new Color(235,235,255)};
             
-            Vector<Preparation> prepsList = new Vector<Preparation>();
-            for (Preparation prep : colObj.getPreparations())
-            {
-                if (prep.getPrepType().getIsLoanable())
-                {
-                    prepsList.add(prep);
-                }
-            }
-            Collections.sort(prepsList);
-            
             int i = 0;
-            for (Preparation prep : prepsList)
+            for (PrepInfo prepInfo : colObjInfo.getPreps().values())
             {
-                PrepPanel pp = new PrepPanel(dlgParent, prep);
+                PrepPanel pp = new PrepPanel(dlgParent, prepInfo);
                 panels.add(pp);
                 pp.setBackground(colors[i % 2]);
                 containerPane.add(pp);
@@ -460,116 +393,63 @@ public class SelectPrepsDlg extends CustomDialog
     //------------------------------------------------------------------------------------------
     class PrepPanel extends JPanel implements ActionListener
     {
-        protected Preparation prep;
-        protected JLabel      label    = null;
-        protected JLabel      label2    = null;
-        protected JComponent  prepInfoBtn    = null;
+        protected PrepInfo    prepInfo;
+        protected JLabel      label       = null;
+        protected JLabel      label2      = null;
+        protected JComponent  prepInfoBtn = null;
         protected JSpinner    spinner; 
         protected JDialog     parent;
         protected int         maxValue = 0;
         protected boolean     unknownQuantity;
 
-        
         /**
          * @param prep
          */
-        public PrepPanel(final JDialog parent, final Preparation prep)
+        public PrepPanel(final JDialog parent, 
+                         final PrepInfo prepInfo)
         {
             super();
-            this.prep = prep;
-            this.parent = parent;
+            this.prepInfo = prepInfo;
+            this.parent   = parent;
 
-            
             setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
             //setBorder(BorderFactory.createCompoundBorder(new CurvedBorder(new Color(160,160,160)), getBorder()));
      
             PanelBuilder    pbuilder = new PanelBuilder(new FormLayout("max(120px;p),2px,max(50px;p),2px,p,2px,p:g", "c:p"), this); //$NON-NLS-1$ //$NON-NLS-2$
             CellConstraints cc      = new CellConstraints();
             
-            pbuilder.add(label = createLabel(prep.getPrepType().getName()), cc.xy(1,1));
+            label = createLabel(prepTypeHash.get(prepInfo.getType()));
+                    
+            pbuilder.add(label, cc.xy(1,1));
             label.setOpaque(false);
             
-            if (prep.getCount() != null)
+            int quantityAvailable = prepInfo.getAvailable();
+            if (quantityAvailable > 0)
             {
-                int count       = prep.getCount();
-                int quantityOut = getLoanQuantityOut(prep);
+                maxValue = quantityAvailable;
                 
-                int quantityAvailable = count - quantityOut;
-                if (quantityAvailable > 0)
-                {
-                    maxValue = quantityAvailable;
-                    
-                    SpinnerModel model = new SpinnerNumberModel(0, //initial value
-                                               0,                  //min
-                                               quantityAvailable,  //max
-                                               1);                 //step
-                    spinner = new JSpinner(model);
-                    fixBGOfJSpinner(spinner);
-                    pbuilder.add(spinner, cc.xy(3, 1));
-                    String fmtStr = getLocalizedMessage("LoanSelectPrepsDlg.OF_QUANT_OUT", quantityAvailable); //$NON-NLS-1$
-                    pbuilder.add(label2 = createLabel(fmtStr), cc.xy(5, 1));
-                    if (quantityOut > 0)
-                    {
-                        fmtStr = getLocalizedMessage("LoanSelectPrepsDlg.NUM_ON_LOAN", quantityOut); //$NON-NLS-1$
-                        prepInfoBtn = new LinkLabelBtn(this, fmtStr, IconManager.getIcon("InfoIcon", IconManager.IconSize.Std16)); //$NON-NLS-1$
-                        pbuilder.add(prepInfoBtn, cc.xy(7, 1));
-                    }
-                    
-                } else
-                {
-                    pbuilder.add(label2 = createLabel(getResourceString("LoanSelectPrepsDlg.NONE_AVAIL")), cc.xywh(3, 1, 5, 1));//$NON-NLS-1$
-                }
-            } else
-            {
                 SpinnerModel model = new SpinnerNumberModel(0, //initial value
-                        0,    //min
-                        10000, //max
-                        1);   //step
+                                           0,                  //min
+                                           quantityAvailable,  //max
+                                           1);                 //step
                 spinner = new JSpinner(model);
                 fixBGOfJSpinner(spinner);
                 pbuilder.add(spinner, cc.xy(3, 1));
-                pbuilder.add(label2 = createLabel(getResourceString("LoanSelectPrepsDlg.UNKN_NUM_AVAIL")), cc.xywh(5, 1, 2, 1)); //$NON-NLS-1$
-                unknownQuantity = true;
-                maxValue = 1;
-            }
-            //pbuilder.add(contentPanel, cc.xy(1,3));
-        }
-        
-        /**
-         * @param preparation
-         * @return
-         */
-        public int getLoanQuantityOut(final Preparation preparation)
-        {
-            PreparationHolderIFace loanPrepObj = prepToLoanPrepHash.get(preparation.getId());
-            int stillOut = 0;
-            for (LoanPreparation lp : preparation.getLoanPreparations())
-            {
-                PreparationHolderIFace lpo = loanPrepObj != null && loanPrepObj.getId() != null && loanPrepObj.getId().equals(lp.getId()) ? loanPrepObj : lp; 
+                String fmtStr = getLocalizedMessage("LoanSelectPrepsDlg.OF_QUANT_OUT", quantityAvailable); //$NON-NLS-1$
+                pbuilder.add(label2 = createLabel(fmtStr), cc.xy(5, 1));
                 
-                stillOut += calcStillOut(lpo);
-            }
-            
-            if (loanPrepObj != null && loanPrepObj.getId() == null)
+                int onLoanQty = prepInfo.getQtyPrep() - quantityAvailable;
+                if (onLoanQty > 0)
+                {
+                    fmtStr = getLocalizedMessage("LoanSelectPrepsDlg.NUM_ON_LOAN", onLoanQty); //$NON-NLS-1$
+                    prepInfoBtn = new LinkLabelBtn(this, fmtStr, IconManager.getIcon("InfoIcon", IconManager.IconSize.Std16)); //$NON-NLS-1$
+                    pbuilder.add(prepInfoBtn, cc.xy(7, 1));
+                }
+                
+            } else
             {
-                stillOut += calcStillOut(loanPrepObj);
+                pbuilder.add(label2 = createLabel(getResourceString("LoanSelectPrepsDlg.NONE_AVAIL")), cc.xywh(3, 1, 5, 1));//$NON-NLS-1$
             }
-            
-            return stillOut;
-        }
-        
-        /**
-         * @param lpo
-         * @return
-         */
-        protected int calcStillOut(final PreparationHolderIFace lpo)
-        {
-            int quantityLoaned   = lpo.getQuantity() != null ? lpo.getQuantity() : 0;
-            int quantityReturned = lpo.getQuantityReturned() != null ? lpo.getQuantityReturned() : 0;
-            
-            //System.err.println("  "+ quantityLoaned+"  "+quantityReturned);
-            
-            return (quantityLoaned - quantityReturned);
         }
         
         /**
@@ -610,9 +490,9 @@ public class SelectPrepsDlg extends CustomDialog
         /**
          * @return
          */
-        public Preparation getPreparation()
+        public Integer getPrepId()
         {
-            return prep;
+            return prepInfo.getPrepId();
         }
         
         /* (non-Javadoc)
@@ -647,10 +527,8 @@ public class SelectPrepsDlg extends CustomDialog
             {
                 spinner.addChangeListener(cl);
             }
-
         }
 
-        
         /**
          * @return
          */
@@ -670,10 +548,11 @@ public class SelectPrepsDlg extends CustomDialog
         {
             List<Loan> loans = new Vector<Loan>();
             
-            for (LoanPreparation lpo : prep.getLoanPreparations())
-            {
-                loans.add(lpo.getLoan());
-            }
+            // XXX FIX ME
+            //for (LoanPreparation lpo : prep.getLoanPreparations())
+            //{
+            //    loans.add(lpo.getLoan());
+            //}
             
             ViewIFace view  = AppContextMgr.getInstance().getView("Loan"); //$NON-NLS-1$
             final ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog(parent,
@@ -709,6 +588,7 @@ public class SelectPrepsDlg extends CustomDialog
     protected static final Cursor handCursor    = new Cursor(Cursor.HAND_CURSOR);
     protected static final Cursor defCursor     = new Cursor(Cursor.DEFAULT_CURSOR);
 
+    //-----------------------------------------------------
     class LinkLabelBtn extends JLabel
     {
         protected ActionListener al;
@@ -720,13 +600,6 @@ public class SelectPrepsDlg extends CustomDialog
             this.al = al;
             setControlSize(this);
             
-            //setBorderPainted(false);
-            //setBorder(BorderFactory.createEmptyBorder());
-            //setOpaque(false);
-            //setCursor(handCursor);
-            
-            //final LinkLabelBtn llb = this;
-
             addMouseListener(new MouseAdapter()
             {
                 public void mouseClicked(MouseEvent e) 
@@ -762,6 +635,5 @@ public class SelectPrepsDlg extends CustomDialog
             });
         }
     }
-
 
 }

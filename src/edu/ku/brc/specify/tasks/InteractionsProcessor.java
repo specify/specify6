@@ -36,7 +36,7 @@ import edu.ku.brc.specify.datamodel.InfoRequest;
 import edu.ku.brc.specify.datamodel.PreparationsProviderIFace;
 import edu.ku.brc.specify.ui.ColObjInfo;
 import edu.ku.brc.specify.ui.PrepInfo;
-import edu.ku.brc.specify.ui.SelectPrepsDlgSQL;
+import edu.ku.brc.specify.ui.SelectPrepsDlg;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -279,7 +279,7 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
         
         final DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(tableId);
 
-        final SelectPrepsDlgSQL loanSelectPrepsDlg = new SelectPrepsDlgSQL(coToPrepHash, prepTypeHash, ti.getTitle());
+        final SelectPrepsDlg loanSelectPrepsDlg = new SelectPrepsDlg(coToPrepHash, prepTypeHash, ti.getTitle());
         loanSelectPrepsDlg.createUI();
         loanSelectPrepsDlg.setModal(true);
         
