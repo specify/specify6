@@ -247,6 +247,7 @@ public class FormPane extends DroppableTaskPane
         
         if (multiView != null)
         {
+            multiView.aboutToShutdown();
             multiView.shutdown();
             multiView = null;
         }

@@ -178,7 +178,7 @@ public class InteractionsTask extends BaseTask
     protected Vector<InteractionEntry>  entries = new Vector<InteractionEntry>();
     
     InteractionsProcessor<Gift> giftProcessor = new InteractionsProcessor<Gift>(this, false, Gift.getClassTableId());
-    InteractionsProcessor<Loan> loanProcessor = new InteractionsProcessor<Loan>(this, true, Loan.getClassTableId());
+    InteractionsProcessor<Loan> loanProcessor = new InteractionsProcessor<Loan>(this, true,  Loan.getClassTableId());
     
     static 
     {
@@ -897,9 +897,9 @@ public class InteractionsTask extends BaseTask
      * @param infoRequest
      * @param prepsHash
      */
-    protected void addPrepsToLoan(final PreparationsProviderIFace existingLoanArg, 
-                                  final InfoRequest               infoRequest,
-                                  final Hashtable<Preparation, Integer> prepsHash)
+    protected void addPrepsToLoan(final PreparationsProviderIFace   existingLoanArg, 
+                                  final InfoRequest                 infoRequest,
+                                  final Hashtable<Integer, Integer> prepsHash)
     {
         Loan existingLoan = (Loan)existingLoanArg;
         Loan loan;
@@ -953,28 +953,47 @@ public class InteractionsTask extends BaseTask
             }
         }
         
-        for (Preparation prep : prepsHash.keySet())
+        DataProviderSessionIFace session = null;
+        try
         {
-            Integer count = prepsHash.get(prep);
-            if (prepToLoanPrepHash != null)
+            session = DataProviderFactory.getInstance().createSession();
+            
+            for (Integer prepId : prepsHash.keySet())
             {
-                LoanPreparation lp = prepToLoanPrepHash.get(prep.getId());
-                if (lp != null)
+                Preparation prep  = session.get(Preparation.class, prepId);
+                Integer     count = prepsHash.get(prepId);
+                if (prepToLoanPrepHash != null)
                 {
-                    int lpCnt = lp.getQuantity();
-                    lpCnt += count;
-                    lp.setQuantity(lpCnt);
-                    //System.err.println("Adding "+count+"  to "+lp.hashCode());
-                    continue;
+                    LoanPreparation lp = prepToLoanPrepHash.get(prep.getId());
+                    if (lp != null)
+                    {
+                        int lpCnt = lp.getQuantity();
+                        lpCnt += count;
+                        lp.setQuantity(lpCnt);
+                        continue;
+                    }
                 }
+                
+                LoanPreparation lpo = new LoanPreparation();
+                lpo.initialize();
+                lpo.setPreparation(prep);
+                lpo.setQuantity(count);
+                lpo.setLoan(loan);
+                loan.getLoanPreparations().add(lpo);
             }
             
-            LoanPreparation lpo = new LoanPreparation();
-            lpo.initialize();
-            lpo.setPreparation(prep);
-            lpo.setQuantity(count);
-            lpo.setLoan(loan);
-            loan.getLoanPreparations().add(lpo);
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(InteractionsTask.class, ex);
+
+        } finally
+        {
+            if (session != null)
+            {
+                session.close();
+            }
         }
         
         if (existingLoan == null)
@@ -998,7 +1017,7 @@ public class InteractionsTask extends BaseTask
      */
     protected void addPrepsToGift(final PreparationsProviderIFace existingGiftArg, 
                                   final InfoRequest               infoRequest,
-                                  final Hashtable<Preparation, Integer> prepsHash)
+                                  final Hashtable<Integer, Integer> prepsHash)
     {
         Gift existingGift = (Gift)existingGiftArg;
         Gift gift;
@@ -1051,28 +1070,48 @@ public class InteractionsTask extends BaseTask
             }
         }
         
-        for (Preparation prep : prepsHash.keySet())
+        DataProviderSessionIFace session = null;
+        try
         {
-            Integer count = prepsHash.get(prep);
-            if (prepToGiftPrepHash != null)
+            session = DataProviderFactory.getInstance().createSession();
+            
+            for (Integer prepId : prepsHash.keySet())
             {
-                GiftPreparation gp = prepToGiftPrepHash.get(prep.getId());
-                if (gp != null)
+                Preparation prep  = session.get(Preparation.class, prepId);
+                Integer     count = prepsHash.get(prepId);
+                if (prepToGiftPrepHash != null)
                 {
-                    int lpCnt = gp.getQuantity();
-                    lpCnt += count;
-                    gp.setQuantity(lpCnt);
-                    //System.err.println("Adding "+count+"  to "+lp.hashCode());
-                    continue;
+                    GiftPreparation gp = prepToGiftPrepHash.get(prep.getId());
+                    if (gp != null)
+                    {
+                        int lpCnt = gp.getQuantity();
+                        lpCnt += count;
+                        gp.setQuantity(lpCnt);
+                        //System.err.println("Adding "+count+"  to "+lp.hashCode());
+                        continue;
+                    }
                 }
+                
+                GiftPreparation gpo = new GiftPreparation();
+                gpo.initialize();
+                gpo.setPreparation(prep);
+                gpo.setQuantity(count);
+                gpo.setGift(gift);
+                gift.getGiftPreparations().add(gpo);
             }
             
-            GiftPreparation gpo = new GiftPreparation();
-            gpo.initialize();
-            gpo.setPreparation(prep);
-            gpo.setQuantity(count);
-            gpo.setGift(gift);
-            gift.getGiftPreparations().add(gpo);
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(InteractionsTask.class, ex);
+
+        } finally
+        {
+            if (session != null)
+            {
+                session.close();
+            }
         }
         
         if (existingGift == null)

@@ -1554,6 +1554,21 @@ public class MultiView extends JPanel
             }
         }
     }
+    
+    /**
+     * Call right before formShutdown is called, but the entire UI is still intact.
+     */
+    public void aboutToShutdown()
+    {
+        for (Enumeration<Viewable> e=viewMapByName.elements();e.hasMoreElements();)
+        {
+            e.nextElement().aboutToShutdown();
+        }
+        for (MultiView mv : kids)
+        {
+            mv.aboutToShutdown();
+        }
+    }
 
     /**
      * Tells the MultiView the MV that it is being shutdown to be disposed.

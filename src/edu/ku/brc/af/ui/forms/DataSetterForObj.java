@@ -84,7 +84,7 @@ public class DataSetterForObj implements DataObjectSettable
                 {
                     args[0] = dataVal;
                     //log.debug("fieldname["+fieldName+"] dataObj["+dataObj+"] data ["+dataVal+"] ("+(dataVal != null ? dataVal.getClass().getSimpleName() : "")+")");
-                    setter.invoke(dataObj, new Object[] {dataVal});
+                    setter.invoke(dataObj, dataVal);
                 }
             } else
             {

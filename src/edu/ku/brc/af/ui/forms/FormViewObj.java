@@ -4205,9 +4205,26 @@ public class FormViewObj implements Viewable,
      * 
      * @param isSkippingAttach true skip session.attach, false do it
      */
-    public void setSkippingAttach(boolean isSkippingAttach)
+    public void setSkippingAttach(final boolean isSkippingAttach)
     {
         this.isSkippingAttach = isSkippingAttach;
+        for (FVOFieldInfo fi : controlsById.values())
+        {
+            if (fi.getFormCell() instanceof FormCellSubView)
+            {
+                if (fi.getComp() instanceof SubViewBtn)
+                {
+                    ((SubViewBtn)fi.getComp()).setSkippingAttach(isSkippingAttach);
+                    
+                } else if (fi.getSubView() != null)
+                {
+                    if (fi.getSubView().getCurrentView() != null)
+                    {
+                        fi.getSubView().getCurrentView().setSkippingAttach(isSkippingAttach);
+                    } 
+                }   
+            }
+        }
     }
 
     /**
@@ -5108,6 +5125,17 @@ public class FormViewObj implements Viewable,
     }
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.Viewable#aboutToShutdown()
+     */
+    public void aboutToShutdown()
+    {
+        if (businessRules != null)
+        {
+            businessRules.aboutToShutdown();
+        }
+    }
+    
+    /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#shutdown()
      */
     public void shutdown()
@@ -5537,7 +5565,7 @@ public class FormViewObj implements Viewable,
                 dataObj != null && 
                 (dataObj instanceof FormDataObjIFace && ((FormDataObjIFace)dataObj).getId() == null))
             {
-                delRecBtn.setEnabled(false);
+                //delRecBtn.setEnabled(false);
             }
         }
     }

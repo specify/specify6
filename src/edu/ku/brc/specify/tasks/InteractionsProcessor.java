@@ -1,11 +1,8 @@
 /*
-     * Copyright (C) 2008  The University of Kansas
-     *
-     * [INSERT KU-APPROVED LICENSE TEXT HERE]
-     *
-     */
-/**
- * 
+ * Copyright (C) 2008  The University of Kansas
+ *
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
+ *
  */
 package edu.ku.brc.specify.tasks;
 
@@ -14,7 +11,6 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
@@ -27,18 +23,20 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.tasks.BaseTask.ASK_TYPE;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.CollectionObject;
-import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.InfoRequest;
-import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.PreparationsProviderIFace;
-import edu.ku.brc.specify.ui.SelectPrepsDlg;
+import edu.ku.brc.specify.ui.ColObjInfo;
+import edu.ku.brc.specify.ui.PrepInfo;
+import edu.ku.brc.specify.ui.SelectPrepsDlgSQL;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -63,8 +61,8 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
      * 
      */
     public InteractionsProcessor(final InteractionsTask task, 
-                                 final boolean isLoan,
-                                 final int     tableId)
+                                 final boolean          isLoan,
+                                 final int              tableId)
     {
         this.task    = task;
         this.isLoan  = isLoan;
@@ -234,17 +232,19 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
                 statusBar.setIndeterminate("LoanLoader", true);
                 
                 UIRegistry.writeSimpleGlassPaneMsg(getResourceString("NEW_INTER_LOADING_PREP"), 24);
-                PrepLoader loader = new PrepLoader(session, sqlStr, currPrepProvider, infoRequest);
-                loader.addPropertyChangeListener(
+                
+                PrepLoaderSQL prepLoaderSQL = new PrepLoaderSQL(currPrepProvider, recordSet, infoRequest, isLoan);
+                prepLoaderSQL.addPropertyChangeListener(
                         new PropertyChangeListener() {
                             public  void propertyChange(PropertyChangeEvent evt) {
+                                log.debug(evt.getNewValue());
                                 if ("progress".equals(evt.getPropertyName())) 
                                 {
                                     statusBar.setValue("LoanLoader", (Integer)evt.getNewValue());
                                 }
                             }
                         });
-                loader.execute();
+                prepLoaderSQL.execute();
                 
             } else
             {
@@ -253,95 +253,76 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
             
         } catch (Exception ex)
         {
+            ex.printStackTrace();
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(InteractionsProcessor.class, ex);
-            log.error(ex);
-            ex.printStackTrace();
-            
         }
     }
-    
+
     /**
-     * @param availColObjList
+     * @param coToPrepHash
+     * @param prepTypeHash
      * @param prepProvider
      * @param infoRequest
      * @param session
      */
-    protected void prepsLoaded(final ArrayList<CollectionObject> availColObjList,
-                               final T                           prepProvider,
-                               final InfoRequest                 infoRequest,
-                               final DataProviderSessionIFace    session)
+    protected void prepsLoaded(final Hashtable<Integer, ColObjInfo> coToPrepHash,
+                               final Hashtable<Integer, String>     prepTypeHash,
+                               final T                              prepProvider,
+                               final InfoRequest                    infoRequest)
     {
-        try
+        if (coToPrepHash.size() == 0)
         {
-            final DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(tableId);
+            UIRegistry.showLocalizedMsg("NEW_INTER_NO_PREPS_TITLE", "NEW_INTER_NO_PREPS");
+            return;
+        }
+        
+        final DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(tableId);
 
-            final SelectPrepsDlg loanSelectPrepsDlg = new SelectPrepsDlg(availColObjList, prepProvider, ti.getTitle());
-            loanSelectPrepsDlg.createUI();
-            
-            if (!loanSelectPrepsDlg.hasAvaliblePrepsToLoan())
-            {
-                UIRegistry.showLocalizedMsg("NEW_INTER_NO_PREPS_TITLE", "NEW_INTER_NO_PREPS");
-                return;
-            }
-            loanSelectPrepsDlg.setModal(true);
-            
-            UIHelper.centerAndShow(loanSelectPrepsDlg);
-            
-            if (loanSelectPrepsDlg.isCancelled())
-            {
-                return;
-            }
+        final SelectPrepsDlgSQL loanSelectPrepsDlg = new SelectPrepsDlgSQL(coToPrepHash, prepTypeHash, ti.getTitle());
+        loanSelectPrepsDlg.createUI();
+        loanSelectPrepsDlg.setModal(true);
+        
+        UIHelper.centerAndShow(loanSelectPrepsDlg);
+        
+        if (loanSelectPrepsDlg.isCancelled())
+        {
+            return;
+        }
 
-            final Hashtable<Preparation, Integer> prepsHash = loanSelectPrepsDlg.getPreparationCounts();
-            if (prepsHash.size() > 0)
+        final Hashtable<Integer, Integer> prepsHash = loanSelectPrepsDlg.getPreparationCounts();
+        if (prepsHash.size() > 0)
+        {
+            final SwingWorker worker = new SwingWorker()
             {
-                final SwingWorker worker = new SwingWorker()
+                @Override
+                public Object construct()
                 {
-                    @Override
-                    public Object construct()
+                    JStatusBar statusBar = UIRegistry.getStatusBar();
+                    statusBar.setIndeterminate("INTERACTIONS", true);
+                    statusBar.setText(getLocalizedMessage("CREATING_INTERACTION", ti.getTitle()));
+                    
+                    if (isLoan)
                     {
-                        JStatusBar statusBar = UIRegistry.getStatusBar();
-                        statusBar.setIndeterminate("INTERACTIONS", true);
-                        
-                        
-                        statusBar.setText(getLocalizedMessage("CREATING_INTERACTION", ti.getTitle()));
-                        
-                        if (isLoan)
-                        {
-                            task.addPrepsToLoan(prepProvider, infoRequest, prepsHash);
-                        } else
-                        {
-                            task.addPrepsToGift(prepProvider, infoRequest, prepsHash);
-                        }
-                        
-                        return null;
+                        task.addPrepsToLoan(prepProvider, infoRequest, prepsHash);
+                    } else
+                    {
+                        task.addPrepsToGift(prepProvider, infoRequest, prepsHash);
                     }
+                    
+                    return null;
+                }
 
-                    //Runs on the event-dispatching thread.
-                    @Override
-                    public void finished()
-                    {
-                        JStatusBar statusBar = UIRegistry.getStatusBar();
-                        statusBar.setProgressDone("INTERACTIONS");
-                        statusBar.setText("");
-                    }
-                };
-                worker.start();
-            }
-        } catch (Exception ex)
-        {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(InteractionsProcessor.class, ex);
-            log.error(ex);
-            ex.printStackTrace();
-            
-        } finally
-        {
-            if (session != null)
-            {
-                session.close();
-            }
+                //Runs on the event-dispatching thread.
+                @Override
+                public void finished()
+                {
+                    JStatusBar statusBar = UIRegistry.getStatusBar();
+                    statusBar.setProgressDone("INTERACTIONS");
+                    statusBar.setText("");
+                }
+            };
+            worker.start();
         }
     }
     
@@ -360,9 +341,9 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
             
         } catch (Exception ex)
         {
+            ex.printStackTrace();
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(InteractionsProcessor.class, ex);
-            ex.printStackTrace();
             // Error Dialog
             
         } finally
@@ -382,28 +363,299 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
     //--------------------------------------------------------------
     // Background loader class for loading a large number of loan preparations
     //--------------------------------------------------------------
-    class PrepLoader extends javax.swing.SwingWorker<Integer, Integer>
+    class PrepLoaderSQL extends javax.swing.SwingWorker<Integer, Integer>
     {
-        private DataProviderSessionIFace session;
-        private String                   sqlStr;
-        private InfoRequest              infoRequest;
-        private T                        prepsProvider;
-               
-        private ArrayList<CollectionObject> availColObjList = new ArrayList<CollectionObject>();
-        private ArrayList<CollectionObject> noCurrDetList   = new ArrayList<CollectionObject>();
-        private List<CollectionObject>      colObjList      = null;
+        private final String PROGRESS = "progress";
+        
+        private RecordSetIFace recordSet;
+        private T              prepsProvider;
+        private InfoRequest    infoRequest;
+        private boolean        isForLoan;
 
-        public PrepLoader(final DataProviderSessionIFace session,
-                          final String                   sqlStr,
-                          final T                        prepsProvider,
-                          final InfoRequest              infoRequest)
+        private Hashtable<Integer, String>     prepTypeHash = new Hashtable<Integer, String>();
+        private Hashtable<Integer, ColObjInfo> coToPrepHash = new Hashtable<Integer, ColObjInfo>();
+        
+        /**
+         * @param prepsProvider
+         * @param recordSet
+         * @param infoRequest
+         */
+        public PrepLoaderSQL(final T              prepsProvider,
+                             final RecordSetIFace recordSet,
+                             final InfoRequest    infoRequest,
+                             final boolean        isForLoan)
         {
-            this.session       = session;
-            this.sqlStr        = sqlStr;
+            this.recordSet     = recordSet;
             this.prepsProvider = prepsProvider;
             this.infoRequest   = infoRequest;
+            this.isForLoan     = isForLoan;
         }
 
+        /**
+         * @param val
+         * @return
+         */
+        private Integer getInt(final Object val)
+        {
+            return val == null ? 0 : (Integer)val;
+        }
+        
+        /**
+         * @return a List of rows that have the CollectionObject info from the rcordset
+         */
+        protected Vector<Object[]> getColObjsFromRecordSet()
+        {
+            String sql = "SELECT co.CollectionObjectID, co.CatalogNumber, tx.FullName FROM determination as dt INNER JOIN collectionobject as co ON dt.CollectionObjectID = co.CollectionObjectID " +
+                         "INNER JOIN taxon as tx ON dt.TaxonID = tx.TaxonID WHERE isCurrent <> 0 AND dt.CollectionMemberID = COLMEMID " + 
+                         "AND co.CollectionObjectID " + DBTableIdMgr.getInstance().getInClause(recordSet);
+            sql = QueryAdjusterForDomain.getInstance().adjustSQL(sql);
+            log.debug(sql);
+            
+            return BasicSQLUtils.query(sql);
+        }
+        
+        /**
+         * @return
+         */
+        protected int collectForLoan()
+        {
+            int total = 0;
+            int count = 0;
+            try
+            {
+                Vector<Object[]> coIdRows = getColObjsFromRecordSet();
+                total = coIdRows.size() * 2;
+                if (coIdRows.size() != 0)
+                {
+                    UIRegistry.getStatusBar().setProgressRange("LoanLoader", 0, Math.min(count, total));
+    
+                    // Get Preps with Gifts
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("SELECT co.CollectionObjectID, p.PreparationID, gp.Quantity " +
+                             "FROM preparation AS p INNER JOIN collectionobject AS co ON p.CollectionObjectID = co.CollectionObjectID " +
+                             "INNER JOIN giftpreparation AS gp ON p.PreparationID = gp.GiftPreparationID " +
+                             "WHERE co.CollectionMemberID = COLMEMID AND co.CollectionObjectID in (");
+                   for (Object[] row : coIdRows)
+                   {
+                       count++;
+                       if ((count % 10) == 0) firePropertyChange(PROGRESS, 0, count);
+                       
+                       Integer coId = (Integer)row[0];
+                       sb.append(coId);
+                       sb.append(',');
+                       
+                       if (row[1] != null && row[2] != null)
+                       {
+                           coToPrepHash.put(coId, new ColObjInfo(coId, row[1].toString(), row[2].toString()));
+                       }
+                   }
+                   sb.setLength(sb.length()-1); // chomp last comma
+                   sb.append(')');
+                   
+                   // Get a hash contain a mapping from PrepId to Gift Quantity
+                   Hashtable<Integer, Integer> prepIdToGiftQnt = new Hashtable<Integer, Integer>();
+                   
+                   String sql = QueryAdjusterForDomain.getInstance().adjustSQL(sb.toString());
+                   log.debug(sql);
+                   
+                   Vector<Object[]> rows = BasicSQLUtils.query(sql);
+                   if (rows.size() > 0)
+                   {
+                       for (Object[] row : rows)
+                       {
+                           prepIdToGiftQnt.put((Integer)row[0], (Integer)row[1]);
+                       }
+                   }
+                   
+                   // Now get the Preps With Loans
+                   sb = new StringBuilder();
+                   sb.append("SELECT p.PreparationID, p.Count, lp.Quantity, lp.QuantityResolved, " +
+                             "co.CollectionObjectID, pt.PrepTypeID, pt.Name " +
+                             "FROM preparation AS p INNER JOIN collectionobject AS co ON p.CollectionObjectID = co.CollectionObjectID " +
+                             "INNER JOIN preptype AS pt ON p.PrepTypeID = pt.PrepTypeID " +
+                             "LEFT OUTER JOIN loanpreparation AS lp ON p.PreparationID = lp.PreparationID " +
+                             "WHERE pt.IsLoanable <> 0 AND co.CollectionObjectID in (");
+                   for (Object[] row : coIdRows)
+                   {
+                       sb.append(row[0]);
+                       sb.append(',');
+                   }
+                   sb.setLength(sb.length()-1); // chomp last comma
+                   sb.append(") ORDER BY co.CatalogNumber ASC");
+                   
+                   // Get the Preps and Qty
+                   sql = QueryAdjusterForDomain.getInstance().adjustSQL(sb.toString());
+                   log.debug(sql);
+                   
+                   rows = BasicSQLUtils.query(sql);
+                   if (rows.size() > 0)
+                   {
+                       for (Object[] row : rows)
+                       {
+                           count++;
+                           if ((count % 10) == 0) firePropertyChange(PROGRESS, 0, Math.min(count, total));
+                           
+                           int prepId = getInt(row[0]);
+                           int pQty   = getInt(row[1]);
+                           int qty    = getInt(row[2]);
+                           int qtyRes = getInt(row[3]);
+                           int coId   = getInt(row[4]);
+                           
+                           prepTypeHash.put((Integer)row[5], row[6].toString());
+                           
+                           pQty -= getInt(prepIdToGiftQnt.get(prepId));
+                           
+                           ColObjInfo colObjInfo = coToPrepHash.get(coId);
+                           if (colObjInfo == null)
+                           {
+                               // error
+                           }
+                           
+                           PrepInfo prepInfo = colObjInfo.get(prepId);
+                           if (prepInfo != null)
+                           {
+                               prepInfo.add(qty, qtyRes);
+                           } else
+                           {
+                               colObjInfo.add(new PrepInfo(prepId, (Integer)row[5], pQty, qty, qtyRes));    
+                           }
+                       }
+                   }                   
+                }
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(InteractionsProcessor.class, ex);
+    
+            }
+            firePropertyChange(PROGRESS, 0, total);
+            UIRegistry.getStatusBar().setIndeterminate("LoanLoader", true);
+            return 0;
+        }
+        
+        /**
+         * @return
+         */
+        protected int collectForGift()
+        {
+            int total = 0;
+            int count = 0;
+            try
+            {
+                Vector<Object[]> coIdRows = getColObjsFromRecordSet();
+                if (coIdRows.size() != 0)
+                {
+                    UIRegistry.getStatusBar().setProgressRange("LoanLoader", 0, total);
+                    
+                    // Get Preps with Loans
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("SELECT p.PreparationID, lp.Quantity, lp.QuantityResolved " +
+                             "FROM preparation AS p INNER JOIN collectionobject AS co ON p.CollectionObjectID = co.CollectionObjectID " +
+                             "INNER JOIN loanpreparation AS lp ON p.PreparationID = lp.LoanPreparationID " +
+                             "WHERE co.CollectionMemberID = COLMEMID AND co.CollectionObjectID in (");
+                   for (Object[] row : coIdRows)
+                   {
+                       count++;
+                       if ((count % 10) == 0) firePropertyChange(PROGRESS, 0, Math.min(count, total));
+                       
+                       Integer coId = (Integer)row[0];
+                       sb.append(coId);
+                       sb.append(',');
+                       
+                       if (row[1] != null && row[2] != null)
+                       {
+                           coToPrepHash.put(coId, new ColObjInfo(coId, row[1].toString(), row[2].toString()));
+                       }
+                   }
+                   sb.setLength(sb.length()-1); // chomp last comma
+                   sb.append(')');
+                   
+                   // Get a hash contain a mapping from PrepId to Gift Quantity
+                   Hashtable<Integer, Integer> prepIdToLoanQnt = new Hashtable<Integer, Integer>();
+                   
+                   String sql = QueryAdjusterForDomain.getInstance().adjustSQL(sb.toString());
+                   log.debug(sql);
+                   
+                   Vector<Object[]> rows = BasicSQLUtils.query(sql);
+                   if (rows.size() > 0)
+                   {
+                       for (Object[] row : rows)
+                       {
+                           int qty    = getInt((Integer)row[1]);
+                           int qtyRes = getInt((Integer)row[2]);
+                           prepIdToLoanQnt.put((Integer)row[0], qty-qtyRes);
+                       }
+                   }
+                   
+                   // Now get the Preps With Gift
+                   sb = new StringBuilder();
+                   sb.append("SELECT p.PreparationID, p.Count, gp.Quantity, " +
+                             "co.CollectionObjectID, pt.PrepTypeID, pt.Name " +
+                             "FROM preparation AS p INNER JOIN collectionobject AS co ON p.CollectionObjectID = co.CollectionObjectID " +
+                             "INNER JOIN preptype AS pt ON p.PrepTypeID = pt.PrepTypeID " +
+                             "LEFT OUTER JOIN giftpreparation AS gp ON p.PreparationID = gp.PreparationID " +
+                             "WHERE pt.IsLoanable <> 0 AND co.CollectionObjectID in (");
+                   for (Object[] row : coIdRows)
+                   {
+                       sb.append(row[0]);
+                       sb.append(',');
+                   }
+                   sb.setLength(sb.length()-1); // chomp last comma
+                   sb.append(") ORDER BY co.CatalogNumber ASC");
+                   
+                   // Get the Preps and Qty
+                   sql = QueryAdjusterForDomain.getInstance().adjustSQL(sb.toString());
+                   log.debug(sql);
+                   
+                   rows = BasicSQLUtils.query(sql);
+                   if (rows.size() > 0)
+                   {
+                       for (Object[] row : rows)
+                       {
+                           int prepId = getInt(row[0]);
+                           
+                           count++;
+                           if ((count % 10) == 0) firePropertyChange(PROGRESS, 0, Math.min(count, total));
+                           
+                           int pQty   = getInt(row[1]);
+                           int qty    = getInt(row[2]);
+                           int coId   = getInt(row[3]);
+                           
+                           prepTypeHash.put((Integer)row[4], row[5].toString());
+                           
+                           pQty -= getInt(prepIdToLoanQnt.get(prepId));
+                           
+                           ColObjInfo colObjInfo = coToPrepHash.get(coId);
+                           if (colObjInfo == null)
+                           {
+                               // error
+                           }
+                           
+                           PrepInfo prepInfo = colObjInfo.get(prepId);
+                           if (prepInfo != null)
+                           {
+                               prepInfo.add(qty, qty);
+                           } else
+                           {
+                               colObjInfo.add(new PrepInfo(prepId, (Integer)row[4], pQty, qty, 0));    
+                           }
+                       }
+                   }                   
+                }
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(InteractionsProcessor.class, ex);
+
+            }
+            firePropertyChange(PROGRESS, 0, total);
+            UIRegistry.getStatusBar().setIndeterminate("LoanLoader", true);
+            return 0;
+        }
+
+        
         /* (non-Javadoc)
          * @see javax.swing.SwingWorker#doInBackground()
          */
@@ -411,46 +663,9 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
         @Override
         protected Integer doInBackground() throws Exception
         {
-            try
-            {
-                colObjList = (List<CollectionObject>)session.getDataList(sqlStr);
-                UIRegistry.getStatusBar().setProgressRange("LoanLoader", 0, 100);
-                
-                int count = 0;
-                for (CollectionObject co : colObjList)
-                {
-                    if (co.getDeterminations().size() > 0)
-                    {
-                        boolean hasCurrDet = false;
-                        for (Determination det : co.getDeterminations())
-                        {
-                            if (det.isCurrentDet())
-                            {
-                                hasCurrDet = true;
-                                availColObjList.add(co);
-                                break;
-                            }
-                        }
-                        
-                        if (!hasCurrDet)
-                        {
-                            noCurrDetList.add(co);
-                        }
-                    } else
-                    {
-                        availColObjList.add(co);
-                    }
-                    count++;
-                    setProgress((int)(100.0 * count / colObjList.size()));
-                }
-            } catch (Exception ex)
-            {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(InteractionsProcessor.class, ex);
-                log.error(ex);
-                ex.printStackTrace();
-            }
-            return 0;
+            coToPrepHash = new Hashtable<Integer, ColObjInfo>();
+            
+            return isForLoan ? collectForLoan() : collectForGift();
         }
 
         /* (non-Javadoc)
@@ -463,9 +678,10 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
             UIRegistry.getStatusBar().setProgressDone("LoanLoader");
             UIRegistry.clearSimpleGlassPaneMsg();
             
-            prepsLoaded(availColObjList, prepsProvider, infoRequest, session);
+            prepsLoaded(coToPrepHash, prepTypeHash, prepsProvider, infoRequest);
         }
         
     }
     
+
 }

@@ -238,6 +238,11 @@ public interface BusinessRulesIFace
     public abstract boolean shouldCloneField(final String fieldName);
     
     /**
+     * Call right before formShutdown is called, but the entire UI is still intact.
+     */
+    public abstract void aboutToShutdown();
+    
+    /**
      * The form is being tossed.
      */
     public abstract void formShutdown();

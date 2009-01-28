@@ -179,7 +179,8 @@ public class TableViewObj implements Viewable,
     protected Object[]                      singleItemArray = new Object[1];
     protected DateWrapper                   scrDateFormat;
     protected boolean                       isLoaded        = false;
-    
+    protected boolean                       isSkippingAttach = false; // Indicates whether to skip before setting data into the form
+
     protected String                        dataClassName;
     protected String                        dataSetFieldName;
 
@@ -1436,7 +1437,7 @@ public class TableViewObj implements Viewable,
         if (dataObjList != null && model != null)
         {
             DataProviderSessionIFace tmpSession = session;
-            if (tmpSession == null)
+            if (tmpSession == null && !isSkippingAttach)
             {
                 tmpSession = DataProviderFactory.getInstance().createSession();
                 for (Object dObj : newObjsList)
@@ -1667,15 +1668,21 @@ public class TableViewObj implements Viewable,
     }
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.Viewable#aboutToShutdown()
+     */
+    public void aboutToShutdown()
+    {
+        if (businessRules != null)
+        {
+            businessRules.aboutToShutdown();
+        }
+    }
+    
+    /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.Viewable#shutdown()
      */
     public void shutdown()
     {
-        //if (mvParent != null)
-        //{
-        //    mvParent.shutdown();
-        //    mvParent = null;
-        //}
         if (businessRules != null)
         {
             businessRules.formShutdown();
@@ -2005,6 +2012,15 @@ public class TableViewObj implements Viewable,
     public boolean isDataCompleteAndValid(final boolean throwAwayOnDiscard)
     {
         return true;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.Viewable#setSkippingAttach(boolean)
+     */
+    @Override
+    public void setSkippingAttach(boolean isSkippingAttach)
+    {
+        this.isSkippingAttach = isSkippingAttach;
     }
     
     //-----------------------------------------------------

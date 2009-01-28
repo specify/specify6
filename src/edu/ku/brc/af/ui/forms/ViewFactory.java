@@ -1361,7 +1361,7 @@ public class ViewFactory
                     int    max    = StringUtils.isNotEmpty(maxStr) ? Integer.parseInt(maxStr) : 0; 
                     
                     ValSpinner spinner = new ValSpinner(min, max, isReq, 
-                                                           cellField.isReadOnly() || mode == AltViewIFace.CreationMode.VIEW);
+                                                        cellField.isReadOnly() || mode == AltViewIFace.CreationMode.VIEW);
                     if (validator != null)
                     {
                         DataChangeNotifier dcn = validator.createDataChangeNotifer(cellField.getIdent(), 
@@ -1911,7 +1911,7 @@ public class ViewFactory
         int colspan = cell.getColspan();
         int rowspan = cell.getRowspan();
         
-        log.debug("["+cell.getType()+"] ["+cell.getName()+"] col: "+bi.colInx+" row: "+rowInx+" colspan: "+colspan+" rowspan: "+rowspan);
+        //log.debug("["+cell.getType()+"] ["+cell.getName()+"] col: "+bi.colInx+" row: "+rowInx+" colspan: "+colspan+" rowspan: "+rowspan);
         viewBldObj.addControlToUI(bi.compToAdd, bi.colInx, rowInx, colspan, rowspan);
 
         if (bi.doRegControl)

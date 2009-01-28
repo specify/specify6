@@ -85,7 +85,8 @@ public class IconViewObj implements Viewable
     protected int                           viewOptions;
     protected Class<?>                      classToCreate = null;
     protected boolean                       ignoreChanges = false;
-    
+    protected boolean                       isSkippingAttach = false; // Indicates whether to skip before setting data into the form
+
     protected FormDataObjIFace              parentDataObj;
     protected Set<Object>                   dataSet;
     protected String                        dataClassName;
@@ -1018,6 +1019,17 @@ public class IconViewObj implements Viewable
     }
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.Viewable#aboutToShutdown()
+     */
+    public void aboutToShutdown()
+    {
+        if (businessRules != null)
+        {
+            businessRules.aboutToShutdown();
+        }
+    }
+    
+    /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.Viewable#shutdown()
      */
     public void shutdown()
@@ -1039,11 +1051,19 @@ public class IconViewObj implements Viewable
     {
         return null;
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.Viewable#setSkippingAttach(boolean)
+     */
+    @Override
+    public void setSkippingAttach(boolean isSkippingAttach)
+    {
+        this.isSkippingAttach = isSkippingAttach;
+    }
     
     //-----------------------------------------------------------------------------------------------
     //-- Inner Classes
     //-----------------------------------------------------------------------------------------------
-
 
     public class IconViewActionEvent extends ActionEvent
     {

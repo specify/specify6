@@ -261,6 +261,17 @@ public interface Viewable
      * Focus the appropriate UI element.
      */
     public abstract void focus();
+    
+    /**
+     * Tells the Viewable to skip the DB attach when loading data.
+     * @param isSkippingAttach true/false
+     */
+    public void setSkippingAttach(final boolean isSkippingAttach);
+
+    /**
+     * Call right before formShutdown is called, but the entire UI is still intact.
+     */
+    public abstract void aboutToShutdown();
 
     /**
      * Tells the Viewable that it is being shutdown and it should cleanup.

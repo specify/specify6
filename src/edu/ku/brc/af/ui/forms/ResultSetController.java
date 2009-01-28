@@ -290,13 +290,14 @@ public class ResultSetController implements ValidationListener
         
         if (addDelBtn)
         {
-            if (false)
+            if (true)
             {
                 delRecBtn = new JButton("-")
                 {
                     public void setEnabled(boolean enable)
                     {
                         //System.err.println(formValidator.getName() + " " + hashCode() + " "+enable);
+                        System.err.println(enable);
                         if (formValidator != null && formValidator.getName() != null && formValidator.getName().equals("Permit"))
                         {
                             int x = 0;

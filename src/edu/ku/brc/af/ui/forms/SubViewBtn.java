@@ -90,6 +90,7 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
     protected Class<?>              classToCreate = null;
     protected String                helpContext   = null;
     protected boolean               isEditing;
+    protected boolean               isSkippingAttach = false; // Indicates whether to skip before setting data into the form
     
     protected JButton               subViewBtn;
     protected JLabel                label;
@@ -221,6 +222,22 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
     }
     
     /**
+     * @return the subViewBtn
+     */
+    public JButton getBtn()
+    {
+        return subViewBtn;
+    }
+
+    /**
+     * @param subViewBtn the subViewBtn to set
+     */
+    public void setSubViewBtn(JButton subViewBtn)
+    {
+        this.subViewBtn = subViewBtn;
+    }
+
+    /**
      * Getting the permissions for the data object.
      * @param dObj the data object
      */
@@ -349,11 +366,13 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
             @Override
             protected void cancelButtonPressed()
             {
-                FormValidator validator = multiView.getCurrentValidator();
-                if (validator != null && validator.getState() != UIValidatable.ErrorType.Valid)
+                multiView.aboutToShutdown();
+                
+                FormViewObj fvo = multiView.getCurrentViewAsFormViewObj();
+                if (fvo != null)
                 {
-                    FormViewObj fvo = multiView.getCurrentViewAsFormViewObj();
-                    if (fvo != null)
+                    FormValidator validator = multiView.getCurrentValidator();
+                    if (validator != null && validator.getState() != UIValidatable.ErrorType.Valid)
                     {
                         boolean  isNew   = fvo.isNewlyCreatedDataObj();
                         String   msgKey  = isNew ? "MV_INCOMPLETE_DATA_NEW" : "MV_INCOMPLETE_DATA";
@@ -546,6 +565,16 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
         }
     }
     
+    /**
+     * Set this to true if you do not want the form to do an attach before filling in the entire form
+     * 
+     * @param isSkippingAttach true skip session.attach, false do it
+     */
+    public void setSkippingAttach(final boolean isSkippingAttach)
+    {
+        this.isSkippingAttach = isSkippingAttach;
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.GetSetValueIFace#getValue()
      */
@@ -582,7 +611,7 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
         try
         {
             sessionLocal = hasSession ? null : DataProviderFactory.getInstance().createSession();
-            if (sessionLocal != null && parentObj != null && parentObj.getId() != null)
+            if (!isSkippingAttach && sessionLocal != null && parentObj != null && parentObj.getId() != null)
             {
                 sessionLocal.attach(parentObj);
             }
@@ -600,6 +629,7 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SubViewBtn.class, ex);
             ex.printStackTrace();
+            
         } finally
         {
             if (sessionLocal != null)

@@ -379,6 +379,7 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
     {
         if (multiView != null)
         {
+            multiView.aboutToShutdown();
             multiView.shutdown();
         }
         
