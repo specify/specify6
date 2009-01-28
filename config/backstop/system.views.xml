@@ -687,7 +687,6 @@
                     <cell type="field" id="7" name="remarks" uitype="textarea" colspan="10"/>
                 </row>  -->
                  <row>
-                    <cell type="label" labelfor="8"/>
                     <cell type="field" id="8" name="isAccessionBound" uitype="checkbox"/>
                 </row>
                 <row>
