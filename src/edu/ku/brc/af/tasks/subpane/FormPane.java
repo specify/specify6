@@ -12,6 +12,7 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.MultiView;
@@ -330,7 +331,13 @@ public class FormPane extends DroppableTaskPane
         if (view != null)
         {
             name = view.getName(); // names the Tab
-
+            
+            DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
+            if (ti != null)
+            {
+                name = ti.getTitle();
+            }
+            
             // Clear the MultiView.RESULTSET_CONTROLLER bit and then reset it if it needs to be set
             //MultiView.printCreateOptions("Before", options);
             int opts = options;
