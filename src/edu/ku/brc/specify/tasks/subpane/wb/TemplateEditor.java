@@ -445,9 +445,12 @@ public class TemplateEditor extends CustomDialog
         
         mainPanel.add(contentPanel, BorderLayout.CENTER);
         
-        FieldMappingPanel fmp = addMappingItem(null, IconManager.getIcon("BlankIcon", IconManager.STD_ICON_SIZE), null);
-        fmp.setAdded(true);
-        fmp.setNew(true);
+        if (dataFileInfo == null) //can't add new mappings when importing.
+        {
+        	FieldMappingPanel fmp = addMappingItem(null, IconManager.getIcon("BlankIcon", IconManager.STD_ICON_SIZE), null);
+        	fmp.setAdded(true);
+        	fmp.setNew(true);
+        }
         
         pack();
         
