@@ -290,7 +290,7 @@ public class ResultSetController implements ValidationListener
         
         if (addDelBtn)
         {
-            if (true)
+            if (false)
             {
                 delRecBtn = new JButton("-")
                 {
