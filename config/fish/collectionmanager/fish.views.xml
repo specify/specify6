@@ -194,7 +194,7 @@
                 </row>
                 <row>
                     <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectingEventAttachments" initialize="btn=true;icon=CollectingEventAttachment"/>
-                <!--    <cell type="subview" id="8" name="collectingEventAttrs" viewname="CollectingEventAttribute" initialize="btn=true"/> -->
+                    <cell type="subview" id="8" name="collectingEventAttribute" viewname="CollectingEventAttribute" initialize="btn=true"/> 
                 </row>
 
             </rows>
