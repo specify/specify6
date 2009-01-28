@@ -1232,6 +1232,8 @@ public class TemplateEditor extends CustomDialog
                     continue;
                 }             
                 
+                fmp.getFieldInfo().setInUse(false);
+                newInfo.setInUse(true);
                 fmp.setFieldInfo(newInfo);
                 fmp.setIcon(DBTableIdMgr.getInstance().getByClassName(Taxon.class.getName()).getIcon(IconManager.STD_ICON_SIZE));
             }
