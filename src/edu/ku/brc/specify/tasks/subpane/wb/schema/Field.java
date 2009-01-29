@@ -78,7 +78,21 @@ public class Field implements Comparable<Field>
         return name.compareToIgnoreCase(fld.name);
     }
 
-    /**
+    
+    /* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) 
+	{
+		if (!(obj instanceof Field))
+		{
+			return false;
+		}
+		return compareTo((Field )obj) == 0;
+	}
+
+	/**
      * @return the name
      */
     public final String getName()

@@ -429,15 +429,8 @@ public class UploadTableTree extends UploadTable
         
         if (parent == null && !this.incrementalNodeNumberUpdates)
         {
-//            try
-//            {
-                getTreeDef().setDoNodeNumberUpdates(false);
-                getTreeDef().setUploadInProgress(true);
-//            }
-//            catch (UploaderException ex)
-//            {
-//                throw new UploaderException(ex);
-//            }
+        	getTreeDef().setDoNodeNumberUpdates(false);
+            getTreeDef().setUploadInProgress(true);
         }
     }
     
@@ -510,6 +503,33 @@ public class UploadTableTree extends UploadTable
             String msg = getResourceString("WB_UPLOAD_NO_DEFITEM") + " (" + wbLevelName + ")";
             result.add(new InvalidStructure(msg, this));            
         }
+        
+        //check for duplicate mappings. This happens if user manages to include both Division and Phylum levels
+        //in the workbench, because they have identical numeric ranks.
+        if (getTreeDefItem() != null)
+        {
+        	for (Vector<UploadField> flds : uploadFields)
+        	{
+        		Vector<Field> fields = new Vector<Field>();
+        		Vector<UploadField> uploadFields = new Vector<UploadField>();
+        		for (UploadField fld : flds)
+        		{
+        			int idx = fields.indexOf(fld.getField());
+        			if (idx != -1)
+        			{
+        				String msg = String.format(getResourceString("WB_UPLOAD_EQUIV_RANKS"), fld.getWbFldName(), 
+        						uploadFields.get(idx).getWbFldName(), getTreeDefItem().getName());
+        				result.add(new InvalidStructure(msg, this));
+        			}
+        			else
+        			{
+        				fields.add(fld.getField());
+        				uploadFields.add(fld);
+        			}
+        		}
+        	}
+        }
+        
         if (parent == null)
         {
             Vector<TreeDefItemIface<?,?,?>> missingDefs = getMissingRequiredDefs();

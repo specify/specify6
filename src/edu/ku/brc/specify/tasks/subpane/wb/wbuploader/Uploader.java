@@ -87,7 +87,7 @@ import edu.ku.brc.util.Pair;
  */
 public class Uploader implements ActionListener, KeyListener
 {
-    private static boolean                       debugging                    = true;
+    private static boolean                       debugging                    = false;
 
     // Phases in the upload process...
     protected final static String                INITIAL_STATE                = "WB_UPLOAD_INITIAL_STATE";
@@ -3641,7 +3641,8 @@ public class Uploader implements ActionListener, KeyListener
     {
         for (UploadField field : uploadFields)
         {
-            if (field.getField().getTable().equals(t.getTable()))
+            logDebug("   uploading field; " + field.getWbFldName());
+        	if (field.getField().getTable().equals(t.getTable()))
             {
                 if (field.getIndex() != -1)
                 {
