@@ -362,113 +362,175 @@
     <field table="Taxon" name="kingdom" treename="taxon" maptofield="name" rankid="10"/>
     <field table="Taxon" name="kingdomAuthor" treename="taxon" maptofield="author" rankid="10"/>
     <field table="Taxon" name="kingdomCommonName" treename="taxon" maptofield="commonName" rankid="10"/>
+    <field table="Taxon" name="kingdomSource" treename="taxon" maptofield="source" rankid="10"/>
+    <field table="Taxon" name="kingdomGUID" treename="taxon" maptofield="guid" rankid="10"/>
     
     <field table="Taxon" name="subkingdom" treename="taxon" maptofield="name" rankid="20"/>
     <field table="Taxon" name="subkingdomAuthor" treename="taxon" maptofield="author" rankid="20"/>
     <field table="Taxon" name="subkingdomCommonName" treename="taxon" maptofield="commonName" rankid="20"/>
+    <field table="Taxon" name="subkingdomSource" treename="taxon" maptofield="source" rankid="20"/>
+    <field table="Taxon" name="subkingdomGUID" treename="taxon" maptofield="guid" rankid="20"/>
     
     <field table="Taxon" name="division" treename="taxon" maptofield="name" rankid="30"/>
     <field table="Taxon" name="divisionAuthor" treename="taxon" maptofield="author" rankid="30"/>
     <field table="Taxon" name="divisionCommonName" treename="taxon" maptofield="commonName" rankid="30"/>
+    <field table="Taxon" name="divisionSource" treename="taxon" maptofield="source" rankid="30"/>
+    <field table="Taxon" name="divisionGUID" treename="taxon" maptofield="guid" rankid="30"/>
     
+    <field table="Taxon" name="subdivision" treename="taxon" maptofield="name" rankid="40"/>
+    <field table="Taxon" name="subdivisionAuthor" treename="taxon" maptofield="author" rankid="40"/>
+    <field table="Taxon" name="subdivisionCommonName" treename="taxon" maptofield="commonName" rankid="40"/>
+    <field table="Taxon" name="subdivisionSource" treename="taxon" maptofield="source" rankid="40"/>
+    <field table="Taxon" name="subdivisionGUID" treename="taxon" maptofield="guid" rankid="40"/>
+
     <field table="Taxon" name="phylum" treename="taxon" maptofield="name" rankid="30"/>
     <field table="Taxon" name="phylumAuthor" treename="taxon" maptofield="author" rankid="30"/>
     <field table="Taxon" name="phylumCommonName" treename="taxon" maptofield="commonName" rankid="30"/>
+    <field table="Taxon" name="phylumSource" treename="taxon" maptofield="source" rankid="30"/>
+    <field table="Taxon" name="phylumGUID" treename="taxon" maptofield="guid" rankid="30"/>
     
     <field table="Taxon" name="subphylum" treename="taxon" maptofield="name" rankid="40"/>
     <field table="Taxon" name="subphylumAuthor" treename="taxon" maptofield="author" rankid="40"/>
     <field table="Taxon" name="subphylumCommonName" treename="taxon" maptofield="commonName" rankid="40"/>
+    <field table="Taxon" name="subphylumSource" treename="taxon" maptofield="source" rankid="40"/>
+    <field table="Taxon" name="subphylumGUID" treename="taxon" maptofield="guid" rankid="40"/>
     
     <field table="Taxon" name="superclass" treename="taxon" maptofield="name" rankid="50"/>
     <field table="Taxon" name="superclassAuthor" treename="taxon" maptofield="author" rankid="50"/>
     <field table="Taxon" name="superclassCommonName" treename="taxon" maptofield="commonName" rankid="50"/>
+    <field table="Taxon" name="superclassSource" treename="taxon" maptofield="source" rankid="50"/>
+    <field table="Taxon" name="superclassGUID" treename="taxon" maptofield="guid" rankid="50"/>
     
     <field table="Taxon" name="class" treename="taxon" maptofield="name" rankid="60"/>
     <field table="Taxon" name="classAuthor" treename="taxon" maptofield="author" rankid="60"/>
     <field table="Taxon" name="classCommonName" treename="taxon" maptofield="commonName" rankid="60"/>
+    <field table="Taxon" name="classSource" treename="taxon" maptofield="source" rankid="60"/>
+    <field table="Taxon" name="classGUID" treename="taxon" maptofield="guid" rankid="60"/>
     
     <field table="Taxon" name="subclass" treename="taxon" maptofield="name" rankid="70"/>
     <field table="Taxon" name="subclassAuthor" treename="taxon" maptofield="author" rankid="70"/>
     <field table="Taxon" name="subclassCommonName" treename="taxon" maptofield="commonName" rankid="70"/>
+    <field table="Taxon" name="subclassSource" treename="taxon" maptofield="source" rankid="70"/>
+    <field table="Taxon" name="subclassGUID" treename="taxon" maptofield="guid" rankid="70"/>
     
     <field table="Taxon" name="infraclass" treename="taxon" maptofield="name" rankid="80"/>
     <field table="Taxon" name="infraclassAuthor" treename="taxon" maptofield="author" rankid="80"/>
     <field table="Taxon" name="infraclassCommonName" treename="taxon" maptofield="commonName" rankid="80"/>
+    <field table="Taxon" name="infraclassSource" treename="taxon" maptofield="source" rankid="80"/>
+    <field table="Taxon" name="infraclassGUID" treename="taxon" maptofield="guid" rankid="80"/>
     
     <field table="Taxon" name="superorder" treename="taxon" maptofield="name" rankid="90"/>
     <field table="Taxon" name="superorderAuthor" treename="taxon" maptofield="author" rankid="90"/>
     <field table="Taxon" name="superorderCommonName" treename="taxon" maptofield="commonName" rankid="90"/>
+    <field table="Taxon" name="superorderSource" treename="taxon" maptofield="source" rankid="90"/>
+    <field table="Taxon" name="superorderGUID" treename="taxon" maptofield="guid" rankid="90"/>
     
     <field table="Taxon" name="order" treename="taxon" maptofield="name" rankid="100"/>
     <field table="Taxon" name="orderAuthor" treename="taxon" maptofield="author" rankid="100"/>
     <field table="Taxon" name="orderCommonName" treename="taxon" maptofield="commonName" rankid="100"/>
+    <field table="Taxon" name="orderSource" treename="taxon" maptofield="source" rankid="100"/>
+    <field table="Taxon" name="orderGUID" treename="taxon" maptofield="guid" rankid="100"/>
     
     <field table="Taxon" name="suborder" treename="taxon" maptofield="name" rankid="110"/>
     <field table="Taxon" name="suborderAuthor" treename="taxon" maptofield="author" rankid="110"/>
     <field table="Taxon" name="suborderCommonName" treename="taxon" maptofield="commonName" rankid="110"/>
+    <field table="Taxon" name="suborderSource" treename="taxon" maptofield="source" rankid="110"/>
+    <field table="Taxon" name="suborderGUID" treename="taxon" maptofield="guid" rankid="110"/>
     
     <field table="Taxon" name="infraorder" treename="taxon" maptofield="name" rankid="120"/>
     <field table="Taxon" name="infraorderAuthor" treename="taxon" maptofield="author" rankid="120"/>
     <field table="Taxon" name="infraorderCommonName" treename="taxon" maptofield="commonName" rankid="120"/>
+    <field table="Taxon" name="infraorderSource" treename="taxon" maptofield="source" rankid="120"/>
+    <field table="Taxon" name="infraorderGUID" treename="taxon" maptofield="guid" rankid="120"/>
     
     <field table="Taxon" name="superfamily" treename="taxon" maptofield="name" rankid="130"/>
     <field table="Taxon" name="superfamilyAuthor" treename="taxon" maptofield="author" rankid="130"/>
     <field table="Taxon" name="superfamilyCommonName" treename="taxon" maptofield="commonName" rankid="130"/>
+    <field table="Taxon" name="superfamilySource" treename="taxon" maptofield="source" rankid="130"/>
+    <field table="Taxon" name="superfamilyGUID" treename="taxon" maptofield="guid" rankid="130"/>
     
     <field table="Taxon" name="family" treename="taxon" maptofield="name" rankid="140"/>
     <field table="Taxon" name="familyAuthor" treename="taxon" maptofield="author" rankid="140"/>
     <field table="Taxon" name="familyCommonName" treename="taxon" maptofield="commonName" rankid="140"/>
+    <field table="Taxon" name="familySource" treename="taxon" maptofield="source" rankid="140"/>
+    <field table="Taxon" name="familyGUID" treename="taxon" maptofield="guid" rankid="140"/>
     
     <field table="Taxon" name="subfamily" treename="taxon" maptofield="name" rankid="150"/>
     <field table="Taxon" name="subfamilyAuthor" treename="taxon" maptofield="author" rankid="150"/>
     <field table="Taxon" name="subfamilyCommonName" treename="taxon" maptofield="commonName" rankid="150"/>
+    <field table="Taxon" name="subfamilySource" treename="taxon" maptofield="source" rankid="150"/>
+    <field table="Taxon" name="subfamilyGUID" treename="taxon" maptofield="guid" rankid="150"/>
     
     <field table="Taxon" name="tribe" treename="taxon" maptofield="name" rankid="160"/>
     <field table="Taxon" name="tribeAuthor" treename="taxon" maptofield="author" rankid="160"/>
     <field table="Taxon" name="tribeCommonName" treename="taxon" maptofield="commonName" rankid="160"/>
+    <field table="Taxon" name="tribeSource" treename="taxon" maptofield="source" rankid="160"/>
+    <field table="Taxon" name="tribeGUID" treename="taxon" maptofield="guid" rankid="160"/>
     
     <field table="Taxon" name="subtribe" treename="taxon" maptofield="name" rankid="170"/>
     <field table="Taxon" name="subtribeAuthor" treename="taxon" maptofield="author" rankid="170"/>
     <field table="Taxon" name="subtribeCommonName" treename="taxon" maptofield="commonName" rankid="170"/>
+    <field table="Taxon" name="subtribeSource" treename="taxon" maptofield="source" rankid="170"/>
+    <field table="Taxon" name="subtribeGUID" treename="taxon" maptofield="guid" rankid="170"/>
     
     <field table="Taxon" name="genus" treename="taxon" maptofield="name" rankid="180"/>
     <field table="Taxon" name="genusAuthor" treename="taxon" maptofield="author" rankid="180"/>
     <field table="Taxon" name="genusCommonName" treename="taxon" maptofield="commonName" rankid="180"/>
+    <field table="Taxon" name="genusSource" treename="taxon" maptofield="source" rankid="180"/>
+    <field table="Taxon" name="genusGUID" treename="taxon" maptofield="guid" rankid="180"/>
     
     <field table="Taxon" name="subgenus" treename="taxon" maptofield="name" rankid="190"/>
     <field table="Taxon" name="subgenusAuthor" treename="taxon" maptofield="author" rankid="190"/>
     <field table="Taxon" name="subgenusCommonName" treename="taxon" maptofield="commonName" rankid="190"/>
+    <field table="Taxon" name="subgenusSource" treename="taxon" maptofield="source" rankid="190"/>
+    <field table="Taxon" name="subgenusGUID" treename="taxon" maptofield="guid" rankid="190"/>
     
     <field table="Taxon" name="section" treename="taxon" maptofield="name" rankid="200"/>
     <field table="Taxon" name="sectionAuthor" treename="taxon" maptofield="author" rankid="200"/>
     <field table="Taxon" name="sectionCommonName" treename="taxon" maptofield="commonName" rankid="200"/>
+    <field table="Taxon" name="sectionSource" treename="taxon" maptofield="source" rankid="200"/>
+    <field table="Taxon" name="sectionGUID" treename="taxon" maptofield="guid" rankid="200"/>
     
     <field table="Taxon" name="subsection" treename="taxon" maptofield="name" rankid="210"/>
     <field table="Taxon" name="subsectionAuthor" treename="taxon" maptofield="author" rankid="210"/>
     <field table="Taxon" name="subsectionCommonName" treename="taxon" maptofield="commonName" rankid="210"/>
+    <field table="Taxon" name="subsectionSource" treename="taxon" maptofield="source" rankid="210"/>
+    <field table="Taxon" name="subsectionGUID" treename="taxon" maptofield="guid" rankid="210"/>
     
     <field table="Taxon" name="species" treename="taxon" maptofield="name" rankid="220"/>
     <field table="Taxon" name="speciesAuthor" treename="taxon" maptofield="author" rankid="220"/>
     <field table="Taxon" name="speciesCommonName" treename="taxon" maptofield="commonName" rankid="220"/>
+    <field table="Taxon" name="speciesSource" treename="taxon" maptofield="source" rankid="220"/>
+    <field table="Taxon" name="speciesGUID" treename="taxon" maptofield="guid" rankid="220"/>
     
     <field table="Taxon" name="subspecies" treename="taxon" maptofield="name" rankid="230"/>
     <field table="Taxon" name="subspeciesAuthor" treename="taxon" maptofield="author" rankid="230"/>
     <field table="Taxon" name="subspeciesCommonName" treename="taxon" maptofield="commonName" rankid="230"/>
+    <field table="Taxon" name="subspeciesSource" treename="taxon" maptofield="source" rankid="230"/>
+    <field table="Taxon" name="subspeciesGUID" treename="taxon" maptofield="guid" rankid="230"/>
     
     <field table="Taxon" name="variety" treename="taxon" maptofield="name" rankid="240"/>
     <field table="Taxon" name="varietyAuthor" treename="taxon" maptofield="author" rankid="240"/>
     <field table="Taxon" name="varietyCommonName" treename="taxon" maptofield="commonName" rankid="240"/>
+    <field table="Taxon" name="varietySource" treename="taxon" maptofield="source" rankid="240"/>
+    <field table="Taxon" name="varietyGUID" treename="taxon" maptofield="guid" rankid="240"/>
     
     <field table="Taxon" name="subvariety" treename="taxon" maptofield="name" rankid="250"/>
     <field table="Taxon" name="subvarietyAuthor" treename="taxon" maptofield="author" rankid="250"/>
     <field table="Taxon" name="subvarietyCommonName" treename="taxon" maptofield="commonName" rankid="250"/>
+    <field table="Taxon" name="subvarietySource" treename="taxon" maptofield="source" rankid="250"/>
+    <field table="Taxon" name="subvarietyGUID" treename="taxon" maptofield="guid" rankid="250"/>
     
     <field table="Taxon" name="forma" treename="taxon" maptofield="name" rankid="260"/>
     <field table="Taxon" name="formaAuthor" treename="taxon" maptofield="author" rankid="260"/>
     <field table="Taxon" name="formaCommonName" treename="taxon" maptofield="commonName" rankid="260"/>
+    <field table="Taxon" name="formaSource" treename="taxon" maptofield="source" rankid="260"/>
+    <field table="Taxon" name="formaGUID" treename="taxon" maptofield="guid" rankid="260"/>
     
     <field table="Taxon" name="subforma" treename="taxon" maptofield="name" rankid="270"/>
     <field table="Taxon" name="subformaAuthor" treename="taxon" maptofield="author" rankid="270"/>
     <field table="Taxon" name="subformaCommonName" treename="taxon" maptofield="commonName" rankid="270"/>
+    <field table="Taxon" name="subformaSource" treename="taxon" maptofield="source" rankid="270"/>
+    <field table="Taxon" name="subformaGUID" treename="taxon" maptofield="guid" rankid="270"/>
     
 </uploaddef>    
