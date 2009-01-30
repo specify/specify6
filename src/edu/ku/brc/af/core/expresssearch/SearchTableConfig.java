@@ -498,9 +498,19 @@ public class SearchTableConfig implements DisplayOrderingIFace,
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
     //@Override
-    public int compareTo(SearchTableConfig o)
+    public int compareTo(final SearchTableConfig obj)
     {
-        return tableName.compareTo(o.tableName);
+        String str1 = tableInfo.getTitle() ;
+        if (StringUtils.isEmpty(str1))
+        {
+            str1 = tableName;
+        }
+        String str2 = obj.tableInfo.getTitle();
+        if (StringUtils.isEmpty(str2))
+        {
+            str2 = obj.tableName;
+        }
+        return str1.compareTo(str2);
     }
 
     /* (non-Javadoc)
