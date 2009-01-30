@@ -95,14 +95,14 @@ public abstract class PermissionEnumerator
             perm.setActions("");
             perm.setPermissionClass(BasicSpPermission.class.getCanonicalName());
             
-            if (userType != null)
-            {
-                PermissionIFace defPerms = securityOption.getDefaultPermissions(userType);
-                if (defPerms != null)
-                {
-                    perm.setActions(defPerms.canView(), defPerms.canAdd(), defPerms.canModify(), defPerms.canDelete());
-                }
-            }
+//            if (userType != null)
+//            {
+//                PermissionIFace defPerms = securityOption.getDefaultPermissions(userType);
+//                if (defPerms != null)
+//                {
+//                    perm.setActions(defPerms.canView(), defPerms.canAdd(), defPerms.canModify(), defPerms.canDelete());
+//                }
+//            }
         }
         
         String desc = UIRegistry.getLocalizedMessage(descKey, securityOption.getShortDesc());

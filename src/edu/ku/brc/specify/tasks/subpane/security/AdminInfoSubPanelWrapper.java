@@ -6,13 +6,14 @@
  */
 package edu.ku.brc.specify.tasks.subpane.security;
 
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-
-import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.auth.specify.permission.PermissionService;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayPanel;
@@ -21,6 +22,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.SpPermission;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * Wraps a JPanel with a permission editor (if panel for group or user) 
@@ -135,6 +137,28 @@ public class AdminInfoSubPanelWrapper
         }
 
         String userType = (user != null)? user.getUserType() : null;
+
+        // turned off for debugging
+//        if (userType != null)
+//        {
+//            Object[] options = { 
+//                    getResourceString("ADMININFO_SET_DEF"), 
+//                    getResourceString("NO")
+//            };
+//            int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
+//                    getResourceString("ADMININFO_SUBPNL"), 
+//                    getResourceString("ADMININFO_SUBPNL_TITLE"), 
+//                    JOptionPane.YES_NO_OPTION,
+//                    JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+//            if (userChoice != JOptionPane.YES_OPTION)
+//            {
+//                userType = null;
+//            } 
+//            else
+//            {
+//                hasChanged = true;
+//            }
+//        }  
         
         Hashtable<String, SpPermission> existingPerms = PermissionService.getExistingPermissions(firstPrincipal.getId());
         Hashtable<String, SpPermission> overrulingPerms = null;
@@ -170,16 +194,6 @@ public class AdminInfoSubPanelWrapper
         for (PermissionPanelEditor editor : permissionEditors)
         {
             editor.savePermissions(session);            
-        }
-        
-        for (SpPermission perm : new ArrayList<SpPermission>(principal.getPermissions()))
-        {
-            if (StringUtils.isEmpty(perm.getActions()))
-            {
-                principal.getPermissions().remove(perm);
-                perm.getPrincipals().remove(principal);
-                session.delete(perm);
-            }
         }
     }
     
