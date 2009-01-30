@@ -50,6 +50,7 @@ import edu.ku.brc.ui.VerticalSeparator;
 import edu.ku.brc.util.LatLonConverter;
 import edu.ku.brc.util.LatLonValueInfo;
 import edu.ku.brc.util.LatLonConverter.FORMAT;
+import edu.ku.brc.util.LatLonConverter.LATLON;
 
 /**
  * 
@@ -617,8 +618,8 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
     {
         if (srcLatitudeStr != null && srcLongitudeStr != null)
         {
-            latInfoOrig = adjustLatLonStr(srcLatitudeStr, srcFormat, true, true);
-            lonInfoOrig = adjustLatLonStr(srcLongitudeStr, srcFormat, true, true);
+            latInfoOrig = adjustLatLonStr(srcLatitudeStr, srcFormat, true, true, LATLON.Latitude);
+            lonInfoOrig = adjustLatLonStr(srcLongitudeStr, srcFormat, true, true, LATLON.Longitude);
     
             if (srcFormat != defaultFormat)
             {
@@ -630,8 +631,8 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
                 this.longitudeStr = srcLongitudeStr;
             }
             
-            latInfoCnvrt = adjustLatLonStr(this.latitudeStr, defaultFormat, false, false);
-            lonInfoCnvrt = adjustLatLonStr(this.longitudeStr, defaultFormat, false, false);
+            latInfoCnvrt = adjustLatLonStr(this.latitudeStr, defaultFormat, false, false, LATLON.Latitude);
+            lonInfoCnvrt = adjustLatLonStr(this.longitudeStr, defaultFormat, false, false, LATLON.Longitude);
             
             latitudeTF.setText(srcLatitudeStr);
             longitudeTF.setText(srcLongitudeStr);

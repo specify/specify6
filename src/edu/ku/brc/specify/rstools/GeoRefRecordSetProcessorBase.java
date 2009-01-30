@@ -9,6 +9,8 @@
  */
 package edu.ku.brc.specify.rstools;
 
+import static edu.ku.brc.util.LatLonConverter.convertToDDDDDD;
+
 import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.List;
@@ -16,7 +18,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -37,6 +38,8 @@ import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.GeoCoordDetail;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.Locality;
+import edu.ku.brc.util.LatLonConverter.DEGREES_FORMAT;
+import edu.ku.brc.util.LatLonConverter.DIRECTION;
 
 /**
  * Implements the RecordSetToolsIFace for GeoReferenceing with BioGeomancer.
@@ -287,9 +290,7 @@ public abstract class GeoRefRecordSetProcessorBase implements RecordSetToolsIFac
                 {
                     try
                     {
-                        if (StringUtils.isNotEmpty(item.getXML()) && 
-                            item.getLatitude() != null && 
-                            item.getLongitude() != null)
+                        if (item.getLatitude() != null && item.getLongitude() != null)
                         {
                             Locality  locality = (Locality)session.getData(Locality.class, 
                                                                            "localityId", 
@@ -297,8 +298,16 @@ public abstract class GeoRefRecordSetProcessorBase implements RecordSetToolsIFac
                                                                            DataProviderSessionIFace.CompareType.Equals);
                             if (locality != null)
                             {
-                                locality.setLatitude1(new BigDecimal(item.getLatitude()));
-                                locality.setLongitude1(new BigDecimal(item.getLongitude()));
+                                BigDecimal lat = new BigDecimal(item.getLatitude());
+                                BigDecimal lon = new BigDecimal(item.getLongitude());
+                                
+                                locality.setLatitude1(lat);
+                                locality.setLongitude1(lon);
+                                
+                                locality.setLat1text(convertToDDDDDD(lat, DEGREES_FORMAT.String, DIRECTION.NorthSouth, 6));
+                                locality.setLong1text(convertToDDDDDD(lon, DEGREES_FORMAT.String, DIRECTION.EastWest, 6));
+                                
+                                locality.setSrcLatLongUnit((byte)0); // Decimal Degrees
                                 
                                 Set<GeoCoordDetail> geoCoordDetails = locality.getGeoCoordDetails();
                                 GeoCoordDetail gcDetail = null;

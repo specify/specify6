@@ -6,7 +6,9 @@
  */
 package edu.ku.brc.services.biogeomancer;
 
-import static edu.ku.brc.ui.UIRegistry.*;
+import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getStatusBar;
 
 import java.awt.Frame;
 import java.util.List;
@@ -18,7 +20,6 @@ import edu.ku.brc.services.geolocate.ui.GeoLocateResultsDisplay;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
 public class GeoLocateResultsChooser extends CustomDialog

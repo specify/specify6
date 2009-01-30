@@ -133,136 +133,151 @@ public class LatLonConverter
      * @param inclZeroes
      * @return
      */
-    public static LatLonValueInfo adjustLatLonStr(final String  str,
+    public static LatLonValueInfo adjustLatLonStr(final String  strArg,
                                                   final FORMAT  actualFmt, 
                                                   final boolean addSymbols,
-                                                  final boolean inclZeroes)
+                                                  final boolean inclZeroes, 
+                                                  final LATLON latOrLon)
     {
-        if (StringUtils.isNotEmpty(str))
+        if (StringUtils.isNotEmpty(strArg))
         {
+            String str = strArg;
+            
             String[] tokens = breakStringAPart(str);
-            if (tokens.length > 1)
+            boolean startsWithMinus = str.startsWith("-");
+            if (startsWithMinus)
             {
-                String zero = inclZeroes ? "0" : "";
-                //System.err.println("tokens[1] ["+tokens[1]+"]["+str+"]");
-                boolean hasDegreesTxt = tokens[1].length() == 3 && tokens[1].equals("deg");
-                
-                LatLonValueInfo latLonInfo = new LatLonValueInfo(hasDegreesTxt);
-                latLonInfo.addPart(tokens[0]);
-                
-                String dirStr = null;
-                FORMAT fmt    = null;
-                
-                if (actualFmt != null && actualFmt != FORMAT.None)
+                str = str.substring(1);
+            }
+            
+            if (tokens.length == 1)
+            {
+                if (latOrLon == LATLON.Latitude)
                 {
-                    switch (actualFmt)
-                    {
-                        case DDDDDD:
-                            dirStr = tokens[1];
-                            break;
-                            
-                        case DDMMMM:
-                            
-                            if (tokens.length == 3)
-                            {
-                                latLonInfo.addPart(tokens[1]);
-                                dirStr = tokens[2];
-                            } else
-                            {
-                                latLonInfo.addPart(zero);
-                                dirStr = tokens[1];
-                            }
-                            
-                            break;
-                            
-                        case DDMMSS:
-                            if (tokens.length == 4)
-                            {
-                                latLonInfo.addPart(tokens[1]);
-                                latLonInfo.addPart(tokens[2]);
-                                dirStr = tokens[3];
-                                
-                            } else if (tokens.length == 3)
-                            {
-                                latLonInfo.addPart(tokens[1]);
-                                latLonInfo.addPart(zero);
-                                dirStr = tokens[2];
-                                
-                            } else if (tokens.length == 2)
-                            {
-                                latLonInfo.addPart(zero);
-                                latLonInfo.addPart(zero);
-                                dirStr = tokens[1];
-                            }
-                            break;
-                            
-                        default:
-                            break;
-                    } // switch 
-                    fmt = actualFmt;
-                    
+                    str += " " + northSouth[startsWithMinus ? 1 : 0]; 
                 } else
                 {
-                    switch (tokens.length)
-                    {
-                        case 2 : 
+                    str += " " + eastWest[startsWithMinus ? 1 : 0]; 
+                }
+            }
+            
+            tokens = breakStringAPart(str);
+            String   zero   = inclZeroes ? "0" : "";
+            //System.err.println("tokens[1] ["+tokens[1]+"]["+str+"]");
+            boolean hasDegreesTxt = tokens[1].length() == 3 && tokens[1].equals("deg");
+   
+            LatLonValueInfo latLonInfo = new LatLonValueInfo(hasDegreesTxt);
+            latLonInfo.addPart(tokens[0]);
+            
+            String dirStr = null;
+            FORMAT fmt    = null;
+            
+            if (actualFmt != null && actualFmt != FORMAT.None)
+            {
+                switch (actualFmt)
+                {
+                    case DDDDDD:
+                        dirStr = tokens[1];
+                        break;
+                        
+                    case DDMMMM:
+                        
+                        if (tokens.length == 3)
                         {
-                            dirStr = tokens[1];
-                            fmt = FORMAT.DDDDDD;
-                            break;
-                        }
-                            
-                        case 3 : 
-                        {
-                            if (hasDegreesTxt)
-                            {
-                                fmt = FORMAT.DDDDDD;
-                            } else
-                            {
-                                latLonInfo.addPart(tokens[1]);
-                                fmt = FORMAT.DDMMMM;
-                            }
+                            latLonInfo.addPart(tokens[1]);
                             dirStr = tokens[2];
-                            break;
-                        }
-                            
-                        case 4 :
+                        } else
                         {
-                            if (hasDegreesTxt)
-                            {
-                                fmt = FORMAT.DDMMMM;
-                            } else
-                            {
-                                latLonInfo.addPart(tokens[1]);
-                                fmt = FORMAT.DDMMSS;
-                            }
+                            latLonInfo.addPart(zero);
+                            dirStr = tokens[1];
+                        }
+                        
+                        break;
+                        
+                    case DDMMSS:
+                        if (tokens.length == 4)
+                        {
+                            latLonInfo.addPart(tokens[1]);
                             latLonInfo.addPart(tokens[2]);
                             dirStr = tokens[3];
-        
-                            break;
+                            
+                        } else if (tokens.length == 3)
+                        {
+                            latLonInfo.addPart(tokens[1]);
+                            latLonInfo.addPart(zero);
+                            dirStr = tokens[2];
+                            
+                        } else if (tokens.length == 2)
+                        {
+                            latLonInfo.addPart(zero);
+                            latLonInfo.addPart(zero);
+                            dirStr = tokens[1];
                         }
-                            
-                        case 5 :
-                            latLonInfo.addPart(tokens[2]);
-                            latLonInfo.addPart(tokens[3]);
-                            dirStr = tokens[4];
-                            fmt = FORMAT.DDMMSS;
-                            break;
-                            
-                        default:
-                            break;
+                        break;
                         
-                    } // switch
-                } // if
-                latLonInfo.addPart(dirStr);
-                latLonInfo.setFormat(fmt);
-                latLonInfo.setDirStr(dirStr);
-                return latLonInfo;
+                    default:
+                        break;
+                } // switch 
+                fmt = actualFmt;
                 
             } else
             {
-                System.err.println("Must be more than 1 token ["+str+"]");
-            }
+                switch (tokens.length)
+                {
+                    case 2 : 
+                    {
+                        dirStr = tokens[1];
+                        fmt = FORMAT.DDDDDD;
+                        break;
+                    }
+                        
+                    case 3 : 
+                    {
+                        if (hasDegreesTxt)
+                        {
+                            fmt = FORMAT.DDDDDD;
+                        } else
+                        {
+                            latLonInfo.addPart(tokens[1]);
+                            fmt = FORMAT.DDMMMM;
+                        }
+                        dirStr = tokens[2];
+                        break;
+                    }
+                        
+                    case 4 :
+                    {
+                        if (hasDegreesTxt)
+                        {
+                            fmt = FORMAT.DDMMMM;
+                        } else
+                        {
+                            latLonInfo.addPart(tokens[1]);
+                            fmt = FORMAT.DDMMSS;
+                        }
+                        latLonInfo.addPart(tokens[2]);
+                        dirStr = tokens[3];
+    
+                        break;
+                    }
+                        
+                    case 5 :
+                        latLonInfo.addPart(tokens[2]);
+                        latLonInfo.addPart(tokens[3]);
+                        dirStr = tokens[4];
+                        fmt = FORMAT.DDMMSS;
+                        break;
+                        
+                    default:
+                        break;
+                    
+                } // switch
+            } // if
+            latLonInfo.addPart(dirStr);
+            latLonInfo.setFormat(fmt);
+            latLonInfo.setDirStr(dirStr);
+            return latLonInfo;
+                
         }
         return null;
     }
@@ -285,7 +300,7 @@ public class LatLonConverter
             return strArg;
         }
      
-        LatLonValueInfo latLonVal = adjustLatLonStr(strArg, fromFmt, false, true);
+        LatLonValueInfo latLonVal = adjustLatLonStr(strArg, fromFmt, false, true, latOrLon);
         
         String str = latLonVal.getStrVal(false);
         
@@ -551,7 +566,7 @@ public class LatLonConverter
     public static String convertToDDDDDD(final BigDecimal bd,
                                          final int        decimalLen)
     {
-        return convertToDDDDDD(bd, DEGREES_FORMAT.None, DIRECTION.None, decimalLen);
+        return convertToDDDDDD(bd, DEGREES_FORMAT.String, DIRECTION.None, decimalLen);
     }
     
     /**
