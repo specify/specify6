@@ -26,6 +26,7 @@ public class JasperCompilerRunnable implements Runnable
     protected final JasperCompileListener  listener;
     protected final File                   cachePath;
     protected final String     				mainReportName;
+    protected final String	               resourceName;
     protected Vector<ReportCompileInfo> 	files = null;
     protected boolean compileRequired     	= true;
 
@@ -42,12 +43,14 @@ public class JasperCompilerRunnable implements Runnable
         this.files   = files;
         this.cachePath = JasperReportsCache.checkAndCreateReportsCache();
         this.mainReportName = null;        //this.paramsArg = null;
+        this.resourceName = null;
     }
 
-    public JasperCompilerRunnable(final JasperCompileListener listener, final String mainReportName)
+    public JasperCompilerRunnable(final JasperCompileListener listener, final String mainReportName, final String resourceName)
     {
     	this.listener = listener;
     	this.mainReportName = mainReportName;
+    	this.resourceName = resourceName;
         this.cachePath = JasperReportsCache.checkAndCreateReportsCache();
         this.files = null;
     }
@@ -82,6 +85,13 @@ public class JasperCompilerRunnable implements Runnable
         
         Vector<File>   reportFiles = new Vector<File>();
         AppResourceIFace appRes    = AppContextMgr.getInstance().getResource(mainReportName); 
+        if (appRes == null)
+        {
+            if (resourceName != null)
+            {
+                appRes = AppContextMgr.getInstance().getResource(resourceName); 
+            }
+        }
         if (appRes != null)
         {
             String subReportsStr = appRes.getMetaData("subreports");
@@ -113,13 +123,17 @@ public class JasperCompilerRunnable implements Runnable
             }
             
             File reportPath = new File(cachePath.getAbsoluteFile() + File.separator + mainReportName);
+            if (!reportPath.exists())
+            {
+            	reportPath = new File(cachePath.getAbsoluteFile() + File.separator + resourceName);
+            }
             if (reportPath.exists())
             {
                 reportFiles.add(reportPath);
                 
             } else
             {
-                throw new RuntimeException("Subreport doesn't exist on disk ["+reportPath.getAbsolutePath()+"]");
+                throw new RuntimeException("Report doesn't exist on disk ["+reportPath.getAbsolutePath()+"]");
             }
             
         } else

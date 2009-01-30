@@ -24,9 +24,9 @@
 	<import value="net.sf.jasperreports.engine.*" />
 	<import value="net.sf.jasperreports.engine.data.*" />
 
-	<parameter name="itemnum" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="itemnum" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="RPT_IMAGE_DIR" isForPrompting="false" class="java.lang.String"/>
-	<parameter name="SUBREPORT_DIR" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="SUBREPORT_DIR" isForPrompting="false" class="java.lang.String"/>
 	<queryString><![CDATA[SELECT Expr2.*, address.Address, address.Address2, address.City, address.State, address.PostalCode, address.Country 
 FROM (SELECT Expr1.*, agent.LastName, agent.FirstName, agent.MiddleInitial 
   FROM (SELECT Expr0.*, agent.LastName as prepLastName, agent.FirstName as prepFirstName, agent.MiddleInitial as prepMiddleInitial

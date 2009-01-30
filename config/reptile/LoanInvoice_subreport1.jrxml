@@ -24,7 +24,7 @@
 	<import value="net.sf.jasperreports.engine.*" />
 	<import value="net.sf.jasperreports.engine.data.*" />
 
-	<parameter name="itemnum" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="itemnum" isForPrompting="false" class="java.lang.String"/>
 	<queryString><![CDATA[SELECT e8.CatalogNumber, e8.FieldNumber, e8.TaxonFullName, e8.Count, e8.Name, e8.Quantity, geography.FullName, e8.QuantityReturned, e8.QuantityResolved, e8.LoanNumber, e8.LoanID,
 e8.StartDate, e8.LocalityName, e8.Lat1Text, e8.Long1Text 
 FROM ( 

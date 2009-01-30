@@ -150,6 +150,7 @@ public class InteractionsTask extends BaseTask
     protected static final String NEW_GIFT             = "NEW_GIFT";
     protected static final String NEW_EXCHANGE_OUT     = "NEW_EXCHANGE_OUT";
     protected static final String PRINT_LOAN           = "PRINT_LOAN";
+    protected static final String PRINT_INVOICE        = "PRINT_INVOICE";
     protected static final String INFO_REQ_MESSAGE     = "Specify Info Request";
     protected static final String CREATE_MAILMSG       = "CreateMailMsg";
     protected static final String ADD_TO_LOAN          = "AddToLoan";
@@ -176,6 +177,8 @@ public class InteractionsTask extends BaseTask
     protected int                     indexOfTBB       = -1;
     
     protected Vector<InteractionEntry>  entries = new Vector<InteractionEntry>();
+    
+    protected Vector<Integer> printableInvoiceTblIds = new Vector<Integer>();
     
     InteractionsProcessor<Gift> giftProcessor = new InteractionsProcessor<Gift>(this, false, Gift.getClassTableId());
     InteractionsProcessor<Loan> loanProcessor = new InteractionsProcessor<Loan>(this, true,  Loan.getClassTableId());
@@ -617,13 +620,25 @@ public class InteractionsTask extends BaseTask
         
         for (EntryFlavor ef : entry.getDraggableFlavors())
         {
+            if (cmdAction.getAction().equals(PRINT_INVOICE))
+            {
+            	//this.printableInvoiceTblIds.add(ef.getDataFlavorClass().
+            	System.out.println(ef);
+            }
             DataFlavorTableExt dfx = new DataFlavorTableExt(ef.getDataFlavorClass(), ef.getHumanReadable(), ef.getTableIdsAsArray());
             roc.addDragDataFlavor(dfx);
         }
         
         for (EntryFlavor ef : entry.getDroppableFlavors())
         {
-            DataFlavorTableExt dfx = new DataFlavorTableExt(ef.getDataFlavorClass(), ef.getHumanReadable(), ef.getTableIdsAsArray());
+            if (cmdAction.getAction().equals(PRINT_INVOICE))
+            {
+            	if (ef.getClassName().equals(RecordSetTask.class.getName()))
+            	{
+            		this.printableInvoiceTblIds.addAll(ef.getTableIds());
+            	}
+            }
+        	DataFlavorTableExt dfx = new DataFlavorTableExt(ef.getDataFlavorClass(), ef.getHumanReadable(), ef.getTableIdsAsArray());
             roc.addDropDataFlavor(dfx);
         }
         return roc;
@@ -787,21 +802,22 @@ public class InteractionsTask extends BaseTask
         return this.getClass();
     }
     
+    
     /**
      * Creates a new loan from a RecordSet.
      * @param fileNameArg the filename of the report (Invoice) to use (can be null)
      * @param recordSets the recordset to use to create the loan
      */
-    protected void printLoan(final String fileNameArg, final Object data)
+    protected void printInvoice(final String fileNameArg, final Object data)
     {
         if (data instanceof RecordSetIFace)
         {
             RecordSetIFace rs = (RecordSetIFace)data;
             
-            if (rs.getDbTableId() != Loan.getClassTableId())
-            {
-                return;
-            }
+//            if (rs.getDbTableId() != Loan.getClassTableId())
+//            {
+//                return;
+//            }
             
             String fileName = fileNameArg;
             if (fileName == null)
@@ -823,6 +839,13 @@ public class InteractionsTask extends BaseTask
                 }
             }
 
+            //XXX NOT FOR RELEASE!
+            UIRegistry.displayErrorDlg("This is only working for the default fish loan invoice.");
+            if (rs.getDbTableId() != Loan.getClassTableId())
+            {
+            	return;
+            }
+            
             if (fileName != null)
             {
                 // XXX For Demo purposes only we need to be able to look up report and labels
@@ -1346,7 +1369,20 @@ public class InteractionsTask extends BaseTask
                 boolean includeIt = false;
                 try
                 {
-                    Integer tblId = Integer.valueOf(tableid);
+                    Integer tblId = null;
+                	try
+                    {
+                    	tblId = Integer.valueOf(tableid);
+                    }
+                    catch (NumberFormatException ex)
+                    {
+                    	//continue;
+                    }
+                    if (tblId == null)
+                    {
+                    	continue;
+                    }
+                    
                     if (tblId.equals(loanTblId))
                     {
                         includeIt = true;
@@ -1979,29 +2015,29 @@ public class InteractionsTask extends BaseTask
         {
             createAndSendEMail();
             
-        } else if (cmdAction.isAction(PRINT_LOAN))
+        } else if (cmdAction.isAction(PRINT_INVOICE))
         {
             if (cmdAction.getData() instanceof RecordSetIFace)
             {
-                if (((RecordSetIFace)cmdAction.getData()).getDbTableId() != cmdAction.getTableId())
-                {
-                    JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
-                                                  getResourceString("ERROR_RECORDSET_TABLEID"), 
-                                                  getResourceString("Error"), 
-                                                  JOptionPane.ERROR_MESSAGE);
-                }
+//                if (((RecordSetIFace)cmdAction.getData()).getDbTableId() != cmdAction.getTableId())
+//                {
+//                    JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
+//                                                  getResourceString("ERROR_RECORDSET_TABLEID"), 
+//                                                  getResourceString("Error"), 
+//                                                  JOptionPane.ERROR_MESSAGE);
+//                }
 
-                printLoan(null, cmdAction.getData());
+                printInvoice(null, cmdAction.getData());
                 
             } if (cmdAction.getData() instanceof CommandAction)
             {
                 String tableIDStr = cmdAction.getPropertyAsString("tableid");
                 if (StringUtils.isNotEmpty(tableIDStr) && StringUtils.isNumeric(tableIDStr))
                 {
-                    RecordSetIFace recordSet = RecordSetTask.askForRecordSet(Integer.parseInt(tableIDStr));
+                    RecordSetIFace recordSet = RecordSetTask.askForRecordSet(this.printableInvoiceTblIds, null);
                     if (recordSet != null)
                     {
-                        printLoan(cmdAction.getPropertyAsString("file"), recordSet);
+                        printInvoice(cmdAction.getPropertyAsString("file"), recordSet);
                     }
                 }
             }

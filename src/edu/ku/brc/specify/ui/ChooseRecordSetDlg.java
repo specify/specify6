@@ -67,17 +67,27 @@ public class ChooseRecordSetDlg extends CustomDialog
     {
         super((Frame)UIRegistry.getTopWindow(), getResourceString("RECORDSET_CHOOSE"), true, OKCANCELHELP, null);
         
-        initialize(tableId);
+        Vector<Integer> id = new Vector<Integer>(1);
+        id.add(tableId);
+        initialize(id);
         
         this.helpContext = "ChooseRecordSet";
     }
 
+    public ChooseRecordSetDlg(final Vector<Integer> tableIds) throws HeadlessException
+    {
+        super((Frame)UIRegistry.getTopWindow(), getResourceString("RECORDSET_CHOOSE"), true, OKCANCELHELP, null);
+        
+        initialize(tableIds);
+        
+        this.helpContext = "ChooseRecordSet";
+    }
     /**
      *
      *
      */
     @SuppressWarnings("unchecked")
-    protected void initialize(final int tableId)
+    protected void initialize(final Vector<Integer> tableIds)
     {
         DataProviderSessionIFace session = null;
         try
@@ -86,21 +96,27 @@ public class ChooseRecordSetDlg extends CustomDialog
             sql = QueryAdjusterForDomain.getInstance().adjustSQL(sql);
             
             session = DataProviderFactory.getInstance().createSession();
-            if (tableId > -1)
+            if (tableIds.size() > 0 && !(tableIds.size() == 0 && tableIds.get(0).intValue() < 0))
             {
-                sql += " AND rs.dbTableId = " + tableId;
+            	StringBuilder sb = new StringBuilder(tableIds.get(0));
+            	for (int i = 1; i < tableIds.size(); i++)
+            	{
+            		sb.append(",");
+            		sb.append(tableIds.get(i));
+            	}
+            	sql += " AND rs.dbTableId in(" + sb.toString() + ")";
             }
             sql += " ORDER BY rs.name";
             
             List<?> rvList = session.getDataList(sql);
             if (rvList.size() > 0)
             {
-                recordSets = new Vector<RecordSetIFace>();
-                for (Object row : rvList)
-                {
-                    Object[] rowData = (Object[])row;
-                    recordSets.add((RecordSetIFace)rowData[0]);
-                }                
+            	recordSets = new Vector<RecordSetIFace>();
+            	for (Object row : rvList)
+            	{
+            		Object[] rowData = (Object[])row;
+            		recordSets.add((RecordSetIFace)rowData[0]);
+            	}
             }
 
         } catch (Exception ex)

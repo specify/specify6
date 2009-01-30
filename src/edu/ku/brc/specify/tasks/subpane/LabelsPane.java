@@ -209,9 +209,9 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
         this.params    = paramsArg;
 
         AppResourceIFace appRes    = AppContextMgr.getInstance().getResource(mainReportName); 
+        String resName = params.getProperty("name");
         if (appRes == null)
         {
-            String resName = params.getProperty("name");
             if (resName != null)
             {
                 appRes = AppContextMgr.getInstance().getResource(resName); 
@@ -238,7 +238,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
         else
         {
             progressLabel.setText(getResourceString("JasperReportCompiling"));            
-            compiler = new JasperCompilerRunnable(this, mainReportName); 
+            compiler = new JasperCompilerRunnable(this, mainReportName, resName); 
             compiler.start();
         }        
     }

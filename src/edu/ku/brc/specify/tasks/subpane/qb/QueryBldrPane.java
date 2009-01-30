@@ -1488,7 +1488,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         qpp.setQuery(report.getQuery(), tblTree, ttHash);
         try
         {
-            JasperCompilerRunnable jcr = new JasperCompilerRunnable(null, report.getName());
+            JasperCompilerRunnable jcr = new JasperCompilerRunnable(null, report.getName(), null);
             jcr.findFiles();
             if (jcr.isCompileRequired())
             {

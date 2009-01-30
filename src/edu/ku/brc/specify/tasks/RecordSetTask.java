@@ -1321,8 +1321,15 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
     public static RecordSetIFace askForRecordSet(final int tableId, 
                                                  final Vector<RecordSetIFace> additionalRS)
     {
+        Vector<Integer> id = new Vector<Integer>(1);
+        id.add(tableId);
+        return askForRecordSet(id, additionalRS);
+     }
+    
+    public static RecordSetIFace askForRecordSet(final Vector<Integer> tableIds, final Vector<RecordSetIFace> additionalRS)
+    {
         UsageTracker.incrUsageCount("RS.ASKRS");
-        ChooseRecordSetDlg dlg = new ChooseRecordSetDlg(tableId);
+        ChooseRecordSetDlg dlg = new ChooseRecordSetDlg(tableIds);
         if (additionalRS != null && additionalRS.size() > 0)
         {
             dlg.addAdditionalObjectsAsRecordSets(additionalRS);
@@ -1343,5 +1350,4 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
         // else
         return null;
     }
-    
 }

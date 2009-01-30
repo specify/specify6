@@ -101,12 +101,20 @@
       </flavor>
     </droppableFlavors>
   </entry>
-  <entry name="printloan" table="loan" label="PRINT_LOANINVOICE" type="Interactions" action="PRINT_LOAN" icon="Reports" isonleft="true" order="0">
+  <entry name="printloan" table="loan" label="PRINT_INVOICE" type="Interactions" action="PRINT_INVOICE" icon="Reports" isonleft="true" order="0">
     <draggableFlavors/>
     <droppableFlavors>
       <flavor isdrag="false" classname="edu.ku.brc.specify.tasks.RecordSetTask" humanreadable="Record_Set">
         <tableIds>
           <int>52</int>
+          <int>7</int> <!-- accession -->
+          <int>18</int> <!-- borrow -->
+          <int>34</int> <!-- deaccession -->
+          <int>39</int> <!--  exchangein -->
+          <int>40</int> <!-- exchangeout -->
+          <int>131</int> <!-- gift -->
+          <int>50</int> <!--  inforequest -->
+          <int>6</int> <!--  permit -->
         </tableIds>
       </flavor>
     </droppableFlavors>
