@@ -502,25 +502,28 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
      */
     protected boolean writeImageIconToFile(final ImageIcon icon, final File output) throws IOException
     {
-        try
+        if (icon != null && icon.getIconWidth() > 0 && icon.getIconHeight() > 0 && output != null)
         {
-            BufferedImage bimage = new BufferedImage(icon.getIconWidth(), icon.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
-            if (bimage != null)
+            try
             {
-                Graphics g = bimage.createGraphics();
-                if (g != null)
+                BufferedImage bimage = new BufferedImage(icon.getIconWidth(), icon.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
+                if (bimage != null)
                 {
-                    g.drawImage(icon.getImage(), 0, 0, null);
-                    g.dispose();
-                    ImageIO.write(bimage, "PNG", output);
-                    return true;
+                    Graphics g = bimage.createGraphics();
+                    if (g != null)
+                    {
+                        g.drawImage(icon.getImage(), 0, 0, null);
+                        g.dispose();
+                        ImageIO.write(bimage, "PNG", output);
+                        return true;
+                    }
                 }
+            } catch (Exception ex)
+            {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(GoogleEarthExporter.class, ex);
+                // no need to throw an exception or display it
             }
-        } catch (Exception ex)
-        {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(GoogleEarthExporter.class, ex);
-            // no need to throw an exception or display it
         }
         return false;
     }
