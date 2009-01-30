@@ -109,12 +109,14 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
             @Override
             public void mousePressed(MouseEvent e)
             {
+                super.mousePressed(e);
                 showPopup(e);
             }
 
             @Override
             public void mouseReleased(MouseEvent e)
             {
+                super.mouseReleased(e);
                 showPopup(e);
             }
         };
@@ -144,7 +146,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
                                          final int       index)
     {
         ExtendedTabPanel tabUI = super.adjustTab(title, icon, comp, index);
-        if (comp instanceof SubPaneIFace)
+        /*if (comp instanceof SubPaneIFace)
         {
             //  just making sure we don't add it twice
             boolean fnd = false;
@@ -160,7 +162,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
             {
                 tabUI.addMouseListener(popupMouseAdapter); 
             }
-        }
+        }*/
         return tabUI;
     }
     
