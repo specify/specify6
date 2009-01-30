@@ -2718,11 +2718,6 @@
             
             <rows>
                 <row>
-                    <!--
-                    <cell type="label" labelfor="3" label="Accession #"/>
-                    <cell type="field" id="3" name="accession" uitype="querycbx" initialize="name=Accession;title=Accession"/>
-                    -->
-                    
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="catalogedDate" uitype="formattedtext" uifieldformatter="Date"/>
                     
@@ -2731,11 +2726,6 @@
                                       
                     <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="fieldNumber" uitype="text"/>
-                    
-                    <!--
-                    <cell type="label" labelfor="4"/>
-                    <cell type="field" id="4" name="cataloger" uitype="querycbx" initialize="name=Agent;title=Catalog Agent"/>
-                    -->
                     
                     <cell type="label" labelfor="5"/>
                     <cell type="field" id="5" name="determinations" uitype="text"/>

@@ -198,7 +198,7 @@ public class ChooseColObjIdsDlg extends JDialog implements ActionListener
     {
         
         JTabbedPane tabbedPane = new JTabbedPane();
-        tabbedPane.add("Record Sets", tabbedPane);
+        tabbedPane.add("Record Sets", tabbedPane);    // I18N
         setContentPane(tabbedPane);
         pack();
         //setLocationRelativeTo(locationComp);

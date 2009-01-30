@@ -1163,7 +1163,9 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 return CONTEXT_STATUS.Error;
                 //throw new RuntimeException("The user ["+userName+"] could  not be located as a Specify user.");
             }
-    
+            
+            
+
             // First we start by getting all the Collection that the User want to
             // work with for this "Context" then we need to go get all the Default View and
             // additional XML Resources.
@@ -1210,10 +1212,12 @@ public class SpecifyAppContextMgr extends AppContextMgr
             dataType.forceLoad();
             AppContextMgr.getInstance().setClassObject(DataType.class, dataType);
             
+            AppPreferences.startup();
+            
             RegisterSpecify.register(false);
             
             //--------------------------------------------------------------------------------
-            //Check for locks set uploader, tree update, ...
+            // Check for locks set uploader, tree update, ...
             //--------------------------------------------------------------------------------
             
             boolean noLocks = Uploader.checkUploadLock();

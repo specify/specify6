@@ -6,7 +6,7 @@
  */
 package edu.ku.brc.services.biogeomancer;
 
-import static edu.ku.brc.ui.UIRegistry.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.*;
 
 import java.awt.Frame;
 import java.util.List;
@@ -28,7 +28,6 @@ public class GeoLocateResultsChooser extends CustomDialog
     protected List<GeorefResult> chosenResults;
     protected boolean            hasBeenShown;
     protected int                rowIndex;
-    protected String             baseTitle;
     
     /**
      * @param parent
@@ -36,14 +35,12 @@ public class GeoLocateResultsChooser extends CustomDialog
      * @param rowsAndResults
      */
     public GeoLocateResultsChooser(final Frame parent, 
-                                   final String title, 
                                    final List<Pair<GeoCoordDataIFace, GeorefResultSet>> rowsAndResults)
     {
-        super(parent, title, true, CustomDialog.OKCANCELAPPLYHELP, null);
+        super(parent, "", true, CustomDialog.OKCANCELAPPLYHELP, null);
         
         this.rowsAndResults = rowsAndResults;
         this.hasBeenShown   = false;
-        this.baseTitle      = title;
         
         if (rowsAndResults.size() == 0)
         {
@@ -170,7 +167,7 @@ public class GeoLocateResultsChooser extends CustomDialog
             showNextRecord();
         }
 
-        setTitle(baseTitle + ": " + (rowIndex+1) + " " + getResourceString("GeoLocateResultsChooser.OF") + " " + rowsAndResults.size()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+        setTitle(getLocalizedMessage("GeoLocateResultsChooser.TITLE", (rowIndex+1), rowsAndResults.size())); //$NON-NLS-1$
         
         try
         {
@@ -187,7 +184,7 @@ public class GeoLocateResultsChooser extends CustomDialog
         {
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(GeoLocateResultsChooser.class, e);
-            UIRegistry.getStatusBar().setErrorMessage(getResourceString("GeoLocateResultsChooser.ERROR_DISPLAY_GL_RESULTS"), e);//$NON-NLS-1$
+            getStatusBar().setErrorMessage(getResourceString("GeoLocateResultsChooser.ERROR_DISPLAY_GL_RESULTS"), e);//$NON-NLS-1$
             super.setVisible(false);
         }
     }

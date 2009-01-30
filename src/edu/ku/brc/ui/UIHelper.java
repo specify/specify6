@@ -1063,6 +1063,47 @@ public final class UIHelper
     }
 
     /**
+     * Creates a JMenuItem.
+     * @param menu parent menu
+     * @param label the label of the menu item
+     * @param mnemonic the mnemonic
+     * @param accessibleDescription the accessible Description
+     * @param enabled enabled
+     * @param action the aciton
+     * @return menu item
+     */
+    public static JMenuItem createMenuItemWithAction(final JPopupMenu menu,
+                                                     final String  label,
+                                                     final String  mnemonic,
+                                                     final String  accessibleDescription,
+                                                     final boolean enabled,
+                                                     final Action  action)
+    {
+        JMenuItem mi = new JMenuItem(action);
+        mi.setText(label);
+        if (menu != null)
+        {
+            menu.add(mi);
+        }
+        if (isNotEmpty(mnemonic))
+        {
+            mi.setMnemonic(mnemonic.charAt(0));
+        }
+        if (isNotEmpty(accessibleDescription))
+        {
+            mi.getAccessibleContext().setAccessibleDescription(accessibleDescription);
+        }
+        
+        if (action != null)
+        {
+            action.addPropertyChangeListener(new MenuItemPropertyChangeListener(mi));
+            action.setEnabled(enabled);
+        }
+
+        return mi;
+    }
+
+    /**
      * Creates a JCheckBoxMenuItem.
      * @param menu parent menu
      * @param label the label of the menu item

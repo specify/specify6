@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.prefs.BackingStoreException;
 
 import org.apache.commons.lang.StringUtils;
@@ -46,7 +47,7 @@ public class AppPreferences
 {
     public static final String factoryName = "edu.ku.brc.af.prefs.AppPrefsIOIFace"; //$NON-NLS-1$
 
-    // Static Data Memebers
+    // Static Data Members
     public final static String LOCALFILENAME  = "user.properties"; //$NON-NLS-1$
     
     private   static final String NOT_INIT = "AppPrefs have not been initialized!"; //$NON-NLS-1$
@@ -56,7 +57,7 @@ public class AppPreferences
     protected static AppPreferences instanceRemote    = null;
     protected static AppPreferences instanceLocal     = null;
 
-    // instanceRemote Data Memeber
+    // instanceRemote Data Member
     protected Properties         properties           = null;
     protected String             dirPath;
     protected boolean            isChanged            = false;
@@ -67,6 +68,12 @@ public class AppPreferences
     protected AppPrefsIOIFace    appPrefsIO           = null;
 
     protected Hashtable<String, List<AppPrefsChangeListener>> listeners = new Hashtable<String, List<AppPrefsChangeListener>>();
+    
+    // Used for Synchronizing the Preferences to the Backend store
+    protected static Timer         syncTimer     = null; // Daemon Thread
+    protected static boolean       connectedToDB = false;
+    protected static AtomicBoolean blockTimer    = new AtomicBoolean(false);
+
     
     /**
      * Constructor for Remote and Local prefs.
@@ -134,24 +141,55 @@ public class AppPreferences
     
     /**
      * Flushes the values and then terminates the Prefs so a new one can be created.
+     * Also, set 'conenctedToDB' to true.
+     */
+    public static void startup()
+    {
+        connectedToDB = true;
+        schedulePrefSynching();
+    }
+    
+    /**
+     * Flushes the values and then terminates the Prefs so a new one can be created.
+     */
+    public static void shutdownPrefs()
+    {
+        if (syncTimer != null)
+        {
+            connectedToDB = false;
+            syncTimer.cancel();
+            syncTimer.purge();
+            syncTimer     = null;
+        }
+    }
+    
+    /**
+     * Flushes the values and then terminates the Prefs so a new one can be created.
      */
     public static void shutdownRemotePrefs()
     {
         // Flush and shutdown the Remote Store
         try
         {
+            blockTimer.set(true);
+            
             if (instanceRemote != null)
             {
-                instanceRemote.flush();
+                if (connectedToDB)
+                {
+                    instanceRemote.flush();
+                }
                 instanceRemote.listeners.clear();
                 instanceRemote.appPrefsIO = null;
                 instanceRemote = null;
             }
+            blockTimer.set(false);
+            
         } catch (BackingStoreException ex)
         {
+            log.error(ex); 
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AppPreferences.class, ex);
-           log.error(ex); 
         }
     }
 
@@ -163,6 +201,7 @@ public class AppPreferences
         // Flush and shutdown the Local Store
         try
         {
+            blockTimer.set(true);
             if (instanceLocal != null)
             {
                 instanceLocal.flush();
@@ -170,11 +209,13 @@ public class AppPreferences
                 instanceLocal.appPrefsIO = null;
                 instanceLocal = null;
             }
+            blockTimer.set(false);
+            
         } catch (BackingStoreException ex)
         {
+            log.error(ex); 
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AppPreferences.class, ex);
-           log.error(ex); 
         }
     }
 
@@ -727,6 +768,28 @@ public class AppPreferences
             }
         }
     }
+    
+    /**
+     * Schedules a timer for flushing and saving the Prefs.
+     */
+    private static void schedulePrefSynching()
+    {
+        // Add periodic timer task to periodically sync cached prefs
+        if (syncTimer == null)
+        {
+            syncTimer = new Timer(true); // Daemon Thread
+            syncTimer.schedule(new TimerTask() {
+                @Override
+                public void run() 
+                {
+                    if (!blockTimer.get())
+                    {
+                        syncPrefs();
+                    }
+                }
+            }, SYNC_INTERVAL*1000, SYNC_INTERVAL*1000);
+        }
+    }
 
     //---------------------------------------------------------------------------------------
     //-- The Code below is re-purposed from Sun's Preferences.java
@@ -746,16 +809,9 @@ public class AppPreferences
                 }
         })));
 
-    protected static Timer syncTimer = new Timer(true); // Daemon Thread
-    protected static boolean connectedToDB = false;
     static {
-        // Add periodic timer task to periodically sync cached prefs
-        syncTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                syncPrefs();
-            }
-        }, SYNC_INTERVAL*1000, SYNC_INTERVAL*1000);
+        
+        schedulePrefSynching();
 
         // Add shutdown hook to flush cached prefs on normal termination
         AccessController.doPrivileged(new PrivilegedAction<Object>() {

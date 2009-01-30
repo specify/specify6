@@ -14,11 +14,19 @@
  */
 package edu.ku.brc.af.core;
 
+import static edu.ku.brc.ui.UIRegistry.getAction;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getStatusBar;
+import static edu.ku.brc.ui.UIRegistry.getTopWindow;
+import static edu.ku.brc.ui.UIRegistry.registerAction;
 
 import java.awt.Component;
+import java.awt.event.ActionEvent;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -26,8 +34,12 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.Icon;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -38,9 +50,9 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
-import edu.ku.brc.ui.ExtendedTabbedPane;
 import edu.ku.brc.ui.ExtendedTabPanel;
-import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.ExtendedTabbedPane;
+import edu.ku.brc.ui.UIHelper;
 
 /**
  * Manages all the SubPanes that are in the main Tabbed pane. It notifies listeners when SubPanes are added, removed or Shown.
@@ -65,6 +77,9 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
 
     protected List<SubPaneMgrListener> listeners = new ArrayList<SubPaneMgrListener>();
     protected boolean                  globalShutdown = false;
+    
+    protected JPopupMenu               popupMenu         = null;
+    protected MouseAdapter             popupMouseAdapter = null;
 
     /**
      * Singleton Constructor.
@@ -76,7 +91,35 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         addChangeListener(this);
 
         setOpaque(true); // this is so the tabs are painted correctly against the BG color of the TabbedPane
+        
+        createTabActions();
+        createContextMenu();
        
+        popupMouseAdapter = new MouseAdapter() 
+        {
+            private void showPopup(MouseEvent e) 
+            {
+                if (e.isPopupTrigger()) 
+                {
+                    int y = e.getY() - popupMenu.getSize().height;
+                    popupMenu.show(e.getComponent(), e.getX(), y < 0 ? e.getY() : y);
+                }
+             }
+            
+            @Override
+            public void mousePressed(MouseEvent e)
+            {
+                showPopup(e);
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e)
+            {
+                showPopup(e);
+            }
+        };
+        
+        addMouseListener(popupMouseAdapter);
     }
 
     /**
@@ -89,9 +132,42 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
     }
     
     /**
+     * Adds a Close Btn to the Tab.
+     * @param title the title of the tab
+     * @param icon the icon for the tab (can be null)
+     * @param comp the component tab
+     * @param index the index of the tab to be fixed
+     */
+    protected ExtendedTabPanel adjustTab(final String    title, 
+                                         final Icon      icon, 
+                                         final Component comp, 
+                                         final int       index)
+    {
+        ExtendedTabPanel tabUI = super.adjustTab(title, icon, comp, index);
+        if (comp instanceof SubPaneIFace)
+        {
+            //  just making sure we don't add it twice
+            boolean fnd = false;
+            for (MouseListener ml : tabUI.getMouseListeners())
+            {
+                if (ml == popupMouseAdapter)
+                {
+                    fnd = true;
+                    break;
+                }
+            }
+            if (!fnd)
+            {
+                tabUI.addMouseListener(popupMouseAdapter); 
+            }
+        }
+        return tabUI;
+    }
+    
+    /**
      * Returns a unique tab name based on the generic tab name.
      * @param paneName the "generic" name of the panel (without the "()")
-     * @return the new unique name with possibly parenthises
+     * @return the new unique name with possibly parenthesis
      */
     protected String buildUniqueName(final String paneName)
     {
@@ -133,7 +209,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
                     Object[] options = { getResourceString("SubPaneMgr.SUBPANE_OPTIONS_CLOSE_ALLBUT"),  //$NON-NLS-1$
                             getResourceString("SubPaneMgr.SUBPANE_OPTIONS_CLOSE_OLDEST")  //$NON-NLS-1$
                           };
-                    int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
+                    int userChoice = JOptionPane.showOptionDialog(getTopWindow(), 
                                                                  getResourceString("SubPaneMgr.SUBPANE_OPTIONS_MAX_TABS"),  //$NON-NLS-1$
                                                                  getResourceString("SubPaneMgr.SUBPANE_OPTIONS_TOO_MANY"),  //$NON-NLS-1$
                                                                  JOptionPane.YES_NO_CANCEL_OPTION,
@@ -162,7 +238,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
             pane.getUIComponent().addComponentListener(new TabSelectionFocusGainListener(firstFocusable));
         }
         
-        UIRegistry.getStatusBar().setText(""); //$NON-NLS-1$
+        getStatusBar().setText(""); //$NON-NLS-1$
         
         if (instance.panes.contains(pane))
         {
@@ -195,19 +271,19 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
      */
     protected void adjustCloseAllMenu()
     {
-        Action closeCurrent = UIRegistry.getAction("CloseCurrent"); //$NON-NLS-1$
+        Action closeCurrent = getAction("CloseCurrent"); //$NON-NLS-1$
         if (closeCurrent != null)
         {
             closeCurrent.setEnabled(panes.size() > 0);//  || TaskMgr.getToolbarTaskCount() > 1);
         }        
         
-        Action closeAll = UIRegistry.getAction("CloseAll"); //$NON-NLS-1$
+        Action closeAll = getAction("CloseAll"); //$NON-NLS-1$
         if (closeAll != null)
         {
             closeAll.setEnabled(panes.size() > 0);//  || TaskMgr.getToolbarTaskCount() > 1);
         }        
         
-        Action closeAllBut = UIRegistry.getAction("CloseAllBut"); //$NON-NLS-1$
+        Action closeAllBut = getAction("CloseAllBut"); //$NON-NLS-1$
         if (closeAllBut != null)
         {
             closeAllBut.setEnabled(panes.size() > 1);//  || TaskMgr.getToolbarTaskCount() > 1);
@@ -233,7 +309,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
             cnt++;
         }
         
-        UIRegistry.getStatusBar().setText(""); //$NON-NLS-1$
+        getStatusBar().setText(""); //$NON-NLS-1$
         
         if (panes.get(pane.getPaneName()) != null)
         {
@@ -272,7 +348,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
      */
     public synchronized SubPaneIFace replacePane(final SubPaneIFace oldPane, final SubPaneIFace newPane)
     {
-        UIRegistry.getStatusBar().setText(""); //$NON-NLS-1$
+        getStatusBar().setText(""); //$NON-NLS-1$
         
         //System.err.println("SubPaneMgr::replacePane ************************************************");
 
@@ -334,7 +410,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
     {
         if (currentPane != null)
         {
-            Action configTaskAction = UIRegistry.getAction("ConfigureTask"); //$NON-NLS-1$
+            Action configTaskAction = getAction("ConfigureTask"); //$NON-NLS-1$
             if (configTaskAction != null)
             {
                 configTaskAction.setEnabled(currentPane.getTask().isConfigurable());
@@ -379,7 +455,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
                                               final boolean      askForSave,
                                               final boolean      doAboutToShutdown)
     {
-        UIRegistry.getStatusBar().setText(""); //$NON-NLS-1$
+        getStatusBar().setText(""); //$NON-NLS-1$
         
         if (currentPane == pane)
         {
@@ -611,7 +687,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
       */
     public SubPaneIFace showPane(final String name)
     {
-        UIRegistry.getStatusBar().setText(""); //$NON-NLS-1$
+        getStatusBar().setText(""); //$NON-NLS-1$
         
         // Look the the desired pane
         SubPaneIFace pane = panes.get(name);
@@ -763,7 +839,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
     @Override
     public synchronized void closeCurrent()
     {
-        Action closeCurrent = UIRegistry.getAction("CloseCurrent");
+        Action closeCurrent = getAction("CloseCurrent");
         if (!closeCurrent.isEnabled())
         {
             return;
@@ -879,6 +955,90 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
             }
         }
     }
+    
+    /**
+     * 
+     */
+    public static void createTabActions()
+    {
+        if (getAction("CloseCurrent") != null)
+        {
+            return;
+        }
+        
+        Action closeCurrent = new AbstractAction()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                SubPaneMgr.getInstance().closeCurrent();
+            }
+        };
+        registerAction("CloseCurrent", closeCurrent); //$NON-NLS-1$
+
+        Action closeAll = new AbstractAction() {
+            public void actionPerformed(ActionEvent ae)
+            {
+                SubPaneMgr.getInstance().closeAll();
+            }
+        };
+        registerAction("CloseAll", closeAll); //$NON-NLS-1$
+        
+        Action closeAllBut = new AbstractAction() {
+            public void actionPerformed(ActionEvent ae)
+            {
+                SubPaneMgr.getInstance().closeAllExceptCurrent();
+            }
+        };
+        registerAction("CloseAllBut", closeAllBut); //$NON-NLS-1$
+        
+        // Configure Task
+        Action configureToolAction = new AbstractAction(getResourceString("Specify.CONFIG_TASK_MENU")) { //$NON-NLS-1$
+            public void actionPerformed(ActionEvent e)
+            {
+                SubPaneIFace sp = SubPaneMgr.getInstance().getCurrentSubPane();
+                if (sp != null)
+                {
+                    Taskable task = sp.getTask();
+                    if (task != null && task.isConfigurable())
+                    {
+                        task.doConfigure();
+                    }
+                }
+            }
+        };
+        registerAction("ConfigureTask", configureToolAction); //$NON-NLS-1$
+        
+        configureToolAction.setEnabled(false);
+    }
+    
+    /**
+     * @param pane
+     */
+    protected void createContextMenu()
+    {
+        if (popupMenu == null)
+        {
+            popupMenu = new JPopupMenu();
+            
+            String ttl = getResourceString("Specify.SBP_CLOSE_CUR_MENU"); 
+            String mnu = getResourceString("Specify.SBP_CLOSE_CUR_MNEU"); 
+            UIHelper.createMenuItemWithAction(popupMenu, ttl, mnu, ttl, true, getAction("CloseCurrent")); 
+    
+            ttl = getResourceString("Specify.SBP_CLOSE_ALL_MENU"); 
+            mnu = getResourceString("Specify.SBP_CLOSE_ALL_MNEU"); 
+            UIHelper.createMenuItemWithAction(popupMenu, ttl, mnu, ttl, true, getAction("CloseAll")); 
+            
+            ttl = getResourceString("Specify.SBP_CLOSE_ALLBUT_MENU"); 
+            mnu = getResourceString("Specify.SBP_CLOSE_ALLBUT_MNEU"); 
+            UIHelper.createMenuItemWithAction(popupMenu, ttl, mnu, ttl, true, getAction("CloseAllBut")); 
+            
+            popupMenu.addSeparator();
+            
+            JMenuItem configTaskMI = new JMenuItem(getAction("ConfigureTask"));
+            popupMenu.add(configTaskMI);
+            //register("ConfigureTask", configTaskMI); //$NON-NLS-1$
+        }
+    }
 
 
     //--------------------------------------------------------
@@ -919,7 +1079,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         checkForTaskableConfig();
     }
 
-    
+    //------------------------------------------------------------------------
     public class TabSelectionFocusGainListener implements ComponentListener
     {
         protected Component focusable;

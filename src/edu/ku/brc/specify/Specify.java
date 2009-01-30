@@ -16,7 +16,7 @@
 package edu.ku.brc.specify;
 
 import static edu.ku.brc.ui.UIHelper.createLabel;
-import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
+import static edu.ku.brc.ui.UIRegistry.*;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
@@ -39,7 +39,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.channels.FileChannel;
 import java.sql.Timestamp;
 import java.util.Locale;
 import java.util.MissingResourceException;
@@ -1011,68 +1010,31 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             mi = UIHelper.createMenuItemWithAction(menu, "Generate All Forms", "G", "", true, genForms);
         }*/
 
-
+        SubPaneMgr.getInstance(); // force creating of the Mgr so the menu Actions are created.
+        
         //--------------------------------------------------------------------
         //-- Tab Menu
         //--------------------------------------------------------------------
         menu = UIHelper.createLocalizedMenu(mb, "Specify.TABS_MENU", "Specify.TABS_MNEU"); //$NON-NLS-1$ //$NON-NLS-2$
         
-        Action closeCurrent = new AbstractAction()
-        {
-            public void actionPerformed(ActionEvent ae)
-            {
-                SubPaneMgr.getInstance().closeCurrent();
-            }
-        };
         String ttl = UIRegistry.getResourceString("Specify.SBP_CLOSE_CUR_MENU"); 
         String mnu = UIRegistry.getResourceString("Specify.SBP_CLOSE_CUR_MNEU"); 
-        mi = UIHelper.createMenuItemWithAction(menu, ttl, mnu, ttl, true, closeCurrent); 
-        UIRegistry.registerAction("CloseCurrent", closeCurrent); //$NON-NLS-1$
+        mi = UIHelper.createMenuItemWithAction(menu, ttl, mnu, ttl, true, getAction("CloseCurrent")); 
 
         ttl = UIRegistry.getResourceString("Specify.SBP_CLOSE_ALL_MENU"); 
         mnu = UIRegistry.getResourceString("Specify.SBP_CLOSE_ALL_MNEU"); 
-        Action closeAll = new AbstractAction() {
-            public void actionPerformed(ActionEvent ae)
-            {
-                SubPaneMgr.getInstance().closeAll();
-            }
-        };
-        mi = UIHelper.createMenuItemWithAction(menu, ttl, mnu, ttl, true, closeAll); 
-        UIRegistry.registerAction("CloseAll", closeAll); //$NON-NLS-1$
+        mi = UIHelper.createMenuItemWithAction(menu, ttl, mnu, ttl, true, getAction("CloseAll")); 
         
-        Action closeAllBut = new AbstractAction() {
-            public void actionPerformed(ActionEvent ae)
-            {
-                SubPaneMgr.getInstance().closeAllExceptCurrent();
-            }
-        };
         ttl = UIRegistry.getResourceString("Specify.SBP_CLOSE_ALLBUT_MENU"); 
         mnu = UIRegistry.getResourceString("Specify.SBP_CLOSE_ALLBUT_MNEU"); 
-        mi = UIHelper.createMenuItemWithAction(menu, ttl, mnu, ttl, true, closeAllBut); 
-        UIRegistry.registerAction("CloseAllBut", closeAllBut); //$NON-NLS-1$
+        mi = UIHelper.createMenuItemWithAction(menu, ttl, mnu, ttl, true, getAction("CloseAllBut")); 
         
         menu.addSeparator();
         
         // Configure Task
-        Action configureToolAction = new AbstractAction(getResourceString("Specify.CONFIG_TASK_MENU")) { //$NON-NLS-1$
-            public void actionPerformed(ActionEvent e)
-            {
-                SubPaneIFace sp = SubPaneMgr.getInstance().getCurrentSubPane();
-                if (sp != null)
-                {
-                    Taskable task = sp.getTask();
-                    if (task != null && task.isConfigurable())
-                    {
-                        task.doConfigure();
-                    }
-                }
-            }
-        };
-        configureToolAction.setEnabled(false);
-        JMenuItem configTaskMI = new JMenuItem(configureToolAction);
+        JMenuItem configTaskMI = new JMenuItem(getAction("ConfigureTask"));
         menu.add(configTaskMI);
-        UIRegistry.register("ConfigureTask", configTaskMI); //$NON-NLS-1$
-        UIRegistry.registerAction("ConfigureTask", configureToolAction); //$NON-NLS-1$
+        //UIRegistry.register("ConfigureTask", configTaskMI); //$NON-NLS-1$
 
         //--------------------------------------------------------------------
         //-- Debug Menu
@@ -2184,8 +2146,13 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         }
         
         AppPreferences.shutdownRemotePrefs();
+        AppPreferences.shutdownPrefs();
+        AppPreferences.setConnectedToDB(false);
         
-        //moved here because context needs to be set before loading prefs, we need to know the SpecifyUser
+        // Moved here because context needs to be set before loading prefs, we need to know the SpecifyUser
+        //
+        // NOTE: AppPreferences.startup(); is called inside setContext's implementation.
+        //
         AppContextMgr.CONTEXT_STATUS status = AppContextMgr.getInstance().setContext(databaseNameArg, userNameArg, startOver);
         
         UsageTracker.setUserInfo(databaseNameArg, userNameArg);
@@ -2212,7 +2179,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         
         if (status == AppContextMgr.CONTEXT_STATUS.OK)
         {
-            
              // XXX Get the current locale from prefs PREF
             
             if (AppContextMgr.getInstance().getClassObject(Discipline.class) == null)

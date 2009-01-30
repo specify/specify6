@@ -345,8 +345,8 @@ public class DatabaseLoginPanel extends JTiledPanel
         PropertiesPickListAdapter dbPickList = new PropertiesPickListAdapter("login.databases"); //$NON-NLS-1$
         PropertiesPickListAdapter svPickList = new PropertiesPickListAdapter("login.servers"); //$NON-NLS-1$
 
-        username = createTextField(20);
-        password = createPasswordField(20);
+        username = createTextField(15);
+        password = createPasswordField(15);
         
         FocusAdapter focusAdp = new FocusAdapter()
         {
@@ -548,7 +548,7 @@ public class DatabaseLoginPanel extends JTiledPanel
 
         addLine("username", username, formBuilder, cc, 3); //$NON-NLS-1$
         addLine("password", password, formBuilder, cc, 5); //$NON-NLS-1$
-        formBuilder.add(moreBtn,                   cc.xy(1, 7));
+        formBuilder.add(moreBtn,                   cc.xy(3, 7));
         
         PanelBuilder extraPanelBlder = new PanelBuilder(new FormLayout("p,3dlu,p:g",//$NON-NLS-1$ 
                 UIHelper.createDuplicateJGoodiesDef("p", "2dlu", 9))); //$NON-NLS-1$ //$NON-NLS-2$
@@ -572,7 +572,7 @@ public class DatabaseLoginPanel extends JTiledPanel
         }
         extraPanel.setVisible(false);
 
-        formBuilder.add(extraPanelBlder.getPanel(), cc.xywh(1, 9, 3, 1));
+        formBuilder.add(extraPanelBlder.getPanel(), cc.xywh(3, 9, 1, 1));
 
         PanelBuilder outerPanel = new PanelBuilder(new FormLayout("p,3dlu,p:g", "t:p,2dlu,p,2dlu,p"), this); //$NON-NLS-1$ //$NON-NLS-2$
         JLabel icon = StringUtils.isNotEmpty(iconName) ? new JLabel(IconManager.getIcon(iconName)) : null;

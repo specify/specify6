@@ -288,8 +288,7 @@ public class GeoCoordGeoLocateProvider implements GeoCoordServiceProviderIFace
 
         // create the UI for displaying the BG results
         JFrame topFrame = (JFrame)UIRegistry.getTopWindow();
-        GeoLocateResultsChooser bgResChooser = new GeoLocateResultsChooser(topFrame, 
-                getResourceString("GeoCoordGeoLocateProvider.GEOLOC_RES_CHOOSER_TITLE"), withResults); //$NON-NLS-1$
+        GeoLocateResultsChooser bgResChooser = new GeoLocateResultsChooser(topFrame, withResults); //$NON-NLS-1$
         
         List<GeorefResult> results = bgResChooser.getResultsChosen();
         

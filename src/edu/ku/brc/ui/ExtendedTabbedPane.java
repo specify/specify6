@@ -116,12 +116,14 @@ public class ExtendedTabbedPane extends JTabbedPane
      * @param comp the component tab
      * @param index the index of the tab to be fixed
      */
-    protected void adjustTab(final String    title, 
-                             final Icon      icon, 
-                             final Component comp, 
-                             final int       index)
+    protected ExtendedTabPanel adjustTab(final String    title, 
+                                         final Icon      icon, 
+                                         final Component comp, 
+                                         final int       index)
     {
-        setTabComponentAt(index, new ExtendedTabPanel(comp, title, icon));
+        ExtendedTabPanel tabUI = new ExtendedTabPanel(comp, title, icon);
+        setTabComponentAt(index, tabUI);
+        return tabUI;
     }
     
     /* (non-Javadoc)

@@ -5565,7 +5565,7 @@ public class FormViewObj implements Viewable,
                 dataObj != null && 
                 (dataObj instanceof FormDataObjIFace && ((FormDataObjIFace)dataObj).getId() == null))
             {
-                //delRecBtn.setEnabled(false);
+                delRecBtn.setEnabled(false);
             }
         }
     }

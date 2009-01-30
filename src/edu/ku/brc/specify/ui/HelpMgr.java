@@ -256,8 +256,12 @@ public class HelpMgr
      */
     static private String getCurrentContext()
     {
-        log.debug(ContextMgr.getCurrentContext().getName());
-        return ContextMgr.getCurrentContext().getName();
+        if (ContextMgr.getCurrentContext() != null)
+        {
+            log.debug(ContextMgr.getCurrentContext().getName());
+            return ContextMgr.getCurrentContext().getName();
+        }
+        return null;
     }
 
     /**
