@@ -26,6 +26,8 @@ import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.ui.db.ERTICaptionInfo;
 import edu.ku.brc.af.ui.db.QueryForIdResultsIFace;
+import edu.ku.brc.af.ui.db.ERTICaptionInfo.ColInfo;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.ui.CommandAction;
@@ -286,7 +288,24 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
                                                           dfc.getFieldInfo().getFormatter(), 
                                                           i+1);
             caption.setColClass(dfc.getFieldInfo().getDataClass());
+            
+            if (dfc.getFieldInfo().isPartialDate())
+            {
+                String precName = dfc.getFieldInfo().getDatePrecisionName();
                 
+                Vector<ColInfo> colInfoList = new Vector<ColInfo>();
+                ColInfo columnInfo = caption.new ColInfo(StringUtils.capitalize(precName), precName);
+                columnInfo.setPosition(0);
+                colInfoList.add(columnInfo);
+                
+                columnInfo = caption.new ColInfo(dfc.getFieldInfo().getColumn(), dfc.getFieldInfo().getName());
+                columnInfo.setPosition(1);
+                colInfoList.add(columnInfo);
+                caption.setColInfoList(colInfoList);
+                caption.setColName(null);
+                // XXX We need to get this from the SchemaConfig
+                caption.setUiFieldFormatter(UIFieldFormatterMgr.getInstance().getFormatter("PartialDate"));
+            }
             captions.add(caption);
             i++;
         }

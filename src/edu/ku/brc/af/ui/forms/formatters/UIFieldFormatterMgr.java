@@ -253,14 +253,14 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
     public List<UIFieldFormatterIFace> getDateFormatterList(final boolean isForPartial)
     {
         Vector<UIFieldFormatterIFace> list = new Vector<UIFieldFormatterIFace>();
-        for (Enumeration<UIFieldFormatterIFace> e = hash.elements(); e.hasMoreElements();)
+        for (UIFieldFormatterIFace f : hash.values())
         {
-            UIFieldFormatterIFace f = e.nextElement();
+            log.debug(f.getName());
             if (f.isDate())
             {
-                boolean isPartial = f.getName().indexOf("Partial") > -1;
-                if ((isForPartial && isPartial) ||
-                    (!isForPartial && !isPartial))
+                boolean isPartial = f.getPartialDateType() == UIFieldFormatterIFace.PartialDateEnum.Month ||
+                                    f.getPartialDateType() == UIFieldFormatterIFace.PartialDateEnum.Year;
+                if (isForPartial == isPartial)
                 {
                     list.add(f);
                 }
@@ -349,7 +349,7 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
     /**
      * Gets a unique name for a formatter if it doesn't yet have one
      */
-    private String getFormatterUniqueName(UIFieldFormatterIFace formatter)
+    private String getFormatterUniqueName(final UIFieldFormatterIFace formatter)
     {
         String name = formatter.getName();
 
@@ -374,7 +374,7 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
     /**
      * Adds a new formatter
      */
-    public void addFormatter(UIFieldFormatterIFace formatter)
+    public void addFormatter(final UIFieldFormatterIFace formatter)
     {
         getFormatterUniqueName(formatter);
         
@@ -477,7 +477,10 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
                                             + dataClassName + "]");
                         }
                     }
-
+                    
+                    
+                    UIFieldFormatterIFace formatter = null;
+                    
                     Element external = (Element) formatElement.selectSingleNode("external");
                     if (external != null)
                     {
@@ -486,121 +489,130 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
                         {
                             try
                             {
-                                UIFieldFormatterIFace formatter = Class.forName(externalClassName).asSubclass(UIFieldFormatterIFace.class).newInstance();
+                                formatter = Class.forName(externalClassName).asSubclass(UIFieldFormatterIFace.class).newInstance();
                                 formatter.setName(name);
                                 formatter.setAutoNumber(autoNumberObj);
                                 formatter.setDefault(isDefault);
-
+                                
                                 hash.put(name, formatter);
 
                             } catch (Exception ex)
                             {
-                                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UIFieldFormatterMgr.class, ex);
                                 log.error(ex);
                                 ex.printStackTrace();
+                                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UIFieldFormatterMgr.class, ex);
                             }
                         } else
                         {
                             throw new RuntimeException("The value cannot be empty for an external formatter! ["+ name + "]");
                         }
+                    }
+                    
+                    List<?>                     fieldsList = formatElement.selectNodes("field");
+                    List<UIFieldFormatterField> fields     = new ArrayList<UIFieldFormatterField>();
+                    boolean                     isInc      = false;
+                    String                      partialDateTypeStr = formatElement.attributeValue("partialdate");
+                    for (Object fldObj : fieldsList)
+                    {
+                        Element fldElement = (Element) fldObj;
 
+                        int     size    = XMLHelper.getAttr(fldElement, "size", 1);
+                        String  value   = fldElement.attributeValue("value");
+                        String  typeStr = fldElement.attributeValue("type");
+                        boolean increm  = XMLHelper.getAttr(fldElement, "inc", false);
+                        boolean byYear  = false;
+
+                        UIFieldFormatterField.FieldType type = null;
+                        try
+                        {
+                            type = UIFieldFormatterField.FieldType.valueOf(typeStr);
+
+                        } catch (Exception ex)
+                        {
+                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UIFieldFormatterMgr.class, ex);
+                            log.error("[" + typeStr + "]" + ex.toString());
+                        }
+
+                        if (type == UIFieldFormatterField.FieldType.year)
+                        {
+                            size = 4;
+                            byYear = XMLHelper.getAttr(fldElement, "byyear", false);
+                        }
+
+                        fields.add(new UIFieldFormatterField(type, size, value, increm, byYear));
+                        if (increm)
+                        {
+                            isInc = true;
+                        }
+                    }
+
+                    // set field type
+                    UIFieldFormatter.FormatterType   type            = UIFieldFormatter.FormatterType.generic;
+                    UIFieldFormatter.PartialDateEnum partialDateType = UIFieldFormatter.PartialDateEnum.None;
+                    if (StringUtils.isNotEmpty(fType) && fType.equals("numeric"))
+                    {
+                        type = UIFieldFormatter.FormatterType.numeric;
+                        
+                    } else if (StringUtils.isNotEmpty(fType) && fType.equals("date"))
+                    {
+                        type = UIFieldFormatter.FormatterType.date;
+                        if (StringUtils.isNotEmpty(partialDateTypeStr))
+                        {
+                            partialDateType = UIFieldFormatter.PartialDateEnum.valueOf(partialDateTypeStr);
+                        } else
+                        {
+                            partialDateType = UIFieldFormatter.PartialDateEnum.Full;
+                        }
+                    }
+                    
+                    Class<?> dataClass = null;
+                    if (StringUtils.isNotEmpty(dataClassName))
+                    {
+                        try
+                        {
+                            dataClass = Class.forName(dataClassName);
+                        } catch (Exception ex)
+                        {
+                            log.error("Couldn't load class [" + dataClassName + "] for [" + name + "]");
+                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UIFieldFormatterMgr.class, ex);
+                        }
+
+                    } else if (StringUtils.isNotEmpty(fType) && fType.equals("date"))
+                    {
+                        dataClass = Date.class;
+                    }
+
+                    if (formatter == null)
+                    {
+                        formatter = new UIFieldFormatter(name, isSystem, fieldName, type, partialDateType,
+                                                         dataClass, isDefault, isInc, fields);
+                        hash.put(name, formatter);
                     } else
                     {
-                        List<?>                     fieldsList = formatElement.selectNodes("field");
-                        List<UIFieldFormatterField> fields     = new ArrayList<UIFieldFormatterField>();
-                        boolean                     isInc      = false;
-                        String                      partialDateTypeStr = formatElement.attributeValue("partialdate");
-                        for (Object fldObj : fieldsList)
-                        {
-                            Element fldElement = (Element) fldObj;
-
-                            int     size    = XMLHelper.getAttr(fldElement, "size", 1);
-                            String  value   = fldElement.attributeValue("value");
-                            String  typeStr = fldElement.attributeValue("type");
-                            boolean increm  = XMLHelper.getAttr(fldElement, "inc", false);
-                            boolean byYear  = false;
-
-                            UIFieldFormatterField.FieldType type = null;
-                            try
-                            {
-                                type = UIFieldFormatterField.FieldType.valueOf(typeStr);
-
-                            } catch (Exception ex)
-                            {
-                                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UIFieldFormatterMgr.class, ex);
-                                log.error("[" + typeStr + "]" + ex.toString());
-                            }
-
-                            if (type == UIFieldFormatterField.FieldType.year)
-                            {
-                                size = 4;
-                                byYear = XMLHelper.getAttr(fldElement, "byyear", false);
-                            }
-
-                            fields.add(new UIFieldFormatterField(type, size, value, increm, byYear));
-                            if (increm)
-                            {
-                                isInc = true;
-                            }
-                        }
-
-                        // set field type
-                        UIFieldFormatter.FormatterType type = UIFieldFormatter.FormatterType.generic;
-                        UIFieldFormatter.PartialDateEnum partialDateType = UIFieldFormatter.PartialDateEnum.None;
-                        if (StringUtils.isNotEmpty(fType) && fType.equals("numeric"))
-                        {
-                            type = UIFieldFormatter.FormatterType.numeric;
-                            
-                        } else if (StringUtils.isNotEmpty(fType) && fType.equals("date"))
-                        {
-                            type = UIFieldFormatter.FormatterType.date;
-                            if (StringUtils.isNotEmpty(partialDateTypeStr))
-                            {
-                                partialDateType = UIFieldFormatter.PartialDateEnum.valueOf(partialDateTypeStr);
-                            } else
-                            {
-                                partialDateType = UIFieldFormatter.PartialDateEnum.Full;
-                            }
-                        }
-
-                        Class<?> dataClass = null;
-                        if (StringUtils.isNotEmpty(dataClassName))
-                        {
-                            try
-                            {
-                                dataClass = Class.forName(dataClassName);
-                            } catch (Exception ex)
-                            {
-                                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UIFieldFormatterMgr.class, ex);
-                                log.error("Couldn't load class [" + dataClassName + "] for [" + name + "]");
-                            }
-
-                        } else if (StringUtils.isNotEmpty(fType) && fType.equals("date"))
-                        {
-                            dataClass = Date.class;
-                        }
-
-                        UIFieldFormatter formatter = new UIFieldFormatter(name,
-                                                            isSystem, fieldName, type, partialDateType,
-                                                            dataClass, isDefault, isInc, fields);
+                        formatter.setPartialDateType(partialDateType);
+                    }
+                    
+                    if (formatter instanceof UIFieldFormatter)
+                    {
+                        UIFieldFormatter fmt = (UIFieldFormatter)formatter;
+                        fmt.setType(type);
+                        
                         if (type == UIFieldFormatter.FormatterType.date && fields.size() == 0)
                         {
-                            addFieldsForDate(formatter);
+                            addFieldsForDate(fmt);
 
                         } else if (type == UIFieldFormatter.FormatterType.numeric)
                         {
-                            formatter.setPrecision(precision);
-                            formatter.setScale(scale);
-                            addFieldsForNumeric(formatter);
+                            fmt.setPrecision(precision);
+                            fmt.setScale(scale);
+                            addFieldsForNumeric(fmt);
                         }
-
-                        formatter.setAutoNumber(autoNumberObj);
-                        hash.put(name, formatter);
-
                     }
+
+                    formatter.setAutoNumber(autoNumberObj);
                 }
             } else
             {
@@ -608,9 +620,9 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
             }
         } catch (Exception ex)
         {
+            ex.printStackTrace();
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UIFieldFormatterMgr.class, ex);
-            ex.printStackTrace();
             log.error(ex);
         }
     }
@@ -618,7 +630,7 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
     /**
      * @param source
      */
-    public void applyChanges(UIFieldFormatterMgr source)
+    public void applyChanges(final UIFieldFormatterMgr source)
     {
         if (source.hasChanged)
         {
@@ -741,9 +753,18 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
     {
         formatter.getFields().clear();
         
-        DateWrapper scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
-
+        String prefPostFix = "";
+        
         UIFieldFormatter.PartialDateEnum partialType = formatter.getPartialDateType();
+        if (partialType == UIFieldFormatter.PartialDateEnum.Month)
+        {
+            prefPostFix = "mon";
+        } else if (partialType == UIFieldFormatter.PartialDateEnum.Year)
+        {
+            prefPostFix = "year";
+        }
+        
+        DateWrapper scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat"+prefPostFix);
 
         StringBuilder newFormatStr = new StringBuilder();
         String        formatStr    = scrDateFormat.getSimpleDateFormat().toPattern();
@@ -763,8 +784,7 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
                         String s = "";
                         s += c;
                         s += c;
-                        UIFieldFormatterField f = new UIFieldFormatterField(
-                                UIFieldFormatterField.FieldType.numeric, 2, s.toUpperCase(), false);
+                        UIFieldFormatterField f = new UIFieldFormatterField(UIFieldFormatterField.FieldType.numeric, 2, s.toUpperCase(), false);
                         formatter.getFields().add(f);
                         currChar = c;
                         newFormatStr.append(c);
@@ -782,9 +802,7 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
                         String s = "";
                         s += c;
                         s += c;
-                        UIFieldFormatterField f = new UIFieldFormatterField(
-                                UIFieldFormatterField.FieldType.numeric, 2, s
-                                        .toUpperCase(), false);
+                        UIFieldFormatterField f = new UIFieldFormatterField(UIFieldFormatterField.FieldType.numeric, 2, s.toUpperCase(), false);
                         formatter.getFields().add(f);
                         currChar = c;
                         newFormatStr.append(c);
@@ -839,7 +857,8 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
             formatter.setDateWrapper(scrDateFormat);
         } else
         {
-            formatter.setDateWrapper(new DateWrapper(new SimpleDateFormat(newFormatStr.toString())));
+            scrDateFormat.setSimpleDateFormat(new SimpleDateFormat(newFormatStr.toString()));
+            formatter.setDateWrapper(scrDateFormat);
         }
     }
 

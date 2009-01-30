@@ -34,7 +34,6 @@ import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.af.ui.forms.formatters.DataObjSwitchFormatter;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
-import edu.ku.brc.specify.datamodel.Collector;
 
 /**
  * @author rods
@@ -136,8 +135,6 @@ public class ERTICaptionInfo
                 
             } catch (java.util.MissingResourceException ex)
             {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ERTICaptionInfo.class, ex);
                 log.error("Missing resource ["+key+"] or ["+key+"_desc]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                 colLabel    = key;
                 description = key+"_desc"; //$NON-NLS-1$
@@ -147,10 +144,46 @@ public class ERTICaptionInfo
         {
             if (fieldInfo == null)
             {
-                if (this.colName.endsWith("ID")) //$NON-NLS-1$
+                if (this.colName != null && this.colName.endsWith("ID")) //$NON-NLS-1$
                 {
                     colLabel    = this.colName;
                     description = ""; //$NON-NLS-1$
+                    
+                } else if (this.colName == null)
+                {
+                    colInfoList = new Vector<ColInfo>();
+                    int pos = 0;
+                    for (Object colObj : element.selectNodes("col")) //$NON-NLS-1$
+                    {
+                        Element colInfoObj = (Element)colObj;
+                        ColInfo columnInfo = new ColInfo(getAttr(colInfoObj, "name", null), getAttr(colInfoObj, "field", null)); //$NON-NLS-1$ //$NON-NLS-2$
+                        columnInfo.setPosition(pos++);
+                        if (colInfoList.size() == 0)
+                        {
+                            fieldInfo = tableInfo.getFieldByColumnName(columnInfo.getColumnName());
+                        }
+                        colInfoList.add(columnInfo);
+                    }
+
+                    if (tableInfo != null)
+                    {
+                        for (ColInfo columnInfo : colInfoList)
+                        {
+                            DBFieldInfo fi = tableInfo.getFieldByName(columnInfo.getFieldName());
+                            if (fi != null)
+                            {
+                                columnInfo.setFieldClass(fi.getDataClass());
+                            } else
+                            {
+                                log.error("Field Name in TableId doesn't exist Class is not a Data Table["+tableInfo.getTitle()+"] Field["+columnInfo.getFieldName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                            }
+                        }
+                        
+                    } else
+                    {
+                        log.error("Aggregate Sub Class is not a Data Table["+tableInfo.getTitle()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+                    }
+                    
                 } else
                 {
                     throw new RuntimeException("Couldn't convert column Name["+this.colName+"] to a field name to find the field in table["+tblId+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -177,16 +210,10 @@ public class ERTICaptionInfo
             String aggClassName = getAttr(aggElement, "class", null); //$NON-NLS-1$
             if (StringUtils.isNotEmpty(aggClassName))
             {
- 
                 aggTableClassName = aggClassName;
                 try
                 {
                     aggClass = Class.forName(aggClassName);
-                    if (aggClass == Collector.class)
-                    {
-                        int x = 0;
-                        x++;
-                    }
                     boolean aggOK = false;
                     DBTableInfo tInfo = DBTableIdMgr.getInstance().getByShortClassName(aggClass.getSimpleName());
                     if (tInfo != null && StringUtils.isNotEmpty(tInfo.getAggregatorName()))
@@ -206,9 +233,9 @@ public class ERTICaptionInfo
                     
                 } catch (ClassNotFoundException ex)
                 {
+                    ex.printStackTrace();
                     edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                     edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ERTICaptionInfo.class, ex);
-                    ex.printStackTrace();
                 }
             }
         }
@@ -226,9 +253,9 @@ public class ERTICaptionInfo
                     
                 } catch (ClassNotFoundException ex)
                 {
+                    ex.printStackTrace();
                     edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                     edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ERTICaptionInfo.class, ex);
-                    ex.printStackTrace();
                 }
             }
         }
@@ -250,9 +277,9 @@ public class ERTICaptionInfo
                     
                 } catch (ClassNotFoundException ex)
                 {
+                    ex.printStackTrace();
                     edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                     edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ERTICaptionInfo.class, ex);
-                    ex.printStackTrace();
                 }
             } else
             {
@@ -410,6 +437,14 @@ public class ERTICaptionInfo
     }
 
     /**
+     * @param colInfoList the colInfoList to set
+     */
+    public void setColInfoList(Vector<ColInfo> colInfoList)
+    {
+        this.colInfoList = colInfoList;
+    }
+
+    /**
      * @return the aggClass
      */
     public Class<?> getAggClass()
@@ -548,6 +583,14 @@ public class ERTICaptionInfo
     public UIFieldFormatterIFace getUiFieldFormatter()
     {
         return uiFieldFormatter;
+    }
+
+    /**
+     * @param uiFieldFormatter the uiFieldFormatter to set
+     */
+    public void setUiFieldFormatter(UIFieldFormatterIFace uiFieldFormatter)
+    {
+        this.uiFieldFormatter = uiFieldFormatter;
     }
 
     /**

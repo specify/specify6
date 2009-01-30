@@ -187,7 +187,7 @@ public class JPAQuery implements CustomQueryIFace
         {
             try
             {
-                //log.debug(sqlStr);
+                log.debug(sqlStr);
                 Query qry = query != null ? query : session.createQuery(sqlStr);
                 
                 if (params != null)
@@ -256,29 +256,35 @@ public class JPAQuery implements CustomQueryIFace
     public void execute(final CustomQueryListener cqlArg)
     {
         runQuery();
-        
-        if (cqlArg != null)
+     
+        try
         {
-            if (inError)
+            if (cqlArg != null)
             {
-                cqlArg.executionError(this);
-                
-            } else
-            {
-                cqlArg.exectionDone(this);
+                if (inError)
+                {
+                    cqlArg.executionError(this);
+                    
+                } else
+                {
+                    cqlArg.exectionDone(this);
+                }
             }
-        }
-        
-        if (cql != null && cql != cqlArg)
+            
+            if (cql != null && cql != cqlArg)
+            {
+                if (inError)
+                {
+                    cqlArg.executionError(this);
+                    
+                } else
+                {
+                    cqlArg.exectionDone(this);
+                }
+            }
+        } catch (Exception ex)
         {
-            if (inError)
-            {
-                cqlArg.executionError(this);
-                
-            } else
-            {
-                cqlArg.exectionDone(this);
-            }
+            ex.printStackTrace();
         }
     }
 

@@ -44,6 +44,8 @@ public class DBFieldInfo extends DBInfoBase implements DBTableChildIFace
     protected boolean     isUpdatable;
     protected boolean     isUnique;
     protected boolean     isIndexed;
+    protected boolean     isPartialDate;
+    protected String      datePrecisionName;
     
     // Transient
     protected String                pickListName = null;
@@ -62,7 +64,9 @@ public class DBFieldInfo extends DBInfoBase implements DBTableChildIFace
                        final boolean isRequired, 
                        final boolean isUpdatable, 
                        final boolean isUnique, 
-                       final boolean isIndexed)
+                       final boolean isIndexed, 
+                       final boolean isPartialDate, 
+                       final String datePrecisionName)
     {
         super(name);
         
@@ -74,6 +78,8 @@ public class DBFieldInfo extends DBInfoBase implements DBTableChildIFace
         this.isUpdatable = isUpdatable;
         this.isUnique = isUnique;
         this.isIndexed = isIndexed;
+        this.isPartialDate = isPartialDate;
+        this.datePrecisionName = datePrecisionName;
     }
 
     public String getColumn()
@@ -219,6 +225,22 @@ public class DBFieldInfo extends DBInfoBase implements DBTableChildIFace
     public void setRequiredInSchema(boolean isRequiredInSchema)
     {
         this.isRequiredInSchema = isRequiredInSchema;
+    }
+
+    /**
+     * @return the isPartialDate
+     */
+    public boolean isPartialDate()
+    {
+        return isPartialDate;
+    }
+
+    /**
+     * @return the datePrecisionName
+     */
+    public String getDatePrecisionName()
+    {
+        return datePrecisionName;
     }
 
     public Class<?> getDataClass()

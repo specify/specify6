@@ -51,7 +51,8 @@ public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     protected Pair<Integer, Integer> incPos;
     protected String                 pattern;
     protected boolean                isDefault             = false;
-    
+    protected PartialDateEnum        partialDateType       = PartialDateEnum.None;
+
     /**
      * @param type the name of the formatter, must be unique and not localized
      * @param altName the localized title
@@ -233,7 +234,16 @@ public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     @Override
     public PartialDateEnum getPartialDateType()
     {
-        return null;
+        return partialDateType;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace#setPartialDateType(edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace.PartialDateEnum)
+     */
+    @Override
+    public void setPartialDateType(PartialDateEnum partialDateType)
+    {
+        this.partialDateType = partialDateType;
     }
 
     /* (non-Javadoc)
@@ -306,8 +316,9 @@ public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#formatInBound(java.lang.Object)
      */
     @Override
-    public Object formatToUI(Object data)
+    public Object formatToUI(Object...datas)
     {
+        Object data = datas[0];
         if (isNumericCatalogNumber)
         {        
             if (data != null)

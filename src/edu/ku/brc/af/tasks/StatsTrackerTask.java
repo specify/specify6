@@ -319,13 +319,13 @@ public class StatsTrackerTask extends BaseTask
      */
     protected int addStat(final String statName, final Vector<NameValuePair> statsList, final String sql)
     {
-        int count = 0;
+        Integer count = 0;
         if (sql != null)
         {
             count = BasicSQLUtils.getCount(sql);
             statsList.add(new NameValuePair(statName, Integer.toString(count)));
         }
-        return count;
+        return count != null ? count : 0;
     }
     
     /**

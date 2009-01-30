@@ -417,7 +417,6 @@ public class AppPrefsCache
         if (dateEntry != null)
         {
             return dateEntry.getDateWrapper();
-            
         }
         // else
         dateEntry = instance.new DateFormatCacheEntry(getDefaultDatePattern(), section, pref, attrName);
@@ -460,11 +459,24 @@ public class AppPrefsCache
     {
         protected DateWrapper dateWrapper;
         
-        public DateFormatCacheEntry(final SimpleDateFormat simpleDateFormat, String attrName, String value, String defValue)
+        public DateFormatCacheEntry(final SimpleDateFormat simpleDateFormat, 
+                                    final String attrName, 
+                                    final String value, 
+                                    final String defValue)
         {
             super(attrName, value, defValue);
             
             dateWrapper = new DateWrapper(simpleDateFormat);
+        }
+        
+        public DateFormatCacheEntry(final DateWrapper dateWrapper, 
+                                    final String attrName, 
+                                    final String value, 
+                                    final String defValue)
+        {
+            super(attrName, value, defValue);
+            
+            this.dateWrapper = dateWrapper;
         }
         
         @Override
@@ -478,6 +490,14 @@ public class AppPrefsCache
         public DateWrapper getDateWrapper()
         {
             return dateWrapper;
+        }
+
+        /**
+         * @param dateWrapper the dateWrapper to set
+         */
+        public void setDateWrapper(DateWrapper dateWrapper)
+        {
+            this.dateWrapper = dateWrapper;
         }
     }
 }

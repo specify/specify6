@@ -189,7 +189,7 @@ public interface UIFieldFormatterIFace
      * @param data the value to be formatted
      * @return the new formatted value
      */
-    public abstract Object formatToUI(final Object data);
+    public abstract Object formatToUI(final Object...data);
 
     /**
      * @return the class that is used for generating the next number in the sequence.
@@ -263,6 +263,11 @@ public interface UIFieldFormatterIFace
      * @return the type of Part date formatter it is.
      */
     public abstract PartialDateEnum getPartialDateType();
+    
+    /**
+     * @param partialDateType the date enum
+     */
+    public abstract void setPartialDateType(PartialDateEnum partialDateType);
     
     /**
      * @return

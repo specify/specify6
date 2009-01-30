@@ -399,6 +399,7 @@ public class DatamodelGenerator
         field.setRequired(!col.nullable());
         field.setUpdatable(col.updatable());
         field.setUnique(col.unique());
+        
         return field;
     }
 
@@ -744,7 +745,7 @@ public class DatamodelGenerator
                         continue;
                     }
                     
-                    if (method.getName().equals("getAcceptedTaxon"))
+                    if (method.getName().equals("getStartDate"))
                     {
                         int x= 0;
                         x++;
@@ -780,7 +781,7 @@ public class DatamodelGenerator
                         typeClass = null;
                     }
                     
-                    // rods 07/10/08 - Used to skip all relationships that point to themslves
+                    // rods 07/10/08 - Used to skip all relationships that point to themselves
                     // that works now and is needed.
                     if (typeClass == null ||
                         typeClass == AttributeIFace.class || 
@@ -809,6 +810,20 @@ public class DatamodelGenerator
                             {
                                 field.setDesc(getFieldDesc(tableName, field.getName()));
                                 field.setNameDesc(getFieldNameDesc(tableName, field.getName()));
+                            }
+                            
+                            if (typeClass == java.util.Calendar.class)
+                            {
+                                String mName = method.getName() + "Precision";
+                                for (Method mthd : classObj.getMethods())
+                                {
+                                    if (mthd.getName().equals(mName))
+                                    {
+                                        field.setPartialDate(true);
+                                        field.setDatePrecisionName(field.getName()+ "Precision");
+                                        break;
+                                    }
+                                }
                             }
                             table.addField(field);
                         }

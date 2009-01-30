@@ -50,9 +50,6 @@
     <external>edu.ku.brc.specify.ui.CatalogNumberStringUIFieldFormatter</external>
   </format>
 
-  <format system="true" name="Date" class="java.util.Date" type="date" partialdate="Full"/>
-  
-
   <format system="true" name="SearchDate" class="java.util.Date" type="date" partialdate="Full">
     <field type="year" size="4" value="YYYY"/>
     <field type="separator" size="1" value="-"/>
@@ -109,12 +106,22 @@
 
   <format system="true" name="NumericShort" class="java.lang.Short" type="numeric">
   </format>
-
+  
+   <!-- ********** Dates ********** -->
+  <format system="true" name="Date" class="java.util.Date" type="date" partialdate="Full"/>
+  
+  <format system="true" name="PartialDate" class="java.util.Date" type="date" partialdate="Full">
+    <external>edu.ku.brc.specify.ui.PartialDateFormatter</external>
+  </format>
+  
   <format system="true" name="PartialDateMonth" class="java.util.Date" type="date" partialdate="Month">
+    <external>edu.ku.brc.specify.ui.PartialDateFormatter</external>
   </format>
 
   <format system="true" name="PartialDateYear" class="java.util.Date" type="date" partialdate="Year">
+    <external>edu.ku.brc.specify.ui.PartialDateFormatter</external>
   </format>
 
+  
 
 </formats>

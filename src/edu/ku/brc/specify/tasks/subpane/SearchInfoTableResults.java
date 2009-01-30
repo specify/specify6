@@ -65,12 +65,8 @@ public class SearchInfoTableResults extends ResultSetTableModel
                 try
                 {
                     Thread.sleep(50);
-                } catch (Exception ex)
-                {
-                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SearchInfoTableResults.class, ex);
-                    
-                }
+                } catch (Exception ex) {}
+                
                 return null;
             }
             

@@ -248,7 +248,9 @@ public class DBTableIdMgr
                                                                 getAttr(irNode, "required", false), //$NON-NLS-1$
                                                                 getAttr(irNode, "updatable", false), //$NON-NLS-1$
                                                                 getAttr(irNode, "unique", false), //$NON-NLS-1$
-                                                                getAttr(irNode, "indexed", false)); //$NON-NLS-1$
+                                                                getAttr(irNode, "indexed", false), //$NON-NLS-1$
+                                                                getAttr(irNode, "partialDate", false), //$NON-NLS-1$
+                                                                getAttr(irNode, "datePrecisionName", null)); //$NON-NLS-1$
                         // This done to cache the original setting.
                         fieldInfo.setRequiredInSchema(fieldInfo.isRequired());
                         tblInfo.addField(fieldInfo);
@@ -274,15 +276,15 @@ public class DBTableIdMgr
 
 		} catch (java.lang.NumberFormatException numEx)
 		{
-    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DBTableIdMgr.class, numEx);
+		    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+		    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DBTableIdMgr.class, numEx);
 			log.error("Specify datamodel input file: " + DatamodelHelper.getDatamodelFilePath() //$NON-NLS-1$
 					+ " failed to provide valid table id for class/table:" + classname); //$NON-NLS-1$
 			log.error(numEx);
 		} catch (Exception ex)
 		{
-    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DBTableIdMgr.class, ex);
+		    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+		    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DBTableIdMgr.class, ex);
 			log.error(ex);
 			ex.printStackTrace();
 		}

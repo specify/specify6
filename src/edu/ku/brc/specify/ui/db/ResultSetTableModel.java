@@ -23,12 +23,10 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
 import java.util.Vector;
 
-import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
 import org.apache.commons.lang.StringUtils;
@@ -158,9 +156,9 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
     	startDataAquisition(doSequentially);
     }
     /**
-     * @param doSequentially
+     * @param doSequentiallyArg
      */
-    protected void startDataAquisition(final boolean doSequentially)
+    protected void startDataAquisition(final boolean doSequentiallyArg)
     {
         //System.out.println("\n"+results.getTitle()+" " +results.isHQL());
         if (statusBar != null)
@@ -184,7 +182,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
             {
                 jpaQuery = new JPAQuery(sqlStr, this);
                 jpaQuery.setParams(results.getParams());
-                if (doSequentially)
+                if (doSequentiallyArg)
                 {
                     jpaQuery.execute();
                 } else
@@ -196,7 +194,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
         } else
         {
             SQLExecutionProcessor sqlProc = new SQLExecutionProcessor(this, results.getSQL(results.getSearchTerm(), ids));
-            if (doSequentially)
+            if (doSequentiallyArg)
             {
                 sqlProc.execute();
                 
@@ -537,7 +535,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.SQLExecutionListener#exectionDone(edu.ku.brc.dbsupport.SQLExecutionProcessor, java.sql.ResultSet)
      */
-    //@Override
+    @Override
     //@SuppressWarnings("null")
     public synchronized void exectionDone(final SQLExecutionProcessor process, final ResultSet resultSet)
     {
@@ -567,9 +565,10 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                 ResultSetMetaData metaData = resultSet.getMetaData();
                 
                 // Composite
-                boolean                hasCompositeObj = false;
-                DataObjSwitchFormatter formatterObj    = null;
-                Object                 compObj         = null;
+                boolean                hasCompositeObj  = false;
+                DataObjSwitchFormatter dataObjFormatter = null;
+                UIFieldFormatterIFace  formatter        = null;
+                Object                 compObj          = null;
                 
                 // Aggregates
                 ERTICaptionInfo        aggCaption = null;
@@ -619,21 +618,25 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                      {
                          // OK, now aggregation but we will be rolling up multiple columns into a single object for formatting
                          // We need to get the formatter to see what the Class is of the object
-                         hasCompositeObj = true;
-                         aggCaption      = caption;
-                         formatterObj    = caption.getDataObjFormatter();
-                         if (formatterObj != null)
+                         hasCompositeObj  = true;
+                         aggCaption       = caption;
+                         dataObjFormatter = caption.getDataObjFormatter();
+                         if (dataObjFormatter != null)
                          {
-                             if (formatterObj.getDataClass() != null)
+                             if (dataObjFormatter.getDataClass() != null)
                              {
-                                 aggSetter = DataObjectSettableFactory.get(formatterObj.getDataClass().getName(), "edu.ku.brc.af.ui.forms.DataSetterForObj");
+                                 aggSetter = DataObjectSettableFactory.get(dataObjFormatter.getDataClass().getName(), "edu.ku.brc.af.ui.forms.DataSetterForObj");
                              } else
                              {
                                  log.error("formatterObj.getDataClass() was null for "+caption.getColName());
                              }
                          } else
                          {
-                             log.error("DataObjFormatter was null for "+caption.getColName());
+                             formatter = caption.getUiFieldFormatter();
+                             if (formatter == null)
+                             {
+                                 log.error("DataObjFormatter was null for "+caption.getColName());
+                             }
                          }
                          
                      }
@@ -697,6 +700,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                 // so this code knows when it is doing an aggregation, so it knows to only add a new row to the display-able
                 // results when primary id changes.
                 
+                DataObjFieldFormatMgr dataObjMgr = DataObjFieldFormatMgr.getInstance();
                 Vector<Object> row       = null;
                 boolean        firstTime = true;
                 int            prevId    = Integer.MAX_VALUE;  // really can't assume any value but will choose Max
@@ -724,7 +728,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                             {
                                 int aggInx = captions.indexOf(aggCaption);
                                 row.remove(aggInx);
-                                row.insertElementAt(DataObjFieldFormatMgr.getInstance().aggregate(aggList, aggCaption.getAggClass()), aggInx);
+                                row.insertElementAt(dataObjMgr.aggregate(aggList, aggCaption.getAggClass()), aggInx);
 
                                 if (aggListRecycler != null)
                                 {
@@ -759,7 +763,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                         {
                             if (hasCompositeObj) // just doing a Composite
                             {
-                                if (aggSetter != null && row != null && formatterObj != null)
+                                if (aggSetter != null && row != null && dataObjFormatter != null)
                                 {
                                     if (compObj == null)
                                     {
@@ -772,8 +776,19 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                                     }
                                     row.add(DataObjFieldFormatMgr.getInstance().format(compObj, compObj.getClass()));
                                     
-                                } else
+                                } else if (formatter != null)
                                 {
+                                    int      len = aggCaption.getColInfoList().size();
+                                    Object[] val = new Object[len];
+                                    int      i   = 0;
+                                    for (ERTICaptionInfo.ColInfo colInfo : aggCaption.getColInfoList())
+                                    {
+                                        val[i++] = resultSet.getObject(colInfo.getPosition()+posIndex+1);
+                                    }
+                                    row.add(formatter.formatToUI(val));
+                                    
+                                } else
+                                {  
                                     log.error("Aggregator is null! ["+aggCaption.getAggregatorName()+"] or row or aggList");
                                 }
                             } else if (aggSetter != null && row != null && aggList != null) // Doing an Aggregation
@@ -863,7 +878,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.SQLExecutionListener#executionError(edu.ku.brc.dbsupport.SQLExecutionProcessor, java.lang.Exception)
      */
-    //@Override
+    @Override
     public synchronized void executionError(SQLExecutionProcessor process, Exception ex)
     {
         if (statusBar != null)
@@ -928,10 +943,13 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                     Vector<Object> row = new Vector<Object>(rowObj.getClass().isArray() ? ((Object[])rowObj).length : 1);
                     if (rowObj != null && rowObj.getClass().isArray())
                     {
-                        int col = 0;
-                        Iterator<ERTICaptionInfo> cols = captions.iterator();                        
-                        for (Object colObj : (Object[])rowObj)
+                        Object[] rowCols = (Object[])rowObj;
+                        int capInx = 0;
+                        for (int col=0;col<rowCols.length;col++)
                         {
+                            Object          colObj  = rowCols[col];
+                            ERTICaptionInfo capInfo = captions.get(capInx);
+                            
                             if (col == 0)
                             {
                                 if (colObj instanceof Integer)
@@ -941,16 +959,32 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                                 } else
                                 {
                                     //log.error("First Column must be Integer id! ["+colObj+"]");
-                                    row.add(cols.next().processValue(colObj));
+                                    row.add(capInfo.processValue(colObj));
+                                    capInx++;
                                 }
+                                
+                            } else if (capInfo.getColName() == null && 
+                                       capInfo.getColInfoList().size() > 0)
+                            {
+                                int      len = capInfo.getColInfoList().size();
+                                Object[] val = new Object[len];
+                                for (int i=0;i<capInfo.getColInfoList().size();i++)
+                                {
+                                    val[i] = capInfo.processValue(rowCols[col+i]);
+                                }
+                                row.add(capInfo.getUiFieldFormatter().formatToUI(val));
+                                col += capInfo.getColInfoList().size() - 1;
+                                capInx++;
+                                
                             } else
                             {
-                                Object obj = cols.next().processValue(colObj);
+                                Object obj = capInfo.processValue(colObj);
                                 row.add(obj);
                                 if (doDebug) log.debug("*** 2 Adding id["+obj+"]");
+                                capInx++;
                             }
-                            col++;
-                        }
+                            
+                        } // for
                     } else
                     {
                         row.add(rowObj);
@@ -982,7 +1016,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.CustomQueryListener#executionError(edu.ku.brc.dbsupport.CustomQuery)
      */
-    //@Override
+    @Override
     public void executionError(CustomQueryIFace customQuery)
     {
         UIRegistry.getStatusBar().incrementValue(getClass().getSimpleName());

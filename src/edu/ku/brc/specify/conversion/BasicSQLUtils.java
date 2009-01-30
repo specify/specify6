@@ -446,7 +446,7 @@ public class BasicSQLUtils
             }
             rs.close();
 
-        } catch (SQLException ex)
+        } catch (Exception ex)
         {
             ex.printStackTrace();
             

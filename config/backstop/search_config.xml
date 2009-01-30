@@ -61,6 +61,7 @@
  collectingevent.CollectingEventID, 
  locality.LocalityName, 
  collectingevent.StartDate, 
+ collectingevent.StartDatePrecision, 
  collectingevent.EndDate, 
  locality.Latitude1,
  locality.Longitude1, 
@@ -73,7 +74,10 @@
                 <captions>
                     <caption tableid="10" col="CollectingEventID" visible="false"/>
                     <caption tableid="2" col="LocalityName"/>
-                    <caption tableid="10" col="StartDate"/>
+                    <caption tableid="10" formatter="PartialDate">
+                        <col name="StartDate"          field="startDate"/>
+                        <col name="StartDatePrecision" field="startDatePrecision"/>
+                    </caption>
                     <caption tableid="10" col="EndDate"/>
                     <caption tableid="2" col="Latitude1"/>
                     <caption tableid="2" col="Longitude1"/>
@@ -93,6 +97,7 @@
  collectionobject.CollectionObjectID, 
  CatalogNumber, 
  CatalogedDate, 
+ CatalogedDatePrecision, 
  FullName, 
  %s 
  From collectionobject 
@@ -103,7 +108,10 @@
                 <captions>
                     <caption tableid="1" col="collectionobject.CollectionObjectID" visible="false"/>
                     <caption tableid="1" col="CatalogNumber" formatter="CatalogNumber"/>
-                    <caption tableid="1" col="CatalogedDate"/>
+                    <caption tableid="1" formatter="PartialDate">
+                        <col name="CatalogedDate"          field="catalogedDate"/>
+                        <col name="CatalogedDatePrecision" field="catalogedDatePrecision"/>
+                    </caption>
                     <caption tableid="4" col="FullName" key="TaxonName"/>
                 </captions>
             </detailView>
@@ -124,6 +132,7 @@
  locality.LocalityName,
  CatalogNumber,
  CatalogedDate,
+ CatalogedDatePrecision,
  StartDate,
  taxon.FullName,
  %s
@@ -139,7 +148,10 @@
                     <caption tableid="3" col="geography.FullName"    key="Geography"/>
                     <caption tableid="2" col="locality.LocalityName"/>
                     <caption tableid="1" col="CatalogNumber" formatter="CatalogNumber"/>
-                    <caption tableid="1" col="CatalogedDate"/>
+                    <caption tableid="1" formatter="PartialDate">
+                        <col name="CatalogedDate"          field="catalogedDate"/>
+                        <col name="CatalogedDatePrecision" field="catalogedDatePrecision"/>
+                    </caption>
                     <caption tableid="10" col="StartDate"/>
                     <caption tableid="4" col="taxon.FullName"        key="TaxonName"/>
                 </captions>
@@ -159,6 +171,7 @@
  collectionobject.CollectionObjectID,
  CatalogNumber,
  CatalogedDate,
+ CatalogedDatePrecision,
  StartDate,
  agent.LastName,
  agent.FirstName,
@@ -181,7 +194,10 @@
                 <captions>
                     <caption tableid="1"  col="collectionobject.CollectionObjectID" visible="false"/>
                     <caption tableid="1"  col="CatalogNumber"   formatter="CatalogNumber"/>
-                    <caption tableid="1"  col="CatalogedDate"/>
+                    <caption tableid="1" formatter="PartialDate">
+                        <col name="CatalogedDate"          field="catalogedDate"/>
+                        <col name="CatalogedDatePrecision" field="catalogedDatePrecision"/>
+                    </caption>
                     <caption tableid="10" col="StartDate"/>
                     <caption tableid="10" key="Collectors">
                         <agg class="edu.ku.brc.specify.datamodel.Collector" aggregator="Collector" ordercol="collector.OrderNumber"/>
@@ -299,6 +315,7 @@
  collectionobject.CollectionObjectID, 
  CatalogNumber, 
  CatalogedDate, 
+ CatalogedDatePrecision, 
  FullName, 
  %s 
  From collectionobject 
@@ -313,7 +330,10 @@
                 <captions>
                     <caption tableid="1" col="collectionobject.CollectionObjectID" visible="false"/>
                     <caption tableid="1" col="CatalogNumber" formatter="CatalogNumber"/>
-                    <caption tableid="1" col="CatalogedDate"/>
+                    <caption tableid="1" formatter="PartialDate">
+                        <col name="CatalogedDate"          field="catalogedDate"/>
+                        <col name="CatalogedDatePrecision" field="catalogedDatePrecision"/>
+                    </caption>
                     <caption tableid="4" col="FullName" key="TaxonName"/>
                 </captions>
             </detailView>
@@ -410,6 +430,7 @@
  collectionobject.CollectionObjectID, 
  collectionobject.CatalogNumber, 
  collectingevent.StartDate, 
+ collectingevent.StartDatePrecision, 
  locality.LocalityName, 
  locality.Latitude1, 
  locality.Longitude1,
@@ -423,7 +444,10 @@
                 <captions>
                     <caption tableid="1" col="CollectionObjectID" visible="false"/>
                     <caption tableid="1" col="CatalogNumber" formatter="CatalogNumber"/>
-                    <caption tableid="10" col="StartDate"/>
+                    <caption tableid="10" formatter="PartialDate">
+                        <col name="StartDate"          field="startDate"/>
+                        <col name="StartDatePrecision" field="startDatePrecision"/>
+                    </caption>
                     <caption tableid="2" col="LocalityName"/>
                     <caption tableid="2" col="Latitude1"/>
                     <caption tableid="2" col="Longitude1"/>

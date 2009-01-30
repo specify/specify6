@@ -1012,9 +1012,9 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                 
             } catch (SQLException ex)
             {
+                ex.printStackTrace();
                 edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ExpressSearchTask.class, ex);
-                ex.printStackTrace();
             }
         }
         sqlProcessorList.remove(process);

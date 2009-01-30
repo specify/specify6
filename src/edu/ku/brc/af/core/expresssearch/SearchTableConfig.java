@@ -271,6 +271,14 @@ public class SearchTableConfig implements DisplayOrderingIFace,
                 sqlStr.append(tableInfo.getAbbrev()); 
                 sqlStr.append('.'); 
                 sqlStr.append(field.getFieldInfo().getName());
+                
+                if (field.getFieldInfo().isPartialDate())
+                {
+                    sqlStr.append(',');
+                    sqlStr.append(tableInfo.getAbbrev()); 
+                    sqlStr.append('.'); 
+                    sqlStr.append(field.getFieldInfo().getDatePrecisionName());
+                }
             }
         }
         

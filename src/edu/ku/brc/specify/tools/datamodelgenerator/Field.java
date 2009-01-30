@@ -23,6 +23,8 @@ public class Field implements Comparable<Field>
     protected boolean isRequired;
     protected boolean isUpdatable;
     protected boolean isUnique;
+    protected boolean isPartialDate;
+    protected String  datePrecisionName;
     
     protected LocalizedStrIFace desc;
     protected LocalizedStrIFace nameDesc;
@@ -227,6 +229,38 @@ public class Field implements Comparable<Field>
     public void setNameDesc(LocalizedStrIFace nameDesc)
     {
         this.nameDesc = nameDesc;
+    }
+
+    /**
+     * @return the isPartialDate
+     */
+    public boolean isPartialDate()
+    {
+        return isPartialDate;
+    }
+
+    /**
+     * @param isPartialDate the isPartialDate to set
+     */
+    public void setPartialDate(boolean isPartialDate)
+    {
+        this.isPartialDate = isPartialDate;
+    }
+
+    /**
+     * @return the datePrecisionName
+     */
+    public String getDatePrecisionName()
+    {
+        return datePrecisionName;
+    }
+
+    /**
+     * @param datePrecisionName the datePrecisionName to set
+     */
+    public void setDatePrecisionName(String datePrecisionName)
+    {
+        this.datePrecisionName = datePrecisionName;
     }
 
     

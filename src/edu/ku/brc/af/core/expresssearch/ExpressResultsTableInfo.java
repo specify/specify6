@@ -144,6 +144,10 @@ public class ExpressResultsTableInfo
                 {
                     captionInfo.add(capInfo);
                     capInfo.setPosIndex(i);
+                    if (capInfo.getColName() == null && capInfo.getColInfoList().size() > 0)
+                    {
+                        i += capInfo.getColInfoList().size() - 1;
+                    }
                 } else
                 {
                     capInfo.setPosIndex(-1);

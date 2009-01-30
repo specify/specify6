@@ -598,6 +598,16 @@
         </switch>
     </format>
     
+    <format
+        name="CollectingEventStartDate"
+        class="edu.ku.brc.specify.datamodel.CollectingEvent"
+        default="false"
+        >
+        <switch single="true">
+            <external class="edu.ku.brc.specify.ui.CollectingEventDataObjFmt"/>
+        </switch>
+    </format>
+    
     <aggregators>
         <aggregator name="AccessionAuthorization" 
             class="edu.ku.brc.specify.datamodel.AccessionAuthorization"
