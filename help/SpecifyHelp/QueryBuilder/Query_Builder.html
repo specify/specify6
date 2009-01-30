@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <link href="../../main.css" rel="stylesheet" type="text/css" media="screen"></link>
-<title>Importing a Taxon Tree</title>
+<title>Query Builder</title>
 </head>
 
 <BODY BGCOLOR=#ffffff>
@@ -12,9 +12,9 @@
   </tr>
 </table>
 <h2><strong> <img src="../../images/query2_32x32.png" width="32" height="32" /> Query</strong> Builder </h2>
-<p>A query is a precise request for information retrieval. The Query Builder (Search in 5.0) in Specify 6 puts the power of the search criteria into the hands of the user by offering condition rows for the fields within Specify. </p>
+<p>The purpose of entering data into the Specify database is to be able to retrieve that data when you need it. Specify's Query builder offers a flexible interface for defining and running searches. Queries are a precise request for information retrieval and can restrict the type of returned records based on the contents of almost any of Specify's  data fields. </p>
 <p>Open the Query Builder by clicking the <img src="../../images/query20x20.png" width="20" height="20" /> (Query icon) on the Task Bar.</p>
-<p>The Sidebar displays a list of frequently used tables to begin the query configuration. Less common tables are found by clicking  <span class="MichaelsChanges"><img src="../../images/more_tables.png" width="20" height="20" />***(This is a broken image for me)*** </span>(More Tables)  in the sidebar and choosing a table from the pop-up dialog. </p>
+<p>The Sidebar displays a list of frequently used tables to begin the query configuration. Less common tables are found by clicking <img src="../../images/more_tables.png" width="20" height="20" /> (More Tables)  in the sidebar and choosing a table from the pop-up dialog. </p>
 <p>A <strong><a name="query_creators"></a>Query Creators  Configuration</strong> tool gives access to less frequently used tables and also allows the Sidebar and More Tables lists to be interchanged and rearranged:</p>
 <p>Right-button-click an open section of the sidebar to activate the Context Menu.</p>
 <p>Choose <em>Configure</em><em> Query Creators</em> to open the Configure New Queries dialog.</p>
@@ -58,13 +58,13 @@
     <td width="77%"><u><strong>Available for Field Type</strong></u></td>
   </tr>
   <tr>
-    <td>Not</td>
+    <td><strong>Not</strong></td>
     <td>&nbsp;</td>
     <td>Switches the operator into its opposite. (example not =)</td>
     <td>All</td>
   </tr>
   <tr>
-    <td>Operator</td>
+    <td><strong>Operator</strong></td>
     <td>&nbsp;</td>
     <td>Finds all contents for which the selected field is Yes, No or Empty.</td>
     <td>&nbsp;</td>
@@ -126,7 +126,7 @@
   <tr>
     <td>&nbsp;</td>
     <td>Empty</td>
-    <td>It is important to note that Empty is a Condition and not the same as a blank Condition. </td>
+    <td>It is important to note that Empty is a Condition and not the same as a blank Condition. A Condition that is left blank will be included in the results but not in the search, a Condition that <em>Empty</em> will only return records that contain an empty field.</td>
     <td>Number, Check Box,  Text</td>
   </tr>
   <tr>
@@ -142,13 +142,13 @@
     <td>Check Box </td>
   </tr>
   <tr>
-    <td>Criteria</td>
+    <td><strong>Criterion</strong></td>
     <td>&nbsp;</td>
-    <td>Criterion is entered into this box, if there is more than one (Between) each must be separated by a comma. The Query Builder is case sensitive, so enter criteria as it appears in the field. </td>
+    <td>Criteria is entered into this box. If the operator is 'Between' two boxes will display for entering both criteria.</td>
     <td>Date, Number, Text</td>
   </tr>
   <tr>
-    <td>Sort</td>
+    <td><strong>Sort</strong></td>
     <td>&nbsp;</td>
     <td>Allows the results to be sorted.</td>
     <td>All</td>
@@ -172,19 +172,19 @@
     <td>&nbsp;</td>
   </tr>
   <tr>
-    <td>Show</td>
+    <td><strong>Show</strong></td>
     <td>&nbsp;</td>
     <td>Includes the field in the results. </td>
     <td>All</td>
   </tr>
   <tr>
-    <td>Prompt</td>
+    <td><strong>Prompt</strong></td>
     <td>&nbsp;</td>
     <td>This will provide a 'prompt' dialog which allows the Query Expression to be customized each time a Report is run on the Query. </td>
     <td>All</td>
   </tr>
   <tr>
-    <td>Always</td>
+    <td><strong>Always</strong></td>
     <td>&nbsp;</td>
     <td><p>Includes the Query Condition when running a Report by dropping a Record Set onto it (in the Report Sidebar). If 'Always' is not checked then the resulting Report will include all record ID's rather than only those matching the Query Condition. This is particularly useful when searching Prep Types and Current Determinations. </p>    </td>
     <td>All</td>
@@ -235,23 +235,24 @@
   </tr>
   
   <tr>
-    <td>Search Synonyms checkbox</td>
+    <td><strong>Search Synonyms</strong> (checkbox)</td>
     <td>Includes synonyms in the query and query results.</td>
   </tr>
   <tr>
-    <td>Distinct checkbox</td>
+    <td><strong>Distinct</strong> (checkbox)</td>
     <td>Returns unique results only.</td>
   </tr>
   <tr>
-    <td>Count checkbox</td>
+    <td><strong>Count</strong> (checkbox)</td>
     <td>Gives a count of the results in a pop up dialog. For large queries the count will return before the full results. If only a count was desired then click the Cancel button on the dialog the cancel the rest of the results. </td>
   </tr>
   <tr>
-    <td>Search button</td>
+    <td><strong>Search</strong> (button)</td>
     <td>Engages the query.</td>
   </tr>
   <tr>
-    <td>Save / Save As toggle button</td>
+    <td><strong>Save / Save As</strong> <br />
+    (toggle button)</td>
     <td>Click the Save button to save the query as the same name or click the <img src="../../images/Down16x16.png" width="16" height="16" /> (toggle) button to choose Save As and rename the query. Saved queries appear in the Sidebar and can be reused.</td>
   </tr>
 </table>
@@ -296,19 +297,19 @@
     <td width="76%"><u><strong>Result</strong></u></td>
   </tr>
   <tr>
-    <td><div align="center">Configure Query Creators</div></td>
+    <td><div align="center"><strong>Configure Query Creators</strong></div></td>
     <td>Opens a Configuration tool for adding, removing or reordering the primary tables in either the Sidebar  or  More Tables lists. This is explained <a href="#query_creators"> Query Creators Configuration</a>.</td>
   </tr>
   <tr>
-    <td><div align="center">Configure Queries</div></td>
+    <td><div align="center"><strong>Configure Queries</strong></div></td>
     <td>Opens a Configuration tool for including the saved Queries in either the Sidebar or More Queries lists. This configuration tool works the same as <a href="#query_creators">Query Creators Configuration</a> above.</td>
   </tr>
   <tr>
-    <td><p align="center">Import Queries</p>    </td>
+    <td><p align="center"><strong>Import Queries</strong></p>    </td>
     <td>Opens a file directory to find the Query in the local file system.</td>
   </tr>
   <tr>
-    <td><div align="center">Export Queries</div></td>
+    <td><div align="center"><strong>Export Queries</strong></div></td>
     <td>Opens a save dialog to save the Query in a location on the local file system.</td>
   </tr>
 </table>
@@ -324,7 +325,7 @@
 </ol>
 <p><em><strong>Note:</strong></em> When importing queries that have the same name as existing queries, Specify will simply add a number (2) to the import query name.</p>
 <p>&nbsp;</p>
-<p>Export</p>
+<p><u>Export</u></p>
 <p>To export a Query: </p>
 <ol>
   <li>Right-button-Click in the Sidebar, then choose <em>Export Queries</em> in the context menu.</li>

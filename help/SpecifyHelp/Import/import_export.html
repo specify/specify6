@@ -1,0 +1,92 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<link href="../../main.css" rel="stylesheet" type="text/css" media="screen"></link>
+<title>Import and Export Forms</title>
+<style type="text/css">
+<!--
+..style8 {font-size: xx-large}
+-->
+</style>
+</head>
+
+<BODY BGCOLOR=#ffffff>
+<table width="100%" border="0" background="../../images/topbar.png">
+  <tr>
+    <td>&nbsp;</td>
+  </tr>
+</table>
+<h2><strong>Import/Export</strong> </h2>
+<p>At this time Specify 6 does not include a Form Editor, as was found in Specify 5 Customize Forms. The forms have been created programmatically to be extremely flexible and can be exported as xml and either edited by on-site staff or emailed to the Specify staff for assistance with form editing and customization. Forms are imported and exported using the Resource Import/Export dialog.</p>
+<p>Choosing <em>System &gt; Resource Import/Export</em> to open the Import/Export dialog.</p>
+<p>Specify implements a heirachical system which limits the accesibility of the forms. This allows forms to be changed and then implemented for  those users who wish to use a particular form. When accessing forms, Specify starts at the Personal level, takes the forms, then moves to the next level. When duplicate forms are encountered the forms for the first level are kept and the higher level forms are ignored.</p>
+<table width="71%" border="1" cellspacing="2" cellpadding="6">
+  <tr>
+    <td width="26%"><u><strong>Level</strong></u></td>
+    <td width="47%"><u><strong>Access</strong></u></td>
+    <td width="27%"><u><strong>Import</strong></u></td>
+    <td width="27%"><u><strong>Export</strong></u></td>
+  </tr>
+  <tr>
+    <td>Personal</td>
+    <td>Accessed by the user only.</td>
+    <td>Yes</td>
+    <td>Yes</td>
+  </tr>
+  <tr>
+    <td>User Type</td>
+    <td>Accessed by the user and User Type.</td>
+    <td>Yes</td>
+    <td>Yes</td>
+  </tr>
+  <tr>
+    <td>Collection</td>
+    <td>Accessed by the user, User Type and anyone in the collection.</td>
+    <td>Yes</td>
+    <td>Yes</td>
+  </tr>
+  <tr>
+    <td>Discipline</td>
+    <td>Accessed by the user, user type, and anyone in the discipline.</td>
+    <td>Yes</td>
+    <td>Yes</td>
+  </tr>
+  <tr>
+    <td>Common</td>
+    <td>Accessed by all users.</td>
+    <td>Yes</td>
+    <td>Yes</td>
+  </tr>
+  <tr>
+    <td>Backstop</td>
+    <td>This includes system files for the form system and is available to everyone. </td>
+    <td>No</td>
+    <td>No</td>
+  </tr>
+</table>
+<p>Forms can be exported, changed and then imported as a new version of the same form, or saved as a new form and added to the form system. </p>
+<p>Forms do not export or import individually, but as a form set. The xml file contains all the forms for a particular level.</p>
+<p>&nbsp;</p>
+<p><strong>Export</strong></p>
+<ol>
+  <li>Choose the level at which the forms are located.</li>
+  <li>Choose  a form set  to export.</li>
+  <li>Click the <em>Export</em> button.</li>
+  <li>Choose a name and path in the resulting file system dialog.</li>
+</ol>
+<p>&nbsp;</p>
+<p><strong>Import</strong></p>
+<p>Resources can only be imported at the User Type and Personal level. </p>
+<ul>
+  <li>Choose the level to import the forms into.</li>
+  <li>Click the Import button.</li>
+  <li>Choose the file in the resulting file system dialog. </li>
+</ul>
+<p>&nbsp;</p>
+<p><strong>Other Resources</strong></p>
+<p>An <em>Other Resources</em> tab is also located on the Import/Export tab. Reports that have been imported can be exported from this window.</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+</BODY>
+</html>

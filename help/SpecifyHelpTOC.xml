@@ -16,7 +16,7 @@
       <tocitem text="Statistics" target="Statistics"/>
       <tocitem text="Search" target="Search"/>
 -->
-          <!-- <tocitem text="Introduction" target="Intro"/> -->
+          <tocitem text="Introduction" target="Intro"/>
 		  
 		  <tocitem text="Preferences" target="PreferencesOverview">
           	<tocitem text="EMail" target="PrefsEMail"/>
@@ -29,11 +29,11 @@
 	      </tocitem>
 	      
 	      <tocitem text="Form System" target="Using_Forms">
-		    <!-- <tocitem text="Data Entry" target="Using_Forms"/>  -->
-          	<tocitem text="Interactions" target="Interactions">
-          	    <tocitem text="Configuration" target="InteractionsConfig"/>
-          	</tocitem>
+		    <tocitem text="Data Entry" target="Data_Entry"/>
+          	<tocitem text="Interactions" target="Interactions"/>
+			<tocitem text="Using Bar Codes" target="using_barcodes"/>
 			<tocitem text="Pick List" target="Pick_List"/>
+			<tocitem text="Import and Export Forms" target="Import"/>
 	      </tocitem>
 		  
 		  <tocitem text="Trees" target="Trees_About">
@@ -42,11 +42,11 @@
 	      
 	      <tocitem text="Simple Search" target="Simple_Search">
           	<tocitem text="Configuring Simple Search" target="Simple_Search_Config"/>
-          	<tocitem text="Tell Me More" target="ESTellMeMore"/>
 	      </tocitem>
 	      
 	      <tocitem text="Query Builder" target="Query">
 		   <tocitem text="Record Sets" target="Record_Set"/>
+		   <tocitem text="Reports and Labels" target="Reports"/>
 	      </tocitem>
 	      
           <tocitem text="Plugins" target="Plugins"/>
@@ -91,7 +91,9 @@
           		<tocitem text="Record Mapping Tool" target="WorkbenchRecordMappingTool"/>
           		<tocitem text="Google Earth" target="WorkbenchGoogleEarth"/>
           		<tocitem text="Lat Long Converter" target="WorkbenchLatLongConverter"/>
+				<tocitem text="Uploading Data Set to Specify" target="uploading"/>
           </tocitem>
+		  <tocitem text="Backup and Restore" target="Restore"/>
       </tocitem>
         
     </tocitem>
