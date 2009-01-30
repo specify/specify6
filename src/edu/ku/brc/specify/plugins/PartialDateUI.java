@@ -211,8 +211,7 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
                 public void actionPerformed(ActionEvent ae)
                 {
                     JComboBox cbx       = (JComboBox)ae.getSource();
-                    Object    dataValue = isDateChanged ? ((GetSetValueIFace)currentUIV).getValue() : Calendar.getInstance();
-                    
+                    Object    dataValue = ((GetSetValueIFace)currentUIV).getValue();//isDateChanged ? ((GetSetValueIFace)currentUIV).getValue() : Calendar.getInstance();
                     currentUIV = uivs[cbx.getSelectedIndex()];
                     
                     ignoreDocChanges = true;
