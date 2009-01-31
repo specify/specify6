@@ -827,7 +827,7 @@ public class DatabaseLoginPanel extends JTiledPanel
             Pair<String, String> masterUsrPwd = masterUsrPwdProvider.getUserNamePassword(getUserName(), getPassword());
             if (StringUtils.isEmpty(masterUsrPwd.first) || StringUtils.isEmpty(masterUsrPwd.second))
             {
-                setMessage("BAD_USRPWD", true);
+                setMessage(getResourceString("BAD_USRPWD"), true);
                 return null;
             }
             usr = masterUsrPwd.first;

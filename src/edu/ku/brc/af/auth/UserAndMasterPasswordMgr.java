@@ -185,6 +185,8 @@ public class UserAndMasterPasswordMgr
      */
     protected Pair<String, String> getUserNamePasswordInternal()
     {
+        Pair<String, String> noUP = new Pair<String, String>("", "");
+        
         Boolean isLocal   = AppPreferences.getLocalPrefs().getBoolean(usersUserName+"_"+MASTER_LOCAL, null);
         String  masterKey = AppPreferences.getLocalPrefs().get(usersUserName+"_"+MASTER_PATH, null);
         
@@ -192,11 +194,11 @@ public class UserAndMasterPasswordMgr
         {
             if (!askForInfo(null, null))
             {
-                return getUserNamePassword();
+                return noUP;//getUserNamePassword();
             }
         }
         
-        Pair<String, String> noUP = new Pair<String, String>("", "");
+        
         
         if (StringUtils.isNotEmpty(masterKey))
         {
@@ -322,11 +324,8 @@ public class UserAndMasterPasswordMgr
             @Override
             protected void changed(DocumentEvent e)
             {
-                if ((isPrefBasedRB.isSelected() && !keyTxt.getText().isEmpty()) || 
-                    (isNetworkRB.isSelected() && !urlTxt.getText().isEmpty()))
-                {
-                    dlg.getOkBtn().setEnabled(true);
-                }
+                dlg.getOkBtn().setEnabled((isPrefBasedRB.isSelected() && !keyTxt.getText().isEmpty()) || 
+                                          (isNetworkRB.isSelected() && !urlTxt.getText().isEmpty()));
             }
         };
         keyTxt.getDocument().addDocumentListener(dl);
@@ -342,11 +341,17 @@ public class UserAndMasterPasswordMgr
                 createBtn.setEnabled(!isNet);  
                 urlLbl.setEnabled(isNet);  
                 urlTxt.setEnabled(isNet);
-                dlg.getOkBtn().setEnabled(true);
+                dlg.getOkBtn().setEnabled((isPrefBasedRB.isSelected() && !keyTxt.getText().isEmpty()) || 
+                                          (isNetworkRB.isSelected() && !urlTxt.getText().isEmpty()));
             }
         };
+        
         isNetworkRB.addChangeListener(chgListener);
         isPrefBasedRB.addChangeListener(chgListener);
+        
+        boolean isPref = AppPreferences.getLocalPrefs().getBoolean(usersUserName+"_"+MASTER_LOCAL, false);
+        isNetworkRB.setSelected(!isPref);
+        isPrefBasedRB.setSelected(isPref);
         
         createBtn.addActionListener(new ActionListener() {
             @Override
@@ -525,8 +530,8 @@ public class UserAndMasterPasswordMgr
         } 
         catch (MalformedURLException mue) 
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UserAndMasterPasswordMgr.class, mue);
+            //edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UserAndMasterPasswordMgr.class, mue);
             mue.printStackTrace();
         } 
         catch (IOException ioe) 

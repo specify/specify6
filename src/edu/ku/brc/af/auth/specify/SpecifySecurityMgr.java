@@ -144,8 +144,8 @@ public class SpecifySecurityMgr extends SecurityMgr
         }
         catch (SQLException ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifySecurityMgr.class, ex);
+            //edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+            //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifySecurityMgr.class, ex);
             log.error("authenticateDB - SQLException: " + ex.toString()); //$NON-NLS-1$
             log.error("authenticateDB - " + ex.getMessage()); //$NON-NLS-1$
             throw new LoginException("authenticateDB - SQLException: " + ex.getMessage()); //$NON-NLS-1$
