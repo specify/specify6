@@ -814,55 +814,61 @@ public class InteractionsTask extends BaseTask
         {
             RecordSetIFace rs = (RecordSetIFace)data;
             
+            InvoiceInfo invoiceInfo = getInvoiceInfo(rs.getDbTableId());
+            if (invoiceInfo != null)
+            {
+            	launchInvoice(invoiceInfo, rs);
+            }
+            
 //            if (rs.getDbTableId() != Loan.getClassTableId())
 //            {
 //                return;
 //            }
             
-            String fileName = fileNameArg;
-            if (fileName == null)
-            {
-                
-                List<AppResourceIFace> invoiceReports = getInvoiceAppResources();
-                if (invoiceReports.size() == 0)
-                {
-                    // XXX Need Error Dialog that there are no Invoices (can this happen?)
-                    
-                } else if (invoiceList.size() > 1) // only Count the ones that require data
-                {
-                    fileName = askForInvoiceName();
-                    
-                } else  
-                {
-                    AppResourceIFace invoiceAppRes = invoiceReports.get(0);
-                    fileName = invoiceAppRes.getName();
-                }
-            }
-
-            //XXX NOT FOR RELEASE!
-            UIRegistry.displayErrorDlg("This is only working for the default fish loan invoice.");
-            if (rs.getDbTableId() != Loan.getClassTableId())
-            {
-            	return;
-            }
-            
-            if (fileName != null)
-            {
-                // XXX For Demo purposes only we need to be able to look up report and labels
-                final CommandAction cmd = new CommandAction(ReportsBaseTask.REPORTS, ReportsBaseTask.PRINT_REPORT, rs);
-                cmd.setProperty("file", "LoanInvoice.jrxml");
-                cmd.setProperty("title", "Loan Invoice");
-                cmd.setProperty(NavBoxAction.ORGINATING_TASK, this);
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run()
-                    {
-                        CommandDispatcher.dispatch(cmd);
-                    }
-                });
-            } else
-            {
-                // XXX need error message about not having an invoice
-            }
+//            String fileName = fileNameArg;
+//            if (fileName == null)
+//            {
+//                
+//                List<AppResourceIFace> invoiceReports = getInvoiceAppResources();
+//                if (invoiceReports.size() == 0)
+//                {
+//                    // XXX Need Error Dialog that there are no Invoices (can this happen?)
+//                    
+//                } else if (invoiceList.size() > 1) // only Count the ones that require data
+//                {
+//                    fileName = askForInvoiceName();
+//                    
+//                } else  
+//                {
+//                    AppResourceIFace invoiceAppRes = invoiceReports.get(0);
+//                    fileName = invoiceAppRes.getName();
+//                }
+//            }
+//
+//            //XXX NOT FOR RELEASE!
+//            UIRegistry.displayErrorDlg("This is only working for the default fish loan invoice.");
+//            if (rs.getDbTableId() != Loan.getClassTableId())
+//            {
+//            	return;
+//            }
+//            
+//            if (fileName != null)
+//            {
+//                // XXX For Demo purposes only we need to be able to look up report and labels
+//                final CommandAction cmd = new CommandAction(ReportsBaseTask.REPORTS, ReportsBaseTask.PRINT_REPORT, rs);
+//                cmd.setProperty("file", "LoanInvoice.jrxml");
+//                cmd.setProperty("title", "Loan Invoice");
+//                cmd.setProperty(NavBoxAction.ORGINATING_TASK, this);
+//                SwingUtilities.invokeLater(new Runnable() {
+//                    public void run()
+//                    {
+//                        CommandDispatcher.dispatch(cmd);
+//                    }
+//                });
+//            } else
+//            {
+//                // XXX need error message about not having an invoice
+//            }
         }
     }
     
@@ -1263,7 +1269,6 @@ public class InteractionsTask extends BaseTask
                 
                 if (invoice == null)
                 {
-                    UIRegistry.displayErrorDlg(getResourceString("LOAN_INVOICE_REPORT_NOT_FOUND"));
                     return;
                 }
                 
@@ -1314,23 +1319,7 @@ public class InteractionsTask extends BaseTask
                             rs.setDbTableId(loan.getTableId());
                             rs.addItem(loan.getId());
                             
-                            if (invoice.getSpReport() != null)
-                            {
-                                SpReport spRep = invoice.getSpReport();
-                                QueryBldrPane.runReport(spRep, UIRegistry.getResourceString("LoanInvoice"),
-                                        rs);
-                            }
-                            else
-                            {
-                                SpAppResource rep = invoice.getSpAppResource();
-                                CommandAction cmd = new CommandAction(ReportsBaseTask.REPORTS, ReportsBaseTask.PRINT_REPORT,
-                                        rs);
-                                cmd.getProperties().put("title", rep.getName());
-                                cmd.getProperties().put("file", rep.getFileName());
-                                cmd.getProperties().put("reporttype", "report");
-                                cmd.getProperties().put("name", rep.getName());
-                                CommandDispatcher.dispatch(cmd);
-                            }
+                            launchInvoice(invoice, rs);
                 } finally
                 {
                     if (session != null)
@@ -1343,20 +1332,51 @@ public class InteractionsTask extends BaseTask
     }
     
     /**
+     * @param invoice
+     * @param rs
+     * 
+     * Builds and dispatches command to launch invoice
+     */
+    protected void launchInvoice(final InvoiceInfo invoice, final RecordSetIFace rs)
+    {
+        if (invoice.getSpReport() != null)
+        {
+            SpReport spRep = invoice.getSpReport();
+            QueryBldrPane.runReport(spRep, UIRegistry.getResourceString("LoanInvoice"),
+                    rs);
+        }
+        else
+        {
+            SpAppResource rep = invoice.getSpAppResource();
+            CommandAction cmd = new CommandAction(ReportsBaseTask.REPORTS, ReportsBaseTask.PRINT_REPORT,
+                    rs);
+            cmd.getProperties().put("title", rep.getName());
+            cmd.getProperties().put("file", rep.getFileName());
+            cmd.getProperties().put("reporttype", "report");
+            cmd.getProperties().put("name", rep.getName());
+            CommandDispatcher.dispatch(cmd);
+        }
+    }
+    
+    public InvoiceInfo getLoanReport()
+    {
+    	return getInvoiceInfo(DBTableIdMgr.getInstance().getIdByShortName("Loan"));
+    }
+    
+    /**
      * @return a loan invoice if one exists.
      * 
      * If more than one report is defined for loan then user must choose.
      * 
      * Fairly goofy code. Eventually may want to add ui to allow labeling resources as "invoice" (see printLoan()).
      */
-    public InvoiceInfo getLoanReport()
+    public InvoiceInfo getInvoiceInfo(final int invoiceTblId)
     {
         DataProviderSessionIFace session = null;
         ChooseFromListDlg<InvoiceInfo> dlg = null;
         try
         {
             session = DataProviderFactory.getInstance().createSession();
-            int loanTblId = DBTableIdMgr.getInstance().getIdByShortName("Loan");
             List<AppResourceIFace> reps = AppContextMgr.getInstance().getResourceByMimeType(ReportsBaseTask.LABELS_MIME);
             reps.addAll(AppContextMgr.getInstance().getResourceByMimeType(ReportsBaseTask.REPORTS_MIME));
             Vector<InvoiceInfo> repInfo = new Vector<InvoiceInfo>();
@@ -1383,7 +1403,7 @@ public class InteractionsTask extends BaseTask
                     	continue;
                     }
                     
-                    if (tblId.equals(loanTblId))
+                    if (tblId.equals(invoiceTblId))
                     {
                         includeIt = true;
                     }
@@ -1392,7 +1412,7 @@ public class InteractionsTask extends BaseTask
                         QueryIFace q = session.createQuery("from SpReport spr join spr.appResource apr "
                               + " join spr.query spq "
                               + "where apr.id = " + ((SpAppResource )rep).getId() 
-                              + " and spq.contextTableId = " + loanTblId, false);
+                              + " and spq.contextTableId = " + invoiceTblId, false);
                         List<?> spReps = q.list();
                         if (spReps.size() > 0)
                         {
@@ -1421,6 +1441,8 @@ public class InteractionsTask extends BaseTask
             
             if (repInfo.size() == 0)
             {
+            	UIRegistry.displayInfoMsgDlgLocalized("InteractionsTask.NoInvoiceFound", 
+                			DBTableIdMgr.getInstance().getTitleForId(invoiceTblId));
                 return null;
             }
             

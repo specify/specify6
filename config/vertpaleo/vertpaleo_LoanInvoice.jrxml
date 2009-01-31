@@ -441,7 +441,7 @@ e-mail: ABentley@ku.edu]]></text>
 					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 					<returnValue subreportVariable="lotCount" toVariable="lots"/>
 					<returnValue subreportVariable="specimenCount" toVariable="specimens"/>
-					<subreportExpression  class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "LoanInvoice_subreport1.jasper"]]></subreportExpression>
+					<subreportExpression  class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "vertpaleo_LoanInvoice_subreport1.jasper"]]></subreportExpression>
 				</subreport>
 			</band>
 		</detail>

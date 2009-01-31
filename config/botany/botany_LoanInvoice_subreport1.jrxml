@@ -36,13 +36,13 @@ FROM (SELECT e3.*, preptype.Name
 FROM (SELECT e2.*, preparation.PreparationID, preparation.Count,  preparation.PrepTypeID 
 FROM (SELECT e1.*, taxon.FullName AS TaxonFullName 
 FROM (SELECT collectionobject.CatalogNumber, collectionobject.FieldNumber, collectionobject.CollectionObjectID, collectionobject.CollectingEventID, 
-determination.TaxonID, determination.DeterminationStatusID 
+determination.PreferredTaxonID
 FROM collectionobject 
 INNER JOIN determination 
 ON collectionobject.CollectionObjectID = determination.CollectionObjectID 
-WHERE determination.DeterminationStatusID = 1) e1 
+WHERE determination.IsCurrent) e1 
 INNER JOIN taxon 
-ON e1.TaxonID = taxon.TaxonID) e2 
+ON e1.PreferredTaxonID = taxon.TaxonID) e2 
 INNER JOIN preparation 
 ON e2.CollectionObjectID = preparation.CollectionObjectID) e3 
 INNER JOIN preptype 

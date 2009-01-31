@@ -30,7 +30,7 @@
 	<queryString><![CDATA[SELECT Expr2.*, address.Address, address.Address2, address.City, address.State, address.PostalCode, address.Country 
 FROM (SELECT Expr1.*, agent.LastName, agent.FirstName, agent.MiddleInitial 
   FROM (SELECT Expr0.*, agent.LastName as prepLastName, agent.FirstName as prepFirstName, agent.MiddleInitial as prepMiddleInitial
-    FROM (SELECT loan.LoanID, loan.LoanNumber, loan.LoanDate, loan.CurrentDueDate, loan.isGift, shipment.ShipmentMethod, shipment.NumberOfPackages,
+    FROM (SELECT loan.LoanID, loan.LoanNumber, loan.LoanDate, loan.CurrentDueDate, shipment.ShipmentMethod, shipment.NumberOfPackages,
           shipment.ShippedToID, shipment.ShippedByID
           FROM loan INNER JOIN shipment ON loan.LoanID = shipment.LoanID) Expr0
     INNER JOIN agent ON Expr0.ShippedByID = agent.AgentID) Expr1
@@ -42,7 +42,6 @@ WHERE LoanID $P!{itemnum}]]></queryString>
 	<field name="LoanNumber" class="java.lang.String"/>
 	<field name="LoanDate" class="java.sql.Date"/>
 	<field name="CurrentDueDate" class="java.sql.Date"/>
-	<field name="isGift" class="java.lang.Boolean"/>
 	<field name="ShipmentMethod" class="java.lang.String"/>
 	<field name="NumberOfPackages" class="java.lang.Integer"/>
 	<field name="ShippedToID" class="java.lang.Long"/>
@@ -201,19 +200,6 @@ WHERE LoanID $P!{itemnum}]]></queryString>
 					<reportElement
 						x="380"
 						y="170"
-						width="93"
-						height="15"
-						key="staticText-8"/>
-					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
-					<textElement textAlignment="Right">
-						<font/>
-					</textElement>
-				<text><![CDATA[Category:]]></text>
-				</staticText>
-				<staticText>
-					<reportElement
-						x="380"
-						y="190"
 						width="92"
 						height="15"
 						key="staticText-9"/>
@@ -235,32 +221,6 @@ WHERE LoanID $P!{itemnum}]]></queryString>
 						<font/>
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$F{ShipmentMethod}]]></textFieldExpression>
-				</textField>
-				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
-					<reportElement
-						x="477"
-						y="170"
-						width="99"
-						height="20"
-						key="textField"/>
-					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
-					<textElement>
-						<font pdfFontName="Helvetica-Bold" size="10" isBold="true"/>
-					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[((edu.ku.brc.specify.config.Scriptlet)$P{REPORT_SCRIPTLET}).loanCategory($F{isGift})]]></textFieldExpression>
-				</textField>
-				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
-					<reportElement
-						x="477"
-						y="150"
-						width="95"
-						height="15"
-						key="textField"/>
-					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
-					<textElement>
-						<font/>
-					</textElement>
-				<textFieldExpression   class="java.lang.Integer"><![CDATA[$F{NumberOfPackages}]]></textFieldExpression>
 				</textField>
 				<staticText>
 					<reportElement
@@ -413,7 +373,7 @@ WHERE LoanID $P!{itemnum}]]></queryString>
 				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
 						x="477"
-						y="190"
+						y="170"
 						width="97"
 						height="15"
 						key="textField-3"/>
@@ -481,7 +441,7 @@ e-mail: ABentley@ku.edu]]></text>
 					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 					<returnValue subreportVariable="lotCount" toVariable="lots"/>
 					<returnValue subreportVariable="specimenCount" toVariable="specimens"/>
-					<subreportExpression  class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "LoanInvoice_subreport1.jasper"]]></subreportExpression>
+					<subreportExpression  class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "invertpaleo_LoanInvoice_subreport1.jasper"]]></subreportExpression>
 				</subreport>
 			</band>
 		</detail>
