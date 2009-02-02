@@ -1284,13 +1284,36 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         		(selectedNode == null || selectedNode.getRank() > visibleRoot.getRank()))
         {
         	TreeNode childNode; 
-        	if (selectedNode != null && selectedNode.getParentId() == visibleRoot.getId())
+        	if (selectedNode == null)
         	{
-        		childNode = selectedNode;
+        		childNode = listModel.getFirstChild(visibleRoot);
         	}
         	else
         	{
-        		childNode = listModel.getFirstChild(visibleRoot);
+        		if (selectedNode.getParentId() == visibleRoot.getId())
+        		{
+        			childNode = selectedNode;
+        		}
+        		else
+        		{
+        			//find Ancestor of selected node at new top rank for zoom,
+        			//and make it the new root.
+        			TreeNode child = selectedNode;
+        			TreeNode parent = listModel.getNodeById(selectedNode.getParentId());
+        			while (parent != null && parent.getRank() > visibleRoot.getRank())
+        			{
+        				child = parent;
+        				parent = listModel.getNodeById(parent.getParentId());
+        			}
+        			if (parent != null)
+        			{
+        				childNode = child;
+        			}
+        			else
+        			{
+        				childNode = listModel.getFirstChild(visibleRoot);
+        			}
+        		}
         	}
         	listModel.setVisibleRoot(childNode);
         
@@ -2770,7 +2793,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		TreeNode testNode = selected != null ? selected : root;
 		List<Integer> ranks =  listModel.getVisibleRanks();
 		int lowestRank = ranks.get(ranks.size()-1).intValue();
-		btn.setEnabled(lowestRank != testNode.getRank());
+		btn.setEnabled(lowestRank != testNode.getRank() || testNode != root);
 	}
 	/**
 	 * @param e
