@@ -225,13 +225,13 @@ public class ResultSetController implements ValidationListener
         
         if (addNewBtn)
         {
-            if (true)
+            if (false)
             {
                 newRecBtn = new JButton("+")
                 {
                     public void setEnabled(boolean enable)
                     {
-                        System.err.println("newRecBtn - RS: "+ formValidator.getName() + " " + newRecBtn.hashCode() + " "+enable+"  isNewObj: "+isNewObj);
+                        //log.debug("newRecBtn - RS: "+ formValidator.getName() + " " + newRecBtn.hashCode() + " "+enable+"  isNewObj: "+isNewObj);
                         if (formValidator != null && formValidator.getName() != null && formValidator.getName().equals("Collection Object"))
                         {
                             int x = 0;
@@ -290,13 +290,13 @@ public class ResultSetController implements ValidationListener
         
         if (addDelBtn)
         {
-            if (true)
+            if (false)
             {
                 delRecBtn = new JButton("-")
                 {
                     public void setEnabled(boolean enable)
                     {
-                        System.err.println("delRecBtn - RS: "+formValidator.getName() + " " + hashCode() + " "+enable);
+                        //log.debug("delRecBtn - RS: "+formValidator.getName() + " " + hashCode() + " "+enable);
                         if (formValidator != null && formValidator.getName() != null && formValidator.getName().equals("Permit"))
                         {
                             int x = 0;
@@ -527,7 +527,7 @@ public class ResultSetController implements ValidationListener
         }
         if (newRecBtn != null)
         {
-            System.err.println("updateUI - RS - formValidator.isTopLevel() "+formValidator.isTopLevel()+" isEnabled() "+formValidator.isEnabled());
+            //log.debug("updateUI - RS - formValidator.isTopLevel() "+formValidator.isTopLevel()+" isEnabled() "+formValidator.isEnabled());
             boolean enable = formValidator == null ? false : (formValidator.isTopLevel() || (formValidator.getParent() != null ? formValidator.getParent().isEnabled() : false));
             newRecBtn.setEnabled(enable);
         }

@@ -236,7 +236,7 @@ public class SQLExecutionProcessor
                 
                 dbStatement = dbConnection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
 
-                log.debug("SQL ["+sqlStr+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+                //log.debug("SQL ["+sqlStr+"]"); //$NON-NLS-1$ //$NON-NLS-2$
                 if (sqlStr.trim().toLowerCase().startsWith("select")) //$NON-NLS-1$
                 {
                     ResultSet rs = dbStatement.executeQuery(sqlStr);

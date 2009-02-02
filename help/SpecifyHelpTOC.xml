@@ -18,7 +18,7 @@
 -->
           <tocitem text="Introduction" target="Intro"/>
 		  
-		  <tocitem text="Preferences" target="PreferencesOverview">
+		  <tocitem text="Preferences">
           	<tocitem text="EMail" target="PrefsEMail"/>
           	<tocitem text="Formatting" target="PrefsFormatting"/>
           	<tocitem text="GoogleEarth" target="PrefsGoogleEarth"/>

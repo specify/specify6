@@ -233,7 +233,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
      */
     protected boolean isFormValid(final boolean checkKids)
     {
-        System.err.println("isFormValid - Name: "+name+"  enabled "+enabled+"  hasChanged "+hasChanged+"  isNewObj "+isNewObj);
+        //log.debugprintln("isFormValid - Name: "+name+"  enabled "+enabled+"  hasChanged "+hasChanged+"  isNewObj "+isNewObj);
         
         if (checkKids)
         {
@@ -245,7 +245,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
                 }
             }
         }
-        System.err.println("isFormValid - "+formValidationState);
+        //log.debug("isFormValid - "+formValidationState);
         return formValidationState == UIValidatable.ErrorType.Valid && processRulesAreOK;
     }
 
@@ -412,7 +412,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
      */
     public void setEnabled(final boolean enabled)
     {
-        log.debug("SetEnabled: "+name+" "+enabled);
+        //log.debug("SetEnabled: "+name+" "+enabled);
         
         if (this.enabled != enabled)
         {
@@ -1272,7 +1272,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
         updateValidationBtnUIState();
         
         //log.debug("UIValidator.isIgnoreAllValidation() "+UIValidator.isIgnoreAllValidation());
-        System.err.println(name+" type "+type+"  itsOKToEnable "+itsOKToEnable);
+        //log.debug(name+" type "+type+"  itsOKToEnable "+itsOKToEnable);
         if ((type == saveEnableType || type == EnableType.ValidAndChangedItems) && saveComp != null && !UIValidator.isIgnoreAllValidation())
         {
             if (itsOKToEnable)

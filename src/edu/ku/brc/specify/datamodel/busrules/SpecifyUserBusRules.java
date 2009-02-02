@@ -96,6 +96,9 @@ public class SpecifyUserBusRules extends BaseBusRules
                 showPwdBtn.setText(UIRegistry.getResourceString(currEcho == echoChar ? "SHOW_PASSWORD" : "HIDE_PASSWORD"));
             }
         });
+        
+        // For now
+        showPwdBtn.setVisible(false);
     }
 
     /**

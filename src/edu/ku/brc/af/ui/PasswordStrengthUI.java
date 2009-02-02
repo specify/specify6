@@ -69,7 +69,7 @@ public class PasswordStrengthUI extends JPanel implements UIPluginable, GetSetVa
     protected String       scoreDesc = null;
     
     /**
-     * 
+     * Constructor.
      */
     public PasswordStrengthUI()
     {

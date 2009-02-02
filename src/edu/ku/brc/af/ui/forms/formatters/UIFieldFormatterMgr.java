@@ -255,7 +255,6 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
         Vector<UIFieldFormatterIFace> list = new Vector<UIFieldFormatterIFace>();
         for (UIFieldFormatterIFace f : hash.values())
         {
-            log.debug(f.getName());
             if (f.isDate())
             {
                 boolean isPartial = f.getPartialDateType() == UIFieldFormatterIFace.PartialDateEnum.Month ||
