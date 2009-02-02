@@ -519,7 +519,7 @@ public class BuildSampleDatabase
         ////////////////////////////////
         // Create the really high-level stuff
         ////////////////////////////////
-        String           title            = props.getProperty("title",     "mr");
+        String           title            = props.getProperty("title",     "");
         String           firstName        = props.getProperty("firstName", "Test");
         String           lastName         = props.getProperty("lastName",  "User");
         String           midInit          = props.getProperty("middleInitial", "A");
@@ -6833,7 +6833,7 @@ public class BuildSampleDatabase
     {
         if (frame == null)
         {
-            frame = new ProgressFrame("Building Specify Database", "AppIcon");
+            frame = new ProgressFrame("Building Specify Database", "SpecifyLargeIcon");
             frame.pack();
         } 
         return frame;

@@ -90,6 +90,9 @@ public class IconTray extends JPanel
         this.add(listScrollPane,BorderLayout.CENTER);
     }
     
+    /* (non-Javadoc)
+     * @see java.awt.Component#addMouseListener(java.awt.event.MouseListener)
+     */
     @Override
     public synchronized void addMouseListener(MouseListener l)
     {
@@ -114,6 +117,9 @@ public class IconTray extends JPanel
         iconListWidget.removeListSelectionListener(listener);
     }
 
+    /**
+     * @return
+     */
     public FormDataObjIFace getSelectedValue()
     {
         return (FormDataObjIFace)iconListWidget.getSelectedValue();
@@ -235,6 +241,9 @@ public class IconTray extends JPanel
         return d;
     }
     
+    /**
+     * @return
+     */
     public FormDataObjIFace getSelection()
     {
         Object selection = iconListWidget.getSelectedValue();

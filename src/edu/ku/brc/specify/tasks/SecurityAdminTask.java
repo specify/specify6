@@ -183,7 +183,7 @@ public class SecurityAdminTask extends BaseTask
             
             if (newPwd1.equals(newPwd2))
             {
-                if (newPwd1.length() < pwdLen)
+                if (newPwd1.length() >= pwdLen)
                 {
                     SpecifyUser spUser    = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
                     String      username  = spUser.getName();
