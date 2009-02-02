@@ -196,7 +196,7 @@ public class ReportsBaseTask extends BaseTask
         List<TaskCommandDef> result = new LinkedList<TaskCommandDef>();
         for (AppResourceIFace ap : AppContextMgr.getInstance().getResourceByMimeType(mimeType))
         {
-            Properties params = ap.getMetaDataMap();
+        	Properties params = ap.getMetaDataMap();
 
             String tableid = params.getProperty("tableid"); //$NON-NLS-1$
             String rptType = params.getProperty("reporttype"); //$NON-NLS-1$

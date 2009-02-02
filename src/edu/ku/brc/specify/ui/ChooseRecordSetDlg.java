@@ -98,7 +98,7 @@ public class ChooseRecordSetDlg extends CustomDialog
             session = DataProviderFactory.getInstance().createSession();
             if (tableIds.size() > 0 && !(tableIds.size() == 0 && tableIds.get(0).intValue() < 0))
             {
-            	StringBuilder sb = new StringBuilder(tableIds.get(0));
+            	StringBuilder sb = new StringBuilder(tableIds.get(0).toString());
             	for (int i = 1; i < tableIds.size(); i++)
             	{
             		sb.append(",");

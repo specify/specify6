@@ -819,56 +819,6 @@ public class InteractionsTask extends BaseTask
             {
             	launchInvoice(invoiceInfo, rs);
             }
-            
-//            if (rs.getDbTableId() != Loan.getClassTableId())
-//            {
-//                return;
-//            }
-            
-//            String fileName = fileNameArg;
-//            if (fileName == null)
-//            {
-//                
-//                List<AppResourceIFace> invoiceReports = getInvoiceAppResources();
-//                if (invoiceReports.size() == 0)
-//                {
-//                    // XXX Need Error Dialog that there are no Invoices (can this happen?)
-//                    
-//                } else if (invoiceList.size() > 1) // only Count the ones that require data
-//                {
-//                    fileName = askForInvoiceName();
-//                    
-//                } else  
-//                {
-//                    AppResourceIFace invoiceAppRes = invoiceReports.get(0);
-//                    fileName = invoiceAppRes.getName();
-//                }
-//            }
-//
-//            //XXX NOT FOR RELEASE!
-//            UIRegistry.displayErrorDlg("This is only working for the default fish loan invoice.");
-//            if (rs.getDbTableId() != Loan.getClassTableId())
-//            {
-//            	return;
-//            }
-//            
-//            if (fileName != null)
-//            {
-//                // XXX For Demo purposes only we need to be able to look up report and labels
-//                final CommandAction cmd = new CommandAction(ReportsBaseTask.REPORTS, ReportsBaseTask.PRINT_REPORT, rs);
-//                cmd.setProperty("file", "LoanInvoice.jrxml");
-//                cmd.setProperty("title", "Loan Invoice");
-//                cmd.setProperty(NavBoxAction.ORGINATING_TASK, this);
-//                SwingUtilities.invokeLater(new Runnable() {
-//                    public void run()
-//                    {
-//                        CommandDispatcher.dispatch(cmd);
-//                    }
-//                });
-//            } else
-//            {
-//                // XXX need error message about not having an invoice
-//            }
         }
     }
     
@@ -2041,26 +1991,13 @@ public class InteractionsTask extends BaseTask
         {
             if (cmdAction.getData() instanceof RecordSetIFace)
             {
-//                if (((RecordSetIFace)cmdAction.getData()).getDbTableId() != cmdAction.getTableId())
-//                {
-//                    JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
-//                                                  getResourceString("ERROR_RECORDSET_TABLEID"), 
-//                                                  getResourceString("Error"), 
-//                                                  JOptionPane.ERROR_MESSAGE);
-//                }
-
                 printInvoice(null, cmdAction.getData());
-                
             } if (cmdAction.getData() instanceof CommandAction)
             {
-                String tableIDStr = cmdAction.getPropertyAsString("tableid");
-                if (StringUtils.isNotEmpty(tableIDStr) && StringUtils.isNumeric(tableIDStr))
+            	RecordSetIFace recordSet = RecordSetTask.askForRecordSet(this.printableInvoiceTblIds, null, true);
+                if (recordSet != null)
                 {
-                    RecordSetIFace recordSet = RecordSetTask.askForRecordSet(this.printableInvoiceTblIds, null);
-                    if (recordSet != null)
-                    {
-                        printInvoice(cmdAction.getPropertyAsString("file"), recordSet);
-                    }
+                	printInvoice(cmdAction.getPropertyAsString("file"), recordSet);
                 }
             }
             

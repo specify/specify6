@@ -1323,10 +1323,11 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
     {
         Vector<Integer> id = new Vector<Integer>(1);
         id.add(tableId);
-        return askForRecordSet(id, additionalRS);
+        return askForRecordSet(id, additionalRS, false);
      }
     
-    public static RecordSetIFace askForRecordSet(final Vector<Integer> tableIds, final Vector<RecordSetIFace> additionalRS)
+    public static RecordSetIFace askForRecordSet(final Vector<Integer> tableIds, final Vector<RecordSetIFace> additionalRS,
+    		final boolean msgIfNoRecordsets)
     {
         UsageTracker.incrUsageCount("RS.ASKRS");
         ChooseRecordSetDlg dlg = new ChooseRecordSetDlg(tableIds);
@@ -1348,6 +1349,10 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
         }
         
         // else
+        if (msgIfNoRecordsets)
+        {
+        	UIRegistry.displayLocalizedStatusBarText("RecordSetTask.NoRecordsets");
+        }
         return null;
     }
 }

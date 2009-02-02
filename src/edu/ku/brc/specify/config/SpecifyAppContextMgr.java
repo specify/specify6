@@ -1771,6 +1771,22 @@ public class SpecifyAppContextMgr extends AppContextMgr
         return null;
     }
 
+    /**
+     * @param appResDir
+     * @return appResDir name.
+     */
+    public String getDirName(final SpAppResourceDir appResDir)
+    {
+    	for (Map.Entry<String, SpAppResourceDir> dir : spAppResourceHash.entrySet())
+    	{
+    		if (appResDir.getSpAppResourceDirId().equals(dir.getValue().getSpAppResourceDirId()))
+    		{
+    			return dir.getKey();
+    		}
+    	}
+    	return null;
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.AppResourceDefaultMgr#getResourceAsDOM(java.lang.String)
      */

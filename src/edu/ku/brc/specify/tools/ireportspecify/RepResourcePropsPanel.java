@@ -21,9 +21,12 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.specify.config.SpecifyAppContextMgr;
+import edu.ku.brc.specify.datamodel.SpAppResource;
 import edu.ku.brc.specify.tasks.DataEntryTask;
 import edu.ku.brc.specify.tasks.DataEntryView;
 import edu.ku.brc.specify.tasks.GeographyTreeTask;
@@ -64,10 +67,52 @@ public class RepResourcePropsPanel extends JPanel
     protected JTextField titleTxt;
     protected JTextField levelTxt;
     protected JComboBox typeCombo;
-    protected JTextField resDirTxt;
+    protected JComboBox resDirCombo;
     protected JComboBox tblCombo;
     protected ReportRepeatPanel repeatPanel;
     protected JButton canceller = null;
+    
+    /**
+     * @author timo
+     *
+     *Title/Name pairs for ResourceDir list.
+     */
+    private class ResDirItem extends edu.ku.brc.util.Pair<String, String>
+    {
+    	/**
+    	 * @param title
+    	 * @param name
+    	 */
+    	public ResDirItem(final String title, final String name)
+    	{
+    		super(title, name);
+    	}
+    	
+    	/**
+    	 * @return the name of the direectory.
+    	 */
+    	public String getTitle()
+    	{
+    		return getFirst();
+    	}
+    	
+    	/**
+    	 * @return localized title for the directory.
+    	 */
+    	public String getName()
+    	{
+    		return getSecond();
+    	}
+
+		/* (non-Javadoc)
+		 * @see edu.ku.brc.util.Pair#toString()
+		 */
+		@Override
+		public String toString() 
+		{
+			return getFirst();
+		}
+    }
     
     /**
      * @param report
@@ -95,7 +140,7 @@ public class RepResourcePropsPanel extends JPanel
 //                                                                                       // typeCombo.
 
         //Hiding Collection and Level
-        String rowDefStr = showTableIds ? "p,p,p,p,p,10dlu" : "p,p,p,p,10dlu"; 
+        String rowDefStr = showTableIds ? "p,p,p,p,p,p,10dlu" : "p,p,p,p,p,10dlu"; 
 
         PanelBuilder builder = new PanelBuilder(new FormLayout("right:p, 2dlu, fill:p:grow", rowDefStr), this);
         CellConstraints cc = new CellConstraints();
@@ -126,26 +171,43 @@ public class RepResourcePropsPanel extends JPanel
         }
         builder.add(typeCombo, cc.xy(3, 3));
         
-//        builder.add(UIHelper.createLabel(UIRegistry.getResourceString("REP_RESDIR_LBL")), cc.xy(1,5));
-        resDirTxt = UIHelper.createTextField(MainFrameSpecify.DEFAULT_REPORT_RESOURCE_DIR);
-        resDirTxt.setEnabled(false);
-//        builder.add(resDirTxt, cc.xy(3, 5));
+        builder.add(UIHelper.createLabel(UIRegistry.getResourceString("REP_RESDIR_LBL")), cc.xy(1,4));
+        resDirCombo = UIHelper.createComboBox();
+        fillResDirCombo();
+        if (rep != null && rep.getAppResource() != null)
+        {
+        	SpAppResource repRes = (SpAppResource )rep.getAppResource();
+        	String name = ((SpecifyAppContextMgr )AppContextMgr.getInstance()).getDirName(repRes.getSpAppResourceDir());
+        	if (name != null)
+        	{
+        		for (int i = 0; i < resDirCombo.getItemCount(); i++)
+        		{
+        			if (name.equals(resDirCombo.getItemAt(i).toString()))
+        			{
+        				resDirCombo.setSelectedIndex(i);
+        				break;
+        			}
+        		}
+        	}
+        }
+        
+        builder.add(resDirCombo, cc.xy(3, 4));
 
         if (showTableIds)
         {
-            builder.add(UIHelper.createLabel(UIRegistry.getResourceString("REP_TBL_LBL")), cc.xy(1,4));
+            builder.add(UIHelper.createLabel(UIRegistry.getResourceString("REP_TBL_LBL")), cc.xy(1,5));
             tblCombo = UIHelper.createComboBox();
             fillTblCombo();
             tblCombo.setSelectedIndex(0);
-            builder.add(tblCombo, cc.xy(3, 4));
+            builder.add(tblCombo, cc.xy(3, 5));
         }
         
         if (rep != null)
         {
-            builder.add(UIHelper.createLabel(UIRegistry.getResourceString("REP_REPEAT_LBL")), cc.xy(1, showTableIds ? 5 : 4));
+            builder.add(UIHelper.createLabel(UIRegistry.getResourceString("REP_REPEAT_LBL")), cc.xy(1, showTableIds ? 6 : 5));
             repeatPanel = new ReportRepeatPanel(rep.getConnection(), canceller);
             repeatPanel.createUI(rep.getSpReport() == null ? null : rep.getSpReport().getRepeats());
-            builder.add(repeatPanel, cc.xy(3, showTableIds ? 5 : 4));
+            builder.add(repeatPanel, cc.xy(3, showTableIds ? 6 : 5));
         }
         else
         {
@@ -163,6 +225,15 @@ public class RepResourcePropsPanel extends JPanel
             return -1;
         }
         return ((DBTableInfo)tblCombo.getSelectedItem()).getTableId();
+    }
+    
+    /**
+     * populate resource directory combo with supported directories.
+     */
+    protected void fillResDirCombo()
+    {
+    	resDirCombo.addItem(new ResDirItem(UIRegistry.getResourceString("SpecifyAppContextMgr.Discipline"), "Discipline"));
+    	resDirCombo.addItem(new ResDirItem(UIRegistry.getResourceString("SpecifyAppContextMgr.Personal"), "Personal"));
     }
     
     /**
@@ -310,9 +381,9 @@ public class RepResourcePropsPanel extends JPanel
     /**
      * @return the resDirTxt
      */
-    public JTextField getResDirTxt()
+    public JComboBox getResDirCombo()
     {
-        return resDirTxt;
+        return resDirCombo;
     }
     
     public static void main(String args[])

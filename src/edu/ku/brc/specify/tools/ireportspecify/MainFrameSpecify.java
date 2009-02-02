@@ -98,8 +98,6 @@ public class MainFrameSpecify extends MainFrame
 
     protected static final String    REP_CHOOSE_REPORT           = "REP_CHOOSE_REPORT";
 
-    public static final String DEFAULT_REPORT_RESOURCE_DIR = "Personal";
-
     protected boolean             refreshingConnections       = false;
 
     protected static Integer      overwrittenReportId         = null;
@@ -434,8 +432,9 @@ public class MainFrameSpecify extends MainFrame
             }
             if (newRep && !result)
             {
-                //XXX - more 'Collection' hard-coding
-                AppContextMgr.getInstance().removeAppResource(DEFAULT_REPORT_RESOURCE_DIR, appRes);
+            	SpecifyAppContextMgr spMgr = (SpecifyAppContextMgr)AppContextMgr.getInstance();
+            	SpAppResource spRes = (SpAppResource )appRes;
+                spMgr.removeAppResourceSp(spRes.getSpAppResourceDir(), spRes);
             }
             session.close();
         }
@@ -520,15 +519,13 @@ public class MainFrameSpecify extends MainFrame
      */
     private AppResAndProps getAppResAndPropsForFrame(final JReportFrame jrf, boolean saveAs)
     {
-    	//XXX - hard-coded for 'Collection' directory.
         /* RULE: SpReport.name == SpAppResource.name (== jrf.getReport().name)*/
         SpReport spRep = ((ReportSpecify) jrf.getReport()).getSpReport();
         AppResourceIFace appRes = null;
         
         if (!saveAs)
     	{
-            appRes = spRep == null ? 
-    	        AppContextMgr.getInstance().getResourceFromDir(DEFAULT_REPORT_RESOURCE_DIR, jrf.getReport().getName()) :
+            appRes = spRep == null ? getRepResource(jrf.getReport().getName()) :
     	            spRep.getAppResource();
     	}
         if (appRes != null)
@@ -568,8 +565,7 @@ public class MainFrameSpecify extends MainFrame
      */
     private static AppResAndProps getAppRes(final String appResName, final Integer tableid, final boolean confirmOverwrite)
     {
-        //XXX - hard-coded for 'Collection' directory.
-        AppResourceIFace resApp = AppContextMgr.getInstance().getResourceFromDir(DEFAULT_REPORT_RESOURCE_DIR, appResName);
+        AppResourceIFace resApp = AppContextMgr.getInstance().getResource(appResName);
         if (resApp != null)
         {
             if (!confirmOverwrite)
@@ -593,6 +589,23 @@ public class MainFrameSpecify extends MainFrame
         return createAppResAndProps(appResName, tableid, null);
     }
     
+    /**
+     * @param repResName
+     * @return a report or label resource named repResName.
+     */
+    protected static SpAppResource getRepResource(final String repResName)
+    {
+    	List<AppResourceIFace> reps = AppContextMgr.getInstance().getResourceByMimeType(ReportsBaseTask.LABELS_MIME);
+    	reps.addAll(AppContextMgr.getInstance().getResourceByMimeType(ReportsBaseTask.REPORTS_MIME));
+    	for (AppResourceIFace rep : reps)
+    	{
+    		if (rep.getName().equals(repResName))
+    		{
+    			return (SpAppResource )rep;
+    		}
+    	}
+    	return null;
+    }
     
     /**
      * @param repResName
@@ -635,10 +648,9 @@ public class MainFrameSpecify extends MainFrame
             {
                 JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), String.format(UIRegistry.getResourceString("REP_NAME_MUST_NOT_BE_BLANK"), propPanel.getNameTxt().getText()));
             }
-            //XXX - more 'Collection' dir hard-coding
             else 
             {
-            	match = (SpAppResource )AppContextMgr.getInstance().getResourceFromDir(DEFAULT_REPORT_RESOURCE_DIR, propPanel.getNameTxt().getText());
+            	match = getRepResource(propPanel.getNameTxt().getText());
             	if (match != null)
             	{
             		if (appRes == null || !((SpAppResource )appRes).getId().equals(match.getId()))
@@ -706,9 +718,8 @@ public class MainFrameSpecify extends MainFrame
             AppResourceIFace modifiedRes = null;
             if (appRes == null)
             {
-                //XXX - which Dir???
                 //XXX - what level???
-                modifiedRes = AppContextMgr.getInstance().createAppResourceForDir(DEFAULT_REPORT_RESOURCE_DIR);
+                modifiedRes = AppContextMgr.getInstance().createAppResourceForDir(propPanel.getResDirCombo().getSelectedItem().toString());
             }
             else
             {
@@ -849,7 +860,6 @@ public class MainFrameSpecify extends MainFrame
                 // @Override
                 public int compare(AppResourceIFace o1, AppResourceIFace o2)
                 {
-                    // TODO Auto-generated method stub
                     return o1.toString().compareTo(o2.toString());
                 }
 
