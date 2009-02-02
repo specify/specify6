@@ -15,7 +15,6 @@ import static edu.ku.brc.ui.UIHelper.createTextField;
 
 import java.awt.Frame;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Vector;
 
 import javax.swing.JComboBox;
@@ -73,28 +72,29 @@ public class FeedBackDlg extends FeedBackSender
     protected FeedBackSenderItem getFeedBackSenderItem(final Class<?> cls, final Exception exception)
     {
         CellConstraints cc = new CellConstraints();
-        PanelBuilder    pb = new PanelBuilder(new FormLayout("p,2px,p,f:p:g", "p,4px,p,4px,p,4px,f:p:g"));
+        PanelBuilder    pb = new PanelBuilder(new FormLayout("p,2px,p,f:p:g", "p,4px,p,4px,p,4px,p,4px,f:p:g"));
         
-        //TreeSet<Taskable> treeSet    = new TreeSet<Taskable>(TaskMgr.getInstance().getAllTasks());
-        Vector<Taskable>  taskItems  = new Vector<Taskable>(TaskMgr.getInstance().getAllTasks());
-        Collections.sort(taskItems, new Comparator<Taskable>() {
-            @Override
-            public int compare(Taskable o1, Taskable o2)
-            {
-                return o1.getName().compareTo(o2.getName());
-            }
-        });
+        Vector<String>  taskItems  = new Vector<String>();
+        for (Taskable task : TaskMgr.getInstance().getAllTasks())
+        {
+            taskItems.add(task.getTitle());
+        }
+        Collections.sort(taskItems);
         
         final JComboBox  taskCBX    = createComboBox(taskItems);
-        final JTextField titleTF    = createTextField();
+        final JTextField subjectTF  = createTextField();
+        final JTextField issueTF    = createTextField();
         final JTextArea  commentsTA = createTextArea(15, 60);
         
         int y = 1;
-        pb.add(createFormLabel("Component"), cc.xy(1, y));
-        pb.add(taskCBX,                 cc.xy(3, y)); y += 2;
+        pb.add(createFormLabel("Subject"), cc.xy(1, y));
+        pb.add(subjectTF,                  cc.xyw(3, y, 2)); y += 2;
         
-        pb.add(createFormLabel("Title"), cc.xy(1, y));
-        pb.add(titleTF,                  cc.xyw(3, y, 2)); y += 2;
+        pb.add(createFormLabel("Component"), cc.xy(1, y));
+        pb.add(taskCBX,                      cc.xy(3, y)); y += 2;
+        
+        pb.add(createFormLabel("Question/Issue"), cc.xy(1, y));
+        pb.add(issueTF,                           cc.xyw(3, y, 2)); y += 2;
         
         pb.add(createFormLabel("Comments"), cc.xy(1, y));     y += 2;
         pb.add(createScrollPane(commentsTA), cc.xyw(1, y, 4)); y += 2;
@@ -109,8 +109,21 @@ public class FeedBackDlg extends FeedBackSender
         
         if (!dlg.isCancelled())
         {
-            String taskName = taskCBX.getSelectedItem() != null ? ((Taskable)taskCBX.getSelectedItem()).getName() : "No Task Name";
-            FeedBackSenderItem item = new FeedBackSenderItem(taskName, titleTF.getText(), "", commentsTA.getText(), "", cls != null ? cls.getName() : "");
+            String taskTitle = (String)taskCBX.getSelectedItem();
+            if (taskTitle != null)
+            {
+                for (Taskable task : TaskMgr.getInstance().getAllTasks())
+                {
+                    if (task.getTitle().equals(taskTitle))
+                    {
+                        taskTitle = task.getName();
+                    }
+                }
+            } else
+            {
+                taskTitle = "No Task Name";
+            }
+            FeedBackSenderItem item = new FeedBackSenderItem(taskTitle, subjectTF.getText(), issueTF.getText(), commentsTA.getText(), "", cls != null ? cls.getName() : "");
             return item;
         }
         return null;

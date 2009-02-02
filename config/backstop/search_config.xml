@@ -93,7 +93,7 @@
             <detailView icon="CollectionObject">
                 <sql>
                     <![CDATA[
- SELECT distinct 
+ SELECT DISTINCT 
  collectionobject.CollectionObjectID, 
  CatalogNumber, 
  CatalogedDate, 
@@ -134,6 +134,7 @@
  CatalogedDate,
  CatalogedDatePrecision,
  StartDate,
+ StartDatePrecision,
  taxon.FullName,
  %s
  FROM geography INNER JOIN locality ON geography.GeographyID = locality.GeographyID
@@ -152,7 +153,10 @@
                         <col name="CatalogedDate"          field="catalogedDate"/>
                         <col name="CatalogedDatePrecision" field="catalogedDatePrecision"/>
                     </caption>
-                    <caption tableid="10" col="StartDate"/>
+                    <caption tableid="10" formatter="PartialDate">
+                        <col name="StartDate"          field="startDate"/>
+                        <col name="StartDatePrecision" field="startDatePrecision"/>
+                    </caption>
                     <caption tableid="4" col="taxon.FullName"        key="TaxonName"/>
                 </captions>
             </detailView>
@@ -173,6 +177,7 @@
  CatalogedDate,
  CatalogedDatePrecision,
  StartDate,
+ StartDatePrecision,
  agent.LastName,
  agent.FirstName,
  agent.AgentType,
@@ -198,7 +203,10 @@
                         <col name="CatalogedDate"          field="catalogedDate"/>
                         <col name="CatalogedDatePrecision" field="catalogedDatePrecision"/>
                     </caption>
-                    <caption tableid="10" col="StartDate"/>
+                    <caption tableid="10" formatter="PartialDate">
+                        <col name="StartDate"          field="startDate"/>
+                        <col name="StartDatePrecision" field="startDatePrecision"/>
+                    </caption>
                     <caption tableid="10" key="Collectors">
                         <agg class="edu.ku.brc.specify.datamodel.Collector" aggregator="Collector" ordercol="collector.OrderNumber"/>
                         <subobject class="edu.ku.brc.specify.datamodel.Agent" fieldname="agent"/>
@@ -320,7 +328,7 @@
  %s 
  From collectionobject 
  Inner Join determination AS DT ON DT.CollectionObjectID = collectionobject.CollectionObjectID
-  Inner Join taxon ON taxon.TaxonID = DT.TaxonID 
+ Inner Join taxon ON taxon.TaxonID = DT.TaxonID 
  WHERE DT.CollectionMemberID = COLMEMID AND 
  collectionobject.CollectionMemberID = COLMEMID AND 
  taxon.TaxonTreeDefID = TAXTREEDEFID AND 
@@ -402,7 +410,9 @@
  collectionobject.CollectionObjectID, 
  collectionobject.CatalogNumber, 
  collectingevent.StartDate, 
+ collectingevent.StartDatePrecision, 
  collectingevent.EndDate, 
+ collectingevent.EndDatePrecision, 
  %s 
  From 
  collectingevent
@@ -412,8 +422,14 @@
                 <captions>
                     <caption tableid="1" col="CollectionObjectID" visible="false"/>
                     <caption tableid="1" col="CatalogNumber" formatter="CatalogNumber"/>
-                    <caption tableid="10" col="StartDate"/>
-                    <caption tableid="10" col="EndDate"/>
+                    <caption tableid="10" formatter="PartialDate">
+                        <col name="StartDate"          field="startDate"/>
+                        <col name="StartDatePrecision" field="startDatePrecision"/>
+                    </caption>
+                    <caption tableid="10" formatter="PartialDate">
+                        <col name="EndDate"          field="endDate"/>
+                        <col name="EndDatePrecision" field="endDatePrecision"/>
+                    </caption>
                 </captions>
             </detailView>
         </table>
@@ -1102,12 +1118,15 @@
         <table id="117" tableid="10" name="CollectingEventSearch" priority="1" color="30, 144, 255">
             <detailView icon="CollectionObject">
                 <sql>
-                    <![CDATA[SELECT CollectingEventID, StationFieldNumber, StartDate FROM collectingevent WHERE DisciplineID = DSPLNID AND (%s)]]>
+                    <![CDATA[SELECT CollectingEventID, StationFieldNumber, StartDate, StartDatePrecision FROM collectingevent WHERE DisciplineID = DSPLNID AND (%s)]]>
                 </sql>
                 <captions>
                     <caption tableid="10" col="CollectingEventID" visible="false"/>
                     <caption tableid="10" col="StationFieldNumber"/>
-                    <caption tableid="10" col="StartDate" formatter="Date"/>
+                    <caption tableid="10" formatter="PartialDate">
+                        <col name="StartDate"          field="startDate"/>
+                        <col name="StartDatePrecision" field="startDatePrecision"/>
+                    </caption>
                 </captions>
             </detailView>
         </table>

@@ -695,14 +695,20 @@ public class FormViewObj implements Viewable,
      */
     protected void addSaveBtn()
     {
-        JButton saveBtn = createButton(UIRegistry.getResourceString("SAVE"));/*
+        JButton saveBtn;
+        if (false)
         {
-            public void setEnabled(boolean enabled)
-            {
-                System.err.println("Save: "+enabled);
-                super.setEnabled(enabled);
-            }
-        };*/
+            saveBtn= createButton(UIRegistry.getResourceString("SAVE"));
+        } else
+        {
+            saveBtn = new JButton(UIRegistry.getResourceString("SAVE")) {
+                public void setEnabled(boolean enabled)
+                {
+                    System.err.println("******* "+formValidator.getName()+"  Save: "+enabled);
+                    super.setEnabled(enabled);
+                }
+            };
+        }
         saveBtn.setEnabled(false);
 
         saveBtn.addActionListener(new ActionListener()
@@ -819,7 +825,7 @@ public class FormViewObj implements Viewable,
             
             fieldInfo.setFieldInfo(fi);
                     
-            log.debug(fieldName);
+            //log.debug(fieldName);
 
             // Start by assuming it is OK to be added
             boolean isOK = true;
@@ -845,12 +851,12 @@ public class FormViewObj implements Viewable,
                         }
                     } else
                     {
-                        System.out.println("Skipping "+infoBase);
+                        log.debug("Skipping "+infoBase);
                     }
                 }
             } else
             {
-                System.out.println("Skipping "+fieldInfo.getFormCell());
+                log.debug("Skipping "+fieldInfo.getFormCell());
             }
             
             // At this point we have weeded out any readonly/autoinc "fields" and we need to get a label for the field
@@ -1480,8 +1486,6 @@ public class FormViewObj implements Viewable,
                 FormValidator fv = v.getValidator();
                 if (fv != null && fv.hasChanged())
                 {
-                    //System.out.println(parentMV.getData());
-                    //System.out.println(v.getDataObj());
                     // They might be different because of a previous save or merge
                     FormHelper.updateLastEdittedInfo(parentMV.getData());
                     if (parentMV.getData() != v.getDataObj())
@@ -2334,8 +2338,8 @@ public class FormViewObj implements Viewable,
                 
             } catch (ConstraintViolationException e)
             {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormViewObj.class, e);
+                //edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormViewObj.class, e);
                 log.error(e);
                 log.error(e.getSQLException());
                 log.error(e.getSQLException().getSQLState());
@@ -2371,8 +2375,8 @@ public class FormViewObj implements Viewable,
             }
             catch (org.hibernate.ObjectNotFoundException ex)
             {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormViewObj.class, ex);
+                //edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormViewObj.class, ex);
                 String errMsg = null;
                 String msg    = ex.toString();
                 if (StringUtils.contains(msg, "No row with the given identifier exists"))
@@ -2876,8 +2880,6 @@ public class FormViewObj implements Viewable,
                 
             } catch (edu.ku.brc.dbsupport.StaleObjectException e)
             {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormViewObj.class, e);
                 e.printStackTrace();
                 doClearObj = false;
                 session.rollback();
@@ -2885,8 +2887,6 @@ public class FormViewObj implements Viewable,
                 
             } catch (Exception e)
             {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormViewObj.class, e);
                 e.printStackTrace();
                 doClearObj = false;
                 session.rollback();
@@ -3007,8 +3007,6 @@ public class FormViewObj implements Viewable,
             }
         } catch (Exception ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormViewObj.class, ex);
             log.error(ex);
         }
     }
@@ -3650,8 +3648,6 @@ public class FormViewObj implements Viewable,
             dObj = tmpSession.get(tableInfo.getClassObj(), recordSetItemList.get(index).getRecordId());
         } catch (Exception ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormViewObj.class, ex);
             ex.printStackTrace();
             
         } finally
@@ -3679,7 +3675,7 @@ public class FormViewObj implements Viewable,
         }
         sql.append(')');
         
-        log.debug(sql.toString());
+        //log.debug(sql.toString());
         
         SQLExecutionListener listener = new SQLExecutionListener()
         {
@@ -3796,8 +3792,6 @@ public class FormViewObj implements Viewable,
             }
         } catch (SQLException ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormViewObj.class, ex);
             SwingUtilities.invokeLater( new Runnable() {
                 //@Override
                 public void run()
@@ -3821,6 +3815,8 @@ public class FormViewObj implements Viewable,
             rsController.updateUI();
         }
         
+        if (true) return;
+        
         //log.debug("----------------- "+formViewDef.getName()+"----------------- ");
         if (delRecBtn != null)
         {
@@ -3838,7 +3834,7 @@ public class FormViewObj implements Viewable,
                 log.debug("  list != null             ["+(list != null)+"]");
                 log.debug("  list.size() > 0          ["+(list != null && list.size() > 0)+"]");
             }*/
-            
+            log.debug("1----------------- Del "+formViewDef.getName()+"  "+enableDelBtn+"----------------- ");
             delRecBtn.setEnabled(enableDelBtn);
         }
         
@@ -3865,7 +3861,8 @@ public class FormViewObj implements Viewable,
             } else 
             {
                 //if (formValidator != null) log.debug(formValidator.getName());
-                //log.debug("mvParent.getData() "+mvParent.getData() +"  data "+dataObj + (!mvParent.isTopLevel() ? mvParent.getMultiViewParent().getData() : "null"));
+                log.debug("mvParent.getData() "+mvParent.getData() +"  data ["+ (dataObj == null ? "null" : dataObj.getClass().getSimpleName()) + "] parent"+ 
+                          (!mvParent.isTopLevel() ? mvParent.getMultiViewParent().getData().getClass().getSimpleName() : "null"));
                 
                 if (mvParent.isTopLevel())
                 {
@@ -3877,11 +3874,12 @@ public class FormViewObj implements Viewable,
                 //enableNewBtn = mvParent.isTopLevel() || !mvParent.isTopLevel() ? mvParent.getMultiViewParent().getData() != null : false;
             }
             
-            //log.debug(view.getName()+"  enableNewBtn "+enableNewBtn+"  isNewlyCreatedDataObj "+isNewlyCreatedDataObj()+" ("+(enableNewBtn && (dataObj == null || !isNewlyCreatedDataObj()))+")");
+            log.debug(view.getName()+"  enableNewBtn "+enableNewBtn+"  isNewlyCreatedDataObj "+isNewlyCreatedDataObj()+" ("+(enableNewBtn && (dataObj == null || !isNewlyCreatedDataObj()))+")");
             
             // 03/27/08 - rods - Add isSingle check for SubForms that hold a single Object
             boolean isSingle      = rsController == null && origDataSet == null;
             boolean newBtnEnabled = enableNewBtn && (dataObj == null || (!isNewlyCreatedDataObj() && !isSingle));
+            log.debug("1----------------- Add "+formViewDef.getName()+"  "+newBtnEnabled+"----------------- ");
             newRecBtn.setEnabled(newBtnEnabled); 
             
             if (switcherUI != null)
@@ -4127,7 +4125,7 @@ public class FormViewObj implements Viewable,
     public void setParentDataObj(Object parentDataObj)
     {
         this.parentDataObj = parentDataObj;
-        updateControllerUI();
+        //updateControllerUI();
     }
 
     /* (non-Javadoc)
@@ -4572,7 +4570,7 @@ public class FormViewObj implements Viewable,
 
         if (doResetAfterFill && mvParent != null && mvParent.isTopLevel() && saveControl != null && isEditing)
         {
-            saveControl.setEnabled(false);
+            //saveControl.setEnabled(false);
         }
         
         // See comment above where I turn this on
@@ -5565,6 +5563,7 @@ public class FormViewObj implements Viewable,
                 dataObj != null && 
                 (dataObj instanceof FormDataObjIFace && ((FormDataObjIFace)dataObj).getId() == null))
             {
+                log.debug("2----------------- "+formViewDef.getName()+"  false----------------- ");
                 delRecBtn.setEnabled(false);
             }
         }

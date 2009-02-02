@@ -217,7 +217,7 @@ public class PropertiesPickListAdapter implements PickListDBAdapterIFace
     public void setSelectedIndex()
     {
         String selectStr = AppPreferences.getLocalPrefs().get(prefSelectedName, ""); //$NON-NLS-1$
-        log.debug("["+prefSelectedName+"]["+selectStr+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        //log.debug("["+prefSelectedName+"]["+selectStr+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
         int selectedIndex = -1;
         int i = 0;

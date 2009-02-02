@@ -298,7 +298,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
         reasonList.clear();
         
         boolean isOK = true;
-        if (deletable != null)
+        if (deletable != null && dataObjArg instanceof FormDataObjIFace && ((FormDataObjIFace)dataObjArg).getId() != null)
         {
             Object dataObj = dataObjArg;
             DataProviderSessionIFace session = sessionArg != null ? sessionArg : DataProviderFactory.getInstance().createSession();

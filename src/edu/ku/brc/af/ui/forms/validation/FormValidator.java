@@ -79,6 +79,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
     protected JComponent                            saveComp           = null;
     protected EnableType                            saveEnableType     = EnableType.ValidAndChangedItems;
 
+    protected boolean                               isTopLevel  = false;
     protected boolean                               enabled     = false;
     protected boolean                               hasChanged  = false;
     protected boolean                               isNewObj    = false;
@@ -232,6 +233,8 @@ public class FormValidator implements ValidationListener, DataChangeListener
      */
     protected boolean isFormValid(final boolean checkKids)
     {
+        System.err.println("isFormValid - Name: "+name+"  enabled "+enabled+"  hasChanged "+hasChanged+"  isNewObj "+isNewObj);
+        
         if (checkKids)
         {
             for (FormValidator kid : kids)
@@ -242,6 +245,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
                 }
             }
         }
+        System.err.println("isFormValid - "+formValidationState);
         return formValidationState == UIValidatable.ErrorType.Valid && processRulesAreOK;
     }
 
@@ -408,7 +412,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
      */
     public void setEnabled(final boolean enabled)
     {
-        //log.debug("SetEnabled: "+name+" "+enabled);
+        log.debug("SetEnabled: "+name+" "+enabled);
         
         if (this.enabled != enabled)
         {
@@ -426,8 +430,34 @@ public class FormValidator implements ValidationListener, DataChangeListener
             for (FormValidator kid : kids)
             {
                 kid.setEnabled(enabled);
-            }            
+            } 
+            
+            //enableUIItems(enabled, saveEnableType);
         }
+    }
+
+    /**
+     * @return the isTopLevel
+     */
+    public boolean isTopLevel()
+    {
+        return isTopLevel;
+    }
+
+    /**
+     * @param isTopLevel the isTopLevel to set
+     */
+    public void setTopLevel(boolean isTopLevel)
+    {
+        this.isTopLevel = isTopLevel;
+    }
+
+    /**
+     * @return the isNewObj
+     */
+    public boolean isNewObj()
+    {
+        return isNewObj;
     }
 
     /**
@@ -1242,7 +1272,8 @@ public class FormValidator implements ValidationListener, DataChangeListener
         updateValidationBtnUIState();
         
         //log.debug("UIValidator.isIgnoreAllValidation() "+UIValidator.isIgnoreAllValidation());
-        if (type == saveEnableType && saveComp != null && !UIValidator.isIgnoreAllValidation())
+        System.err.println(name+" type "+type+"  itsOKToEnable "+itsOKToEnable);
+        if ((type == saveEnableType || type == EnableType.ValidAndChangedItems) && saveComp != null && !UIValidator.isIgnoreAllValidation())
         {
             if (itsOKToEnable)
             {

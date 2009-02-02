@@ -225,13 +225,13 @@ public class ResultSetController implements ValidationListener
         
         if (addNewBtn)
         {
-            if (false)
+            if (true)
             {
                 newRecBtn = new JButton("+")
                 {
                     public void setEnabled(boolean enable)
                     {
-                        //System.err.println("RS: "+ formValidator.getName() + " " + newRecBtn.hashCode() + " "+enable+"  isNewObj: "+isNewObj);
+                        System.err.println("newRecBtn - RS: "+ formValidator.getName() + " " + newRecBtn.hashCode() + " "+enable+"  isNewObj: "+isNewObj);
                         if (formValidator != null && formValidator.getName() != null && formValidator.getName().equals("Collection Object"))
                         {
                             int x = 0;
@@ -290,14 +290,13 @@ public class ResultSetController implements ValidationListener
         
         if (addDelBtn)
         {
-            if (false)
+            if (true)
             {
                 delRecBtn = new JButton("-")
                 {
                     public void setEnabled(boolean enable)
                     {
-                        //System.err.println(formValidator.getName() + " " + hashCode() + " "+enable);
-                        System.err.println(enable);
+                        System.err.println("delRecBtn - RS: "+formValidator.getName() + " " + hashCode() + " "+enable);
                         if (formValidator != null && formValidator.getName() != null && formValidator.getName().equals("Permit"))
                         {
                             int x = 0;
@@ -526,6 +525,12 @@ public class ResultSetController implements ValidationListener
         {
             delRecBtn.setEnabled(numRecords > 0);
         }
+        if (newRecBtn != null)
+        {
+            System.err.println("updateUI - RS - formValidator.isTopLevel() "+formValidator.isTopLevel()+" isEnabled() "+formValidator.isEnabled());
+            boolean enable = formValidator == null ? false : (formValidator.isTopLevel() || (formValidator.getParent() != null ? formValidator.getParent().isEnabled() : false));
+            newRecBtn.setEnabled(enable);
+        }
         
         panel.validate();
     }
@@ -622,19 +627,19 @@ public class ResultSetController implements ValidationListener
     {
         if (!enabled)
         {
-            firstBtn.setEnabled(enabled);
-            prevBtn.setEnabled(enabled);
-            nextBtn.setEnabled(enabled);
-            lastBtn.setEnabled(enabled);
-            recDisp.setEnabled(enabled);
+            firstBtn.setEnabled(false);
+            prevBtn.setEnabled(false);
+            nextBtn.setEnabled(false);
+            lastBtn.setEnabled(false);
+            recDisp.setEnabled(false);
             
             if (newRecBtn != null)
             {
-                newRecBtn.setEnabled(enabled);
+                newRecBtn.setEnabled(false);
             }
             if (delRecBtn != null)
             {
-                delRecBtn.setEnabled(enabled);
+                delRecBtn.setEnabled(false);
             }
         } else
         {

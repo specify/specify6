@@ -571,12 +571,13 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                 Object                 compObj          = null;
                 
                 // Aggregates
-                ERTICaptionInfo        aggCaption = null;
-                Vector<Object>         aggList    = null;
-                DataObjectSettable     aggSetter  = null;
-                Stack<Object>          aggListRecycler = null;
+                ERTICaptionInfo        aggCaption       = null;
+                ERTICaptionInfo        compositeCaption = null;
+                Vector<Object>         aggList          = null;
+                DataObjectSettable     aggSetter        = null;
+                Stack<Object>          aggListRecycler  = null;
                 
-                DataObjectSettable     dataSetter     = null;  // data getter for Aggregate or the Subclass
+                DataObjectSettable     dataSetter       = null;  // data getter for Aggregate or the Subclass
                             
                 // Loop through the caption to figure out what columns will be displayed.
                 // Watch for Captions with an Aggregator or Composite 
@@ -616,24 +617,27 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                          
                      } else if (caption.getColInfoList() != null)
                      {
-                         // OK, now aggregation but we will be rolling up multiple columns into a single object for formatting
-                         // We need to get the formatter to see what the Class is of the object
-                         hasCompositeObj  = true;
-                         aggCaption       = caption;
-                         dataObjFormatter = caption.getDataObjFormatter();
-                         if (dataObjFormatter != null)
+                         formatter = caption.getUiFieldFormatter();
+                         if (formatter != null)
                          {
-                             if (dataObjFormatter.getDataClass() != null)
-                             {
-                                 aggSetter = DataObjectSettableFactory.get(dataObjFormatter.getDataClass().getName(), "edu.ku.brc.af.ui.forms.DataSetterForObj");
-                             } else
-                             {
-                                 log.error("formatterObj.getDataClass() was null for "+caption.getColName());
-                             }
+                             compositeCaption = caption;
                          } else
                          {
-                             formatter = caption.getUiFieldFormatter();
-                             if (formatter == null)
+                             // OK, now aggregation but we will be rolling up multiple columns into a single object for formatting
+                             // We need to get the formatter to see what the Class is of the object
+                             hasCompositeObj  = true;
+                             aggCaption       = caption;
+                             dataObjFormatter = caption.getDataObjFormatter();
+                             if (dataObjFormatter != null)
+                             {
+                                 if (dataObjFormatter.getDataClass() != null)
+                                 {
+                                     aggSetter = DataObjectSettableFactory.get(dataObjFormatter.getDataClass().getName(), "edu.ku.brc.af.ui.forms.DataSetterForObj");
+                                 } else
+                                 {
+                                     log.error("formatterObj.getDataClass() was null for "+caption.getColName());
+                                 }
+                             } else
                              {
                                  log.error("DataObjFormatter was null for "+caption.getColName());
                              }
@@ -662,7 +666,8 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                         }
                     }
                     
-                    // Now check to see if there is an Order Column because the Aggregator might need it for sorting the Aggregation
+                    // Now check to see if there is an Order Column because the Aggregator 
+                    // might need it for sorting the Aggregation
                     String ordColName = aggCaption.getOrderCol();
                     if (StringUtils.isNotEmpty(ordColName))
                     {
@@ -704,6 +709,8 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                 Vector<Object> row       = null;
                 boolean        firstTime = true;
                 int            prevId    = Integer.MAX_VALUE;  // really can't assume any value but will choose Max
+                
+                int numCols = resultSet.getMetaData().getColumnCount();
                 do 
                 {
                     int id = resultSet.getInt(1);
@@ -759,7 +766,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                     for (ERTICaptionInfo caption :  captions)
                     {
                         int posIndex = caption.getPosIndex();
-                        if (caption == aggCaption) // Checks to see if we need to take multiplier columns and make one column
+                        if (caption == aggCaption) // Checks to see if we need to take multiple columns and make one column
                         {
                             if (hasCompositeObj) // just doing a Composite
                             {
@@ -778,12 +785,20 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                                     
                                 } else if (formatter != null)
                                 {
-                                    int      len = aggCaption.getColInfoList().size();
+                                    int      len = compositeCaption.getColInfoList().size();
                                     Object[] val = new Object[len];
                                     int      i   = 0;
-                                    for (ERTICaptionInfo.ColInfo colInfo : aggCaption.getColInfoList())
+                                    for (ERTICaptionInfo.ColInfo colInfo : compositeCaption.getColInfoList())
                                     {
-                                        val[i++] = resultSet.getObject(colInfo.getPosition()+posIndex+1);
+                                        int colInx = colInfo.getPosition()+posIndex+1;
+                                        if (colInx < numCols)
+                                        {
+                                            val[i++] = resultSet.getObject(colInx);
+                                        } else
+                                        {
+                                            //val[i++] = resultSet.getObject(posIndex+1);
+                                            val[i++] = "(Missing Data)";
+                                        }
                                     }
                                     row.add(formatter.formatToUI(val));
                                     

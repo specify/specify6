@@ -2217,7 +2217,8 @@ public class ViewFactory
                 formViewObj.setValidator(fv);
                 
                 fv.setName(formViewDef.getName()); // For Debugging
-
+                fv.setTopLevel(parentView.isTopLevel());
+                
                 if (enableRules != null)
                 {
                     for (String id : enableRules.keySet())

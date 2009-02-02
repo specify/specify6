@@ -33,6 +33,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -466,6 +467,21 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
         {
             formVal.setEnabled(true);
             multiView.addCurrentValidator();
+            if (multiView.getCurrentViewAsFormViewObj() != null)
+            {
+                final ResultSetController rsc = multiView.getCurrentViewAsFormViewObj().getRsController();
+                rsc.getNewRecBtn().setEnabled(true);
+                if (rsc.getLength() == 0)
+                {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run()
+                        {
+                            rsc.getNewRecBtn().doClick();
+                        }
+                    });
+                }
+            }
         }
         
         dlg.createUI();
