@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="4.2" transformSequenceNumber="2">
   <directoryPresets config="../InstallerFiles" />
-  <application name="Specify" distributionSourceDir="" applicationId="5397-6897-2502-8965" mediaDir="../MacMediaUpdate" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}_Beta_update" compression="6" lzmaCompression="false" pack200Compression="false" excludeSignedFromPacking="true" keepModificationTimes="false" missingFilesStrategy="warn" shortName="Specify" publisher="Biodiversity Research Center, University of Kansas" publisherWeb="http://www.specifysoftware.org" version="6.2.09" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="true" macSignature="????" installerName="" javaMinVersion="1.6" javaMaxVersion="1.6" allowBetaVM="false" jdkMode="runtimeJre" jdkName="">
+  <application name="Specify" distributionSourceDir="" applicationId="5397-6897-2502-8965" mediaDir="../MacMediaUpdate" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}_Beta_update" compression="6" lzmaCompression="false" pack200Compression="false" excludeSignedFromPacking="true" keepModificationTimes="false" missingFilesStrategy="warn" shortName="Specify" publisher="Biodiversity Research Center, University of Kansas" publisherWeb="http://www.specifysoftware.org" version="6.2.11" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="true" macSignature="????" installerName="" javaMinVersion="1.6" javaMaxVersion="1.6" allowBetaVM="false" jdkMode="runtimeJre" jdkName="">
     <languages skipLanguageSelection="false" languageSelectionInPrincipalLanguage="false">
       <principalLanguage id="en" customLocalizationFile="" />
       <additionalLanguages />
@@ -356,6 +356,31 @@
                     <object class="com.install4j.api.beans.ExternalFile">
                       <string>../src/edu/ku/brc/specify/images/specify128.png</string>
                     </object>
+                  </void>
+                </object>
+              </java>
+            </serializedBean>
+            <condition />
+            <validation />
+            <preActivation />
+            <postActivation />
+            <actions />
+            <formComponents />
+          </screen>
+          <screen name="" id="1155" beanClass="com.install4j.runtime.beans.screens.CustomizableInfoScreen" enabled="true" commentSet="false" comment="" rollbackBarrier="false" backButton="2" finishScreen="false">
+            <serializedBean>
+              <java class="java.beans.XMLDecoder">
+                <object class="com.install4j.runtime.beans.screens.CustomizableInfoScreen">
+                  <void property="displayedTextFile">
+                    <object class="com.install4j.api.beans.ExternalFile">
+                      <string>../InstallerFiles/changelog.html</string>
+                    </object>
+                  </void>
+                  <void property="subTitle">
+                    <string>Specify ${compiler:sys.version} Beta includes the following changes:</string>
+                  </void>
+                  <void property="title">
+                    <string>New This Release</string>
                   </void>
                 </object>
               </java>
@@ -1128,31 +1153,6 @@ if (wizardContext != null) {
                     <condition />
                   </action>
                 </actions>
-                <formComponents />
-              </screen>
-              <screen name="" id="1123" beanClass="com.install4j.runtime.beans.screens.CustomizableInfoScreen" enabled="true" commentSet="false" comment="" rollbackBarrier="false" backButton="2" finishScreen="false">
-                <serializedBean>
-                  <java class="java.beans.XMLDecoder">
-                    <object class="com.install4j.runtime.beans.screens.CustomizableInfoScreen">
-                      <void property="displayedTextFile">
-                        <object class="com.install4j.api.beans.ExternalFile">
-                          <string>../InstallerFiles/changelog.html</string>
-                        </object>
-                      </void>
-                      <void property="subTitle">
-                        <string>Specify ${compiler:sys.version} Beta includes the following changes:</string>
-                      </void>
-                      <void property="title">
-                        <string>New This Release</string>
-                      </void>
-                    </object>
-                  </java>
-                </serializedBean>
-                <condition />
-                <validation />
-                <preActivation />
-                <postActivation />
-                <actions />
                 <formComponents />
               </screen>
               <screen name="Finish" id="116" beanClass="com.install4j.runtime.beans.screens.BannerFormScreen" enabled="true" commentSet="false" comment="" rollbackBarrier="false" backButton="2" finishScreen="true">

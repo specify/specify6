@@ -261,6 +261,31 @@
             <actions />
             <formComponents />
           </screen>
+          <screen name="" id="915" beanClass="com.install4j.runtime.beans.screens.CustomizableInfoScreen" enabled="true" commentSet="false" comment="" rollbackBarrier="false" backButton="2" finishScreen="false">
+            <serializedBean>
+              <java class="java.beans.XMLDecoder">
+                <object class="com.install4j.runtime.beans.screens.CustomizableInfoScreen">
+                  <void property="displayedTextFile">
+                    <object class="com.install4j.api.beans.ExternalFile">
+                      <string>../InstallerFiles/changelog.html</string>
+                    </object>
+                  </void>
+                  <void property="subTitle">
+                    <string>Specify ${compiler:sys.version} Beta includes the following changes:</string>
+                  </void>
+                  <void property="title">
+                    <string>New This Release</string>
+                  </void>
+                </object>
+              </java>
+            </serializedBean>
+            <condition />
+            <validation />
+            <preActivation />
+            <postActivation />
+            <actions />
+            <formComponents />
+          </screen>
           <screen name="" id="513" beanClass="com.install4j.runtime.beans.screens.LicenseScreen" enabled="true" commentSet="false" comment="" rollbackBarrier="false" backButton="2" finishScreen="false">
             <serializedBean>
               <java class="java.beans.XMLDecoder">
@@ -1022,31 +1047,6 @@ if (wizardContext != null) {
                     <condition />
                   </action>
                 </actions>
-                <formComponents />
-              </screen>
-              <screen name="" id="883" beanClass="com.install4j.runtime.beans.screens.CustomizableInfoScreen" enabled="true" commentSet="false" comment="" rollbackBarrier="false" backButton="2" finishScreen="false">
-                <serializedBean>
-                  <java class="java.beans.XMLDecoder">
-                    <object class="com.install4j.runtime.beans.screens.CustomizableInfoScreen">
-                      <void property="displayedTextFile">
-                        <object class="com.install4j.api.beans.ExternalFile">
-                          <string>../InstallerFiles/changelog.html</string>
-                        </object>
-                      </void>
-                      <void property="subTitle">
-                        <string>Specify ${compiler:sys.version} Beta includes the following changes:</string>
-                      </void>
-                      <void property="title">
-                        <string>New This Release</string>
-                      </void>
-                    </object>
-                  </java>
-                </serializedBean>
-                <condition />
-                <validation />
-                <preActivation />
-                <postActivation />
-                <actions />
                 <formComponents />
               </screen>
               <screen name="Finish" id="116" beanClass="com.install4j.runtime.beans.screens.BannerFormScreen" enabled="true" commentSet="false" comment="" rollbackBarrier="false" backButton="2" finishScreen="true">
