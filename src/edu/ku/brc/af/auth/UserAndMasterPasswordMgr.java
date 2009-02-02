@@ -385,8 +385,8 @@ public class UserAndMasterPasswordMgr
         isPrefBasedRB.addChangeListener(chgListener);
         
         boolean isPref = AppPreferences.getLocalPrefs().getBoolean(usersUserName+"_"+MASTER_LOCAL, false);
-        isNetworkRB.setSelected(isPref);
-        isPrefBasedRB.setSelected(!isPref);
+        isNetworkRB.setSelected(!isPref);
+        isPrefBasedRB.setSelected(isPref);
         
         createBtn.addActionListener(new ActionListener() {
             @Override
