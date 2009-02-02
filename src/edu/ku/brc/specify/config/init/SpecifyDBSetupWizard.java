@@ -471,6 +471,7 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
                         {
                             HibernateUtil.shutdown();
                         }
+                        System.exit(0);
                     }
                 };
                 worker.start();
