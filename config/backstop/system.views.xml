@@ -837,7 +837,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="name" uitype="text" cols="40" isrequired="true"/> 
+                    <cell type="field" id="1" name="name" uitype="text" cols="40" isrequired="true" initialize="editoncreate=true"/> 
                 </row>
                 <row>
                     <cell type="label" labelfor="3"/>
