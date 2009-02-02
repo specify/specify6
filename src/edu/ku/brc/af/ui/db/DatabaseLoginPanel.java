@@ -825,6 +825,10 @@ public class DatabaseLoginPanel extends JTiledPanel
         if (masterUsrPwdProvider != null)
         {
             Pair<String, String> masterUsrPwd = masterUsrPwdProvider.getUserNamePassword(getUserName(), getPassword());
+            if (masterUsrPwd == null)
+            {
+                return null;
+            }
             if (StringUtils.isEmpty(masterUsrPwd.first) || StringUtils.isEmpty(masterUsrPwd.second))
             {
                 setMessage(getResourceString("BAD_USRPWD"), true);
@@ -854,7 +858,10 @@ public class DatabaseLoginPanel extends JTiledPanel
         
         if (masterUsrPwdProvider != null && !masterUsrPwdProvider.hasMasterUserAndPwdInfo(getUserName(), getPassword()))
         {
-            masterUsrPwdProvider.editMasterInfo(getUserName());
+            if (!masterUsrPwdProvider.editMasterInfo(getUserName()))
+            {
+                return;
+            }
         }
 
         final String name = getClass().getName();
@@ -881,9 +888,10 @@ public class DatabaseLoginPanel extends JTiledPanel
 
         final SwingWorker worker = new SwingWorker()
         {
-            boolean isLoggedIn = false;
             long    eTime;
-            boolean timeOK     = false;
+            boolean isLoggedIn       = false;
+            boolean timeOK           = false;
+            boolean isLoginCancelled = false;
 
             @SuppressWarnings("synthetic-access") //$NON-NLS-1$
             @Override
@@ -904,6 +912,11 @@ public class DatabaseLoginPanel extends JTiledPanel
                     {
                         isLoggedIn &= jaasLogin();
                     }
+                } else if (usrPwd == null)
+                {
+                    isLoginCancelled = true;
+                    setMessage("  ", false);
+                    return null;
                 }
 
                 if (isLoggedIn)
@@ -1008,15 +1021,16 @@ public class DatabaseLoginPanel extends JTiledPanel
                     
                     isLoggingIn = false;
                     
-                } else
+                } else 
                 {
-                    String msg = DBConnection.getInstance().getErrorMsg();
-                    setMessage(StringUtils.isEmpty(msg) ? getResourceString("INVALID_LOGIN") : msg, true);
+                    if (!isLoginCancelled)
+                    {
+                        String msg = DBConnection.getInstance().getErrorMsg();
+                        setMessage(StringUtils.isEmpty(msg) ? getResourceString("INVALID_LOGIN") : msg, true);
+                    }
                     
                     enableUI(true);
                 }
-                
-                
 
                 if (isAutoClose)
                 {

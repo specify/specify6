@@ -11,6 +11,7 @@ import static edu.ku.brc.ui.UIHelper.createI18NFormLabel;
 import static edu.ku.brc.ui.UIHelper.createPasswordField;
 import static edu.ku.brc.ui.UIHelper.createTextField;
 import static edu.ku.brc.ui.UIRegistry.getFormattedResStr;
+import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static edu.ku.brc.ui.UIRegistry.loadAndPushResourceBundle;
 import static edu.ku.brc.ui.UIRegistry.popResourceBundle;
@@ -32,6 +33,7 @@ import java.util.Hashtable;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
@@ -58,6 +60,7 @@ import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.validation.ValPasswordField;
 import edu.ku.brc.helpers.Encryption;
+import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.DocumentAdaptor;
@@ -122,6 +125,13 @@ public class UserAndMasterPasswordMgr
         Boolean isLocal   = AppPreferences.getLocalPrefs().getBoolean(usersUserName+"_"+MASTER_LOCAL, null);
         String  masterKey = AppPreferences.getLocalPrefs().get(usersUserName+"_"+MASTER_PATH, null); 
         
+        if (masterKey == null)
+        {
+            if (askToContForCredentials() == JOptionPane.NO_OPTION)
+            {
+                return false;
+            }
+        }
         boolean isOK = askForInfo(isLocal, masterKey);
         
         usersUserName = uNameCached;
@@ -181,6 +191,27 @@ public class UserAndMasterPasswordMgr
     }
     
     /**
+     * @return
+     */
+    protected int askToContForCredentials()
+    {
+        int userChoice = JOptionPane.NO_OPTION;
+        Object[] options = { getResourceString("Continue"),  //$NON-NLS-1$
+                             getResourceString("CANCEL")  //$NON-NLS-1$
+              };
+        loadAndPushResourceBundle("masterusrpwd");
+
+        userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
+                                                     getLocalizedMessage("MISSING_CREDS", usersUserName),  //$NON-NLS-1$
+                                                     getResourceString("MISSING_CREDS_TITLE"),  //$NON-NLS-1$
+                                                     JOptionPane.YES_NO_OPTION,
+                                                     JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+        popResourceBundle();
+        
+        return userChoice;
+    }
+    
+    /**
      * @return Username and Password as a pair
      */
     protected Pair<String, String> getUserNamePasswordInternal()
@@ -192,13 +223,17 @@ public class UserAndMasterPasswordMgr
         
         if (isLocal == null || StringUtils.isEmpty(masterKey))
         {
+            
+            if (askToContForCredentials() == JOptionPane.NO_OPTION)
+            {
+                return null;
+            }
+            
             if (!askForInfo(null, null))
             {
                 return noUP;//getUserNamePassword();
             }
         }
-        
-        
         
         if (StringUtils.isNotEmpty(masterKey))
         {
@@ -350,8 +385,8 @@ public class UserAndMasterPasswordMgr
         isPrefBasedRB.addChangeListener(chgListener);
         
         boolean isPref = AppPreferences.getLocalPrefs().getBoolean(usersUserName+"_"+MASTER_LOCAL, false);
-        isNetworkRB.setSelected(!isPref);
-        isPrefBasedRB.setSelected(isPref);
+        isNetworkRB.setSelected(isPref);
+        isPrefBasedRB.setSelected(!isPref);
         
         createBtn.addActionListener(new ActionListener() {
             @Override
@@ -414,6 +449,8 @@ public class UserAndMasterPasswordMgr
         final JLabel     dbPwdLbl    = createI18NFormLabel("PASSWORD", SwingConstants.RIGHT);
         final JLabel     usrLbl      = createI18NFormLabel("USERNAME", SwingConstants.RIGHT);
         final JLabel     pwdLbl      = createI18NFormLabel("PASSWORD", SwingConstants.RIGHT);
+        
+        usrText.setText(usersUserName);
         
         CellConstraints cc = new CellConstraints(); 
         
@@ -690,7 +727,7 @@ public class UserAndMasterPasswordMgr
         {
             AppPreferences.getLocalPrefs().put(username+"_"+UserAndMasterPasswordMgr.MASTER_PATH, encryptedMasterUP);
             spUser.setPassword(newPwd);
-            if (SpecifyUser.save(spUser))
+            if (DataModelObjBase.save(spUser))
             {
                 return true;
             }
