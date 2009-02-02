@@ -14,6 +14,8 @@
  */
 package edu.ku.brc.specify.datamodel.busrules;
 
+import static edu.ku.brc.ui.UIRegistry.*;
+
 import java.util.Calendar;
 import java.util.List;
 
@@ -155,10 +157,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.BaseBusRules#beforeMerge(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
-     */
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.BaseBusRules#processBusinessRules(java.lang.Object)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#processBusinessRules(java.lang.Object)
      */
     @Override
     public STATUS processBusinessRules(final Object dataObj)
@@ -222,7 +221,6 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
     {
         super.beforeMerge(dataObj, session);
         
-        
         CollectionObject colObj = (CollectionObject)dataObj;
         if (AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent())
         {
@@ -231,17 +229,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
             {
                 try
                 {
-                    Integer ceid = ce.getId();
-                    CollectingEvent newCe = null;
-                    if (ceid != null)
-                    {
-                    	newCe = session.get(CollectingEvent.class, ceid);
-                    }
-                    if (newCe == null) 
-                    {
-                    	newCe = ce;
-                    }
-                	session.saveOrUpdate(newCe);
+                    session.saveOrUpdate(ce);
                     
                 } catch (Exception ex)
                 {
@@ -440,7 +428,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
             {
                 if (co.getId().equals(colObj.getId()))
                 {
-                    reasonList.add(UIRegistry.getLocalizedMessage("CO_DUP", colObj.getIdentityTitle()));
+                    reasonList.add(getLocalizedMessage("CO_DUP", colObj.getIdentityTitle()));
                     return false;
                 }
             }
@@ -455,7 +443,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
             {
                 if (co.getId().equals(colObj.getId()))
                 {
-                    reasonList.add(UIRegistry.getLocalizedMessage("CO_DUP", colObj.getIdentityTitle()));
+                    reasonList.add(getLocalizedMessage("CO_DUP", colObj.getIdentityTitle()));
                     return false;
                 }
             }
