@@ -303,7 +303,7 @@
         <table name="LocalityCitation" field="localityCitations">
             <alias name="ReferenceWork"/>
         </table>
-        <!--alias name="CollectingEvent" field="collectingEvents"/-->
+        <!-- alias name="CollectingEvent" field="collectingEvents"/==>
     </table>
     
     <table name="Permit">

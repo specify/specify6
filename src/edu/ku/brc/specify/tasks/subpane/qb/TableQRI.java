@@ -17,6 +17,9 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.specify.datamodel.CollectingEvent;
+import edu.ku.brc.specify.datamodel.Locality;
 
 /**
  * @author rod
@@ -97,13 +100,44 @@ public class TableQRI extends ExpandableQRI
                     }
                 }
             }
+            if (relationship == null && isLocToCollectingEventsLink())
+            {
+            	relationship = buildLocToCollectingEventsRel();
+            }
             if (relationship == null)
             {
-                log.error("Unable to determine relationship for " + this.getTitle());
+            	log.error("Unable to determine relationship for " + this.getTitle());
             }
         }
     }
 
+    /**
+     * @return one-to-many relationship for Locality->CollectingEvents
+     * 
+     * The Locality->CollectingEvents relationship was removed from the Hibernate schema for the db due to performance problems 
+     * (during data entry, I believe). This method creates a 'description' of the relationship for use by the query builder.
+     * 
+     * HOWEVER, in order for this strategy to work, the QueryBuilder would have to use SQL, because HQL does not support 
+     * "...JOIN CollectingEvent ce ON ce.LocalityId = loc0.localityId" syntax. So for now, the Locality-CollectingEvent relationship
+     * is commented out of the QueryBuilder config file (querybuilder.xml).
+     */
+    protected DBRelationshipInfo buildLocToCollectingEventsRel()
+    {
+    	return new DBRelationshipInfo("collectingEvents", DBRelationshipInfo.RelationshipType.OneToMany,
+    			CollectingEvent.class.getName(), null, "locality", null, false, false, false);
+    }
+    
+    /**
+     * @return true if this object represents CollectingEvents associated with Locality.
+     */
+    protected boolean isLocToCollectingEventsLink()
+    {
+    	return tableTree.getParent() != null 
+    		&& tableTree.getParent().getTableInfo().getClassObj().equals(Locality.class)
+    		&& getTableTree().getTableInfo().getClassObj().equals(CollectingEvent.class) 
+    		&& tableTree.getField().equals("collectingEvents");
+    }
+    
     /**
      * @param rel
      * @param classObj
