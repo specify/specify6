@@ -10,40 +10,45 @@ table.box td { border-bottom: 1px solid gray; border-right: 1px solid gray }
 </head>
 
 <body>
-<h2>BioGeomancer</h2>
-<hr>
-<p>The WorkBench uses the BioGeomancer web service to calculate the latitude and longitude positions from a textual locality description and three geography fields. 
+<table width="100%" border="0" background="../../images/topbar.png">
+  <tr>
+    <td>&nbsp;</td>
+  </tr>
+</table>
+<h2>BioGeomancer and GEOLocate</h2>
+<p>The WorkBench uses both the BioGeomancer and GEOLocate web services to calculate the latitude and longitude positions from a textual locality description and three geography fields. 
 The WorkBench processes all the selected rows and caches the information, enabling the results to be stepped through  and the appropriate Latitude / Longitude 
-to be either selected or skipped. For more information about the BioGeomancer tool visit their Web Site: www.biogeomancer.org</p>
+to be either selected or skipped. </p>
 <p><em><strong>Notes: </strong></em></p>
 <ul>
   <li>If BioGeomancer results are accepted, they will overwrite any existing  data in the corresponding Data Set columns.</li>
   <li>The WorkBench is not responsible for any of the results returned by BioGeomancer, the WorkBench is integrated with the BioGeomancer web service. </li>
 </ul>
-<p><strong><u>Requirements:</u></strong></p>
+<h4>Requirements:</h4>
 <table class="box" border="1" cellspacing="0" cellpadding="4">
 
 <tr>
-  <td><u><strong>Column Heading</strong> </u></td>
-  <td><u><strong>Data Needed </strong></u></td>
+  <td><div align="left"><u><strong>Column Heading</strong> </u></div></td>
+  <td><div align="left"><u><strong>Data Needed </strong></u></div></td>
 </tr>
-<tr><td width="124">Locality Name</td>
-<td width="197">Yes</td>
+<tr><td width="124"><strong>Locality Name</strong></td>
+<td width="197"><div align="left">Yes</div></td>
 </tr>
-<tr><td>Country</td>
-  <td>Yes</td>
+<tr><td><strong>Country</strong></td>
+  <td><div align="left">Yes</div></td>
 </tr>
-<tr><td>State</td>
-  <td>Yes</td>
+<tr><td><strong>State</strong></td>
+  <td><div align="left">Yes</div></td>
 </tr>
-<tr><td>County</td>
-  <td>Yes</td>
+<tr><td><strong>County</strong></td>
+  <td><div align="left">Yes, for US data</div></td>
 </tr>
-<tr><td>Latitude1</td>
-  <td>No (this is a results column) </td>
+<tr><td><strong>Latitude1</strong></td>
+  <td>    <p align="left">No<br>(this is a results column) </p></td>
 </tr>
-<tr><td>Longitude1</td>
-  <td>No (this is a results column)</td>
+<tr><td><strong>Longitude1</strong></td>
+  <td><div align="left">No<br>
+    (this is a results column)</div></td>
 </tr>
 </table>
 <p>The BioGeomancer tool uses the data present in the Locality Name, Country, State and County colunns to query the BioGeomancer service.&nbsp;The service will not work without data in all of the columns.&nbsp; The Latitude 1 and Longitude 1 columns are needed to accept the data returned by the BioGeomancer service.&nbsp; If BioGeomancer is able to obtain results for any of the records, the BioGeomancer Results Chooser dialog will display results for each Data Set record.&nbsp;</p>
@@ -58,40 +63,33 @@ to be either selected or skipped. For more information about the BioGeomancer to
 <p>To choose a result,  select  the row that corresponds with the correct coordinates of the Data Set record from the lower table.&nbsp; </p>
 <p>To deselect a row, either select a different row or hold the Control key while clicking on the currently selected row. </p>
 <p>The buttons at the bottom of the dialog offer the following functionality:</p>
-<table width="75%" border="1" cellspacing="1" cellpadding="6">
+<table width=600 border="1" cellspacing="1" cellpadding="6">
   <tr>
-    <td width="11%">Help</td>
+    <td><u><strong>Button</strong></u></td>
+    <td><u><strong>Result</strong></u></td>
+  </tr>
+  <tr>
+    <td width="11%"><div align="left"><strong>Help</strong></div></td>
     <td width="89%">Opens the WorkBench Help Window </td>
   </tr>
   <tr>
-    <td>Accept</td>
+    <td><div align="left"><strong>Accept</strong></div></td>
     <td>Stores the latitude and longitude values in the appropriate cells of the Data Set record corresponding to the query.</td>
   </tr>
   <tr>
-    <td>Skip</td>
+    <td><div align="left"><strong>Skip</strong></div></td>
     <td>Ignores all results obtained for a given record, and displays  the results for the next  record.</td>
   </tr>
   <tr>
-    <td>Done</td>
+    <td><div align="left"><strong>Done</strong></div></td>
     <td>Accepts the currently selected row and closes the BioGeomancer Results Chooser dialog.</td>
   </tr>
 </table>
 <p>&nbsp;</p>
 <p>  The dialog will close when all the records have been displayed. Results that were accepted will be written in the Latitude 1 and Longitude 1 columns of the record.&nbsp; Any data already in these columns will be overwritten. </p>
-<p>The WorkBench also stores all ancillary metadata returned by BioGeomancer in the following fields:</p>
-<ul type="disc">
-  <li>Country Bounding Box</li>
-  <li>Bounding Box</li>
-  <li>Bounding Box Centroid</li>
-  <li>Bounding Box Centroid Error Radius</li>
-  <li>Bounding Box Centroid Error Radius Units</li>
-  <li>Multi Point Match</li>
-  <li>Weighted Centroid</li>
-</ul>
-<p>These fields are not viewable in the Data Set but are stored for later inclusion into the record when importing into Specify 6.</p>
-<br>
-<br>
-<br>
+<p>The dialog will close when all the records have been displayed. Results that were accepted will be written in the Latitude 1 and Longitude 1 columns of the record.&nbsp; Any data already in these columns will be overwritten. </p>
+<p>The WorkBench copies the latitude and longitude data into a hidden <em>Source</em> field. If the Data Set is uploaded into Specify 6 this hidden field will copy into the <em>Source</em> field in Specify 6 and will display on the Locality form.</p>
+<p>The WorkBench does not keep any ancillary data.</p>
 <br>
 </body>
 </html>

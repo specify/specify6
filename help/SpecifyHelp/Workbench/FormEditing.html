@@ -4,9 +4,14 @@
 <title>Form Editing</title>
 </head>
 <body>
+<table width="100%" border="0" background="../../images/topbar.png">
+  <tr>
+    <td>&nbsp;</td>
+  </tr>
+</table>
 <h2>Form Editing</h2>
-<hr>
-<font size="-2"><br></font>
+<font size="-2"><br>
+</font>
 <p><span class="index">Form Editing</span> enables the Data Set rows to be  displayed and edited row by row (record by record). Column headings are referred to as 'labels' in the Form view. Each label  has an accompanying User Interface (UI) control (text field, text area, or check box) for entering data. </p>
 <p>Values within a Data Set are easily manipulated using the icons in the Workspace Item Bar:</p>
 <table border="1">
@@ -42,12 +47,12 @@
   </tr>
   <tr>
     <td><span class="index">Image Window</span></td>
-    <td><img src="../images/ToggleImageFrame16x16.png" width="16" height="16"></td>
+    <td><img src="../images/Image-Window-A-16x16.png" width="20" height="20"></td>
     <td>Toggles the Image Window on and off. </td>
   </tr>
   <tr>
     <td><span class="index">Configure Carry Forward</span></td>
-    <td><img src="../images/Configure16x16.png" width="16" height="16"></td>
+    <td><img src="../images/CarryForward20x20.png" alt="Carry Forward"></td>
     <td>Opens the 'Carry Forward' configuration dialog. See <a href="#Carry_Forward">Carry Forward</a>. </td>
   </tr>
   <tr>
@@ -56,10 +61,11 @@
     <td>Displays the Data Set in a  grid view (resembling a spreadsheet). Data Sets always open in this view. </td>
   </tr>
 </table>
-<p>The labels and UI controls can be moved and repositioned on the form with a click and drag. </p>
+
+<p>The labels and UI controls can be moved and repositioned on the form by dragging and dropping.</p>
 <p>UI controls can be activated by clicking in them, or using the tab key to navigate between them. The tab order is top-left to bottom-right by default. </p>
 <p>&nbsp;</p>
-<h3><a name="formcontrol"></a><u>Edit Form  Properties</u></h3>
+<h3><a name="formcontrol"></a>Edit Form  Properties</h3>
 <p>In addition to dragging and dropping the controls, several properties can also be manually updated. Activate either the column heading or UI control,  then click the <img src="../images/EditProperties16x16.png" width="16" height="16"> (edit properties) button. The following dialog will appear: </p>
 <p align="center"><img src="../images/formproperties.png" alt="form properties"></p>
 <p align="center"><span class="imgcaption">Edit Form Properties</span></p>
@@ -80,7 +86,7 @@
   </tr>
   <tr>
     <td>Number of Rows </td>
-    <td>Lists the number of rows the UI control will display. </td>
+    <td>Lists the number of rows the UI control will display. (Limit 25 rows)</td>
   </tr>
   <tr>
     <td>Field Type </td>
@@ -88,7 +94,7 @@
       <p>Text Area:  allows the text area to expand to more than one row and activates the Number of Rows field. </p></td>
   </tr>
   <tr>
-    <td>Field Columns </td>
+    <td>Field Length</td>
     <td>Refers to the length of the value box.</td>
   </tr>
   <tr>
@@ -106,13 +112,13 @@
 </table>
 <h3>&nbsp;</h3>
 <h3><u><a name="Carry_Forward"></a>Carry Forward</u></h3>
-<p><span class="index">Carry Forward</span> enables the value in one or more labels  to be 'carried forward', or copied to the next new row(s) of data. To select the label to be carried forward click  the <img src="../images/Configure16x16.png" alt="configure" width="16" height="16"> (carry forward) button. The following configuration window will open: </p>
+<p><span class="index">Carry Forward</span> enables the value in one or more labels  to be 'carried forward', or copied to the next new row(s) of data. To select the label to be carried forward, click  the <img src="../images/CarryForward20x20.png" alt="Carry Forward"> (carry forward) button. The following configuration window will open:</p>
 <p align="center"><img src="../images/carryforwardscr.png" alt="Carry Forward"><br>
     <span class="imgcaption">Configure Carry Forward </span></p>
 <p>&nbsp;</p>
 <p>The values in the selected label(s) are 'carried forward' into  new rows, (new rows are added by clicking the <img src="../images/AddNewRecord16x16.png" alt="add" width="16" height="16"> button), until Carry Forward is reset. </p>
 <p>&nbsp;</p>
-<h3><u>Form Editing Examples</u></h3>
+<h3>Form Editing Examples</h3>
 <p><u>Delete a Record(s):</u></p>
 <ol>
   <li>Click  the <img src="../images/RemoveRecord16x16.png" alt="clear" width="16" height="16"> (delete) button </li>
@@ -125,11 +131,11 @@
 <p>&nbsp;</p>
 <p><u>Add a Record with Preset Values:</u></p>
 <ol>
-  <li>Click  the <img src="../images/Configure16x16.png" alt="configure" width="16" height="16"> button</li>
-  <li>Select the labels(fields)  to be copied into the new row</li>
-  <li>Click the 'OK' button at the bottom of the Carry Forward window</li>
-  <li>Select the row  to be copied into the new row</li>
-  <li>Click  the <img src="../images/AddNewRecord16x16.png" alt="add" width="16" height="16"> button </li>
+  <li>Click  the <img src="../images/CarryForward20x20.png" alt="Carry Forward"> button.</li>
+  <li>Select the labels(fields)  to be copied into the new row.</li>
+  <li>Click the 'OK' button at the bottom of the Carry Forward window.</li>
+  <li>Select the row  to be copied into the new row.</li>
+  <li>Click  the <img src="../images/AddNewRecord16x16.png" alt="add" width="16" height="16"> button.</li>
 </ol>
 <p>&nbsp;</p>
 </body>
