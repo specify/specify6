@@ -46,6 +46,9 @@ public class OrderedIconTray extends IconTray implements ActionListener, ListSel
     /** An array of the buttons used to rearrange elements.  For ease of disabling/enabling all buttons. */
     protected JButton[] orderButtons;
     
+    /** boolean to indicate whether it should be in "orderable mode" */
+    protected boolean isOrderable = true;;
+    
     /**
      * Creates a new instance containing zero items.
      * 
@@ -100,12 +103,27 @@ public class OrderedIconTray extends IconTray implements ActionListener, ListSel
         this.add(southPanel,BorderLayout.SOUTH);
     }
     
+    /**
+     * @param enable
+     */
     public void enableOrderButtons(boolean enable)
     {
         toStartButton.setEnabled(enable);
         moveLeftButton.setEnabled(enable);
         moveRightButton.setEnabled(enable);
         toEndButton.setEnabled(enable);
+    }
+
+    /**
+     * @param isOrderable the isOrderable to set
+     */
+    public void setOrderable(boolean isOrderable)
+    {
+        this.isOrderable = isOrderable;
+        if (!isOrderable)
+        {
+            southPanel.setVisible(false);
+        }
     }
 
     /* (non-Javadoc)
@@ -236,7 +254,10 @@ public class OrderedIconTray extends IconTray implements ActionListener, ListSel
     public synchronized void addItem(FormDataObjIFace item)
     {
         listModel.add(item);
-        setOrderIndices();
+        if (isOrderable)
+        {
+            setOrderIndices();
+        }
     }
 
 

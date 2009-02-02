@@ -65,7 +65,7 @@ import edu.ku.brc.util.OrderableComparator;
 
 /**
  * A Viewable that will display a set of FormDataObjIFace objects in a file
- * browser-like UI.
+ * browser-like UI. It now used an Orderable IconTray at all times and disables it when it isn't needed.
  *
  * @code_status Beta
  * @author jds
@@ -94,7 +94,7 @@ public class IconViewObj implements Viewable
 
     // UI stuff
     protected boolean                       dataTypeError;
-    protected IconTray                      iconTray;
+    protected OrderedIconTray               iconTray;
     protected RestrictablePanel             mainComp;
     protected JPanel                        southPanel;
     protected JButton                       viewBtn           = null;
@@ -162,22 +162,7 @@ public class IconViewObj implements Viewable
             }
         }
         
-        try
-        {
-            Class<?> dataClass = Class.forName(view.getClassName());
-            if (Orderable.class.isAssignableFrom(dataClass))
-            {
-                // this IconViewObj is showing Orderable objects
-                // so we should use an OrderedIconTray
-                orderableDataClass = true;
-            }
-        }
-        catch (ClassNotFoundException e)
-        {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(IconViewObj.class, e);
-            log.error("Data class of view cannot be found", e);
-        }
+        checkOrderableness();
     }
     
     /* (non-Javadoc)
@@ -227,24 +212,17 @@ public class IconViewObj implements Viewable
         altViewsList = new Vector<AltViewIFace>();
         switcherUI   = FormViewObj.createMenuSwitcherPanel(mvParent, view, altView, altViewsList, mainComp);
         
-        if (orderableDataClass && isEditing)
+        iconTray = new OrderedIconTray(IconTray.SINGLE_ROW);
+        iconTray.addPropertyChangeListener(new PropertyChangeListener()
         {
-            iconTray = new OrderedIconTray(IconTray.SINGLE_ROW);
-            iconTray.addPropertyChangeListener(new PropertyChangeListener()
+            public void propertyChange(PropertyChangeEvent evt)
             {
-                public void propertyChange(PropertyChangeEvent evt)
+                if (evt.getPropertyName().equalsIgnoreCase("item order"))
                 {
-                    if (evt.getPropertyName().equalsIgnoreCase("item order"))
-                    {
-                        rootHasChanged();
-                    }
+                    rootHasChanged();
                 }
-            });
-        }
-        else // the data isn't Orderable or we're in view only mode
-        {
-            iconTray = new IconTray(IconTray.SINGLE_ROW);
-        }
+            }
+        });
         
         iconTray.addMouseListener(new MouseAdapter()
         {
@@ -338,7 +316,6 @@ public class IconViewObj implements Viewable
             southPanel = builder.getPanel();
             mainComp.add(southPanel,BorderLayout.SOUTH);
         }
-        
 
         mainComp.add(iconTray,BorderLayout.CENTER);
         
@@ -350,6 +327,35 @@ public class IconViewObj implements Viewable
     public boolean isDataCompleteAndValid(final boolean throwAwayOnDiscard)
     {
         return true;
+    }
+    
+    /**
+     * Checks to see if the data class is orderable.
+     */
+    protected void checkOrderableness()
+    {
+        try
+        {
+            Class<?> dataClass = Class.forName(dataClassName != null ? dataClassName : view.getClassName());
+            if (Orderable.class.isAssignableFrom(dataClass))
+            {
+                // this IconViewObj is showing Orderable objects
+                // so we should use an OrderedIconTray
+                orderableDataClass = true;
+                return;
+            }
+        }
+        catch (ClassNotFoundException e)
+        {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(IconViewObj.class, e);
+            log.error("Data class of view cannot be found", e);
+        }
+        
+        if (iconTray != null)
+        {
+            iconTray.setOrderable(false);
+        }
     }
     
     /**
@@ -373,7 +379,7 @@ public class IconViewObj implements Viewable
     }
 
     /**
-     * @param e mouse event
+     * 
      */
     protected void doDoubleClick()
     {
@@ -764,6 +770,8 @@ public class IconViewObj implements Viewable
             return;
         }
         this.parentDataObj = (FormDataObjIFace)parentDataObj;
+        
+        adjustDataClassName();
     }
 
     /* (non-Javadoc)
@@ -974,14 +982,11 @@ public class IconViewObj implements Viewable
     }
 
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.ui.forms.Viewable#setCellName(java.lang.String)
+    /**
+     * Uses the parentDataObj to adjust the dataClassName
      */
-    public void setCellName(String cellName)
+    protected void adjustDataClassName()
     {
-        this.cellName = cellName;
-        this.dataSetFieldName = cellName;
-        
         if (parentDataObj == null)
         {
             this.dataClassName = viewDef.getClassName();
@@ -992,6 +997,19 @@ public class IconViewObj implements Viewable
             DBRelationshipInfo rel      = parentTI.getRelationshipByName(cellName);
             this.dataClassName = rel.getClassName();
         }
+        
+        checkOrderableness();
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.Viewable#setCellName(java.lang.String)
+     */
+    public void setCellName(String cellName)
+    {
+        this.cellName = cellName;
+        this.dataSetFieldName = cellName;
+        
+        adjustDataClassName();
     }
     
     /* (non-Javadoc)
