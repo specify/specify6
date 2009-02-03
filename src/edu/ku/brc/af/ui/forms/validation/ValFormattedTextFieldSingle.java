@@ -412,12 +412,18 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
             Insets    i2 = getBorder().getBorderInsets(this);
             int x = i2.left-1;
             int y = i2.top-1;
-            int ww = s.width - i2.right + 1;
-            int hh = s.height - i2.bottom + 1;
-            g.setClip(x, y, ww, hh);            
+            //int ww = s.width - i2.right + 1;
+            int hh = s.height - i2.bottom  + 1;
             
+            String str = bgStr.substring(text.length(), bgStr.length());
+            w = fm.stringWidth(str);
+            
+            g.setClip(x, y, Math.min(x+w, g.getClipBounds().width-x), hh);            
+            
+            g.setColor(Color.RED);
+            g.drawRect(x, y, x+w-1, hh-1);
             g.setColor(textColor);
-            g.drawString(bgStr.substring(text.length(), bgStr.length()), pnt.x, pnt.y);
+            g.drawString(str, pnt.x, pnt.y);
             
             g.setClip(r.x, r.y, r.width, r.height); // reset clip
         }
