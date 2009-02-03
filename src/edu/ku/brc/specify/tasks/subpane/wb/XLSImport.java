@@ -244,11 +244,12 @@ public class XLSImport extends DataImport implements DataImportIFace
     {
         if (cell.getHyperlink() != null)
         {
-            if (cell.getHyperlink().getLastRow() > cell.getRowIndex() || cell.getHyperlink().getLastColumn() > cell.getColumnIndex())
+            HSSFHyperlink l = cell.getHyperlink();
+        	if (l.getLastRow() > cell.getRowIndex() || l.getLastColumn() > cell.getColumnIndex())
             {
-                activeHyperlinks.add(cell.getHyperlink());
+                activeHyperlinks.add(l);
             }
-            return cell.getHyperlink();
+            return l;
         }
         
         for (HSSFHyperlink hl : activeHyperlinks)

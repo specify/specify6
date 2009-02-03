@@ -65,7 +65,16 @@ public class ERTICaptionInfoQB extends ERTICaptionInfo
     @Override
     public Object processValue(Object value)
     {
-        if (value != null && pickList instanceof TypeCode)
+        //This is a quick and dirty way to deal with PartialDates formatting.
+    	if (value instanceof Object[])
+        {
+        	if (uiFieldFormatter != null)
+            {
+                return this.uiFieldFormatter.formatToUI((Object[] )value);
+            }
+        }	
+    	//else
+    	if (value != null && pickList instanceof TypeCode)
         {
             PickListItemIFace item = ((TypeCode )pickList).getItemByValue(value);
             if (item != null)
@@ -74,6 +83,7 @@ public class ERTICaptionInfoQB extends ERTICaptionInfo
             }
             return value.toString();
         }
+    	//else
         return super.processValue(value);
     }
 

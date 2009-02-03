@@ -54,7 +54,10 @@ public class DataImport
         {
             maxLen = wbtmi.getDataFieldLength()/*wbtmi.getFieldInfo().getLength()*/;
         }
-        if (value.length() <= maxLen ) { return value; }
+        if (value == null || value.length() <= maxLen ) 
+        { 
+        	return value; 
+        }
         return trackTrunc(value, row, wbtmi.getViewOrder(), wbtmi.getCaption(), maxLen);
     }
 

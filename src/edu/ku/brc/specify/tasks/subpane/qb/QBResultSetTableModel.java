@@ -169,7 +169,7 @@ public class QBResultSetTableModel extends ResultSetTableModel
 					Integer id = null;
 					if (rowObj != null) 
 					{
-						int col = 0;
+						int skipCols = 0;
 						Iterator<ERTICaptionInfo> cols = captions.iterator();
 						Object[] values;
 						if (rowObj.getClass().isArray())
@@ -181,8 +181,16 @@ public class QBResultSetTableModel extends ResultSetTableModel
 							values = new Object[1];
 							values[0] = rowObj;
 						}
-						for (Object colObj : values) 
+						int col = 0;
+						while (col < values.length) 
 						{
+							Object colObj = values[col];
+							if (skipCols != 0)
+							{
+								skipCols--;
+								continue;
+							}
+							
 							if (col == 0 && hasIds) {
 								if (hasIds) // Does this mean
 								{
@@ -191,7 +199,8 @@ public class QBResultSetTableModel extends ResultSetTableModel
 										log.debug("*** 1 Adding id[" + colObj
 												+ "]");
 								} 
-							} else 
+							} 
+							else 
 							{
 								ERTICaptionInfo erti = cols.next();
 								if (colObj != null
@@ -221,8 +230,20 @@ public class QBResultSetTableModel extends ResultSetTableModel
 									row
 											.add(UIRegistry
 													.getResourceString("QBResultSetTableModel.LOADING_CELL"));
-								} else 
+								}
+								else
 								{
+									if (erti.getColInfoList() != null)
+									{
+										Object[] modifiedColObj = new Object[erti.getColInfoList().size()];
+										modifiedColObj[0] = colObj;
+										for (int subCol = 1; subCol < modifiedColObj.length; subCol++)
+										{
+											modifiedColObj[subCol] = values[++col];
+										}
+										colObj = modifiedColObj;
+									}
+									
 									Object obj = erti.processValue(colObj);
 									row.add(obj);
 									if (debugging)

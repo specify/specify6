@@ -87,7 +87,9 @@ import edu.ku.brc.af.core.db.DBRelationshipInfo.RelationshipType;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.af.ui.db.ERTICaptionInfo;
+import edu.ku.brc.af.ui.db.ERTICaptionInfo.ColInfo;
 import edu.ku.brc.af.ui.forms.formatters.DataObjDataFieldFormatIFace;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
@@ -1352,6 +1354,23 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     erti = new ERTICaptionInfoQB(colName, lbl, true, qfp.getFieldQRI().getFormatter(), 0, qfp.getStringId(), qfp.getPickList());
                 }
                 erti.setColClass(qfp.getFieldQRI().getDataClass());
+                if (qfp.getFieldQRI().getFieldInfo().isPartialDate())
+                {
+                    String precName = qfp.getFieldQRI().getFieldInfo().getDatePrecisionName();
+                    
+                    Vector<ColInfo> colInfoList = new Vector<ColInfo>();
+                    ColInfo columnInfo = erti.new ColInfo(StringUtils.capitalize(precName), precName);
+                    columnInfo.setPosition(0);
+                    colInfoList.add(columnInfo);
+                    
+                    columnInfo = erti.new ColInfo(qfp.getFieldQRI().getFieldInfo().getColumn(), qfp.getFieldQRI().getFieldInfo().getName());
+                    columnInfo.setPosition(1);
+                    colInfoList.add(columnInfo);
+                    erti.setColInfoList(colInfoList);
+                    erti.setColName(null);
+                    // XXX We need to get this from the SchemaConfig
+                    erti.setUiFieldFormatter(UIFieldFormatterMgr.getInstance().getFormatter("PartialDate"));
+                }
                 result.add(erti);
             }
         }

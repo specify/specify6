@@ -88,7 +88,13 @@ public class FieldQRI extends BaseQRI
      */
     public String getSQLFldSpec(final TableAbbreviator ta, final boolean forWhereClause)
     {
-        return ta.getAbbreviation(table.getTableTree()) + "." + getFieldName();
+        String result = ta.getAbbreviation(table.getTableTree()) + "." + getFieldName();
+        if (getFieldInfo() != null && getFieldInfo().isPartialDate())
+        {
+            String precName = getFieldInfo().getDatePrecisionName();
+            result += ", " + ta.getAbbreviation(table.getTableTree()) + "." + precName;
+        }
+        return result;
     }
         
     public Class<?> getDataClass()
