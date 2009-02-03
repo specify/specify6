@@ -51,56 +51,28 @@ public class GiftPreparationBusRules extends BaseBusRules implements CommandList
     {
         super.initialize(viewableArg);
         
-        if (formViewObj != null && formViewObj.getRsController() != null)
+        
+        JButton newBtn = getNewBtn();
+        if (newBtn != null)
         {
-            JButton newBtn = formViewObj.getRsController().getNewRecBtn();
-            if (newBtn != null)
+            // Remove all ActionListeners, there should only be one
+            for (ActionListener al : newBtn.getActionListeners())
             {
-                // Remove all ActionListeners, there should only be one
-                for (ActionListener al : newBtn.getActionListeners())
-                {
-                    newBtn.removeActionListener(al);
-                }
-                
-                newBtn.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e)
-                    {
-                        MultiView loanMV = formViewObj.getMVParent().getMultiViewParent();
-                        if (loanMV != null)
-                        {
-                            formViewObj.getDataFromUI();
-                            CommandDispatcher.dispatch(new CommandAction(CMDTYPE, "AddToGift", loanMV.getCurrentViewAsFormViewObj().getCurrentDataObj()));
-                        }
-                    }
-                });
+                newBtn.removeActionListener(al);
             }
             
-        } else if (viewableArg instanceof TableViewObj)
-        {
-            final TableViewObj tvo = (TableViewObj)viewableArg;
-            JButton newBtn = tvo.getNewButton();
-            if (newBtn != null)
-            {
-                // Remove all ActionListeners, there should only be one
-                for (ActionListener al : newBtn.getActionListeners())
+            newBtn.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e)
                 {
-                    newBtn.removeActionListener(al);
-                }
-                
-                newBtn.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e)
+                    MultiView loanMV = formViewObj.getMVParent().getMultiViewParent();
+                    if (loanMV != null)
                     {
-                        MultiView loanMV = tvo.getMVParent().getMultiViewParent();
-                        if (loanMV != null)
-                        {
-                            //formViewObj.getDataFromUI();
-                            CommandDispatcher.dispatch(new CommandAction(CMDTYPE, "AddToGift", loanMV.getCurrentViewAsFormViewObj().getCurrentDataObj()));
-                        }
+                        formViewObj.getDataFromUI();
+                        CommandDispatcher.dispatch(new CommandAction(CMDTYPE, "AddToGift", loanMV.getCurrentViewAsFormViewObj().getCurrentDataObj()));
                     }
-                });
-            }
+                }
+            });
         }
     }
     
