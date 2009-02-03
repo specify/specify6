@@ -184,8 +184,8 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
             props.put("divName", "Fish");
             props.put("divAbbrev", "IT");
     
-            props.put("collPrefix", "KUFSH");
             props.put("collName", "Fish");
+            props.put("collPrefix", "KUFSH");
             
             // Address
             props.put("addr1", "1345 Jayhawk Blvd");
@@ -237,8 +237,8 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
          
         panels.add(new GenericFormPanel("collection", 
                 "ENTER_COL_INFO",
-                new String[] { "PREFIX", "NAME"}, 
-                new String[] { "collPrefix", "collName"}, 
+                new String[] { "NAME", "PREFIX", }, 
+                new String[] { "collName", "collPrefix", }, 
                 nextBtn));
         
         panels.add(new FormatterPickerPanel(nextBtn, true));

@@ -1940,7 +1940,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     }
                     appRes.setTimestampModified(new Timestamp(System.currentTimeMillis()));
                     appRes.setModifiedByAgent(Agent.getUserAgent());
-                    appRes.setDataAsString(xmlStr);
+                    //appRes.setDataAsString(xmlStr); // this uses a session, which we can't do
+                    appRes.setDataStr(xmlStr);
                     session.saveOrUpdate(appRes);
                     session.commit();
                     session.flush();

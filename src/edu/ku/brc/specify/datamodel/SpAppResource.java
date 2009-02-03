@@ -447,28 +447,7 @@ public class SpAppResource extends DataModelObjBase implements java.io.Serializa
                 session.attach(this);
             }
             
-            if (StringUtils.isNotEmpty(dataStr))
-            {
-                SpAppResourceData ard;
-                if (spAppResourceDatas.size() == 0)
-                {
-                    ard = new SpAppResourceData();
-                    ard.initialize();
-                    ard.setSpAppResource(this);
-                    spAppResourceDatas.add(ard);
-                    
-                } else
-                {
-                    ard = spAppResourceDatas.iterator().next();
-                }
-
-                ard.setData(dataStr.getBytes());
-
-
-            } else if (spAppResourceDatas.size() > 0)
-            {
-                spAppResourceDatas.iterator().next().setData(null);
-            }
+            setDataStr(dataStr);
             
         } catch (Exception ex)
         {
@@ -486,6 +465,35 @@ public class SpAppResource extends DataModelObjBase implements java.io.Serializa
         }
         
         //setSpAppResourceDatas(spAppResourceDatas); // Must call this to make sure it knows we changed it
+    }
+    
+    /**
+     * Sets a string as the data and does NOT save it to the database.
+     * @param dataStr the string data
+     */
+    public void setDataStr(final String dataStr)
+    {
+        if (StringUtils.isNotEmpty(dataStr))
+        {
+            SpAppResourceData ard;
+            if (spAppResourceDatas.size() == 0)
+            {
+                ard = new SpAppResourceData();
+                ard.initialize();
+                ard.setSpAppResource(this);
+                spAppResourceDatas.add(ard);
+                
+            } else
+            {
+                ard = spAppResourceDatas.iterator().next();
+            }
+
+            ard.setData(dataStr.getBytes());
+
+        } else if (spAppResourceDatas.size() > 0)
+        {
+            spAppResourceDatas.iterator().next().setData(null);
+        }
     }
 
     /* (non-Javadoc)
