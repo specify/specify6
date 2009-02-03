@@ -1853,6 +1853,7 @@ public class FormViewObj implements Viewable,
                     edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                     edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormViewObj.class, ex);
                     ex.printStackTrace();
+                    
                 } finally
                 {
                     if (sessionLocal != null)
@@ -2766,6 +2767,16 @@ public class FormViewObj implements Viewable,
                 try
                 {
                     session.attach(dataObj);
+                    
+                    if (carryFwdDataObj != null && carryFwdDataObj instanceof FormDataObjIFace)
+                    {
+                        FormDataObjIFace fdo = (FormDataObjIFace)carryFwdDataObj;
+                        if (fdo.getId() != null && fdo.getId().equals(((FormDataObjIFace)dataObj).getId()))
+                        {
+                            carryFwdDataObj = null;
+                            // XXX should we warn the user?
+                        }
+                    }
                     
                 } catch (org.hibernate.HibernateException ex)
                 {
