@@ -416,9 +416,9 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
             int hh = s.height - i2.bottom  + 1;
             
             String str = bgStr.substring(text.length(), bgStr.length());
-            w = fm.stringWidth(str);
+            int bgW = fm.stringWidth(str);
             
-            g.setClip(x, y, Math.min(x+w, g.getClipBounds().width-x), hh);            
+            g.setClip(x+w, y, Math.min(x+bgW, g.getClipBounds().width-x), hh);            
             
             g.setColor(textColor);
             g.drawString(str, pnt.x, pnt.y);
