@@ -1428,6 +1428,9 @@ public class UIRegistry
         {
             glassPane.setMargin(new Insets(0, 0, statusBar.getSize().height, 0));
         }
+        
+        UIRegistry.getGlassPane().finishedWithDragAndDrop();
+
         oldGlassPane = UIRegistry.getGlassPane();
         
         ((JFrame)UIRegistry.getTopWindow()).setGlassPane(glassPane);

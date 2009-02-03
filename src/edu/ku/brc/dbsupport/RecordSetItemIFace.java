@@ -17,12 +17,12 @@ public interface RecordSetItemIFace extends Comparable<RecordSetItemIFace>
 {
 
     /**
-     * @return
+     * @return the record ID of the record it references
      */
     public abstract Integer getRecordId();
 
     /**
-     * @param recordId
+     * @param recordId sets the record ID of the item it references
      */
     public abstract void setRecordId(final Integer recordId);
     
@@ -32,7 +32,7 @@ public interface RecordSetItemIFace extends Comparable<RecordSetItemIFace>
     public int compareTo(RecordSetItemIFace obj);
     
     /**
-     * 
+     * Clears the reference to the Parent RecordSetIFace
      */
     public abstract void clearParentReference();
 

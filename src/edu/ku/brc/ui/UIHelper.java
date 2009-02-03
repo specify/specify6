@@ -213,6 +213,13 @@ public final class UIHelper
         {
             baseClassHash.put(cls.getSimpleName(), true);
         }
+        
+        /*if (isMacOS())
+        {
+            UIDefaults defaults = UIManager.getDefaults( );
+            defaults.put( "TabbedPane.useSmallLayout", Boolean.TRUE );
+        }*/
+
     }
     
     /**

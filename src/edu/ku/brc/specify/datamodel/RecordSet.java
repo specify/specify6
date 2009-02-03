@@ -553,7 +553,7 @@ public class RecordSet extends CollectionMember implements java.io.Serializable,
                 {
                     conn = DatabaseService.getInstance().getConnection();
                     stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-                    ResultSet rs = stmt.executeQuery("SELECT REcordSetItemID "+sql);
+                    ResultSet rs = stmt.executeQuery("SELECT RecordId "+sql);
                     
                     while (rs.next())
                     {

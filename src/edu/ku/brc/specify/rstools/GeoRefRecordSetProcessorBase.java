@@ -38,6 +38,7 @@ import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.GeoCoordDetail;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.Locality;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.LatLonConverter.DEGREES_FORMAT;
 import edu.ku.brc.util.LatLonConverter.DIRECTION;
 
@@ -164,6 +165,11 @@ public abstract class GeoRefRecordSetProcessorBase implements RecordSetToolsIFac
         
         if (ids.size() > 0)
         {
+            if (ids.size() < recordSet.getNumItems())
+            {
+                UIRegistry.showLocalizedMsg(null, "GeoRefRSProc.NOT_ALL_RES", ids.size(), recordSet.getNumItems());
+            }
+            
             List<GeoCoordDataIFace> geoRefDataList = new Vector<GeoCoordDataIFace>();
             
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
@@ -196,11 +202,14 @@ public abstract class GeoRefRecordSetProcessorBase implements RecordSetToolsIFac
             }
             
             geoRefService.processGeoRefData(geoRefDataList, this, requestParams != null ? requestParams.getProperty("helpcontext") : null);
+        } else
+        {
+            UIRegistry.writeTimedSimpleGlassPaneMsg(UIRegistry.getResourceString("GeoRefRSProc.NO_LOCS"));
         }
     }
     
     /**
-     * Recursive method to discover any given rank that has a lower rank the current Geogrpahy object passed in.
+     * Recursive method to discover any given rank that has a lower rank the current Geography object passed in.
      * @param geo the current geo
      * @param rankId the rankid to be found
      * @return the geo object with the rankid or null

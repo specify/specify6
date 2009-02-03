@@ -16,7 +16,8 @@
 package edu.ku.brc.specify;
 
 import static edu.ku.brc.ui.UIHelper.createLabel;
-import static edu.ku.brc.ui.UIRegistry.*;
+import static edu.ku.brc.ui.UIRegistry.getAction;
+import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
@@ -2515,6 +2516,19 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
       IconManager.loadIcons(XMLHelper.getConfigDir("icons_datamodel.xml")); //$NON-NLS-1$
       IconManager.loadIcons(XMLHelper.getConfigDir("icons_plugins.xml")); //$NON-NLS-1$
       IconManager.loadIcons(XMLHelper.getConfigDir("icons_disciplines.xml")); //$NON-NLS-1$
+      
+      /*if (UIHelper.isMacOS())
+      {
+          Toolkit toolkit = Toolkit.getDefaultToolkit( );
+          Image image = toolkit.getImage( "NSImage://NSUserGroup" );
+
+          IconEntry entry = IconManager.getIconEntryByName("AdminGroup");
+          entry.setIcon(new ImageIcon(image));
+          
+          image = toolkit.getImage( "NSImage://NSUser" );
+          entry = IconManager.getIconEntryByName("person");
+          entry.setIcon(new ImageIcon(image));
+      }*/
       
       if (!UIRegistry.isRelease())
       {
