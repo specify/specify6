@@ -486,6 +486,14 @@ public class TableViewObj implements Viewable,
 
 
     /**
+     * @return the deleteButton
+     */
+    public JButton getDeleteButton()
+    {
+        return deleteButton;
+    }
+
+    /**
      * @return the mvParent
      */
     public MultiView getMVParent()

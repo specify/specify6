@@ -13,8 +13,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */package edu.ku.brc.specify.datamodel.busrules;
 
+import javax.swing.JButton;
+
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
+import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.Collection;
@@ -38,6 +41,29 @@ public class CollectingEventBusRules extends AttachmentOwnerBaseBusRules
     public CollectingEventBusRules()
     {
         super(CollectingEvent.class);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#initialize(edu.ku.brc.af.ui.forms.Viewable)
+     */
+    @Override
+    public void initialize(Viewable viewableArg)
+    {
+        super.initialize(viewableArg);
+        
+        if (AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent())
+        {
+            JButton newBtn = getNewBtn();
+            if (newBtn != null)
+            {
+                newBtn.setVisible(false);
+            }
+            JButton delBtn = getDelBtn();
+            if (delBtn != null)
+            {
+                delBtn.setVisible(false);
+            }
+        }
     }
 
     /* (non-Javadoc)

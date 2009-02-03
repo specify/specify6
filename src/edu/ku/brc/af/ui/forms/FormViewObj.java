@@ -606,6 +606,22 @@ public class FormViewObj implements Viewable,
     }
 
     /**
+     * @return the newRecBtn
+     */
+    public JButton getNewRecBtn()
+    {
+        return newRecBtn;
+    }
+
+    /**
+     * @return the delRecBtn
+     */
+    public JButton getDelRecBtn()
+    {
+        return delRecBtn;
+    }
+
+    /**
      * Creates a special drop "switcher UI" component for switching between the Viewables in the MultiView.
      * @param mvParentArg the MultiView Parent
      * @param viewArg the View

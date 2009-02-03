@@ -24,6 +24,8 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.JButton;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -737,6 +739,50 @@ public class BaseBusRules implements BusinessRulesIFace
         reasonList.add(getErrorMsg("GENERIC_FIELD_MISSING", dataClass, fieldName, ""));
 
         return STATUS.Error;
+    }
+    
+    /**
+     * @return the 'new' btn from the FormViewObj or the TableViewObj
+     */
+    protected JButton getNewBtn()
+    {
+        if (formViewObj != null)
+        {
+            JButton newBtn = formViewObj.getNewRecBtn();
+            if (newBtn == null && formViewObj.getRsController() != null)
+            {
+                return formViewObj.getRsController().getNewRecBtn();    
+            }
+            return newBtn;
+            
+        } else if (viewable instanceof TableViewObj)
+        {
+            TableViewObj tvo = (TableViewObj)viewable;
+            return tvo.getNewButton();
+        }
+        return null;
+    }
+
+    /**
+     * @return the 'delete' btn from the FormViewObj or the TableViewObj
+     */
+    protected JButton getDelBtn()
+    {
+        if (formViewObj != null)
+        {
+            JButton delBtn = formViewObj.getDelRecBtn();
+            if (delBtn == null && formViewObj.getRsController() != null)
+            {
+                return formViewObj.getRsController().getDelRecBtn();    
+            }
+            return delBtn;
+            
+        } else if (viewable instanceof TableViewObj)
+        {
+            TableViewObj tvo = (TableViewObj)viewable;
+            return tvo.getDeleteButton();
+        }
+        return null;
     }
 
     /* (non-Javadoc)
