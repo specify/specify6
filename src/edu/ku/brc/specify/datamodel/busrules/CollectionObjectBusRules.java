@@ -31,6 +31,7 @@ import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
@@ -288,6 +289,13 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
         boolean isOK = true;
         if (deletable != null && dataObjArg instanceof FormDataObjIFace && ((FormDataObjIFace)dataObjArg).getId() != null)
         {
+            Integer count = BasicSQLUtils.getCount("SELECT COUNT(*) FROM CollectionObject WHERE CollectionObjectID = " + ((FormDataObjIFace)dataObjArg).getId());
+            if (count != null && count == 0)
+            {
+                UIRegistry.showLocalizedMsg("NO_RECORD_FOUND_TITLE", "NO_RECORD_FOUND");
+                return;
+            }
+            
             Object dataObj = dataObjArg;
             DataProviderSessionIFace session = sessionArg != null ? sessionArg : DataProviderFactory.getInstance().createSession();
             try
