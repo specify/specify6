@@ -1326,8 +1326,15 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
         return askForRecordSet(id, additionalRS, false);
      }
     
-    public static RecordSetIFace askForRecordSet(final Vector<Integer> tableIds, final Vector<RecordSetIFace> additionalRS,
-    		final boolean msgIfNoRecordsets)
+    /**
+     * @param tableIds
+     * @param additionalRS
+     * @param msgIfNoRecordsets
+     * @return
+     */
+    public static RecordSetIFace askForRecordSet(final Vector<Integer> tableIds,
+                                                 final Vector<RecordSetIFace> additionalRS,
+    		                                     final boolean msgIfNoRecordsets)
     {
         UsageTracker.incrUsageCount("RS.ASKRS");
         ChooseRecordSetDlg dlg = new ChooseRecordSetDlg(tableIds);
@@ -1338,11 +1345,12 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
         
         if (dlg.hasRecordSets())
         {
-            if (dlg.getRecordSets().size() == 1)
+            // Commenting out because user want a chance to say 
+            // yes or cancel even when there is one item
+            /*if (dlg.getRecordSets().size() == 1)
             {
                 return dlg.getRecordSets().get(0);
-                
-            }
+            }*/
             // else
             dlg.setVisible(true); // modal (waits for answer here)
             return dlg.isCancelled() ? null : dlg.getSelectedRecordSet();
