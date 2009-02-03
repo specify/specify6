@@ -7047,7 +7047,7 @@ public class BuildSampleDatabase
                     }
                     rs.close();
                     
-                    try
+                    /*try
                     {
                         String createUserStr = "GRANT SELECT,INSERT,UPDATE,DELETE ON "+databaseName+".* TO '"+saUserName+"'@'%' IDENTIFIED BY '"+saPassword+"'";
                         int rv = stmt.executeUpdate(createUserStr);
@@ -7064,7 +7064,7 @@ public class BuildSampleDatabase
                     {
                         //JOptionPane.showMessageDialog(null, "Master User["+saUserName+"] could not be created!");
                         e.printStackTrace();
-                    }
+                    }*/
                     return true;
                 }
             } catch (SQLException ex)
