@@ -323,7 +323,13 @@ public class StatsTrackerTask extends BaseTask
         if (sql != null)
         {
             count = BasicSQLUtils.getCount(sql);
-            statsList.add(new NameValuePair(statName, Integer.toString(count)));
+            if (count != null)
+            {
+                statsList.add(new NameValuePair(statName, Integer.toString(count)));
+            } else
+            {
+                return 0;
+            }
         }
         return count != null ? count : 0;
     }
