@@ -615,6 +615,12 @@ public class ResourceImportExportDlg extends CustomDialog
                             SpAppResource fndAppRes = checkForOverrideAppRes(fileName);
                             if (fndAppRes != null)
                             {
+                                // Show Dialog here and tell them it found a resource to override by the same name
+                                // and ask whether they want to override it or not
+                            }
+                            
+                            if (fndAppRes != null) // overriding
+                            {
                                 appRes.setMetaData(fndAppRes.getMetaData());
                                 appRes.setDescription(fndAppRes.getDescription());
                                 appRes.setFileName(fileName);
