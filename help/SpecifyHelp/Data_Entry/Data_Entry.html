@@ -18,11 +18,11 @@
 <p>Data Entry forms are used for entering, editing and viewing collection data. Because Specify uses related fields to link information, most data can be entered using the Collection Object form; however it may be useful to enter background information, such as Agents and Collecting Events before entering Collection Objects. </p>
 <p>Access Data Entry forms by clicking the <img src="../../images/data_entry.png" width="20" height="20"> (Data Entry) button. A list of forms will appear in the Sidebar.</p>
 <p>Each discipline has access to a specific set of forms for viewing, entering and editing data. Specify ships with the most frequently used forms listed on the Sidebar. Less common forms are found by clicking <img src="../../images/more_forms.png" alt="more forms" width="32" height="32"> (More Forms)  in the sidebar and choosing a form from the pop-up dialog. </p>
-<p>A <strong>Form Configuration</strong>  tool gives access to less frequently used forms and also allows the Sidebar and More Forms lists to be interchanged and rearranged:</p>
+<p>A <strong><a name="data_entry_configure"></a>Form Configuration</strong>  tool gives access to less frequently used forms and also allows the Sidebar and More Forms lists to be interchanged and rearranged:</p>
 <p>Right-button-click an open section of the sidebar to activate the <img src="../../images/configure_box.png" width="110" height="27"> button.</p>
 <ul>
   <li>Use the <img src="../../images/ReorderUp16x16.png" width="16" height="16">,and <img src="../../images/ReorderDown16x16.png" width="16" height="16"> (reorder) buttons to change the order in which the forms appear in the Sidebar and More Forms list.</li>
-  <li>Use the <img src="../../images/Map16x16.png" width="16" height="16">, and <img src="../../images/Unmap16x16.png" width="16" height="16"> icon (move) buttons to move a Sidebar item to the Extra Forms list and vise versa. </li>
+  <li>Use the <img src="../../images/Map16x16.png" width="16" height="16">, and <img src="../../images/Unmap16x16.png" width="16" height="16">  (move) buttons to move a Sidebar item to the Extra Forms list and vise versa. </li>
   <li>Click the <img src="../../images/add.png" width="16" height="16">(add) button for a list of additional forms that can be moved into either the Sidebar or More Forms list.</li>
   <li>Click the <img src="../../images/delete.png" width="16" height="16">(delete) button to remove forms from either the Sidebar or More Forms list; this will put them back into the master list.</li>
 </ul>
@@ -30,74 +30,13 @@
 <p>Most forms can be completed by understanding related information, form controls and icons and other tools like Carry Forward, Auto Numbering, and</p>
 <h3><u>Unique Forms</u></h3>
 <h4>Form vs Tree</h4>
-<p>Specify represents Taxon, Geography, Storage, Lithostratigraphy and Chronostratigraphy  data as both trees and  forms.  When entering data using a form, keep in mind that Carry Forward is not available for the Parent field and entering Children via the tree  can save time and energy.</p>
-<p><em><strong>Note:</strong></em> Tables can not be edited simultaneously in both the Tree and Form mode, or by multiple users. For example, if a user is editing the Taxon Tree and wants to open a Taxon Form it will open as <em>View Only</em>. In addition, if another user tries to open either the Taxon Tree (or Taxon Form) a dialog will pop-up stating that the Tree is locked and will open in <em>View Only </em>mode.</p>
+<p>Specify represents Taxon, Geography, Storage, Lithostratigraphy and Chronostratigraphy  data in both trees and  forms.  When entering data using a form, keep in mind that Carry Forward is not available for the Parent field and entering Child Nodes via the tree  can save time and energy.</p>
+<p>When adding, editing or viewing data as a tree users can also access forms for individual nodes by clicking either the edit (<img src="../../images/Edit-2-16x16.png" alt="edit" width="16" height="16">) button or the add (<img src="../../images/add.png" alt="add" width="16" height="16">) button. Trees are not accessible when using the form system. </p>
+<p><em><strong>Note:</strong></em> Tables can not be edited simultaneously in both the Tree and Form mode, or by multiple users. For example, if a user is editing the Taxon Tree and wants to open a Taxon Form it will open as <em>View Only</em>. In addition, if another user tries to open either the Taxon Tree or Taxon Form a dialog will pop-up stating that the Tree is locked and will open in <em>View Only </em>mode.</p>
 <p>&nbsp;</p>
 <p><strong>Taxon Form</strong></p>
-<p>Adding  a Taxon via a form also adds the Taxo as a node on the Taxon tree. The following fields are available on the Taxon form.</p>
-<table width="75%" border="1" cellspacing="2" cellpadding="6">
-  <tr>
-    <td width="31%"><u><strong>Field Label</strong></u></td>
-    <td width="69%"><u><strong>Field Usage</strong></u></td>
-  </tr>
-  <tr>
-    <td><strong>Name</strong></td>
-    <td>Taxon Name.</td>
-  </tr>
-  <tr>
-    <td><strong>Parent</strong></td>
-    <td>Taxon Name of Parent.</td>
-  </tr>
-  <tr>
-    <td><strong>Rank</strong></td>
-    <td>Rank in the Taxon Tree.</td>
-  </tr>
-  <tr>
-    <td><strong>Common Name</strong></td>
-    <td>Common name.</td>
-  </tr>
-  <tr>
-    <td><strong>Source</strong></td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td><strong>Author</strong></td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td><strong>Is Preferred</strong></td>
-    <td>This box is checked if the Taxon is not a synonym. </td>
-  </tr>
-  <tr>
-    <td><strong>Preferred Name</strong></td>
-    <td>This field refers to the Preferred Taxon name and is used only when the <em>Is Preferred</em> box is no checked.</td>
-  </tr>
-  <tr>
-    <td><strong>Is Hybrid</strong></td>
-    <td>If the Taxon is a hybrid this box is checked.</td>
-  </tr>
-  <tr>
-    <td><strong>Hybrid Parent 1</strong></td>
-    <td>This field refers to a parent of the hybrid.</td>
-  </tr>
-  <tr>
-    <td><strong>Hybrid Parent 2</strong></td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td><strong>Children</strong></td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td><strong>Synonyms</strong></td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td><strong>Taxon Citations</strong></td>
-    <td>&nbsp;</td>
-  </tr>
-</table>
-<p>&nbsp;</p>
+<p>The Taxon form includes fields from the Taxon table such as Name, Parent, Rank, Common Name, Source, Author, synonym information, Child Taxa and Taxon Citations. </p>
+<p>It also includes information for Hybrids by combining the Hybrid Parent 1 field and the Hybrid Parent 2 field.</p>
 <p>&nbsp;</p>
 <h4>Determinations Form</h4>
 <p>The Determinations form includes many fields that may not be immediately recognizable.</p>

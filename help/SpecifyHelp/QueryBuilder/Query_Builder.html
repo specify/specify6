@@ -3,6 +3,9 @@
 <head>
 <link href="../../main.css" rel="stylesheet" type="text/css" media="screen"></link>
 <title>Query Builder</title>
+<style type="text/css">
+.style1 {font-style: italic}
+</style>
 </head>
 
 <BODY BGCOLOR=#ffffff>
@@ -13,18 +16,26 @@
 </table>
 <h2><strong> <img src="../../images/query2_32x32.png" width="32" height="32" /> Query</strong> Builder </h2>
 <p>The purpose of entering data into the Specify database is to be able to retrieve that data when you need it. Specify's Query builder offers a flexible interface for defining and running searches. Queries are a precise request for information retrieval and can restrict the type of returned records based on the contents of almost any of Specify's  data fields. </p>
+<p>These queries can then be used to create <a href="../RecordSet/record_set.html">Record Sets</a> or <a href="../Reports/reports.html">Reports</a>. </p>
 <p>Open the Query Builder by clicking the <img src="../../images/query20x20.png" width="20" height="20" /> (Query icon) on the Task Bar.</p>
 <p>The Sidebar displays a list of frequently used tables to begin the query configuration. Less common tables are found by clicking <img src="../../images/more_tables.png" width="20" height="20" /> (More Tables)  in the sidebar and choosing a table from the pop-up dialog. </p>
 <p>A <strong><a name="query_creators"></a>Query Creators  Configuration</strong> tool gives access to less frequently used tables and also allows the Sidebar and More Tables lists to be interchanged and rearranged:</p>
-<p>Right-button-click an open section of the sidebar to activate the Context Menu.</p>
+<p>Choose <em>Tabs &gt; Configure Sidebar</em> from the Menu bar or right-button-click an open section of the sidebar to activate the Context Menu.</p>
 <p>Choose <em>Configure</em><em> Query Creators</em> to open the Configure New Queries dialog.</p>
 <ul>
   <li>Use the <img src="../../images/ReorderUp16x16.png" alt="b" width="16" height="16" />,and <img src="../../images/ReorderDown16x16.png" alt="b" width="16" height="16" /> (reorder) buttons to change the order in which the forms appear in the Sidebar and More Forms list.</li>
-  <li>Use the <img src="../../images/Map16x16.png" alt="b" width="16" height="16" />, and <img src="../../images/Unmap16x16.png" alt="b" width="16" height="16" />icon (move) buttons to move a Sidebar item to the Extra Forms list and vise versa. </li>
+  <li>Use the <img src="../../images/Map16x16.png" alt="b" width="16" height="16" />, and <img src="../../images/Unmap16x16.png" alt="b" width="16" height="16" /> (move) buttons to move a Sidebar item to the Extra Forms list and vise versa. </li>
   <li>Click the <img src="../../images/add.png" alt="b" width="16" height="16" />(add) button for a list of additional forms that can be moved into either the Sidebar or More Forms list.</li>
   <li>Click the <img src="../../images/delete.png" alt="b" width="16" height="16" />(delete) button to remove forms from either the Sidebar or More Forms list; this will put them back into the master list.</li>
 </ul>
 <p><em><strong>Note:</strong></em> deleting a table from either the Sidebar or More Tables will place it back in the master list which is accessed by the <img src="../../images/add.png" alt="add" width="16" height="16" /> (add) button.</p>
+<p>&nbsp;</p>
+<p>A <a name="configure_queries" id="configure_queries"></a><strong>Configure Queries</strong> tool allows saved queries to be rearranced on  Sidebar. Choose <em>Tabs &gt; Configure Sidebar</em> from the Menu bar or right-button-click an open section of the sidebar to activate the Context Menu.</p>
+<p>Choose <em>Configure</em><em> Queries</em> to open the Configure Queries dialog.</p>
+<ul>
+  <li>Use the <img src="../../images/ReorderUp16x16.png" alt="b" width="16" height="16" />,and <img src="../../images/ReorderDown16x16.png" alt="b" width="16" height="16" /> (reorder) buttons to change the order in which the forms appear in the Sidebar and More Forms list.</li>
+  <li>Use the <img src="../../images/Map16x16.png" alt="b" width="16" height="16" />, and <img src="../../images/Unmap16x16.png" alt="b" width="16" height="16" /> (move) buttons to move a saved query from the Favorite Queries sidebar list to the Other Queries list and vise versa. </li>
+</ul>
 <p>&nbsp;</p>
 <p>Choose a table from this Sidebar list to begin building the query. </p>
 <p><em><strong>Note:</strong></em> Because of the way Specify combines related information almost every field can be found from within most tables. This will determine the data elements to be returned i.e. searching from Collection Objects (CO) will return CO records. </p>
@@ -50,12 +61,12 @@
 <p><img src="../../images/query_criteria.png" width="1187" height="48" /></p>
 <p><em><strong>Note:</strong></em> Not all fields include Criteria. For instance; a Check Box does not have searchable Criteria and needs only an Operator.</p>
 <p>&nbsp;</p>
-<table width="65%" border="1" cellspacing="2" cellpadding="6">
+<table width="100%" border="1" cellspacing="2" cellpadding="6">
   <tr>
-    <td width="23%"><u><strong>Heading</strong></u></td>
-    <td width="23%"><u><strong>Choices</strong></u></td>
-    <td width="77%"><u><strong>Result</strong></u></td>
-    <td width="77%"><u><strong>Available for Field Type</strong></u></td>
+    <td width="12%"><u><strong>Heading</strong></u></td>
+    <td width="11%"><u><strong>Choices</strong></u></td>
+    <td width="39%"><u><strong>Result</strong></u></td>
+    <td width="38%"><u><strong>Available for Field Type</strong></u></td>
   </tr>
   <tr>
     <td><strong>Not</strong></td>
@@ -126,7 +137,7 @@
   <tr>
     <td>&nbsp;</td>
     <td>Empty</td>
-    <td>It is important to note that Empty is a Condition and not the same as a blank Condition. A Condition that is left blank will be included in the results but not in the search, a Condition that <em>Empty</em> will only return records that contain an empty field.</td>
+    <td>It is important to note that <em>Empty</em> is a Condition and not the same as a  Condition left blank. A Condition that is left blank will be included in the results but not in the search, a Condition that is<em> set to Empty</em> will only return records that contain an empty field.</td>
     <td>Number, Check Box,  Text</td>
   </tr>
   <tr>
@@ -150,7 +161,8 @@
   <tr>
     <td><strong>Sort</strong></td>
     <td>&nbsp;</td>
-    <td>Allows the results to be sorted.</td>
+    <td><p>Allows the results to be sorted.</p>
+    <p>It is often useful to sort duplicate data so that results are easier to read and the information may be grouped on a report. For example, if a report is desired that lists Collection Objects according to their Taxon Name then the Query must be created with the Taxon Name sorted and then grouped in the Report. </p></td>
     <td>All</td>
   </tr>
   <tr>
@@ -169,7 +181,7 @@
     <td>&nbsp;</td>
     <td><img src="../../images/down.png" width="16" height="16" /></td>
     <td>Sort in ascending order.</td>
-    <td>&nbsp;</td>
+    <td>See above.</td>
   </tr>
   <tr>
     <td><strong>Show</strong></td>
@@ -210,6 +222,7 @@
 <p>When it is necessary to use an asterisk (*) as part of the search criteria preceed it with a &quot;\&quot;. For example; when it is desired to find Cli*nton enter the search criteria as *Cli\*nton*.</p>
 <h4>&nbsp;</h4>
 <h4><strong>Other</strong> Controls</h4>
+<p>The order of the condition row determines the order in which fields will be sorted as well as the arrangement of the fields in the results panel. If a Query includes both Taxon Name and the Last Name of the Collector are both are sorted but Taxon Name is ordered first Specify will sort Taxon Name first, then Last Name of the Collector. </p>
 <table width="75%" border="1" cellspacing="2" cellpadding="6">
   <tr>
     <td><u><strong>Side Icons</strong></u></td>
@@ -240,7 +253,7 @@
   </tr>
   <tr>
     <td><strong>Distinct</strong> (checkbox)</td>
-    <td>Returns unique results only.</td>
+    <td>Returns unique results only (no duplicates).</td>
   </tr>
   <tr>
     <td><strong>Count</strong> (checkbox)</td>
@@ -260,6 +273,7 @@
 <p><em><strong>Note:</strong></em> Saving a Query is different from saving the Query results. The results of a Query are saved as a Record Set. </p>
 <p>&nbsp;</p>
 <p><strong>Query Results</strong></p>
+<p>Query results are limited to 5000 records. A return count can include more records, but Specify can not display more than 5000 result records.</p>
 <p>Query results display as a grid in a Query Results window. They are designated by a green (<img src="../../images/query_colors.png" width="20" height="20" />) results bar.</p>
 <p>Results can be manipulated and utilized in various ways using the icons on the results bar.</p>
 <span class="MichaelsChanges">
@@ -302,7 +316,7 @@
   </tr>
   <tr>
     <td><div align="center"><strong>Configure Queries</strong></div></td>
-    <td>Opens a Configuration tool for including the saved Queries in either the Sidebar or More Queries lists. This configuration tool works the same as <a href="#query_creators">Query Creators Configuration</a> above.</td>
+    <td>Opens a Configuration tool for including the saved Queries in either the Sidebar or Other Queries lists. This configuration tool is explained in <a href="#configure_queries">Configure Queries</a>.</td>
   </tr>
   <tr>
     <td><p align="center"><strong>Import Queries</strong></p>    </td>
@@ -313,8 +327,9 @@
     <td>Opens a save dialog to save the Query in a location on the local file system.</td>
   </tr>
 </table>
+<p>The configure tools can also be accessed by choosing <em>Tabs &gt; Configure Sidebar</em> from the Menu bar.</p>
 <p>&nbsp;</p>
-<p><strong>Import / Export Query</strong></p>
+<p><strong><a name="import_query" id="import_query"></a>Import / Export Query</strong></p>
 <p>Queries are imported and exported as a group of queries contained in a file. Even when only one query is being exported, Specify writes the query to a file. </p>
 <p>The exported query file will be saved as an xml file.</p>
 <p><u>Import</u></p>

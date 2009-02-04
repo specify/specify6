@@ -21,133 +21,34 @@
 <td><h2>Tree Definition</h2></td></tr>
 </table>
 <p>The  Tree Definition tool defines the ranks available in a  Tree as well as with how these ranks are enforced in data entry and used in aggregating the full name. Tree Definition tools are available for each of the trees.</p>
+<p>Specify ships with Taxon ranks included for all disciplines as defined by the Catalog of Life. </p>
 <p> Click the <em><img src="../../images/Tree-32x32.png" alt="tree" width="20" height="20" /> Trees</em> button on the Task Bar, then select a tree from the Sidebar list under <em>Edit Tree Definition</em>.</p>
 <p>The resulting window displays a hierarchical list of included Ranks in a grid view. </p>
 <p>A tree and form may not write to the database at the same time. Therefore, if a  Tree or Tree Definition are open a  form  can be viewed but not edited. For example, if user A is editing the Taxon Tree Definition user B will not be allowed to edit a Taxon form.</p>
-<p>Also, a Tree and Tree Definition can not be open at the same time. If the Tree Definition is open and the Tree is selected the Tree will replace the definition in the same tab, therefore closing the Tree Definition. </p>
+<p>Also, a Tree and Tree Definition representing the same Table can not be open at the same time. If the Tree Definition is open and the Tree is selected the Tree will replace the definition in the same tab, therefore closing the Tree Definition. </p>
 <p>&nbsp;</p>
 <h4>Change Tree Title</h4>
-<p>Click on the <img src="../../../images/Edit-2-16x16.png" alt="edit" width="16" height="16" /> (edit) button next to the tree title  to edit the title of the Tree. This is also the name given to the first node in te tree.</p>
+<p>Click on the <img src="../../images/Edit-2-16x16.png" alt="edit" width="16" height="16" /> (edit) button next to the tree title  to edit the title of the Tree. This is also the name given to the first node in te tree.</p>
 <p>&nbsp;</p>
 <h3>Edit / Add / Delete Ranks</h3>
-<p>First select the Rank, then choose one of the following buttons:</p>
-<table width="973" border="1" cellpadding="6" cellspacing="2">
-  <tr>
-    <td width="52"><div align="center"><u><strong>Button</strong></u></div></td>
-    <td width="51"><div align="center"><u><strong>Action</strong></u></div></td>
-    <td width="228"><div align="center"><u><strong>Result</strong></u></div></td>
-    <td width="574"><div align="center"><u><strong>Note</strong></u></div></td>
-  </tr>
-  <tr>
-    <td><div align="center"><img src="../../../images/Edit-2-16x16.png" alt="edit" width="16" height="16" /></div></td>
-    <td>Edit </td>
-    <td>Opens the Tree Definition Data Entry Form.</td>
-    <td>The edit dialog will also open by double clicking on the Node. Names of predefined ranks may not be edited.</td>
-  </tr>
-  <tr>
-    <td><div align="center"><img src="../../../images/delete.png" alt="delete" width="16" height="16" /></div></td>
-    <td>Delete </td>
-    <td>Deletes the selected Rank.</td>
-    <td>Ranks which are included in other Table associations may not be deleted. See below.</td>
-  </tr>
-  <tr>
-    <td><div align="center"><img src="../../../images/add.png" width="16" height="16" /></div></td>
-    <td>Add </td>
-    <td><p>Opens dialogs for adding predefined levels or custom levels. If no predefined levels are available only the custom levels dialog will appear.</p>
-    </td>
-    <td>The new Node will appear under the selected Node.</td>
-  </tr>
-</table>
+<p>Buttons for editing (<img src="../../images/Edit-2-16x16.png" alt="edit" width="16" height="16" />), and adding (<img src="../../images/add.png" alt="" width="16" height="16" />), deleting (<img src="../../images/delete.png" alt="delete" width="16" height="16" />) ranks are located at the bottom right of the Workspace window.</p>
+<p>Select a rank, then click either <strong>edit</strong> or <strong>add</strong> to open the Rank Properties dialog. New ranks will be added below the selected rank.</p>
+<ul>
+  <li><strong>Name</strong> of the rank.</li><br />
+  <li><strong>Remarks</strong> about the rank.</li><br />
+  <li>I<strong>n Full Name </strong>will use the rank when displaying the full name for any associated Collection Objects (which appears in the Taxon Full Name field of the Taxon table). The Full Name is also displayed in the Preferred Taxon field on the Determinations form and is useful when when running queries and reports and the full name is desired. <br />
+  <br />Once the full name is configured and data is added in the tree the full name configuration is not editable.</li><br />
+  <li><strong>Enforced</strong> ensures that the Rank can not be skipped when attaching children</li>
+</ul>
 <p>&nbsp;</p>
-<h4>Nodes may not be deleted if nodes in the rank are in use.</h4>
-<table  border="1" cellspacing="2" cellpadding="6">
-  <tr>
-    <td width="135"><div align="center"><u><strong>Tree</strong></u></div></td>
-    <td width="300"><div align="center"><u><strong>Deletion Requirements</strong></u></div></td>
-  </tr>
-  <tr>
-    <td><div align="center">Taxon</div></td>
-    <td><ul>
-      <li> Not used in a Determination.</li>
-      <li>Not included in a Taxon citation.</li>
-      <li>Not a parent node of a Hybrid.</li>
-      <li>Not a preferred name of a Synonym.</li>
-    </ul></td>
-  </tr>
-  <tr>
-    <td><div align="center">Geography</div></td>
-    <td><ul>
-      <li>Not used in a Locality.</li>
-      <li>Not a preferred name of a Synonym.</li>
-    </ul></td>
-  </tr>
-  <tr>
-    <td><div align="center">Storage</div></td>
-    <td><ul>
-      <li>Not used in a Preparation.</li>
-      <li>Not a preferred name of a Synonym.</li>
-    </ul></td>
-  </tr>
-  <tr>
-    <td><div align="center">Chronostratigraphy</div></td>
-    <td><ul>
-      <li>Not used in a Paleo Context.</li>
-      <li>Not a preferred name of a Synonym.</li>
-    </ul></td>
-  </tr>
-  <tr>
-    <td><div align="center">Lithostratigraphy</div></td>
-    <td><ul>
-      <li>Not used in a Paleo Context.</li>
-      <li>Not a preferred name of a Synonym.</li>
-    </ul></td>
-  </tr>
-</table>
+<p>Click the delete button to delete a rank. Ranks may <strong>NOT</strong> be deleted if nodes are associated with it.</p>
 <p>Once the change is saved the Tree will update. If the Tree is extremely large this may take several minutes. </p>
-<p><em><strong>Note:</strong></em> If the save (or update) process is interrupted, the Tree will update, and a prompt will appear, the next time Specify is launched.</p>
+<p><em><strong>Note:</strong></em> If the save (or update) process is interrupted, the Tree will need to update when Specify relaunches. A prompt will appear notifying the user that the Tree is updating.</p>
 <p>&nbsp;</p>
-<h3>Predefined Levels Form</h3>
-<p>Edits to large Tree Definitions will require an ample amount of time to write to the data base. To aid this process, Specify has predefined ranks available for Taxon Trees. When adding a Taxon rank, the first dialog that pops-up will require a rank name and offer choices from the predefined ranks, as well as a choice to type in a custom rank name. Whenever possible, it is highly recommended that users choose a predefined rank. </p>
+<h3>Predefined Ranks</h3>
+<p>Taxon, Chronostratigraphy, Geography and Lighostratigraphy Trees will include predefined ranks for the Tree Definitions. These will be included in the default Tree Defintion for each Discipline. If a predefined ranks are deleted from the Tree Definition, and ranks are then being added a Predefined Ranks dialog will precede the Edit Rank Properties dialog offering a list of predefined ranks to choose among. If the list does not include the desired Rank, one can be added by clicking the <em>Custom</em> button and naming the rank in the ensuing Edit Rank Properties dialog.</p>
+<p>Whenever possible, it is highly recommended that users choose a predefined rank. </p>
 <p>There is a limit to the number of custom ranks available between each predefined rank. When custom ranks are no longer able to be added between the predefined ranks, the status bar message <em>Unable to assign Rank</em> will appear.</p>
-<table width="47%" border="1" cellspacing="2" cellpadding="6">
-  <tr>
-    <td width="29%"><div align="center"><u><strong>Option</strong></u></div></td>
-    <td width="71%"><div align="center"><u><strong>Result</strong></u></div></td>
-  </tr>
-  <tr>
-    <td><div align="center"><strong>Custom Level</strong></div></td>
-    <td>Adds a custom rank name to the tree definition. </td>
-  </tr>
-  <tr>
-    <td><div align="center"><strong>Okay</strong></div></td>
-    <td>Accepts the rank and opens the Tree Definition Data Entry Form.</td>
-  </tr>
-</table>
-<p>&nbsp;</p>
-<h4>Tree Definition Data Entry Form</h4>
-<table border="1" cellspacing="2" cellpadding="6">
-  <tr>
-    <td><div align="center"><u><strong>Option</strong></u></div></td>
-    <td><div align="center"><u><strong>Result</strong></u></div></td>
-  </tr>
-  <tr>
-    <td><div align="center"><strong>Name</strong></div></td>
-    <td>Name of the node.</td>
-  </tr>
-  <tr>
-    <td><div align="center"><strong>Remarks</strong></div></td>
-    <td>Describes the node.</td>
-  </tr>
-  <tr>
-    <td><div align="center"><strong>Is In Full Name</strong></div></td>
-    <td> Checking this box will include the node in the full name. Once the full name is configured and data is added in the tree the full name configuration is not editable.</td>
-  </tr>
-  <tr>
-    <td><div align="center"><strong>Is Enforced</strong></div></td>
-    <td>Ensures that the Rank can not be skipped when attaching children.</td>
-  </tr>
-</table>
-<p>&nbsp;</p>
 <p><em><strong>Note:</strong></em> Ranks must be defined in the Tree Definition before they can be entered as nodes in either a tree or form. For example, the City of Lawrence can not be added under Douglas County in a Geography Tree if the Tree Definition does not include a Rank for City. </p>
 <p>&nbsp;</p>
 </body>
