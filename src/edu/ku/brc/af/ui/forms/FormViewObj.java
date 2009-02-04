@@ -208,6 +208,8 @@ public class FormViewObj implements Viewable,
     protected PanelBuilder                  builder;
 
     protected boolean                       isSkippingAttach = false; // Indicates whether to skip before setting data into the form
+    protected Boolean                       isJavaCollection = null;
+    
     protected FormValidator                 formValidator   = null;
     protected Object                        parentDataObj   = null;
     protected Object                        dataObj         = null;
@@ -308,7 +310,6 @@ public class FormViewObj implements Viewable,
         this.cellName    = cellName;
         this.bgColor     = bgColor;
 
-        
         businessRules    = view.createBusinessRule();
         isEditing        = altView.getMode() == AltViewIFace.CreationMode.EDIT;
         
@@ -572,6 +573,33 @@ public class FormViewObj implements Viewable,
         {
             rsController.setNewObj(isNewlyCreatedDataObj);
         }
+    }
+    
+    /**
+     * Helper method for discovering the type of objects it will hold.
+     */
+    protected boolean isJavaCollection()
+    {
+        if (parentDataObj != null)
+        {
+            if (isJavaCollection == null)
+            {
+                isJavaCollection = false;
+                DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(parentDataObj.getClass().getName());
+                if (ti != null)
+                {
+                    DBRelationshipInfo ri = ti.getRelationshipByName(cellName);
+                    if (ri != null)
+                    {
+                        //log.debug(ri.getType());
+                        isJavaCollection = ri.getType() == DBRelationshipInfo.RelationshipType.OneToMany ||
+                                           ri.getType() == DBRelationshipInfo.RelationshipType.ManyToMany;
+                    }
+                }
+            }
+            return isJavaCollection;
+        }
+        return false;
     }
     
     /**
@@ -1908,7 +1936,12 @@ public class FormViewObj implements Viewable,
         {
             // NOTE: This is primarily for single objects that are in a sub-form.
             // Not calling setHasNewData because we need to traverse and setHasNewData doesn't
-            traverseToToSetAsNew(mvParent.getMultiViewParent(), true, false); // don't traverse deeper than our immediate children
+            
+            ///////////////////////////////
+            // 02/03/09 rods - set second argument to false and that seems to fix several bugs
+            // that was causing data to disappear because it was resetting the fields in the parent form.
+            
+            traverseToToSetAsNew(mvParent.getMultiViewParent(), false, false); // don't traverse deeper than our immediate children
         }
         
         if (recordSetItemList != null)
@@ -2687,35 +2720,33 @@ public class FormViewObj implements Viewable,
         }
         
         // We do this because the process of determining whether something can be deleted might take a while.
-        if (businessRules != null)
+        
+        if (addSearch)
         {
-            if (addSearch)
+            doDeleteDataObj(dataObj, session, true);
+            
+        } else if (businessRules != null)
+        {
+            UIRegistry.getStatusBar().setIndeterminate(STATUSBAR_NAME, true);
+            final SwingWorker worker = new SwingWorker()
             {
-                doDeleteDataObj(dataObj, session, true);
-                
-            } else
-            {
-                UIRegistry.getStatusBar().setIndeterminate(STATUSBAR_NAME, true);
-                final SwingWorker worker = new SwingWorker()
+                public Object construct()
                 {
-                    public Object construct()
+                    businessRules.okToDelete(dataObj, session, FormViewObj.this);
+                    return null;
+                }
+
+                //Runs on the event-dispatching thread.
+                public void finished()
+                {
+                    UIRegistry.getStatusBar().setProgressDone(STATUSBAR_NAME);
+                    if (session != null)
                     {
-                        businessRules.okToDelete(dataObj, session, FormViewObj.this);
-                        return null;
+                        session.close();
                     }
-    
-                    //Runs on the event-dispatching thread.
-                    public void finished()
-                    {
-                        UIRegistry.getStatusBar().setProgressDone(STATUSBAR_NAME);
-                        if (session != null)
-                        {
-                            session.close();
-                        }
-                    }
-                };
-                worker.start();
-            }
+                }
+            };
+            worker.start();
         }
     }
 
@@ -3296,6 +3327,11 @@ public class FormViewObj implements Viewable,
             // This is the new way
             sepController = rowBuilder.getPanel();
             
+            if (formValidator != null && newRecBtn != null)
+            {
+                formValidator.addEnableItem(newRecBtn, FormValidator.EnableType.ValidItems);
+            }
+            
             setAddDelListeners(newRecBtn, delRecBtn);
         }
             
@@ -3842,54 +3878,26 @@ public class FormViewObj implements Viewable,
             rsController.updateUI();
         }
         
-        if (true) return;
-        
-        //log.debug("----------------- "+formViewDef.getName()+"----------------- ");
-        if (delRecBtn != null)
+        log.debug("----------------- "+formViewDef.getName()+"----------------- ");
+        if (delRecBtn != null && !isJavaCollection())
         {
-            boolean enableDelBtn = dataObj != null && 
-                                   (dataObj instanceof FormDataObjIFace && ((FormDataObjIFace)dataObj).getId() != null) &&
-                                   (businessRules == null || businessRules.okToEnableDelete(this.dataObj));// && list != null && list.size() > 0;
-            /*log.info(formViewDef.getName()+" Enabling The Del Btn: "+enableDelBtn);
-            if (!enableDelBtn)
-            {
-                //log.debug("  parentDataObj != null    ["+(parentDataObj != null) + "]");
-                //log.debug("  formIsInNewDataMode      ["+(!formIsInNewDataMode)+"]");
-                log.debug("  dataObj != null          ["+(dataObj != null)+"] ");
-                log.debug("  businessRules != null    ["+(businessRules != null)+"] ");
-                log.debug("  businessRules.okToDelete ["+(businessRules != null && businessRules.okToDelete(this.dataObj))+"]");
-                log.debug("  list != null             ["+(list != null)+"]");
-                log.debug("  list.size() > 0          ["+(list != null && list.size() > 0)+"]");
-            }*/
+            boolean enableDelBtn = dataObj != null && (businessRules == null || businessRules.okToEnableDelete(this.dataObj));
             log.debug("1----------------- Del "+formViewDef.getName()+"  "+enableDelBtn+"----------------- ");
+            
             delRecBtn.setEnabled(enableDelBtn);
         }
         
         boolean enableNewBtn = false;
         if (newRecBtn != null)
         {
-            /*if (MultiView.isOptionOn(options, MultiView.IS_SINGLE_OBJ))
-            {
-                enableNewBtn = dataObj == null && parentDataObj != null;
-            } else 
-            {
-                enableNewBtn = dataObj != null || parentDataObj != null;// || mvParent.isTopLevel();
-            }*/
-            //log.info(formViewDef.getName()+" Enabling The New Btn: "+enableNewBtn);
-            /*if (isEditting)
-            {
-                log.debug(formViewDef.getName()+" ["+(dataObj != null) + "] ["+(parentDataObj != null)+"]["+(mvParent.isTopLevel())+"] "+enableNewBtn);
-                log.debug(formViewDef.getName()+" Enabling The New Btn: "+enableNewBtn);
-            }*/
             if (formValidator != null && dataObj != null)
             {
                 enableNewBtn = formValidator.isFormValid();
                 
             } else 
             {
-                //if (formValidator != null) log.debug(formValidator.getName());
-                log.debug("mvParent.getData() "+mvParent.getData() +"  data ["+ (dataObj == null ? "null" : dataObj.getClass().getSimpleName()) + "] parent"+ 
-                          (!mvParent.isTopLevel() ? mvParent.getMultiViewParent().getData().getClass().getSimpleName() : "null"));
+                //log.debug("mvParent.getData() "+mvParent.getData() +"  data ["+ (dataObj == null ? "null" : dataObj.getClass().getSimpleName()) + "] parent"+ 
+                //          (!mvParent.isTopLevel() ? mvParent.getMultiViewParent().getData().getClass().getSimpleName() : "null"));
                 
                 if (mvParent.isTopLevel())
                 {
@@ -3898,16 +3906,19 @@ public class FormViewObj implements Viewable,
                 {
                     enableNewBtn = mvParent.getMultiViewParent() != null && mvParent.getMultiViewParent().getData() != null;
                 }
-                //enableNewBtn = mvParent.isTopLevel() || !mvParent.isTopLevel() ? mvParent.getMultiViewParent().getData() != null : false;
             }
             
-            log.debug(view.getName()+"  enableNewBtn "+enableNewBtn+"  isNewlyCreatedDataObj "+isNewlyCreatedDataObj()+" ("+(enableNewBtn && (dataObj == null || !isNewlyCreatedDataObj()))+")");
+            //log.debug(view.getName()+"  enableNewBtn "+enableNewBtn+"  isNewlyCreatedDataObj "+isNewlyCreatedDataObj()+" ("+(enableNewBtn && (dataObj == null || !isNewlyCreatedDataObj()))+")");
             
             // 03/27/08 - rods - Add isSingle check for SubForms that hold a single Object
             boolean isSingle      = rsController == null && origDataSet == null;
             boolean newBtnEnabled = enableNewBtn && (dataObj == null || (!isNewlyCreatedDataObj() && !isSingle));
-            log.debug("1----------------- Add "+formViewDef.getName()+"  "+newBtnEnabled+"----------------- ");
-            newRecBtn.setEnabled(newBtnEnabled); 
+            //log.debug("1----------------- Add "+formViewDef.getName()+"  "+newBtnEnabled+"----------------- ");
+            
+            if (!isJavaCollection())
+            {
+                newRecBtn.setEnabled(newBtnEnabled);
+            }
             
             if (switcherUI != null)
             {
@@ -5591,7 +5602,7 @@ public class FormViewObj implements Viewable,
                 (dataObj instanceof FormDataObjIFace && ((FormDataObjIFace)dataObj).getId() == null))
             {
                 log.debug("2----------------- "+formViewDef.getName()+"  false----------------- ");
-                delRecBtn.setEnabled(false);
+                //delRecBtn.setEnabled(false);
             }
         }
     }
