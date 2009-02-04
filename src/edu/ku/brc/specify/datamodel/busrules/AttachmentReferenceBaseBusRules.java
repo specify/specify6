@@ -20,7 +20,7 @@ import edu.ku.brc.specify.datamodel.CollectingEventAttachment;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttachment;
 import edu.ku.brc.specify.datamodel.ConservDescriptionAttachment;
 import edu.ku.brc.specify.datamodel.ConservEventAttachment;
-import edu.ku.brc.specify.datamodel.DNASequenceAttachment;
+import edu.ku.brc.specify.datamodel.DNASequencingRunAttachment;
 import edu.ku.brc.specify.datamodel.FieldNotebookAttachment;
 import edu.ku.brc.specify.datamodel.FieldNotebookPageAttachment;
 import edu.ku.brc.specify.datamodel.FieldNotebookPageSetAttachment;
@@ -53,7 +53,7 @@ public class AttachmentReferenceBaseBusRules extends BaseBusRules
                CollectionObjectAttachment.class,
                ConservDescriptionAttachment.class,
                ConservEventAttachment.class,
-               DNASequenceAttachment.class,
+               DNASequencingRunAttachment.class,
                FieldNotebookAttachment.class,
                FieldNotebookPageAttachment.class,
                FieldNotebookPageSetAttachment.class,

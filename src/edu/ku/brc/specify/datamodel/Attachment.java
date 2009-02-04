@@ -18,7 +18,9 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -58,8 +60,8 @@ public class Attachment extends DataModelObjBase implements Serializable
     protected Calendar                fileCreatedDate;
     protected String                  remarks;
     protected String                  attachmentLocation;
-    protected Integer                 visibility;
-    protected String                  visibilitySetBy;
+    protected Byte                    visibility;
+    protected Agent                   visibilitySetBy;
     protected Set<AttachmentMetadata> metadata;
     protected Set<AttachmentTag>      tags;
     
@@ -73,7 +75,7 @@ public class Attachment extends DataModelObjBase implements Serializable
     protected Set<CollectionObjectAttachment>        collectionObjectAttachments;
     protected Set<ConservDescriptionAttachment>      conservDescriptionAttachments;
     protected Set<ConservEventAttachment>            conservEventAttachments;
-    protected Set<DNASequenceAttachment>             dnaSequenceAttachments;
+    protected Set<DNASequencingRunAttachment>             dnaSequenceAttachments;
     protected Set<FieldNotebookAttachment>           fieldNotebookAttachments;
     protected Set<FieldNotebookPageAttachment>       fieldNotebookPageAttachments;
     protected Set<FieldNotebookPageSetAttachment>    fieldNotebookPageSetAttachments;
@@ -301,22 +303,23 @@ public class Attachment extends DataModelObjBase implements Serializable
     }
 
     @Column(name = "Visibility")
-    public Integer getVisibility() 
+    public Byte getVisibility() 
     {
         return this.visibility;
     }
     
-    public void setVisibility(Integer visibility) 
+    public void setVisibility(Byte visibility) 
     {
         this.visibility = visibility;
     }   
 
-    @Column(name = "VisibilitySetBy", length = 50)
-    public String getVisibilitySetBy() {
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "VisibilitySetByID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Agent getVisibilitySetBy() {
         return this.visibilitySetBy;
     }
     
-    public void setVisibilitySetBy(String visibilitySetBy) {
+    public void setVisibilitySetBy(Agent visibilitySetBy) {
         this.visibilitySetBy = visibilitySetBy;
     }
 
@@ -418,12 +421,12 @@ public class Attachment extends DataModelObjBase implements Serializable
 
     @OneToMany(mappedBy = "attachment")
     @Cascade( {CascadeType.ALL} )
-    public Set<DNASequenceAttachment> getDnaSequenceAttachments()
+    public Set<DNASequencingRunAttachment> getDnaSequenceAttachments()
     {
         return dnaSequenceAttachments;
     }
 
-    public void setDnaSequenceAttachments(Set<DNASequenceAttachment> dnaSequenceAttachments)
+    public void setDnaSequenceAttachments(Set<DNASequencingRunAttachment> dnaSequenceAttachments)
     {
         this.dnaSequenceAttachments = dnaSequenceAttachments;
     }

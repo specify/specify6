@@ -80,7 +80,7 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
     // Fields    
 
     protected Integer                       referenceWorkId;
-    protected Integer                       containingReferenceWorkId;
+    protected ReferenceWork                 containingReferenceWork;
     protected Byte                          referenceWorkType;
     protected String                        title;
     protected String                        publisher;
@@ -107,7 +107,8 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
     protected Journal                       journal;
     protected Set<Author>                   authors;
     protected Set<Exsiccata>                exsiccatae;
-
+    protected Set<ReferenceWork>            containedReferenceWorks;
+    
     // Constructors
 
     /** default constructor */
@@ -126,7 +127,7 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
     {
         super.init();
         referenceWorkId = null;
-        containingReferenceWorkId = null;
+        containingReferenceWork = null;
         referenceWorkType = null;
         title = null;
         publisher = null;
@@ -153,6 +154,7 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
         journal = null;
         authors = new HashSet<Author>();
         exsiccatae = new HashSet<Exsiccata>();
+        containedReferenceWorks = new HashSet<ReferenceWork>();
     }
     // End Initializer
 
@@ -189,35 +191,61 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
         return ReferenceWork.class;
     }
     
-    public void setReferenceWorkId(Integer referenceWorkId) {
+    public void setReferenceWorkId(Integer referenceWorkId) 
+    {
         this.referenceWorkId = referenceWorkId;
     }
 
     /**
      *      * Link to Reference containing (if Section)
      */
-    @Column(name = "ContainingReferenceWorkID", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
-    public Integer getContainingReferenceWorkId() {
-        return this.containingReferenceWorkId;
+    @Column(name = "ContainingReferenceWorkID", unique = false, nullable = true, insertable = true, updatable = true)
+    public ReferenceWork getContainingReferenceWork() 
+    {
+        return this.containingReferenceWork;
     }
     
-    public void setContainingReferenceWorkId(Integer containingReferenceWorkId) {
-        this.containingReferenceWorkId = containingReferenceWorkId;
+    public void setContainingReferenceWork(ReferenceWork containingReferenceWork) 
+    {
+        this.containingReferenceWork = containingReferenceWork;
     }
 
     /**
      * 
      */
-    @Column(name = "ReferenceWorkType", unique = false, nullable = false, insertable = true, updatable = true, length = 3)
-    public Byte getReferenceWorkType() {
+    @Column(name = "ReferenceWorkType", unique = false, nullable = false, insertable = true, updatable = true)
+    public Byte getReferenceWorkType() 
+    {
         return this.referenceWorkType;
     }
     
-    public void setReferenceWorkType(Byte referenceWorkType) {
+    public void setReferenceWorkType(Byte referenceWorkType) 
+    {
         this.referenceWorkType = referenceWorkType;
     }
 
+    
+    
     /**
+	 * @return the containedReferenceWorks
+	 */
+    @OneToMany(mappedBy = "containingReferenceWork")
+    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
+	public Set<ReferenceWork> getContainedReferenceWorks()
+	{
+		return containedReferenceWorks;
+	}
+
+	/**
+	 * @param containedReferenceWorks the containedReferenceWorks to set
+	 */
+	public void setContainedReferenceWorks(
+			Set<ReferenceWork> containedReferenceWorks)
+	{
+		this.containedReferenceWorks = containedReferenceWorks;
+	}
+
+	/**
      *      * Title of reference
      */
     @Column(name = "Title", unique = false, nullable = true, insertable = true, updatable = true)
@@ -229,6 +257,7 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
         this.title = title;
     }
 
+    
     /**
      * 
      */
@@ -385,7 +414,7 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
     /**
      *      * User definable
      */
-    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
+    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true)
     public Float getNumber1() {
         return this.number1;
     }
@@ -397,7 +426,7 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
     /**
      *      * User definable
      */
-    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
+    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true)
     public Float getNumber2() {
         return this.number2;
     }

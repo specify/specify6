@@ -2,9 +2,9 @@
 
 <!-- 
 
-    Last used ID is 133 or 526
+    Last used ID is 135 or 526
     
-    88, 105 are available
+    126 are available
     
     PLEASE Keep this file in alphabetical order! 
 
@@ -100,6 +100,7 @@
             <businessrule>edu.ku.brc.specify.datamodel.busrules.CollectorBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.CommonNameTx" abbrev="cn" id="106" searchable="true"/>
+        <table name="edu.ku.brc.specify.datamodel.CommonNameTxCitation" abbrev="cncit" id="134" searchable="true" />
         <table name="edu.ku.brc.specify.datamodel.ConservDescription" abbrev="csd" id="103" searchable="true">
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.ConservDescriptionBusRules</businessrule>
         </table>
@@ -135,10 +136,12 @@
         <table name="edu.ku.brc.specify.datamodel.DNASequence" abbrev="dna" id="121" searchable="true">
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.DNASequenceBusRules</businessrule>
         </table>
-        <table name="edu.ku.brc.specify.datamodel.DNASequenceAttachment" abbrev="dnaat" id="126" searchable="true">
-        	<display view="ObjectAttachment" newobjdlg="DNASequenceAttachmentDisplay"/>
+        <table name="edu.ku.brc.specify.datamodel.DNASequencingRun" abbrev="dnar" id="88" searchable="true" />
+        <table name="edu.ku.brc.specify.datamodel.DNASequencingRunAttachment" abbrev="dnarat" id="135" searchable="true">
+        	<display view="ObjectAttachment" newobjdlg="DNASequencingRunAttachmentDisplay"/>
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
         </table>
+        <table name="edu.ku.brc.specify.datamodel.DNASequencingRunCitation" abbrev="dnarcit" id="105" searchable="true" />
         <table name="edu.ku.brc.specify.datamodel.ExchangeIn" abbrev="exi" id="39" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.ExchangeOut" abbrev="exo" id="40" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.Exsiccata" abbrev="exsic" id="89" searchable="true"/>
@@ -295,6 +298,7 @@
         <table name="edu.ku.brc.specify.datamodel.RecordSetItem" abbrev="rsi" id="502"/>
         <table name="edu.ku.brc.specify.datamodel.ReferenceWork" abbrev="rw" id="69" searchable="true">
             <display view="ReferenceWork" searchdlg="ReferenceWorkSearch" newobjdlg="ReferenceWorkDisplay"/>
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.ReferenceWorkBusRules</businessrule>          
         </table>
         <table name="edu.ku.brc.specify.datamodel.RepositoryAgreement" abbrev="ra" id="70" searchable="true">
             <display view="RepositoryAgreement" searchdlg="RepositoryAgreementSearch" newobjdlg="RepositoryAgreementDisplay"/>

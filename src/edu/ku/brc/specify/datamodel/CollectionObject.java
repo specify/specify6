@@ -118,8 +118,8 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     protected BigDecimal                    totalValue;
     
     // Security
-    protected Integer                       visibility;
-    protected String                        visibilitySetBy;
+    protected Byte                          visibility;
+    protected Agent                         visibilitySetBy;
     
     // Relationships
     protected CollectingEvent               collectingEvent;
@@ -445,7 +445,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     /**
      *
      */
-    @Column(name = "CountAmt", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
+    @Column(name = "CountAmt", unique = false, nullable = true, insertable = true, updatable = true)
     public Integer getCountAmt() {
         return this.countAmt;
     }
@@ -707,11 +707,11 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
      *      * Indicates whether this record can be viewed - by owner, by institution, or by all
      */
     @Column(name = "Visibility", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
-    public Integer getVisibility() {
+    public Byte getVisibility() {
         return this.visibility;
     }
     
-    public void setVisibility(Integer visibility) {
+    public void setVisibility(Byte visibility) {
         this.visibility = visibility;
     }
 
@@ -727,12 +727,13 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     /**
      * 
      */
-    @Column(name = "VisibilitySetBy", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
-    public String getVisibilitySetBy() {
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "VisibilitySetByID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Agent getVisibilitySetBy() {
         return this.visibilitySetBy;
     }
     
-    public void setVisibilitySetBy(String visibilitySetBy) {
+    public void setVisibilitySetBy(Agent visibilitySetBy) {
         this.visibilitySetBy = visibilitySetBy;
     }
     

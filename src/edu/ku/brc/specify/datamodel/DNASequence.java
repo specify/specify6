@@ -7,6 +7,7 @@
 package edu.ku.brc.specify.datamodel;
 
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -42,27 +43,41 @@ import org.hibernate.annotations.Index;
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "dnasequence")
 @org.hibernate.annotations.Table(appliesTo="dnasequence", indexes =
-    {   @Index (name="DNASeqDateIDX", columnNames={"SeqDate"}),
-        @Index (name="DNAColMemIDX", columnNames={"CollectionMemberID"})
+    {   @Index (name="GenBankAccIDX", columnNames={"GenBankAccessionNumber"}),
+        @Index (name="BOLDBarCodeIDX", columnNames={"BOLDBarCodeID"}),
+        @Index (name="BOLDSampleIDX", columnNames=("BOLDSampleID"))
     })
 public class DNASequence extends CollectionMember
 {
-    protected Integer  dnaSequenceId;
-    protected String   geneName;
-    protected String   geneSequence;
-    protected String   pcrPrimerFwd;
-    protected String   pcrPrimerRev;
-    protected String   redirection;
-    protected String   processIdentifier;
-    protected Calendar seqDate;
-    protected Calendar submissionDate;
-    protected String   barCodeIdent;
-    
-    protected Agent    sequencer;
-    protected String   ncbiNumber;
-    
-    protected CollectionObject collectionObject;
-    protected Set<DNASequenceAttachment> attachments;
+	protected Integer						dnaSequenceId;
+	protected String						moleculeType;
+	protected String						targetMarker;
+	protected String						boldBarcodeId;
+	protected String						genbankAccessionNumber;
+	protected String						boldSampleId;
+	protected String						boldTranslationMatrix;
+	protected String	                    geneSequence;
+	protected String						remarks;
+	protected String						text1;
+	protected String						text2;
+	protected String						text3;
+	protected Boolean						yesNo1;
+	protected Boolean						yesNo2;
+	protected Boolean						yesNo3;
+	protected Integer						totalResidues;
+	protected Integer						compA;
+	protected Integer						compG;
+	protected Integer						compC;
+	protected Integer						compT;
+	protected Integer						ambiguousResidues;
+	protected Float						    number1;
+	protected Float						    number2;
+	protected Float						    number3;
+	protected Calendar						boldLastUpdateDate;
+
+	protected Agent							sequencer;
+	protected CollectionObject				collectionObject;
+	protected Set<DNASequencingRun>			dnaSequencingRuns;
     
     /**
      * 
@@ -81,100 +96,498 @@ public class DNASequence extends CollectionMember
     {
         super.init();
 
-        dnaSequenceId     = null;
-        geneName          = null;
-        geneSequence      = null;
-        pcrPrimerFwd      = null;
-        pcrPrimerRev      = null;
-        redirection       = null;
-        processIdentifier = null;
-        seqDate           = null;
-        submissionDate    = null;
-        sequencer         = null;
-        ncbiNumber        = null;
-        barCodeIdent      = null;
-        collectionObject  = null;
-        attachments       = new TreeSet<DNASequenceAttachment>();
+        dnaSequenceId = null;
+		moleculeType = null;
+		targetMarker = null;
+		boldBarcodeId = null;
+		genbankAccessionNumber = null;
+		boldSampleId = null;
+		boldTranslationMatrix = null;
+		geneSequence = null;
+		remarks = null;
+		text1 = null;
+		text2 = null;
+		text3 = null;
+		yesNo1 = null;
+		yesNo2 = null;
+		yesNo3 = null;
+		totalResidues = null;
+		compA = null;
+		compG = null;
+		compC = null;
+		compT = null;
+		ambiguousResidues = null;
+		number1 = null;
+		number2 = null;
+		number3 = null;
+		boldLastUpdateDate = null;
+
+		sequencer = null;
+		collectionObject = null;
+		dnaSequencingRuns = new HashSet<DNASequencingRun>();
     }
 
+    /**
+     * @return the moleculeType
+     */
+    @Column(name = "MoleculeType", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
+    public String getMoleculeType()
+    {
+    	return this.moleculeType;
+    }
+    
+    
+    /**
+	 * @return the targetMarker
+	 */
+    @Column(name = "TargetMarker", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
+	public String getTargetMarker()
+	{
+		return targetMarker;
+	}
+
+
+	/**
+	 * @return the boldBarcodeId
+	 */
+    @Column(name = "BOLDBarcodeID", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
+	public String getBoldBarcodeId()
+	{
+		return boldBarcodeId;
+	}
+
+
+	/**
+	 * @return the genbankAccessionNumber
+	 */
+    @Column(name = "GenBankAccessionNumber", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
+	public String getGenbankAccessionNumber()
+	{
+		return genbankAccessionNumber;
+	}
+
+
+	/**
+	 * @return the boldSampleId
+	 */
+    @Column(name = "BOLDSampleID", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
+	public String getBoldSampleId()
+	{
+		return boldSampleId;
+	}
+
+
+	/**
+	 * @return the boldTranslationMatrix
+	 */
+    @Column(name = "BOLDTranslationMatrix", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+	public String getBoldTranslationMatrix()
+	{
+		return boldTranslationMatrix;
+	}
+
+	/**
+	 * @return the geneSequence
+	 */
+    @Lob
+    @Column(name = "GeneSequence", unique = false, nullable = true, insertable = true, updatable = true, length = 2048)
+	public String getGeneSequence()
+	{
+		return remarks;
+	}
+
+	/**
+	 * @return the remarks
+	 */
+    @Lob
+    @Column(name = "Remarks", unique = false, nullable = true, insertable = true, updatable = true, length = 4096)
+	public String getRemarks()
+	{
+		return remarks;
+	}
+
+
+	/**
+	 * @return the text1
+	 */
+    @Column(name = "Text1", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
+	public String getText1()
+	{
+		return text1;
+	}
+
+
+	/**
+	 * @return the text2
+	 */
+    @Column(name = "Text2", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
+	public String getText2()
+	{
+		return text2;
+	}
+
+
+	/**
+	 * @return the text3
+	 */
+    @Column(name = "Text3", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+	public String getText3()
+	{
+		return text3;
+	}
+
+
+	/**
+	 * @return the yesNo1
+	 */
+    @Column(name="YesNo1",unique=false,nullable=true,updatable=true,insertable=true)
+	public Boolean getYesNo1()
+	{
+		return yesNo1;
+	}
+
+
+	/**
+	 * @return the yesNo2
+	 */
+    @Column(name="YesNo2",unique=false,nullable=true,updatable=true,insertable=true)
+	public Boolean getYesNo2()
+	{
+		return yesNo2;
+	}
+
+
+	/**
+	 * @return the yesNo3
+	 */
+    @Column(name="YesNo3",unique=false,nullable=true,updatable=true,insertable=true)
+	public Boolean getYesNo3()
+	{
+		return yesNo3;
+	}
+
+
+	/**
+	 * @return the totalResidues
+	 */
+    @Column(name = "TotalResidues", unique = false, nullable = true, insertable = true, updatable = true)
+	public Integer getTotalResidues()
+	{
+		return totalResidues;
+	}
+
+
+	/**
+	 * @return the compA
+	 */
+    @Column(name = "CompA", unique = false, nullable = true, insertable = true, updatable = true)
+	public Integer getCompA()
+	{
+		return compA;
+	}
+
+
+	/**
+	 * @return the compG
+	 */
+    @Column(name = "CompG", unique = false, nullable = true, insertable = true, updatable = true)
+	public Integer getCompG()
+	{
+		return compG;
+	}
+
+
+	/**
+	 * @return the compC
+	 */
+    @Column(name = "CompC", unique = false, nullable = true, insertable = true, updatable = true)
+	public Integer getCompC()
+	{
+		return compC;
+	}
+
+
+	/**
+	 * @return the compT
+	 */
+    @Column(name = "compT", unique = false, nullable = true, insertable = true, updatable = true)
+	public Integer getCompT()
+	{
+		return compT;
+	}
+
+
+	/**
+	 * @return the ambiguousResidues
+	 */
+    @Column(name = "AmbiguousResidues", unique = false, nullable = true, insertable = true, updatable = true)
+	public Integer getAmbiguousResidues()
+	{
+		return ambiguousResidues;
+	}
+
+
+	/**
+	 * @return the number1
+	 */
+    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true)
+	public Float getNumber1()
+	{
+		return number1;
+	}
+
+
+	/**
+	 * @return the number2
+	 */
+    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true)
+	public Float getNumber2()
+	{
+		return number2;
+	}
+
+
+	/**
+	 * @return the number3
+	 */
+    @Column(name = "Number3", unique = false, nullable = true, insertable = true, updatable = true)
+	public Float getNumber3()
+	{
+		return number3;
+	}
+
+
+	/**
+	 * @return the boldLastUpdateDate
+	 */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "BOLDLastUpdateDate", unique = false, nullable = true, insertable = true, updatable = true)
+	public Calendar getBoldLastUpdateDate()
+	{
+		return boldLastUpdateDate;
+	}
+
+
+	/**
+	 * @param targetMarker the targetMarker to set
+	 */
+	public void setTargetMarker(String targetMarker) 
+	{
+		this.targetMarker = targetMarker;
+	}
+
+
+	/**
+	 * @param boldBarcodeId the boldBarcodeId to set
+	 */
+	public void setBoldBarcodeId(String boldBarcodeId) 
+	{
+		this.boldBarcodeId = boldBarcodeId;
+	}
+
+
+	/**
+	 * @param genbankAccessionNumber the genbankAccessionNumber to set
+	 */
+	public void setGenbankAccessionNumber(String genbankAccessionNumber) 
+	{
+		this.genbankAccessionNumber = genbankAccessionNumber;
+	}
+
+
+	/**
+	 * @param boldSampleId the boldSampleId to set
+	 */
+	public void setBoldSampleId(String boldSampleId) 
+	{
+		this.boldSampleId = boldSampleId;
+	}
+
+
+	/**
+	 * @param boldTranslationMatrix the boldTranslationMatrix to set
+	 */
+	public void setBoldTranslationMatrix(String boldTranslationMatrix) 
+	{
+		this.boldTranslationMatrix = boldTranslationMatrix;
+	}
+
+	/**
+	 * @param geneSequence the geneSequence to set
+	 */
+	public void setGeneSequence(String geneSequence) 
+	{
+		this.geneSequence = geneSequence;
+	}
+
+	
+	/**
+	 * @param remarks the remarks to set
+	 */
+	public void setRemarks(String remarks) 
+	{
+		this.remarks = remarks;
+	}
+
+
+	/**
+	 * @param text1 the text1 to set
+	 */
+	public void setText1(String text1) 
+	{
+		this.text1 = text1;
+	}
+
+
+	/**
+	 * @param text2 the text2 to set
+	 */
+	public void setText2(String text2) 
+	{
+		this.text2 = text2;
+	}
+
+
+	/**
+	 * @param text3 the text3 to set
+	 */
+	public void setText3(String text3) 
+	{
+		this.text3 = text3;
+	}
+
+
+	/**
+	 * @param yesNo1 the yesNo1 to set
+	 */
+	public void setYesNo1(Boolean yesNo1) 
+	{
+		this.yesNo1 = yesNo1;
+	}
+
+
+	/**
+	 * @param yesNo2 the yesNo2 to set
+	 */
+	public void setYesNo2(Boolean yesNo2) 
+	{
+		this.yesNo2 = yesNo2;
+	}
+
+
+	/**
+	 * @param yesNo3 the yesNo3 to set
+	 */
+	public void setYesNo3(Boolean yesNo3) 
+	{
+		this.yesNo3 = yesNo3;
+	}
+
+
+	/**
+	 * @param totalResidues the totalResidues to set
+	 */
+	public void setTotalResidues(Integer totalResidues) 
+	{
+		this.totalResidues = totalResidues;
+	}
+
+
+	/**
+	 * @param compA the compA to set
+	 */
+	public void setCompA(Integer compA) 
+	{
+		this.compA = compA;
+	}
+
+
+	/**
+	 * @param compG the compG to set
+	 */
+	public void setCompG(Integer compG) 
+	{
+		this.compG = compG;
+	}
+
+
+	/**
+	 * @param compC the compC to set
+	 */
+	public void setCompC(Integer compC) 
+	{
+		this.compC = compC;
+	}
+
+
+	/**
+	 * @param compT the compT to set
+	 */
+	public void setCompT(Integer compT) 
+	{
+		this.compT = compT;
+	}
+
+
+	/**
+	 * @param ambiguousResidues the ambiguousResidues to set
+	 */
+	public void setAmbiguousResidues(Integer ambiguousResidues) 
+	{
+		this.ambiguousResidues = ambiguousResidues;
+	}
+
+
+	/**
+	 * @param number1 the number1 to set
+	 */
+	public void setNumber1(Float number1) 
+	{
+		this.number1 = number1;
+	}
+
+
+	/**
+	 * @param number2 the number2 to set
+	 */
+	public void setNumber2(Float number2) 
+	{
+		this.number2 = number2;
+	}
+
+
+	/**
+	 * @param number3 the number3 to set
+	 */
+	public void setNumber3(Float number3) 
+	{
+		this.number3 = number3;
+	}
+
+
+	/**
+	 * @param boldLastUpdateDate the boldLastUpdateDate to set
+	 */
+	public void setBoldLastUpdateDate(Calendar boldLastUpdateDate) 
+	{
+		this.boldLastUpdateDate = boldLastUpdateDate;
+	}
+
+
+	/**
+     * @param moleculeType the moleculeType to set
+     */
+    public void setMoleculeType(String moleculeType)
+    {
+    	this.moleculeType = moleculeType;
+    }
+        
     /**
      * @param dnaSequenceId the dnaSequenceId to set
      */
     public void setDnaSequenceId(Integer dnaSequenceId)
     {
         this.dnaSequenceId = dnaSequenceId;
-    }
-
-
-    /**
-     * @param geneName the geneName to set
-     */
-    public void setGeneName(String geneName)
-    {
-        this.geneName = geneName;
-    }
-
-
-    /**
-     * @param geneSequence the geneSequence to set
-     */
-    public void setGeneSequence(String geneSequence)
-    {
-        this.geneSequence = geneSequence;
-    }
-
-
-    /**
-     * @param pcrPrimerFwd the pcrPrimerFwd to set
-     */
-    public void setPcrPrimerFwd(String pcrPrimerFwd)
-    {
-        this.pcrPrimerFwd = pcrPrimerFwd;
-    }
-
-
-    /**
-     * @param pcrPrimerRev the pcrPrimerRev to set
-     */
-    public void setPcrPrimerRev(String pcrPrimerRev)
-    {
-        this.pcrPrimerRev = pcrPrimerRev;
-    }
-
-
-    /**
-     * @param redirection the redirection to set
-     */
-    public void setRedirection(String redirection)
-    {
-        this.redirection = redirection;
-    }
-
-
-    /**
-     * @param processIdentifier the processIdentifier to set
-     */
-    public void setProcessIdentifier(String processIdentifier)
-    {
-        this.processIdentifier = processIdentifier;
-    }
-
-
-    /**
-     * @param seqDate the seqDate to set
-     */
-    public void setSeqDate(Calendar seqDate)
-    {
-        this.seqDate = seqDate;
-    }
-
-
-    /**
-     * @param submissionDate the submissionDate to set
-     */
-    public void setSubmissionDate(Calendar submissionDate)
-    {
-        this.submissionDate = submissionDate;
     }
 
 
@@ -187,21 +600,6 @@ public class DNASequence extends CollectionMember
     }
 
 
-    /**
-     * @param ncbiNumber the ncbiNumber to set
-     */
-    public void setNcbiNumber(String ncbiNumber)
-    {
-        this.ncbiNumber = ncbiNumber;
-    }
-
-    /**
-     * @param barCodeIdent the barCodeIdent to set
-     */
-    public void setBarCodeIdent(String barCodeIdent)
-    {
-        this.barCodeIdent = barCodeIdent;
-    }
 
     /**
      * @param dnaSequence the dnaSequence to set
@@ -223,87 +621,6 @@ public class DNASequence extends CollectionMember
     }
 
 
-    /**
-     * @return the geneName
-     */
-    @Column(name = "GeneName", unique = false, nullable = false, insertable = true, updatable = true, length = 32)
-    public String getGeneName()
-    {
-        return geneName;
-    }
-
-
-    /**
-     * @return the geneSequence
-     */
-    @Lob
-    @Column(name = "GeneSequence", unique = false, nullable = true, insertable = true, updatable = true, length = 2048)
-    public String getGeneSequence()
-    {
-        return geneSequence;
-    }
-
-
-    /**
-     * @return the pcrPrimerFwd
-     */
-    @Column(name = "PcrPrimerFwd", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
-    public String getPcrPrimerFwd()
-    {
-        return pcrPrimerFwd;
-    }
-
-
-    /**
-     * @return the pcrPrimerRev
-     */
-    @Column(name = "PcrPrimerRev", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
-    public String getPcrPrimerRev()
-    {
-        return pcrPrimerRev;
-    }
-
-
-    /**
-     * @return the redirection
-     */
-    @Column(name = "Redirection", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
-    public String getRedirection()
-    {
-        return redirection;
-    }
-
-
-    /**
-     * @return the processIdentifier
-     */
-    @Column(name = "ProcessIdentifier", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
-    public String getProcessIdentifier()
-    {
-        return processIdentifier;
-    }
-
-
-    /**
-     * @return the seqDate
-     */
-    @Temporal(TemporalType.DATE)
-    @Column(name = "SeqDate", unique = false, nullable = false, insertable = true, updatable = true)
-    public Calendar getSeqDate()
-    {
-        return seqDate;
-    }
-
-
-    /**
-     * @return the subMissionDate
-     */
-    @Temporal(TemporalType.DATE)
-    @Column(name = "SubmissionDate", unique = false, nullable = true, insertable = true, updatable = true)
-    public Calendar getSubmissionDate()
-    {
-        return submissionDate;
-    }
 
 
     /**
@@ -318,26 +635,7 @@ public class DNASequence extends CollectionMember
 
 
     /**
-     * @return the ncbiNumber
-     */
-    @Column(name = "NcbiNumber", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
-    public String getNcbiNumber()
-    {
-        return ncbiNumber;
-    }
-
-    /**
-     * @return the barCodeIdent
-     */
-    @Column(name = "BarCodeIdent", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
-    public String getBarCodeIdent()
-    {
-        return barCodeIdent;
-    }
-
-
-    /**
-     * @return the dnaSequence
+     * @return the collectionObject
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "CollectionObjectID", unique = false, nullable = true, insertable = true, updatable = true)
@@ -346,26 +644,33 @@ public class DNASequence extends CollectionMember
         return collectionObject;
     }
 
-
+    /**
+	 * @return the dnaSequencingRuns
+	 */
     @OneToMany(mappedBy = "dnaSequence")
     @Cascade( {CascadeType.ALL} )
     @OrderBy("ordinal ASC")
-    public Set<DNASequenceAttachment> getAttachments()
-    {
-        return attachments;
-    }
+	public Set<DNASequencingRun> getDnaSequencingRuns()
+	{
+		return dnaSequencingRuns;
+	}
 
 
-    public void setAttachments(Set<DNASequenceAttachment> attachments)
-    {
-        this.attachments = attachments;
-    }
-
+	/**
+	 * @param dnaSequencingRuns the dnaSequencingRuns to set
+	 */
+	public void setDnaSequencingRuns(Set<DNASequencingRun> dnaSequencingRuns)
+	{
+		this.dnaSequencingRuns = dnaSequencingRuns;
+	}
+    
+    
     //---------------------------------------------------------------------------
     // Overrides DataModelObjBase
     //---------------------------------------------------------------------------
+ 
 
-    /* (non-Javadoc)
+	/* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getId()
      */
     @Override

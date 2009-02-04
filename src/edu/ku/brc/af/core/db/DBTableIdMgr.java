@@ -431,7 +431,7 @@ public class DBTableIdMgr
         // for now just use a brute force linear search
         for (DBTableInfo tableInfo : hash.values())
         {
-            if (tableInfo.getShortClassName().equalsIgnoreCase(shortClassName))
+        	if (tableInfo.getShortClassName().equalsIgnoreCase(shortClassName))
             {
                 return tableInfo;
             }

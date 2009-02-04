@@ -21,33 +21,33 @@ import edu.ku.brc.util.Orderable;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "dnasequenceattachment")
-public class DNASequenceAttachment extends DataModelObjBase implements ObjectAttachmentIFace<DNASequence>, 
+public class DNASequencingRunAttachment extends DataModelObjBase implements ObjectAttachmentIFace<DNASequencingRun>, 
                                                                        Orderable, 
                                                                        Serializable,
-                                                                       Comparable<DNASequenceAttachment>
+                                                                       Comparable<DNASequencingRunAttachment>
 {
-    protected Integer     dnaSequenceAttachmentId;
-    protected DNASequence dnaSequence;
+    protected Integer     dnaSequencingRunAttachmentId;
+    protected DNASequencingRun dnaSequencingRun;
     protected Attachment  attachment;
     protected Integer     ordinal;
     protected String      remarks;
     
-    public DNASequenceAttachment()
+    public DNASequencingRunAttachment()
     {
         
     }
 
     @Id
     @GeneratedValue
-    @Column(name = "DnaSequenceAttachmentId")
-    public Integer getDnaSequenceAttachmentId()
+    @Column(name = "DnaSequencingRunAttachmentId")
+    public Integer getDnaSequencingRunAttachmentId()
     {
-        return dnaSequenceAttachmentId;
+        return dnaSequencingRunAttachmentId;
     }
 
-    public void setDnaSequenceAttachmentId(Integer dnaSequenceAttachmentId)
+    public void setDnaSequencingRunAttachmentId(Integer dnaSequencingRunAttachmentId)
     {
-        this.dnaSequenceAttachmentId = dnaSequenceAttachmentId;
+        this.dnaSequencingRunAttachmentId = dnaSequencingRunAttachmentId;
     }
 
     @Override
@@ -55,8 +55,8 @@ public class DNASequenceAttachment extends DataModelObjBase implements ObjectAtt
     {
         super.init();
 
-        dnaSequenceAttachmentId = null;
-        dnaSequence             = null;
+        dnaSequencingRunAttachmentId = null;
+        dnaSequencingRun             = null;
         attachment              = null;
         ordinal                 = null;
         remarks                 = null;
@@ -86,15 +86,15 @@ public class DNASequenceAttachment extends DataModelObjBase implements ObjectAtt
     }
 
     @ManyToOne
-    @JoinColumn(name = "DnaSequenceID", nullable = false)
-    public DNASequence getDnaSequence()
+    @JoinColumn(name = "DnaSequencingRunID", nullable = false)
+    public DNASequencingRun getDnaSequencingRun()
     {
-        return dnaSequence;
+        return dnaSequencingRun;
     }
 
-    public void setDnaSequence(DNASequence dnaSequence)
+    public void setDnaSequencingRun(DNASequencingRun dnaSequencingRun)
     {
-        this.dnaSequence = dnaSequence;
+        this.dnaSequencingRun = dnaSequencingRun;
     }
 
     @ManyToOne
@@ -111,14 +111,14 @@ public class DNASequenceAttachment extends DataModelObjBase implements ObjectAtt
     }
 
     @Transient
-    public DNASequence getObject()
+    public DNASequencingRun getObject()
     {
-        return getDnaSequence();
+        return getDnaSequencingRun();
     }
 
-    public void setObject(DNASequence dna)
+    public void setObject(DNASequencingRun dnaSequencingRun)
     {
-        this.dnaSequence = dna;
+        this.dnaSequencingRun = dnaSequencingRun;
     }
 
     @Transient
@@ -149,28 +149,37 @@ public class DNASequenceAttachment extends DataModelObjBase implements ObjectAtt
     @Transient
     public Class<?> getDataClass()
     {
-        return DNASequenceAttachment.class;
+        return DNASequencingRunAttachment.class;
     }
 
     @Override
     @Transient
     public Integer getId()
     {
-        return dnaSequenceAttachmentId;
+        return dnaSequencingRunAttachmentId;
     }
 
+	/**
+     * @return the Table ID for the class.
+     */
+	@Transient
+    public static int getClassTableId()
+    {
+    	return 135;
+    }
+	
     @Override
     @Transient
     public int getTableId()
     {
-        return 126;
+        return getClassTableId();
     }
     
     
     /* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
-    public int compareTo(DNASequenceAttachment obj)
+    public int compareTo(DNASequencingRunAttachment obj)
     {
         return ordinal.compareTo(obj.ordinal);
     }

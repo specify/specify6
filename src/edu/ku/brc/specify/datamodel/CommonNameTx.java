@@ -7,6 +7,8 @@
 package edu.ku.brc.specify.datamodel;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -38,12 +40,17 @@ import org.hibernate.annotations.Index;
     })
 public class CommonNameTx extends DataModelObjBase implements Serializable
 {
-    protected Integer            commonNameTxId;
-    protected String             country;    // Java Two Character Code
-    protected String             language;   // Java Two Character Code
-    protected String             variant;    // Java Two Character Code
-    protected String             name;
-    protected Taxon              taxon;
+    protected Integer					commonNameTxId;
+	protected String					country;		// Java Two Character
+														// Code
+	protected String					language;		// Java Two Character
+														// Code
+	protected String					variant;		// Java Two Character
+														// Code
+	protected String					name;
+	protected String					author;
+	protected Taxon						taxon;
+	protected Set<CommonNameTxCitation>	citations;
 
     public CommonNameTx()
     {
@@ -69,6 +76,7 @@ public class CommonNameTx extends DataModelObjBase implements Serializable
         language     = null;
         variant      = null;
         taxon        = null;
+        citations    = new HashSet<CommonNameTxCitation>();
     }
 
     @Id
@@ -187,7 +195,25 @@ public class CommonNameTx extends DataModelObjBase implements Serializable
         this.taxon = taxon;
     }
 
-    /* (non-Javadoc)
+    
+    /**
+	 * @return the author
+	 */
+    @Column(name = "Author", length = 128)
+	public String getAuthor()
+	{
+		return author;
+	}
+
+	/**
+	 * @param author the author to set
+	 */
+	public void setAuthor(String author)
+	{
+		this.author = author;
+	}
+
+	/* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override

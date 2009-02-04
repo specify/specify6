@@ -72,6 +72,7 @@
 		<mapping class="edu.ku.brc.specify.datamodel.Collector"/>
 		<mapping class="edu.ku.brc.specify.datamodel.CollectionObjectAttribute"/>
 		<mapping class="edu.ku.brc.specify.datamodel.CommonNameTx"/>
+		<mapping class="edu.ku.brc.specify.datamodel.CommonNameTxCitation"/>
 		<mapping class="edu.ku.brc.specify.datamodel.ConservDescription"/>
 		<mapping class="edu.ku.brc.specify.datamodel.ConservDescriptionAttachment"/>
 		<mapping class="edu.ku.brc.specify.datamodel.ConservEvent"/>
@@ -87,7 +88,9 @@
 		<mapping class="edu.ku.brc.specify.datamodel.Discipline"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Division"/>
 		<mapping class="edu.ku.brc.specify.datamodel.DNASequence"/>
-		<mapping class="edu.ku.brc.specify.datamodel.DNASequenceAttachment"/>
+		<mapping class="edu.ku.brc.specify.datamodel.DNASequencingRun"/>
+		<mapping class="edu.ku.brc.specify.datamodel.DNASequencingRunAttachment"/>
+		<mapping class="edu.ku.brc.specify.datamodel.DNASequencingRunCitation"/>
 		<mapping class="edu.ku.brc.specify.datamodel.ExchangeIn"/>
 		<mapping class="edu.ku.brc.specify.datamodel.ExchangeOut"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Exsiccata"/>

@@ -100,8 +100,8 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
     protected String                lat2text;   // The original value
     protected String                long1text;  // The original value
     protected String                long2text;  // The original value
-    protected Integer               visibility;
-    protected String                visibilitySetBy;
+    protected Byte                  visibility;
+    protected Agent                 visibilitySetBy;
     protected String                guid;
     
     // Source Data used for formatting
@@ -610,7 +610,7 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
      * * Indicates whether this record can be viewed - by owner, by institution, or by all
      */
     @Column(name = "Visibility", unique = false, nullable = true, insertable = true, updatable = true)
-    public Integer getVisibility()
+    public Byte getVisibility()
     {
         return this.visibility;
     }
@@ -618,7 +618,7 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
     /**
      * @param visibility
      */
-    public void setVisibility(Integer visibility)
+    public void setVisibility(Byte visibility)
     {
         this.visibility = visibility;
     }
@@ -636,13 +636,14 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
     /**
      * 
      */
-    @Column(name = "VisibilitySetBy", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
-    public String getVisibilitySetBy()
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "VisibilitySetByID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Agent getVisibilitySetBy()
     {
         return this.visibilitySetBy;
     }
 
-    public void setVisibilitySetBy(String visibilitySetBy)
+    public void setVisibilitySetBy(Agent visibilitySetBy)
     {
         this.visibilitySetBy = visibilitySetBy;
     }

@@ -232,7 +232,7 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
     /**
      *      * The number of objects (specimens, slides, pieces) prepared
      */
-    @Column(name = "Count", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
+    @Column(name = "Count", unique = false, nullable = true, insertable = true, updatable = true)
     public Integer getCount() 
     {
         return this.count;

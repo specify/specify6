@@ -106,8 +106,6 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
     protected String                        abbreviation;
     protected String                        initials;
     protected String                        remarks;
-    protected Integer                       visibility;
-    protected String                        visibilitySetBy;
     
     protected String                        guid; 
     
@@ -214,7 +212,6 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
         abbreviation              = null;
         initials                  = null;
         remarks                   = null;
-        visibility                = null;
         guid                      = null;
         orgMembers                = new HashSet<Agent>();
         organization              = null;
@@ -472,37 +469,6 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
 
     public void setRemarks(String remarks) {
         this.remarks = remarks;
-    }
-    /**
-     *      * Indicates whether this record can be viewed - by owner, by instituion, or by all
-     */
-    @Column(name = "Visibility")
-    public Integer getVisibility() {
-        return this.visibility;
-    }
-    
-    public void setVisibility(Integer visibility) {
-        this.visibility = visibility;
-    }
-    
-    @Transient
-    @Override
-    public boolean isRestrictable()
-    {
-        return true;
-    }
-    
-    /**
-     * 
-     */
-    @Column(name = "VisibilitySetBy", length = 50)
-    public String getVisibilitySetBy() {
-        return this.visibilitySetBy;
-    }
-    
-    public void setVisibilitySetBy(String visibilitySetBy) 
-    {
-        this.visibilitySetBy = visibilitySetBy;
     }
     
     /**

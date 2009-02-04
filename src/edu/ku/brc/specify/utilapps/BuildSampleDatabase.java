@@ -5188,10 +5188,11 @@ public class BuildSampleDatabase
 
                 DNASequence dna = new DNASequence();
                 dna.initialize();
-                dna.setSeqDate(cal);
+                
+                //dna.setSeqDate(cal); //moved to DNASequencingRun
                 dna.setCollectionMemberId(collObjs.get(i).getCollectionMemberId());
                 dna.setCollectionObject(collObjs.get(i));
-                dna.setGeneName("COI5'");
+                //dna.setGeneName("COI5'");
                 int agentInx = rand.nextInt(agents.size());
                 dna.setCreatedByAgent(agents.get(agentInx));
                 dna.setSequencer(agents.get(agentInx));
@@ -5201,15 +5202,15 @@ public class BuildSampleDatabase
                     sb.append(syms[rand.nextInt(syms.length)]);
                 }
                 dna.setGeneSequence(sb.toString());
-                dna.setPcrPrimerFwd("C_VF1LFt1");
-                dna.setPcrPrimerRev("C_VR1LRt1");
-                dna.setProcessIdentifier("M13R");
+                //dna.setPcrPrimerFwd("C_VF1LFt1"); //moved to DNASequencingRun (sort of)
+                //dna.setPcrPrimerRev("C_VR1LRt1"); //moved to DNASequencingRun (sort of)
+                //dna.setProcessIdentifier("M13R"); //moved to DNASequencingRun (sort of)
                 if (rand.nextInt(3) < 2)
                 {
-                    dna.setBarCodeIdent(String.format("NOSMF%03d-%d02", rand.nextInt(1000), i));
+                    //dna.setBarCodeIdent(String.format("NOSMF%03d-%d02", rand.nextInt(1000), i)); //moved to DNASequencingRun (sort of)
                     Calendar submDate = (Calendar)cal.clone();
                     submDate.add(Calendar.DAY_OF_MONTH, 12);
-                    dna.setSubmissionDate(submDate);
+                    //dna.setSubmissionDate(submDate);
                 }
                 dnaObjs.add(dna);
             }

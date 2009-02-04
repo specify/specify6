@@ -87,6 +87,9 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
     protected String               isisNumber;
     protected String               ncbiTaxonNumber;
     
+    //Catalog of Life
+    protected String               colStatus;
+    
 	// reference info
 	protected String               author;
 	protected String               source;
@@ -128,8 +131,8 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
     protected Integer              highestChildNodeNumber;
     protected Integer              rankId;
     protected String               groupNumber;
-    protected Integer              visibility;
-    protected String               visibilitySetBy;
+    protected Byte                 visibility;
+    protected Agent                visibilitySetBy;
     
     protected List<Taxon>          ancestors; 
 
@@ -184,6 +187,12 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
         author                        = null;
         source                        = null;
         environmentalProtectionStatus = null;
+        esaStatus                     = null;
+        citesStatus                   = null;
+        colStatus                     = null;
+        usfwsCode                     = null;
+        isisNumber                    = null;
+        ncbiTaxonNumber               = null;
         labelFormat                   = null;
         nodeNumber                    = null;
         highestChildNodeNumber        = null;
@@ -288,7 +297,25 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
         this.commonName = commonName;
     }
 
+    
     /**
+	 * @return the colStatus
+	 */
+    @Column(name = "COLStatus", length = 32)
+	public String getColStatus()
+	{
+		return colStatus;
+	}
+
+	/**
+	 * @param colStatus the colStatus to set
+	 */
+	public void setColStatus(String colStatus)
+	{
+		this.colStatus = colStatus;
+	}
+
+	/**
      * @return the cultivarName
      */
     @Column(name = "CultivarName", length = 32)
@@ -634,11 +661,11 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
      *      * Indicates whether this record can be viewed - by owner, by instituion, or by all
      */
     @Column(name = "Visibility")
-    public Integer getVisibility() {
+    public Byte getVisibility() {
         return this.visibility;
     }
     
-    public void setVisibility(Integer visibility) {
+    public void setVisibility(Byte visibility) {
         this.visibility = visibility;
     }
     
@@ -663,12 +690,13 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
     /**
      * 
      */
-    @Column(name = "VisibilitySetBy", length = 50)
-    public String getVisibilitySetBy() {
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "VisibilitySeteByID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Agent getVisibilitySetBy() {
         return this.visibilitySetBy;
     }
     
-    public void setVisibilitySetBy(String visibilitySetBy) {
+    public void setVisibilitySetBy(Agent visibilitySetBy) {
         this.visibilitySetBy = visibilitySetBy;
     }
     
