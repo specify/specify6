@@ -7,6 +7,9 @@
 package edu.ku.brc.specify.rstools;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getStatusBar;
+import static edu.ku.brc.ui.UIRegistry.getTopWindow;
+import static edu.ku.brc.ui.UIRegistry.writeTimedSimpleGlassPaneMsg;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -43,7 +46,6 @@ import edu.ku.brc.specify.tasks.services.CollectingEventLocalityKMLGenerator;
 import edu.ku.brc.ui.GraphicsUtils;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.Pair;
 import edu.ku.brc.util.services.GenericKMLGenerator;
@@ -69,7 +71,7 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
 	 */
 	public void processRecordSet(final RecordSetIFace recordSet, final Properties reqParams)
     {
-	    String description = JOptionPane.showInputDialog(UIRegistry.getTopWindow(), UIRegistry.getResourceString("GE_ENTER_DESC"));
+	    String description = JOptionPane.showInputDialog(getTopWindow(), getResourceString("GE_ENTER_DESC"));
         
         log.info("Exporting RecordSet");
         int dataTableId = recordSet.getDbTableId();
@@ -139,7 +141,7 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
                                                                      (List<GoogleEarthPlacemarkIFace>)data, imageIcon, tmpFile);
                 if (mappedPlacemarks.size() != data.size())
                 {
-                    UIRegistry.getStatusBar().setErrorMessage(String.format(getResourceString("NOT_ALL_MAPPED"), new Object[] {(data.size() - mappedPlacemarks.size()), data.size()}));
+                    getStatusBar().setErrorMessage(String.format(getResourceString("NOT_ALL_MAPPED"), new Object[] {(data.size() - mappedPlacemarks.size()), data.size()}));
                 }
                 
                 try
@@ -150,14 +152,14 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
                 {
                 	log.warn("Failed to open external viewer (e.g. Google Earth) for KML file", e);
                     String errorMessage = getResourceString("GOOGLE_EARTH_ERROR");
-                    UIRegistry.getStatusBar().setErrorMessage(errorMessage,e);
+                    getStatusBar().setErrorMessage(errorMessage,e);
                 }
             }
             catch (Exception e)
             {
                 log.error("Exception caught while creating KML output or opening Google Earth", e);
                 String errorMessage = getResourceString("KML_EXPORT_ERROR");
-                UIRegistry.getStatusBar().setErrorMessage(errorMessage,e);
+                getStatusBar().setErrorMessage(errorMessage,e);
             }
         }
     }
@@ -174,40 +176,29 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
         List<Object> records = RecordSetLoader.loadCollectionObjectsRecordSet(recordSet);
         for (Object obj : records)
         {
-            list.add(obj);
+            if (obj instanceof CollectionObject) // it HAS to be
+            {
+                CollectionObject colObj = (CollectionObject)obj;
+                if (colObj.getCollectingEvent() != null &&
+                    colObj.getCollectingEvent().getLocality() != null)
+                {
+                    Locality loc = colObj.getCollectingEvent().getLocality();
+                    if (loc.getLatitude1() != null && loc.getLongitude1() != null)
+                    {
+                        list.add(obj);
+                    }
+                }
+            }
         }
         
         if (list.size() > 0)
         {
             exportDataObjects(description, list, true, getIconFromPrefs());
-        }
-        /*
-        List<Object> ceList  = new Vector<Object>();
-        List<Object> records = RecordSetLoader.loadRecordSet(recordSet);
-        Hashtable<Integer, CollectingEvent> ceHash = new Hashtable<Integer, CollectingEvent>();
-        for (Object o: records)
+            
+        } else
         {
-            CollectionObject colObj = (CollectionObject)o;
-            CollectingEvent  ce     = colObj.getCollectingEvent();
-            if (ce != null)
-            {
-                int id = ce.getCollectingEventId();
-                if (ceHash.get(id) == null)
-                {
-                    ceHash.put(id, ce);
-                }
-            }
+            writeTimedSimpleGlassPaneMsg(getResourceString("GE_NO_POINTS"), Color.RED);
         }
-        
-        if (ceHash.size() > 0)
-        {
-            for (CollectingEvent ce : ceHash.values())
-            {
-                ceList.add(ce);    
-            }
-            exportDataObjects(description, ceList, true, getIconFromPrefs());
-        }
-        */
     }
     
     
@@ -229,6 +220,9 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
         if (list.size() > 0)
         {
             exportDataObjects(description, list, true, getIconFromPrefs());
+        } else
+        {
+            writeTimedSimpleGlassPaneMsg(getResourceString("GE_NO_POINTS"), Color.RED);
         }
     }
     
@@ -263,7 +257,7 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
      * @param doKMZ whether to export as KMZ or KML
      * @param imgIconArg the icon to use for placemarks
      */
-    protected void exportDataObjects(final String description,
+    protected void exportDataObjects(final String       description,
                                      final List<Object> dataObjList, 
                                      final boolean      doKMZ,
                                      final ImageIcon    imgIconArg) 
@@ -356,14 +350,12 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
                 
             } else
             {
-                // XXX Error dialog saying there were no CEs to export.
+                writeTimedSimpleGlassPaneMsg(getResourceString("GE_NO_POINTS"), Color.RED);
             }
 
         } catch (Exception ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(GoogleEarthExporter.class, ex);
-            // XXX Error dialog saying there was a problem with the export
+            writeTimedSimpleGlassPaneMsg(getResourceString("GE_EXPORT_PROB"), Color.RED);
             ex.printStackTrace();
         }
     }
