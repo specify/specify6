@@ -618,7 +618,7 @@
         </table>
         
         
-        <table id="20" tableid="121" indexed="false" name="DNA2ATT" priority="1" color="30, 144, 144">
+        <!-- <table id="20" tableid="121" indexed="false" name="DNA2ATT" priority="1" color="30, 144, 144">
             <joins>
                 <join tableid="121" primary="true">dnasequence.DNASequenceID</join>
                 <join tableid="41">attachment.AttachmentID</join>
@@ -627,12 +627,9 @@
                 <sql>
                     <![CDATA[SELECT 
   dnasequence.DNASequenceID, 
-  dnasequence.GeneName,
-  dnasequence.SeqDate,
-  attachment.Title,
+  dnasequence.SeqDate
   %s
-  FROM dnasequence INNER JOIN dnasequenceattachment ON dnasequence.DNASequenceID = dnasequenceattachment.DNASequenceID
-  INNER JOIN attachment ON dnasequenceattachment.AttachmentID = attachment.AttachmentID]]>
+  FROM dnasequence ]>
                 </sql>
                 <captions>
                     <caption tableid="121" col="DNASequenceID" visible="false"/>
@@ -641,7 +638,7 @@
                     <caption tableid="41" col="Title"/>
                 </captions>
             </detailView>
-        </table>
+        </table>-->
         
         <table id="21" tableid="83" indexed="false" name="Fbk2ATT" priority="1" color="30, 144, 144">
             <joins>

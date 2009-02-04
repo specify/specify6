@@ -67,7 +67,7 @@
     <dialog type="display" view="ObjectAttachment" name="CollectionObjectAttachmentDisplay"     class="edu.ku.brc.specify.datamodel.CollectionObjectAttachment"/>
     <dialog type="display" view="ObjectAttachment" name="ConservDescriptionAttachmentDisplay"   class="edu.ku.brc.specify.datamodel.ConservDescriptionAttachment"/>
     <dialog type="display" view="ObjectAttachment" name="ConservEventAttachmentDisplay"         class="edu.ku.brc.specify.datamodel.ConservEventAttachment"/>
-    <dialog type="display" view="ObjectAttachment" name="DNASequenceAttachmentDisplay"          class="edu.ku.brc.specify.datamodel.DNASequenceAttachment"/>
+    <dialog type="display" view="ObjectAttachment" name="DNASequencingRunAttachmentDisplay"     class="edu.ku.brc.specify.datamodel.DNASequencingRunAttachment"/>
     <dialog type="display" view="ObjectAttachment" name="FieldNotebookAttachmentDisplay"        class="edu.ku.brc.specify.datamodel.FieldNotebookAttachment"/>
     <dialog type="display" view="ObjectAttachment" name="FieldNotebookAttachmentPageDisplay"    class="edu.ku.brc.specify.datamodel.FieldNotebookPageAttachment"/>
     <dialog type="display" view="ObjectAttachment" name="FieldNotebookAttachmentPageSetDisplay" class="edu.ku.brc.specify.datamodel.FieldNotebookPageSetAttachment"/>
