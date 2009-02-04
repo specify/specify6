@@ -29,6 +29,7 @@
 	<mapID target="PrefsTree"           url="SpecifyHelp/Prefs//Tree.html" />
     <mapID target="PrefsLogin"          url="SpecifyHelp/Prefs/Login.html" />
     <mapID target="PrefsMySQL"          url="SpecifyHelp/Prefs/MySQL.html" />
+    <mapID target="PrefsMisc"           url="SpecifyHelp/Prefs/Taskbar.html"/>
 
 		
     <!-- Data Entry -->
@@ -187,6 +188,7 @@
 	<mapID target="WorkbenchBGM"               url="SpecifyHelp/Workbench/BioGiomancer.html"/>
 	
 	<!-- Preferences -->
+	<!--
     <mapID target="PreferencesOverview"        url="SpecifyHelp/Prefs/Prefs.html"/>
     <mapID target="PrefsSystem"                url="SpecifyHelp/Prefs/System.html"/>
 	<mapID target="PrefsEMail"                 url="SpecifyHelp/Prefs/EMail.html"/>
@@ -196,6 +198,7 @@
 	<mapID target="PrefsGoogleEarth"           url="SpecifyHelp/Prefs/GoogleEarth.html"/>
 	<mapID target="PrefsLogin"                 url="SpecifyHelp/Prefs/Login.html"/>
 	<mapID target="PrefsMySQL"                 url="SpecifyHelp/Prefs/MySQL.html"/>
+	-->
 	
 	
 	<!--
