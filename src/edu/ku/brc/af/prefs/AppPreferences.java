@@ -819,7 +819,10 @@ public class AppPreferences
                 Runtime.getRuntime().addShutdownHook(new Thread() {
                     @Override
                     public void run() {
-                        syncTimer.cancel();
+                        if (syncTimer != null)
+                        {
+                            syncTimer.cancel();
+                        }
                         syncPrefs();
                     }
                 });

@@ -438,6 +438,37 @@ public class DBTableIdMgr
         }
         throw new RuntimeException("Couldn't find table id for table name[" + shortClassName + "]"); //$NON-NLS-1$ //$NON-NLS-2$
     }
+    
+    /**
+     * @return a list of the tables the users deal with, it excludes all System tables.
+     */
+    public Vector<DBTableInfo> getTablesForUserDisplay()
+    {
+        Vector<DBTableInfo> list = new Vector<DBTableInfo>();
+        
+        for (DBTableInfo ti : tables)
+        {
+            String tblName = ti.getName();
+            
+            if (!(tblName.startsWith("sp") || 
+                        tblName.startsWith("attachment") || 
+                        tblName.startsWith("autonum") || 
+                        tblName.equals("picklist") || 
+                        tblName.equals("attributedef") || 
+                        tblName.equals("recordset") || 
+                        tblName.equals("inforequest") || 
+                        tblName.startsWith("workbench") || 
+                        tblName.endsWith("treedef") || 
+                        tblName.endsWith("treedefitem") || 
+                        tblName.endsWith("attachment") || 
+                        tblName.endsWith("attr") || 
+                        tblName.endsWith("reltype")))
+            {
+                list.add(ti);
+            }
+        }
+        return list;
+    }
 
     /**
      * Returns the Info Object By Id.

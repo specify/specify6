@@ -36,6 +36,8 @@ import javax.swing.JTabbedPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -55,11 +57,13 @@ import edu.ku.brc.af.ui.forms.persist.ViewIFace;
 import edu.ku.brc.af.ui.forms.persist.ViewSetIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.SpAppResource;
 import edu.ku.brc.specify.datamodel.SpAppResourceDir;
 import edu.ku.brc.specify.datamodel.SpViewSetObj;
+import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -212,6 +216,21 @@ public class ResourceImportExportDlg extends CustomDialog
         contentPanel = pb.getPanel();
         mainPanel.add(contentPanel, BorderLayout.CENTER);
         
+        tabbedPane.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e)
+            {
+                if (tabbedPane.getModel().getSelectedIndex() == 0)
+                {
+                    viewSetsList.setSelectedIndex(-1);
+                } else
+                {
+                    resList.setSelectedIndex(-1);
+                }
+                enableUI();
+            }
+        });
+        
         levelCBX.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
@@ -285,15 +304,15 @@ public class ResourceImportExportDlg extends CustomDialog
      */
     protected void fillViewsList()
     {
-        int index = levelCBX.getSelectedIndex();
-        if (index > -1)
+        int levelIndex = levelCBX.getSelectedIndex();
+        if (levelIndex > -1)
         {
-            SpAppResourceDir dir = dirs.get(index);
+            SpAppResourceDir dir = dirs.get(levelIndex);
             viewsModel.clear();
-            index = viewSetsList.getSelectedIndex();
-            if (index > -1)
+            levelIndex = viewSetsList.getSelectedIndex();
+            if (levelIndex > -1)
             {
-                ViewSetIFace vs = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getViewSetList(dir).get(index);
+                ViewSetIFace vs = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getViewSetList(dir).get(levelIndex);
                 Vector<ViewIFace> views = new Vector<ViewIFace>(vs.getViews().values());
                 Collections.sort(views);
                 for (ViewIFace view : views)
@@ -309,15 +328,39 @@ public class ResourceImportExportDlg extends CustomDialog
      */
     protected void enableUI()
     {
-        boolean enable = !viewSetsList.isSelectionEmpty() || !resList.isSelectionEmpty();
+        int currentTabIndex = tabbedPane.getModel().getSelectedIndex();
         
-        importBtn.setEnabled(enable && levelCBX.getSelectedIndex() < 2);
-        exportBtn.setEnabled(enable);
+        if (currentTabIndex == 0) // Views
+        {
+            boolean enable = !viewSetsList.isSelectionEmpty();
+            
+            importBtn.setEnabled(enable && levelCBX.getSelectedIndex() < 2);
+            exportBtn.setEnabled(enable && viewSetsModel.size() > 0);
+            
+            SpViewSetObj vso = (SpViewSetObj)viewSetsList.getSelectedValue();
+            
+            reverBtn.setEnabled(vso != null && vso.getId() != null);
+            
+        } else // Resources
+        {
+            if (resList.getSelectedValue() instanceof String)
+            {
+                importBtn.setEnabled(true);
+                exportBtn.setEnabled(false);
+                reverBtn.setEnabled(false);
+                
+            } else
+            {
+                boolean enable = !resList.isSelectionEmpty();
+                
+                importBtn.setEnabled(enable && levelCBX.getSelectedIndex() < 2);
+                exportBtn.setEnabled(enable && resModel.size() > 0);
+                
+                SpAppResource appRes = (SpAppResource)resList.getSelectedValue();
+                reverBtn.setEnabled(appRes != null && appRes.getId() != null);
+            }
+        }
         
-        SpViewSetObj   vso   = (SpViewSetObj)viewSetsList.getSelectedValue();
-        SpAppResource appRes = (SpAppResource)resList.getSelectedValue();
-        
-        reverBtn.setEnabled((vso != null && vso.getId() != null) || (appRes != null && appRes.getId() != null));
     }
     
     /**
@@ -463,8 +506,10 @@ public class ResourceImportExportDlg extends CustomDialog
      */
     protected void importResource()
     {
-        int index = levelCBX.getSelectedIndex();
-        if (index > -1)
+        int currentTabIndex = tabbedPane.getModel().getSelectedIndex();
+        
+        int levelIndex = levelCBX.getSelectedIndex();
+        if (levelIndex > -1)
         {
             String exportedName = null;
             
@@ -489,23 +534,10 @@ public class ResourceImportExportDlg extends CustomDialog
                     ex.printStackTrace();
                 }
                 
-                index = resList.getSelectedIndex();
-                if (index > -1)
+                if (currentTabIndex == 0)
                 {
-                    AppResourceIFace appRes = resources.get(index);
-                    exportedName = appRes.getName();
-                    String           fName  = FilenameUtils.getName(exportedName);
-                    String           dbBaseName = FilenameUtils.getBaseName(fileName);
-                    if (dbBaseName.equals(fName))
-                    {
-                        appRes.setDataAsString(data);
-                        ((SpecifyAppContextMgr)AppContextMgr.getInstance()).saveResource(appRes);
-                    }
-                    
-                } else
-                {
-                    index = viewSetsList.getSelectedIndex();
-                    if (index > -1)
+                    int viewIndex = viewSetsList.getSelectedIndex();
+                    if (viewIndex > -1)
                     {
                         boolean      isOK = false;
                         SpViewSetObj vso  = null;
@@ -563,9 +595,64 @@ public class ResourceImportExportDlg extends CustomDialog
                         
                         if (isOK)
                         {
-                            viewSetsModel.remove(index);
-                            viewSetsModel.insertElementAt(vso, index);
+                            viewSetsModel.remove(viewIndex);
+                            viewSetsModel.insertElementAt(vso, viewIndex);
                             viewSetsList.repaint();
+                        }
+                    }
+                    
+                } else
+                {
+                    int resIndex = resList.getSelectedIndex();
+                    if (resIndex > -1)
+                    {
+                        if (resIndex == 0)
+                        {
+                            SpAppResourceDir dir    = dirs.get(levelIndex);
+                            SpAppResource    appRes = new SpAppResource();
+                            appRes.initialize();
+
+                            SpAppResource fndAppRes = checkForOverrideAppRes(fileName);
+                            if (fndAppRes != null)
+                            {
+                                appRes.setMetaData(fndAppRes.getMetaData());
+                                appRes.setDescription(fndAppRes.getDescription());
+                                appRes.setFileName(fileName);
+                                appRes.setMimeType(appRes.getMimeType());
+                                appRes.setName(fileName);
+                                
+                                SpecifyUser user  = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
+                                Agent       agent = AppContextMgr.getInstance().getClassObject(Agent.class);
+                                appRes.setCreatedByAgent(agent);
+                                appRes.setSpecifyUser(user);
+                                
+                                appRes.setLevel(fndAppRes.getLevel());
+                                
+                            } else if (!getMetaInformation(appRes))
+                            {
+                                return;
+                            }
+                            
+                            appRes.setSpAppResourceDir(dir);
+                            dir.getSpAppResources().add(appRes);
+                            
+                            appRes.setDataAsString(data);
+                            SpecifyAppContextMgr mgr =  (SpecifyAppContextMgr)AppContextMgr.getInstance();
+                            mgr.saveResource(appRes);
+                            
+                        } else
+                        {
+                            resIndex++;
+                            AppResourceIFace appRes = resources.get(resIndex);
+                            exportedName = appRes.getName();
+                            String           fName  = FilenameUtils.getName(exportedName);
+                            String           dbBaseName = FilenameUtils.getBaseName(fileName);
+                            if (dbBaseName.equals(fName))
+                            {
+                                appRes.setDataAsString(data);
+                                ((SpecifyAppContextMgr)AppContextMgr.getInstance()).saveResource(appRes);
+                            }
+ 
                         }
                     }
                 }
@@ -578,6 +665,35 @@ public class ResourceImportExportDlg extends CustomDialog
             
             enableUI();
         }
+    }
+    
+    /**
+     * @return
+     */
+    protected boolean getMetaInformation(final SpAppResource appRes)
+    {
+        ResImpExpMetaInfoDlg dlg = new ResImpExpMetaInfoDlg(appRes);
+        dlg.setVisible(true);
+        return !dlg.isCancelled();
+    }
+    
+    /**
+     * @param name
+     * @return
+     */
+    protected SpAppResource checkForOverrideAppRes(final String name)
+    {
+        for (SpAppResourceDir dir : dirs)
+        {
+            for (SpAppResource ar : dir.getSpAppResources())
+            {
+                if (ar.getName().equals(name))
+                {
+                    return ar;
+                }
+            }
+        }
+        return null;
     }
     
     /**
@@ -595,6 +711,7 @@ public class ResourceImportExportDlg extends CustomDialog
             
             resources.clear();
             resources.addAll(dir.getSpAppResources());
+            resModel.addElement("Add New Resource");
             for (SpAppResource appRes : resources)
             {
                 resModel.addElement(appRes);
@@ -637,10 +754,15 @@ public class ResourceImportExportDlg extends CustomDialog
             {
                 title = ((SpViewSetObj)value).getName();
                 id    = ((SpViewSetObj)value).getId();
-            } else
+                
+            } else if (value instanceof SpAppResource)
             {
                 title = ((SpAppResource)value).getName();
                 id    = ((SpAppResource)value).getId();
+            } else
+            {
+                title = value.toString();
+                id    = null;
             }
             if (id != null)
             {
