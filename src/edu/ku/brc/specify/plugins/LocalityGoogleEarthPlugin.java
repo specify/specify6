@@ -442,7 +442,7 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
          */
         public Pair<Double, Double> getLatLon()
         {
-            return new Pair<Double, Double>(localityCEP.getLat1(), localityCEP.getLong1());
+            return localityCEP != null ? new Pair<Double, Double>(localityCEP.getLat1(), localityCEP.getLong1()) : null;
         }
 
         /* (non-Javadoc)
