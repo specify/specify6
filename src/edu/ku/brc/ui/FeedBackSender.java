@@ -8,6 +8,9 @@ package edu.ku.brc.ui;
 
 import static edu.ku.brc.ui.UIHelper.getInstall4JInstallString;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryPoolMXBean;
+import java.lang.management.MemoryType;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Properties;
@@ -120,7 +123,7 @@ public abstract class FeedBackSender
     /**
      * Creates an array of POST method parameters to send with the version checking / usage tracking connection.
      * 
-     * @param doSendSecondaryStats if true, the POST parameters include usage stats
+     * @param item the item to fill
      * @return an array of POST parameters
      */
     protected NameValuePair[] createPostParameters(final FeedBackSenderItem item)
@@ -139,11 +142,17 @@ public abstract class FeedBackSender
             String installID = UsageTracker.getInstallId();
             postParams.add(new NameValuePair("id", installID)); //$NON-NLS-1$
     
+            Runtime runtime    = Runtime.getRuntime();
+            Long    usedMemory = runtime.maxMemory() - (runtime.totalMemory () + runtime.freeMemory ());
+            Long    maxMemory = runtime.maxMemory();
+            
             // get the OS name and version
-            postParams.add(new NameValuePair("os_name",      System.getProperty("os.name"))); //$NON-NLS-1$
-            postParams.add(new NameValuePair("os_version",   System.getProperty("os.version"))); //$NON-NLS-1$
-            postParams.add(new NameValuePair("java_version", System.getProperty("java.version"))); //$NON-NLS-1$
-            postParams.add(new NameValuePair("java_vendor",  System.getProperty("java.vendor"))); //$NON-NLS-1$
+            postParams.add(new NameValuePair("os_name",      System.getProperty("os.name"))); //$NON-NLS-1$ //$NON-NLS-2$
+            postParams.add(new NameValuePair("os_version",   System.getProperty("os.version"))); //$NON-NLS-1$ //$NON-NLS-2$
+            postParams.add(new NameValuePair("java_version", System.getProperty("java.version"))); //$NON-NLS-1$ //$NON-NLS-2$
+            postParams.add(new NameValuePair("java_vendor",  System.getProperty("java.vendor"))); //$NON-NLS-1$ //$NON-NLS-2$
+            postParams.add(new NameValuePair("max_memory",   maxMemory.toString())); //$NON-NLS-1$
+            postParams.add(new NameValuePair("used_memory",  usedMemory.toString())); //$NON-NLS-1$
             
             Properties props = item.getProps();
             if (props != null)
