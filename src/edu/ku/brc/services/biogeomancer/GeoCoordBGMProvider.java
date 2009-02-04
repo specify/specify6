@@ -118,8 +118,6 @@ public class GeoCoordBGMProvider implements GeoCoordServiceProviderIFace
                     }
                     catch (IOException ex1)
                     {
-                        UsageTracker.incrHandledUsageCount();
-                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(GeoCoordBGMProvider.class, ex1);
                         String warning = getResourceString("GeoCoordBGMProvider.WB_BIOGEOMANCER_UNAVAILABLE"); //$NON-NLS-1$
                         statusBar.setWarningMessage(warning, ex1);
                         log.error("A network error occurred while contacting the BioGeomancer service", ex1); //$NON-NLS-1$

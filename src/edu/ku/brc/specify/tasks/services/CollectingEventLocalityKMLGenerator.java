@@ -1,5 +1,7 @@
 package edu.ku.brc.specify.tasks.services;
 
+import static edu.ku.brc.util.LatLonConverter.convertToDDDDDD;
+
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -19,15 +21,19 @@ import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.specify.datamodel.Determination;
+import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.tasks.PluginsTask;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
+import edu.ku.brc.util.LatLonConverter.DEGREES_FORMAT;
+import edu.ku.brc.util.LatLonConverter.DIRECTION;
 import edu.ku.brc.util.services.GenericKMLGenerator;
 
 /**
@@ -166,6 +172,10 @@ public class CollectingEventLocalityKMLGenerator
             } else if (dataObj instanceof Locality)
             {
                 kmlStr = generatePlacemark((Locality)dataObj, label);
+                
+            } else if (dataObj instanceof CollectionObject)
+            {
+                kmlStr = generatePlacemark((CollectionObject)dataObj, label);
             }
             
             if (kmlStr != null)
@@ -516,6 +526,166 @@ public class CollectingEventLocalityKMLGenerator
 		log.debug("Generated placemark:\n " + sb.toString() );
 		return sb.toString();
 	}
+    
+    /**
+     * @param sb
+     * @param title
+     * @param value
+     */
+    private void appendCellTR(final StringBuilder sb, 
+                              final Integer tableId,
+                              final String  colName,
+                              final String  titleArg, 
+                              final String  value)
+    {
+        String title = titleArg;
+        if (titleArg == null && tableId != null)
+        {
+            DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(tableId);
+            if (ti != null)
+            {
+                if (colName != null)
+                {
+                    DBFieldInfo fi = ti.getFieldByColumnName(colName);
+                    if (fi != null)
+                    {
+                        title = fi.getTitle();
+                    }
+                } else
+                {
+                    title = ti.getTitle();
+                }
+            }
+        }
+        if (StringUtils.isNotEmpty(title) &&StringUtils.isNotEmpty(value))
+        {
+            sb.append("<tr><td style=\"color:#"+textColor+"; text-align:right\">"+title+":</td><td style=\"color:#"+textColor+"\" >"+value+"</td></tr>\n");
+        }
+    }
+    
+    /**
+     * Generates a KML chunk describing the given collecting event.
+     *
+     * @param ce the event
+     * @param label the label for the event
+     * @return the KML string
+     */
+    protected String generatePlacemark(final CollectionObject colObj, final String label)
+    {
+        if (colObj == null || 
+            colObj.getCollectingEvent() == null || 
+            colObj.getCollectingEvent().getLocality() == null)
+        {
+            return null;
+        }
+        
+        CollectingEvent ce = colObj.getCollectingEvent();
+        Locality        loc = ce.getLocality();
+        
+        if (loc.getLatitude1() == null || loc.getLongitude1() == null)
+        {
+            return null;
+        }
+        
+        BigDecimal lat = loc.getLatitude1();
+        BigDecimal lon = loc.getLongitude1();
+        
+        //DBTableInfo coti = DBTableIdMgr.getInstance().getInfoById(CollectionObject.getClassTableId());
+        DBTableInfo ceti = DBTableIdMgr.getInstance().getInfoById(CollectingEvent.getClassTableId());
+        
+        StringBuilder title        = new StringBuilder(colObj.getIdentityTitle());
+        String        taxonStr     = null;
+        String        startDateStr = null;
+        String        geoStr       = null;
+        for (Determination det : colObj.getDeterminations())
+        {
+            if (det.getIsCurrent())
+            {
+                Taxon taxon = det.getTaxon();
+                if (taxon != null)
+                {
+                    taxonStr = taxon.getFullName();
+                }
+            }
+        }
+        
+        if (ce.getStartDate() != null)
+        {
+            DBFieldInfo           sdFI  = ceti.getFieldByColumnName("StartDate");
+            UIFieldFormatterIFace fmtr = sdFI.getFormatter();
+            if (fmtr == null)
+            {
+                fmtr = UIFieldFormatterMgr.getInstance().getFormatter("PartialDate");
+            }
+            if (fmtr != null)
+            {
+                Object dateFmtObj = (String)fmtr.formatToUI(ce.getStartDate(), ce.getStartDatePrecision());
+                if (dateFmtObj != null)
+                {
+                    startDateStr = dateFmtObj.toString();
+                }
+            }
+        }
+        
+        if (loc.getGeography() != null)
+        {
+            geoStr = loc.getGeography().getFullName();
+        }
+        
+        // build the placemark
+        StringBuilder sb = new StringBuilder("<Placemark>\n");
+        {
+            sb.append(GenericKMLGenerator.generateXmlElement("styleUrl", "#custom"));
+            sb.append("\n");
+        }
+        sb.append("<name>");
+        if (label != null)
+        {
+            sb.append(label);
+        } else
+        {
+            sb.append(title.toString());
+        }
+        sb.append("</name>\n");
+
+        // build the fancy HTML popup description
+        
+        sb.append("<description><![CDATA[");
+        //sb.append("<h3>"+UIRegistry.getResourceString("GE_LOCALITY")+":</h3>\n<ul><br/>\n");
+        sb.append("<table>\n");
+        
+        appendCellTR(sb, CollectingEvent.getClassTableId(), "StartDate",  "Start Date", startDateStr);
+        appendCellTR(sb, Taxon.getClassTableId(),            null,        "Taxon",      taxonStr);
+        appendCellTR(sb, Locality.getClassTableId(),        "Latitude1",  "Latitude",   convertToDDDDDD(loc.getLatitude1(), DEGREES_FORMAT.String, DIRECTION.NorthSouth, 4));
+        appendCellTR(sb, Locality.getClassTableId(),        "Longitude1", "Longitude",  convertToDDDDDD(loc.getLongitude1(), DEGREES_FORMAT.String, DIRECTION.EastWest, 4));
+        appendCellTR(sb, Geography.getClassTableId(),       null,         "Geography",  geoStr);
+        
+        sb.append("</table>]]></description>\n");
+        
+        
+        sb.append("<LookAt>\n");
+        sb.append("<latitude>");
+        sb.append(lat.doubleValue());
+        sb.append("</latitude>\n");
+        sb.append("<longitude>");
+        sb.append(lon.doubleValue());
+        sb.append("</longitude>\n");
+        sb.append("<range>300000.00</range>\n");
+        sb.append("</LookAt>\n");
+        sb.append("<Point>\n");
+        sb.append("<coordinates>");
+        sb.append(lon.doubleValue());
+        sb.append(",");
+        sb.append(lat.doubleValue());
+        sb.append("</coordinates>\n");
+        sb.append("</Point>\n");
+        sb.append("</Placemark>\n\n\n");
+
+        log.debug("Generated placemark:\n " + sb.toString() );
+        return sb.toString();
+    }
+
+
 
     /**
      * @param placemarkIconURL the placemarkIconURL to set

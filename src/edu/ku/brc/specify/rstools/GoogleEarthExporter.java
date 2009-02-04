@@ -15,7 +15,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
@@ -32,6 +31,7 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
@@ -67,27 +67,27 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.specify.rstools.RecordSetToolsIFace#processRecordSet(edu.ku.brc.dbsupport.RecordSetIFace, java.util.Properties)
 	 */
-	public void processRecordSet(final RecordSetIFace data, final Properties reqParams)
+	public void processRecordSet(final RecordSetIFace recordSet, final Properties reqParams)
     {
 	    String description = JOptionPane.showInputDialog(UIRegistry.getTopWindow(), UIRegistry.getResourceString("GE_ENTER_DESC"));
         
         log.info("Exporting RecordSet");
-        int dataTableId = data.getDbTableId();
+        int dataTableId = recordSet.getDbTableId();
 
         if (dataTableId == CollectingEvent.getClassTableId())
         {
             exportDataObjects(description, 
-                              RecordSetLoader.loadRecordSet(data), 
+                              RecordSetLoader.loadRecordSet(recordSet), 
                               true, 
                               getPlacemarkIcon());
             
         } else if (dataTableId == CollectionObject.getClassTableId())
         {
-            exportCollectionObjectRecordSet(description, data);
+            exportCollectionObjectRecordSet(description, recordSet);
             
         } else if (dataTableId == Locality.getClassTableId())
         {
-            exportLocalityRecordSet(description, data);
+            exportLocalityRecordSet(description, recordSet);
             
         } else
         {
@@ -148,8 +148,6 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
                 }
                 catch (Exception e)
                 {
-                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(GoogleEarthExporter.class, e);
                 	log.warn("Failed to open external viewer (e.g. Google Earth) for KML file", e);
                     String errorMessage = getResourceString("GOOGLE_EARTH_ERROR");
                     UIRegistry.getStatusBar().setErrorMessage(errorMessage,e);
@@ -157,8 +155,6 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
             }
             catch (Exception e)
             {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(GoogleEarthExporter.class, e);
                 log.error("Exception caught while creating KML output or opening Google Earth", e);
                 String errorMessage = getResourceString("KML_EXPORT_ERROR");
                 UIRegistry.getStatusBar().setErrorMessage(errorMessage,e);
@@ -174,6 +170,18 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
     protected void exportCollectionObjectRecordSet(final String description,
                                                    final RecordSetIFace recordSet)
     {
+        List<Object> list    = new Vector<Object>();
+        List<Object> records = RecordSetLoader.loadCollectionObjectsRecordSet(recordSet);
+        for (Object obj : records)
+        {
+            list.add(obj);
+        }
+        
+        if (list.size() > 0)
+        {
+            exportDataObjects(description, list, true, getIconFromPrefs());
+        }
+        /*
         List<Object> ceList  = new Vector<Object>();
         List<Object> records = RecordSetLoader.loadRecordSet(recordSet);
         Hashtable<Integer, CollectingEvent> ceHash = new Hashtable<Integer, CollectingEvent>();
@@ -199,6 +207,7 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
             }
             exportDataObjects(description, ceList, true, getIconFromPrefs());
         }
+        */
     }
     
     
@@ -226,6 +235,7 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
     /**
      * @return
      */
+    @SuppressWarnings("deprecation")
     protected ImageIcon getIconFromPrefs()
     {
         String iconUrl = AppPreferences.getRemote().getProperties().getProperty("google.earth.icon", null);
@@ -320,14 +330,9 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
                 
                 for (Object obj : dataObjList)
                 {
-                    if (obj instanceof Locality)
+                    if (obj instanceof FormDataObjIFace)
                     {
-                        kmlGen.addDataObj((Locality)obj, null);
-                        
-                    } else if (obj instanceof CollectingEvent)
-                    {
-                        kmlGen.addDataObj((CollectingEvent)obj, null);
-                        
+                        kmlGen.addDataObj((FormDataObjIFace)obj, null);
                     }
                 }
                 
@@ -570,9 +575,9 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
             if (false)
             {
                 // Shrink File
-                ImageIcon icon = new ImageIcon(defaultIconFile.getAbsolutePath());
+                ImageIcon     icon   = new ImageIcon(defaultIconFile.getAbsolutePath());
                 BufferedImage bimage = new BufferedImage(icon.getIconWidth(), icon.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
-                Graphics g = bimage.createGraphics();
+                Graphics      g      = bimage.createGraphics();
                 g.drawImage(icon.getImage(), 0, 0, null);
                 g.dispose();
                 BufferedImage scaledBI = GraphicsUtils.getScaledInstance(bimage, 16, 16, true);

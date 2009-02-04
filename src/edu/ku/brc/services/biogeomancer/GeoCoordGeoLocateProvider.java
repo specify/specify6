@@ -197,8 +197,6 @@ public class GeoCoordGeoLocateProvider implements GeoCoordServiceProviderIFace
                     }
                     catch (ExecutionException e)
                     {
-                        UsageTracker.incrHandledUsageCount();
-                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(GeoCoordGeoLocateProvider.class, e);
                         // ignore this query since results were not available
                         log.error(completedQuery.toString() + " had an execution error",e); //$NON-NLS-1$
                     }
