@@ -730,8 +730,8 @@
                     default="true"
                     orderfieldname="ordinal"/>   
                     
-        <aggregator name="DNASequenceAttachment"
-                    class="edu.ku.brc.specify.datamodel.DNASequenceAttachment" 
+        <aggregator name="DNASequencingRunAttachment"
+                    class="edu.ku.brc.specify.datamodel.DNASequencingRunAttachment" 
                     separator="; " 
                     count="" 
                     ending="" 
