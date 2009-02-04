@@ -42,7 +42,7 @@ FROM collectionobject INNER JOIN determination dt ON collectionobject.Collection
 	 INNER JOIN preptype ON preparation.PrepTypeID = preptype.PrepTypeID
 	 INNER JOIN locality ON collectingevent.LocalityID = locality.LocalityID
 	 INNER JOIN taxon ON dt.TaxonID = taxon.TaxonID
-WHERE preptype.Name = 'EtOH' AND dt.IsCurrent <> 0 AND collectionobject.CollectionObjectID $P!{itemnum}]]></queryString>
+WHERE preptype.Name = 'Egg' AND dt.IsCurrent <> 0 AND collectionobject.CollectionObjectID $P!{itemnum}]]></queryString>
 
 	<field name="cat_no" class="java.lang.String"/>
 	<field name="catalogedBy" class="java.lang.String"/>
@@ -105,7 +105,7 @@ WHERE preptype.Name = 'EtOH' AND dt.IsCurrent <> 0 AND collectionobject.Collecti
 					<textElement textAlignment="Center" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<text><![CDATA[University of Kansas Museum of Natural History - Icthyology]]></text>
+				<text><![CDATA[University of Kansas Museum of Natural History - Ornithology]]></text>
 				</staticText>
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement

@@ -27,6 +27,10 @@
 	
 	<table name="DNASequence">
 		<alias name="CollectionObject"/>
+		<alias name="Agent" field="sequencer"/>
+		<table name="DNASequencingRun"/>
+        <alias name="Agent" field="createdByAgent" />
+        <alias name="Agent" field="modifiedByAgent" />
 	</table>
 	
     <table name="Agent">

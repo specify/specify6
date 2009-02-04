@@ -9,8 +9,8 @@
     <file level="3" mimetype="text/xml" name="ExpressSearchConfig" description="ExpressSearchConfig" file="es_config.xml"/>    
     
     <!-- Labels -->  
-    <file level="3" mimetype="jrxml/label" name="bird_label.jrxml" description="Fish Labels" file="bird_label.jrxml" 
-        metadata="tableid=1;reqrs=true;type=Labels;action=PrintLabel;reporttype=CollectionObject"/>
+    <file level="3" mimetype="jrxml/label" name="bird_label.jrxml" description="Bird Labels" file="bird_label.jrxml" 
+        metadata="tableid=1;reqrs=true;type=Labels;action=PrintLabel;reporttype=Report"/>
         
     <file level="3" mimetype="jrxml/report" name="bird_LoanInvoice.jrxml" description="Loan Invoice" file="bird_LoanInvoice.jrxml" 
         metadata="tableid=52;reqrs=true;type=Labels;action=PrintLabel;reporttype=Invoice;subreports=bird_LoanInvoice_subreport1.jrxml"/>
