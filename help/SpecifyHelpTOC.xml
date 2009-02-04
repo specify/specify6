@@ -17,8 +17,11 @@
       <tocitem text="Search" target="Search"/>
 -->
           <tocitem text="Introduction" target="Intro"/>
+		  <tocitem text="Backup and Restore" target="Restore"/>
+
 		  
-		  <tocitem text="Preferences">
+
+		  <tocitem text="Preferences" target="PreferencesOverview">
           	<tocitem text="EMail" target="PrefsEMail"/>
           	<tocitem text="Formatting" target="PrefsFormatting"/>
           	<tocitem text="GoogleEarth" target="PrefsGoogleEarth"/>
@@ -93,7 +96,6 @@
           		<tocitem text="Lat Long Converter" target="WorkbenchLatLongConverter"/>
 				<tocitem text="Uploading Data Set to Specify" target="uploading"/>
           </tocitem>
-		  <tocitem text="Backup and Restore" target="Restore"/>
       </tocitem>
         
     </tocitem>
