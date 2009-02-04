@@ -149,7 +149,7 @@ import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttachment;
 import edu.ku.brc.specify.datamodel.ConservDescriptionAttachment;
 import edu.ku.brc.specify.datamodel.ConservEventAttachment;
-import edu.ku.brc.specify.datamodel.DNASequenceAttachment;
+import edu.ku.brc.specify.datamodel.DNASequencingRunAttachment;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
@@ -426,7 +426,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         defClassActionHandler.registerActionHandler(CollectionObjectAttachment.class,     attachmentDisplayer);
         defClassActionHandler.registerActionHandler(ConservDescriptionAttachment.class,   attachmentDisplayer);
         defClassActionHandler.registerActionHandler(ConservEventAttachment.class,         attachmentDisplayer);
-        defClassActionHandler.registerActionHandler(DNASequenceAttachment.class,          attachmentDisplayer);
+        defClassActionHandler.registerActionHandler(DNASequencingRunAttachment.class,     attachmentDisplayer);
         defClassActionHandler.registerActionHandler(FieldNotebookAttachment.class,        attachmentDisplayer);
         defClassActionHandler.registerActionHandler(FieldNotebookPageAttachment.class,    attachmentDisplayer);
         defClassActionHandler.registerActionHandler(FieldNotebookPageSetAttachment.class, attachmentDisplayer);
