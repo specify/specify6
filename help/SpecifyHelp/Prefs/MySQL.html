@@ -18,37 +18,41 @@
   <li>For Mac: Choose<em> Specify &gt; Preferences &gt; MySQL. </em> </li>
   <li>For Windows and Linux: Choose <em>Edit &gt; Preferences &gt; MySQL</em>.</li>
 </ul>
-<p>Set MySQL information for the backup and restore funtion. These paths should only be edited by the MySQL administrator.</p>
+<p>Set MySQL information for the backup and restore function. These paths should only be edited by the MySQL administrator.</p>
 <table width="100%" border="1" cellspacing="2" cellpadding="6">
   <tr>
-    <td width="29%"><div align="center"><u><strong>MySQL Preference</strong></u></div></td>
-    <td width="38%"><div align="center"><u><strong>Result</strong></u></div></td>
-    <td width="33%"><div align="center"><u><strong>Action</strong></u></div></td>
+    <td width="29%"><div align="left"><u><strong>MySQL Preference</strong></u></div></td>
+    <td width="38%"><div align="left"><u><strong>Result</strong></u></div></td>
+    <td width="33%"><div align="left"><u><strong>Action</strong></u></div></td>
   </tr>
   <tr>
-    <td><div align="center" class="MichaelsChanges"><strong>mysqldump</strong></div></td>
-    <td>Points Specify to the needed MySQL files for backup purposes.</td>
+    <td><div align="center" class="MichaelsChanges">
+      <div align="left"><strong>mysqldump</strong></div>
+    </div></td>
+    <td>Points Specify to the needed mysqldump.exe file for backup purposes. This path will point to a server when accessing Specify from a server, and be local when Specify is run locally.</td>
     <td>Click on the browse button and find the path to the command-line tools for MySQL.</td>
   </tr>
   <tr>
-    <td><div align="center" class="MichaelsChanges"><strong>mysql</strong></div></td>
-    <td>Points Specify to the needed MySQL files for backup purposes.</td>
+    <td><div align="center" class="MichaelsChanges">
+      <div align="left"><strong>mysql</strong></div>
+    </div></td>
+    <td>Points Specify to the needed mysqldump.exe file for backup purposes.This path will point to a server when accessing Specify from a server, and be local when Specify is run locally.</td>
     <td>Click on the browse button and find the path to the command-line tools for MySQL.</td>
   </tr>
   <tr>
-    <td><div align="center"><strong>Backup Location</strong></div></td>
+    <td><div align="left"><strong>Backup Location</strong></div></td>
     <td>Specify will write the backup file in the chosen location.</td>
     <td>Click on the browse button and choose a path for backup file(s).</td>
   </tr>
   <tr>
-    <td><div align="center"><strong>Backup (button)</strong></div></td>
+    <td><div align="left"><strong>Backup (button)</strong></div></td>
     <td>The entire database will be backed up to the specified location.</td>
     <td>Click the <em>Backup</em> button.</td>
   </tr>
 </table>
 <p>The Backup function is NOT local and backs up the entire database, for this reason it requires  a high-level permission to use. In other words, if an institution uses one database for all collection<span class="MichaelsChanges">s in all disciplines, t</span>he backup function will backup all collections. This will be a huge file, and the backup function should be  implemented by a MySQL administrator. </p>
 <p>If collections within the museum maintain their own databases then the backup will be collection-specific. </p>
-<p>To Restore from a backup run the <a href="backup_restore.html">BackupAndRestore</a> Specify application found in the Specify Bin directory. </p>
+<p>To Restore from a backup run the <a href="../restore/backup_restore.html">BackupAndRestore</a> Specify application found in the Specify Bin directory. </p>
 <p>Specify automatically checks for backups every 7 and 30 days. If a backup file is not found Specify gives a prompt to allow or decline a backup. </p>
 <p><em><strong>Note:</strong></em> Specify automatically includes the default MySQL locations for Mac OS X and Linux in the MySQL Preference text boxes, but MySQL locations for Windows  are user-specified and therefore will <span class="MichaelsChanges">need to be provided.</span></p>
 <h2>&nbsp;</h2>

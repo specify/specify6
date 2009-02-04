@@ -22,7 +22,7 @@
 <p>Related tables with a many-to-one relation to the primary table are represented on the form as a field with buttons to edit, add or search for a record within the table.</p>
 <h4>One-to-Many</h4>
 <p>A relationship involving a primary and related table in which many related records are linked to a single primary record in the related table. For example, several Collection Object records would be linked to a single record in the Collection Event table because all those specimens were collected during the same event.</p>
-<p>Related tables with a one-to-many relationship to the primary table are included on the form as a subform with navigation controls.</p>
+<p>Related tables with a one-to-many relationship to the primary table are included on the form as a sub form with navigation controls.</p>
 <p>&nbsp;</p>
 <h3><u>Controls</u></h3>
 <p>Specify's forms use a variety of boxes, buttons, and panels to enter and display data, called controls.</p>
@@ -50,17 +50,17 @@
   <tr>
     <td><img src="../../images/Down16x16.png" alt="" width="16" height="16"></td>
     <td>Collapse</td>
-    <td>Hides the form/subform.</td>
+    <td>Hides the form/sub form.</td>
   </tr>
   <tr>
     <td><img src="../../images/Forward16x16.png" width="16" height="16"></td>
     <td>Expand</td>
-    <td>Opens the form/subform.</td>
+    <td>Opens the form/sub form.</td>
   </tr>
   <tr>
     <td><img src="../../images/add.png" alt="a" width="16" height="16"></td>
     <td>Add</td>
-    <td>Adds a new record to the  form or  subform.</td>
+    <td>Adds a new record to the  form or  sub form.</td>
   </tr>
   <tr>
     <td><img src="../../images/delete.png" width="16" height="16"></td>
@@ -75,7 +75,7 @@
   <tr>
     <td><img src="../../images/Search-16x16.png" alt="a" width="16" height="16"></td>
     <td>Search</td>
-    <td>Opens a search dialog to search for a record. Fields for the table will be available to search, but this search is not inclusive of criteria, it treats all criteria independantly. For example; when searching for an agent 'John Smith', entering 'John' into the first name field and 'Smith' into the last name field will return results for all last names of 'Smith' and all first names of 'John' rather than limiting the search to only 'John Smith'. </td>
+    <td>Opens a search dialog to search for a record. Fields for the table will be available to search, but this search is not inclusive of criteria, it treats all criteria independently. For example; when searching for an agent 'John Smith', entering 'John' into the first name field and 'Smith' into the last name field will return results for all last names of 'Smith' and all first names of 'John' rather than limiting the search to only 'John Smith'. </td>
   </tr>
   <tr>
     <td><p><img src="../../images/info_20x20.png" alt="a" width="20" height="20"></p></td>
@@ -202,7 +202,7 @@
 <p>&nbsp;</p>
 <p><u>Required Fields</u></p>
 <p><img src="../../images/required_edit.png" alt="required" width="296" height="33"></p>
-<p>Fields that are required have a bold label and text areas that are shaded blue (shown in the above Query Combo Box). Records can not be saved (the save button for the form will not become enabled) until all required feilds contain proper data. </p>
+<p>Fields that are required have a bold label and text areas that are shaded blue (shown in the above Query Combo Box). Records can not be saved (the save button for the form will not become enabled) until all required fields contain proper data. </p>
 <p><em><strong>Note:</strong></em> The shaded color can be changed in Specify Preferences. <em></em></p>
 <ul>
   <li>For Mac: Choose<em> Specify &gt; Preferences &gt; Formatting. </em> </li>
@@ -227,13 +227,13 @@
   <li>Choose <em>Data &gt; Config. Carry Forward</em> or right-button click within the form and choose <em>Configure Carry Forward</em> in the context menu. </li>
   <li>Choose individual fields or click the <em>Select All</em> button and then the <em>OK</em> button in the resulting dialog.</li>
 </ol>
-<p>Subforms that contain more than one value will carry forward all the values. For example: if a Collection Object has 6 Determinations associated with it and Carry Forward is enabled <strong>all</strong> 6 of the Determinations will carry forward into the new record. </p>
+<p>Sub forms that contain more than one value will carry forward all the values. For example: if a Collection Object has 6 Determinations associated with it and Carry Forward is enabled <strong>all</strong> 6 of the Determinations will carry forward into the new record. </p>
 <p><em><strong>Note:</strong></em> fields that are check boxes, or use an auto-formatter <strong>will not</strong> carry forward. However, auto-formatted fields will still update using Auto Numbering. For instance,  Catalog Number is a field that is always formatted for a numbering scheme. If the Catalog Number (C#)is 1234  and Carry Forward is turned on but Auto Numbering is turned off then the the next record will not include a C# (one will need to be entered manually). If the C# is 1234 and Carry Forward and Auto Numbering are both turned on then the next record added will include a C# of 1235.</p>
 <p>&nbsp;</p>
 <h3>Auto Numbering</h3>
-<p>Fields that have been formatted for a numbering scheme  automatically increment their numbering scheme using Auto Numbering. These   are typically the Catalog, Accession, Gift and Loan Number fields, but any field that is a string can be formatted using the Schema Configuration tool (<em>System &gt; Schema Configuation</em>). Forms open with Auto Numbering on. Turn off off Auto Numbering by  clicking <em>Data &gt; Auto Numbering</em>.</p>
-<p> Once Auto Numbering is turned off it will stay off until the subpane (tab) is closed; however, new subpanes will open with Auto Numbering turned on. For instance, if a Collection Object (CO) form is opened and Auto Numbering is turned off it will remain off while new CO's are entered using the same subpane. If a new CO form is opened in a new subpane (creating a new tab) it will open with Auto Numbering turned on.</p>
-<p>When Auto Numbering is not on, catalog numbers must be manually assigned. This is useful when entering legacy data.</p>
+<p>Fields that have been formatted for a numbering scheme  automatically increment their numbering scheme using Auto Numbering. These   are typically the Catalog, Accession, Gift and Loan Number fields, but any field that is a string can be formatted using the Schema Configuration tool (<em>System &gt; Schema Configuration</em>). Forms open with Auto Numbering on. Turn off off Auto Numbering by  clicking <em>Data &gt; Auto Numbering</em>.</p>
+<p> Once Auto Numbering is turned off it will stay off until the Workspace window is closed; however, new windows will open with Auto Numbering turned on. For instance, if a Collection Object (CO) form is opened and Auto Numbering is turned off it will remain off while new CO's are entered using the same window. If a new CO form is opened in a new window (creating a new tab) it will open with Auto Numbering turned on.</p>
+<p>When Auto Numbering is not on, formatted numbers must be manually assigned. This is useful when entering legacy data.</p>
 <p>&nbsp;</p>
 <h3>Using a Bar Code Reader</h3>
 <p>Please refer to <a href="../barcodes/using_barcodes.html">Using Barcodes</a>.</p>

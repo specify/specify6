@@ -42,43 +42,44 @@
 <p>The Determinations form includes many fields that may not be immediately recognizable.</p>
 <table width="100%" border="1" cellspacing="2" cellpadding="6">
   <tr>
-    <td width="150"><div align="center"><u><strong>Field Label</strong></u></div></td>
-    <td><div align="center"><u><strong>Field Usage</strong></u></div></td>
+    <td width="150"><div align="left"><u><strong>Field Label</strong></u></div></td>
+    <td><div align="left"><u><strong>Field Usage</strong></u></div></td>
   </tr>
   <tr>
-    <td><div align="center"><strong>Active Taxon</strong></div></td>
-    <td>This is a view only field that represents the preferred name of any synonym entered into the determined taxon field.  If a preferred name is entered into the determined taxon name field then this will represent a duplication of that name.</td>
+    <td><div align="left"><strong>Preferred Taxon</strong></div></td>
+    <td>This is a view only field that represents the preferred name of any synonym entered into the Determined Taxon field.  If a preferred name is entered into the Determined Taxon Name field then this will represent a duplication of that name.</td>
   </tr>
   <tr>
-    <td><div align="center"><strong>Current</strong></div></td>
+    <td><div align="left"><strong>Current</strong></div></td>
     <td><p>Signifies the Current  Determination of the Collection Object.</p>
     <p> Current Determination is a Required Field but only one  can exist for each Collection Object. Therefore;  to change the Current Determination one must first open the old Determination and uncheck the Current box. </p></td>
   </tr>
   <tr>
-    <td> <div align="center"><strong>Taxon</strong></div></td>
+    <td> <div align="left"><strong>Taxon</strong></div></td>
     <td><p>This field is the determined name of the specimen in question.</p>
     <p>Names can be chosen from a Query Combo Box, or added to the Table. Synonymized names are included in the Query Combo Box, but if chosen a prompt will indicate that the name is a synonymy and ask which name to use.</p>
     <p>This field operates as an &ldquo;either/or&rdquo; condition with Alternate Name; both cannot be entered in a single Determination. </p></td>
   </tr>
   <tr>
-    <td><div align="center"><strong>Qualifier</strong></div></td>
+    <td><div align="left"><strong>Qualifier</strong></div></td>
     <td>A term to qualify the identification of the taxon name when doubts have arisen as to its identity or as a comparison to a given name (e.g. &quot;cf.&quot; or &quot;aff.&quot;).</td>
   </tr>
   <tr>
-    <td><div align="center"><strong>Name Usage</strong></div></td>
-    <td>A free text suffix element added to the taxon name to indicate a concept or citation for that name. For example; Sensu Latu. </td>
+    <td><div align="left"><strong>Addendum</strong></div></td>
+    <td>A Pick List suffix element added to the taxon name to indicate a concept or citation for that name. For example; Sensu Latu. </td>
   </tr>
   <tr>
-    <td><div align="center"><strong>Addendum</strong></div></td>
-    <td>A free text suffix element added to the taxon name to indicate a concept or citation for that name.</td>
+    <td><strong>Alternate Name</strong></td>
+    <td>A free text field for insertion of a name (scientific or common) not recognized in the taxon tree authority.  This field operates as an &ldquo;either/or&rdquo; condition with Preferred Taxon; both cannot be entered in a single Determination. </td>
   </tr>
   <tr>
-    <td><p align="center"><strong>Alternate Name</strong></p>    </td>
-    <td>A free text field for insertion of a name (scientific or common) not recognized in the taxon tree authority.  This field operates as an &ldquo;either/or&rdquo; condition with Active taxon; both cannot be entered in a single Determination. </td>
+    <td><div align="left"><strong>Name Usage</strong></div></td>
+    <td>User customizable pick list used to describe the context of the name entered into the taxon or Alternate name fields.  Taxon field - if a synonym name is used, it could denote a &ldquo;shelved by&rdquo; name.  Alternate name field - could denote the appropriate authority the alternate name was taken from (e.g. Flora of Nebraska).</td>
   </tr>
+  
   <tr>
-    <td><div align="center"><strong>Alt. Name</strong></div></td>
-    <td>This field is available for Taxon that may be used in a different way than the Determined Taxon or is not part of the Taxon Authority File. </td>
+    <td><div align="left"><strong>Type Status Name</strong></div></td>
+    <td>A  pick list of all available type designations; Holotype, Paratype, Neotype. Specify ships with predetermined values which are editable for users.</td>
   </tr>
 </table>
 <p>&nbsp;</p>
@@ -178,14 +179,14 @@
   </tr>
 </table>
 <p>&nbsp;</p>
-<p>It is also important to note that Agents are shared throughout a Discipline. In other words, if a Discipline has two collections (A and B) and collection A creates an Agent, that Agent will also be in Collection B.</p>
+<p>It is also important to note that Agents are shared throughout a Discipline. In other words, if a Discipline has two collections (A and B) and collection A creates an Agent,  Collection B will also have access to that agent.</p>
 <p>&nbsp;</p>
 <h3><strong><u>Attachments</u></strong></h3>
 <h4>Add Attachment</h4>
 <p>Many tables in Specify 6 allow  Attachments. Specify copies the attached file to the specified Attachment path. To create or alter the Attachment path, go to:</p>
 <ul>
-  <li>For Mac: <em>Specify &gt; Preferences &gt; Sytem &gt; Attachment Storage Location. </em> </li>
-  <li>For PC and Linux: Choose <em>Edit &gt; Preferences &gt; Sytem &gt; Attachment Storage Location</em>.</li>
+  <li>For Mac: <em>Specify &gt; Preferences &gt; System &gt; Attachment Storage Location. </em> </li>
+  <li>For PC and Linux: Choose <em>Edit &gt; Preferences &gt; System &gt; Attachment Storage Location</em>.</li>
 </ul>
 <p><em><strong>Note:</strong></em> if the attached file is an image, Specify also creates and stores an icon for the image in the Attachment Storage Location.</p>
 <p>Accepted Attachment files include:</p>

@@ -7,7 +7,7 @@
 <!--
 	<mapID target="Labels"              url="SpecifyHelp/Labels/Labels.html" />
 	<mapID target="login"               url="SpecifyHelp/login.html" />
-	<mapID target="Reports"             url="SpecifyHelp/Reports/Reports.html" />
+	<mapID target="Reports"             url="SpecifyHelp/ReportsLabels/Reports.html" />
 	<mapID target="Search"              url="SpecifyHelp/Search/Search.html" />
 -->
 	
@@ -104,9 +104,9 @@
 	<mapID target="uploading"               url="SpecifyHelp/Uploader/wb_uploader.html" />
 	
 	<!-- Reports/Labels -->
-	<mapID target="Reports"                 url="SpecifyHelp/Reports/reports.html" />
+	<mapID target="Reports"                 url="SpecifyHelp/ReportsLabels/reports.html" />
 	<mapID target="RunReportSettings"       url="SpecifyHelp/Dialogs/report_settings.html" />
-    <mapID target="iReports"                url="SpecifyHelp/Reports/specifyireports.html" />
+    <mapID target="iReports"                url="SpecifyHelp/ReportsLabels/specifyireports.html" />
 
 
 	

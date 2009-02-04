@@ -3,9 +3,6 @@
 <head>
 <link href="../../main.css" rel="stylesheet" type="text/css" media="screen"></link>
 <title>Query Builder</title>
-<style type="text/css">
-.style1 {font-style: italic}
-</style>
 </head>
 
 <BODY BGCOLOR=#ffffff>
@@ -16,8 +13,8 @@
 </table>
 <h2><strong> <img src="../../images/query2_32x32.png" width="32" height="32" /> Query</strong> Builder </h2>
 <p>The purpose of entering data into the Specify database is to be able to retrieve that data when you need it. Specify's Query builder offers a flexible interface for defining and running searches. Queries are a precise request for information retrieval and can restrict the type of returned records based on the contents of almost any of Specify's  data fields. </p>
-<p>These queries can then be used to create <a href="../RecordSet/record_set.html">Record Sets</a> or <a href="../Reports/reports.html">Reports</a>. </p>
-<p>Open the Query Builder by clicking the <img src="../../images/query20x20.png" width="20" height="20" /> (Query icon) on the Task Bar.</p>
+<p>These queries can then be used to create <a href="../RecordSet/record_set.html">Record Sets</a> or <a href="../ReportsLabels/reports.html">Reports</a>. </p>
+<p>Open the Query Builder by clicking the <img src="../../images/query20x20.png" width="20" height="20" /> (Query button) on the Taskbar.</p>
 <p>The Sidebar displays a list of frequently used tables to begin the query configuration. Less common tables are found by clicking <img src="../../images/more_tables.png" width="20" height="20" /> (More Tables)  in the sidebar and choosing a table from the pop-up dialog. </p>
 <p>A <strong><a name="query_creators"></a>Query Creators  Configuration</strong> tool gives access to less frequently used tables and also allows the Sidebar and More Tables lists to be interchanged and rearranged:</p>
 <p>Choose <em>Tabs &gt; Configure Sidebar</em> from the Menu bar or right-button-click an open section of the sidebar to activate the Context Menu.</p>
@@ -30,7 +27,7 @@
 </ul>
 <p><em><strong>Note:</strong></em> deleting a table from either the Sidebar or More Tables will place it back in the master list which is accessed by the <img src="../../images/add.png" alt="add" width="16" height="16" /> (add) button.</p>
 <p>&nbsp;</p>
-<p>A <a name="configure_queries" id="configure_queries"></a><strong>Configure Queries</strong> tool allows saved queries to be rearranced on  Sidebar. Choose <em>Tabs &gt; Configure Sidebar</em> from the Menu bar or right-button-click an open section of the sidebar to activate the Context Menu.</p>
+<p>A <a name="configure_queries" id="configure_queries"></a><strong>Configure Queries</strong> tool allows saved queries to be rearranged on  Sidebar. Choose <em>Tabs &gt; Configure Sidebar</em> from the Menu bar or right-button-click an open section of the sidebar to activate the Context Menu.</p>
 <p>Choose <em>Configure</em><em> Queries</em> to open the Configure Queries dialog.</p>
 <ul>
   <li>Use the <img src="../../images/ReorderUp16x16.png" alt="b" width="16" height="16" />,and <img src="../../images/ReorderDown16x16.png" alt="b" width="16" height="16" /> (reorder) buttons to change the order in which the forms appear in the Sidebar and More Forms list.</li>
@@ -50,7 +47,8 @@
 <p>Select a table to be part of the search criteria by double clicking it in the list box.  Tables are either formatted or aggregated, depending on their relationship to the primary Table, and do not offer any other search criteria. Most tables in Specify have a default format and aggregate setting. Formats and aggregates can be edited, created or deleted  in <em>System &gt; Schema Configuration</em>.</p>
 <p><strong><img src="../../images/SingleKid.png" alt="many-to-one" width="16" height="16" /> Many-to-One</strong></p>
 <p>A relationship involving a primary and related table in which many primary records are linked to a single related record in the related table. For example, many Collection Object records might be linked to the same Locality record because they were all found at the same location.</p>
-<p>Tables with a many-to-one relationship are designated by an icon (<strong><img src="../../images/SingleKid.png" width="16" height="16" />). </strong>Tables with many-to-one relationships are formatted to be represented by at least one field. Most tables are represented by only one field, (Collection Object shows the Catalog Number), but some are best represented by more than one field (Agent may be formatted to display last name, first name, middle initial). Query results use this format when returning results. </p>
+<p>Tables with a many-to-one relationship are designated by an </p>
+<p> (<strong><img src="../../images/SingleKid.png" width="16" height="16" />). </strong>Tables with many-to-one relationships are formatted to be represented by at least one field. Most tables are represented by only one field, (Collection Object shows the Catalog Number), but some are best represented by more than one field (Agent may be formatted to display last name, first name, middle initial). Query results use this format when returning results. </p>
 <p><strong><img src="../../images/MultiKid.png" alt="one-to-many" width="16" height="16" /> One-to-Many</strong></p>
 <p>A relationship involving a primary and related table in which many related records are linked to a single primary record in the related table. For example, several Collection Object records would be linked to a single record in the Collection Event table because all those specimens were collected during the same event.</p>
 <p>Tables with a one-to-many relationship  are designated by an icon (<strong><img src="../../images/MultiKid.png" width="16" height="16" />)</strong> and return aggregated data. For example, a Collection Object can have many Preparations. The results of a query of Collection Objects with Preparations will return Preparations aggregated together in one column, separated by colons or semi colons. </p>
@@ -65,8 +63,8 @@
   <tr>
     <td width="12%"><u><strong>Heading</strong></u></td>
     <td width="11%"><u><strong>Choices</strong></u></td>
-    <td width="39%"><u><strong>Result</strong></u></td>
-    <td width="38%"><u><strong>Available for Field Type</strong></u></td>
+    <td width="61%"><u><strong>Result</strong></u></td>
+    <td width="16%"><u><strong>Available for Field Type</strong></u></td>
   </tr>
   <tr>
     <td><strong>Not</strong></td>
@@ -201,6 +199,13 @@
     <td><p>Includes the Query Condition when running a Report by dropping a Record Set onto it (in the Report Sidebar). If 'Always' is not checked then the resulting Report will include all record ID's rather than only those matching the Query Condition. This is particularly useful when searching Prep Types and Current Determinations. </p>    </td>
     <td>All</td>
   </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td><img src="../../images/closeHover.gif" width="12" height="12" /></td>
+    <td><p>Delete the expression from the Query. </p>
+    <p>When editing a Saved Query any expressions used in a report may not be deleted.</p></td>
+    <td>All</td>
+  </tr>
 </table>
 <p>&nbsp;</p>
 <h4>Using Wild Cards</h4>
@@ -219,13 +224,13 @@
     <td>Returns any string that includes Clinton anywhere in the string.</td>
   </tr>
 </table>
-<p>When it is necessary to use an asterisk (*) as part of the search criteria preceed it with a &quot;\&quot;. For example; when it is desired to find Cli*nton enter the search criteria as *Cli\*nton*.</p>
+<p>When it is necessary to use an asterisk (*) as part of the search criteria precede it with a &quot;\&quot;. For example; when it is desired to find Cli*nton enter the search criteria as *Cli\*nton*.</p>
 <h4>&nbsp;</h4>
 <h4><strong>Other</strong> Controls</h4>
 <p>The order of the condition row determines the order in which fields will be sorted as well as the arrangement of the fields in the results panel. If a Query includes both Taxon Name and the Last Name of the Collector are both are sorted but Taxon Name is ordered first Specify will sort Taxon Name first, then Last Name of the Collector. </p>
 <table width="75%" border="1" cellspacing="2" cellpadding="6">
   <tr>
-    <td><u><strong>Side Icons</strong></u></td>
+    <td><u><strong>Side Buttons</strong></u></td>
     <td><u><strong>Function</strong></u></td>
     <td><u><strong>Result</strong></u></td>
   </tr>
@@ -275,7 +280,7 @@
 <p><strong>Query Results</strong></p>
 <p>Query results are limited to 5000 records. A return count can include more records, but Specify can not display more than 5000 result records.</p>
 <p>Query results display as a grid in a Query Results window. They are designated by a green (<img src="../../images/query_colors.png" width="20" height="20" />) results bar.</p>
-<p>Results can be manipulated and utilized in various ways using the icons on the results bar.</p>
+<p>Results can be manipulated and utilized in various ways using the buttons on the results bar.</p>
 <span class="MichaelsChanges">
 <table width="600" border="1" cellspacing="2" cellpadding="6">
   <tr>
@@ -286,9 +291,9 @@
     <td><div align="center"><img src="../../images/data_entry.png" width="25" height="25" /></div></td>
     <td>Open records; 
       <ul>
-        <li class="style1">To open a specific result record, first choose the record then click on the icon.</li>
-        <li class="style1">To open select records, select them by Command+Click (for Mac) or Ctrl+Click (for PC) each record, then clicking on the icon.</li>
-        <li class="style1">To open all the records, select the icon without choosing a specific record.</li>
+        <li>To open a specific result record, first choose the record then click on the button.</li>
+        <li>To open select records, select them by Command + Click (for Mac) or Ctrl + Click (for PC) each record, then clicking on the button.</li>
+        <li>To open all the records, select the button without choosing a specific record.</li>
     </ul></td>
   </tr>
   <tr>
@@ -301,7 +306,15 @@
   </tr>
 </table></span>
 <p><em><strong>Note:</strong></em> Individual records opened from the Query results will open in View  mode. To edit the records click the <img src="../../images/view_form_20x20.png" width="20" height="20" /> (Edit) button.</p>
-<p><em><strong>Note:</strong></em> Queries can be used to run Reports in SpecifyiReport. Please refer to <a href="reports.html">Reports</a>.</p>
+<p>Query results can also be used to add records to an existing Record Set.</p>
+<p>Click the <img src="../../images/record_sets_dark_20.png" alt="record set" width="20" height="20" /> (Record Set) button at the bottom of the results window. The <em>Choose a Record Set</em> dialog will appear:</p>
+<ul>
+  <li>Select a Record Set name in the list and click the <em>OK</em> button to add the selected records to the existing Record Set.</li>
+  <br />
+  <li>Click the <em>New</em> button to create a new Record Set</li>
+  <br />
+  <li>Click <em>Cancel</em> to close the dialog. </li>
+</ul>
 <p>&nbsp;</p>
 <p><strong>Configure or Import/Export </strong><strong>Queries</strong></p>
 <p>Right-button-Click on the Sidebar to open the Query Context Menu:</p>
@@ -312,11 +325,11 @@
   </tr>
   <tr>
     <td><div align="center"><strong>Configure Query Creators</strong></div></td>
-    <td>Opens a Configuration tool for adding, removing or reordering the primary tables in either the Sidebar  or  More Tables lists. This is explained <a href="#query_creators"> Query Creators Configuration</a>.</td>
+    <td>Opens a Configuration tool for adding, removing or reordering the primary tables in either the Sidebar  or  More Tables lists. This is explained <a href="../QueryBuilder/Query_Builder#query_creators"> Query Creators Configuration</a>.</td>
   </tr>
   <tr>
     <td><div align="center"><strong>Configure Queries</strong></div></td>
-    <td>Opens a Configuration tool for including the saved Queries in either the Sidebar or Other Queries lists. This configuration tool is explained in <a href="#configure_queries">Configure Queries</a>.</td>
+    <td>Opens a Configuration tool for including the saved Queries in either the Sidebar or Other Queries lists. This configuration tool is explained in <a href="../QueryBuilder/Query_Builder#configure_queries">Configure Queries</a>.</td>
   </tr>
   <tr>
     <td><p align="center"><strong>Import Queries</strong></p>    </td>
@@ -348,7 +361,9 @@
   <li>Name the file and choose a storage location for the file in the resulting file menu dialog, then click the <em>Save</em> button.</li>
 </ol>
 <p>&nbsp;</p>
-<p>&nbsp;</p>
+<p><strong>Delete Query</strong></p>
+<p>Queries can be deleted by dragging and dropping them onto the Trash Can in the Sidebar. A prompt will ask the user if they are sure they want to delete the Query.</p>
+<p>Queries that are used in Reports may not be deleted.</p>
 <p>&nbsp;</p>
 <p>&nbsp;</p>
 </BODY>
