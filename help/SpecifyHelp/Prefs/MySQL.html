@@ -8,46 +8,47 @@
 <BODY BGCOLOR=#ffffff>
 <table width="100%" border="0" background="../../images/topbar.png">
   <tr>
-    <td>&nbsp;</td>
+    <td valign="top">&nbsp;</td>
   </tr>
 </table><br />
 <table border="0">
-<tr><td><img src="../../images/mysql_logo.png" alt=""/></td><td><h2>MySQL</h2></td></tr>
+<tr><td width="32"><img src="../../images/mysql_logo.png" alt=""/></td>
+<td width="267"><h2>MySQL Preferences</h2></td></tr>
 </table>
 <ul>
   <li>For Mac: Choose<em> Specify &gt; Preferences &gt; MySQL. </em> </li>
   <li>For Windows and Linux: Choose <em>Edit &gt; Preferences &gt; MySQL</em>.</li>
 </ul>
 <p>Set MySQL information for the backup and restore function. These paths should only be edited by the MySQL administrator.</p>
-<table width="100%" border="1" cellspacing="2" cellpadding="6">
+<table width="100%" border="0" cellspacing="2" cellpadding="6">
   <tr>
-    <td width="29%"><div align="left"><u><strong>MySQL Preference</strong></u></div></td>
-    <td width="38%"><div align="left"><u><strong>Result</strong></u></div></td>
-    <td width="33%"><div align="left"><u><strong>Action</strong></u></div></td>
+    <td valign="bottom" width="29%"><div align="left"><u><strong>MySQL Preference</strong></u></div></td>
+    <td valign="bottom" width="38%"><div align="left"><u><strong>Result</strong></u></div></td>
+    <td valign="bottom" width="33%"><div align="left"><u><strong>Action</strong></u></div></td>
   </tr>
   <tr>
-    <td><div align="center" class="MichaelsChanges">
+    <td valign="top"><div align="center" class="MichaelsChanges">
       <div align="left"><strong>mysqldump</strong></div>
     </div></td>
-    <td>Points Specify to the needed mysqldump.exe file for backup purposes. This path will point to a server when accessing Specify from a server, and be local when Specify is run locally.</td>
-    <td>Click on the browse button and find the path to the command-line tools for MySQL.</td>
+    <td valign="top">Points Specify to the needed mysqldump.exe file for backup purposes. This path will point to a server when accessing Specify from a server, and be local when Specify is run locally.</td>
+    <td valign="top">Click on the browse button and find the path to the command-line tools for MySQL.</td>
   </tr>
   <tr>
-    <td><div align="center" class="MichaelsChanges">
+    <td valign="top"><div align="center" class="MichaelsChanges">
       <div align="left"><strong>mysql</strong></div>
     </div></td>
-    <td>Points Specify to the needed mysqldump.exe file for backup purposes.This path will point to a server when accessing Specify from a server, and be local when Specify is run locally.</td>
-    <td>Click on the browse button and find the path to the command-line tools for MySQL.</td>
+    <td valign="top">Points Specify to the needed mysqldump.exe file for backup purposes.This path will point to a server when accessing Specify from a server, and be local when Specify is run locally.</td>
+    <td valign="top">Click on the browse button and find the path to the command-line tools for MySQL.</td>
   </tr>
   <tr>
-    <td><div align="left"><strong>Backup Location</strong></div></td>
-    <td>Specify will write the backup file in the chosen location.</td>
-    <td>Click on the browse button and choose a path for backup file(s).</td>
+    <td valign="top"><div align="left"><strong>Backup Location</strong></div></td>
+    <td valign="top">Specify will write the backup file in the chosen location.</td>
+    <td valign="top">Click on the browse button and choose a path for backup file(s).</td>
   </tr>
   <tr>
-    <td><div align="left"><strong>Backup (button)</strong></div></td>
-    <td>The entire database will be backed up to the specified location.</td>
-    <td>Click the <em>Backup</em> button.</td>
+    <td valign="top"><div align="left"><strong>Backup (button)</strong></div></td>
+    <td valign="top">The entire database will be backed up to the specified location.</td>
+    <td valign="top">Click the <em>Backup</em> button.</td>
   </tr>
 </table>
 <p>The Backup function is NOT local and backs up the entire database, for this reason it requires  a high-level permission to use. In other words, if an institution uses one database for all collection<span class="MichaelsChanges">s in all disciplines, t</span>he backup function will backup all collections. This will be a huge file, and the backup function should be  implemented by a MySQL administrator. </p>

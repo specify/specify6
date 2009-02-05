@@ -29,6 +29,7 @@
           	<tocitem text="System" target="PrefsSystem"/>
           	<tocitem text="Tree" target="PrefsTree"/>
 			<tocitem text="Login" target="PrefsLogin"/>
+			<tocitem text="<MySQL" target="PrefsMySQL"/>
 	      </tocitem>
 	      
 	      <tocitem text="Form System" target="Using_Forms">
