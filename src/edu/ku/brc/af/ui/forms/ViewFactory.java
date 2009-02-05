@@ -1346,7 +1346,7 @@ public class ViewFactory
                     if (validator != null)
                     {
                         DataChangeNotifier dcn = validator.createDataChangeNotifer(cellField.getIdent(), tristateCB, null);
-                        tristateCB.addChangeListener(dcn);
+                        tristateCB.addActionListener(dcn);
                     }
                     bi.compToAdd = tristateCB;
                     break;
