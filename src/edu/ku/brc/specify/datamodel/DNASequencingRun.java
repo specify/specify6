@@ -71,6 +71,53 @@ public class DNASequencingRun extends CollectionMember
 	protected Set<DNASequencingRunCitation> citations;
 		
     /**
+     * 
+     */
+    public DNASequencingRun()
+    {
+        super();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#initialize()
+     */
+    @Override
+    public void initialize()
+    {
+        super.init();
+        dnaSequencingRunId = null;
+        ordinal = null;
+        readDirection = null;
+        runDate = null;
+        pcrCocktailPrimer = null;
+        pcrForwardPrimerCode = null;
+        pcrReversePrimerCode = null;
+        pcrPrimerSequence5_3 = null;
+        pcrPrimerName = null;
+        sequencePrimerCode = null;
+        sequencePrimerName = null;
+        sequencePrimerSequence5_3 = null;
+        sequenceCocktailPrimer = null;
+        traceFileName = null;
+        scoreFileName = null;
+        remarks = null;
+
+        number1 = null;
+        number2 = null;
+        number3 = null;
+        text1 = null;
+        text2 = null;
+        text3 = null;
+        yesNo1 = null;
+        yesNo2 = null;
+        yesNo3 = null;
+        
+        dnaSequence = null;
+        attachments = new TreeSet<DNASequencingRunAttachment>();
+        citations = new HashSet<DNASequencingRunCitation>();
+    }
+    
+    /**
 	 * @return the dnaSequencingRunId
 	 */
     @Id
@@ -791,42 +838,5 @@ public class DNASequencingRun extends CollectionMember
 		return getClassTableId();
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.ku.brc.specify.datamodel.DataModelObjBase#initialize()
-	 */
-	@Override
-	public void initialize()
-	{
-		dnaSequencingRunId = null;
-		ordinal = null;
-		readDirection = null;
-		runDate = null;
-		pcrCocktailPrimer = null;
-		pcrForwardPrimerCode = null;
-		pcrReversePrimerCode = null;
-		pcrPrimerSequence5_3 = null;
-		pcrPrimerName = null;
-		sequencePrimerCode = null;
-		sequencePrimerName = null;
-		sequencePrimerSequence5_3 = null;
-		sequenceCocktailPrimer = null;
-		traceFileName = null;
-		scoreFileName = null;
-		remarks = null;
-
-		number1 = null;
-		number2 = null;
-		number3 = null;
-		text1 = null;
-		text2 = null;
-		text3 = null;
-		yesNo1 = null;
-		yesNo2 = null;
-		yesNo3 = null;
-		
-		dnaSequence = null;
-		attachments = new TreeSet<DNASequencingRunAttachment>();
-		citations = new HashSet<DNASequencingRunCitation>();
-	}
 	
 }
