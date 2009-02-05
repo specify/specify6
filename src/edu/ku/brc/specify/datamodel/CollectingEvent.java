@@ -93,7 +93,7 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
     protected String                verbatimLocality;
     protected String                remarks;
     protected Byte                  visibility;
-    protected Agent           		visibilitySetBy;
+    protected SpecifyUser            visibilitySetBy;
     protected Set<CollectionObject> collectionObjects;
     protected Set<Collector>        collectors;
     protected Locality              locality;
@@ -110,7 +110,7 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
     /** default constructor */
     public CollectingEvent()
     {
-    	// do nothing
+        // do nothing
     }
     
     /** constructor with id */
@@ -367,12 +367,12 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "VisibilitySetByID", unique = false, nullable = true, insertable = true, updatable = true)
-    public Agent getVisibilitySetBy() 
+    public SpecifyUser getVisibilitySetBy() 
     {
         return this.visibilitySetBy;
     }
     
-    public void setVisibilitySetBy(Agent visibilitySetBy) 
+    public void setVisibilitySetBy(SpecifyUser visibilitySetBy) 
     {
         this.visibilitySetBy = visibilitySetBy;
     }

@@ -132,7 +132,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
     protected Integer              rankId;
     protected String               groupNumber;
     protected Byte                 visibility;
-    protected Agent                visibilitySetBy;
+    protected SpecifyUser          visibilitySetBy;
     
     protected List<Taxon>          ancestors; 
 
@@ -692,11 +692,11 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "VisibilitySeteByID", unique = false, nullable = true, insertable = true, updatable = true)
-    public Agent getVisibilitySetBy() {
+    public SpecifyUser getVisibilitySetBy() {
         return this.visibilitySetBy;
     }
     
-    public void setVisibilitySetBy(Agent visibilitySetBy) {
+    public void setVisibilitySetBy(SpecifyUser visibilitySetBy) {
         this.visibilitySetBy = visibilitySetBy;
     }
     

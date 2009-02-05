@@ -489,7 +489,7 @@ class SetUpBuildDlg extends CustomDialog
         CollectionChoice.config(xstream);
         
         System.out.println("Start");
-        File file = new File(UIRegistry.getDefaultWorkingPath()+File.separator+"bld_coll_choices.xml");
+        File file = new File(UIRegistry.getAppDataDir()+File.separator+"bld_coll_choices.xml");
         try
         {
             FileUtils.writeStringToFile(file, xstream.toXML(choices));

@@ -101,7 +101,7 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
     protected String                long1text;  // The original value
     protected String                long2text;  // The original value
     protected Byte                  visibility;
-    protected Agent                 visibilitySetBy;
+    protected SpecifyUser           visibilitySetBy;
     protected String                guid;
     
     // Source Data used for formatting
@@ -638,12 +638,12 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "VisibilitySetByID", unique = false, nullable = true, insertable = true, updatable = true)
-    public Agent getVisibilitySetBy()
+    public SpecifyUser getVisibilitySetBy()
     {
         return this.visibilitySetBy;
     }
 
-    public void setVisibilitySetBy(Agent visibilitySetBy)
+    public void setVisibilitySetBy(SpecifyUser visibilitySetBy)
     {
         this.visibilitySetBy = visibilitySetBy;
     }

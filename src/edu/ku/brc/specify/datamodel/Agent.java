@@ -232,7 +232,6 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
         email                          = null;
         url                            = null;
         remarks                        = null;
-        organization                   = null;
         addresses                      = new HashSet<Address>();
         agentAttachments               = new HashSet<AgentAttachment>();
         variants                       = new HashSet<AgentVariant>();

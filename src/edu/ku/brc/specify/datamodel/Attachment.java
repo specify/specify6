@@ -61,7 +61,7 @@ public class Attachment extends DataModelObjBase implements Serializable
     protected String                  remarks;
     protected String                  attachmentLocation;
     protected Byte                    visibility;
-    protected Agent                   visibilitySetBy;
+    protected SpecifyUser             visibilitySetBy;
     protected Set<AttachmentMetadata> metadata;
     protected Set<AttachmentTag>      tags;
     
@@ -315,11 +315,11 @@ public class Attachment extends DataModelObjBase implements Serializable
 
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "VisibilitySetByID", unique = false, nullable = true, insertable = true, updatable = true)
-    public Agent getVisibilitySetBy() {
+    public SpecifyUser getVisibilitySetBy() {
         return this.visibilitySetBy;
     }
     
-    public void setVisibilitySetBy(Agent visibilitySetBy) {
+    public void setVisibilitySetBy(SpecifyUser visibilitySetBy) {
         this.visibilitySetBy = visibilitySetBy;
     }
 
