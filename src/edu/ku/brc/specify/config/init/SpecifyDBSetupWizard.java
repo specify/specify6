@@ -436,7 +436,7 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
                                     getResourceString("EXIT")
                                   };
                             int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
-                                                                         getResourceString("DEL_CUR_DB"), 
+                                                                         UIRegistry.getLocalizedMessage("DEL_CUR_DB", userPanel.getDbName()), 
                                                                          getResourceString("DEL_CUR_DB_TITLE"), 
                                                                          JOptionPane.YES_NO_OPTION,
                                                                          JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
@@ -581,8 +581,8 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
             {
                 connStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, properties.getProperty("hostName"),  dbName);
             }
-            String userName = properties.getProperty("userName");
-            String password = properties.getProperty("password");
+            String userName = properties.getProperty("dbUserName");
+            String password = properties.getProperty("dbPassword");
             
             if (!UIHelper.tryLogin(driverInfo.getDriverClassName(), 
                     driverInfo.getDialectClassName(), 

@@ -154,8 +154,8 @@ public class DatabasePanel extends BaseSetupPanel
     @Override
     public void setValues(Properties values)
     {
-        usernameTxt.setText(values.getProperty("userName"));
-        passwordTxt.setText(values.getProperty("password"));
+        usernameTxt.setText(values.getProperty("dbUserName"));
+        passwordTxt.setText(values.getProperty("dbPassword"));
         dbNameTxt.setText(values.getProperty("dbName"));
         hostNameTxt.setText(values.getProperty("hostName"));
         
