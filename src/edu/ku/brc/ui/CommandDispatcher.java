@@ -108,6 +108,7 @@ public class CommandDispatcher
      */
     public static boolean dispatch(final CommandAction cmdAction)
     {
+        log.debug(cmdAction);
         Vector<CommandListener> list = instance.listeners.get(cmdAction.getType());
         if (list != null)
         {

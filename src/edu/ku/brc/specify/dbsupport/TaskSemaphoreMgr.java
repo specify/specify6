@@ -12,6 +12,9 @@ package edu.ku.brc.specify.dbsupport;
 import static edu.ku.brc.ui.UIRegistry.*;
 
 import java.net.InetAddress;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.sql.Timestamp;
 
 import javax.swing.JOptionPane;
@@ -20,6 +23,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.StaleObjectException;
@@ -64,13 +68,58 @@ public class TaskSemaphoreMgr
                                    final String name, 
                                    final SCOPE  scope)
     {
+        Discipline discipline = scope == SCOPE.Discipline ? AppContextMgr.getInstance().getClassObject(Discipline.class) : null;
+        Collection collection = scope == SCOPE.Collection ? AppContextMgr.getInstance().getClassObject(Collection.class) : null;
+       
+        Connection connection = DBConnection.getInstance().getConnection();
+        if (connection != null)
+        {
+            Statement  stmt = null;
+            ResultSet  rs   = null;
+            try
+            {
+                String sql = buildSQL(name, scope, discipline, collection);
+                log.debug(sql);
+                
+                stmt = connection.createStatement();
+                rs = stmt.executeQuery(sql);
+                if (rs != null && rs.next())
+                {
+                    return rs.getBoolean(1);
+                }
+                return false;
+                
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TaskSemaphoreMgr.class, ex);
+                //log.error(ex);
+                
+            } finally 
+            {
+                try
+                {
+                    if (rs != null)
+                    {
+                        rs.close();
+                    }
+                    if (stmt != null)
+                    {
+                        stmt.close();
+                    }
+                } catch (Exception ex) {}
+            }
+        }
+        return false;
+        
+        /*
+        // This is not used right NOW!
         DataProviderSessionIFace session = null;
         try
         {
             session = DataProviderFactory.getInstance().createSession();
-            Discipline discipline = scope == SCOPE.Discipline ? AppContextMgr.getInstance().getClassObject(Discipline.class) : null;
-            Collection collection = scope == SCOPE.Collection ? AppContextMgr.getInstance().getClassObject(Collection.class) : null;
-
+ 
             SpTaskSemaphore semaphore = getSemaphore(session, name, scope, discipline, collection);
             
             if (semaphore == null)
@@ -95,6 +144,7 @@ public class TaskSemaphoreMgr
              }
         }
         throw new RuntimeException("Error checking lock ["+title+"]");   
+        */
     }
 
     /**
@@ -136,6 +186,111 @@ public class TaskSemaphoreMgr
         throw new RuntimeException("Error getting lock info ["+title+"]");   
     }
 
+    /**
+     * @param title
+     * @param name
+     * @param scope
+     * @return
+     */
+    public static boolean askUserToUnlock(final String title, 
+                                           final String name, 
+                                           final SCOPE  scope)
+    {
+        SpecifyUser user      = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
+        Discipline discipline = scope == SCOPE.Discipline ? AppContextMgr.getInstance().getClassObject(Discipline.class) : null;
+        Collection collection = scope == SCOPE.Collection ? AppContextMgr.getInstance().getClassObject(Collection.class) : null;
+
+        DataProviderSessionIFace session = null;
+        try
+        {
+            session = DataProviderFactory.getInstance().createSession();
+            
+            SpTaskSemaphore semaphore = null;
+            try
+            {
+                semaphore = getSemaphore(session, name, scope, discipline, collection);
+            
+            } catch (StaleObjectException ex)
+            {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TaskSemaphoreMgr.class, ex);
+                semaphore = null;
+            }
+            
+            if (semaphore == null)
+            {
+                // can't be unlocked at this time.
+                // or it isn't locked
+                
+            } else
+            {
+                if (!semaphore.getIsLocked())
+                {
+                    return false;
+                }
+                
+                // Check to see if we have the same user on the same machine.
+                String currMachineName = InetAddress.getLocalHost().toString();
+                String dbMachineName   = semaphore.getMachineName();
+                
+                if (StringUtils.isNotEmpty(dbMachineName) && 
+                    StringUtils.isNotEmpty(currMachineName) && 
+                    currMachineName.equals(dbMachineName) &&
+                    semaphore.getOwner() != null && 
+                    user != null && 
+                    user.getId().equals(semaphore.getOwner().getId()))
+                {
+                    // In use by this user
+                    
+                    int      options      = JOptionPane.YES_NO_OPTION;
+                    Object[] optionLabels = new String[] { getResourceString("SpTaskSemaphore.OVERRIDE"),  //$NON-NLS-1$
+                                                           getResourceString("CANCEL")//$NON-NLS-1$
+                                                         };
+                    int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
+                            getLocalizedMessage("SpTaskSemaphore.IN_USE_BY_YOU_UNLK", title),
+                            getResourceString("SpTaskSemaphore.IN_USE_TITLE"),  //$NON-NLS-1$
+                            options,
+                            JOptionPane.QUESTION_MESSAGE, null, optionLabels, 1);
+                    
+                    return userChoice == JOptionPane.YES_OPTION;
+                }
+                
+                String userStr = prevLockedBy != null ? prevLockedBy : semaphore.getOwner().getIdentityTitle();
+                String msg = UIRegistry.getLocalizedMessage("SpTaskSemaphore.IN_USE_OV_UNLK", title, userStr, semaphore.getLockedTime().toString());
+                
+                int      options;
+                Object[] optionLabels;
+                    options = JOptionPane.YES_NO_OPTION;
+                    optionLabels = new String[] { getResourceString("SpTaskSemaphore.OVERRIDE"),  //$NON-NLS-1$
+                                                  getResourceString("CANCEL"),  //$NON-NLS-1$
+                                                };
+                
+                int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
+                                                             msg,
+                                                             getResourceString("SpTaskSemaphore.IN_USE_TITLE"),  //$NON-NLS-1$
+                                                             options,
+                                                             JOptionPane.QUESTION_MESSAGE, null, optionLabels, 1);
+                return userChoice == JOptionPane.YES_OPTION;
+            }
+
+                
+        } catch (Exception ex)
+        {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TaskSemaphoreMgr.class, ex);
+            ex.printStackTrace();
+            //log.error(ex);
+            
+        } finally 
+        {
+             if (session != null)
+             {
+                 session.close();
+             }
+        }
+
+        return false;
+    }
     
     /**
      * Unlocks the semaphore.
@@ -156,7 +311,6 @@ public class TaskSemaphoreMgr
             int     count = 0;
             boolean lockWasRemoved = false;
             do {
-                
                 try
                 {
                     lockWasRemoved = setLock(session, name, null, scope, false, false) != null;
@@ -198,6 +352,14 @@ public class TaskSemaphoreMgr
         return false;
     }
     
+    /**
+     * @param title
+     * @param name
+     * @param context
+     * @param scope
+     * @param allViewMode
+     * @return
+     */
     public static USER_ACTION lock(final String title, 
                                    final String name, 
                                    final String context,
@@ -206,6 +368,7 @@ public class TaskSemaphoreMgr
     {
         return lock(title, name, context, scope, allViewMode, null);
     }
+    
     /**
      * Locks the semaphore.
      * @param title The human (localized) title of the task 
@@ -374,7 +537,7 @@ public class TaskSemaphoreMgr
      * @param collection
      * @return
      */
-    private static String buildSQL(final String name, 
+    private static String buildHQL(final String name, 
                                    final SCOPE  scope,
                                    final Discipline discipline,
                                    final Collection collection)
@@ -410,6 +573,50 @@ public class TaskSemaphoreMgr
     }
     
     /**
+     * Builds the SQL string needed for checking the semaphore.
+     * @param name the unique name
+     * @param scope the scope of the lock
+     * @param specifyUser
+     * @param discipline
+     * @param collection
+     * @return
+     */
+    private static String buildSQL(final String name, 
+                                   final SCOPE  scope,
+                                   final Discipline discipline,
+                                   final Collection collection)
+    {
+        StringBuilder joins = new StringBuilder();
+        StringBuilder where = new StringBuilder();
+        
+        if (discipline != null)
+        {
+            where.append(" AND d.DisciplineID = ");
+            where.append(discipline.getId());
+            joins.append("INNER JOIN discipline d ON d.DisciplineID = ts.DisciplineID ");
+            
+        } else if (collection != null)
+        {
+            where.append(" AND ts.CollectionID = ");
+            where.append(collection.getId());
+            joins.append("INNER JOIN collection c ON c.CollectionID = ts.CollectionID ");
+        }
+        
+        //where.append(" AND spu.specifyUserId = ");
+        //where.append(specifyUser.getId());
+        //joins.append("INNER JOIN ts.owner spu ");
+        
+        StringBuilder sb = new StringBuilder("SELECT IsLocked FROM sptasksemaphore ts ");
+        sb.append(joins);
+        String wStr = String.format("WHERE TaskName = '%s' AND Scope = %d ", 
+                                     name, scope.ordinal());
+        sb.append(wStr);
+        sb.append(where);
+        
+        return sb.toString();
+    }
+    
+    /**
      * Gets the semaphore object from the database.
      * @param session
      * @param name the unique name
@@ -426,7 +633,7 @@ public class TaskSemaphoreMgr
                                                 final Discipline discipline,
                                                 final Collection collection) throws Exception
     {
-        String sql = buildSQL(name, scope, discipline, collection);
+        String sql = buildHQL(name, scope, discipline, collection);
         //System.err.println(sql);
         //Object[] cols = (Object[])session.getData(sql);
         Object data = session.getData(sql);

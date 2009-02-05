@@ -23,6 +23,7 @@ import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
+import edu.ku.brc.specify.tasks.TreeTaskMgr;
 import edu.ku.brc.ui.GetSetValueIFace;
 
 /**
@@ -94,6 +95,8 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
                 }
             });
         }
+        
+        TreeTaskMgr.checkLocks();
     }
 
     /* (non-Javadoc)
@@ -287,5 +290,16 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
                 }
             }
         }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#formShutdown()
+     */
+    @Override
+    public void formShutdown()
+    {
+        super.formShutdown();
+        
+        TreeTaskMgr.checkLocks();
     }
 }

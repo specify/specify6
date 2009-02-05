@@ -7,10 +7,12 @@
 package edu.ku.brc.specify.datamodel.busrules;
 
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
+import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Storage;
 import edu.ku.brc.specify.datamodel.StorageTreeDef;
 import edu.ku.brc.specify.datamodel.StorageTreeDefItem;
+import edu.ku.brc.specify.tasks.TreeTaskMgr;
 
 /**
  * A business rules class that handles various safety checking and housekeeping tasks
@@ -29,7 +31,18 @@ public class StorageBusRules extends BaseTreeBusRules<Storage, StorageTreeDef, S
     {
         super(Storage.class, StorageTreeDefItem.class);
     }
-
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.busrules.BaseTreeBusRules#initialize(edu.ku.brc.af.ui.forms.Viewable)
+     */
+    @Override
+    public void initialize(Viewable viewableArg)
+    {
+        super.initialize(viewableArg);
+        
+        TreeTaskMgr.checkLocks(); // TreeTaskMgr needs to Watch for Data_Entry Commands instead of calling it directly
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#getDeleteMsg(java.lang.Object)
      */
@@ -133,5 +146,17 @@ public class StorageBusRules extends BaseTreeBusRules<Storage, StorageTreeDef, S
         }
         
         return true;
+    }
+    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#formShutdown()
+     */
+    @Override
+    public void formShutdown()
+    {
+        super.formShutdown();
+        
+        TreeTaskMgr.checkLocks();
     }
 }

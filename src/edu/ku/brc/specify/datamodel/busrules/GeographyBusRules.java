@@ -7,10 +7,12 @@
 package edu.ku.brc.specify.datamodel.busrules;
 
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
+import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeographyTreeDefItem;
+import edu.ku.brc.specify.tasks.TreeTaskMgr;
 
 /**
  * A business rules class that handles various safety checking and housekeeping tasks
@@ -30,6 +32,17 @@ public class GeographyBusRules extends BaseTreeBusRules<Geography, GeographyTree
     public GeographyBusRules()
     {
         super(Geography.class,GeographyTreeDefItem.class);
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.busrules.BaseTreeBusRules#initialize(edu.ku.brc.af.ui.forms.Viewable)
+     */
+    @Override
+    public void initialize(Viewable viewableArg)
+    {
+        super.initialize(viewableArg);
+        
+        TreeTaskMgr.checkLocks(); // TreeTaskMgr needs to Watch for Data_Entry Commands instead of calling it directly
     }
     
     /* (non-Javadoc)
@@ -129,5 +142,15 @@ public class GeographyBusRules extends BaseTreeBusRules<Geography, GeographyTree
     {
         // nothing specific to Geography
     }    
-    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#formShutdown()
+     */
+    @Override
+    public void formShutdown()
+    {
+        super.formShutdown();
+        
+        TreeTaskMgr.checkLocks();
+    }
 }

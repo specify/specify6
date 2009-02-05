@@ -309,6 +309,8 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
     	                visibleSubPane = treeViewer;
     	                addSubPaneToMgr(treeViewer);
     	                isOpeningTree = false;
+    	                
+    	                TreeTaskMgr.checkLocks();
     	            }
     	        };
     	        bgWorker.start();
@@ -332,22 +334,26 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
                 
                 UsageTracker.incrUsageCount("TD.UNLOCK."+treeDefClass.getSimpleName());
 
-                if (TaskSemaphoreMgr.isLocked(titleArg, formLockName, TaskSemaphoreMgr.SCOPE.Discipline))
+                boolean okToUnlock = TaskSemaphoreMgr.askUserToUnlock(titleArg, lockName, TaskSemaphoreMgr.SCOPE.Discipline);
+                if (okToUnlock)
                 {
-                    TaskSemaphoreMgr.unlock(titleArg, formLockName, TaskSemaphoreMgr.SCOPE.Discipline);
-                } else
-                {
-                    // Show Dialog ?? or Taskbar message ??
-                    log.warn(titleArg + " form was not locked.");
-                }
-                
-                if (TaskSemaphoreMgr.isLocked(titleArg, lockName, TaskSemaphoreMgr.SCOPE.Discipline))
-                {
-                    TaskSemaphoreMgr.unlock(titleArg, lockName, TaskSemaphoreMgr.SCOPE.Discipline);
-                } else
-                {
-                    // Show Dialog ?? or Taskbar message ??
-                    log.warn(titleArg + " was not locked.");
+                    if (TaskSemaphoreMgr.isLocked(titleArg, formLockName, TaskSemaphoreMgr.SCOPE.Discipline))
+                    {
+                        TaskSemaphoreMgr.unlock(titleArg, formLockName, TaskSemaphoreMgr.SCOPE.Discipline);
+                    } else
+                    {
+                        // Show Dialog ?? or Taskbar message ??
+                        log.warn(titleArg + " form was not locked.");
+                    }
+                    
+                    if (TaskSemaphoreMgr.isLocked(titleArg, lockName, TaskSemaphoreMgr.SCOPE.Discipline))
+                    {
+                        TaskSemaphoreMgr.unlock(titleArg, lockName, TaskSemaphoreMgr.SCOPE.Discipline);
+                    } else
+                    {
+                        // Show Dialog ?? or Taskbar message ??
+                        log.warn(titleArg + " was not locked.");
+                    }
                 }
             }
         };
@@ -393,6 +399,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
                     {
                         switchViewType(isEditMode, false);
                     }
+                    TreeTaskMgr.checkLocks();
                 }
             }
         };
@@ -433,6 +440,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
                                 currentDefInUse = true;
                                 visibleSubPane = defEditor;
                                 addSubPaneToMgr(defEditor);
+                                TreeTaskMgr.checkLocks();
                             }
                         };
                         bgWorker.start();

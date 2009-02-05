@@ -116,6 +116,14 @@ public class AppPreferences
             this.appPrefsIO.setAppPrefsMgr(this);
         }
     }
+    
+    /**
+     * 
+     */
+    public static void setBlockTimer()
+    {
+        blockTimer.set(true);
+    }
 
     /**
      * @return
@@ -192,7 +200,7 @@ public class AppPreferences
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AppPreferences.class, ex);
         }
     }
-
+    
     /**
      * Flushes the values and then terminates the Prefs so a new one can be created.
      */
@@ -201,15 +209,19 @@ public class AppPreferences
         // Flush and shutdown the Local Store
         try
         {
-            blockTimer.set(true);
-            if (instanceLocal != null)
+            if (instanceLocal != null && !blockTimer.get())
             {
-                instanceLocal.flush();
-                instanceLocal.listeners.clear();
-                instanceLocal.appPrefsIO = null;
-                instanceLocal = null;
+                blockTimer.set(true);
+                if (instanceLocal != null)
+                {
+                    AppPreferences local = instanceLocal;
+                    instanceLocal = null;
+                    local.flush();
+                    local.listeners.clear();
+                    local.appPrefsIO = null;
+                }
+                blockTimer.set(false);
             }
-            blockTimer.set(false);
             
         } catch (BackingStoreException ex)
         {
@@ -698,6 +710,13 @@ public class AppPreferences
      */
     public synchronized void flush() throws BackingStoreException
     {
+        /*if (!isRemote)
+        {
+            System.err.println(instanceLocal+"  "+(instanceLocal == null ? 0 : Calendar.getInstance().getTime().getTime()));
+            
+            putLong("update_time", instanceLocal == null ? 0 : Calendar.getInstance().getTime().getTime());
+        }*/
+        
         // Only flush the properties if they are loaded and have changed
         if (isChanged && properties != null && appPrefsIO != null)
         {
@@ -823,7 +842,10 @@ public class AppPreferences
                         {
                             syncTimer.cancel();
                         }
-                        syncPrefs();
+                        if (!blockTimer.get())
+                        {
+                            syncPrefs();
+                        }
                     }
                 });
                 return null;
@@ -882,6 +904,18 @@ public class AppPreferences
         return appPrefsIO != null && appPrefsIO.isAvailable();
     }
 
+    /**
+     * @return the last date the prefs were saved or null.
+     */
+    public Date getLastSavedDate()
+    {
+        if (appPrefsIO != null)
+        {
+            return appPrefsIO.lastSavedDate();
+        }
+        return null;
+    }
+    
     //-------------------------------------------------------------------------
     //-- AppPrefsIOIFace Interface for performing Prefs IO
     //-------------------------------------------------------------------------

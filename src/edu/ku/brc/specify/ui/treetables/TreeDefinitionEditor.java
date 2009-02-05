@@ -65,6 +65,7 @@ import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemStandardEntry;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
+import edu.ku.brc.specify.tasks.TreeTaskMgr;
 import edu.ku.brc.specify.treeutils.TreeDataService;
 import edu.ku.brc.specify.treeutils.TreeDataServiceFactory;
 import edu.ku.brc.specify.treeutils.TreeFactory;
@@ -193,6 +194,8 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 	        TaskSemaphoreMgr.unlock(name, displayedDef.getClass().getSimpleName(), TaskSemaphoreMgr.SCOPE.Discipline);
 	    }
 		super.shutdown();
+        
+        TreeTaskMgr.checkLocks();
 	}
     
     /*  *

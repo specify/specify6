@@ -559,6 +559,22 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             }
             
         };
+        
+        /*long lastSaved = AppPreferences.getLocalPrefs().getLong("update_time", 0L);
+        if (lastSaved > 0)
+        {
+            Date now = Calendar.getInstance().getTime();
+            
+            double elapsedMinutes = (now.getTime() - lastSaved) / 60000.0;
+            System.out.println(elapsedMinutes);
+            if (elapsedMinutes < 1.0)
+            {
+                AppPreferences.setBlockTimer();
+                UIRegistry.showError("You are currently logged in.\n Logging in twice will cause problems for your account.");
+                System.exit(0);
+            }
+        }*/
+        
         dbLoginPanel = UIHelper.doLogin(usrPwdProvider, false, false, this, "SpecifyLargeIcon", getTitle(), null); // true means do auto login if it can, second bool means use dialog instead of frame
         localPrefs.load();
     }
@@ -2145,6 +2161,11 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         {
             checkAndSendStats();
         }
+        
+        try
+        {
+            AppPreferences.getLocalPrefs().flush();
+        } catch (BackingStoreException ex) {}
         
         AppPreferences.shutdownRemotePrefs();
         AppPreferences.shutdownPrefs();

@@ -155,7 +155,7 @@ public class SpTaskSemaphore extends DataModelObjBase implements java.io.Seriali
     @Column(name = "IsLocked", unique = false, nullable = true, insertable = true, updatable = true)
     public Boolean getIsLocked()
     {
-        return isLocked;
+        return isLocked == null ? false : isLocked;
     }
 
     /**

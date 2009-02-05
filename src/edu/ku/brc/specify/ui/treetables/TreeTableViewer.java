@@ -88,6 +88,7 @@ import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
 import edu.ku.brc.specify.tasks.DualViewSearchable;
+import edu.ku.brc.specify.tasks.TreeTaskMgr;
 import edu.ku.brc.specify.treeutils.ChildNodeCounter;
 import edu.ku.brc.specify.treeutils.TreeDataService;
 import edu.ku.brc.specify.treeutils.TreeDataServiceFactory;
@@ -2953,6 +2954,9 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             TaskSemaphoreMgr.unlock(name, treeDef.getClass().getSimpleName(), TaskSemaphoreMgr.SCOPE.Discipline);
         }
 		super.shutdown();
+        
+        TreeTaskMgr.checkLocks();
+
 	}
 	
 	/**

@@ -1,9 +1,11 @@
 package edu.ku.brc.specify.datamodel.busrules;
 
+import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.LithoStrat;
 import edu.ku.brc.specify.datamodel.LithoStratTreeDef;
 import edu.ku.brc.specify.datamodel.LithoStratTreeDefItem;
+import edu.ku.brc.specify.tasks.TreeTaskMgr;
 
 public class LithoStratBusRules extends BaseTreeBusRules<LithoStrat, LithoStratTreeDef, LithoStratTreeDefItem>
 {
@@ -12,6 +14,20 @@ public class LithoStratBusRules extends BaseTreeBusRules<LithoStrat, LithoStratT
         super(LithoStrat.class,LithoStratTreeDefItem.class);
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.busrules.BaseTreeBusRules#initialize(edu.ku.brc.af.ui.forms.Viewable)
+     */
+    @Override
+    public void initialize(Viewable viewableArg)
+    {
+        super.initialize(viewableArg);
+        
+        TreeTaskMgr.checkLocks(); // TreeTaskMgr needs to Watch for Data_Entry Commands instead of calling it directly
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.busrules.BaseTreeBusRules#getRelatedTableAndColumnNames()
+     */
     @Override
     public String[] getRelatedTableAndColumnNames()
     {
@@ -99,5 +115,17 @@ public class LithoStratBusRules extends BaseTreeBusRules<LithoStrat, LithoStratT
     protected void beforeSaveLithoStrat(@SuppressWarnings("unused") LithoStrat geo)
     {
         // nothing specific to LithoStrat
+    }
+    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#formShutdown()
+     */
+    @Override
+    public void formShutdown()
+    {
+        super.formShutdown();
+        
+        TreeTaskMgr.checkLocks(); // TreeTaskMgr needs to Watch for Data_Entry Commands instead of calling it directly
     }
 }
