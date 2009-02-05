@@ -190,7 +190,7 @@ public class SecurityAdminTask extends BaseTask
                     String      spuOldPwd = spUser.getPassword();
                     if (oldPwd.equals(spuOldPwd))
                     {
-                        Pair<String, String> masterPwd = UserAndMasterPasswordMgr.getInstance().getUserNamePassword();
+                        Pair<String, String> masterPwd = UserAndMasterPasswordMgr.getInstance().getUserNamePasswordForDB();
                         
                         String encryptedMasterUP = UserAndMasterPasswordMgr.getInstance().encrypt(masterPwd.first, masterPwd.second, newPwd2);
                         if (StringUtils.isNotEmpty(encryptedMasterUP))
@@ -291,7 +291,7 @@ public class SecurityAdminTask extends BaseTask
             public void actionPerformed(ActionEvent ae)
             {
                 SpecifyUser spUser = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
-                UserAndMasterPasswordMgr.getInstance().editMasterInfo(spUser.getName());
+                UserAndMasterPasswordMgr.getInstance().editMasterInfo(spUser.getName(), true);
             }
         });
         MenuItemDesc mid = new MenuItemDesc(mi, UIHelper.isMacOS() ? "HELP" : "HELP/ABOUT", UIHelper.isMacOS() ? MenuItemDesc.Position.Bottom : MenuItemDesc.Position.Before); //$NON-NLS-1$ $NON-NLS-2$

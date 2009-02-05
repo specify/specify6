@@ -166,9 +166,10 @@ public class DatabaseLoginPanel extends JTiledPanel
         /**
          * Shows UI for the user to set up the Master Username and Password
          * @param username the user's username
+         * @param askForCredentials it should or should not ask for the credentials when they are missing
          * @return true if it was setup correctly
          */
-        public abstract boolean editMasterInfo(String username);
+        public abstract boolean editMasterInfo(String username, boolean askForCredentials);
     }
     
     /**
@@ -396,7 +397,7 @@ public class DatabaseLoginPanel extends JTiledPanel
                 {
                     if (masterUsrPwdProvider != null)
                     {
-                        masterUsrPwdProvider.editMasterInfo(username.getText());
+                        masterUsrPwdProvider.editMasterInfo(username.getText(), false);
                     }
                 }
             });
@@ -858,7 +859,7 @@ public class DatabaseLoginPanel extends JTiledPanel
         
         if (masterUsrPwdProvider != null && !masterUsrPwdProvider.hasMasterUserAndPwdInfo(getUserName(), getPassword()))
         {
-            if (!masterUsrPwdProvider.editMasterInfo(getUserName()))
+            if (!masterUsrPwdProvider.editMasterInfo(getUserName(), true))
             {
                 return;
             }

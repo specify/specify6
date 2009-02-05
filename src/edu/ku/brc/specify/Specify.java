@@ -547,15 +547,15 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                 UserAndMasterPasswordMgr.getInstance().setUsersUserName(username);
                 UserAndMasterPasswordMgr.getInstance().setUsersPassword(password);
                 
-                Pair<String, String> usrPwd = UserAndMasterPasswordMgr.getInstance().getUserNamePassword();
+                Pair<String, String> usrPwd = UserAndMasterPasswordMgr.getInstance().getUserNamePasswordForDB();
                 
                 return usrPwd;
             }
 
             @Override
-            public boolean editMasterInfo(final String username)
+            public boolean editMasterInfo(final String username, final boolean askForCredentials)
             {
-                return UserAndMasterPasswordMgr.getInstance().editMasterInfo(username);
+                return UserAndMasterPasswordMgr.getInstance().editMasterInfo(username, askForCredentials);
             }
             
         };

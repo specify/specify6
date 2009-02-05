@@ -55,7 +55,7 @@ public class AppResourceTest extends TestCase
             localPrefs.setDirPath(UIRegistry.getAppDataDir());
             localPrefs.load();
 
-            Pair<String, String> usernamePassword = UserAndMasterPasswordMgr.getInstance().getUserNamePassword();
+            Pair<String, String> usernamePassword = UserAndMasterPasswordMgr.getInstance().getUserNamePasswordForDB();
             String hostName = "localhost";
             if (!UIHelper.tryLogin("com.mysql.jdbc.Driver", "org.hibernate.dialect.MySQLDialect", 
                     databaseName, "jdbc:mysql://"+hostName+"/"+databaseName, 

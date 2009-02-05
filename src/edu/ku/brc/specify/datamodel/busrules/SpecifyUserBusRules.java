@@ -151,7 +151,7 @@ public class SpecifyUserBusRules extends BaseBusRules
         String pwdStr = password.getText();
         if (!pwdStr.isEmpty())
         {
-            Pair<String, String> usrPwd = UserAndMasterPasswordMgr.getInstance().getUserNamePassword();
+            Pair<String, String> usrPwd = UserAndMasterPasswordMgr.getInstance().getUserNamePasswordForDB();
             Encryption.setEncryptDecryptPassword(pwdStr);
             String key = Encryption.encrypt(usrPwd.first+","+usrPwd.second, pwdStr);
             Encryption.setEncryptDecryptPassword("Specify");

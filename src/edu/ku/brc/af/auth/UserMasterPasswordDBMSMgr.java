@@ -48,7 +48,7 @@ public class UserMasterPasswordDBMSMgr extends UserAndMasterPasswordMgr
     /**
      * @return
      */
-    public Pair<String, String> getUserNamePassword()
+    public Pair<String, String> getUserNamePasswordForDB()
     {
         return new Pair<String, String>(username, password);
     }

@@ -1475,14 +1475,14 @@ public class MainFrameSpecify extends MainFrame
                         UserAndMasterPasswordMgr.getInstance().setUsersUserName(username);
                         UserAndMasterPasswordMgr.getInstance().setUsersPassword(password);
                         
-                        Pair<String, String> usrPwd = UserAndMasterPasswordMgr.getInstance().getUserNamePassword();
+                        Pair<String, String> usrPwd = UserAndMasterPasswordMgr.getInstance().getUserNamePasswordForDB();
                         
                         return usrPwd;
                     }
                     @Override
-                    public boolean editMasterInfo(final String username)
+                    public boolean editMasterInfo(final String username, final boolean askFroCredentials)
                     {
-                        return UserAndMasterPasswordMgr.getInstance().editMasterInfo(username);
+                        return UserAndMasterPasswordMgr.getInstance().editMasterInfo(username, askFroCredentials);
                     }
                 };
                 String nameAndTitle = "Specify iReport"; // I18N

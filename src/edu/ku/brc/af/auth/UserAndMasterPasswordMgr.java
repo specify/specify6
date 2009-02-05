@@ -117,7 +117,7 @@ public class UserAndMasterPasswordMgr
      * @param username the current user's username
      * @return true if changed successfully
      */
-    public boolean editMasterInfo(final String username)
+    public boolean editMasterInfo(final String username, final boolean askForCredentials)
     {
         String uNameCached = username != null ? username: usersUserName;
         usersUserName = username;
@@ -127,14 +127,17 @@ public class UserAndMasterPasswordMgr
         
         if (masterKey == null)
         {
-            if (askToContForCredentials() == JOptionPane.NO_OPTION)
+            if (askForCredentials && askToContForCredentials() == JOptionPane.NO_OPTION)
             {
                 return false;
             }
         }
         boolean isOK = askForInfo(isLocal, masterKey);
         
-        usersUserName = uNameCached;
+        if (StringUtils.isEmpty(usersUserName) && StringUtils.isNotEmpty(uNameCached))
+        {
+            usersUserName = uNameCached;
+        }
         
         return isOK;
     }
@@ -181,7 +184,7 @@ public class UserAndMasterPasswordMgr
     /**
      * @return the Master Username and Password
      */
-    public Pair<String, String> getUserNamePassword()
+    public Pair<String, String> getUserNamePasswordForDB()
     {
         if (dbUsernameAndPassword == null && usersPassword != null)
         {
@@ -400,6 +403,8 @@ public class UserAndMasterPasswordMgr
                     {
                         keyTxt.setText(encryptedStr);
                         dlg.getOkBtn().setEnabled(true);
+                        
+                        usersUserName = keys[2];
                     }
                 }
             }
@@ -720,7 +725,7 @@ public class UserAndMasterPasswordMgr
         SpecifyUser spUser    = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
         String      username  = spUser.getName();
 
-        Pair<String, String> masterPwd = UserAndMasterPasswordMgr.getInstance().getUserNamePassword();
+        Pair<String, String> masterPwd = UserAndMasterPasswordMgr.getInstance().getUserNamePasswordForDB();
         
         String encryptedMasterUP = UserAndMasterPasswordMgr.getInstance().encrypt(masterPwd.first, masterPwd.second, newPwd);
         if (StringUtils.isNotEmpty(encryptedMasterUP))

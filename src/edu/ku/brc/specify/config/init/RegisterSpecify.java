@@ -57,7 +57,7 @@ public class RegisterSpecify
     private static RegisterSpecify instance   = new RegisterSpecify();
     
     private boolean hasConnection = false;
-    private boolean isFirstReg    = false;
+    private Boolean isFirstReg    = null;
     
     
     /**
@@ -102,7 +102,13 @@ public class RegisterSpecify
     public static boolean hasInstitutionRegistered()
     {
         Institution inst = AppContextMgr.getInstance().getClassObject(Institution.class);
-        return inst != null && StringUtils.isNotEmpty(inst.getRegNumber());
+        boolean isReg =  inst != null && StringUtils.isNotEmpty(inst.getRegNumber());
+        
+        if (getInstance().isFirstReg == null)
+        {
+            getInstance().isFirstReg = isReg;
+        }
+        return isReg;
     }
     
     public static boolean isAnonymous()

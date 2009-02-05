@@ -72,7 +72,7 @@ public class AppPreferenceHelper
             
             String hostName = "localhost";
             
-            Pair<String, String> usernamePassword = UserAndMasterPasswordMgr.getInstance().getUserNamePassword();
+            Pair<String, String> usernamePassword = UserAndMasterPasswordMgr.getInstance().getUserNamePasswordForDB();
             // This will log us in and return true/false
             if (!UIHelper.tryLogin("com.mysql.jdbc.Driver", 
                                    "org.hibernate.dialect.MySQLDialect", 

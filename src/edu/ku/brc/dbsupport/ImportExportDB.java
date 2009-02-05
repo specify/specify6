@@ -49,7 +49,7 @@ public class ImportExportDB
 
     public static void main(String[] args)
     {
-        Pair<String, String> usernamePassword = UserAndMasterPasswordMgr.getInstance().getUserNamePassword();
+        Pair<String, String> usernamePassword = UserAndMasterPasswordMgr.getInstance().getUserNamePasswordForDB();
         UIHelper.tryLogin("com.mysql.jdbc.Driver", "org.hibernate.dialect.MySQLDialect", //$NON-NLS-1$ //$NON-NLS-2$
                 "testfish", "jdbc:mysql://localhost/testfish", //$NON-NLS-1$ //$NON-NLS-2$
                 usernamePassword.first, 

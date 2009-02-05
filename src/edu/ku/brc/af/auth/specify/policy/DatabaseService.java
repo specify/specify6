@@ -56,7 +56,7 @@ public class DatabaseService
         {
             if(debug)log.debug("getAdminLevelConnection - Trying to connect to: " + url); //$NON-NLS-1$
             if(debug)log.error("getAdminLevelConnection - Trying to connect with BUILT IN ADMIN LEVER USER ACCOUNT - need to address"); //$NON-NLS-1$
-            Pair<String, String> usernamePassword = UserAndMasterPasswordMgr.getInstance().getUserNamePassword();
+            Pair<String, String> usernamePassword = UserAndMasterPasswordMgr.getInstance().getUserNamePasswordForDB();
             con = DriverManager.getConnection(url, usernamePassword.first, usernamePassword.second);
             if(debug)log.debug("getAdminLevelConnection - connected!"); //$NON-NLS-1$
             return con;
@@ -90,7 +90,7 @@ public class DatabaseService
             // throw new LoginException("Database driver class not found: " + driverClass);
         }
         
-        Pair<String, String> usernamePassword = UserAndMasterPasswordMgr.getInstance().getUserNamePassword();
+        Pair<String, String> usernamePassword = UserAndMasterPasswordMgr.getInstance().getUserNamePasswordForDB();
 
         if(debug)log.debug("getConnection -  url:" + JaasContext.url); //$NON-NLS-1$
         if(debug)log.debug("getConnection -  embeddedSpecifyAppRootUser:" + usernamePassword.first); //$NON-NLS-1$

@@ -179,7 +179,7 @@ public class ConvertVerifier
             log.error("Error setting ServerType for destination database for conversion.  Could affect the"
                     + " way that SQL string are generated and executed on differetn DB egnines");
         }
-        Pair<String, String> usernamePassword = UserAndMasterPasswordMgr.getInstance().getUserNamePassword();
+        Pair<String, String> usernamePassword = UserAndMasterPasswordMgr.getInstance().getUserNamePasswordForDB();
         String destConnectionString = driverInfoDest.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, databaseHostDest, "", userNameDest, passwordDest, driverNameDest);
         log.debug("attempting login to destination: " + destConnectionString);
         // This will log us in and return true/false

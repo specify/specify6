@@ -1394,7 +1394,7 @@ public class UIRegistry
     /**
      * Clears the GlassPane, meaning it sets the mainComp visible again and sets the GlassPane to be hidden.
      */
-    public static void clearGlassPaneMsg()
+    public synchronized static void clearGlassPaneMsg()
     {
         Component mainComp = UIRegistry.get(UIRegistry.MAINPANE);
         if (mainComp != null && getGlassPane() != null && getGlassPane().isVisible())
@@ -1410,6 +1410,9 @@ public class UIRegistry
         showingGlassPane = false;
     }
     
+    /**
+     * @return
+     */
     public static boolean isShowingGlassPane()
     {
         return showingGlassPane;
@@ -1433,9 +1436,17 @@ public class UIRegistry
 
         oldGlassPane = UIRegistry.getGlassPane();
         
-        ((JFrame)UIRegistry.getTopWindow()).setGlassPane(glassPane);
-        glassPane.setVisible(true);
-        showingGlassPane = true;
+        if (glassPane != null)
+        {
+            ((JFrame)UIRegistry.getTopWindow()).setGlassPane(glassPane);
+            glassPane.setVisible(true);
+            showingGlassPane = true;
+            
+        } else
+        {
+            oldGlassPane     = null;
+            showingGlassPane = false;
+        }
         
         return glassPane;
     }
@@ -1468,9 +1479,9 @@ public class UIRegistry
      * @param pointSize the point size to draw the text
      */
     public static void writeTimedSimpleGlassPaneMsg(final String  localizedMsg,
-                                                    final Integer milliseconds, 
-                                                    final Color   textColor,
-                                                    final Integer pointSize)
+                                                                 final Integer milliseconds, 
+                                                                 final Color   textColor,
+                                                                 final Integer pointSize)
     {
         final SimpleGlassPane sgp = UIRegistry.writeSimpleGlassPaneMsg(localizedMsg, pointSize == null ? STD_FONT_SIZE : pointSize);
         if (sgp != null)
@@ -1526,11 +1537,14 @@ public class UIRegistry
     /**
      * 
      */
-    public static void clearSimpleGlassPaneMsg()
+    public synchronized static void clearSimpleGlassPaneMsg()
     {
-        ((JFrame)UIRegistry.getTopWindow()).setGlassPane(oldGlassPane);
-        oldGlassPane.setVisible(false);
-        oldGlassPane = null;
+        if (oldGlassPane != null)
+        {
+            ((JFrame)UIRegistry.getTopWindow()).setGlassPane(oldGlassPane);
+            oldGlassPane.setVisible(false);
+        }
+        oldGlassPane     = null;
         showingGlassPane = false;
     }
     

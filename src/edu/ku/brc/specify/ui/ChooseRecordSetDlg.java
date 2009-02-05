@@ -82,6 +82,7 @@ public class ChooseRecordSetDlg extends CustomDialog
         
         this.helpContext = "ChooseRecordSet";
     }
+    
     /**
      *
      *

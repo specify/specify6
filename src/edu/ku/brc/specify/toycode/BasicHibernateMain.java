@@ -85,7 +85,7 @@ public class BasicHibernateMain implements DatabaseLoginListener
         localPrefs.setDirPath(UIRegistry.getAppDataDir());
         localPrefs.load();
 
-        Pair<String, String> usernamePassword = UserAndMasterPasswordMgr.getInstance().getUserNamePassword();
+        Pair<String, String> usernamePassword = UserAndMasterPasswordMgr.getInstance().getUserNamePasswordForDB();
         BasicHibernateMain tester = new BasicHibernateMain();
 		UIHelper.doLogin(usernamePassword.first, usernamePassword.second, true, false, tester, null);
 	}

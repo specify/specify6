@@ -58,7 +58,7 @@ public class PreferenceTest extends TestCase
             localPrefs.setDirPath(UIRegistry.getAppDataDir());
             localPrefs.load();
             
-            Pair<String, String> usernamePassword = UserAndMasterPasswordMgr.getInstance().getUserNamePassword();
+            Pair<String, String> usernamePassword = UserAndMasterPasswordMgr.getInstance().getUserNamePasswordForDB();
             String hostName = "localhost";
             // This will log us in and return true/false
             if (!UIHelper.tryLogin("com.mysql.jdbc.Driver", 
