@@ -43,7 +43,7 @@ import edu.ku.brc.ui.RolloverCommand;
  */
 public class TreeTaskMgr
 {
-    private static final int SYNC_INTERVAL = 10; // 5 minutes
+    private static final int SYNC_INTERVAL = 300; // 5 minutes
     
     private static TreeTaskMgr instance       = new TreeTaskMgr();
     private static Timer       lockCheckTimer = null;
