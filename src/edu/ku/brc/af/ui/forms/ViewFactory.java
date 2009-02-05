@@ -1326,7 +1326,7 @@ public class ViewFactory
                     if (validator != null)
                     {
                         DataChangeNotifier dcn = validator.createDataChangeNotifer(cellField.getIdent(), checkbox, null);
-                        checkbox.addChangeListener(dcn);
+                        checkbox.addActionListener(dcn);
                     }
                     bi.compToAdd = checkbox;
                     break;
