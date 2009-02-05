@@ -1354,7 +1354,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     erti = new ERTICaptionInfoQB(colName, lbl, true, qfp.getFieldQRI().getFormatter(), 0, qfp.getStringId(), qfp.getPickList());
                 }
                 erti.setColClass(qfp.getFieldQRI().getDataClass());
-                if (qfp.getFieldQRI().getFieldInfo().isPartialDate())
+                if (qfp.getFieldInfo() != null && qfp.getFieldQRI().getFieldInfo().isPartialDate())
                 {
                     String precName = qfp.getFieldQRI().getFieldInfo().getDatePrecisionName();
                     
