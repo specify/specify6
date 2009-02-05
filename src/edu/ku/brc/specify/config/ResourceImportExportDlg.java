@@ -44,6 +44,8 @@ import javax.swing.event.ListSelectionListener;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
+import org.dom4j.Node;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -57,13 +59,16 @@ import edu.ku.brc.af.ui.forms.persist.ViewIFace;
 import edu.ku.brc.af.ui.forms.persist.ViewSetIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.SpAppResource;
 import edu.ku.brc.specify.datamodel.SpAppResourceDir;
+import edu.ku.brc.specify.datamodel.SpReport;
 import edu.ku.brc.specify.datamodel.SpViewSetObj;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.specify.tasks.ReportsBaseTask;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -447,12 +452,12 @@ public class ResourceImportExportDlg extends CustomDialog
             
             String data     = null;
             String fileName = null;
-
+            AppResourceIFace appRes = null;
             index = resList.getSelectedIndex();
             if (index > -1)
             {
                 
-                AppResourceIFace appRes = resources.get(index);
+                appRes = resources.get(index);
                 exportedName = appRes.getName();
                 fileName     = FilenameUtils.getName(exportedName);
                 data         = appRes.getDataAsString();
@@ -483,7 +488,15 @@ public class ResourceImportExportDlg extends CustomDialog
                     File expFile  = new File(dirStr + File.separator + fileName);
                     try
                     {
-                        FileUtils.writeStringToFile(expFile, data);
+//                        if (appRes.getMimeType().equals(ReportsBaseTask.REPORTS_MIME) 
+//                        		|| appRes.getMimeType().equals(ReportsBaseTask.LABELS_MIME))
+//                        {
+//                        	writeReportResToFile(expFile, data, appRes);
+//                        }
+//                        else
+                        {
+                        	FileUtils.writeStringToFile(expFile, data);
+                        }
                         
                     } catch (IOException ex)
                     {
@@ -501,6 +514,78 @@ public class ResourceImportExportDlg extends CustomDialog
         }
     }
     
+    protected boolean isReportResource(final String data)
+    {
+    	return data.indexOf("<reportresource>") == 0; 
+    }
+    
+    protected void writeReportResToFile(final File expFile, final String data, final AppResourceIFace appRes) throws IOException
+    {
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("<reportresource>\r\n");
+    	sb.append("<resourcedata>\r\n");
+    	sb.append("<header>\r\n");
+    	int reportTag = data.indexOf("<jasperReport>");
+    	String header = data.substring(0, reportTag);
+    	sb.append("<![CDATA[\r\n");
+    	sb.append(header);
+    	sb.append("]]>\r\n");
+    	sb.append("</header>\r\n");
+    	sb.append(data.substring(reportTag));
+    	sb.append("\r\n</resourcedata>\r\n");
+    	sb.append("<metadata > <![CDATA[");
+    	sb.append(appRes.getMetaDataMap().toString());
+    	sb.append("</metadata>\r\n");
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        try
+        {
+            SpReport spRep = (SpReport )session.getData("from SpReport where appResourceId = " +
+            		((SpAppResource )appRes).getId());
+            if (spRep != null)
+            {
+            	spRep.forceLoad();
+            	spRep.toXML(sb);
+            }
+        }
+        finally
+        {
+        	session.close();
+        }
+    	sb.append("\r\n</reportresource>\r\n");
+    	FileUtils.writeStringToFile(expFile, sb.toString());            
+    }
+    
+    protected void importReportResource(final String data)
+    {
+    	try
+    	{
+    		Element root = XMLHelper.readStrToDOM4J(data);
+    		Node header = root.selectSingleNode("resourcedata/header");
+    		String headerStr = header.getStringValue();
+    		int jrStart = data.indexOf("<jasperReport");
+    		int jrEnd = data.indexOf("</jasperReport>") + "</jasperReport>".length();
+    		String jrStr = data.substring(jrStart, jrEnd);
+    		String appResData = headerStr + "\r\n" + jrStr;
+    		System.out.println(appResData);
+            int index = levelCBX.getSelectedIndex();
+            SpAppResourceDir dir = dirs.get(index);
+            String dirName = "Discipline";
+            AppResourceIFace appRes = AppContextMgr.getInstance().createAppResourceForDir(dirName);
+            ((SpAppResource) appRes).setSpAppResourceDir(dir);
+            appRes.setDataAsString(appResData);
+            Node metadata = root.selectSingleNode("metadata");
+            String metadataStr = metadata.getStringValue();
+            appRes.setMetaData(metadataStr);
+            appRes.setLevel((short )3);
+            appRes.setName("ImportedReportResource");
+            AppContextMgr.getInstance().saveResource(appRes);
+        }
+    	catch (Exception e)
+    	{
+    		
+    	}
+    	
+    }
     /**
      * 
      */
@@ -534,6 +619,12 @@ public class ResourceImportExportDlg extends CustomDialog
                     ex.printStackTrace();
                 }
                 
+//                if (isReportResource(data))
+//                {
+//                	importReportResource(data);
+//                	return;
+//                }
+                
                 if (currentTabIndex == 0)
                 {
                     int viewIndex = viewSetsList.getSelectedIndex();
@@ -562,7 +653,6 @@ public class ResourceImportExportDlg extends CustomDialog
                                 vso.setSpAppResourceDir(appResDir);
                             }
                             vso.setDataAsString(data);
-
                             session.saveOrUpdate(appResDir);
                             session.saveOrUpdate(vso);
                             session.commit();

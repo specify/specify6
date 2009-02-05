@@ -17,6 +17,9 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import static edu.ku.brc.helpers.XMLHelper.addAttr;
+import static edu.ku.brc.helpers.XMLHelper.getAttr;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -29,7 +32,10 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.apache.log4j.Logger;
+import org.dom4j.Element;
 import org.hibernate.annotations.Index;
+
+import edu.ku.brc.helpers.XMLHelper;
 
 /**
  * @author rods
@@ -300,5 +306,47 @@ public class SpReport extends DataModelObjBase
     {
         return 519;
     }
+       
+    /**
+     * @param sb
+     */
+    public void toXML(final StringBuilder sb)
+    {
+        sb.append("<report ");
+        addAttr(sb, "name", name);
+        addAttr(sb, "remarks", remarks);
+        addAttr(sb, "repeatCount", repeatCount);
+        addAttr(sb, "repeatField", repeatField);
+        sb.append("\n");
+        if (query != null)
+        {
+        	query.forceLoad();
+        	query.toXML(sb);
+        }
+        sb.append("</report>\n");
+    }
+
+    /**
+     * @param element
+     */
+    public void fromXML(final Element element)
+    {
+        name            = getAttr(element, "name", null);
+        remarks     	=  getAttr(element, "remarks", null);
+        String repeatCountStr = getAttr(element, "repeatCount", null);
+        repeatCount = repeatCountStr == null ? null : Integer.valueOf(repeatCountStr);
+        repeatField      = getAttr(element, "repeatField", null);
         
+        Element qryNode = (Element)element.selectSingleNode("query");
+        if (qryNode != null)
+        {
+        	query = new SpQuery();
+        	query.fromXML(qryNode);
+        }
+        else
+        {
+        	query = null;
+        }
+    }
+
 }
