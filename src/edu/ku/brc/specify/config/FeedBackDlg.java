@@ -97,7 +97,7 @@ public class FeedBackDlg extends FeedBackSender
         pb.add(issueTF,                           cc.xyw(3, y, 2)); y += 2;
         
         pb.add(createFormLabel("Comments"), cc.xy(1, y));     y += 2;
-        pb.add(createScrollPane(commentsTA), cc.xyw(1, y, 4)); y += 2;
+        pb.add(createScrollPane(commentsTA, true), cc.xyw(1, y, 4)); y += 2;
         
         Taskable currTask = SubPaneMgr.getInstance().getCurrentSubPane().getTask();
         taskCBX.setSelectedItem(currTask != null ? currTask : TaskMgr.getDefaultTaskable());

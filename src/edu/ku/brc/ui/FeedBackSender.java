@@ -8,9 +8,6 @@ package edu.ku.brc.ui;
 
 import static edu.ku.brc.ui.UIHelper.getInstall4JInstallString;
 
-import java.lang.management.ManagementFactory;
-import java.lang.management.MemoryPoolMXBean;
-import java.lang.management.MemoryType;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Properties;

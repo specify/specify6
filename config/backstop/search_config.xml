@@ -617,7 +617,6 @@
             </detailView>
         </table>
         
-        <!-- 
         <!-- <table id="20" tableid="121" indexed="false" name="DNA2ATT" priority="1" color="30, 144, 144">
             <joins>
                 <join tableid="121" primary="true">dnasequence.DNASequenceID</join>
@@ -639,7 +638,6 @@
                 </captions>
             </detailView>
         </table>-->
-         -->
          
         <table id="21" tableid="83" indexed="false" name="Fbk2ATT" priority="1" color="30, 144, 144">
             <joins>
