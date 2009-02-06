@@ -88,13 +88,39 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
     {
         super.initialize(viewableArg);
         
-        if (formViewObj != null && formViewObj.getMVParent().isTopLevel())
+        if (formViewObj != null)
         {
-            ResultSetController rsc = formViewObj.getRsController();
-            if (rsc != null)
+            if (formViewObj.getMVParent().isTopLevel())
             {
-                if (rsc.getNewRecBtn() != null) rsc.getNewRecBtn().setVisible(false);
-                if (rsc.getDelRecBtn() != null) rsc.getDelRecBtn().setVisible(false);
+                ResultSetController rsc = formViewObj.getRsController();
+                if (rsc != null)
+                {
+                    if (rsc.getNewRecBtn() != null) rsc.getNewRecBtn().setVisible(false);
+                    if (rsc.getDelRecBtn() != null) rsc.getDelRecBtn().setVisible(false);
+                }
+            }
+            
+            Component comp = formViewObj.getControlByName("type");
+            if (comp instanceof ValComboBox)
+            {
+                final ValComboBox dspCbx = (ValComboBox)comp;
+                for (DisciplineType dt : DisciplineType.getDisciplineList())
+                {
+                    dspCbx.getComboBox().addItem(dt);
+                }
+                dspCbx.getComboBox().setSelectedIndex(-1);
+                
+                dspCbx.getComboBox().addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        DisciplineType dt = (DisciplineType)dspCbx.getComboBox().getSelectedItem();
+                        if (dt != null)
+                        {
+                            ((Discipline)formViewObj.getDataObj()).setType(dt.getName());
+                        }
+                    }
+                });
             }
         }
         
@@ -112,30 +138,7 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
         {
             Discipline discipline = (Discipline)dataObj;
             Component  comp       = formViewObj.getControlByName("type");
-            if (comp instanceof ValComboBox)
-            {
-                final ValComboBox dspCbx = (ValComboBox)comp;
-                if (dspCbx.getModel().getSize() == 0)
-                {
-                    for (DisciplineType dt : DisciplineType.getDisciplineList())
-                    {
-                        dspCbx.getComboBox().addItem(dt);
-                    }
-                    dspCbx.getComboBox().setSelectedIndex(-1);
-                    
-                    dspCbx.getComboBox().addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e)
-                        {
-                            DisciplineType dt = (DisciplineType)dspCbx.getComboBox().getSelectedItem();
-                            if (dt != null)
-                            {
-                                ((Discipline)formViewObj.getDataObj()).setType(dt.getName());
-                            }
-                        }
-                    });
-                }
-            } else if (comp instanceof TextFieldFromPickListTable)
+            if (comp instanceof TextFieldFromPickListTable)
             {
                 TextFieldFromPickListTable tf = (TextFieldFromPickListTable)comp;
                 tf.setValue(DisciplineType.getByName(discipline.getType()), "");

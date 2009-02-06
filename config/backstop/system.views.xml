@@ -446,7 +446,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="name" uitype="text" colspan="3"/>
+                    <cell type="field" id="3" name="name" uitype="text" colspan="3" isrequired="true"/>
                 </row>
                 <row>
                     <cell type="subview" viewname="CollectionGrid" id="5" name="collections" colspan="6"/>
@@ -476,7 +476,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="name" uitype="text"/>
+                    <cell type="field" id="3" name="name" uitype="text" isrequired="true"/>
                 </row>
                 <row>
                     <cell type="subview" viewname="CollectionGridViewOnly" id="4" name="collections" colspan="4"/>
@@ -687,6 +687,7 @@
                     <cell type="field" id="7" name="remarks" uitype="textarea" colspan="10"/>
                 </row>  -->
                  <row>
+                    <cell type="label" label="  "/>
                     <cell type="field" id="8" name="isAccessionBound" uitype="checkbox"/>
                 </row>
                 <row>

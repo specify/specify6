@@ -1910,7 +1910,7 @@ public class FormViewObj implements Viewable,
         
         if (businessRules != null)
         {
-            businessRules.addChildrenToNewDataObjects(obj);
+            //businessRules.addChildrenToNewDataObjects(obj);
         }
         
         if (carryFwdDataObj == null && oldDataObj != null)
