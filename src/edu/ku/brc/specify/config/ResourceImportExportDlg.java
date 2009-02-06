@@ -499,7 +499,7 @@ public class ResourceImportExportDlg extends CustomDialog
                         if (appRes.getMimeType().equals(ReportsBaseTask.REPORTS_MIME) 
                         		|| appRes.getMimeType().equals(ReportsBaseTask.LABELS_MIME))
                         {
-                        	writeReportResToZipFile(expFile, data, appRes);
+                        	writeSpReportResToZipFile(expFile, data, appRes);
                         }
                         else
                         {
@@ -526,9 +526,20 @@ public class ResourceImportExportDlg extends CustomDialog
      * @param data
      * @return true if data represents a report resource.
      */
-    protected boolean isReportResource(final String data)
+    protected boolean isSpReportResource(final String data)
     {
     	return data.indexOf("<reportresource name=") == 0; 
+    }
+    
+    /**
+     * @param data
+     * @return true if data is a Jasper report definition (a .jrxml file).
+     * @throws Exception
+     */
+    protected boolean isJasperReport(final String data) throws Exception
+    {
+    	Element element = XMLHelper.readStrToDOM4J(data);
+    	return element.getDocument().getDocType().getName().equals("jasperReport");
     }
     
     /**
@@ -536,7 +547,7 @@ public class ResourceImportExportDlg extends CustomDialog
      * @return name of report resource contained in file, or null if file does not
      * contain a report resource.
      */
-    protected String getReportResourceName(final File file)
+    protected String getSpReportResourceName(final File file)
     {
     	try
     	{
@@ -551,7 +562,7 @@ public class ResourceImportExportDlg extends CustomDialog
     			return null;
     		}
     		String appStr = readZipEntryToString(zin, app);
-    		if (isReportResource(appStr))
+    		if (isSpReportResource(appStr))
     		{
     			Element appElement = XMLHelper.readStrToDOM4J(appStr);
     			return XMLHelper.getAttr(appElement, "name", null);
@@ -651,7 +662,7 @@ public class ResourceImportExportDlg extends CustomDialog
      * 
      */
     //XXX implement support for subreports
-    protected void writeReportResToZipFile(final File expFile, final String data, final AppResourceIFace appRes) throws IOException
+    protected void writeSpReportResToZipFile(final File expFile, final String data, final AppResourceIFace appRes) throws IOException
     {
     	StringBuilder sb = new StringBuilder();
     	
@@ -669,7 +680,7 @@ public class ResourceImportExportDlg extends CustomDialog
     	byte[] bytes = sb.toString().getBytes();
     	zout.write(bytes, 0, bytes.length);
     	zout.closeEntry();
-    	
+    	    	
     	//the data
     	zout.putNextEntry(new ZipEntry("data.xml"));
     	bytes = data.getBytes();
@@ -788,7 +799,7 @@ public class ResourceImportExportDlg extends CustomDialog
      * as well if an equivalent query does not exist in the database.
      *  
      */
-    protected void importReportZipResource(final File file)
+    protected void importSpReportZipResource(final File file)
     {
     	boolean resourceSaved = false;
         int index = levelCBX.getSelectedIndex();
@@ -911,7 +922,7 @@ public class ResourceImportExportDlg extends CustomDialog
             {
                 String data        = null;
                 File   importFile  = new File(dirStr + File.separator + fileName);
-                String repResourceName = getReportResourceName(importFile);
+                String repResourceName = getSpReportResourceName(importFile);
                 boolean isRepResource = repResourceName != null;
                 try
                 {
@@ -1012,7 +1023,7 @@ public class ResourceImportExportDlg extends CustomDialog
 								SpAppResource fndAppRes = checkForOverrideAppRes(isRepResource ? repResourceName : fileName);
 								if (fndAppRes != null)
 								{
-									if (isRepResource)
+									if (isRepResource && fndAppRes == null)
 									{
 										//Show dialog saying it can't be done
 										UIRegistry.displayInfoMsgDlgLocalized("RIE_RepResCantBeOverwritten", fndAppRes.getName(),
@@ -1046,7 +1057,7 @@ public class ResourceImportExportDlg extends CustomDialog
 								if (isRepResource)
 								{
 									//importReportResource(reportDom, data);
-									importReportZipResource(importFile);
+									importSpReportZipResource(importFile);
 									//XXX not for release
 									//UIRegistry.displayErrorDlg("Reports cannot be imported yet.");
 									return;
