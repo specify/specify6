@@ -35,7 +35,7 @@
 	      <tocitem text="Form System" target="Using_Forms">
 		    <tocitem text="Data Entry" target="Data_Entry"/>
           	<tocitem text="Interactions" target="Interactions"/>
-			<tocitem text="Using Bar Codes" target="using_barcodes"/>
+			<tocitem text="Using Bar Codes" target="Barcodes"/>
 			<tocitem text="Pick List" target="Pick_List"/>
 			<tocitem text="Import and Export Forms" target="Import"/>
 	      </tocitem>
@@ -49,8 +49,9 @@
 	      </tocitem>
 	      
 	      <tocitem text="Query Builder" target="Query">
-		   <tocitem text="Record Sets" target="Record_Set"/>
+		   <tocitem text="Record Sets" target="RecordSet"/>
 		   <tocitem text="Reports and Labels" target="Reports"/>
+		   <tocitem text="Using iReports" target="SpecifyiReport"/>
 	      </tocitem>
 	      
           <tocitem text="Plugins" target="Plugins"/>

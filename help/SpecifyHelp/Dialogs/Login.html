@@ -14,7 +14,7 @@
 <table border="0">
 <tr><td><img src="../../images/login.png"  width="20" height="20" alt=""/></td><td><h2>How to Login</h2></td></tr>
 </table>
-  <p>The security for Specify 6 uses both a Master Username and Password, which accesses  the Database, as well as a User Username and Password, which accesses the Specify application. Specify uses only one Master Username and Password, but encrypts the Master password with the User information. This creates a string of information.  To recap, the following information is required to login to Specify the first time (after that the login tool remembers the information of the last user).</p>
+  <p>The security for Specify 6 uses both a Master Username and Password, which accesses  the MySQL Database, as well as a User Username and Password, which accesses the Specify application. Specify uses only one Master Username and Password, but encrypts the Master password with the User information. This creates a string of information.  To recap, the following information is required to login to Specify the first time (after that the login tool remembers the information of the last user).</p>
   <ul>
     <li>User Username</li>
     <li>User Password</li>
@@ -33,9 +33,10 @@
   <p>Users needing to create their encrypted Master Username and Password should click the  <em>Configure Master Key ...</em> button.</p>
   <p>&nbsp;</p>
   <p><img src="../../images/login4.png" width="924" height="294" /></p>
-  <p><em>Is stored locally</em> refers to both users that are on a network and users that are on a single computer. </p>
-  <p><em>Is network based</em> refers to Institutions that are utilizing a web service for their security. </p>
-  <p>Encrypted Username / Password refers to the string that results when the Master Username and Password are Encrypted (using the User Username and Password). This can be created by the IT administrator when a new user is created in the Specify application, then given to the user, or it can be created by clicking the <em>Generate Master</em> ... button.</p>
+  <p>The Master Source information refers to where the encryption is stored.</p>
+  <p><em>Is stored locally</em> is the default storage method for Specify, which utilizes the Personal Preferences on the local machine. </p>
+<p><em>Is network based</em> refers to Institutions that  utilize a web service to store their security information. </p>
+<p>Encrypted Username / Password refers to the string that results when the Master Username and Password are Encrypted (using the User Username and Password). This can be created by the IT administrator when a new user is created in the Specify application, then given to the user, or it can be created by clicking the <em>Generate Master</em> ... button.</p>
   <p><img src="../../images/login5.png" width="689" height="337" /></p>
   <p>Type in the information for both passwords and click the <em>Generate</em> button. The <em>Show Password</em> button can be used to turn off the encryption characters and show the actual textual information. </p>
   <p><img src="../../images/login3.png" width="911" height="296" /></p>
