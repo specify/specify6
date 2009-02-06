@@ -228,28 +228,30 @@ public class QBJRDataSourceBase implements JRDataSource
      *
      * This code may be affected by changes to QBJRDataSourceConnection.getColClass, and vice-versa.
      */
-    protected Object processValue(final int fldIdx, final Object obj)
+    protected Object processValue(final int fldIdx, final int colIdx, final Object obj)
     {    
-        if (obj instanceof Calendar)
-        {
-            return scrDateFormat.format((Calendar)obj);
-        
-        } 
-        else 
-        if (obj instanceof Timestamp )
-        {
-            return scrDateFormat.format((Date)obj);
-        } else if (obj instanceof java.sql.Date || obj instanceof Date )
-        {
-            return scrDateFormat.format((Date)obj);
-        }
+//        if (columnInfo.get(colIdx).getColInfoList() == null) 
+//        {
+        	if (obj instanceof Calendar)
+        	{
+        		return scrDateFormat.format((Calendar)obj);        
+        	} 
+        	else if (obj instanceof Timestamp )
+        	{
+        			return scrDateFormat.format((Date)obj);
+        	} 
+        	else if (obj instanceof java.sql.Date || obj instanceof Date )
+        	{
+        		return scrDateFormat.format((Date)obj);
+        	}
     
-        UIFieldFormatterIFace formatter = columnInfo.get(fldIdx).getUiFieldFormatter();
-        if (formatter != null && formatter.isInBoundFormatter())
-        {
-            return formatter.formatToUI(obj);
-        }
-        
+        	UIFieldFormatterIFace formatter = columnInfo.get(colIdx).getUiFieldFormatter();
+        	if (formatter != null && formatter.isInBoundFormatter())
+        	{
+        		return formatter.formatToUI(obj);
+        	}
+//        }
+        //else everything has already been taken care of
         return obj;
     }
     

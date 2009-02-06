@@ -9,6 +9,7 @@
  */
 package edu.ku.brc.specify.tasks.subpane.qb;
 
+import java.util.Collections;
 import java.util.List;
 
 import net.sf.jasperreports.engine.JRException;
@@ -16,6 +17,7 @@ import net.sf.jasperreports.engine.JRField;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceBase.SourceColumnInfo;
 import edu.ku.brc.specify.ui.db.ResultSetTableModel;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -110,7 +112,8 @@ public class QBLiveJRDataSource extends QBJRDataSourceBase
             log.error("field not found: " + arg0.getName());
             return null;
         }
-        return processValue(fldIdx, data.getCacheValueAt(row, fldIdx));
+        int colInfoIdx = Collections.binarySearch(colNames, new SourceColumnInfo(arg0.getName(), null, null), colPairComparator);
+        return processValue(fldIdx, colNames.get(colInfoIdx).getColInfoIdx(), data.getCacheValueAt(row, fldIdx));
     }
 
     /* (non-Javadoc)

@@ -127,14 +127,32 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
            log.error("field not found: " + fldName);
            return null;
         }
-        int processIdx = colNames.get(colInfoIdx).getColInfoIdx();
-        
+       
+        int colIdx = this.recordIdsIncluded ? fldIdx - 1 : fldIdx;       
         if (!processed)
         {
-            return processValue(processIdx, columnInfo.get(processIdx).processValue(((Object[] )rowVals)[fldIdx]));
+            int processIdx = colNames.get(colInfoIdx).getColInfoIdx();
+            ERTICaptionInfoQB col = columnInfo.get(processIdx);
+            Object value;
+            if (col.getColInfoList() != null && col.getColInfoList().size() > 1)
+            {
+            	//Then assume the values for the fields in the colInfo list are
+            	//stored consecutively in the resultset.
+            	value = new Object[col.getColInfoList().size()];
+            	((Object[] )value)[0] = ((Object[] )rowVals)[fldIdx];
+            	for (int i = 1; i < col.getColInfoList().size(); i++)
+            	{
+            		((Object[] )value)[i] = ((Object[] )rowVals)[fldIdx+i];
+            	}
+            }
+            else
+            {
+            	value = ((Object[] )rowVals)[fldIdx];
+            }
+            return processValue(fldIdx, processIdx, columnInfo.get(processIdx).processValue(value));
         }
         //else processing already done
-        return ((Vector<Object> )rowVals).get(processIdx);
+        return ((Vector<Object> )rowVals).get(colIdx);
     }
     
     /* (non-Javadoc)
