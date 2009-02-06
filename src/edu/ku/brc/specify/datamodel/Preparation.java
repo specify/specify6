@@ -294,7 +294,7 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
                     while (rs.next())
                     {
                         prepQty = rs.getObject(1) != null ? rs.getInt(1) : 0;
-                        System.err.print("\nprepQty "+prepQty);
+                        //System.err.print("\nprepQty "+prepQty);
                         
                         boolean isResolved = rs.getObject(5) != null ? rs.getBoolean(5) : false;
                         

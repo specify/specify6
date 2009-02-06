@@ -528,7 +528,8 @@ public class ResultSetController implements ValidationListener
         if (newRecBtn != null)
         {
             //log.debug("updateUI - RS - formValidator.isTopLevel() "+formValidator.isTopLevel()+" isEnabled() "+formValidator.isEnabled());
-            boolean enable = formValidator == null ? false : (formValidator.isTopLevel() || (formValidator.getParent() != null ? formValidator.getParent().isEnabled() : false));
+            boolean enable = formValidator == null ? false : (formValidator.isTopLevel() || 
+                    (formValidator.getParent() != null ? formValidator.getParent().isEnabled() : formValidator.isEnabled()));
             newRecBtn.setEnabled(enable);
         }
         

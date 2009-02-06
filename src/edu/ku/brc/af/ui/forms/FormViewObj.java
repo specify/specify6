@@ -748,7 +748,7 @@ public class FormViewObj implements Viewable,
             saveBtn = new JButton(UIRegistry.getResourceString("SAVE")) {
                 public void setEnabled(boolean enabled)
                 {
-                    log.debug("******* "+formValidator.getName()+"  Save: "+enabled);
+                    //log.debug("******* "+formValidator.getName()+"  Save: "+enabled);
                     super.setEnabled(enabled);
                 }
             };
@@ -5597,14 +5597,14 @@ public class FormViewObj implements Viewable,
             
             // The Validator enabled the Delete Btn
             // Now make sure the Delete Btn should still be enabled
-            if (delRecBtn != null && 
+            /*if (delRecBtn != null && 
                 delRecBtn.isEnabled() &&
                 dataObj != null && 
                 (dataObj instanceof FormDataObjIFace && ((FormDataObjIFace)dataObj).getId() == null))
             {
                 log.debug("2----------------- "+formViewDef.getName()+"  false----------------- ");
                 //delRecBtn.setEnabled(false);
-            }
+            }*/
         }
     }
 
