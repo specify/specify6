@@ -300,17 +300,14 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
                         
                         int loanQty = rs.getObject(2) != null ? rs.getInt(2) : 0;
                         int qtyRes  = rs.getObject(3) != null ? rs.getInt(3) : 0;
-                        int qtyRtn  = rs.getObject(4) != null ? rs.getInt(4) : 0;
+                        //int qtyRtn  = rs.getObject(4) != null ? rs.getInt(4) : 0;
                         
                         if (isResolved && qtyRes != loanQty) // this shouldn't happen
                         {
                             qtyRes = loanQty;
                         }
                         
-                        System.err.println("  loanQty "+loanQty+"   qtyRtn "+qtyRtn+"   qtyRes "+qtyRes);
-                        
                         totalAvail += qtyRes - loanQty;
-                        System.err.println("totalAvail: "+totalAvail);
                     }
                     rs.close();
                     
