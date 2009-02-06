@@ -1941,7 +1941,8 @@ public class FormViewObj implements Viewable,
             // 02/03/09 rods - set second argument to false and that seems to fix several bugs
             // that was causing data to disappear because it was resetting the fields in the parent form.
             
-            traverseToToSetAsNew(mvParent.getMultiViewParent(), false, false); // don't traverse deeper than our immediate children
+            //traverseToToSetAsNew(mvParent.getMultiViewParent(), false, false); // don't traverse deeper than our immediate children
+            indexChanged(-1);
         }
         
         if (recordSetItemList != null)
@@ -4730,9 +4731,9 @@ public class FormViewObj implements Viewable,
                     
                     String id = fieldInfo.getFormCell().getIdent();
                     
-                    //log.debug(fieldInfo.getName()+"\t"+fieldInfo.getFormCell().getName()+"\t   hasChanged: "+(!isReadOnly && hasFormControlChanged(id)));
+                    log.debug(fieldInfo.getName()+"\t"+fieldInfo.getFormCell().getName()+"\t   hasChanged: "+(!isReadOnly && hasFormControlChanged(id)));
                     
-                    if (!isReadOnly && !isInoreGetSet && hasFormControlChanged(id))
+                     if (!isReadOnly && !isInoreGetSet && hasFormControlChanged(id))
                     {
                         // this ends up calling the getData on the GetSetValueIFace 
                         // which enables the control to set data into the data object
@@ -5627,27 +5628,24 @@ public class FormViewObj implements Viewable,
             getDataFromUI();
         }
         
-        if (list.size() == 0)
+        if (list != null)
         {
-            return;
-        }
-        
-        Object listDO = list.get(newIndex);
-        /*log.debug("newIndex "+newIndex+"  "+listDO);
-        for (int i=0;i<list.size();i++)
-        {
-            log.debug("i "+i+"  "+list.get(i));
-        }*/
-        
-        if (recordSetItemList != null && listDO == null)
-        {
-            dataObj = getDataObjectViaRecordSet(newIndex);
-            list.remove(newIndex);
-            list.insertElementAt(dataObj, newIndex);
+            if (list.isEmpty())
+            {
+                return;
+            }
             
-        } else
-        {
-            dataObj = listDO;    
+            Object listDO = list.get(newIndex);
+            if (recordSetItemList != null && listDO == null)
+            {
+                dataObj = getDataObjectViaRecordSet(newIndex);
+                list.remove(newIndex);
+                list.insertElementAt(dataObj, newIndex);
+                
+            } else
+            {
+                dataObj = listDO;    
+            }
         }
         
         /////////////////////////////////////////////////////////////////////////////////
