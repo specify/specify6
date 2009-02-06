@@ -616,14 +616,19 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
                             hash.put(rsi.getRecordId(), true);
                         }
                         
+                        boolean allTheSame = true;
                         for (RecordSetItemIFace rsi : sprs.getItems())
                         {
                             if (hash.get(rsi.getRecordId()) == null)
                             {
-                                return null;
+                                allTheSame = false;
+                                break;
                             }
                         }
-                        return sp;
+                        if (allTheSame)
+                        {
+                            return sp;
+                        }
                     }
                 }
             }
