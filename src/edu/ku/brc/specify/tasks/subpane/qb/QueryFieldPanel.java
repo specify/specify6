@@ -310,7 +310,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
             labelStrs = new String[]{ " ",
                     UIRegistry.getResourceString("QB_FIELD"), UIRegistry.getResourceString("QB_NOT"),
                     UIRegistry.getResourceString("QB_OPERATOR"),
-                    UIRegistry.getResourceString("QB_"), UIRegistry.getResourceString("QB_SORT"),
+                    UIRegistry.getResourceString("QB_CRITERIA"), UIRegistry.getResourceString("QB_SORT"),
                     //UIRegistry.getResourceString("QB_DISPLAY"), getResourceString("QB_PROMPT"), 
                     //" ", " " 
                     };
