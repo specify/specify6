@@ -19,10 +19,16 @@ import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
@@ -478,7 +484,7 @@ public class ResourceImportExportDlg extends CustomDialog
 
             if (StringUtils.isNotEmpty(data))
             {
-                FileDialog fileDlg = new FileDialog(this, "Export Resource", FileDialog.SAVE); // I18N
+                FileDialog fileDlg = new FileDialog(this, "RIE_ExportResource", FileDialog.SAVE); 
                 fileDlg.setFile(fileName);
                 fileDlg.setVisible(true);
                 
@@ -493,7 +499,7 @@ public class ResourceImportExportDlg extends CustomDialog
                         if (appRes.getMimeType().equals(ReportsBaseTask.REPORTS_MIME) 
                         		|| appRes.getMimeType().equals(ReportsBaseTask.LABELS_MIME))
                         {
-                        	writeReportResToFile(expFile, data, appRes);
+                        	writeReportResToZipFile(expFile, data, appRes);
                         }
                         else
                         {
@@ -516,11 +522,86 @@ public class ResourceImportExportDlg extends CustomDialog
         }
     }
     
+    /**
+     * @param data
+     * @return true if data represents a report resource.
+     */
     protected boolean isReportResource(final String data)
     {
     	return data.indexOf("<reportresource name=") == 0; 
     }
     
+    /**
+     * @param file
+     * @return name of report resource contained in file, or null if file does not
+     * contain a report resource.
+     */
+    protected String getReportResourceName(final File file)
+    {
+    	try
+    	{
+    		ZipInputStream zin = new ZipInputStream(new FileInputStream(file));
+    		ZipEntry app = zin.getNextEntry();
+    		if (app == null)
+    		{
+    			return null;
+    		}
+    		if (zin.available() == 0)
+    		{
+    			return null;
+    		}
+    		String appStr = readZipEntryToString(zin, app);
+    		if (isReportResource(appStr))
+    		{
+    			Element appElement = XMLHelper.readStrToDOM4J(appStr);
+    			return XMLHelper.getAttr(appElement, "name", null);
+    		}
+    		return null;
+    	}
+    	catch (ZipException ex)
+    	{
+    		//I think this means it is not a zip file.
+    		return null;
+    	}
+    	catch (Exception ex)
+    	{
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
+    		return null;
+    	}
+    }
+    
+    /**
+     * @param zin
+     * @param entry
+     * @return the contents of entry.
+     * @throws IOException
+     */
+    protected String readZipEntryToString(final ZipInputStream zin,
+			final ZipEntry entry) throws IOException
+	{
+		StringBuilder result = new StringBuilder();
+		byte[] bytes = new byte[100];
+		int bytesRead = zin.read(bytes, 0, 100);
+		while (bytesRead > 0)
+		{
+			result.append(new String(bytes, 0, bytesRead));
+			bytesRead = zin.read(bytes, 0, 100);
+		}
+		return result.toString();
+	}
+    
+    /**
+     * @param expFile
+     * @param data
+     * @param appRes
+     * @throws IOException
+     * 
+     * writes the contents of a report resource - the AppResource data, plus
+     * SpReport, SpQuery, SpQueryField if necessary to a single text file.
+     * 
+     */
+    //XXX obsolete.
     protected void writeReportResToFile(final File expFile, final String data, final AppResourceIFace appRes) throws IOException
     {
     	StringBuilder sb = new StringBuilder();
@@ -555,9 +636,78 @@ public class ResourceImportExportDlg extends CustomDialog
         	session.close();
         }
     	sb.append("\r\n</reportresource>\r\n");
-    	FileUtils.writeStringToFile(expFile, sb.toString());            
+    	FileUtils.writeStringToFile(expFile, sb.toString());    
     }
-    
+ 
+    /**
+     * @param expFile
+     * @param data
+     * @param appRes
+     * @throws IOException
+     * 
+     * writes the contents of a report resource to a zip file. 
+     * Currently creates 3 entries: 1) AppResource, 2) AppResource data,
+     * and if present, 3)SpReport, SpQuery, SpQueryFields.
+     * 
+     */
+    //XXX implement support for subreports
+    protected void writeReportResToZipFile(final File expFile, final String data, final AppResourceIFace appRes) throws IOException
+    {
+    	StringBuilder sb = new StringBuilder();
+    	
+    	ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(expFile));
+    	
+    	//the appResource name and metadata
+    	sb.append("<reportresource name=\"" + appRes.getName() + "\">\r\n");
+    	sb.append("<metadata > <![CDATA[");
+    	sb.append(appRes.getMetaData());
+    	sb.append("]]>");
+    	sb.append("</metadata>\r\n");
+    	sb.append("\r\n</reportresource>\r\n");
+    	
+    	zout.putNextEntry(new ZipEntry("app.xml"));
+    	byte[] bytes = sb.toString().getBytes();
+    	zout.write(bytes, 0, bytes.length);
+    	zout.closeEntry();
+    	
+    	//the data
+    	zout.putNextEntry(new ZipEntry("data.xml"));
+    	bytes = data.getBytes();
+    	zout.write(bytes, 0, bytes.length);
+    	zout.closeEntry();
+
+    	
+    	//the spReport
+    	sb.setLength(0);
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        try
+        {
+            SpReport spRep = (SpReport )session.getData("from SpReport where appResourceId = " +
+            		((SpAppResource )appRes).getId());
+            if (spRep != null)
+            {
+            	spRep.forceLoad();
+            	spRep.toXML(sb);
+            	bytes = sb.toString().getBytes();
+            	zout.putNextEntry(new ZipEntry("SpReport.xml"));
+            	zout.write(bytes, 0, bytes.length);
+            	zout.closeEntry();
+            }
+        }
+        finally
+        {
+        	session.close();
+        }        
+        zout.close();
+    }
+
+    /**
+     * @param root
+     * @param data
+     * 
+     * imports a report resource from a text file.
+     */
+    //XXX obsolete.
     protected void importReportResource(final Element root, final String data)
     {
     	boolean resourceSaved = false;
@@ -628,6 +778,117 @@ public class ResourceImportExportDlg extends CustomDialog
     	}
     	
     }
+
+    /**
+     * @param file
+     * 
+     * Imports a report resource from a zip file (see writeReportResToZipFile())
+     * 
+     * If resource contains an SpReport, the SpReport's data source query will be imported
+     * as well if an equivalent query does not exist in the database.
+     *  
+     */
+    protected void importReportZipResource(final File file)
+    {
+    	boolean resourceSaved = false;
+        int index = levelCBX.getSelectedIndex();
+        AppResourceIFace appRes = null;
+        SpAppResourceDir dir = dirs.get(index);
+
+        try
+    	{
+    		
+        	ZipInputStream zin = new ZipInputStream(new FileInputStream(file));
+        	
+        	//Assuming they come out in the order they were put in.
+    		ZipEntry entry = zin.getNextEntry();
+    		if (entry == null)
+    		{
+    			throw new Exception(UIRegistry.getResourceString("RIE_ReportImportFileError"));
+    		}
+    		String app = readZipEntryToString(zin, entry);
+    		zin.closeEntry();
+    		
+    		entry = zin.getNextEntry();
+    		if (entry == null)
+    		{
+    			throw new Exception(UIRegistry.getResourceString("RIE_ReportImportFileError"));
+    		}
+    		String data = readZipEntryToString(zin, entry);
+    		zin.closeEntry();
+    		
+            appRes = ((SpecifyAppContextMgr )AppContextMgr.getInstance()).createAppResourceForDir(dir);
+            appRes.setDataAsString(data);
+    		Element appRoot = XMLHelper.readStrToDOM4J(app);
+            Node metadata = appRoot.selectSingleNode("metadata");
+            String metadataStr = metadata.getStringValue() + ";";
+            appRes.setMetaData(metadataStr.trim());
+            String repType = appRes.getMetaDataMap().getProperty("reporttype");
+            if (repType != null && repType.equalsIgnoreCase("label"))
+            {
+                appRes.setMimeType("jrxml/label"); 
+            }
+            else
+            {
+            	appRes.setMimeType("jrxml/report"); 
+            }
+            //XXX level?????????????????
+            appRes.setLevel((short )3);
+
+            entry = zin.getNextEntry();
+            if (entry != null)
+            {
+        		String spReport = readZipEntryToString(zin, entry);
+        		zin.closeEntry();
+        		Element repElement = XMLHelper.readStrToDOM4J(spReport);
+        		SpReport rep = new SpReport();
+				rep.initialize();
+				rep.setSpecifyUser(AppContextMgr.getInstance().getClassObject(SpecifyUser.class));
+				rep.fromXML(repElement);
+				appRes.setName(rep.getName());
+				appRes.setDescription(appRes.getName());
+				AppContextMgr.getInstance().saveResource(appRes);
+				resourceSaved = true;
+				rep.setAppResource((SpAppResource) appRes);
+				DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        		boolean transOpen = false;
+        		try
+        		{
+                	session.beginTransaction();
+                	transOpen = true;
+                	if (rep.getQuery().getId() == null)
+                	{
+                		session.saveOrUpdate(rep.getQuery());
+                	}
+                	session.saveOrUpdate(rep);
+                	session.commit();
+                	transOpen = false;
+                }
+                finally
+                {
+                	if (transOpen)
+                	{
+                		session.rollback();
+                	}
+                	session.close();
+                }
+            }
+        }
+    	catch (Exception e)
+    	{
+    		if (resourceSaved)
+    		{
+    			//XXX discipline hard-coded
+    			((SpecifyAppContextMgr )AppContextMgr.getInstance()).removeAppResourceSp(dir, appRes);
+    		}
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, e);
+            log.error(e);
+    	}
+    }
+
+    
+    
     /**
      * 
      */
@@ -650,6 +911,8 @@ public class ResourceImportExportDlg extends CustomDialog
             {
                 String data        = null;
                 File   importFile  = new File(dirStr + File.separator + fileName);
+                String repResourceName = getReportResourceName(importFile);
+                boolean isRepResource = repResourceName != null;
                 try
                 {
                     data = FileUtils.readFileToString(importFile);
@@ -740,55 +1003,52 @@ public class ResourceImportExportDlg extends CustomDialog
 								SpAppResource appRes = new SpAppResource();
 								appRes.initialize();
 
-								Element reportDom = null;
-								if (isReportResource(data))
-								{
-									reportDom = XMLHelper.readStrToDOM4J(data);
-								}
+//								Element reportDom = null;
+//								if (isRepResource)
+//								{
+//									reportDom = XMLHelper.readStrToDOM4J(data);
+//								}
 
-								SpAppResource fndAppRes = checkForOverrideAppRes(
-										fileName, reportDom);
+								SpAppResource fndAppRes = checkForOverrideAppRes(isRepResource ? repResourceName : fileName);
 								if (fndAppRes != null)
 								{
-									// Show Dialog here and tell them it found a
-									// resource to override by the same name
-									// and ask whether they want to override it
-									// or not
-									String title = UIRegistry
-											.getResourceString("RIE.ConfirmResourceOverwriteTitle");
-									String msg = String
+									if (isRepResource)
+									{
+										//Show dialog saying it can't be done
+										UIRegistry.displayInfoMsgDlgLocalized("RIE_RepResCantBeOverwritten", fndAppRes.getName(),
+												getHierarchicalTitle(fndAppRes.getSpAppResourceDir()));
+										return;
+									}
+									else
+									{
+										// Show Dialog here and tell them it found a
+										// resource to override by the same name
+										// and ask whether they want to override it
+										// or not
+										String title = UIRegistry
+											.getResourceString("RIE_ConfirmResourceOverwriteTitle");
+										String msg = String
 											.format(
 													UIRegistry
-															.getResourceString("RIE.ConfirmResourceOverwriteMsg"),
+															.getResourceString("RIE_ConfirmResourceOverwriteMsg"),
 													fndAppRes.getName(),
 													getHierarchicalTitle(fndAppRes
 															.getSpAppResourceDir()));
-									if (!UIRegistry.displayConfirm(title, msg,
-											"OK", "CANCEL",
+										if (!UIRegistry.displayConfirm(title, msg,
+											UIRegistry.getResourceString("Yes"), 
+											UIRegistry.getResourceString("Cancel"),
 											JOptionPane.WARNING_MESSAGE))
-									{
-										return;
-									} else
-									{
-										//XXX not for Release
-										// overwrites not supported yet
-										title = "Really?";
-										msg = "Are you sure";
-										while (UIRegistry.displayConfirm(title,
-												msg + "?", "OK", "CANCEL",
-												JOptionPane.QUESTION_MESSAGE))
 										{
-											msg += " you are sure";
+											return;
 										}
-										return;
-									}
-								}
-
-								if (isReportResource(data))
+									} 								}
+							
+								if (isRepResource)
 								{
 									//importReportResource(reportDom, data);
+									importReportZipResource(importFile);
 									//XXX not for release
-									UIRegistry.displayErrorDlg("Reports cannot be imported yet.");
+									//UIRegistry.displayErrorDlg("Reports cannot be imported yet.");
 									return;
 								}
 
@@ -874,13 +1134,13 @@ public class ResourceImportExportDlg extends CustomDialog
      * @param name
      * @return
      */
-    protected SpAppResource checkForOverrideAppRes(final String filename, final Element dom)
+    protected SpAppResource checkForOverrideAppRes(final String filename/*, final Element dom*/)
     {
     	String name = filename;
-    	if (dom != null)
-    	{
-    		name = XMLHelper.getAttr(dom, "name", filename);
-    	}
+//    	if (dom != null)
+//    	{
+//    		name = XMLHelper.getAttr(dom, "name", filename);
+//    	}
     	for (SpAppResourceDir dir : dirs)
         {
             for (SpAppResource ar : dir.getSpAppResources())
@@ -938,7 +1198,6 @@ public class ResourceImportExportDlg extends CustomDialog
         /* (non-Javadoc)
          * @see javax.swing.DefaultListCellRenderer#getListCellRendererComponent(javax.swing.JList, java.lang.Object, int, boolean, boolean)
          */
-        @SuppressWarnings("unchecked")
         @Override
         public Component getListCellRendererComponent(JList list,
                                                       Object value,
