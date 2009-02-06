@@ -632,7 +632,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
     {
         // This starter pane will only be visible for a brief moment while the tree loads.
         // It doesn't need to be fancy.
-        return starterPane = StartUpTask.createFullImageSplashPanel(title, this);
+        return starterPane = StartUpTask.createFullImageSplashPanel(getResourceString("BaseTreeTask.Trees"), this);
     }
 
 	/* (non-Javadoc)
