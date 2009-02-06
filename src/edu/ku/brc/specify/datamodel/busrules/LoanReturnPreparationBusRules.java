@@ -9,6 +9,7 @@ package edu.ku.brc.specify.datamodel.busrules;
 import java.awt.Component;
 
 import javax.swing.JButton;
+import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -153,37 +154,13 @@ public class LoanReturnPreparationBusRules extends BaseBusRules
                 if (loanRetPrep != null)
                 {
                     final ValSpinner quantity = (ValSpinner)comp;
-                    quantity.setRange(0, qtyToBeReturned + getInt(loanRetPrep.getQuantity()), getInt(loanRetPrep.getQuantity()));
+                    quantity.setRange(0, qQnt, getInt(loanRetPrep.getQuantity()));
                 }
             }
         }
         
         isFillingForm = false;
     }
-    
-    /**
-     * @param loanPrepId
-     * @return
-     */
-    /*private Pair<Integer, Integer> getOrigValue(final Integer loanPrepId)
-    {
-        int qQnt     = 0;
-        int qQntRes  = 0;
-        
-        if (loanPrepId != null)
-        {
-            String sql = "SELECT QuantityResolved, QuantityReturned FROM loanpreparation WHERE LoanPreparationID = " + loanPrepId;
-            
-            Vector<Object[]> rows = BasicSQLUtils.query(sql);
-            for (Object[] cols : rows)
-            {
-                qQnt     += getInt(cols[0]);
-                qQntRes  += getInt(cols[1]);
-            }
-        }
-        
-        return new Pair<Integer, Integer>(qQnt, qQntRes);
-    }*/
     
     /**
      * 
@@ -209,9 +186,8 @@ public class LoanReturnPreparationBusRules extends BaseBusRules
                     loanRetPrep.setQuantity(lrpQty);
                 }
                 
-                //Pair<Integer, Integer> origValues = getOrigValue(loanPrep.getId());
-                int qtyRes = 0;//origValues.first;
-                int qtyRet = 0;//origValues.second;
+                int qtyRes = 0;
+                int qtyRet = 0;
                 
                 int i = 0;
                 for (LoanReturnPreparation lrp : loanRetPrep.getLoanPreparation().getLoanReturnPreparations())
@@ -224,14 +200,14 @@ public class LoanReturnPreparationBusRules extends BaseBusRules
                 ValCheckBox isResolved = (ValCheckBox)loanPrepFVO.getControlByName("isResolved");
                 isResolved.setSelected(qtyRes == loanPrep.getQuantity());
         
-                comp = loanPrepFVO.getControlByName("quantityReturned");
+                comp = loanPrepFVO.getControlByName("quantityResolved");
                 if (comp instanceof ValSpinner)
                 {
-                    final ValSpinner qtyReturnedVS = (ValSpinner)comp;
-                    final ValSpinner qtyResolvedVS = (ValSpinner)loanPrepFVO.getControlByName("quantityResolved");
+                    final JTextField qtyReturnedVS = (JTextField)loanPrepFVO.getControlByName("quantityReturned");
+                    //final ValSpinner qtyResolvedVS = (ValSpinner)comp;
                     
-                    qtyReturnedVS.setValue(qtyRet);
-                    qtyResolvedVS.setValue(qtyRes);
+                    qtyReturnedVS.setText(Integer.toString(qtyRet));
+                    //qtyResolvedVS.setValue(qtyRes);
                     loanPrep.setQuantityReturned(qtyRet);
                     
                     // Do not set the Quantity Resolved

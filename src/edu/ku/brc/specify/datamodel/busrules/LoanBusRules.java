@@ -154,7 +154,7 @@ public class LoanBusRules extends AttachmentOwnerBaseBusRules
 
             MultiView mvParent = formViewObj.getMVParent();
             Loan      loan     = (Loan)formViewObj.getDataObj();
-            boolean   isNewObj = MultiView.isOptionOn(mvParent.getOptions(), MultiView.IS_NEW_OBJECT);
+            boolean   isNewObj = loan.getId() == null;//MultiView.isOptionOn(mvParent.getOptions(), MultiView.IS_NEW_OBJECT);
             boolean   isEdit   = mvParent.isEditable();
 
             Component comp     = formViewObj.getControlByName("generateInvoice");
@@ -177,9 +177,9 @@ public class LoanBusRules extends AttachmentOwnerBaseBusRules
             comp = formViewObj.getControlByName("ReturnLoan");
             if (comp instanceof JButton)
             {
-                comp.setVisible(!isNewObj && isEdit);
+                comp.setVisible(isEdit);
                 Boolean isClosed = loan.getIsClosed();
-                comp.setEnabled(isClosed != null ? !loan.getIsClosed() : false && !allResolved);
+                comp.setEnabled(!isNewObj && (isClosed != null ? !loan.getIsClosed() : false) && !allResolved);
                 
                 if (allResolved)
                 {

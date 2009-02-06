@@ -12,6 +12,7 @@ import java.awt.event.ActionListener;
 import java.util.Vector;
 
 import javax.swing.JButton;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -94,12 +95,12 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
                 });
             }
             
-            Component comp = formViewObj.getControlByName("quantityReturned");
+            Component comp = formViewObj.getControlByName("quantityResolved");
             if (comp instanceof ValSpinner)
             {
-                final ValSpinner quantityReturned = (ValSpinner)comp;
+                final JTextField quantityResolved = (JTextField)formViewObj.getControlByName("quantityReturned");
                 final ValSpinner quantity         = (ValSpinner)formViewObj.getControlByName("quantity");
-                final ValSpinner qtyResolved      = (ValSpinner)formViewObj.getControlByName("quantityResolved");
+                final ValSpinner qtyResolved      = (ValSpinner)comp;
     
                 final ValCheckBox isResolved = (ValCheckBox)formViewObj.getControlByName("isResolved");
                 ChangeListener cl = new ChangeListener()
@@ -117,15 +118,12 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
                             
                             if (!isFillingForm)
                             {
-                                quantitiesChanged(quantity, quantityReturned, qtyResolved, isResolved);
+                                quantitiesChanged(quantity, Integer.parseInt(quantityResolved.getText()), qtyResolved, isResolved);
                             }
                         }
                     }
                 };
-                
-                    
                 quantity.addChangeListener(cl);
-                quantityReturned.addChangeListener(cl);
                 qtyResolved.addChangeListener(cl);
             }
             
@@ -206,13 +204,12 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
                 loanRetBtn.setEnabled(loanPrep.getId() != null);
             }
             
-            Component comp = formViewObj.getControlByName("quantityReturned");
+            Component comp = formViewObj.getControlByName("quantityResolved");
             if (comp instanceof ValSpinner && prep != null &&  prep.getPreparationId() != null)
             {
                 final boolean    isNewObj         = loanPrep.getId() == null;
-                final ValSpinner quantityReturned = (ValSpinner)comp;
                 final ValSpinner quantity         = (ValSpinner)formViewObj.getControlByName("quantity");
-                final ValSpinner qtyResolved      = (ValSpinner)formViewObj.getControlByName("quantityResolved");
+                final ValSpinner qtyResolved      = (ValSpinner)comp;
                 
                 // Calculate how many have been Gift'ed
                 String sql = "SELECT gf.Quantity FROM  giftpreparation AS gf " +
@@ -233,11 +230,14 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
                 int qQntRes  = 0;
                 int qPrepCnt = 0;
                 
+                Integer pCnt = BasicSQLUtils.getCount("SELECT Count FROM preparation WHERE PreparationID = " + prep.getPreparationId());
+                qPrepCnt = pCnt != null ? pCnt : 0;
+                
                 if (loanPrep.getId() != null)
                 {
                     // Get all the LoanReturn Quantities so we can figure out
                     // how many are still available
-                    sql = "SELECT lp.Quantity, lp.QuantityResolved, lrp.Quantity, p.Count, p.PreparationID " +
+                    sql = "SELECT lp.Quantity, lp.QuantityResolved, lrp.Quantity, p.PreparationID " +
                                  "FROM  loanpreparation AS lp " +
                                  "LEFT JOIN loanreturnpreparation AS lrp ON lrp.LoanPreparationID = lp.LoanPreparationID " +
                                  "INNER JOIN preparation AS p ON lp.PreparationID = p.PreparationID " +
@@ -248,17 +248,10 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
                     rows = BasicSQLUtils.query(sql);
                     for (Object[] cols : rows)
                     {
-                        //for (int i=0;i<cols.length;i++) System.out.print(" "+cols[i]);
-                        //System.out.println();
-                        
                         qQnt     += getInt(cols[0]); // Qty loaned out
                         qQntRes  += getInt(cols[1]); // Qty Resolved (came back)
-                        
                         qPrepCnt = getInt(cols[3]); // Prep Qty available (don't sum)
                     }
-                } else
-                {
-                    qPrepCnt = loanPrep.getQuantity();
                 }
                 
                 // Calculate the total available
@@ -266,19 +259,8 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
                 
                 quantity.setRange(0, availableQnt, loanPrep.getQuantity());
                 
-                //quantityReturned.setEnabled(!isNewObj);
-                
-                quantityReturned.setRange(0, availableQnt, loanPrep.getQuantityReturned());
-                qtyResolved.setRange(0,      availableQnt, loanPrep.getQuantityResolved());
-                
-                quantityReturned.setEnabled(isNewObj);
-                //qtyResolved.setEnabled(isNewObj);
-                
-                
-                //formViewObj.getLabelFor(quantityReturned).setEnabled(!isNewObj);
-                
-                //ValCheckBox isResolved = (ValCheckBox)formViewObj.getControlByName("isResolved");
-                //isResolved.setEnabled(!isNewObj);
+                qtyResolved.setEnabled(!isNewObj);
+                qtyResolved.setRange(0, availableQnt, loanPrep.getQuantityResolved());
             }
         }
         
@@ -291,21 +273,17 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
      * @param qtyResolved
      */
     private void quantitiesChanged(final ValSpinner quantity, 
-                                   final ValSpinner quantityReturned, 
+                                   int   quantityReturned,
                                    final ValSpinner qtyResolved,
                                    final ValCheckBox resolvedChkBx)
     {
         int qty    = (Integer)quantity.getValue();
-        int qtyRet = (Integer)quantityReturned.getValue();
         int qtyRes = (Integer)qtyResolved.getValue();
         
-        //System.err.println(qty+"  "+qtyRet+"  "+qtyRes+"  ");
         quantity.setState(UIValidatable.ErrorType.Valid);
-        quantityReturned.setState(UIValidatable.ErrorType.Valid);
         qtyResolved.setState(UIValidatable.ErrorType.Valid);
         
-        quantityReturned.setState(qtyRet > qty ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid);
-        qtyResolved.setState(qtyRes > qty ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid);
+        qtyResolved.setState(qtyRes > qty || qtyRes > qty ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid);
         
         SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -317,8 +295,7 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
             }
         });
         
-        Boolean allRet = qty == qtyRes;
-        resolvedChkBx.setSelected(allRet);
+        final Boolean allRet = qty == qtyRes;
         
         LoanPreparation loanPrep = (LoanPreparation)formViewObj.getDataObj();
         Loan            loan     = loanPrep.getLoan();
@@ -340,12 +317,25 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
         {
             allPrepsReturned = false;
         }
-        Component comp = formViewObj.getMVParent().getMultiViewParent().getCurrentViewAsFormViewObj().getCompById("2");
-        if (comp instanceof ValCheckBox)
-        {
-            ValCheckBox chk = (ValCheckBox)comp;
-            chk.setSelected(allPrepsReturned);
-        }
+        
+        final boolean allRetP = allPrepsReturned;
+        
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run()
+            {
+                resolvedChkBx.setSelected(allRet);
+
+                Component comp = formViewObj.getMVParent().getMultiViewParent().getCurrentViewAsFormViewObj().getCompById("2");
+                if (comp instanceof ValCheckBox)
+                {
+                    ValCheckBox chk = (ValCheckBox)comp;
+                    chk.setSelected(allRetP);
+                    chk.repaint();
+                }
+            }
+        });
+
     }
     
     /**

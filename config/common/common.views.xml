@@ -2267,7 +2267,7 @@
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="quantity" uitype="spinner" initialize="max=5000" isrequired="true"/>
                     <cell type="label" labelfor="7"/>
-                    <cell type="field" id="7" name="quantityReturned" uitype="spinner" initialize="max=5000;min=1" isrequired="true"/>
+                    <cell type="field" id="7" name="quantityReturned" uitype="dsptextfield"/>
                     <cell type="label" labelfor="10"/>
                     <cell type="field" id="10" name="quantityResolved" uitype="spinner" initialize="max=5000;min=1" isrequired="true"/>
                 </row>
