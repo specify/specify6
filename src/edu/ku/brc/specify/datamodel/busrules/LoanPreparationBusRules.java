@@ -9,7 +9,6 @@ package edu.ku.brc.specify.datamodel.busrules;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Calendar;
 import java.util.Vector;
 
 import javax.swing.JButton;
@@ -23,10 +22,10 @@ import edu.ku.brc.af.ui.forms.SubViewBtn;
 import edu.ku.brc.af.ui.forms.TableViewObj;
 import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.validation.UIValidatable;
+import edu.ku.brc.af.ui.forms.validation.UIValidator;
 import edu.ku.brc.af.ui.forms.validation.ValCheckBox;
 import edu.ku.brc.af.ui.forms.validation.ValSpinner;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
-import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.LoanPreparation;
 import edu.ku.brc.specify.datamodel.LoanReturnPreparation;
@@ -53,7 +52,7 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
     private SubViewBtn loanRetBtn       = null;
     
     /**
-     * 
+     * Constructor.
      */
     public LoanPreparationBusRules()
     {
@@ -108,20 +107,23 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
                     @Override
                     public void stateChanged(ChangeEvent e)
                     {
-                        boolean isNewObj = false;
-                        if (formViewObj != null)
+                        if (!UIValidator.isIgnoreAllValidation())
                         {
-                            LoanPreparation loanPrep = (LoanPreparation)formViewObj.getDataObj();
-                            isNewObj = loanPrep.getId() == null;
-                        }
-                        
-                        if (!isFillingForm && isNewObj)
-                        {
-                            quantitiesChanged(quantity, quantityReturned, qtyResolved, isResolved);
+                            if (formViewObj != null)
+                            {
+                                LoanPreparation loanPrep = (LoanPreparation)formViewObj.getDataObj();
+                                loanPrep.setQuantity(quantity.getIntValue());
+                            }
+                            
+                            if (!isFillingForm)
+                            {
+                                quantitiesChanged(quantity, quantityReturned, qtyResolved, isResolved);
+                            }
                         }
                     }
                 };
                 
+                    
                 quantity.addChangeListener(cl);
                 quantityReturned.addChangeListener(cl);
                 qtyResolved.addChangeListener(cl);
@@ -218,7 +220,7 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
                              "INNER JOIN preparation AS p ON gf.PreparationID = p.PreparationID " +
                              "WHERE p.PreparationID = " + prep.getPreparationId();
                 
-                System.out.println(sql);
+                //System.out.println(sql);
                 int qGiftQnt = 0;
 
                 Vector<Object[]> rows = BasicSQLUtils.query(sql);
@@ -240,8 +242,8 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
                                  "LEFT JOIN loanreturnpreparation AS lrp ON lrp.LoanPreparationID = lp.LoanPreparationID " +
                                  "INNER JOIN preparation AS p ON lp.PreparationID = p.PreparationID " +
                                  "WHERE p.PreparationID = " + prep.getPreparationId();
-                    System.out.println(sql);
-                    System.out.println(" prep.getPreparationId() "+prep.getPreparationId());
+                    //System.out.println(sql);
+                    //System.out.println(" prep.getPreparationId() "+prep.getPreparationId());
                     
                     rows = BasicSQLUtils.query(sql);
                     for (Object[] cols : rows)
@@ -270,7 +272,7 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
                 qtyResolved.setRange(0,      availableQnt, loanPrep.getQuantityResolved());
                 
                 quantityReturned.setEnabled(isNewObj);
-                qtyResolved.setEnabled(isNewObj);
+                //qtyResolved.setEnabled(isNewObj);
                 
                 
                 //formViewObj.getLabelFor(quantityReturned).setEnabled(!isNewObj);
@@ -309,7 +311,9 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
             @Override
             public void run()
             {
-                //formViewObj.getValidator().wasValidated(null);
+                formViewObj.getValidator().wasValidated(null);
+                formViewObj.getMVParent().getMultiViewParent().getCurrentValidator().setHasChanged(true);
+                formViewObj.getMVParent().getMultiViewParent().getCurrentValidator().wasValidated(null);
             }
         });
         
@@ -320,36 +324,6 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
         Loan            loan     = loanPrep.getLoan();
         
         loanPrep.setIsResolved(allRet);
-        
-        LoanReturnPreparation loanRetPrep = getNewLRP(loanPrep);
-        if (allRet)
-        {
-            if (loanRetPrep == null)
-            {
-                loanRetPrep = new LoanReturnPreparation();
-                loanRetPrep.initialize();
-                loanRetPrep.setReceivedBy(null);
-                loanRetPrep.setModifiedByAgent(Agent.getUserAgent());
-                loanRetPrep.setReturnedDate(Calendar.getInstance());
-                loanPrep.addReference(loanRetPrep, "loanReturnPreparations");
-            } else
-            {
-                loanRetPrep.setQuantity(qtyRes);
-            }
-            
-            loanPrep.setQuantity(qty);
-            loanPrep.setQuantityResolved(qtyRes);
-            loanPrep.setQuantityReturned(qtyRet);
-            
-        } else if (loanRetPrep != null)
-        {
-            if (loanRetPrep.getId() == null)
-            {
-                loanPrep.removeReference(loanRetPrep, "loanReturnPreparations");
-            } else
-            {
-            }
-        }
         
         boolean allPrepsReturned = true;
         if (allRet)
@@ -428,6 +402,12 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
             } else if (viewable instanceof TableViewObj)
             {
                 TableViewObj tvo = (TableViewObj)viewable;
+                // Make sure the Loan form knows there is a change
+                MultiView loanMV = tvo.getMVParent().getMultiViewParent();
+                loanMV.getCurrentValidator().setHasChanged(true);
+                loanMV.getCurrentValidator().validateRoot();
+                
+                // Refresh list in the grid
                 tvo.refreshDataList();
             }
         }
@@ -441,7 +421,7 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
     {
         reasonList.clear();
         LoanPreparation loanPrep = (LoanPreparation)dataObj;
-        if (loanPrep.getQuantityReturned() > loanPrep.getQuantity())
+        if (loanPrep.getQuantityResolved() > loanPrep.getQuantity())
         {
             reasonList.add(UIRegistry.getResourceString("LOAN_RET_LWR_QNT"));
             return STATUS.Error;

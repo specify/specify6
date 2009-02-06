@@ -28,6 +28,7 @@ public class VerticalSeparator extends JComponent
 {
     protected Color bgColor;
     protected Color fgColor;
+    protected int   preferredWidth = 10;
     
     /**
      * @param bgColor
@@ -37,6 +38,17 @@ public class VerticalSeparator extends JComponent
     {
         this.bgColor = bgColor;
         this.fgColor = fgColor;
+    }
+
+    /**
+     * @param bgColor
+     * @param fgColor
+     */
+    public VerticalSeparator(final Color fgColor, final Color bgColor, final int preferredWidth)
+    {
+        this.bgColor = bgColor;
+        this.fgColor = fgColor;
+        this.preferredWidth = preferredWidth;
     }
 
     /* (non-Javadoc)
@@ -69,7 +81,7 @@ public class VerticalSeparator extends JComponent
     public Dimension getPreferredSize()
     {
         Dimension size = super.getPreferredSize();
-        size.width = 10;
+        size.width = preferredWidth;
         return size;
     }
 

@@ -74,6 +74,11 @@ public class ChooseRecordSetDlg extends CustomDialog
         this(tableId, false);
     }
 
+    /**
+     * @param tableId
+     * @param includeAddBtn
+     * @throws HeadlessException
+     */
     public ChooseRecordSetDlg(final int tableId, final boolean includeAddBtn) throws HeadlessException
     {
         super((Frame)UIRegistry.getTopWindow(), getResourceString("RECORDSET_CHOOSE"), true, OKCANCELHELP, null);

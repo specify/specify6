@@ -2213,16 +2213,13 @@
                      <cell type="subview" viewname="LoanItems" id="10" name="loanPreparations" defaulttype="table" colspan="12"/>
                 </row>
                 <row>
-                    <cell type="separator" label="Attachments" colspan="12"/>
-                </row>
-                <row>
-                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="loanAttachments" colspan="12" initialize="btn=true;icon=LoanAttachment"/>
-                </row>
-                <row>
-                    <cell type="panel" id="16" name="outerPanel" coldef="f:p:g,1px,p,5px,p" rowdef="p" colspan="12">
+                    <cell type="panel" id="16" name="outerPanel" coldef="max(p;100px),f:p:g,p,5px,p" rowdef="p,4px,p" colspan="12">
                         <rows>
+			                <row>
+			                    <cell type="separator" label="Attachments" colspan="1"/>
+			                </row>
                             <row>
-                                <cell type="label" label=" "/>
+                                <cell type="subview" id="attachments" viewname="ObjectAttachment" name="loanAttachments" colspan="1" initialize="btn=true;icon=LoanAttachment"/>
                                 <cell type="command" id="14" name="ReturnLoan" label="Return Loan" commandtype="Interactions" action="ReturnLoan" ignore="true" initialize="vis=false"/>
                                 <cell type="field" uitype="checkbox" id="13" name="generateInvoice" label="Generate Invoice on Save" ignore="true" default="true" initialize="vis=false"/>
                             </row>

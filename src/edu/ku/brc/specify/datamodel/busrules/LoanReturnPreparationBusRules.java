@@ -7,7 +7,6 @@
 package edu.ku.brc.specify.datamodel.busrules;
 
 import java.awt.Component;
-import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.event.ChangeEvent;
@@ -19,11 +18,9 @@ import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.validation.ValCheckBox;
 import edu.ku.brc.af.ui.forms.validation.ValSpinner;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.LoanPreparation;
 import edu.ku.brc.specify.datamodel.LoanReturnPreparation;
-import edu.ku.brc.util.Pair;
 
 /**
  * @author rod
@@ -133,6 +130,9 @@ public class LoanReturnPreparationBusRules extends BaseBusRules
         {
             formViewObj.setSkippingAttach(true);
             
+            loanPrepFVO = formViewObj.getMVParent().getMultiViewParent().getCurrentViewAsFormViewObj();
+            loanFVO     = loanPrepFVO.getMVParent().getMultiViewParent().getCurrentViewAsFormViewObj();
+            
             LoanReturnPreparation loanRetPrep = (LoanReturnPreparation)dataObj;
             LoanPreparation       loanPrep    = (LoanPreparation)loanPrepFVO.getDataObj();
             
@@ -165,7 +165,7 @@ public class LoanReturnPreparationBusRules extends BaseBusRules
      * @param loanPrepId
      * @return
      */
-    private Pair<Integer, Integer> getOrigValue(final Integer loanPrepId)
+    /*private Pair<Integer, Integer> getOrigValue(final Integer loanPrepId)
     {
         int qQnt     = 0;
         int qQntRes  = 0;
@@ -183,7 +183,7 @@ public class LoanReturnPreparationBusRules extends BaseBusRules
         }
         
         return new Pair<Integer, Integer>(qQnt, qQntRes);
-    }
+    }*/
     
     /**
      * 
@@ -192,6 +192,9 @@ public class LoanReturnPreparationBusRules extends BaseBusRules
     {
         if (formViewObj != null)
         {
+            loanPrepFVO = formViewObj.getMVParent().getMultiViewParent().getCurrentViewAsFormViewObj();
+            loanFVO     = loanPrepFVO.getMVParent().getMultiViewParent().getCurrentViewAsFormViewObj();
+
             Component comp = formViewObj.getControlByName("quantity");
             if (comp instanceof ValSpinner)
             {
@@ -206,14 +209,16 @@ public class LoanReturnPreparationBusRules extends BaseBusRules
                     loanRetPrep.setQuantity(lrpQty);
                 }
                 
-                Pair<Integer, Integer> origValues = getOrigValue(loanPrep.getId());
-                int qtyRes = origValues.first;
-                int qtyRet = origValues.second;
+                //Pair<Integer, Integer> origValues = getOrigValue(loanPrep.getId());
+                int qtyRes = 0;//origValues.first;
+                int qtyRet = 0;//origValues.second;
                 
-                for (LoanReturnPreparation lrp : loanPrep.getLoanReturnPreparations())
+                int i = 0;
+                for (LoanReturnPreparation lrp : loanRetPrep.getLoanPreparation().getLoanReturnPreparations())
                 {
                     qtyRes += getInt(lrp.getQuantity()); 
                     qtyRet += getInt(lrp.getQuantity());
+                    i++;
                 }
                 
                 ValCheckBox isResolved = (ValCheckBox)loanPrepFVO.getControlByName("isResolved");
@@ -228,7 +233,9 @@ public class LoanReturnPreparationBusRules extends BaseBusRules
                     qtyReturnedVS.setValue(qtyRet);
                     qtyResolvedVS.setValue(qtyRes);
                     loanPrep.setQuantityReturned(qtyRet);
-                    loanPrep.setQuantityResolved(qtyRes);
+                    
+                    // Do not set the Quantity Resolved
+                    //loanPrep.setQuantityResolved(qtyRes);
                 }
                 
                 int qQnt    = 0;

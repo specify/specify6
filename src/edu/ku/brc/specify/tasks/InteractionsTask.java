@@ -1696,26 +1696,13 @@ public class InteractionsTask extends BaseTask
                         loanRetPrep.setReceivedBy(agent);
                         loanRetPrep.setModifiedByAgent(Agent.getUserAgent());
                         loanRetPrep.setReturnedDate(Calendar.getInstance());
-                        loanRetPrep.setQuantity(loanRetInfo.getQuantity());
+                        
                         loanRetPrep.setRemarks(loanRetInfo.getRemarks());
                         
-                        int quantity         = loanPrep.getQuantity();
-                        int quantityReturned = loanPrep.getQuantityReturned();
-                        int quantityResolved = loanPrep.getQuantityResolved();
-                        
-                        if (loanRetInfo.isResolved() != null)
-                        {
-                            loanPrep.setIsResolved(loanRetInfo.isResolved());
-                            loanPrep.setQuantityReturned(quantityReturned + loanRetInfo.getQuantity());
-                        }
+                        loanPrep.setIsResolved(loanRetInfo.isResolved());
+                        loanPrep.setQuantityReturned(loanPrep.getQuantityReturned());
+                        loanPrep.setQuantityResolved(loanPrep.getQuantityResolved());
                         loanPrep.addReference(loanRetPrep, "loanReturnPreparations");
-                        
-                        quantityReturned += loanRetInfo.getQuantity();
-                        
-                        if (quantityResolved == quantity)
-                        {
-                            loanPrep.setIsResolved(true);
-                        }
                         
                         session.save(loanRetPrep);
                         session.saveOrUpdate(loanPrep);
@@ -1992,6 +1979,7 @@ public class InteractionsTask extends BaseTask
             if (cmdAction.getData() instanceof RecordSetIFace)
             {
                 printInvoice(null, cmdAction.getData());
+                
             } if (cmdAction.getData() instanceof CommandAction)
             {
             	RecordSetIFace recordSet = RecordSetTask.askForRecordSet(this.printableInvoiceTblIds, null, true);

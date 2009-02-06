@@ -14,8 +14,9 @@
  */
 package edu.ku.brc.specify.ui;
 
-import static edu.ku.brc.ui.UIHelper.*;
+import static edu.ku.brc.ui.UIHelper.createButton;
 import static edu.ku.brc.ui.UIHelper.createCheckBox;
+import static edu.ku.brc.ui.UIHelper.createI18NLabel;
 import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIHelper.setControlSize;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
@@ -23,7 +24,6 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -31,8 +31,6 @@ import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Hashtable;
@@ -54,7 +52,6 @@ import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -97,6 +94,7 @@ import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.VerticalSeparator;
 
 /**
  * Creates a dialog representing all the Preparation objects being returned for a loan.
@@ -313,18 +311,20 @@ public class LoanReturnDlg extends JDialog
      */
     protected void doEnableOKBtn()
     {
-        int count = 0;
-        for (ColObjPanel pp : colObjPanels)
+        int retCnt = 0;
+        int resCnt = 0;
+        for (ColObjPanel colObjPanel : colObjPanels)
         {
-            count += pp.getReturnCount();
+            retCnt += colObjPanel.getReturnedCount();
+            resCnt += colObjPanel.getResolvedCount();
         }
-        okBtn.setEnabled(count > 0 && agentCBX.getValue() != null);
+        okBtn.setEnabled((retCnt > 0 && resCnt > 0) && agentCBX.getValue() != null);
 
-        summaryLabel.setText(String.format(getResourceString("LOANRET_NUM_ITEMS_2B_RET_FMT"), count));
+        summaryLabel.setText(String.format(getResourceString("LOANRET_NUM_ITEMS_2B_RET_FMT"), retCnt, resCnt));
     }
     
     /**
-     * @return
+     * @return the return agent combobox
      */
     protected ValComboBoxFromQuery createAgentCombobox()
     {
@@ -386,7 +386,7 @@ public class LoanReturnDlg extends JDialog
         {
             for (PrepPanel pp : colObjPanel.getPanels())
             {
-                if (pp.getCount() > 0)
+                if (pp.getReturnedCount() > 0 || pp.getResolvedCount() > 0)
                 {
                     returns.add(pp.getLoanReturnInfo());
                 }
@@ -486,7 +486,6 @@ public class LoanReturnDlg extends JDialog
                     {
                         pp.setEnabled(checkBox.isSelected());
                     }
-                    //System.out.println(getReturnCount());
                     repaint();
                 }
             });
@@ -507,14 +506,27 @@ public class LoanReturnDlg extends JDialog
             return checkBox;
         }
         
-        public int getReturnCount()
+        public int getReturnedCount()
         {
             int count = 0;
             if (checkBox.isSelected())
             {
                 for (PrepPanel pp : panels)
                 {
-                    count += pp.getCount();
+                    count += pp.getReturnedCount();
+                }
+            }
+            return count;
+        }
+
+        public int getResolvedCount()
+        {
+            int count = 0;
+            if (checkBox.isSelected())
+            {
+                for (PrepPanel pp : panels)
+                {
+                    count += pp.getResolvedCount();
                 }
             }
             return count;
@@ -529,23 +541,26 @@ public class LoanReturnDlg extends JDialog
     }
    
     //------------------------------------------------------------------------------------------
-    //
+    // Return panel for each LoanPreparation.
     //------------------------------------------------------------------------------------------
     class PrepPanel extends JPanel implements ActionListener
     {
         protected Preparation prep;
         protected LoanPreparation lpo;
-        protected JLabel      label    = null;
-        protected JLabel      label2    = null;
-        protected JComponent  prepInfoBtn    = null;
-        protected JSpinner    spinner; 
+        protected JLabel      label       = null;
+        protected JLabel      retLabel    = null;
+        protected JLabel      resLabel    = null;
+        protected JComponent  prepInfoBtn = null;
+        protected JSpinner    returnedSpinner; 
+        protected JSpinner    resolvedSpinner; 
         protected JDialog     parent;
+        protected JTextField  remarks;
+        
         protected int         quantityReturned;
+        protected int         quantityResolved;
         protected int         quantityLoaned;
         protected int         maxValue = 0;
         protected boolean     unknownQuantity;
-        protected JTextField  remarks;
-        protected JCheckBox   resolved;
 
         /**
          * Constructs a panel representing the Preparation being returned.
@@ -560,14 +575,26 @@ public class LoanReturnDlg extends JDialog
             this.lpo    = lpo;
             this.parent = parent;
             
+            Color color = new Color(192, 192, 192);
+            Color bg = color.darker();
+            Color fg = color.brighter();
+            
             setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
             //setBorder(BorderFactory.createCompoundBorder(new CurvedBorder(new Color(160,160,160)), getBorder()));
      
-            PanelBuilder    pbuilder = new PanelBuilder(new FormLayout("max(120px;p),2px,max(50px;p),2px,p,2px,p,10px,p:g", "p,2px,p"), this);
+            FormLayout fl = new FormLayout("max(120px;p),p," +
+                                           "max(50px;p),2px,p,p," + // 3,4,5,6
+                                           "max(50px;p),2px,p,p," + // 7,8,9,10
+                                           "f:p:g", //"p,0px,p:g", 
+                                           "f:p:g,2px,p");
+            PanelBuilder    pbuilder = new PanelBuilder(fl, this);
             CellConstraints cc       = new CellConstraints();
             
-            pbuilder.add(label = createLabel(prep.getPrepType().getName()), cc.xy(1,1));
+            int x = 1;
+            pbuilder.add(label = createLabel(prep.getPrepType().getName()), cc.xy(x,1)); x += 1;  // 1
             label.setOpaque(false);
+            
+            pbuilder.add(new VerticalSeparator(fg, bg, 20), cc.xy(x,1)); x += 1; // 2
             
             boolean allReturned = false;
             
@@ -575,34 +602,39 @@ public class LoanReturnDlg extends JDialog
             {
                 quantityLoaned    = lpo.getQuantity();
                 quantityReturned  = lpo.getQuantityReturned();
+                quantityResolved  = lpo.getQuantityResolved();
                 
-                int quantityOut   = quantityLoaned - quantityReturned;
+                int quantityOut   = quantityLoaned - quantityResolved;
                 
                 if (quantityOut > 0 && !lpo.getIsResolved())
                 {
                     maxValue = quantityLoaned;
                     
-                    SpinnerModel model = new SpinnerNumberModel(quantityReturned, //initial value
+                    SpinnerModel retModel = new SpinnerNumberModel(quantityReturned, //initial value
                                                quantityReturned, //min
                                                quantityLoaned,   //max
                                                1);               //step
-                    spinner = new JSpinner(model);
-                    fixBGOfJSpinner(spinner);
-                    pbuilder.add(spinner, cc.xy(3, 1));
-                    setControlSize(spinner);
+                    returnedSpinner = new JSpinner(retModel);
+                    fixBGOfJSpinner(returnedSpinner);
+                    pbuilder.add(returnedSpinner, cc.xy(x, 1)); x += 2; // 3
+                    setControlSize(returnedSpinner);
                     
-                    //String str = " of " + Integer.toString(quantityAvailable) + "  " + (quantityOut > 0 ? "(" + quantityOut + " on loan.)" : "");
-                    String fmtStr = String.format(getResourceString("LOANRET_OF_FORMAT")+"   ", new Object[] {quantityLoaned});
-                    pbuilder.add(label2 = createLabel(fmtStr), cc.xy(5, 1));
-                    if (quantityOut > 0)
-                    {
-                        fmtStr = quantityReturned == 0 ? getResourceString("LOANRET_NOTHING_RET") : 
-                            String.format(getResourceString("LOANRET_NUM_ITEMS_RET_FMT"), quantityReturned);
-                        prepInfoBtn = new LinkLabelBtn(this, fmtStr, IconManager.getIcon("InfoIcon", IconManager.IconSize.Std16));
-                        //prepInfoBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-                        pbuilder.add(prepInfoBtn, cc.xy(7, 1));
-                    }
+                    String fmtStr = String.format(getResourceString("LOANRET_OF_FORMAT_RET"), quantityLoaned);
+                    pbuilder.add(retLabel = createLabel(fmtStr), cc.xy(x, 1)); x += 1; // 5
                     
+                    pbuilder.add(new VerticalSeparator(fg, bg, 20), cc.xy(x,1)); x += 1; // 6
+                    
+                    SpinnerModel resModel = new SpinnerNumberModel(quantityReturned, //initial value
+                            quantityResolved, //min
+                            quantityLoaned,   //max
+                            1);               //step
+                    resolvedSpinner = new JSpinner(resModel);
+                    fixBGOfJSpinner(resolvedSpinner);
+                    pbuilder.add(resolvedSpinner, cc.xy(x, 1)); x += 2; // 7
+                    setControlSize(resolvedSpinner);
+                    
+                    fmtStr = String.format(getResourceString("LOANRET_OF_FORMAT_RES"), quantityLoaned);
+                    pbuilder.add(retLabel = createLabel(fmtStr), cc.xy(x, 1)); x += 1; // 9
                     
                 } else
                 {
@@ -615,6 +647,7 @@ public class LoanReturnDlg extends JDialog
                             if (lastReturnDate == null)
                             {
                                 lastReturnDate = lrpo.getReturnedDate();
+                                
                             } else if (retDate.after(lastReturnDate))
                             {
                                 lastReturnDate = retDate;
@@ -625,57 +658,33 @@ public class LoanReturnDlg extends JDialog
                     String fmtStr = lastReturnDate == null ? getResourceString("LOANRET_ALL_RETURNED") :
                                  String.format(getResourceString("LOANRET_ALL_RETURNED_ON_FMT"), 
                                                scrDateFormat.format(lastReturnDate));
-                    prepInfoBtn = new LinkLabelBtn(this, fmtStr, IconManager.getIcon("InfoIcon", IconManager.IconSize.Std16));
-                    pbuilder.add(prepInfoBtn, cc.xywh(3, 1, 7, 1));
+                    pbuilder.add(retLabel = createLabel(fmtStr), cc.xy(x, 1));
                     allReturned = true;
                 }
 
                 
             } else
             {
-                SpinnerModel model = new SpinnerNumberModel(0, //initial value
-                        0,    //min
-                        10000, //max
-                        1);   //step
-                spinner = new JSpinner(model);
-                fixBGOfJSpinner(spinner);
-                pbuilder.add(spinner, cc.xy(3, 1));
-                pbuilder.add(label2 = createLabel(" " + getResourceString("LOANRET_UNKNOWN_NUM_AVAIL")), cc.xywh(5, 1, 2, 1));
+                pbuilder.add(retLabel = createLabel(" " + getResourceString("LOANRET_UNKNOWN_NUM_AVAIL")), cc.xywh(1, 1, 4, 1));
                 unknownQuantity = true;
-                maxValue = 1;
             }
 
             if (!allReturned)
             {
-                resolved = createCheckBox(getResourceString("LOANRET_RESOLVED"));
-                resolved.setOpaque(false);
-                //resolved.setBackground(this.getBackground());
-                pbuilder.add(resolved, cc.xywh(9, 1, 1, 1));
-
                 remarks = new RemarksText();
-                pbuilder.add(remarks, cc.xywh(1, 3, 9, 1));
-                
-                resolved.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e)
-                    {
-                        quantityReturned = quantityLoaned;
-                        spinner.setValue(quantityLoaned);
-                    }
-                });
+                pbuilder.add(remarks, cc.xywh(1, 3, 11, 1));
             }
             
-            if (spinner != null)
+            /*if (returnedSpinner != null)
             {
-                spinner.addChangeListener(new ChangeListener()
+                returnedSpinner.addChangeListener(new ChangeListener()
                 {
                     public void stateChanged(ChangeEvent ae)
                     {
-                        Integer val = (Integer)spinner.getValue();
-                        resolved.setSelected(val >= maxValue);
+                        Integer val = (Integer)returnedSpinner.getValue();
                     }
                 });
-            }
+            }*/
         }
         
         /**
@@ -709,9 +718,9 @@ public class LoanReturnDlg extends JDialog
          */
         public void selectAllItems()
         {
-            if (spinner != null)
+            if (returnedSpinner != null)
             {
-                spinner.setValue(maxValue);
+                returnedSpinner.setValue(maxValue);
             }
         }
 
@@ -733,17 +742,21 @@ public class LoanReturnDlg extends JDialog
             {
                 label.setEnabled(enabled);
             }
-            if (label2 != null)
+            if (retLabel != null)
             {
-                label2.setEnabled(enabled);
+                retLabel.setEnabled(enabled);
+            }
+            if (resLabel != null)
+            {
+                resLabel.setEnabled(enabled);
             }
             if (prepInfoBtn != null)
             {
                 prepInfoBtn.setEnabled(enabled);
             }
-            if (spinner != null)
+            if (returnedSpinner != null)
             {
-                spinner.setEnabled(enabled);
+                returnedSpinner.setEnabled(enabled);
             }
         }
         
@@ -753,9 +766,9 @@ public class LoanReturnDlg extends JDialog
          */
         public void addChangeListener(final ChangeListener cl)
         {
-            if (spinner != null)
+            if (returnedSpinner != null)
             {
-                spinner.addChangeListener(cl);
+                returnedSpinner.addChangeListener(cl);
             }
         }
         
@@ -763,12 +776,24 @@ public class LoanReturnDlg extends JDialog
          * Returns the count from the spinner, the count of items being returning.
          * @return the count from the spinner, the count of items being returning.
          */
-        public int getCount()
+        public int getReturnedCount()
         {
-            if (spinner != null)
+            if (returnedSpinner != null)
             {
-                Object valObj = spinner.getValue();
-               return valObj == null ? 0 : ((Integer)valObj).intValue() - quantityReturned;
+                Object valObj = returnedSpinner.getValue();
+               return valObj == null ? 0 : ((Integer)valObj).intValue();
+                
+            }
+            // else
+            return 0;
+        }
+        
+        public int getResolvedCount()
+        {
+            if (resolvedSpinner != null)
+            {
+                Object valObj = resolvedSpinner.getValue();
+               return valObj == null ? 0 : ((Integer)valObj).intValue();
                 
             }
             // else
@@ -782,9 +807,10 @@ public class LoanReturnDlg extends JDialog
         public LoanReturnInfo getLoanReturnInfo()
         {
             return new LoanReturnInfo(lpo, 
-                                      resolved != null ? resolved.isSelected() : null, 
                                       remarks != null ? remarks.getText() : null,
-                                      (short)getCount());
+                                      getReturnedCount(),
+                                      getResolvedCount(),
+                                      getResolvedCount() == quantityLoaned);
         }
         
         /* (non-Javadoc)
@@ -850,100 +876,54 @@ public class LoanReturnDlg extends JDialog
         }
     }
 
-   
-    //------------------------------------------------------------------------------------------
-    //
-    //------------------------------------------------------------------------------------------
-    protected static final Cursor handCursor    = new Cursor(Cursor.HAND_CURSOR);
-    protected static final Cursor defCursor     = new Cursor(Cursor.DEFAULT_CURSOR);
-
-    class LinkLabelBtn extends JLabel
-    {
-        protected ActionListener al;
-        
-        public LinkLabelBtn(final ActionListener al, final String label, final ImageIcon imgIcon)
-        {
-            super(label, imgIcon, SwingConstants.LEFT);
-            setHorizontalTextPosition(SwingConstants.LEFT);
-            this.al = al;
-            
-            //setBorderPainted(false);
-            //setBorder(BorderFactory.createEmptyBorder());
-            //setOpaque(false);
-            //setCursor(handCursor);
-            
-            //final LinkLabelBtn llb = this;
-
-            addMouseListener(new MouseAdapter()
-            {
-                public void mouseClicked(MouseEvent e) 
-                {
-                    al.actionPerformed(new ActionEvent(this, 0, ""));
-                }
-
-                /**
-                 * Invoked when a mouse button has been pressed on a component.
-                 */
-                public void mousePressed(MouseEvent e) {}
-
-                /**
-                 * Invoked when a mouse button has been released on a component.
-                 */
-                public void mouseReleased(MouseEvent e) {}
-
-                /**
-                 * Invoked when the mouse enters a component.
-                 */
-                public void mouseEntered(MouseEvent e) 
-                {
-                    //llb.setCursor(handCursor);
-                }
-
-                /**
-                 * Invoked when the mouse exits a component.
-                 */
-                public void mouseExited(MouseEvent e) 
-                {
-                    //llb.setCursor(defCursor);
-                }
-            });
-        }
-    }
-    
     //------------------------------------------------------------------------------------------
     //
     //------------------------------------------------------------------------------------------
     public class LoanReturnInfo
     {
         protected LoanPreparation lpo;
-        protected Boolean         isResolved;
+        protected boolean         isResolved;
         protected String          remarks;
-        protected int             quantity;
+        protected int             returnedQty;
+        protected int             resolvedQty;
         
-        public LoanReturnInfo(LoanPreparation lpo, Boolean isResolved, String remarks, short quantity)
+        public LoanReturnInfo(LoanPreparation lpo, 
+                              String remarks, 
+                              int returnedQty, 
+                              int resolvedQty,
+                              boolean isResolved)
         {
             super();
             this.lpo = lpo;
-            this.isResolved = isResolved;
             this.remarks = remarks;
-            this.quantity = quantity;
-        }
-        public Boolean isResolved()
-        {
-            return isResolved;
+            this.returnedQty = returnedQty;
+            this.resolvedQty = resolvedQty;
+            this.isResolved  = isResolved;
         }
         public LoanPreparation getLoanPreparation()
         {
             return lpo;
         }
-        public int getQuantity()
-        {
-            return quantity;
-        }
         public String getRemarks()
         {
             return remarks;
         }
+        public int getReturnedQty()
+        {
+            return returnedQty;
+        }
+        public int getResolvedQty()
+        {
+            return resolvedQty;
+        }
+        /**
+         * @return the isResolved
+         */
+        public boolean isResolved()
+        {
+            return isResolved;
+        }
+        
     }
     
     class RemarksText extends JTextField
