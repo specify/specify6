@@ -997,8 +997,6 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
 
                 } catch (ParseException ex)
                 {
-                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ValFormattedTextFieldSingle.class, ex);
                     log.error("Date is in error for parsing["+value+"]");
                 }
             }

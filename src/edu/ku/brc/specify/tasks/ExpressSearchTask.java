@@ -66,7 +66,6 @@ import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.ERTIJoinColInfo;
-import edu.ku.brc.af.core.expresssearch.ESTermParser;
 import edu.ku.brc.af.core.expresssearch.ExpressResultsTableInfo;
 import edu.ku.brc.af.core.expresssearch.ExpressSearchConfigCache;
 import edu.ku.brc.af.core.expresssearch.ExpressSearchConfigDlg;
@@ -76,10 +75,11 @@ import edu.ku.brc.af.core.expresssearch.QueryForIdResultsSQL;
 import edu.ku.brc.af.core.expresssearch.SearchConfig;
 import edu.ku.brc.af.core.expresssearch.SearchConfigService;
 import edu.ku.brc.af.core.expresssearch.SearchTableConfig;
-import edu.ku.brc.af.core.expresssearch.SearchTermField;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
+import edu.ku.brc.af.ui.ESTermParser;
 import edu.ku.brc.af.ui.SearchBox;
+import edu.ku.brc.af.ui.SearchTermField;
 import edu.ku.brc.af.ui.db.ERTICaptionInfo;
 import edu.ku.brc.af.ui.db.JAutoCompTextField;
 import edu.ku.brc.af.ui.db.PickListDBAdapterFactory;
@@ -395,7 +395,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
         
         String searchTerm = (searchTextArg != null ? searchTerm = searchTextArg.getText() : searchTextStr).toLowerCase();
         
-        if (!ESTermParser.parse(searchTerm, false))
+        if (!ESTermParser.getInstance().parse(searchTerm, false))
         {
             setUserInputToNotFound("BAD_SEARCH_TERMS", false);
             return false;
@@ -434,14 +434,14 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                             {
                                 if (table.getTableInfo().getPermissions().canView())
                                 {
-                                    startSearchJPA(esrPane, table, searchTerm, ESTermParser.getFields());
+                                    startSearchJPA(esrPane, table, searchTerm, ESTermParser.getInstance().getFields());
                                 } else
                                 {
                                     log.debug("Skipping ["+table.getTableInfo().getTitle()+"]");
                                 }
                             } else
                             {
-                                startSearchJPA(esrPane, table, searchTerm, ESTermParser.getFields());
+                                startSearchJPA(esrPane, table, searchTerm, ESTermParser.getInstance().getFields());
                             }
                         }
                     }
@@ -462,7 +462,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                 
             } else
             {
-                startSearchJPA(esrPane, context, searchTerm, ESTermParser.getFields());
+                startSearchJPA(esrPane, context, searchTerm, ESTermParser.getInstance().getFields());
                 return true;
             }
         } else

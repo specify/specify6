@@ -19,9 +19,9 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
-import edu.ku.brc.af.core.expresssearch.ESTermParser;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
-import edu.ku.brc.af.core.expresssearch.SearchTermField;
+import edu.ku.brc.af.ui.ESTermParser;
+import edu.ku.brc.af.ui.SearchTermField;
 import edu.ku.brc.af.ui.db.ERTICaptionInfo;
 import edu.ku.brc.af.ui.db.QueryForIdResultsIFace;
 import edu.ku.brc.af.ui.db.ViewBasedSearchQueryBuilderIFace;
@@ -215,11 +215,11 @@ public class TreeableSearchQueryBuilder implements ViewBasedSearchQueryBuilderIF
         for (String colName : dataMap.keySet())
         {
             String data = (String)dataMap.get(colName);
-            if (ESTermParser.parse(data.toLowerCase(), true))
+            if (ESTermParser.getInstance().parse(data.toLowerCase(), true))
             {
                 if (StringUtils.isNotEmpty(data))
                 {
-                    List<SearchTermField> fields     = ESTermParser.getFields();
+                    List<SearchTermField> fields     = ESTermParser.getInstance().getFields();
                     SearchTermField       firstTerm  = fields.get(0);
                     String                fieldName = colName;
                     
@@ -235,7 +235,7 @@ public class TreeableSearchQueryBuilder implements ViewBasedSearchQueryBuilderIF
     
                     if (criCnt > 0) criteria.append(" OR ");
                     
-                    String clause = ESTermParser.createWhereClause(firstTerm, null, fieldName);
+                    String clause = ESTermParser.getInstance().createWhereClause(firstTerm, null, fieldName);
                     criteria.append(clause);
                     
                     if (criCnt > 0) orderBy.append(',');
@@ -359,11 +359,11 @@ public class TreeableSearchQueryBuilder implements ViewBasedSearchQueryBuilderIF
 //        for (String colName : dataMap.keySet())
 //        {
 //            String data = (String)dataMap.get(colName);
-//            if (ESTermParser.parse(data.toLowerCase(), true))
+//            if (ESTermParser.getInstance().parse(data.toLowerCase(), true))
 //            {
 //                if (StringUtils.isNotEmpty(data))
 //                {
-//                    List<SearchTermField> fields     = ESTermParser.getFields();
+//                    List<SearchTermField> fields     = ESTermParser.getInstance().getFields();
 //                    SearchTermField       firstTerm  = fields.get(0);
 //                    String                columnName = colName;
 //                    
@@ -374,7 +374,7 @@ public class TreeableSearchQueryBuilder implements ViewBasedSearchQueryBuilderIF
 //    
 //                    if (criCnt > 0) criteria.append(" OR ");
 //                    
-//                    String clause = ESTermParser.createWhereClause(firstTerm, null, columnName);
+//                    String clause = ESTermParser.getInstance().createWhereClause(firstTerm, null, columnName);
 //                    criteria.append(clause);
 //                    
 //                    if (criCnt > 0) orderBy.append(',');

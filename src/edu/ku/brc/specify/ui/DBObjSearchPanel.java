@@ -53,12 +53,12 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.core.expresssearch.ESTermParser;
 import edu.ku.brc.af.core.expresssearch.ExpressResultsTableInfo;
 import edu.ku.brc.af.core.expresssearch.ExpressSearchConfigCache;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.core.expresssearch.QueryForIdResultsSQL;
-import edu.ku.brc.af.core.expresssearch.SearchTermField;
+import edu.ku.brc.af.ui.ESTermParser;
+import edu.ku.brc.af.ui.SearchTermField;
 import edu.ku.brc.af.ui.db.ERTICaptionInfo;
 import edu.ku.brc.af.ui.db.QueryForIdResultsIFace;
 import edu.ku.brc.af.ui.db.ViewBasedSearchQueryBuilderIFace;
@@ -434,11 +434,11 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
                     {
                         if (qafd.isUserInputNotInjectable(valStr))
                         {
-                            if (ESTermParser.parse(valStr.toLowerCase(), true))
+                            if (ESTermParser.getInstance().parse(valStr.toLowerCase(), true))
                             {
                                 if (StringUtils.isNotEmpty(valStr))
                                 {
-                                    List<SearchTermField> fields     = ESTermParser.getFields();
+                                    List<SearchTermField> fields     = ESTermParser.getInstance().getFields();
                                     SearchTermField       firstTerm  = fields.get(0);
                                     
                                     if (cnt > 0)
@@ -476,7 +476,7 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
                                     
                                     if (clause == null)
                                     {
-                                        clause = ESTermParser.createWhereClause(firstTerm, null, captionInfo.getColName());
+                                        clause = ESTermParser.getInstance().createWhereClause(firstTerm, null, captionInfo.getColName());
                                     }
                                     strBuf.append(clause);
                                     cnt++;

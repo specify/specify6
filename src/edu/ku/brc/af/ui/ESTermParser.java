@@ -7,7 +7,7 @@
 /**
  * 
  */
-package edu.ku.brc.af.core.expresssearch;
+package edu.ku.brc.af.ui;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -29,7 +29,7 @@ import edu.ku.brc.ui.DateWrapper;
  * May 6, 2008
  *
  */
-public class ESTermParser
+public class ESTermParser implements SearchTermParserIFace
 {
     private static final ESTermParser instance = new ESTermParser();
     
@@ -42,25 +42,33 @@ public class ESTermParser
     /**
      * 
      */
-    private ESTermParser()
+    protected ESTermParser()
     {
         
     }
     
     /**
-     * @return the fields
+     * @return
      */
-    public static List<SearchTermField> getFields()
+    public static ESTermParser getInstance()
+    {
+        return instance;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.expresssearch.SearchTermParserIFace#getFields()
+     */
+    @Override
+    public List<SearchTermField> getFields()
     {
         return instance.fields;
     }
 
-    /**
-     * @param searchTermArg
-     * @param parseAsSingleTerm
-     * @return true if all the tokens are valid
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.expresssearch.SearchTermParserIFace#parse(java.lang.String, boolean)
      */
-    public static boolean parse(final String searchTermArg, final boolean parseAsSingleTerm)
+    @Override
+    public boolean parse(final String searchTermArg, final boolean parseAsSingleTerm)
     {
         instance.fields.clear();
         
@@ -112,6 +120,11 @@ public class ESTermParser
 
             for (String term : terms)
             {
+                if (StringUtils.isEmpty(term))
+                {
+                    continue;
+                }
+                
                 SearchTermField stf = new SearchTermField(term);
                 
                 if (stf.isSingleChar())
@@ -182,16 +195,13 @@ public class ESTermParser
         return instance.fields.size() > 0 && cnt > 0;
     }
     
-    /**
-     * @param term
-     * @param abbrevArg
-     * @param fieldName
-     * @param termStr
-     * @return
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.expresssearch.SearchTermParserIFace#createWhereClause(edu.ku.brc.af.core.expresssearch.SearchTermField, java.lang.String, java.lang.String)
      */
-    public static String createWhereClause(final SearchTermField term,
-                                           final String abbrevArg, 
-                                           final String fieldName)
+    @Override
+    public String createWhereClause(final SearchTermField term,
+                                    final String abbrevArg, 
+                                    final String fieldName)
     {
         String abbrev = StringUtils.isNotEmpty(abbrevArg) ? (abbrevArg + '.') : "";
         

@@ -29,6 +29,8 @@ import org.apache.commons.lang.StringUtils;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.ui.ESTermParser;
+import edu.ku.brc.af.ui.SearchTermField;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 
 /**
@@ -426,7 +428,7 @@ public class SearchTableConfig implements DisplayOrderingIFace,
                                     
                                 } else
                                 {
-                                    clause = ESTermParser.createWhereClause(term, abbrev, fieldName);
+                                    clause = ESTermParser.getInstance().createWhereClause(term, abbrev, fieldName);
                                     
                                     /*boolean startWildCard = term.isOn(SearchTermField.STARTS_WILDCARD);
                                     boolean endWildCard   = term.isOn(SearchTermField.ENDS_WILDCARD);

@@ -4,7 +4,8 @@
  * [INSERT KU-APPROVED LICENSE TEXT HERE]
  *
  */
-package edu.ku.brc.af.core.expresssearch;
+package edu.ku.brc.af.ui;
+
 
 /**
  * @author rod
@@ -16,14 +17,14 @@ package edu.ku.brc.af.core.expresssearch;
  */
 public class SearchTermField
 {
-    public static final int NO_OPTIONS             =   0; // Indicates there are no options
-    public static final int IS_STRING              =   1; // String Only
-    public static final int IS_DATE                =   2; // Is fully
-    public static final int IS_YEAR_OF_DATE        =   4; // It could be just the year 
-    public static final int IS_NUMERIC             =   8; // Is a numeric number
-    public static final int HAS_DEC_POINT          =  16; // has a decimal point in the number
-    public static final int STARTS_WILDCARD        =  32; // starts with wild card
-    public static final int ENDS_WILDCARD          =  64; // ends with wild card
+    public static final int NO_OPTIONS      = 0; // Indicates there are no options
+    public static final int IS_STRING       = 1; // String Only
+    public static final int IS_DATE         = 2; // Is fully
+    public static final int IS_YEAR_OF_DATE = 4; // It could be just the year 
+    public static final int IS_NUMERIC      = 8; // Is a numeric number
+    public static final int HAS_DEC_POINT   = 16; // has a decimal point in the number
+    public static final int STARTS_WILDCARD = 32; // starts with wild card
+    public static final int ENDS_WILDCARD   = 64; // ends with wild card
 
     protected String term;
     protected int    options = NO_OPTIONS;
@@ -44,48 +45,32 @@ public class SearchTermField
         return term.length() == 1 && term.equals("*");
     }
 
-    /**
-     * @param term the term to set
-     */
     public void setTerm(String term)
     {
         this.term = term;
     }
 
-    /**
-     * @return the term
-     */
     public String getTerm()
     {
         return term;
     }
 
-    /**
-     * @return the options
-     */
-    public int getOptions()
+   public int getOptions()
     {
         return options;
     }
     
-    /**
-     * @param option
-     */
     public void setOption(final int option)
     {
         options |= option;
     }
-
+    
     public boolean isOptionOn(final int opt)
     {
 
         return (options & opt) == opt;
     }
     
-    /**
-     * @param option
-     * @return
-     */
     public boolean isOn(final int option)
     {
         return isOptionOn(options, option);

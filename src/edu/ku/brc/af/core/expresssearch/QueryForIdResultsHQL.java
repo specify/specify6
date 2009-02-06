@@ -24,6 +24,7 @@ import java.util.concurrent.Future;
 
 import org.apache.commons.lang.StringUtils;
 
+import edu.ku.brc.af.ui.ESTermParser;
 import edu.ku.brc.af.ui.db.ERTICaptionInfo;
 import edu.ku.brc.af.ui.db.QueryForIdResultsIFace;
 import edu.ku.brc.af.ui.db.ERTICaptionInfo.ColInfo;
@@ -163,8 +164,8 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
         {
             return overrideSQL;
         }
-        ESTermParser.parse(searchTermArg, false);
-        return searchTableConfig.getSQL(ESTermParser.getFields(), false, ids == null && recIds != null ? recIds : ids, true);
+        ESTermParser.getInstance().parse(searchTermArg, false);
+        return searchTableConfig.getSQL(ESTermParser.getInstance().getFields(), false, ids == null && recIds != null ? recIds : ids, true);
     }
 
     /* (non-Javadoc)

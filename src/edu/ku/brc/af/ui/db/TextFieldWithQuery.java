@@ -22,6 +22,7 @@ import java.awt.Graphics2D;
 import java.awt.HeadlessException;
 import java.awt.Point;
 import java.awt.RenderingHints;
+import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -67,6 +68,7 @@ import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.af.ui.ESTermParser;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.dbsupport.CustomQueryIFace;
@@ -1212,45 +1214,62 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
      */
     protected void doQuery(final String newEntryStr)
     {
-        prevEnteredText = newEntryStr;
-
-        if (!isDoingQuery.get())
+        UIRegistry.getStatusBar().setText("");
+       
+        ESTermParser parser = ESTermParser.getInstance();
+        
+        if (parser.parse(newEntryStr, true))
         {
-            if (hasNewText)
+            prevEnteredText = newEntryStr;
+    
+            if (!isDoingQuery.get())
             {
-                
-                isDoingQuery.set(true);
-                isDoingCount.set(true);
-                
-                list.clear();
-                idList.clear();
-                
-                returnCount  = null;
-                
-                String newSql = null;
-                if (builder != null)
+                if (hasNewText)
                 {
-                    newSql = builder.buildSQL(newEntryStr, true);
-                }
-                
-                if (newSql == null)
+                    
+                    isDoingQuery.set(true);
+                    isDoingCount.set(true);
+                    
+                    list.clear();
+                    idList.clear();
+                    
+                    returnCount  = null;
+                    
+                    String newSql = null;
+                    if (builder != null)
+                    {
+                        newSql = builder.buildSQL(newEntryStr, true);
+                    }
+                    
+                    if (newSql == null)
+                    {
+                        newSql = buildSQL(newEntryStr, true);
+                    }
+                               
+                    JPAQuery jpaQuery = new JPAQuery(newSql, this);
+                    jpaQuery.setUnique(true);
+                    jpaQuery.setData(newEntryStr);
+                    jpaQuery.start();
+                    
+                } else if (returnCount != null && returnCount > popupDlgThreshold)
                 {
-                    newSql = buildSQL(newEntryStr, true);
+                    showDialog();
+                    
+                } else
+                {
+                    showPopup();
                 }
-                           
-                JPAQuery jpaQuery = new JPAQuery(newSql, this);
-                jpaQuery.setUnique(true);
-                jpaQuery.setData(newEntryStr);
-                jpaQuery.start();
-                
-            } else if (returnCount != null && returnCount > popupDlgThreshold)
-            {
-                showDialog();
-                
-            } else
-            {
-                showPopup();
             }
+        } else
+        {
+            String errMsg = UIRegistry.getLocalizedMessage("TFWQ_INPUT_IN_ERROR", newEntryStr);
+            Toolkit.getDefaultToolkit().beep();
+            
+            if (UIRegistry.getStatusBar() != null)
+            {
+                UIRegistry.getStatusBar().setErrorMessage(errMsg);
+            }
+            UIRegistry.writeTimedSimpleGlassPaneMsg(errMsg, Color.RED);
         }
     }
     
