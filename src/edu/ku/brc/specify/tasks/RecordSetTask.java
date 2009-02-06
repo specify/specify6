@@ -732,6 +732,37 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
      * @param srcObj the source data (better be a RecordSet)
      * @param dstObj the destination data (better be a RecordSet)
      */
+    protected void createRecordSet(final RecordSet recordSet)
+    {
+        UsageTracker.incrUsageCount("RS.ASKRS");
+        ChooseRecordSetDlg dlg = new ChooseRecordSetDlg(recordSet.getDbTableId(), true);
+        if (dlg.hasRecordSets())
+        {
+            dlg.setVisible(true); // modal (waits for answer here)
+            if (!dlg.isCancelled())
+            {
+                if (dlg.getBtnPressed() == ChooseRecordSetDlg.OK_BTN)
+                {
+                    mergeRecordSets(recordSet, dlg.getSelectedRecordSet());
+                    
+                } else
+                {
+                    String rsName = getUniqueRecordSetName("");
+                    if (isNotEmpty(rsName))
+                    {
+                        recordSet.setName(rsName);
+                        saveNewRecordSet(recordSet);
+                    }
+                }
+            }
+        }
+    }
+    
+    /**
+     * Merge two RecordSets removes duplicates and saves the destination RecordSet to the database
+     * @param srcObj the source data (better be a RecordSet)
+     * @param dstObj the destination data (better be a RecordSet)
+     */
     protected void mergeRecordSets(final Object srcObj, final Object dstObj)
     {
         UsageTracker.incrUsageCount("RS.MERGE");
@@ -1147,10 +1178,11 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
 
         } else if (cmdAction.isAction("Dropped"))
         {
-            Object srcObj = cmdAction.getSrcObj();
-            Object dstObj = cmdAction.getDstObj();
+            mergeRecordSets(cmdAction.getSrcObj(), cmdAction.getDstObj());
             
-            mergeRecordSets(srcObj, dstObj);
+        } else if (cmdAction.isAction("AskForNewRS"))
+        {
+            createRecordSet((RecordSet)cmdAction.getSrcObj());
             
         } else if (cmdAction.isAction("DELETEITEMS"))
         {
@@ -1316,9 +1348,10 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
     /**
      * Displays UI that asks the user to select a predefined label.
      * @param tableId the table id
+     * @param additionalRS additional RecordSets to be added to the list
      * @return returns the selected RecordSet or null
      */
-    public static RecordSetIFace askForRecordSet(final int tableId, 
+    public static RecordSetIFace askForRecordSet(final int                    tableId, 
                                                  final Vector<RecordSetIFace> additionalRS)
     {
         Vector<Integer> id = new Vector<Integer>(1);
@@ -1332,9 +1365,9 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
      * @param msgIfNoRecordsets
      * @return
      */
-    public static RecordSetIFace askForRecordSet(final Vector<Integer> tableIds,
+    public static RecordSetIFace askForRecordSet(final Vector<Integer>        tableIds,
                                                  final Vector<RecordSetIFace> additionalRS,
-    		                                     final boolean msgIfNoRecordsets)
+    		                                     final boolean                msgIfNoRecordsets)
     {
         UsageTracker.incrUsageCount("RS.ASKRS");
         ChooseRecordSetDlg dlg = new ChooseRecordSetDlg(tableIds);

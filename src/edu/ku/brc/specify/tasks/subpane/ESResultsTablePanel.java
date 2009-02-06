@@ -325,12 +325,7 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
             public void actionPerformed(ActionEvent e)
             {
                 RecordSetIFace src = (RecordSetIFace)moveToRSCmd.getData();
-                
-                RecordSetIFace recordSetFromDB = RecordSetTask.askForRecordSet(results.getTableId());
-                if (recordSetFromDB != null)
-                {
-                    CommandDispatcher.dispatch(new CommandAction(RecordSetTask.RECORD_SET, "Dropped", src, recordSetFromDB, null));
-                }
+                CommandDispatcher.dispatch(new CommandAction(RecordSetTask.RECORD_SET, "AskForNewRS", src, null, null));
             }
         });
         

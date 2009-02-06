@@ -17,6 +17,7 @@ package edu.ku.brc.specify.ui;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Frame;
 import java.awt.HeadlessException;
 import java.awt.event.MouseAdapter;
@@ -26,6 +27,8 @@ import java.util.Vector;
 
 import javax.swing.AbstractListModel;
 import javax.swing.BorderFactory;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListModel;
@@ -36,10 +39,12 @@ import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.ui.db.RecordSetListCellRenderer;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.Pair;
 
 /**
  * Choose a record set from the a list from the database.
@@ -56,8 +61,9 @@ public class ChooseRecordSetDlg extends CustomDialog
     private static final Logger log = Logger.getLogger(ChooseRecordSetDlg.class);
 
     // Data Members
-    protected JList                list       = null;
-    protected List<RecordSetIFace> recordSets = null;
+    protected JList                       list       = null;
+    protected List<Pair<String, Integer>> recordSets = null;
+    protected boolean                     includeAddBtn = false;
 
     /**
      * @param tableId
@@ -65,18 +71,51 @@ public class ChooseRecordSetDlg extends CustomDialog
      */
     public ChooseRecordSetDlg(final int tableId) throws HeadlessException
     {
+        this(tableId, false);
+    }
+
+    public ChooseRecordSetDlg(final int tableId, final boolean includeAddBtn) throws HeadlessException
+    {
         super((Frame)UIRegistry.getTopWindow(), getResourceString("RECORDSET_CHOOSE"), true, OKCANCELHELP, null);
         
         Vector<Integer> id = new Vector<Integer>(1);
         id.add(tableId);
         initialize(id);
         
+        this.includeAddBtn = includeAddBtn;
+        if (includeAddBtn)
+        {
+            this.whichBtns = OKCANCELAPPLYHELP;
+            setApplyLabel(getResourceString("New"));
+        }
+        
         this.helpContext = "ChooseRecordSet";
     }
 
+    /**
+     * @param tableIds
+     * @throws HeadlessException
+     */
     public ChooseRecordSetDlg(final Vector<Integer> tableIds) throws HeadlessException
     {
+        this(tableIds, false);
+    }
+    
+    /**
+     * @param tableIds
+     * @param includeAddBtn
+     * @throws HeadlessException
+     */
+    public ChooseRecordSetDlg(final Vector<Integer> tableIds, final boolean includeAddBtn) throws HeadlessException
+    {
         super((Frame)UIRegistry.getTopWindow(), getResourceString("RECORDSET_CHOOSE"), true, OKCANCELHELP, null);
+        
+        this.includeAddBtn = includeAddBtn;
+        if (includeAddBtn)
+        {
+            this.whichBtns = OKCANCELAPPLYHELP;
+            setApplyLabel(getResourceString("New"));
+        }
         
         initialize(tableIds);
         
@@ -87,52 +126,35 @@ public class ChooseRecordSetDlg extends CustomDialog
      *
      *
      */
-    @SuppressWarnings("unchecked")
     protected void initialize(final Vector<Integer> tableIds)
     {
-        DataProviderSessionIFace session = null;
-        try
+        String sql = "SELECT rs.Name,RecordSetID FROM recordset rs INNER JOIN specifyuser spu " + 
+                     "ON spu.SpecifyUserID = rs.SpecifyUserID WHERE rs.Type = 0 AND "+
+                     "rs.CollectionMemberID = COLLID AND spu.SpecifyUserID = SPECIFYUSERID";
+        
+        if (tableIds.size() > 0 && !(tableIds.size() == 0 && tableIds.get(0).intValue() < 0))
         {
-            String sql = "FROM RecordSet rs INNER JOIN rs.specifyUser spu WHERE rs.type = 0 AND rs.collectionMemberId = COLLID AND spu.specifyUserId = SPECIFYUSERID";
-            sql = QueryAdjusterForDomain.getInstance().adjustSQL(sql);
-            
-            session = DataProviderFactory.getInstance().createSession();
-            if (tableIds.size() > 0 && !(tableIds.size() == 0 && tableIds.get(0).intValue() < 0))
-            {
-            	StringBuilder sb = new StringBuilder(tableIds.get(0).toString());
-            	for (int i = 1; i < tableIds.size(); i++)
-            	{
-            		sb.append(",");
-            		sb.append(tableIds.get(i));
-            	}
-            	sql += " AND rs.dbTableId in(" + sb.toString() + ")";
-            }
-            sql += " ORDER BY rs.name";
-            
-            List<?> rvList = session.getDataList(sql);
-            if (rvList.size() > 0)
-            {
-            	recordSets = new Vector<RecordSetIFace>();
-            	for (Object row : rvList)
-            	{
-            		Object[] rowData = (Object[])row;
-            		recordSets.add((RecordSetIFace)rowData[0]);
-            	}
-            }
-
-        } catch (Exception ex)
+        	StringBuilder sb = new StringBuilder(tableIds.get(0).toString());
+        	for (int i = 1; i < tableIds.size(); i++)
+        	{
+        		sb.append(",");
+        		sb.append(tableIds.get(i));
+        	}
+        	sql += " AND rs.TableID in(" + sb.toString() + ")";
+        }
+        sql += " ORDER BY rs.Name";
+        
+        sql = QueryAdjusterForDomain.getInstance().adjustSQL(sql);
+        System.out.println(sql);
+        
+        Vector<Object[]> rows = BasicSQLUtils.query(sql);
+        if (rows != null && rows.size() > 0)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ChooseRecordSetDlg.class, ex);
-            log.error(ex);
-            ex.printStackTrace();
-            
-        } finally
-        {
-            if (session != null)
-            {
-                session.close();
-            }
+        	recordSets = new Vector<Pair<String, Integer>>();
+        	for (Object[] row : rows)
+        	{
+        		recordSets.add(new Pair<String, Integer>(row[0].toString(), (Integer)row[1]));
+        	}
         }
     }
     
@@ -156,6 +178,8 @@ public class ChooseRecordSetDlg extends CustomDialog
         list = new JList(listModel);
         list.setCellRenderer(new RecordSetListCellRenderer());
         list.setVisibleRowCount(10);
+        list.setCellRenderer(new PairListRenderer());
+        
         list.addMouseListener(new MouseAdapter() 
         {
             public void mouseClicked(MouseEvent e) 
@@ -167,7 +191,6 @@ public class ChooseRecordSetDlg extends CustomDialog
                     okBtn.doClick(); //emulate button click
                     return;
                 }
-                
             }
         });
         
@@ -179,6 +202,17 @@ public class ChooseRecordSetDlg extends CustomDialog
         mainPanel.add(contentPanel, BorderLayout.CENTER);
 
         pack();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.CustomDialog#applyButtonPressed()
+     */
+    @Override
+    protected void applyButtonPressed()
+    {
+        super.applyButtonPressed();
+        
+        setVisible(false);
     }
 
     /* (non-Javadoc)
@@ -197,15 +231,18 @@ public class ChooseRecordSetDlg extends CustomDialog
 
     /**
      * @param additionalTableId
-     * @param ids
      */
     public void addAdditionalObjectsAsRecordSets(final Vector<RecordSetIFace> additionalRS)
     {
         if (recordSets == null)
         {
-            recordSets = new Vector<RecordSetIFace>();
+            recordSets = new Vector<Pair<String,Integer>>();
         }
-        recordSets.addAll(additionalRS);
+        
+        for (RecordSetIFace rsi : additionalRS)
+        {
+            recordSets.add(new Pair<String, Integer>(rsi.getName(), rsi.getRecordSetId()));
+        }
     }
     
     /**
@@ -217,16 +254,8 @@ public class ChooseRecordSetDlg extends CustomDialog
     }
 
     /**
-     * @return the List of RecordSets
-     */
-    public List<RecordSetIFace> getRecordSets()
-    {
-        return recordSets;
-    }
-
-    /**
-     * Returns the selected recordset
-     * @return the selected recordset
+     * Returns the selected RecordSetIFace
+     * @return the selected RecordSetIFace
      */
     public RecordSetIFace getSelectedRecordSet()
     {
@@ -235,10 +264,54 @@ public class ChooseRecordSetDlg extends CustomDialog
             int inx = list.getSelectedIndex();
             if (inx != -1)
             {
-                return recordSets.get(inx);
+                DataProviderSessionIFace session = null;
+                try
+                {
+                    String sql = "FROM RecordSet WHERE recordSetId = " + recordSets.get(inx).second;
+                    
+                    session = DataProviderFactory.getInstance().createSession();
+                    List<?> rvList = session.getDataList(sql);
+                    if (rvList.size() == 1)
+                    {
+                        return (RecordSetIFace)rvList.get(0);
+                    }
+
+                } catch (Exception ex)
+                {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ChooseRecordSetDlg.class, ex);
+                    log.error(ex);
+                    ex.printStackTrace();
+                    
+                } finally
+                {
+                    if (session != null)
+                    {
+                        session.close();
+                    }
+                }
             }
         }
         return null;
     }
 
+    class PairListRenderer extends DefaultListCellRenderer
+    {
+        /* (non-Javadoc)
+         * @see javax.swing.DefaultListCellRenderer#getListCellRendererComponent(javax.swing.JList, java.lang.Object, int, boolean, boolean)
+         */
+        @SuppressWarnings("unchecked")
+        @Override
+        public Component getListCellRendererComponent(@SuppressWarnings("hiding") JList list,
+                                                      Object value,
+                                                      int index,
+                                                      boolean isSelected,
+                                                      boolean cellHasFocus)
+        {
+            JLabel label = (JLabel)super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+            label.setText(((Pair<String, Integer>)value).first);
+            return label;
+        }
+        
+    }
 }
