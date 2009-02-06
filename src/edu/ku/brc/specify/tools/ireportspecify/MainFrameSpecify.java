@@ -729,14 +729,13 @@ public class MainFrameSpecify extends MainFrame
             modifiedRes.setDescription(propPanel.getNameTxt().getText().trim());
             modifiedRes.setLevel(Short.valueOf(propPanel.getLevelTxt().getText()));
             String metaDataStr = "tableid=" + propPanel.getTableId() + ";";
+            metaDataStr += "reporttype=Report";
             if (propPanel.getTypeCombo().getSelectedIndex() == 0)
             {
-                metaDataStr += "reporttype=Report";
                 modifiedRes.setMimeType("jrxml/report"); 
             }
             else
             {
-                metaDataStr += "reporttype=Report";
                 modifiedRes.setMimeType("jrxml/label"); 
             }
             if (StringUtils.isNotEmpty(modifiedRes.getMetaData()))

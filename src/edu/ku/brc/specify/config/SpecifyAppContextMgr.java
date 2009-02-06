@@ -1671,7 +1671,6 @@ public class SpecifyAppContextMgr extends AppContextMgr
             {
                 appResDir.getSpPersistedAppResources().add(spAppResource);
             }
-            
             log.debug(appResDir.getIdentityTitle());
             
             DataProviderSessionIFace session = null;
@@ -1680,7 +1679,10 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 session = DataProviderFactory.getInstance().createSession();
                 session.beginTransaction();
                 session.saveOrUpdate(appResDir);
-                session.saveOrUpdate(spAppResource);
+                //saveOrCommit() shouldn't be necessary, it also shouldn't cause
+                //problems, but it has been removed because it often does generate 
+                //hibernate exceptions for newly created resources.
+                //session.saveOrUpdate(spAppResource);
                 session.commit();
                 session.flush();
                 return true;
@@ -1705,6 +1707,56 @@ public class SpecifyAppContextMgr extends AppContextMgr
         }
         return false;
     }
+
+        
+    /**
+     * @param appRes
+     * @return
+     */
+//    @Override
+//    public boolean saveResource(final AppResourceIFace appRes)
+//    {
+//        if (appRes instanceof SpAppResource)
+//        {
+//            SpAppResource    spAppResource = (SpAppResource)appRes;
+//            SpAppResourceDir appResDir     = spAppResource.getSpAppResourceDir(); 
+//            if (!appResDir.getSpPersistedAppResources().contains(spAppResource))
+//            {
+//                appResDir.getSpPersistedAppResources().add(spAppResource);
+//            }
+//            log.debug(appResDir.getIdentityTitle());
+//            
+//            DataProviderSessionIFace session = null;
+//            try
+//            {
+//                session = DataProviderFactory.getInstance().createSession();
+//                session.beginTransaction();
+//                session.saveOrUpdate(appResDir);
+//                session.saveOrUpdate(spAppResource);
+//                session.commit();
+//                session.flush();
+//                return true;
+//                
+//            } catch (Exception ex)
+//            {
+//                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+//                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
+//                session.rollback();
+//                log.error(ex);
+//                
+//            } finally 
+//            {
+//                if (session != null)
+//                {
+//                    session.close();
+//                }
+//            }
+//        } else
+//        {
+//            log.error("AppResource was not of class SpAppResource!"); //$NON-NLS-1$
+//        }
+//        return false;
+//    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.AppContextMgr#getResource(java.lang.String)
@@ -1759,7 +1811,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         {
             for (SpAppResource ar : appResDir.getSpAppResources())
             {
-                if (ar.getName().equals(appResName))
+            	if (ar.getName().equals(appResName))
                 {
                     return ar;
                 }
@@ -2016,17 +2068,25 @@ public class SpecifyAppContextMgr extends AppContextMgr
         SpAppResourceDir appResDir = spAppResourceHash.get(appResDirName);
         if (appResDir != null)
         {
-            SpAppResource appRes = new SpAppResource();
-            appRes.initialize();
-            appRes.setSpecifyUser(AppContextMgr.getInstance().getClassObject(SpecifyUser.class));
-            
-            appResDir.getSpAppResources().add(appRes);
-            appRes.setSpAppResourceDir(appResDir);
-            return appRes;
-                
+        	return createAppResourceForDir(appResDir);
         }
         log.error("Couldn't find AppResDir with name["+appResDirName+"]"); //$NON-NLS-1$ //$NON-NLS-2$
         return null;
+    }
+    
+    /**
+     * @param appResDir
+     * @return
+     */
+    public AppResourceIFace createAppResourceForDir(SpAppResourceDir appResDir)
+    {
+        SpAppResource appRes = new SpAppResource();
+        appRes.initialize();
+        appRes.setSpecifyUser(AppContextMgr.getInstance().getClassObject(SpecifyUser.class));
+        
+        appResDir.getSpAppResources().add(appRes);
+        appRes.setSpAppResourceDir(appResDir);
+        return appRes;
     }
 
     /* (non-Javadoc)

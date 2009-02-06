@@ -194,40 +194,52 @@ public class ReportsBaseTask extends BaseTask
 
     {
         List<TaskCommandDef> result = new LinkedList<TaskCommandDef>();
+        Vector<Integer> excludedTableIds = new Vector<Integer>();
+        excludedTableIds.add(79);
         for (AppResourceIFace ap : AppContextMgr.getInstance().getResourceByMimeType(mimeType))
         {
+        	System.out.println("ReportsBaseTask: checking resource: " + ap.getName());
+        	
         	Properties params = ap.getMetaDataMap();
 
             String tableid = params.getProperty("tableid"); //$NON-NLS-1$
-            String rptType = params.getProperty("reporttype"); //$NON-NLS-1$
-
-            if (StringUtils.isNotEmpty(tableid)
-                    && (classTableId == null || (Integer.parseInt(tableid) == classTableId
-                            .intValue())) && StringUtils.isEmpty(reportType)
-                    || (StringUtils.isNotEmpty(rptType) && reportType.equals(rptType)))
-            {
-                params.put("name", ap.getName()); //$NON-NLS-1$
-                params.put("title", ap.getDescription()); //$NON-NLS-1$
-                params.put("file", ap.getName()); //$NON-NLS-1$
-                params.put("mimetype", mimeType); //$NON-NLS-1$
-                Object param = params.get("isimport");
-                if (param != null && param.equals("1"))
-                {
-                    params.put("appresource", ap);
-                }
-                param = params.get("hasrsdropparam");
-                if (param != null)
-                {
-                    params.put(RECORDSET_PARAM, param);
-                }
-                String localIconName = params.getProperty("icon"); //$NON-NLS-1$
-                if (StringUtils.isEmpty(localIconName))
-                {
-                    localIconName = defaultIcon;
-                }
-                result.add(new TaskCommandDef(ap.getDescription(), localIconName, params));
-            }
-        }
+            
+            if (StringUtils.isNotEmpty(tableid))
+			{
+				String rptType = params.getProperty("reporttype"); //$NON-NLS-1$
+				Integer tblId = Integer.parseInt(tableid);
+				if (excludedTableIds.indexOf(tblId) == -1
+						&& (classTableId == null || tblId.equals(classTableId))
+						&& (StringUtils.isEmpty(reportType) || (StringUtils
+								.isNotEmpty(rptType) && reportType
+								.equals(rptType))))
+				{
+					params.put("name", ap.getName()); //$NON-NLS-1$
+					params
+							.put(
+									"title", ap.getDescription() == null ? ap.getName() : ap.getDescription()); //$NON-NLS-1$
+					params.put("file", ap.getName()); //$NON-NLS-1$
+					params.put("mimetype", mimeType); //$NON-NLS-1$
+					Object param = params.get("isimport");
+					if (param != null && param.equals("1"))
+					{
+						params.put("appresource", ap);
+					}
+					param = params.get("hasrsdropparam");
+					if (param != null)
+					{
+						params.put(RECORDSET_PARAM, param);
+					}
+					String localIconName = params.getProperty("icon"); //$NON-NLS-1$
+					if (StringUtils.isEmpty(localIconName))
+					{
+						localIconName = defaultIcon;
+					}
+					result.add(new TaskCommandDef(ap.getDescription(),
+							localIconName, params));
+				}
+			}
+		}
         return result;
     }
     

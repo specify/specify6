@@ -20,6 +20,8 @@ package edu.ku.brc.specify.datamodel;
 import static edu.ku.brc.helpers.XMLHelper.addAttr;
 import static edu.ku.brc.helpers.XMLHelper.getAttr;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -31,10 +33,14 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 import org.hibernate.annotations.Index;
 
+import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.XMLHelper;
 
 /**
@@ -317,13 +323,13 @@ public class SpReport extends DataModelObjBase
         addAttr(sb, "remarks", remarks);
         addAttr(sb, "repeatCount", repeatCount);
         addAttr(sb, "repeatField", repeatField);
-        sb.append("\n");
+        sb.append(">\r\n");
         if (query != null)
         {
         	query.forceLoad();
         	query.toXML(sb);
         }
-        sb.append("</report>\n");
+        sb.append("</report>\r\n");
     }
 
     /**
@@ -334,19 +340,87 @@ public class SpReport extends DataModelObjBase
         name            = getAttr(element, "name", null);
         remarks     	=  getAttr(element, "remarks", null);
         String repeatCountStr = getAttr(element, "repeatCount", null);
-        repeatCount = repeatCountStr == null ? null : Integer.valueOf(repeatCountStr);
+        repeatCount = StringUtils.isBlank(repeatCountStr) ? null : Integer.valueOf(repeatCountStr);
         repeatField      = getAttr(element, "repeatField", null);
-        
-        Element qryNode = (Element)element.selectSingleNode("query");
+        if (StringUtils.isBlank(repeatField))
+        {
+        	repeatField = null;
+        }
+        Element qryNode = element.element("query");
         if (qryNode != null)
         {
-        	query = new SpQuery();
-        	query.fromXML(qryNode);
+        	SpQuery newQ = new SpQuery();
+        	newQ.initialize();
+        	newQ.fromXML(qryNode);
+        	newQ.setSpecifyUser(AppContextMgr.getInstance().getClassObject(SpecifyUser.class));
+        	query = determineQueryForImport(newQ);
+        	if (query.getId() == null)
+        	{
+        		query.setName(getUniqueNameForImportQuery(query.getName()));
+        	}
         }
         else
         {
         	query = null;
         }
+    }
+    
+    /**
+     * @param importedQ
+     * @return a query equivalent to importedQ if one exists, or importedQ.
+     */
+    protected SpQuery determineQueryForImport(final SpQuery importedQ)
+    {
+    	DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+    	try
+    	{
+    		List<SpQuery> matches = session.getDataList(SpQuery.class);
+    		for (SpQuery qObj : matches)
+    		{
+    			qObj.forceLoad();
+    			if (qObj.isEquivalent(importedQ))
+    			{
+    				return qObj;
+    			}
+    		}
+			return importedQ;
+    	}
+    	finally
+    	{
+    		session.close();
+    	}
+    }
+
+    /**
+     * @param qName
+     * @return qName with extension.
+     */
+    protected String getUniqueNameForImportQuery(final String qName)
+    {
+    	DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+    	try
+    	{
+    		boolean done = false;
+    		String result = qName;
+    		Integer tries = 1;
+    		while (!done)
+    		{
+    			List<?> matches = session.getDataList("from SpQuery where name = '" + result + "'");
+    			if (matches.size() == 0)
+    			{
+    				done = true;
+    			}
+    			else
+    			{
+    				result = qName + tries++; //el cheapo
+    			}
+    		}
+    		return result;
+    	}
+    	finally
+    	{
+    		session.close();
+    	}
     }
 
 }

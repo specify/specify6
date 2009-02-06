@@ -9,8 +9,10 @@ package edu.ku.brc.specify.datamodel;
 import static edu.ku.brc.helpers.XMLHelper.addAttr;
 import static edu.ku.brc.helpers.XMLHelper.getAttr;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Vector;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -32,6 +34,10 @@ import org.hibernate.annotations.Index;
  * @code_status Alpha
  *
  * Oct 17, 2007
+ *
+ */
+/**
+ * @author Administrator
  *
  */
 @Entity
@@ -290,13 +296,13 @@ public class SpQuery extends DataModelObjBase implements Cloneable
         addAttr(sb, "isFavorite", isFavorite);
         addAttr(sb, "named", named);
         addAttr(sb, "ordinal", ordinal);
-        sb.append(">\n");
+        sb.append(">\r\n");
         
         if (sqlStr != null)
         {
             sb.append("<sqlStr><![CDATA[");
             sb.append(sqlStr);
-            sb.append("]]></sqlStr>\n");
+            sb.append("]]></sqlStr>\r\n");
         }
         
         sb.append("<fields>");
@@ -304,8 +310,8 @@ public class SpQuery extends DataModelObjBase implements Cloneable
         {
             field.toXML(sb);
         }
-        sb.append("</fields>\n");
-        sb.append("</query>\n");
+        sb.append("</fields>\r\n");
+        sb.append("</query>\r\n");
     }
     
     /**
@@ -425,4 +431,38 @@ public class SpQuery extends DataModelObjBase implements Cloneable
         return query;
     }
 
+	/**
+	 * @param obj
+	 * @return true if obj has same fields (in the same order) and tablecontext
+	 * forceLoad() may need to be called for this query and q.
+	 */
+	public boolean isEquivalent(final SpQuery q)
+	{
+		if (!contextTableId.equals(q.getContextTableId()))
+		{
+			return false;
+		}
+		
+		if (fields.size() != q.fields.size())
+		{
+			return false;
+		}
+		
+		//gross.
+		Vector<SpQueryField> theseFields = new Vector<SpQueryField>(fields);
+		Vector<SpQueryField> thoseFields = new Vector<SpQueryField>(q.fields);
+		//sort by column position
+		Collections.sort(theseFields);
+		Collections.sort(thoseFields);
+		for (int f = 0; f < theseFields.size(); f++)
+		{
+			if (!theseFields.get(f).isEquivalent(thoseFields.get(f)))
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
+    
 }

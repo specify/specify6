@@ -726,6 +726,10 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
         stringId     = getAttr(element, "stringId", null);
         operStart    = getAttr(element, "operStart", (byte)0);
         operEnd      = getAttr(element, "operEnd", (byte)0);
+        if (operEnd.byteValue() == 0)
+        {
+        	operEnd = null;
+        }
         startValue   = getAttr(element, "startValue", null);
         endValue     = getAttr(element, "endValue", null);
         sortType     = getAttr(element, "sortType", (byte)0);
@@ -734,4 +738,43 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
         columnAlias  = getAttr(element, "columnAlias", null);
     }
 
+    protected boolean eq(final Object obj1, final Object obj2, final Object nullVal)
+    {
+    	if (obj1 == null && obj2 == null)
+    	{
+    		return true;
+    	}
+    	Object o1 = obj1 == null ? nullVal : obj1;
+    	Object o2 = obj2 == null ? nullVal : obj2;
+    	return o1.equals(o2);
+    }
+    
+	/**
+	 * @param obj
+	 * @return true if this and obj represent the same database field with the same relationship to the
+	 * root query table, parameters.  and options.
+	 */
+	public boolean isEquivalent(Object obj)
+	{
+		if (obj instanceof SpQueryField)
+		{
+			SpQueryField f = (SpQueryField )obj;
+			return fieldName.equals(f.fieldName)
+				&& isNot.equals(f.isNot)
+				&& isDisplay.equals(f.isDisplay)
+				&& isPrompt.equals(f.isPrompt)
+				&& alwaysFilter.equals(f.alwaysFilter)
+				&& eq(operStart, f.operStart, 0)
+				&& eq(operEnd, f.operEnd, 0)
+				&& eq(startValue, f.startValue, "")
+				&& eq(endValue, f.endValue, "")
+				&& eq(sortType, f.sortType, 0)
+				&& eq(tableList, f.tableList, "")
+				&& eq(contextTableIdent, f.contextTableIdent, 0)
+				&& eq(columnAlias, f.columnAlias, "");
+		}
+		return false;
+	}
+
+    
 }
