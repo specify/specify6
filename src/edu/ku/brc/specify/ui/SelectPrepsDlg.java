@@ -61,6 +61,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
@@ -70,13 +71,18 @@ import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.persist.ViewIFace;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.Taxon;
+import edu.ku.brc.specify.datamodel.busrules.AccessionBusRules;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -544,44 +550,16 @@ public class SelectPrepsDlg extends CustomDialog
             return 0;
         }
         
-        public void actionPerformed(ActionEvent e)
+        public void actionPerformed(final ActionEvent e)
         {
-            List<Loan> loans = new Vector<Loan>();
+            final JStatusBar statusBar = UIRegistry.getStatusBar();
+            statusBar.setIndeterminate("LoanLoader", true);
             
-            // XXX FIX ME
-            //for (LoanPreparation lpo : prep.getLoanPreparations())
-            //{
-            //    loans.add(lpo.getLoan());
-            //}
+            UIRegistry.writeSimpleGlassPaneMsg(getResourceString("NEW_INTER_LOADING_PREP"), 24);
+ 
+            LoanLoader loanLoader = new LoanLoader(parent, prepInfo.getPrepId());
+            loanLoader.execute();
             
-            ViewIFace view  = AppContextMgr.getInstance().getView("Loan"); //$NON-NLS-1$
-            final ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog(parent,
-                    view.getViewSetName(),
-                    "Loan", //$NON-NLS-1$
-                    null,
-                    getResourceString("LoanSelectPrepsDlg.IAT_LOAN_REVIEW"), //$NON-NLS-1$
-                    getResourceString("CLOSE"), //$NON-NLS-1$
-                    null, // className,
-                    null, // idFieldName,
-                    false, // isEdit,
-                    MultiView.RESULTSET_CONTROLLER);
-            dlg.setHelpContext("LOAN_REVIEW");
-            
-            MultiView mv = dlg.getMultiView();
-            Viewable currentViewable = mv.getCurrentView();
-            if (currentViewable != null && currentViewable instanceof FormViewObj)
-            {
-                FormViewObj formViewObj = (FormViewObj)currentViewable;
-                Component comp      = formViewObj.getControlByName("generateInvoice"); //$NON-NLS-1$
-                if (comp instanceof JCheckBox)
-                {
-                    comp.setVisible(false);
-                }
-
-            }
-            dlg.setModal(true);
-            dlg.setData(loans);
-            dlg.setVisible(true);
         }
     }
     
@@ -634,6 +612,116 @@ public class SelectPrepsDlg extends CustomDialog
                 }
             });
         }
+    }
+    
+    //--------------------------------------------------------------
+    // Background loader class for loading a large number of loan preparations
+    //--------------------------------------------------------------
+    class LoanLoader extends javax.swing.SwingWorker<Integer, Integer>
+    {
+        private int        prepId;
+        private List<Loan> loans = null;
+        private JDialog    parent;
+        
+        /**
+         * @param prepId
+         */
+        public LoanLoader(final JDialog parent, final int prepId)
+        {
+            this.parent = parent;
+            this.prepId = prepId;
+        }
+
+        /* (non-Javadoc)
+         * @see javax.swing.SwingWorker#doInBackground()
+         */
+        @SuppressWarnings("unchecked")
+        @Override
+        protected Integer doInBackground() throws Exception
+        {
+            
+            String sql = "SELECT loan.LoanID FROM preparation p "+
+            "INNER JOIN loanpreparation lp ON p.PreparationID = lp.PreparationID " +
+            "INNER JOIN loan ON lp.LoanID = loan.LoanID " +
+            "WHERE p.PreparationID = " + prepId;
+            
+            System.out.println(sql);
+            //System.out.println(" prep.getPreparationId() "+prep.getPreparationId());
+            
+            StringBuilder sb = new StringBuilder();
+            Vector<Object[]> rows = BasicSQLUtils.query(sql);
+            for (Object[] cols : rows)
+            {
+               if (sb.length() > 0) sb.append(',');
+               sb.append(cols[0]);
+            }
+            
+            
+            DataProviderSessionIFace session = null;
+            try
+            {
+               session = DataProviderFactory.getInstance().createSession();
+               loans = (List<Loan>)session.getDataList("FROM Loan WHERE loanId in("+sb.toString()+")");
+               
+            } catch (Exception ex)
+            {
+               edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AccessionBusRules.class, ex);
+               ex.printStackTrace();
+               UsageTracker.incrNetworkUsageCount();
+               
+            } finally
+            {
+               if (session != null)
+               {
+                   session.close();
+               }
+            }
+
+            return 0;
+        }
+
+        /* (non-Javadoc)
+         * @see javax.swing.SwingWorker#done()
+         */
+        @Override
+        protected void done()
+        {
+            super.done();
+            UIRegistry.getStatusBar().setProgressDone("LoanLoader");
+            UIRegistry.clearSimpleGlassPaneMsg();
+            
+            ViewIFace view  = AppContextMgr.getInstance().getView("Loan"); //$NON-NLS-1$
+            final ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog(parent,
+                    view.getViewSetName(),
+                    "Loan", //$NON-NLS-1$
+                    null,
+                    getResourceString("LoanSelectPrepsDlg.IAT_LOAN_REVIEW"), //$NON-NLS-1$
+                    getResourceString("CLOSE"), //$NON-NLS-1$
+                    null, // className,
+                    null, // idFieldName,
+                    false, // isEdit,
+                    MultiView.RESULTSET_CONTROLLER);
+            
+            dlg.setHelpContext("LOAN_REVIEW");
+            
+            MultiView mv = dlg.getMultiView();
+            Viewable currentViewable = mv.getCurrentView();
+            if (currentViewable != null && currentViewable instanceof FormViewObj)
+            {
+                FormViewObj formViewObj = (FormViewObj)currentViewable;
+                Component comp      = formViewObj.getControlByName("generateInvoice"); //$NON-NLS-1$
+                if (comp instanceof JCheckBox)
+                {
+                    comp.setVisible(false);
+                }
+
+            }
+            dlg.setModal(true);
+            dlg.setData(loans);
+            dlg.setVisible(true);
+            
+        }
+        
     }
 
 }
