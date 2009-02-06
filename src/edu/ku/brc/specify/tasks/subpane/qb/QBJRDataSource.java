@@ -117,8 +117,8 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
     {
         if (fldIdx < 0)
             return null;
-        int processIdx = recordIdsIncluded ? fldIdx-1 : fldIdx;
-        if (processIdx == -1)
+        int colInfoIdx = Collections.binarySearch(colNames, new SourceColumnInfo(fldName, null, null), colPairComparator);
+        if (colInfoIdx == -1)
         {
            if (fldClass.equals(String.class))
            {
@@ -127,6 +127,7 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
            log.error("field not found: " + fldName);
            return null;
         }
+        int processIdx = colNames.get(colInfoIdx).getColInfoIdx();
         
         if (!processed)
         {

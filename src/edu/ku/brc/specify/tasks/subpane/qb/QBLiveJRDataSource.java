@@ -11,10 +11,11 @@ package edu.ku.brc.specify.tasks.subpane.qb;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
-
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRField;
+
+import org.apache.log4j.Logger;
+
 import edu.ku.brc.specify.ui.db.ResultSetTableModel;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -110,6 +111,21 @@ public class QBLiveJRDataSource extends QBJRDataSourceBase
             return null;
         }
         return processValue(fldIdx, data.getCacheValueAt(row, fldIdx));
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceBase#setUpCollNames()
+     */
+    @Override
+    protected void setUpCollNames()
+    {
+        int c = 0;
+        for (ERTICaptionInfoQB col : this.columnInfo) 
+        {
+        	colNames.add(new SourceColumnInfo(col.getColStringId(),
+					new Integer(c), new Integer(c)));
+        	c++;
+		}    	
     }
 
     
