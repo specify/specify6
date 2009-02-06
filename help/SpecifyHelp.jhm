@@ -102,7 +102,7 @@
 
 	
 	<!-- Uploader -->
-	<mapID target="uploading"               url="SpecifyHelp/Uploader/wb_uploader.html" />
+	<mapID target="uploading"               url="SpecifyHelp/Uploading/wb_uploader.html" />
 	
 	<!-- Reports/Labels -->
 	<mapID target="Reports"                 url="SpecifyHelp/ReportsLabels/reports.html" />

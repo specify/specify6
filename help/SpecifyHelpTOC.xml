@@ -29,7 +29,7 @@
           	<tocitem text="System" target="PrefsSystem"/>
           	<tocitem text="Tree" target="PrefsTree"/>
 			<tocitem text="Login" target="PrefsLogin"/>
-			<tocitem text="<MySQL" target="PrefsMySQL"/>
+			<tocitem text="MySQL" target="PrefsMySQL"/>
 	      </tocitem>
 	      
 	      <tocitem text="Form System" target="Using_Forms">
@@ -51,7 +51,7 @@
 	      <tocitem text="Query Builder" target="Query">
 		   <tocitem text="Record Sets" target="RecordSet"/>
 		   <tocitem text="Reports and Labels" target="Reports"/>
-		   <tocitem text="Using iReports" target="SpecifyiReport"/>
+		   <tocitem text="Using iReports" target="iReport"/>
 	      </tocitem>
 	      
           <tocitem text="Plugins" target="Plugins"/>

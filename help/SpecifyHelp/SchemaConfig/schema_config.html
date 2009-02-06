@@ -1,0 +1,204 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<link href="../main2.css" rel="stylesheet" type="text/css" media="screen"></link>
+<title>Using Statistics</title>
+</head>
+
+<body bgcolor="#ffffff">
+<table width="100%" border="0" background="../../images/topbar.png">
+  <tr>
+    <td>&nbsp;</td>
+  </tr>
+</table>
+<h2>Schema Config </h2>
+<p>&nbsp;</p>
+<p>Specify 6 was created to handle  all disciplines. The Schema Configuration tool allows users to hide tables and/or fields that are not being used for a particular discipline. This not only customizes Specify 6 for a specific discipline but also enables the program to run more efficiently.</p>
+<p>The Schema Configuration tool can be used to:</p>
+<p>hide tables and/or fields not being used in an individual discipline</p>
+<p>label fields ***will this be shown on forms then?*** </p>
+<p>write descriptions (usage notes)</p>
+<p>associate a field to a pick list</p>
+<p>format a text field </p>
+<p>** Check to make sure that this is changing by Discipline and not just Collection!!!</p>
+<p>&nbsp;</p>
+<p><em><strong>Note:</strong></em> The Schema Configuration Tool is NOT a local tool, any changes made to the Schema will change every Collection throughout the Discipline. </p>
+<p>&nbsp;</p>
+<p>Specify 6 was created to handle  all disciplines. The Schema Configuration tool allows users to hide tables and/or fields that are not being used for a particular discipline. This not only customizes Specify 6 for a specific discipline but also enables the program to run more efficiently.</p>
+<p>The Schema Configuration tool can be used to:</p>
+<p>hide tables and/or fields not being used in an individual discipline</p>
+<p>label fields ***will this be shown on forms then?*** </p>
+<p>write descriptions (usage notes)</p>
+<p>associate a field to a pick list</p>
+<p>format a text field </p>
+<p>&nbsp;</p>
+<p>First dialog:</p>
+<p>Edit Schema</p>
+<p>Export Schema</p>
+<p>Import Schema</p>
+<p>&nbsp;</p>
+<p>The Schema Configuration tool displays the Table configuration tools on the top and the Field configuration tools on the bottom. </p>
+<p>&nbsp;</p>
+<p>Table choices</p>
+<table width="100%">
+  <tr>
+    <td width="18%"><u><strong>Table Preference</strong></u></td>
+    <td width="42%"><u><strong>Result</strong></u></td>
+    <td width="40%"><u><strong>Notes</strong></u></td>
+  </tr>
+  <tr>
+    <td>Name</td>
+    <td>Changes the name of the Table as represented in the Form System and Query Builder.</td>
+    <td>Changes to the Table Name will be reflected on the Forms during the current session, but Specify must be relaunchedfor the changes to be reflected in the Sidebar lists.</td>
+  </tr>
+  <tr>
+    <td>Hide Table</td>
+    <td>Hides the Table in the Schema. This will not remove the Table from the Form System. The Table will be removed from the Query Builder and Simple Search.</td>
+    <td><p>Hidden Tables that are used in the Form System will cause a Warning Dialog to appear when using the Form System. It is recommeded that Tables be removed from the Form System before being removed from the Schema. </p>
+    <p>Tables that are still used in the Form System but removed from the Schema are still editable and any changes made to the Table will be reflected in the Database. </p></td>
+  </tr>
+  <tr>
+    <td>Desc</td>
+    <td>Description of the Table.</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>***Spell Check</td>
+    <td>Checks the spelling of words used in the Description.</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>Display Format</td>
+    <td>Launches the Display Formatting Editor (explained below).</td>
+    <td>Tables with Many-to-One relationships are formatted to be represented by at least one field in both the Form System and Query Builder. Most tables are represented by only one field, (Collection Object shows the Catalog Number), but some are best represented by more than one field (Agent may be formatted to display last name, first name, middle initial). </td>
+  </tr>
+  <tr>
+    <td>Aggregate</td>
+    <td>Opens the Aggregation Editor (explained below).</td>
+    <td>Tables with a one-to-many relationship  return aggregated data in the Query Builder. For example, a Collection Object can have many Preparations. The results of a query of Collection Objects wtih Preparations will return Preparations aggregated together in one column, separated by semi colons.</td>
+  </tr>
+  <tr>
+    <td>Web Links</td>
+    <td>Opens the Web Link Editor (explained below).</td>
+    <td>&nbsp;</td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<p>Field Choices</p>
+<table width="100%">
+  <tr>
+    <td width="18%">Field Preference</td>
+    <td width="42%">Description</td>
+    <td width="40%">Notes</td>
+  </tr>
+  <tr>
+    <td>Label</td>
+    <td>Changes the name of the Field as represented in the Form System and Query Builder.</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>Hide Field</td>
+    <td>Hides the Field in the Schema. This will not remove the Field from the Form System. The Field will be removed from the Query Builder and Simple Search.</td>
+    <td><p>Hidden Fields that are used in the Form System will cause a Warning Dialog to appear when using the Form System. It is recommeded that Fields be removed from the Form System before being removed from the Schema. </p>
+    <p>Fields that are still used in the Form System but removed from the Schema are still editable and any data changes made will be reflected in the Database. </p></td>
+  </tr>
+  <tr>
+    <td>Desc</td>
+    <td>Description of the Field.</td>
+    <td>&nbsp;</td>
+  </tr>
+  
+  <tr>
+    <td>Type</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>String</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>Date</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>Float</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>Byte</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>Boolean</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>Integer</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>Many-to-One</td>
+    <td>This represents a relationship to a Table, not an actual field.</td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>One-to-Many</td>
+    <td>This represents a relationship to a Table, not an actual field.</td>
+  </tr>
+  <tr>
+    <td>Is Required</td>
+    <td>Fields that are required in the Schema can not be changed, but fields that are not required can be changed to Required.</td>
+    <td>Relationships can not be edited to be required.</td>
+  </tr>
+  <tr>
+    <td>Length</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>Format Type</td>
+    <td>relationships can be a picklisk</td>
+    <td>&nbsp;</td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<p>relationships -- Picklist</p>
+<p>string -- Format; Weblink; Picklist (this is not the same formatting as relationships but format as in CO number)</p>
+<p>* can only format strings that are 255 characters or less</p>
+<p>date -- none</p>
+<p>float -- none</p>
+<p>byte -- none</p>
+<p>boolean -- none</p>
+<p>integer -- none</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>Used by Query Builder, Forms, Simple Search, (anything with UI presented uses this)</p>
+<p>Great place to change labels</p>
+<p>overridden by forms so what is in the forms is not necessarily represented here</p>
+<p>this is the place to </p>
+<p>localize</p>
+<p>turn on/use fields</p>
+<p>format non-formatted fields (catalog number, accession number(repository agreement) loan number, gift number, shipment number</p>
+<p>coopt a text 1 field for a special number in a collection (new label </p>
+<p>all dates done in preferences</p>
+<p>&nbsp;</p>
+<p>Display Format -- what fields in that record do you want to display in the UI (representing a whole row as a single field)</p>
+<p> example -- agent as last, first</p>
+<p>display formats combine fields </p>
+<p>&nbsp;</p>
+<p>Aggragator -- for each of the things being put together what do you use? could be a semi colon and et all (only show 3)</p>
+<p>aggragators combine records </p>
+<p>give examples of things that are aggragated </p>
+<p>collectors are actually agents with an order -- agents have a format 	 </p>
+<p>&nbsp;</p>
+</body>
+</html>
