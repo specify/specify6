@@ -1,7 +1,8 @@
 package edu.ku.brc.specify.conversion;
 
-import static edu.ku.brc.specify.config.init.DataBuilder.createAdminPrincipal;
+import static edu.ku.brc.specify.config.init.DataBuilder.createAdminGroup;
 import static edu.ku.brc.specify.config.init.DataBuilder.createAgent;
+import static edu.ku.brc.specify.config.init.DataBuilder.createAndAddTesterToCollection;
 import static edu.ku.brc.specify.config.init.DataBuilder.createSpecifyUser;
 
 import java.io.File;
@@ -1064,11 +1065,13 @@ public class SpecifyDBConverter
                     
                     try
                     {
-                        List<SpPrincipal> groups = new ArrayList<SpPrincipal>();
+                        Map<String, SpPrincipal> groupMap = null;
+                        // XXX where do we get the data to create the admin user??
+                        //groupMap = DataBuilder.createAdminGroupAndUser(institution, username, email, password, userType)Groups(institution);
+                        List<SpPrincipal> groups = new ArrayList<SpPrincipal>(groupMap.values());
+                        groupMap = DataBuilder.createStandardGroups(collection);
+                        groups.addAll(groupMap.values());
                         
-                        DataBuilder.createStandardGroups(groups, institution);
-                        DataBuilder.createStandardGroups(groups, dscp);
-                        DataBuilder.createStandardGroups(groups, collection);
                         for (SpPrincipal prin : groups)
                         {
                             log.debug("Principal Name:["+prin.getName()+"]  Group["+prin.getGroupType()+"]");
@@ -1101,34 +1104,15 @@ public class SpecifyDBConverter
                         trans = localSession.beginTransaction();
                         
                         SpPrincipal userPrincipal  = DataBuilder.createUserPrincipal(specifyUser);
-                        groups.add(userPrincipal);
-                        
-                        SpPrincipal adminPrincipal = createAdminPrincipal("Administrator", institution);
-                        groups.add(adminPrincipal);
-
-                        SpPrincipal disciplineGroup = DataBuilder.findGroup(groups, dscp, "CollectionManager");
+                        SpPrincipal adminPrincipal = createAdminGroup("Administrator", institution);
 
                         specifyUser.addUserToSpPrincipalGroup(userPrincipal);
                         specifyUser.addUserToSpPrincipalGroup(adminPrincipal);
-                        specifyUser.addUserToSpPrincipalGroup(disciplineGroup);
                         
                         // Tester
-                        SpPrincipal guestGroup  = DataBuilder.findGroup(groups, dscp, "Guest");
-                        
                         //Discipline disciplineCache = AppContextMgr.getInstance().getClassObject(Discipline.class);
-                        Agent       testerAgent = createAgent("", "Joe", "", "Tester", "", "joetester@brc.ku.edu");
-                        testerAgent.setDivision(division);
-                        SpecifyUser testerUser          = createSpecifyUser("JoeTester", "joetester@brc.ku.edu", "JoeTester", disciplineGroup, guestGroup.getGroupType());
-                        
-                        SpPrincipal testerUserPrincipal = DataBuilder.createUserPrincipal(testerUser);
-                        groups.add(testerUserPrincipal);
-
-                        testerUser.addUserToSpPrincipalGroup(guestGroup);
-                        testerUser.addUserToSpPrincipalGroup(testerUserPrincipal);
-                        
-                        dscp.addReference(testerAgent, "agents");
-                        testerUser.addReference(testerAgent, "agents");
-                        
+                        DataBuilder.createAndAddTesterToCollection("JoeTester", "joetester@brc.ku.edu", "JoeTester", 
+                                "", "Joe", "", "Tester", "", dscp, division, groupMap, "Guest");
                         
                         for (Object obj : groups)
                         {
@@ -1139,8 +1123,6 @@ public class SpecifyDBConverter
                         localSession.saveOrUpdate(dscp);
                         localSession.saveOrUpdate(collection);
                         
-                        localSession.saveOrUpdate(testerUser);
-                        localSession.saveOrUpdate(testerAgent);
                         localSession.saveOrUpdate(specifyUser);
                         
                         trans.commit();

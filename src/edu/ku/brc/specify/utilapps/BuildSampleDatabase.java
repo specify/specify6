@@ -12,7 +12,7 @@ import static edu.ku.brc.specify.config.init.DataBuilder.buildDarwinCoreSchema;
 import static edu.ku.brc.specify.config.init.DataBuilder.createAccession;
 import static edu.ku.brc.specify.config.init.DataBuilder.createAccessionAgent;
 import static edu.ku.brc.specify.config.init.DataBuilder.createAddress;
-import static edu.ku.brc.specify.config.init.DataBuilder.createAdminPrincipal;
+import static edu.ku.brc.specify.config.init.DataBuilder.createAdminGroup;
 import static edu.ku.brc.specify.config.init.DataBuilder.createAgent;
 import static edu.ku.brc.specify.config.init.DataBuilder.createAgentVariant;
 import static edu.ku.brc.specify.config.init.DataBuilder.createAttachment;
@@ -66,6 +66,7 @@ import static edu.ku.brc.specify.config.init.DataBuilder.createWorkbench;
 import static edu.ku.brc.specify.config.init.DataBuilder.createWorkbenchDataItem;
 import static edu.ku.brc.specify.config.init.DataBuilder.createWorkbenchMappingItem;
 import static edu.ku.brc.specify.config.init.DataBuilder.createWorkbenchTemplate;
+import static edu.ku.brc.specify.config.init.DataBuilder.createAndAddTesterToCollection;
 
 import java.awt.Dimension;
 import java.io.File;
@@ -86,6 +87,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Properties;
 import java.util.Random;
@@ -384,7 +386,7 @@ public class BuildSampleDatabase
      * @return the entire list of DB object to be persisted
      */
     public List<Object> createEmptyDiscipline(final Properties props, 
-                                              @SuppressWarnings("unused") final CollectionChoice choice)
+                                              final CollectionChoice choice)
     {
         AppContextMgr.getInstance().setHasContext(true);
         
@@ -414,8 +416,6 @@ public class BuildSampleDatabase
         System.out.println("----- User Agent -----");
         System.out.println("Userame:   "+username);
         
-        List<SpPrincipal> groups = new ArrayList<SpPrincipal>();
-        
         institution = createInstitution(props.getProperty("instName"));
         //institution.setTitle(props.getProperty("instTitle"));
         institution.setCode(props.getProperty("instAbbrev"));
@@ -433,22 +433,15 @@ public class BuildSampleDatabase
         institution.setAddress(instAddress);
         instAddress.getInsitutions().add(institution);
         
-        SpecifyUser specifyUser = createSpecifyUser(username, email, password, userType);
-//            SpPrincipal     userPrincipal = DataBuilder.createUserPrincipal(user);
-//            groups.add(userPrincipal);
-        
-        SpPrincipal admin = createAdminPrincipal("Administrator", institution);
-        groups.add(admin);
-        specifyUser.addUserToSpPrincipalGroup(admin);
+        SpecifyUser specifyAdminUser = DataBuilder.createAdminGroupAndUser(institution, 
+                username, email, password, userType);
         
         dataType = createDataType("Biota");
         
 
         persist(institution);        
-        persist(specifyUser); 
-        persist(groups);
+        persist(specifyAdminUser); 
         persist(dataType);
-        //persist(admin);
         commitTx();
         
         frame.setProcess(++createStep);
@@ -489,11 +482,6 @@ public class BuildSampleDatabase
         AppContextMgr.getInstance().setClassObject(Division.class, division);
         
         persist(institution);
-
-        groups.clear();
-        DataBuilder.createStandardGroups(groups, discipline);
-        SpPrincipal disciplineGroup = DataBuilder.findGroup(groups, discipline, "CollectionManager");
-
         persist(division);
         persist(discipline);
 
@@ -539,28 +527,10 @@ public class BuildSampleDatabase
         Agent userAgent = createAgent(title, firstName, midInit, lastName, abbrev, email);
         
         discipline.addReference(userAgent, "agents");
-        specifyUser.addReference(userAgent, "agents");
-        specifyUser.addUserToSpPrincipalGroup(disciplineGroup);
-        
-        // Tester
-        String      dspAbbrev = disciplineType.getAbbrev();
-        Agent       testerAgent = createAgent("", dspAbbrev, "", "Tester", "", dspAbbrev+"tester@brc.ku.edu");
-        testerAgent.setDivision(division);
-
-        SpecifyUser testerUser          = createSpecifyUser(dspAbbrev+"Tester", dspAbbrev+"tester@brc.ku.edu", dspAbbrev+"Tester", disciplineGroup, specifyUser.getUserType());
-        SpPrincipal testerUserPrincipal = DataBuilder.createUserPrincipal(testerUser);
-        groups.add(testerUserPrincipal);
-        testerUser.addUserToSpPrincipalGroup(testerUserPrincipal);
-        discipline.addReference(testerAgent, "agents");
-        testerUser.addReference(testerAgent, "agents");
-
+        specifyAdminUser.addReference(userAgent, "agents");
         
         persist(discipline);
-        persist(specifyUser);
         persist(userAgent);
-        
-        persist(testerUser);
-        persist(testerAgent);
         
         UIFieldFormatterIFace fmt = UIFieldFormatterMgr.getInstance().getFormatter(catNumFmt);
         AutoNumberingScheme catANS = createAutoNumberingScheme("Catalog Numbering Scheme", "", fmt.isNumeric(), CollectionObject.getClassTableId());
@@ -597,11 +567,23 @@ public class BuildSampleDatabase
         
         persist(collection);
         
-        DataBuilder.createStandardGroups(groups, collection);
+
+        // create the standard user groups for this collection
+        Session dataBuilderSession = switchDataBuilderSession();
+        Map<String, SpPrincipal> groupMap = DataBuilder.createStandardGroups(collection);
+
+        // add the administrator as a Collections Manager in this group
+        specifyAdminUser.addUserToSpPrincipalGroup(groupMap.get("CollectionManager"));
+
+        // add tester
+        String dspAbbrev = disciplineType.getAbbrev();
+        createAndAddTesterToCollection(dspAbbrev+"Tester", dspAbbrev+"tester@brc.ku.edu", dspAbbrev+"Tester", 
+                "", dspAbbrev, "", "Tester", "", discipline, division, groupMap, "CollectionManager");
+        
+        DataBuilder.setSession(dataBuilderSession);
 
         AppContextMgr.getInstance().setClassObject(Collection.class, collection);
 
-        persist(groups);
         
         if (accANS != null)
         {
@@ -626,10 +608,10 @@ public class BuildSampleDatabase
         //loadSchemaLocalization(discipline, SpLocaleContainer, schema);
         //buildDarwinCoreSchema(discipline);
 
-        AppContextMgr.getInstance().setClassObject(SpecifyUser.class, specifyUser);
-        specifyUser.addReference(userAgent, "agents");
+        AppContextMgr.getInstance().setClassObject(SpecifyUser.class, specifyAdminUser);
+        specifyAdminUser.addReference(userAgent, "agents");
         
-        persist(specifyUser);
+        persist(specifyAdminUser);
 
         Journal journal = createJournalsAndReferenceWork();
         
@@ -734,7 +716,6 @@ public class BuildSampleDatabase
     /**
      * @param dataObjects
      */
-    @SuppressWarnings("unchecked")
     protected void addConservatorData(final List<Agent> agents, 
                                       final List<CollectionObject> colObjs)
     {
@@ -967,8 +948,6 @@ public class BuildSampleDatabase
         List<SpPrincipal> groups = new ArrayList<SpPrincipal>();
         
         
-        DataBuilder.createStandardGroups(groups, discipline);
-        
         persist(institution);
         persist(division);
         persist(discipline);
@@ -1007,25 +986,9 @@ public class BuildSampleDatabase
         Agent userAgent = createAgent(title, firstName, midInit, lastName, abbrev, email);        
         discipline.addReference(userAgent, "agents");
         user.addReference(userAgent, "agents");
-        SpPrincipal disciplineGroup = DataBuilder.findGroup(groups, discipline, "Guest");
-        user.addUserToSpPrincipalGroup(disciplineGroup);
         
         persist(userAgent);
         persist(user);
-        
-        // Tester
-        Agent testerAgent = createAgent("mr", "Bob", "", "Botony", "", "botanyuser@ku.edu");
-        testerAgent.setDivision(division);
-        SpecifyUser testerUser          = createSpecifyUser("botanyuser", "botanyuser@ku.edu", /*(short) 0,*/ "botanyuser", disciplineGroup, "Guest");
-        SpPrincipal testerUserPrincipal = DataBuilder.createUserPrincipal(testerUser);
-        groups.add(testerUserPrincipal);
-        testerUser.addUserToSpPrincipalGroup(testerUserPrincipal);
-        discipline.addReference(testerAgent, "agents");
-        testerUser.addReference(testerAgent, "agents");
-        
-        persist(discipline);
-        persist(testerAgent);
-        persist(testerUser);
         
         frame.setProcess(++createStep);
         
@@ -1048,7 +1011,19 @@ public class BuildSampleDatabase
         Collection collection = createCollection("KUBOT", "Botany", cns, discipline);
         persist(collection);
         
-        DataBuilder.createStandardGroups(groups, collection);
+        Session dataBuilderSession = switchDataBuilderSession();
+        // create the standard user groups for this collection
+        Map<String, SpPrincipal> groupMap = DataBuilder.createStandardGroups(collection);
+
+        // add the administrator as a Collections Manager in this group
+        user.addUserToSpPrincipalGroup(groupMap.get("CollectionManager"));
+
+        // Tester
+        createAndAddTesterToCollection("botanyuser", "botanyuser@ku.edu", "botanyuser", "mr", "Bob", "", "Botony", "",  
+                discipline, division, groupMap, "Guest");
+
+        DataBuilder.setSession(dataBuilderSession);
+        persist(discipline);
 
         AppContextMgr.getInstance().setClassObject(Collection.class, collection);
 
@@ -2232,17 +2207,8 @@ public class BuildSampleDatabase
         AppContextMgr.getInstance().setClassObject(Institution.class, institution);
         
         persist(institution);
-
-        List<SpPrincipal> groups = new ArrayList<SpPrincipal>();
-
-        //List<SpPrincipal> groups = new ArrayList<SpPrincipal>();
-        DataBuilder.createStandardGroups(groups, discipline);
-        SpPrincipal disciplineGroup = DataBuilder.findGroup(groups, discipline, "CollectionManager");
-        //groups.add(disciplineGroup);   
-        
         persist(division);
         persist(discipline);
-        //persist(disciplineGroup);
         
         AppContextMgr.getInstance().setClassObject(Division.class, division);
         AppContextMgr.getInstance().setClassObject(Discipline.class, discipline);
@@ -2278,20 +2244,7 @@ public class BuildSampleDatabase
         Agent userAgent = createAgent(title, firstName, midInit, lastName, abbrev, email);        
         discipline.addReference(userAgent, "agents");
         user.addReference(userAgent, "agents");
-        user.addUserToSpPrincipalGroup(disciplineGroup);
         
-        // Tester
-        Agent testerAgent = createAgent("mr", "Joe", "", "InvertPaleo", "", "InvertPaleo@ku.edu");
-        testerAgent.setDivision(division);
-        SpecifyUser testerUser          = createSpecifyUser("ivpuser", "InvertPaleo@ku.edu", /*(short) 0,*/ "ivpuser", disciplineGroup, "Guest");
-        SpPrincipal testerUserPrincipal = DataBuilder.createUserPrincipal(testerUser);
-        groups.add(testerUserPrincipal);
-        testerUser.addUserToSpPrincipalGroup(testerUserPrincipal);
-        discipline.addReference(testerAgent, "agents");
-        testerUser.addReference(testerAgent, "agents");
-        
-        persist(testerAgent);
-        persist(testerUser);
         persist(discipline);
         persist(userAgent);
         persist(user);
@@ -2325,11 +2278,21 @@ public class BuildSampleDatabase
         Collection collection = createCollection("KUIVP", disciplineType.getTitle(), cns, discipline);
         persist(collection);
         
-        DataBuilder.createStandardGroups(groups, collection);
+        Session dataBuilderSession = switchDataBuilderSession();
+        // create the standard user groups for this collection
+        Map<String, SpPrincipal> groupMap = DataBuilder.createStandardGroups(collection);
+
+        // add the administrator as a Collections Manager in this group
+        user.addUserToSpPrincipalGroup(groupMap.get("CollectionManager"));
+
+        // Tester
+        createAndAddTesterToCollection("ivpuser", "InvertPaleo@ku.edu", "ivpuser", "mr", "Joe", "", "InvertPaleo", "",
+                discipline, division, groupMap, "Guest");
+
+        DataBuilder.setSession(dataBuilderSession);
 
         AppContextMgr.getInstance().setClassObject(Collection.class, collection);
 
-        persist(groups);
         division.addReference(accessionNS, "numberingSchemes");
         persist(division);
 
@@ -3298,11 +3261,6 @@ public class BuildSampleDatabase
         AppContextMgr.getInstance().setClassObject(Institution.class, institution);
         
         persist(institution);
-
-        List<SpPrincipal> groups = new ArrayList<SpPrincipal>();
-        DataBuilder.createStandardGroups(groups, discipline);
-        SpPrincipal disciplineGroup = DataBuilder.findGroup(groups, discipline, "CollectionManager");
-
         persist(division);
         persist(discipline);
         
@@ -3343,26 +3301,10 @@ public class BuildSampleDatabase
         
         discipline.addReference(userAgent, "agents");
         user.addReference(userAgent, "agents");
-        user.addUserToSpPrincipalGroup(disciplineGroup);
-        
-        // Tester
-        String dspAbbrev = disciplineType.getAbbrev();
-        Agent testerAgent = createAgent("", dspAbbrev, "", "Tester", "", dspAbbrev+"tester@brc.ku.edu");
-        testerAgent.setDivision(division);
-        SpecifyUser testerUser          = createSpecifyUser(dspAbbrev+"Tester", dspAbbrev+"tester@brc.ku.edu", dspAbbrev+"Tester", disciplineGroup, user.getUserType());
-        SpPrincipal testerUserPrincipal = DataBuilder.createUserPrincipal(testerUser);
-        groups.add(testerUserPrincipal);
-        testerUser.addUserToSpPrincipalGroup(testerUserPrincipal);
-        discipline.addReference(testerAgent, "agents");
-        testerUser.addReference(testerAgent, "agents");
-
         
         persist(discipline);
         persist(userAgent);
         persist(user);
-        
-        persist(testerAgent);
-        persist(testerUser);
         
         frame.setProcess(++createStep);
         
@@ -3386,11 +3328,22 @@ public class BuildSampleDatabase
         Collection collection = createCollection("KU", disciplineType.getTitle(), cns, discipline, disciplineType.isEmbeddedCollecingEvent());
         persist(collection);
         
-        DataBuilder.createStandardGroups(groups, collection);
+        Session dataBuilderSession = switchDataBuilderSession();
+        // create the standard user groups for this collection
+        Map<String, SpPrincipal> groupMap = DataBuilder.createStandardGroups(collection);
 
+        // add the administrator as a Collections Manager in this group
+        user.addUserToSpPrincipalGroup(groupMap.get("CollectionManager"));
+
+        // Tester
+        String dspAbbrev = disciplineType.getAbbrev();
+        createAndAddTesterToCollection(dspAbbrev+"Tester", dspAbbrev+"tester@brc.ku.edu", dspAbbrev+"Tester", 
+                "", dspAbbrev, "", "Tester", "", discipline, division, groupMap, "Guest");
+
+        DataBuilder.setSession(dataBuilderSession);
+        
         AppContextMgr.getInstance().setClassObject(Collection.class, collection);
 
-        persist(groups);
         
         division.addReference(accessionNS, "numberingSchemes");
         persist(division);
@@ -4401,40 +4354,16 @@ public class BuildSampleDatabase
         System.out.println("Email:     "+email);
         System.out.println("UserType:  "+userType);
         
-        List<SpPrincipal> groups = new ArrayList<SpPrincipal>();
-
-        DataBuilder.createStandardGroups(groups, discipline);
-        SpPrincipal disciplineGroup = DataBuilder.findGroup(groups, discipline, "CollectionManager");
-        
         Agent userAgent = createAgent(title, firstName, midInit, lastName, abbrev, email);
         userAgent.setDivision(division);
         discipline.addReference(userAgent, "agents");
         user.addReference(userAgent, "agents");
-        user.addUserToSpPrincipalGroup(disciplineGroup);
         
-        SpPrincipal userPrincipal = DataBuilder.createUserPrincipal(user);
-        groups.add(userPrincipal);
-        user.addUserToSpPrincipalGroup(userPrincipal);
-        
-        // Tester
-        SpPrincipal guestGroup  = DataBuilder.findGroup(groups, discipline, "Guest");
-        Agent       testerAgent = createAgent("", "Fish", "", "Tester", "", "fishtester@brc.ku.edu");
-        testerAgent.setDivision(division);
-        SpecifyUser testerUser          = createSpecifyUser("FishTester", "fishtester@brc.ku.edu", "FishTester", disciplineGroup, guestGroup.getGroupType());
-        SpPrincipal testerUserPrincipal = DataBuilder.createUserPrincipal(testerUser);
-        groups.add(testerUserPrincipal);
-        testerUser.addUserToSpPrincipalGroup(guestGroup);
-        testerUser.addUserToSpPrincipalGroup(testerUserPrincipal);
-        discipline.addReference(testerAgent, "agents");
-        testerUser.addReference(testerAgent, "agents");
-        
+
         startTx();
         persist(discipline);               
         persist(user);
         persist(userAgent);
-        persist(testerUser);
-        persist(testerAgent);
-        persist(groups);
              
         loadSchemaLocalization(discipline, 
                                SpLocaleContainer.CORE_SCHEMA, 
@@ -4472,7 +4401,7 @@ public class BuildSampleDatabase
         Collection voucher = null;
         if (isChoosen(DisciplineType.STD_DISCIPLINES.fish, false))
         {
-            voucher = createFishCollection(discipline, user, userAgent, division,
+            voucher = createFishCollection(disciplineType, discipline, user, userAgent, division,
                                             taxonTreeDef, geoTreeDef, gtpTreeDef,
                                             lithoStratTreeDef,
                                             journal, taxa, geos, gtps, lithoStrats,
@@ -4485,7 +4414,7 @@ public class BuildSampleDatabase
         Collection tissue = null;
         if (isChoosen(DisciplineType.STD_DISCIPLINES.fish, true))
         {
-            tissue = createFishCollection(discipline, user, userAgent, division,
+            tissue = createFishCollection(disciplineType, discipline, user, userAgent, division,
                                             taxonTreeDef, geoTreeDef, gtpTreeDef,
                                             lithoStratTreeDef,
                                             journal, taxa, geos, gtps, lithoStrats,
@@ -4705,25 +4634,37 @@ public class BuildSampleDatabase
     }
     
     /**
+     * Replace DataBuilder session with current BuildSampleDatabase session and 
+     * return old DataBuilder session so it can be later restored.
+     * @return
+     */
+    private Session switchDataBuilderSession() {
+        Session oldSession = DataBuilder.getSession();
+        DataBuilder.setSession(session);
+        return oldSession;
+    }
+    
+    /**
      * Creates a single disciplineType collection.
      * @param disciplineName the name of the Discipline to use
      * @param disciplineName the disciplineType name
      * @return the entire list of DB object to be persisted
      */
     @SuppressWarnings("unchecked")
-    public Collection createFishCollection(final Discipline                discipline,
+    public Collection createFishCollection(final DisciplineType            disciplineType,
+                                           final Discipline                discipline,
                                            final SpecifyUser               user,
                                            final Agent                     userAgent,
                                            final Division                  division,                  
-                                           @SuppressWarnings("unused") final TaxonTreeDef              taxonTreeDef,
-                                           @SuppressWarnings("unused") final GeographyTreeDef          geoTreeDef,
-                                           @SuppressWarnings("unused") final GeologicTimePeriodTreeDef gtpTreeDef,
-                                           @SuppressWarnings("unused") final LithoStratTreeDef         lithoStratTreeDef,
+                                           final TaxonTreeDef              taxonTreeDef,
+                                           final GeographyTreeDef          geoTreeDef,
+                                           final GeologicTimePeriodTreeDef gtpTreeDef,
+                                           final LithoStratTreeDef         lithoStratTreeDef,
                                            final Journal                   journal,
                                            final List<Object>              taxa,
                                            final List<Object>              geos,
-                                           @SuppressWarnings("unused") final List<Object>              gtps,
-                                           @SuppressWarnings("unused") final List<Object>              lithoStrats,
+                                           final List<Object>              gtps,
+                                           final List<Object>              lithoStrats,
                                            final String                    colPrefix,
                                            final String                    colName,
                                            final boolean                   isVoucherCol,
@@ -4755,15 +4696,30 @@ public class BuildSampleDatabase
         Collection collection = createCollection(colPrefix, colName, cns, discipline, false);
         persist(collection);
         
-        List<SpPrincipal> groups = new ArrayList<SpPrincipal>();
-        DataBuilder.createStandardGroups(groups, collection);
 
         AppContextMgr.getInstance().setClassObject(Collection.class, collection);
         
-        persist(groups);
-        
         division.addReference(accessionNS, "numberingSchemes");
         persist(division);
+
+        ////////////////////////////////
+        // Default user groups and test user
+        ////////////////////////////////
+        Session dataBuilderSession = switchDataBuilderSession();
+        Map<String, SpPrincipal> groupMap = DataBuilder.createStandardGroups(collection);
+
+        // add the administrator as a Collections Manager in this group
+        user.addUserToSpPrincipalGroup(groupMap.get("CollectionManager"));
+
+        // Tester
+        String userPrefix = (isVoucherCol)? "Voucher" : "";
+        createAndAddTesterToCollection(userPrefix + "FishTester", "fishtester@brc.ku.edu", userPrefix + "FishTester", 
+                "", "Fish", "", "Tester", "", discipline, division, groupMap, "Guest");
+        
+        DataBuilder.setSession(dataBuilderSession);
+        commitTx();
+        
+        startTx();
 
         ////////////////////////////////
         // picklists
@@ -5966,7 +5922,7 @@ public class BuildSampleDatabase
 //        SpPrincipal     userPrincipal = DataBuilder.createUserPrincipal(user);
 //        groups.add(userPrincipal);
         
-        SpPrincipal admin = createAdminPrincipal("Administrator", institution);
+        SpPrincipal admin = createAdminGroup("Administrator", institution);
         groups.add(admin);
         user.addUserToSpPrincipalGroup(admin);
         

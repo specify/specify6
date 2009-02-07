@@ -6,21 +6,22 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.util.Calendar;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
-import org.dom4j.Node;
 import org.hibernate.Session;
 
 import com.thoughtworks.xstream.XStream;
 
-import edu.ku.brc.af.auth.specify.permission.BasicSpPermission;
 import edu.ku.brc.af.auth.specify.principal.AdminPrincipal;
 import edu.ku.brc.af.auth.specify.principal.GroupPrincipal;
 import edu.ku.brc.af.auth.specify.principal.UserPrincipal;
@@ -119,6 +120,8 @@ import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
+import edu.ku.brc.specify.tasks.BaseTask;
+import edu.ku.brc.specify.tasks.PermissionOptionPersist;
 
 public class DataBuilder
 {
@@ -2224,14 +2227,14 @@ public class DataBuilder
     public static SpecifyUser createSpecifyUser(final String name,
                                                 final String email,
                                                 final String password,
-                                                final SpPrincipal userGroup,
+                                                final Map<String, SpPrincipal> groupMap,
                                                 final String userType)
     {
         SpecifyUser specifyuser = new SpecifyUser();
         specifyuser.initialize();
         specifyuser.setEmail(email);
         specifyuser.setPassword(password);
-        specifyuser.addUserToSpPrincipalGroup(userGroup);
+        specifyuser.addUserToSpPrincipalGroup(groupMap.get(userType));
         specifyuser.setName(name);
         specifyuser.setUserType(userType);
         persist(specifyuser);
@@ -2281,7 +2284,35 @@ public class DataBuilder
         persist(specifyuser);
         return specifyuser;
     }
-    
+
+    public static void createAndAddTesterToCollection(
+            final String             name,
+            final String             email,
+            final String             pwd,
+            final String             title,
+            final String             first,
+            final String             middle,
+            final String             last,
+            final String             abbrev,
+            Discipline               discipline, 
+            Division                 division, 
+            Map<String, SpPrincipal> groupMap, 
+            String                   userType) 
+    {
+        // Tester
+        Agent       testerAgent = createAgent(title, first, middle, last, abbrev, email);
+        testerAgent.setDivision(division);
+        SpecifyUser testerUser = createSpecifyUser(name, email, pwd, groupMap, userType);
+
+        SpPrincipal testerUserPrincipal = DataBuilder.createUserPrincipal(testerUser);
+        testerUser.addUserToSpPrincipalGroup(testerUserPrincipal);
+        discipline.addReference(testerAgent, "agents");
+        testerUser.addReference(testerAgent, "agents");
+
+        persist(testerUser);
+        persist(testerAgent);
+    }
+
 //    public static UserPermission createUserPermission(SpecifyUser owner, 
 //                                                      Discipline objDef, 
 //                                                      boolean adminPrivilege, 
@@ -2307,35 +2338,6 @@ public class DataBuilder
         return taxoncitation;
     }
 
-//  public static SpPrincipal createPrincipalGroup(final String name)
-//  {
-//      SpPrincipal usergroup = new SpPrincipal();
-//      usergroup.initialize();
-//      usergroup.setName(name);
-//      usergroup.setPrincipalSubtypeClass(GroupPrincipal.class.getCanonicalName());
-//      persist(usergroup);
-//      return usergroup;
-//  }
-    
-    public static SpPrincipal findGroup(List<SpPrincipal> 		groups,
-    									UserGroupScope 			scope,
-    									String 					groupType)
-    {
-    	for (SpPrincipal group : groups)
-    	{
-    	    if (group.getScope().getId() != null && scope.getId() != null && scope.getId().equals(group.getScope().getId()))
-    	    {
-    	        return group;
-    	    }
-    	    
-    		if (group.getScope() == scope && group.getGroupType().equals(groupType))
-    		{
-    			return group;
-    		}
-    	}
-    	return null;
-    }
-    
     public static SpPrincipal createGroup(final String name, final String type, final UserGroupScope scope)
     {
         SpPrincipal usergroup = new SpPrincipal();
@@ -2348,7 +2350,7 @@ public class DataBuilder
         return usergroup;    
     }
     
-    public static SpPrincipal createAdminPrincipal(final String name, final UserGroupScope scope)
+    public static SpPrincipal createAdminGroup(final String name, final UserGroupScope scope)
     {
         SpPrincipal groupPrincipal = new SpPrincipal();
         groupPrincipal.initialize();
@@ -2365,6 +2367,7 @@ public class DataBuilder
         userPrincipal.initialize();
         userPrincipal.setName(user.getName());
         userPrincipal.setGroupSubClass(UserPrincipal.class.getCanonicalName());
+        user.getSpPrincipals().add(userPrincipal);
         persist(userPrincipal);
         return userPrincipal;   
     }
@@ -2399,92 +2402,77 @@ public class DataBuilder
     	return perm;
     }
 
+    // TODO: move this property up where it belongs
+    /** Maps usertype strings to the name of the default groups */
+    static Map<String, String> usertypeToDefaultGroup;
     
     /**
-     * @return the DOM to process
+     * Load definition of default groups
      */
-    protected static Element getStandardGroupsDOM() throws Exception
+    private static void loadDefaultGroupDefinitions()
     {
-    	boolean doingLocal = true;
-    	String localFileName = "backstop" + File.separator + "security.xml";
-    	
-    	if (doingLocal)
+        if (usertypeToDefaultGroup != null)
         {
-            return XMLHelper.readDOMFromConfigDir(localFileName);
+            // already loaded
+            return;
         }
         
-        AppContextMgr mgr = AppContextMgr.getInstance();
-        if (mgr != null)
-        {
-            return mgr.getResourceAsDOM("security");
-            
-        }
-        return XMLHelper.readDOMFromConfigDir(localFileName);
+        usertypeToDefaultGroup = new HashMap<String, String>();
+        usertypeToDefaultGroup.put("CollectionManager", "Collection Managers");
+        usertypeToDefaultGroup.put("DataEntry", "Data Entry");
+        usertypeToDefaultGroup.put("Guest", "Guests");
     }
 
     /**
-     * Loads default groups from configuration file
+     * Create default groups under the given scope.
      *
      */
-    public static void createStandardGroups(List<SpPrincipal> groups, final UserGroupScope scope)
+    public static Map<String, SpPrincipal> createStandardGroups(final UserGroupScope scope)
     {
-        try
-        {
-            Element root  = getStandardGroupsDOM();
-            
-            if (root != null)
-            {
-            	String permClass = BasicSpPermission.class.getCanonicalName();
-            	
-            	String nodePath = "/Security/DefaultUserGroups[@scope='"+scope.getDataClass().getSimpleName()+"']";
-                Node defaultUserGroupsNode = root.selectSingleNode(nodePath);
-                if (defaultUserGroupsNode != null)
-                {
-                    List<?> userGroups = defaultUserGroupsNode.selectNodes("UserGroup");
-                    for ( Object userGroupObj : userGroups)
-                    {
-                        Element userGroupElement = (Element) userGroupObj;
+        loadDefaultGroupDefinitions();
+        
+        Map<String, SpPrincipal> groupMap = new HashMap<String, SpPrincipal>();
+
+        for (String usertype : usertypeToDefaultGroup.keySet()) {
+            SpPrincipal group = createGroup(usertypeToDefaultGroup.get(usertype), usertype, scope);
+            groupMap.put(usertype, group);
+        }
+        createDefaultPermissions(groupMap);
+
+        return groupMap;
+    }
+
+    public static void createDefaultPermissions(final Map<String, SpPrincipal> groupMap)
+    {
+        createDefaultPermissions("dataobjs.xml", "DO.", groupMap);
+        createDefaultPermissions("prefsperms.xml", "Prefs.", groupMap);
+        //createDefaultPermissions("tasks.xml", "Tasks.", groupMap);
+    }
     
-                        // create user group
-                        String name       = userGroupElement.attributeValue("name");
-                        String type       = userGroupElement.attributeValue("userType");
-                        
-                        SpPrincipal group = createGroup(name, type, scope); 
-                        groups.add(group);
-                        
-                       
-                        Set<SpPrincipal> groupSet = new HashSet<SpPrincipal>();
-                        groupSet.add(group);
-                        
-                        // create permissions
-                        Set<SpPermission> permSet = new HashSet<SpPermission>();
-                        List<?> permissionNodes = userGroupElement.selectNodes("Permissions/Permission");
-                        for ( Object permissionObj : permissionNodes)
-                        {
-                            Element permissionElement = (Element) permissionObj;
-                            String permName = permissionElement.attributeValue("name");
-                            String actions  = userGroupElement.attributeValue("actions");
-                            
-                            SpPermission perm = createPermission(permName, actions, permClass, groupSet);
-                            permSet.add(perm);
-                        }
-                        group.setPermissions(permSet);
-                    }
-                } else
-                {
-                    System.err.println("Couldn't get find ["+nodePath+"]");
-                }
-                    
-            } else
-            {
-            	System.err.println("Couldn't get resource [security]");
-            }
-        } catch (Exception ex)
+    public static void createDefaultPermissions(final String      filename,
+                                                final String      prefix,
+                                                final Map<String, SpPrincipal> groupMap)
+    {
+        Hashtable<String, Hashtable<String, PermissionOptionPersist>> mainHash = 
+            BaseTask.readDefaultPrefsFromXML(filename);
+        
+        Enumeration<String> mainHashKeys = mainHash.keys();
+        while (mainHashKeys.hasMoreElements())
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataBuilder.class, ex);
-            ex.printStackTrace();
-            System.out.println(ex);
+            String permName = mainHashKeys.nextElement();
+            Hashtable<String, PermissionOptionPersist> hash = mainHash.get(permName);
+            Enumeration<String> hashKeys = hash.keys();
+            while (hashKeys.hasMoreElements()) 
+            {
+                String userType = hashKeys.nextElement();
+                PermissionOptionPersist tp = hash.get(userType);
+                SpPermission perm = tp.getSpPermission();
+                persist(perm);
+                Set<SpPrincipal> groupSet = new HashSet<SpPrincipal>();
+                groupSet.add(groupMap.get(userType));
+                perm.setPrincipals(groupSet);
+                perm.setName(prefix + permName);
+            }
         }
     }
 
@@ -3008,5 +2996,29 @@ public class DataBuilder
             this.formatter = formatter;
         }
         
+    }
+
+    /**
+     * Creates the administration group under the discipline provided as argument. Also creates
+     * one admin user under that group.
+     * 
+     * @param institution
+     * @param username
+     * @param email
+     * @param password
+     * @param userType
+     * @return
+     */
+    public static SpecifyUser createAdminGroupAndUser(Institution institution, String username,
+            String email, String password, String userType) 
+    {
+        
+        SpecifyUser specifyAdminUser = createSpecifyUser(username, email, password, userType);
+        SpPrincipal adminGroup       = createAdminGroup("Administrator", institution);
+        specifyAdminUser.addUserToSpPrincipalGroup(adminGroup);
+        createUserPrincipal(specifyAdminUser);
+        persist(specifyAdminUser);
+        
+        return specifyAdminUser;
     }
 }

@@ -10,6 +10,8 @@ import com.thoughtworks.xstream.XStream;
 
 import edu.ku.brc.af.auth.PermissionSettings;
 import edu.ku.brc.af.core.PermissionIFace;
+import edu.ku.brc.specify.datamodel.SpPermission;
+import edu.ku.brc.af.auth.specify.permission.BasicSpPermission;
 
 /**
  * @author rod
@@ -121,6 +123,14 @@ public class PermissionOptionPersist
         return new PermissionSettings(canView, canModify, canDel, canAdd);
     }
     
+    public SpPermission getSpPermission()
+    {
+        SpPermission perm = new SpPermission();
+        perm.setActions(canView, canAdd, canModify, canDel);
+        perm.setPermissionClass(BasicSpPermission.class.getCanonicalName());
+        // XXX set name: perm.setName(taskName)
+        return perm;
+    }
     
     /**
      * @param xstream
