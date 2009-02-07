@@ -127,6 +127,7 @@ public class QueryTask extends BaseTask
     // Static Data Members
     public static final String QUERY                = "Query";
     public static final String SAVE_QUERY           = "Save";
+    public static final String REFRESH_QUERIES      = "RefreshQueries";
     public static final String QUERY_RESULTS_REPORT = "QueryResultsReport";
     protected static final String XML_PATH_PREF     = "Query.XML.Dir";
     
@@ -1269,7 +1270,17 @@ public class QueryTask extends BaseTask
             {
                 deleteQueryFromUI(null, recordSet);
             }
+            return;
         }
+        
+        if (cmdAction.isAction(REFRESH_QUERIES))
+        {
+        	navBoxes.remove(navBox);
+        	loadQueries();
+        	navBoxes.add(navBox);
+        	return;
+        }
+        
         if (cmdAction.isAction(QUERY_RESULTS_REPORT))
         {
             if (cmdAction.getData() instanceof QBResultReportServiceCmdData)

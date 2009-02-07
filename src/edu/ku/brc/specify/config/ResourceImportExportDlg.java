@@ -76,7 +76,11 @@ import edu.ku.brc.specify.datamodel.SpAppResourceDir;
 import edu.ku.brc.specify.datamodel.SpReport;
 import edu.ku.brc.specify.datamodel.SpViewSetObj;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.specify.tasks.QueryTask;
 import edu.ku.brc.specify.tasks.ReportsBaseTask;
+import edu.ku.brc.specify.tools.ireportspecify.MainFrameSpecify;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -496,8 +500,8 @@ public class ResourceImportExportDlg extends CustomDialog
                     File expFile  = new File(dirStr + File.separator + fileName);
                     try
                     {
-                        if (appRes.getMimeType().equals(ReportsBaseTask.REPORTS_MIME) 
-                        		|| appRes.getMimeType().equals(ReportsBaseTask.LABELS_MIME))
+                        if ((appRes.getMimeType().equals(ReportsBaseTask.REPORTS_MIME) 
+                        		|| appRes.getMimeType().equals(ReportsBaseTask.LABELS_MIME)) && !isJasperReport(data))
                         {
                         	writeSpReportResToZipFile(expFile, data, appRes);
                         }
@@ -506,7 +510,7 @@ public class ResourceImportExportDlg extends CustomDialog
                         	FileUtils.writeStringToFile(expFile, data);
                         }
                         
-                    } catch (IOException ex)
+                    } catch (Exception ex)
                     {
                         edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                         edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ResourceImportExportDlg.class, ex);
@@ -780,7 +784,6 @@ public class ResourceImportExportDlg extends CustomDialog
     	{
     		if (resourceSaved)
     		{
-    			//XXX discipline hard-coded
     			((SpecifyAppContextMgr )AppContextMgr.getInstance()).removeAppResourceSp(dir, appRes);
     		}
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
@@ -799,7 +802,7 @@ public class ResourceImportExportDlg extends CustomDialog
      * as well if an equivalent query does not exist in the database.
      *  
      */
-    protected void importSpReportZipResource(final File file)
+    protected String importSpReportZipResource(final File file)
     {
     	boolean resourceSaved = false;
         int index = levelCBX.getSelectedIndex();
@@ -889,180 +892,221 @@ public class ResourceImportExportDlg extends CustomDialog
     	{
     		if (resourceSaved)
     		{
-    			//XXX discipline hard-coded
     			((SpecifyAppContextMgr )AppContextMgr.getInstance()).removeAppResourceSp(dir, appRes);
     		}
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, e);
             log.error(e);
+            return null;
+    	}
+    	if (appRes != null)
+    	{
+    		return appRes.getName();
+    	}
+    	else
+    	{
+    		return null;
     	}
     }
 
-    
+    /**
+     * @param appRes
+     * 
+     * removes appRes and its associated SpReport
+     */
+    protected void removeSpResource(SpAppResource appRes)
+    {
+    	ReportsBaseTask.deleteReportAndResource(null, appRes);
+    }
     
     /**
      * 
      */
     protected void importResource()
-    {
-        int currentTabIndex = tabbedPane.getModel().getSelectedIndex();
-        
-        int levelIndex = levelCBX.getSelectedIndex();
-        if (levelIndex > -1)
-        {
-            String exportedName = null;
-            
-            FileDialog fileDlg = new FileDialog(this, getResourceString("RIE_IMPORT_RES"), FileDialog.LOAD);
-            fileDlg.setVisible(true);
-            
-            String dirStr   = fileDlg.getDirectory();
-            String fileName = fileDlg.getFile();
-            
-            if (StringUtils.isNotEmpty(dirStr) && StringUtils.isNotEmpty(fileName))
-            {
-                String data        = null;
-                File   importFile  = new File(dirStr + File.separator + fileName);
-                String repResourceName = getSpReportResourceName(importFile);
-                boolean isRepResource = repResourceName != null;
-                try
-                {
-                    data = FileUtils.readFileToString(importFile);
-                    
-                } catch (IOException ex)
-                {
-                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ResourceImportExportDlg.class, ex);
-                    ex.printStackTrace();
-                }
-                                
-                if (currentTabIndex == 0)
-                {
-                    int viewIndex = viewSetsList.getSelectedIndex();
-                    if (viewIndex > -1)
-                    {
-                        boolean      isOK = false;
-                        SpViewSetObj vso  = null;
-                        
-                        DataProviderSessionIFace session = null;
-                        try
-                        {
-                            session = DataProviderFactory.getInstance().createSession();
-                            session.beginTransaction();
-                            
-                            vso = (SpViewSetObj)viewSetsList.getSelectedValue();
-                            if (vso.getId() == null)
-                            {
-                                //vso = (SpViewSetObj)vso.clone();
-                            }
-                            SpAppResourceDir appResDir = vso.getSpAppResourceDir();
-                            exportedName = vso.getName();
-                            
-                            if (vso.getSpViewSetObjId() == null)
-                            {
-                                appResDir.getSpPersistedViewSets().add(vso);
-                                vso.setSpAppResourceDir(appResDir);
-                            }
-                            vso.setDataAsString(data);
-                            session.saveOrUpdate(appResDir);
-                            session.saveOrUpdate(vso);
-                            session.commit();
-                            session.flush();
-                            
-                            hasChanged = true;
-                            isOK       = true;
-                            
-                        } catch (Exception ex)
-                        {
-                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ResourceImportExportDlg.class, ex);
-                            session.rollback();
-                            
-                            ex.printStackTrace();
-                            
-                        } finally
-                        {
-                            try
-                            {
-                                session.close();
-                                
-                            } catch (Exception ex)
-                            {
-                                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ResourceImportExportDlg.class, ex);
-                                ex.printStackTrace();
-                            }
-                        }
-                        
-                        if (isOK)
-                        {
-                            viewSetsModel.remove(viewIndex);
-                            viewSetsModel.insertElementAt(vso, viewIndex);
-                            viewSetsList.repaint();
-                        }
-                    }
-                    
-                } else
-                {
-                    int resIndex = resList.getSelectedIndex();
-                    if (resIndex > -1)
-                    {
-                        if (resIndex == 0)
-                        {
-                            try
+{
+	int currentTabIndex = tabbedPane.getModel().getSelectedIndex();
+
+	int levelIndex = levelCBX.getSelectedIndex();
+	if (levelIndex > -1)
+	{
+		String importedName = null;
+
+		FileDialog fileDlg = new FileDialog(this,
+				getResourceString("RIE_IMPORT_RES"), FileDialog.LOAD);
+		fileDlg.setVisible(true);
+
+		String dirStr = fileDlg.getDirectory();
+		String fileName = fileDlg.getFile();
+
+		if (StringUtils.isNotEmpty(dirStr) && StringUtils.isNotEmpty(fileName))
+		{
+			String data = null;
+			File importFile = new File(dirStr + File.separator + fileName);
+			String repResourceName = getSpReportResourceName(importFile); 
+			boolean isSpRepRes = repResourceName != null;
+			boolean isJRRepRes = false;
+			try
+			{
+				data = FileUtils.readFileToString(importFile);
+				isJRRepRes = isJasperReport(data);
+
+			} catch (Exception ex)
+			{
+				edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+				edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(
+						ResourceImportExportDlg.class, ex);
+				ex.printStackTrace();
+				return;
+			}
+			
+			boolean isRepRes = isJRRepRes || isSpRepRes;
+			
+			if (currentTabIndex == 0)
+			{
+				int viewIndex = viewSetsList.getSelectedIndex();
+				if (viewIndex > -1)
+				{
+					boolean isOK = false;
+					SpViewSetObj vso = null;
+
+					DataProviderSessionIFace session = null;
+					try
+					{
+						session = DataProviderFactory.getInstance()
+								.createSession();
+						session.beginTransaction();
+
+						vso = (SpViewSetObj) viewSetsList.getSelectedValue();
+						if (vso.getId() == null)
+						{
+							// vso = (SpViewSetObj)vso.clone();
+						}
+						SpAppResourceDir appResDir = vso.getSpAppResourceDir();
+						importedName = vso.getName();
+
+						if (vso.getSpViewSetObjId() == null)
+						{
+							appResDir.getSpPersistedViewSets().add(vso);
+							vso.setSpAppResourceDir(appResDir);
+						}
+						vso.setDataAsString(data);
+						session.saveOrUpdate(appResDir);
+						session.saveOrUpdate(vso);
+						session.commit();
+						session.flush();
+
+						hasChanged = true;
+						isOK = true;
+
+					} catch (Exception ex)
+					{
+						edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+						edu.ku.brc.exceptions.ExceptionTracker.getInstance()
+								.capture(ResourceImportExportDlg.class, ex);
+						session.rollback();
+
+						ex.printStackTrace();
+
+					} finally
+					{
+						try
+						{
+							session.close();
+
+						} catch (Exception ex)
+						{
+							edu.ku.brc.af.core.UsageTracker
+									.incrHandledUsageCount();
+							edu.ku.brc.exceptions.ExceptionTracker
+									.getInstance().capture(
+											ResourceImportExportDlg.class, ex);
+							ex.printStackTrace();
+						}
+					}
+
+					if (isOK)
+					{
+						viewSetsModel.remove(viewIndex);
+						viewSetsModel.insertElementAt(vso, viewIndex);
+						viewSetsList.repaint();
+					}
+				}
+
+			} else
+			{
+				int resIndex = resList.getSelectedIndex();
+				if (resIndex > -1)
+				{
+					if (resIndex == 0)
+					{
+						try
+						{
+							SpAppResourceDir dir = dirs.get(levelIndex);
+							SpAppResource appRes = new SpAppResource();
+							appRes.initialize();
+
+							SpAppResource fndAppRes = checkForOverrideAppRes(isSpRepRes ? repResourceName
+									: fileName);
+							if (fndAppRes != null)
 							{
-								SpAppResourceDir dir = dirs.get(levelIndex);
-								SpAppResource appRes = new SpAppResource();
-								appRes.initialize();
+								// Show Dialog here and tell them it found a
+								// resource to override by the same name
+								// and ask whether they want to override it
+								// or not
+								String title = UIRegistry
+										.getResourceString("RIE_ConfirmResourceOverwriteTitle");
+								String msg = String
+										.format(
+												UIRegistry
+														.getResourceString("RIE_ConfirmResourceOverwriteMsg"),
+												fndAppRes.getName(),
+												getHierarchicalTitle(fndAppRes
+														.getSpAppResourceDir()));
+								if (!UIRegistry.displayConfirm(title, msg,
+										UIRegistry.getResourceString("Yes"),
+										UIRegistry.getResourceString("Cancel"),
+										JOptionPane.WARNING_MESSAGE))
+								{
+									return;
+								}
+							}
 
-//								Element reportDom = null;
-//								if (isRepResource)
-//								{
-//									reportDom = XMLHelper.readStrToDOM4J(data);
-//								}
-
-								SpAppResource fndAppRes = checkForOverrideAppRes(isRepResource ? repResourceName : fileName);
+							if (isRepRes)
+							{
+								// importReportResource(reportDom, data);
 								if (fndAppRes != null)
 								{
-									if (isRepResource && fndAppRes == null)
+									if (isSpRepRes)
 									{
-										//Show dialog saying it can't be done
-										UIRegistry.displayInfoMsgDlgLocalized("RIE_RepResCantBeOverwritten", fndAppRes.getName(),
-												getHierarchicalTitle(fndAppRes.getSpAppResourceDir()));
-										return;
+										this.removeSpResource(fndAppRes);
 									}
 									else
 									{
-										// Show Dialog here and tell them it found a
-										// resource to override by the same name
-										// and ask whether they want to override it
-										// or not
-										String title = UIRegistry
-											.getResourceString("RIE_ConfirmResourceOverwriteTitle");
-										String msg = String
-											.format(
-													UIRegistry
-															.getResourceString("RIE_ConfirmResourceOverwriteMsg"),
-													fndAppRes.getName(),
-													getHierarchicalTitle(fndAppRes
-															.getSpAppResourceDir()));
-										if (!UIRegistry.displayConfirm(title, msg,
-											UIRegistry.getResourceString("Yes"), 
-											UIRegistry.getResourceString("Cancel"),
-											JOptionPane.WARNING_MESSAGE))
-										{
-											return;
-										}
-									} 								}
-							
-								if (isRepResource)
-								{
-									//importReportResource(reportDom, data);
-									importSpReportZipResource(importFile);
-									//XXX not for release
-									//UIRegistry.displayErrorDlg("Reports cannot be imported yet.");
-									return;
+										//XXX ???????????
+										((SpecifyAppContextMgr) AppContextMgr.getInstance()).removeAppResourceSp(fndAppRes
+						                    .getSpAppResourceDir(), fndAppRes);
+									}
 								}
+								if (isSpRepRes)
+								{
+									importedName = importSpReportZipResource(importFile);
+								}
+								else
+								{
+						            if (MainFrameSpecify.importJasperReport(importFile))
+						            {
+						            	importedName = importFile.getName();
+						            }
+								}
+								if (importedName != null)
+								{
+						            CommandDispatcher.dispatch(new CommandAction(ReportsBaseTask.REPORTS, ReportsBaseTask.REFRESH, null));
+						            CommandDispatcher.dispatch(new CommandAction(QueryTask.QUERY, QueryTask.REFRESH_QUERIES, null));
+								}
+							}
 
+							else
+							{
 								if (fndAppRes != null) // overriding
 								{
 									appRes.setMetaData(fndAppRes.getMetaData());
@@ -1094,46 +1138,49 @@ public class ResourceImportExportDlg extends CustomDialog
 								SpecifyAppContextMgr mgr = (SpecifyAppContextMgr) AppContextMgr
 										.getInstance();
 								mgr.saveResource(appRes);
-							} catch (Exception e)
-							{
-								edu.ku.brc.af.core.UsageTracker
-										.incrHandledUsageCount();
-								edu.ku.brc.exceptions.ExceptionTracker
-										.getInstance().capture(
-												ResourceImportExportDlg.class,
-												e);
-								e.printStackTrace();
 							}
-                        } else
-                        {
-                            resIndex++;
-                            AppResourceIFace appRes = resources.get(resIndex);
-                            exportedName = appRes.getName();
-                            String           fName  = FilenameUtils.getName(exportedName);
-                            String           dbBaseName = FilenameUtils.getBaseName(fileName);
-                            if (dbBaseName.equals(fName))
-                            {
-                                appRes.setDataAsString(data);
-                                ((SpecifyAppContextMgr)AppContextMgr.getInstance()).saveResource(appRes);
-                            }
- 
-                        }
-                    }
-                }
-            }
-            
-            if (exportedName != null)
-            {
-                UIRegistry.getStatusBar().setText(UIRegistry.getLocalizedMessage("RIE_RES_IMPORTED", exportedName));
-            }
-            
-            enableUI();
-        }
-    }
+						} catch (Exception e)
+						{
+							edu.ku.brc.af.core.UsageTracker
+									.incrHandledUsageCount();
+							edu.ku.brc.exceptions.ExceptionTracker
+									.getInstance().capture(
+											ResourceImportExportDlg.class, e);
+							e.printStackTrace();
+						}
+					} else
+					{
+						resIndex++;
+						AppResourceIFace appRes = resources.get(resIndex);
+						importedName = appRes.getName();
+						String fName = FilenameUtils.getName(importedName);
+						String dbBaseName = FilenameUtils.getBaseName(fileName);
+						if (dbBaseName.equals(fName))
+						{
+							appRes.setDataAsString(data);
+							((SpecifyAppContextMgr) AppContextMgr.getInstance())
+									.saveResource(appRes);
+						}
+
+					}
+				}
+			}
+		}
+
+		if (importedName != null)
+		{
+			UIRegistry.getStatusBar().setText(
+					UIRegistry.getLocalizedMessage("RIE_RES_IMPORTED",
+							importedName));
+		}
+
+		enableUI();
+	}
+}
     
     /**
-     * @return
-     */
+	 * @return
+	 */
     protected boolean getMetaInformation(final SpAppResource appRes)
     {
         ResImpExpMetaInfoDlg dlg = new ResImpExpMetaInfoDlg(appRes);
@@ -1142,16 +1189,21 @@ public class ResourceImportExportDlg extends CustomDialog
     }
     
     /**
-     * @param name
-     * @return
-     */
-    protected SpAppResource checkForOverrideAppRes(final String filename/*, final Element dom*/)
+	 * @param name
+	 * @return
+	 */
+    protected SpAppResource checkForOverrideAppRes(final String filename/*
+																		 * ,
+																		 * final
+																		 * Element
+																		 * dom
+																		 */)
     {
     	String name = filename;
-//    	if (dom != null)
-//    	{
-//    		name = XMLHelper.getAttr(dom, "name", filename);
-//    	}
+// if (dom != null)
+// {
+// name = XMLHelper.getAttr(dom, "name", filename);
+// }
     	for (SpAppResourceDir dir : dirs)
         {
             for (SpAppResource ar : dir.getSpAppResources())
@@ -1166,8 +1218,8 @@ public class ResourceImportExportDlg extends CustomDialog
     }
     
     /**
-     * A Virtual Directory Level has been choosen.
-     */
+	 * A Virtual Directory Level has been choosen.
+	 */
     protected void levelSelected()
     {
         int index = levelCBX.getSelectedIndex();
@@ -1199,16 +1251,19 @@ public class ResourceImportExportDlg extends CustomDialog
     }
     
     
-    //------------------------------------------------------------------------------------------------------
-    //--
-    //------------------------------------------------------------------------------------------------------
+    // ------------------------------------------------------------------------------------------------------
+    // --
+    // ------------------------------------------------------------------------------------------------------
     class ARListRenderer extends DefaultListCellRenderer
     {
         private String databaseStr = getResourceString("RIE_FROM_DATABASE");
         
-        /* (non-Javadoc)
-         * @see javax.swing.DefaultListCellRenderer#getListCellRendererComponent(javax.swing.JList, java.lang.Object, int, boolean, boolean)
-         */
+        /*
+		 * (non-Javadoc)
+		 * 
+		 * @see javax.swing.DefaultListCellRenderer#getListCellRendererComponent(javax.swing.JList,
+		 *      java.lang.Object, int, boolean, boolean)
+		 */
         @Override
         public Component getListCellRendererComponent(JList list,
                                                       Object value,

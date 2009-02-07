@@ -942,38 +942,37 @@ public class ReportsBaseTask extends BaseTask
         {
             resource = (SpAppResource) appRes;
         }
-        else
-        {
-            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-            boolean transOpen = false;
-            try
-            {
-                SpReport rep = (SpReport) session.getData("from SpReport where id = " + reportId);
-                if (rep != null)
-                {
-                    resource = rep.getAppResource();
-                    session.beginTransaction();
-                    transOpen = true;
-                    session.delete(rep);
-                    session.commit();
-                    transOpen = false;
-                }
-            }
-            catch (Exception e)
-            {
-                UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ReportsBaseTask.class, e);
-                if (transOpen)
-                {
-                    session.rollback();
-                }
-                e.printStackTrace();
-            }
-            finally
-            {
-                session.close();
-            }
-        }
+        DataProviderSessionIFace session = DataProviderFactory.getInstance()
+				.createSession();
+		boolean transOpen = false;
+		try 
+		{
+			String hql = reportId != null ? "from SpReport where id = "  + reportId : 
+				"from SpReport where appResourceId = " + resource.getId();
+			SpReport rep = (SpReport) session.getData(hql);
+			if (rep != null) 
+			{
+				resource = rep.getAppResource();
+				session.beginTransaction();
+				transOpen = true;
+				session.delete(rep);
+				session.commit();
+				transOpen = false;
+			}
+		} catch (Exception e) 
+		{
+			UsageTracker.incrHandledUsageCount();
+			edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(
+					ReportsBaseTask.class, e);
+			if (transOpen) 
+			{
+				session.rollback();
+			}
+			e.printStackTrace();
+		} finally 
+		{
+			session.close();
+		}
         if (resource != null)
         {
             ((SpecifyAppContextMgr) AppContextMgr.getInstance()).removeAppResourceSp(resource
@@ -982,8 +981,8 @@ public class ReportsBaseTask extends BaseTask
     }
     
     /**
-     * @param recordSets
-     */
+	 * @param recordSets
+	 */
     protected void deleteReportFromUI(final String btnName)
     {
         Pair<NavBoxIFace, NavBoxItemIFace> btn = findDnDBtn(btnName);
