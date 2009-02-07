@@ -13,84 +13,18 @@
                  is no need to specify permissions for administrators here. -->                   
         </UserGroup>
 
-        <UserGroup name="Guest"
-                   spPrincipalClass="edu.ku.brc.af.auth.specify.principal.GroupPrincipal"
-                   userType="Guest">
-
-            <Permissions>
-                <!-- Default permissions for this group
-
-                    Possible permission names are: 
-                        View.<View Name>
-                        Examples: 
-                            View.Agent          (Agent view in all viewset)
-                            View.*              (All views in all viewset))
-                            
-                            Task.StartUpTask    (StartUpTask)
-                            Task.TaxonTreeTask  (TaxonTreeTask)
-                            Task.*				(All tasks)
-                    
-                    Possible actions names are: none, view, add, modify, delete
-                -->
-
-                <Permission name="View.Global.*"         actions="none"/>
-                <Permission name="View.SystemSetup.*"     actions="none"/>
-                <Permission name="View.Search.*"         actions="none"/>
-                <Permission name="View.Editor.*"         actions="none"/>
-                <Permission name="View.Preferences.*"     actions="none"/>
-            </Permissions>
-                   
-        </UserGroup>
-
-        <UserGroup name="Web"
-                   spPrincipalClass="edu.ku.brc.af.auth.specify.principal.GroupPrincipal">
-
-            <Permissions>
-                <Permission name="View.*" actions="none"/>
-            </Permissions>
-                   
-        </UserGroup>
     </DefaultUserGroups>  <!-- for Institutions -->
     
     
     <DefaultUserGroups scope="Discipline">
-        <UserGroup     name="Discipline Manager"
-                    spPrincipalClass="edu.ku.brc.af.auth.specify.principal.GroupPrincipal"
-                    userType="CollectionManager">
-
-            <Permissions>
-                <Permission name="View.*" actions="view,add,modify,delete"/>
-                <Permission name="SensitiveData" actions="view,add,modify,delete"/>
-                <Permission name="Admin.Scope" actions="view,add,modify,delete" target="THIS_SCOPE_ID"/>
-            </Permissions>
-        </UserGroup>
-        
-        <UserGroup     name="Data Entry"
-                    userType="Guest">
-
-            <Permissions>
-                <Permission name="View.*" actions="view,add,modify"/>
-                <Permission name="SensitiveData" actions="view"/>
-            </Permissions>
-        </UserGroup>
-        
-        <UserGroup     name="Guest"
-                    spPrincipalClass="edu.ku.brc.af.auth.specify.principal.GroupPrincipal"
-                    userType="Guest">
-
-            <Permissions>
-                <Permission name="View.*" actions="view"/>
-                <Permission name="SensitiveData" actions="none"/>
-            </Permissions>
-        </UserGroup>
-                    
-    </DefaultUserGroups>  <!-- for Disciplines -->
-
+    	<!--  We'll have groups only under collections for now. So no groups are defined here. -->
+    </DefaultUserGroups>
 
     <DefaultUserGroups scope="Collection">
-        <UserGroup     name="Collection Manager"
-                    spPrincipalClass="edu.ku.brc.af.auth.specify.principal.GroupPrincipal"
-                    userType="CollectionManager">
+        <UserGroup 
+        		name="Collection Manager"
+            	spPrincipalClass="edu.ku.brc.af.auth.specify.principal.GroupPrincipal"
+            	userType="CollectionManager">
 
             <Permissions>
                 <Permission name="View.*" actions="view,add,modify,delete"/>
@@ -98,9 +32,10 @@
             </Permissions>
         </UserGroup>
         
-        <UserGroup     name="Data Entry"
-                    spPrincipalClass="edu.ku.brc.af.auth.specify.principal.GroupPrincipal"
-                    userType="Guest">
+        <UserGroup
+        		name="Data Entry"
+                spPrincipalClass="edu.ku.brc.af.auth.specify.principal.GroupPrincipal"
+                userType="DataEntry">
 
             <Permissions>
                 <Permission name="View.*" actions="view,add,modify"/>
@@ -108,9 +43,10 @@
             </Permissions>
         </UserGroup>
         
-        <UserGroup     name="Guest"
-                    spPrincipalClass="edu.ku.brc.af.auth.specify.principal.GroupPrincipal"
-                    userType="Guest">
+        <UserGroup 
+				name="Guest"
+                spPrincipalClass="edu.ku.brc.af.auth.specify.principal.GroupPrincipal"
+                userType="Guest">
 
             <Permissions>
                 <Permission name="View.*" actions="view"/>

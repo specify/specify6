@@ -160,15 +160,6 @@ public class NavigationTreeContextMenuMgr extends MouseAdapter implements TreeSe
             // object is a collection: offer to add new group and to delete the collection
             return getCollectionNodeContextMenu(clickedElement);
             
-        } else if (dmObject instanceof Discipline)
-        {
-            // object is a discipline: offer to add new collection and to delete the discipline
-            return getDisciplineNodeContextMenu(clickedElement);
-            
-        } else if (dmObject instanceof Institution)
-        {
-            // object is a user group: offer to add new discipline
-            return getInstitutionNodeContextMenu(clickedElement);
         }
 
         return null;
@@ -220,10 +211,6 @@ public class NavigationTreeContextMenuMgr extends MouseAdapter implements TreeSe
         JPopupMenu groupNodeContextMenu = new JPopupMenu("Collection Context Menu");
         // add new group feature disabled temporarily
         //groupNodeContextMenu.add(new AddNewGroupAction(clickedElement, getTreeMgr()));
-        boolean canDelete = getTreeMgr().canDeleteItem((DefaultMutableTreeNode) clickedElement.getLastPathComponent());
-        DeleteUserGroupScopeAction deleteAction = new DeleteUserGroupScopeAction("Collection", clickedElement, getTreeMgr());
-        deleteAction.setEnabled(canDelete);
-        groupNodeContextMenu.add(deleteAction);
         return groupNodeContextMenu;
     }
 
