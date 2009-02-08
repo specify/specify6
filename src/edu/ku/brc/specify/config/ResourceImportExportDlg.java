@@ -1243,10 +1243,10 @@ public class ResourceImportExportDlg extends CustomDialog
                 viewSetsModel.addElement(vso);
             }
             
-            if (viewSetsModel.size() > 0)
-            {
-                viewSetsList.setSelectedIndex(0);
-            }
+            viewSetsList.setSelectedIndex(viewSetsModel.size() > 0 ? 0 : -1);
+            
+            enableUI();
+            
         }
     }
     
