@@ -97,6 +97,7 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
     protected JButton                cancelBtn;
     
     protected DatabasePanel          userPanel;
+    protected TaxonTreeDefPanel      taxonTDPanel;
     protected DBLocationPanel        locationPanel;
     
     protected int                    step     = 0;
@@ -201,6 +202,9 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
         
         userPanel = new DatabasePanel(nextBtn, true);
         panels.add(userPanel);
+               
+        taxonTDPanel = new TaxonTreeDefPanel(nextBtn, userPanel);
+        panels.add(taxonTDPanel);
                
         UIFieldFormatterMgr.setDoingLocal(true);
         

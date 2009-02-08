@@ -721,22 +721,25 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
     @Transient
     public List<CollectingEvent> getCollectingEvents()
     {
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        try
+        if (getId() != null)
         {
-            if (session != null)
+            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            try
             {
-                List<CollectingEvent> ces = (List<CollectingEvent>)session.getDataList("FROM CollectingEvent WHERE localityId = "+getId());
-                for (CollectingEvent ce : ces)
+                if (session != null)
                 {
-                    ce.getCollectionObjects().size(); // force load of COs
+                    List<CollectingEvent> ces = (List<CollectingEvent>)session.getDataList("FROM CollectingEvent WHERE localityId = "+getId());
+                    for (CollectingEvent ce : ces)
+                    {
+                        ce.getCollectionObjects().size(); // force load of COs
+                    }
+                    return ces;
                 }
-                return ces;
             }
-        }
-        finally
-        {
-            session.close();
+            finally
+            {
+                session.close();
+            }
         }
         return null;
     }

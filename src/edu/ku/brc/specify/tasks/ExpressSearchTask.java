@@ -425,7 +425,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                     queryCount     = 0;
                     queryCountDone = 0;
                     
-                    
+                    int cnt = 0;
                     for (SearchTableConfig table : config.getTables())
                     {
                         if (!table.getTableInfo().isHidden())
@@ -434,16 +434,28 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                             {
                                 if (table.getTableInfo().getPermissions().canView())
                                 {
-                                    startSearchJPA(esrPane, table, searchTerm, ESTermParser.getInstance().getFields());
+                                    if (startSearchJPA(esrPane, table, searchTerm, ESTermParser.getInstance().getFields()) != null)
+                                    {
+                                        cnt++;
+                                    }
                                 } else
                                 {
                                     log.debug("Skipping ["+table.getTableInfo().getTitle()+"]");
                                 }
                             } else
                             {
-                                startSearchJPA(esrPane, table, searchTerm, ESTermParser.getInstance().getFields());
+                                if (startSearchJPA(esrPane, table, searchTerm, ESTermParser.getInstance().getFields()) != null)
+                                {
+                                    cnt++;
+                                }
                             }
                         }
+                    }
+                    
+                    if (cnt == 0)
+                    {
+                        setUserInputToNotFound("NO_FIELDS_TO_SEARCH", true);
+                        return false;
                     }
                     
                     // Check to see if any queries got started.
@@ -462,8 +474,12 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                 
             } else
             {
-                startSearchJPA(esrPane, context, searchTerm, ESTermParser.getInstance().getFields());
-                return true;
+                if (startSearchJPA(esrPane, context, searchTerm, ESTermParser.getInstance().getFields()) != null)
+                {
+                    return true;
+                }
+                setUserInputToNotFound("NO_FIELDS_TO_SEARCH", true);
+                return true; // if we return false then this error gets overwritten with a different error
             }
         } else
         {

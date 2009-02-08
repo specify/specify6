@@ -60,8 +60,8 @@ public class DataObjFieldFmtListEdtDlg extends FmtListEditorDlgBase
                                      final UIFieldFormatterMgr   uiFieldFormatterMgrCache) throws HeadlessException
     {
         super(frame, 
-                "DOF_DLG_TITLE",
-                "DOF_LIST_EDITOR", 
+                "DOF_DLG_AVAIL_TITLE",
+                "DOF_LIST_EDITOR",  // HelpContext
                 tableInfo, 
                 dataObjFieldFormatMgrCache, 
                 uiFieldFormatterMgrCache);

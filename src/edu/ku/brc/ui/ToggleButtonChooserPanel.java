@@ -555,6 +555,21 @@ public class ToggleButtonChooserPanel<T> extends JPanel implements ActionListene
         }
         return list;
     }
+    
+    /**
+     * @return true if at least one item is selected.
+     */
+    public boolean hasSelection()
+    {
+        for (JToggleButton tb : buttons)
+        {
+            if (tb.isSelected())
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      * @param okBtn the okBtn to set

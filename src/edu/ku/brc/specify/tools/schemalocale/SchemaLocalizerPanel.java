@@ -225,7 +225,7 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
                                                                   ",6px,p,2px,p,2px,p"  // formatter, aggregator & weblink panel
                                                                   ));
         
-        topInner.add(tblDescLbl = createI18NFormLabel("SL_NAME", SwingConstants.RIGHT), cc.xy(1, y));
+        topInner.add(tblDescLbl = createI18NFormLabel("SL_LABEL", SwingConstants.RIGHT), cc.xy(1, y));
         topInner.add(tblNameText, cc.xy(3, y)); y += 2;
         
         if (includeHiddenUI)

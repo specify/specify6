@@ -37,7 +37,7 @@ public class DataObjAggListEdtDlg extends FmtListEditorDlgBase
         throws HeadlessException
     {
         super(frame, 
-              "DOA_DLG_TITLE",
+              "DOA_DLG_AVAIL_TITLE",
               "DOA_LIST_EDITOR", 
               tableInfo, 
               dataObjFieldFormatMgrCache, 

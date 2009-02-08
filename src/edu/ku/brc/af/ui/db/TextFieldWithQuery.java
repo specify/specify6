@@ -51,7 +51,6 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.PopupMenuEvent;
@@ -75,6 +74,7 @@ import edu.ku.brc.dbsupport.CustomQueryIFace;
 import edu.ku.brc.dbsupport.CustomQueryListener;
 import edu.ku.brc.dbsupport.JPAQuery;
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -209,9 +209,10 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             }
         });
         
-        textField.getDocument().addDocumentListener(new DocumentListener() 
+        textField.getDocument().addDocumentListener(new DocumentAdaptor() 
         {
-            protected void check()
+            @Override
+            protected void changed(DocumentEvent e)
             {
                 prevEnteredText = textField.getText();
                 boolean oldWasCleared = wasCleared;
@@ -227,21 +228,6 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                         notifyListenersOfChange(StringUtils.isEmpty(prevEnteredText) ? null : TextFieldWithQuery.this);
                     }
                 }
-            }
-            @Override
-            public void changedUpdate(DocumentEvent e)
-            {
-                check();
-            }
-            @Override
-            public void insertUpdate(DocumentEvent e)
-            {
-                check();
-            }
-            @Override
-            public void removeUpdate(DocumentEvent e)
-            {
-                check();
             }
         });
         

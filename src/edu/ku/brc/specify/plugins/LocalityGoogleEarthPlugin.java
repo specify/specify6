@@ -107,7 +107,7 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
         } else if (locality != null)
         {
             List<CollectingEvent> collectingEvents = locality.getCollectingEvents();
-            if (collectingEvents.size() > 0)
+            if (collectingEvents != null && collectingEvents.size() > 0)
             {
                 ImageIcon img = imageIcon != null ? imageIcon : IconManager.getIcon("collectingevent", IconManager.IconSize.Std32);
                 for (CollectingEvent colEv : collectingEvents)
@@ -228,7 +228,7 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
             {
                 locality = (Locality)value;
                 List<CollectingEvent> collectingEvents = locality.getCollectingEvents();
-                if (collectingEvents.size() == 1)
+                if (collectingEvents != null && collectingEvents.size() == 1)
                 {
                     ce = collectingEvents.get(0);
                     if (ce.getCollectionObjects().size() == 1)
