@@ -746,6 +746,11 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
      */
     protected void doSchemaConfig(final Byte schemaType, final DBTableIdMgr tableMgr)
     {
+        if (isTabsClosed())
+        {
+            return;
+        }
+        
         boolean ok = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).displayAgentsLoggedInDlg("SystemSetupTask.SCHEMA_CFG");
         if (!ok)
         {
