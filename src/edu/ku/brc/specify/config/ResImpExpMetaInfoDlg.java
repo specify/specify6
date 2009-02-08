@@ -125,7 +125,7 @@ public class ResImpExpMetaInfoDlg extends CustomDialog
         
         contentPanel = pb.getPanel();
         mainPanel.add(contentPanel, BorderLayout.CENTER);
-
+        pack();
     }
 
     /* (non-Javadoc)

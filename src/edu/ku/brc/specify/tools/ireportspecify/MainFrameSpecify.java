@@ -256,7 +256,7 @@ public class MainFrameSpecify extends MainFrame
      * @param jasperFile
      * @return true if the report is successfully imported, otherwise return false.
      */
-    public static boolean importJasperReport(final File jasperFile)
+    public static boolean importJasperReport(final File jasperFile, boolean confirmOverwrite)
     {
         ByteArrayOutputStream xml = null;
         try
@@ -271,7 +271,7 @@ public class MainFrameSpecify extends MainFrame
             UIRegistry.getStatusBar().setErrorMessage(e.getLocalizedMessage(), e);
             return false;
         }
-        AppResAndProps resApp = getAppRes(jasperFile.getName(), null, true);
+        AppResAndProps resApp = getAppRes(jasperFile.getName(), null, confirmOverwrite);
         if (resApp != null)
         {
             String metaData = resApp.getAppRes().getMetaData();
@@ -626,7 +626,26 @@ public class MainFrameSpecify extends MainFrame
         else
         {
             String mime = appRes.getMimeType();
-            repType = mime.equals(ReportsBaseTask.LABELS_MIME) ? "Label" : "Report";
+            String reportType = appRes.getMetaDataMap().getProperty("reporttype", null);
+            if (mime.equals(ReportsBaseTask.LABELS_MIME))
+            {
+            	repType = "Label";
+            }
+            else if (mime.equals(ReportsBaseTask.SUBREPORTS_MIME))
+            {
+            	repType = "Subreport";
+            }
+            else
+            {
+            	if (reportType != null && reportType.equalsIgnoreCase("invoice"))
+            	{
+            		repType = "Invoice";
+            	}
+            	else
+            	{
+            		repType = "Report";
+            	}
+            }
         }
         RepResourcePropsPanel propPanel = new RepResourcePropsPanel(repResName, repType, tableId == null, rep);
         boolean goodProps = false;
@@ -729,15 +748,32 @@ public class MainFrameSpecify extends MainFrame
             modifiedRes.setDescription(propPanel.getNameTxt().getText().trim());
             modifiedRes.setLevel(Short.valueOf(propPanel.getLevelTxt().getText()));
             String metaDataStr = "tableid=" + propPanel.getTableId() + ";";
-            metaDataStr += "reporttype=Report";
-            if (propPanel.getTypeCombo().getSelectedIndex() == 0)
+            if (propPanel.getTypeCombo().getSelectedIndex() == 2)
             {
-                modifiedRes.setMimeType("jrxml/report"); 
+            	metaDataStr += "reporttype=Invoice;";
             }
             else
             {
+            	metaDataStr += "reporttype=Report;";
+            }
+            if (propPanel.getSubReportsTxt().getText() != null)
+            {
+            	metaDataStr += "subreports=" + propPanel.getSubReportsTxt().getText() + ";";
+            }
+            
+            if (propPanel.getTypeCombo().getSelectedIndex() == 3)
+            {
+                modifiedRes.setMimeType("jrxml/subreport"); 
+            }
+            else if (propPanel.getTypeCombo().getSelectedIndex() == 1)
+            {
                 modifiedRes.setMimeType("jrxml/label"); 
             }
+            else
+            {
+                modifiedRes.setMimeType("jrxml/report"); 
+            }
+           	
             if (StringUtils.isNotEmpty(modifiedRes.getMetaData()))
             {
                 /* Assuming ReportResources only get edited by this class...

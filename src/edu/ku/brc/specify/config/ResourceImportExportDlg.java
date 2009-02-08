@@ -538,12 +538,19 @@ public class ResourceImportExportDlg extends CustomDialog
     /**
      * @param data
      * @return true if data is a Jasper report definition (a .jrxml file).
-     * @throws Exception
+     * 
      */
-    protected boolean isJasperReport(final String data) throws Exception
+    protected boolean isJasperReport(final String data)
     {
-    	Element element = XMLHelper.readStrToDOM4J(data);
-    	return element.getDocument().getDocType().getName().equals("jasperReport");
+    	try
+    	{
+    		Element element = XMLHelper.readStrToDOM4J(data);
+    		return element.getDocument().getDocType().getName().equals("jasperReport");
+    	}
+    	catch (Exception ex)
+    	{
+    		return false;
+    	}
     }
     
     /**
@@ -1093,7 +1100,7 @@ public class ResourceImportExportDlg extends CustomDialog
 								}
 								else
 								{
-						            if (MainFrameSpecify.importJasperReport(importFile))
+						            if (MainFrameSpecify.importJasperReport(importFile, false))
 						            {
 						            	importedName = importFile.getName();
 						            }

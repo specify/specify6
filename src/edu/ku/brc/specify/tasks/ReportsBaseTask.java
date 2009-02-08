@@ -96,6 +96,7 @@ public class ReportsBaseTask extends BaseTask
     public static final String           REPORTS             = "Reports";
     public static final String           REPORTS_MIME        = "jrxml/report";
     public static final String           LABELS_MIME         = "jrxml/label";
+    public static final String			 SUBREPORTS_MIME     = "jrxml/subreport";
     public static final String           RECORDSET_PARAM     = "itemnum";
 
     // public static final String DOLABELS_ACTION = "DoLabels";
@@ -1264,7 +1265,7 @@ public class ReportsBaseTask extends BaseTask
 
         if (file.exists())
         {
-            if (MainFrameSpecify.importJasperReport(file))
+            if (MainFrameSpecify.importJasperReport(file, true))
             {
                 refreshCommands();
             }

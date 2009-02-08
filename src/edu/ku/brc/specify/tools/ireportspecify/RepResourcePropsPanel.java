@@ -66,6 +66,7 @@ public class RepResourcePropsPanel extends JPanel
     protected JTextField nameTxt;
     protected JTextField titleTxt;
     protected JTextField levelTxt;
+    protected JTextField subReportsTxt;
     protected JComboBox typeCombo;
     protected JComboBox resDirCombo;
     protected JComboBox tblCombo;
@@ -140,7 +141,7 @@ public class RepResourcePropsPanel extends JPanel
 //                                                                                       // typeCombo.
 
         //Hiding Collection and Level
-        String rowDefStr = showTableIds ? "p,p,p,p,p,p,10dlu" : "p,p,p,p,p,10dlu"; 
+        String rowDefStr = showTableIds ? "p,p,p,p,p,p,p,10dlu" : "p,p,p,p,p,p,10dlu"; 
 
         PanelBuilder builder = new PanelBuilder(new FormLayout("right:p, 2dlu, fill:p:grow", rowDefStr), this);
         CellConstraints cc = new CellConstraints();
@@ -165,10 +166,21 @@ public class RepResourcePropsPanel extends JPanel
         typeCombo = UIHelper.createComboBox();
         typeCombo.addItem(UIRegistry.getResourceString("REP_REPORT"));
         typeCombo.addItem(UIRegistry.getResourceString("REP_LABEL"));
+        typeCombo.addItem(UIRegistry.getResourceString("REP_INVOICE"));
+        typeCombo.addItem(UIRegistry.getResourceString("REP_SUBREPORT"));
         if (reportType != null && reportType.equals("Label"))
         {
             typeCombo.setSelectedIndex(1);
         }
+        else if (reportType != null && reportType.equals("Invoice"))
+        {
+            typeCombo.setSelectedIndex(2);
+        }
+        else if (reportType != null && reportType.equals("Subreport"))
+        {
+            typeCombo.setSelectedIndex(2);
+        }
+
         builder.add(typeCombo, cc.xy(3, 3));
         
         builder.add(UIHelper.createLabel(UIRegistry.getResourceString("REP_RESDIR_LBL")), cc.xy(1,4));
@@ -193,21 +205,25 @@ public class RepResourcePropsPanel extends JPanel
         
         builder.add(resDirCombo, cc.xy(3, 4));
 
+        builder.add(UIHelper.createLabel(UIRegistry.getResourceString("REP_SUBREPS_LBL")), cc.xy(1,5));
+        subReportsTxt = UIHelper.createTextField(null);
+        builder.add(subReportsTxt, cc.xy(3, 5));
+        
         if (showTableIds)
         {
-            builder.add(UIHelper.createLabel(UIRegistry.getResourceString("REP_TBL_LBL")), cc.xy(1,5));
+            builder.add(UIHelper.createLabel(UIRegistry.getResourceString("REP_TBL_LBL")), cc.xy(1,6));
             tblCombo = UIHelper.createComboBox();
             fillTblCombo();
             tblCombo.setSelectedIndex(0);
-            builder.add(tblCombo, cc.xy(3, 5));
+            builder.add(tblCombo, cc.xy(3, 6));
         }
         
         if (rep != null)
         {
-            builder.add(UIHelper.createLabel(UIRegistry.getResourceString("REP_REPEAT_LBL")), cc.xy(1, showTableIds ? 6 : 5));
+            builder.add(UIHelper.createLabel(UIRegistry.getResourceString("REP_REPEAT_LBL")), cc.xy(1, showTableIds ? 7 : 6));
             repeatPanel = new ReportRepeatPanel(rep.getConnection(), canceller);
             repeatPanel.createUI(rep.getSpReport() == null ? null : rep.getSpReport().getRepeats());
-            builder.add(repeatPanel, cc.xy(3, showTableIds ? 6 : 5));
+            builder.add(repeatPanel, cc.xy(3, showTableIds ? 7 : 6));
         }
         else
         {
@@ -413,7 +429,16 @@ public class RepResourcePropsPanel extends JPanel
         return null;
     }
     
+    
     /**
+	 * @return the subReportsTxt
+	 */
+	public JTextField getSubReportsTxt()
+	{
+		return subReportsTxt;
+	}
+
+	/**
      * @return true if all properties are valid.
      */
     public boolean validInputs()
