@@ -746,7 +746,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
      */
     protected void doSchemaConfig(final Byte schemaType, final DBTableIdMgr tableMgr)
     {
-        if (isTabsClosed())
+        if (!isTabsClosed())
         {
             return;
         }
