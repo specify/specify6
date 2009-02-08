@@ -106,9 +106,11 @@ public class DeterminationBusRules extends BaseBusRules
                 	{
                 		if (currentComp instanceof ValCheckBox)
                 		{
-                			((ValCheckBox )currentComp).setSelected(true);
-                		}
-                		else
+                		    // Do this instead of setSelected because
+                		    // this activates the DataChangeListener
+                			((ValCheckBox )currentComp).doClick();
+                			
+                		} else
                 		{
                 			log.error("IsCurrent not set to true because form control is of unexpected type: " + currentComp.getClass().getName());
                 		}
@@ -122,8 +124,7 @@ public class DeterminationBusRules extends BaseBusRules
                 if (determination != null && determination.getPreferredTaxon() != null)
                 {
                     ((JTextField )activeTax).setText(determination.getPreferredTaxon().getFullName());
-                }
-                else
+                } else
                 {
                     ((JTextField )activeTax).setText("");
                 }
