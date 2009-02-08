@@ -3017,7 +3017,6 @@ public class DataBuilder
         SpPrincipal adminGroup       = createAdminGroup("Administrator", institution);
         specifyAdminUser.addUserToSpPrincipalGroup(adminGroup);
         createUserPrincipal(specifyAdminUser);
-        persist(specifyAdminUser);
         
         return specifyAdminUser;
     }

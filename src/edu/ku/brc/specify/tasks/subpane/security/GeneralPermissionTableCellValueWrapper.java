@@ -128,23 +128,25 @@ public class GeneralPermissionTableCellValueWrapper
      */
     public void prepareComponent(GeneralPermissionTableCheckBox customCheckbox)
     {
+        // finally, put itself inside the checkbox
+        customCheckbox.setCellValue(this);
+
         if (isAdmin()) 
         {
             customCheckbox.setText("Always (Admin)");
             customCheckbox.setEnabled(false);
+            customCheckbox.setSelected(true);
         }
         else if (isOverriden())
         {
             customCheckbox.setText("(" + getOverrulingPermissionText() + ")");
             customCheckbox.setEnabled(false);
+            customCheckbox.setSelected(true);
         }
         else
         {
             customCheckbox.setText("");
             customCheckbox.setEnabled(true);
         }
-
-        // finally, put itself inside the checkbox
-        customCheckbox.setCellValue(this);
     }
 }

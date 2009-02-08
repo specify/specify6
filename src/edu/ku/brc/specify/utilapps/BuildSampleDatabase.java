@@ -12,7 +12,6 @@ import static edu.ku.brc.specify.config.init.DataBuilder.buildDarwinCoreSchema;
 import static edu.ku.brc.specify.config.init.DataBuilder.createAccession;
 import static edu.ku.brc.specify.config.init.DataBuilder.createAccessionAgent;
 import static edu.ku.brc.specify.config.init.DataBuilder.createAddress;
-import static edu.ku.brc.specify.config.init.DataBuilder.createAdminGroup;
 import static edu.ku.brc.specify.config.init.DataBuilder.createAgent;
 import static edu.ku.brc.specify.config.init.DataBuilder.createAgentVariant;
 import static edu.ku.brc.specify.config.init.DataBuilder.createAttachment;
@@ -433,8 +432,10 @@ public class BuildSampleDatabase
         institution.setAddress(instAddress);
         instAddress.getInsitutions().add(institution);
         
+        Session dataBuilderSession = switchDataBuilderSession();
         SpecifyUser specifyAdminUser = DataBuilder.createAdminGroupAndUser(institution, 
                 username, email, password, userType);
+        DataBuilder.setSession(dataBuilderSession);
         
         dataType = createDataType("Biota");
         
@@ -569,7 +570,7 @@ public class BuildSampleDatabase
         
 
         // create the standard user groups for this collection
-        Session dataBuilderSession = switchDataBuilderSession();
+        dataBuilderSession = switchDataBuilderSession();
         Map<String, SpPrincipal> groupMap = DataBuilder.createStandardGroups(collection);
 
         // add the administrator as a Collections Manager in this group
@@ -5914,26 +5915,18 @@ public class BuildSampleDatabase
         System.out.println("----- User Agent -----");
         System.out.println("Userame:   "+username);
         
-        List<SpPrincipal> groups = new ArrayList<SpPrincipal>();
-        
         Institution    institution    = createInstitution("Natural History Museum");        
         
-        SpecifyUser user = createSpecifyUser(username, email, password, userType);
-//        SpPrincipal     userPrincipal = DataBuilder.createUserPrincipal(user);
-//        groups.add(userPrincipal);
-        
-        SpPrincipal admin = createAdminGroup("Administrator", institution);
-        groups.add(admin);
-        user.addUserToSpPrincipalGroup(admin);
+        Session dataBuilderSession = switchDataBuilderSession();
+        SpecifyUser specifyAdminUser = DataBuilder.createAdminGroupAndUser(institution, 
+                username, email, password, userType);
+        DataBuilder.setSession(dataBuilderSession);
         
         dataType = createDataType("Biota");
         
         startTx();
         persist(institution);        
-        persist(user); 
-        persist(groups);
         persist(dataType);
-        //persist(admin);
         commitTx();
         
         frame.setProcess(++createStep);
@@ -5943,7 +5936,7 @@ public class BuildSampleDatabase
         if (isChoosen(DisciplineType.STD_DISCIPLINES.fish, false) ||
             isChoosen(DisciplineType.STD_DISCIPLINES.fish, true))
         {
-            createFishCollection(DisciplineType.getDiscipline("fish"), institution, user,
+            createFishCollection(DisciplineType.getDiscipline("fish"), institution, specifyAdminUser,
                                  getChoice(DisciplineType.STD_DISCIPLINES.fish, false));
             //done = true;
         }
@@ -5952,7 +5945,7 @@ public class BuildSampleDatabase
         
         if (isChoosen(DisciplineType.STD_DISCIPLINES.invertpaleo, false))
         {
-            createSingleInvertPaleoCollection(DisciplineType.getDiscipline("invertpaleo"), institution, user, 
+            createSingleInvertPaleoCollection(DisciplineType.getDiscipline("invertpaleo"), institution, specifyAdminUser, 
                     getChoice(DisciplineType.STD_DISCIPLINES.invertpaleo, false));
             //done = true;
         }
@@ -5962,11 +5955,11 @@ public class BuildSampleDatabase
         {
             if (!doHugeBotany)
             {
-                createSingleBotanyCollection(DisciplineType.getDiscipline("botany"), institution, user, 
+                createSingleBotanyCollection(DisciplineType.getDiscipline("botany"), institution, specifyAdminUser, 
                         getChoice(DisciplineType.STD_DISCIPLINES.botany, false));
             } else
             {
-                createHugeBotanyCollection(DisciplineType.getDiscipline("botany"), institution, user, 
+                createHugeBotanyCollection(DisciplineType.getDiscipline("botany"), institution, specifyAdminUser, 
                         getChoice(DisciplineType.STD_DISCIPLINES.botany, false));
             }
             //done = true;
@@ -6007,7 +6000,7 @@ public class BuildSampleDatabase
                 log.debug("Building "+dType.getName());
                 if (XMLHelper.getConfigDir(dType.getName()+ File.separator + "taxon_init.xml").exists())
                 {
-                    createGenericCollection(dType, institution, user,  getChoice(disp, false), method);
+                    createGenericCollection(dType, institution, specifyAdminUser,  getChoice(disp, false), method);
                 }
             }
         }
