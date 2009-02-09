@@ -94,7 +94,8 @@
 	<mapID target="ESConfigRelatedTables"   url="SpecifyHelp/Simple_Search/Simple_Search.html#related_tables"/>
 	
 	<!-- Search Help -->
-	<mapID target="CBXQSearch"              url="SpecifyHelp/Dialogs/CBXQSearch.html"/>
+    <mapID target="CBXQSearch"              url="SpecifyHelp/Dialogs/CBXQSearch.html"/>
+    <mapID target="CBXQViewEdit"            url="SpecifyHelp/Dialogs/CBXQSearch.html"/>
 	
 	<!-- RecordSets -->
 	<mapID target="ChooseRecordSet"         url="SpecifyHelp/Interactions/ChooseRecordSet.html" />
