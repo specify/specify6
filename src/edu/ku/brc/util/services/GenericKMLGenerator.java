@@ -316,11 +316,8 @@ public class GenericKMLGenerator
         sb.append(generateXmlStartTag("Placemark"));
         sb.append(generateXmlElement("name", name));
         
-        if (iconURL != null)
-        {
-            sb.append(generateXmlElement("styleUrl", "#custom"));
-            sb.append("\n");
-        }
+        sb.append(generateXmlElement("styleUrl", "#custom"));
+        sb.append("\n");
         sb.append(generateXmlElement("description", "<![CDATA[" + htmlDesc + "]]>"));
         sb.append("\n");
         sb.append(buildPointAndLookAt(point));

@@ -405,10 +405,10 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
             }
         }
         
-        Color  geBGColor = AppPreferences.getRemote().getColor("google.earth.bgcolor", new Color(0, 102, 179));
+        Color  geBGColor = AppPreferences.getRemote().getColor("google.earth.bgcolor", new Color(0, 102, 179), true);
         String bgColor   = UIHelper.getBGRHexFromColor(geBGColor);
         
-        Color  geFGColor = AppPreferences.getRemote().getColor("google.earth.fgcolor", new Color(255, 255, 255));
+        Color  geFGColor = AppPreferences.getRemote().getColor("google.earth.fgcolor", new Color(255, 255, 255), true);
         String fgColor   = UIHelper.getBGRHexFromColor(geFGColor);
         
         // setup all of the general style stuff

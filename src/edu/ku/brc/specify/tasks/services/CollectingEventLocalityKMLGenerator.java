@@ -208,7 +208,9 @@ public class CollectingEventLocalityKMLGenerator
 	{
 	    int cnt = 0;
 		StringBuilder sb = new StringBuilder("<Placemark>\n");
-		sb.append("<LineString>\n");
+        sb.append(GenericKMLGenerator.generateXmlElement("styleUrl", "#custom"));
+        sb.append("\n");
+        sb.append("<LineString>\n");
 		sb.append("<coordinates>");
 		for( FormDataObjIFace dataObj : dataObjs )
 		{
@@ -254,10 +256,8 @@ public class CollectingEventLocalityKMLGenerator
 
         // build the placemark
         StringBuilder sb = new StringBuilder("<Placemark>\n");
-        {
-            sb.append(GenericKMLGenerator.generateXmlElement("styleUrl", "#custom"));
-            sb.append("\n");
-        }
+        sb.append(GenericKMLGenerator.generateXmlElement("styleUrl", "#custom"));
+        sb.append("\n");
         sb.append("<name>");
         if (label != null)
         {
@@ -387,11 +387,8 @@ public class CollectingEventLocalityKMLGenerator
 
 		// build the placemark
 		StringBuilder sb = new StringBuilder("<Placemark>\n");
-        //if (placemarkIconURL != null)
-        {
-            sb.append(GenericKMLGenerator.generateXmlElement("styleUrl", "#custom"));
-            sb.append("\n");
-        }
+        sb.append(GenericKMLGenerator.generateXmlElement("styleUrl", "#custom"));
+        sb.append("\n");
 		sb.append("<name>");
         if(label != null)
         {
@@ -634,10 +631,8 @@ public class CollectingEventLocalityKMLGenerator
         
         // build the placemark
         StringBuilder sb = new StringBuilder("<Placemark>\n");
-        {
-            sb.append(GenericKMLGenerator.generateXmlElement("styleUrl", "#custom"));
-            sb.append("\n");
-        }
+        sb.append(GenericKMLGenerator.generateXmlElement("styleUrl", "#custom"));
+        sb.append("\n");
         sb.append("<name>");
         if (label != null)
         {

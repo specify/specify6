@@ -22,6 +22,7 @@ import java.util.Vector;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JTextField;
 import javax.swing.event.ChangeListener;
 
 import org.apache.commons.lang.NotImplementedException;
@@ -70,6 +71,7 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
     protected Object                       origData     = null;
     protected boolean                      hasPoints    = false;
     protected ImageIcon                    imageIcon    = null;
+    protected Component                    localityNameComp = null;
     
     protected String                       watchId      = null;
     protected LatLonUI                     latLonPlugin = null;
@@ -114,15 +116,24 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
                 {
                     items.add(new CEPlacemark(colEv, img));
                 }
-            } else
+            } else if (locality != null)
             {
-                ImageIcon img = imageIcon != null ? imageIcon : IconManager.getIcon("locality", IconManager.IconSize.Std32);
-                if (latLon != null && isLatLonOK)
+                Locality geLoc = new Locality();
+                geLoc.initialize();
+                
+                if (localityNameComp != null && localityNameComp instanceof JTextField)
                 {
-                    locality.setLatitude1(latLon.first);
-                    locality.setLongitude1(latLon.second);
+                    geLoc.setLocalityName(((JTextField)localityNameComp).getText());
                 }
-                items.add(new CEPlacemark(locality, img));
+                
+                ImageIcon img = imageIcon != null ? imageIcon : IconManager.getIcon("locality", IconManager.IconSize.Std32);
+                if (geLoc != null && isLatLonOK)
+                {
+                    geLoc.setLatitude1(latLon.first);
+                    geLoc.setLongitude1(latLon.second);
+                    geLoc.setGeography(locality.getGeography());
+                }
+                items.add(new CEPlacemark(geLoc, img));
             }
         }
         
@@ -307,6 +318,8 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
     {
         if (parent != null && StringUtils.isNotEmpty(watchId))
         {
+            localityNameComp = parent.getControlByName("localityName");
+            
             Component comp = parent.getCompById(watchId);
             if (comp instanceof LatLonUI)
             {
@@ -415,7 +428,7 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
             DBTableInfo localityTI = DBTableIdMgr.getInstance().getInfoById(Locality.getClassTableId());
             
             StringBuilder sb = new StringBuilder("<table>");
-            sb.append("<tr><td align=\"right\">");
+            sb.append("<tr><td align=\"right\" nowrap=\"true\">");
             sb.append(localityTI.getFieldByColumnName("localityName").getTitle());
             sb.append(":</td><td align=\"left\">");
             
