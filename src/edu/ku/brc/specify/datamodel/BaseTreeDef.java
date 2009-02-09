@@ -31,7 +31,7 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
-import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
+import edu.ku.brc.specify.dbsupport.TreeDefStatusMgr;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable;
 import edu.ku.brc.specify.treeutils.FullNameRebuilder;
 import edu.ku.brc.specify.treeutils.NodeNumberer;
@@ -53,14 +53,6 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
                                   implements TreeDefIface<N,D,I>
 {
     private static final Logger     log = Logger.getLogger(BaseTreeDef.class);
-
-    
-    protected static transient Boolean nodeNumbersAreUpToDate = null;
-    protected static transient Boolean isRenumberingNodes = null;
-    protected static transient boolean doNodeNumberUpdates = true;
-    protected static transient boolean uploadInProgress = false;
-    protected static transient String nodeNumbersInvalid = "BadNodes";
-    protected static transient String numberingNodes = "UpdateNodes";
     
     protected transient DataProviderSessionIFace nodeUpdateSession = null;
     protected transient QueryIFace nodeQ = null;
@@ -69,21 +61,11 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
     
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#initialize()
-     */
-    @Override
-    public void initialize()
-    {
-        doNodeNumberUpdates = true;
-        uploadInProgress = false;
-    }
-
-    /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.TreeDefIface#nodeNumbersAreCurrent()
      */
     public boolean getNodeNumbersAreUpToDate()
     {
-        return nodeNumbersAreUpToDate;
+        return TreeDefStatusMgr.isNodeNumbersAreUpToDate(this);
     }
     
     /**
@@ -134,7 +116,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
             writeHighestChildNodeNumber(root.getTreeId(), highestChild);
             
             nodeUpdateSession.commit();
-            nodeNumbersAreUpToDate = true;
+            TreeDefStatusMgr.setNodeNumbersAreUpToDate(this, true);
         }
         catch (Exception ex)
         {
@@ -226,7 +208,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
      */
     public boolean getDoNodeNumberUpdates()
     {
-        return doNodeNumberUpdates;
+        return TreeDefStatusMgr.isNodeNumbersAreUpToDate(this);
     }
 
     /* (non-Javadoc)
@@ -234,7 +216,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
      */
     public void setDoNodeNumberUpdates(final boolean arg)
     {
-        doNodeNumberUpdates = arg;
+        TreeDefStatusMgr.setDoNodeNumberUpdates(this, arg);
     }
 
     /* (non-Javadoc)
@@ -242,7 +224,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
      */
     public boolean isUploadInProgress()
     {
-        return uploadInProgress;
+        return TreeDefStatusMgr.isUploadInProgress(this);
     }
 
     /* (non-Javadoc)
@@ -250,7 +232,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
      */
     public void setUploadInProgress(final boolean arg)
     {
-        uploadInProgress = arg;
+        TreeDefStatusMgr.setUploadInProgress(this, arg);
     }
 
     /* (non-Javadoc)
@@ -261,32 +243,33 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
     @Override
     public void setNodeNumbersAreUpToDate(final boolean arg) 
     {
-        if (nodeNumbersAreUpToDate == null || arg != nodeNumbersAreUpToDate)
-        {
-            boolean canSwitch;
-            //seems like a lock is the best way to persist the out-of-date state
-            if (!arg)
-            {
-                TaskSemaphoreMgr.USER_ACTION action = TaskSemaphoreMgr.lock(getNodeNumberUptoDateLockTitle(), getNodeNumberUptoDateLockName(), null, TaskSemaphoreMgr.SCOPE.Discipline, canOverrideLock());
-                canSwitch = action == TaskSemaphoreMgr.USER_ACTION.OK;        
-            }
-            else
-            {
-                if (!TaskSemaphoreMgr.isLocked(getNodeNumberUptoDateLockTitle(), getNodeNumberUptoDateLockName(), TaskSemaphoreMgr.SCOPE.Discipline))
-                {
-                    canSwitch = true;
-                }
-                else
-                {
-                    canSwitch = TaskSemaphoreMgr.unlock(getNodeNumberUptoDateLockTitle(), 
-                            getNodeNumberUptoDateLockName(), TaskSemaphoreMgr.SCOPE.Discipline);
-                }
-            }
-            if (canSwitch)
-            {
-                nodeNumbersAreUpToDate = arg;
-            }
-        }
+    	TreeDefStatusMgr.setNodeNumbersAreUpToDate(this, arg);
+//        if (nodeNumbersAreUpToDate == null || !nodeNumbersAreUpToDate.equals(arg))
+//        {
+//            boolean canSwitch;
+//            //seems like a lock is the best way to persist the out-of-date state
+//            if (!arg)
+//            {
+//                TaskSemaphoreMgr.USER_ACTION action = TaskSemaphoreMgr.lock(getNodeNumberUptoDateLockTitle(), getNodeNumberUptoDateLockName(), null, TaskSemaphoreMgr.SCOPE.Discipline, canOverrideLock());
+//                canSwitch = action == TaskSemaphoreMgr.USER_ACTION.OK;        
+//            }
+//            else
+//            {
+//                if (!TaskSemaphoreMgr.isLocked(getNodeNumberUptoDateLockTitle(), getNodeNumberUptoDateLockName(), TaskSemaphoreMgr.SCOPE.Discipline))
+//                {
+//                    canSwitch = true;
+//                }
+//                else
+//                {
+//                    canSwitch = TaskSemaphoreMgr.unlock(getNodeNumberUptoDateLockTitle(), 
+//                            getNodeNumberUptoDateLockName(), TaskSemaphoreMgr.SCOPE.Discipline);
+//                }
+//            }
+//            if (canSwitch)
+//            {
+//                nodeNumbersAreUpToDate = arg;
+//            }
+//        }
     }
     
     
@@ -520,7 +503,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
         setRenumberingNodes(true);
         setNodeNumbersAreUpToDate(false);
         
-        if (!isRenumberingNodes || nodeNumbersAreUpToDate)
+        if (!TreeDefStatusMgr.isRenumberingNodes(this) || TreeDefStatusMgr.isNodeNumbersAreUpToDate(this))
         {
             //locking issues will hopefully have been made apparent to user during the preceding setXXX calls. 
             UIRegistry.showLocalizedError("BaseTreeDef.UnableToUpdate");
@@ -586,65 +569,35 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
      */
     public void setRenumberingNodes(boolean arg) 
     {
-        if (isRenumberingNodes == null || arg != isRenumberingNodes)
-        {
-            boolean canSwitch;
-            if (arg)
-            {
-                TaskSemaphoreMgr.USER_ACTION action = TaskSemaphoreMgr.lock(getNodeNumberingLockTitle(), getNodeNumberingLockName(), null,
-                                                                            TaskSemaphoreMgr.SCOPE.Discipline, canOverrideLock());
-                canSwitch = TaskSemaphoreMgr.USER_ACTION.OK == action;
-            }
-            else
-            {
-                if (!TaskSemaphoreMgr.isLocked(getNodeNumberingLockTitle(), getNodeNumberingLockName(), TaskSemaphoreMgr.SCOPE.Discipline))
-                {
-                    canSwitch = true;
-                }
-                else
-                {
-                    canSwitch = TaskSemaphoreMgr.unlock(getNodeNumberingLockTitle(), getNodeNumberingLockName(),
-                            TaskSemaphoreMgr.SCOPE.Discipline);
-                }
-            }
-            if (canSwitch)
-            {
-                isRenumberingNodes = arg;
-            }
-        }
+    	TreeDefStatusMgr.setRenumberingNodes(this, arg);
+//        if (isRenumberingNodes == null || !isRenumberingNodes.equals(arg))
+//        {
+//            boolean canSwitch;
+//            if (arg)
+//            {
+//            	TaskSemaphoreMgr.USER_ACTION action = TaskSemaphoreMgr.lock(getNodeNumberingLockTitle(), getNodeNumberingLockName(), null,
+//                                                                            TaskSemaphoreMgr.SCOPE.Discipline, canOverrideLock());
+//                canSwitch = TaskSemaphoreMgr.USER_ACTION.OK == action;
+//            }
+//            else
+//            {
+//                if (!TaskSemaphoreMgr.isLocked(getNodeNumberingLockTitle(), getNodeNumberingLockName(), TaskSemaphoreMgr.SCOPE.Discipline))
+//                {
+//                    canSwitch = true;
+//                }
+//                else
+//                {
+//                    canSwitch = TaskSemaphoreMgr.unlock(getNodeNumberingLockTitle(), getNodeNumberingLockName(),
+//                            TaskSemaphoreMgr.SCOPE.Discipline);
+//                }
+//            }
+//            if (canSwitch)
+//            {
+//                isRenumberingNodes = arg;
+//            }
+//        }
     }
     
-    /**
-     * @return title for nodenumbering lock.
-     */
-    protected String getNodeNumberingLockTitle()
-    {
-        return String.format(UIRegistry.getResourceString("BaseTreeDef.numberingNodes"), getClass().getSimpleName());
-    }
-       
-    /**
-     * @return title for nodenumberuptodate lock.
-     */
-    protected String getNodeNumberUptoDateLockTitle()
-    {
-        return String.format(UIRegistry.getResourceString("BaseTreeDef.nodeNumbersInvalid"), getClass().getSimpleName());
-    }
-    
-    /**
-     * @return  name for nodenumbering lock.
-     */
-    protected String getNodeNumberingLockName()
-    {
-        return numberingNodes + getNodeClass().getSimpleName();
-    }
-    
-    /**
-     * @return name for nodenumberuptodate lock.
-     */
-    protected String getNodeNumberUptoDateLockName()
-    {
-        return nodeNumbersInvalid + getNodeClass().getSimpleName();
-    }
     
     /**
      * @return true if current user is a collection manager.
@@ -666,10 +619,14 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
     public boolean checkNodeNumbersUpToDate() throws Exception
     {
         boolean result;
-        if (!TaskSemaphoreMgr.isLocked(getNodeNumberUptoDateLockTitle(), getNodeNumberUptoDateLockName(), TaskSemaphoreMgr.SCOPE.Discipline))
+//        if (!TaskSemaphoreMgr.isLocked(getNodeNumberUptoDateLockTitle(), getNodeNumberUptoDateLockName(), TaskSemaphoreMgr.SCOPE.Discipline))
+//        {
+//             result = true;
+//             nodeNumbersAreUpToDate = true;
+//        }
+        if (TreeDefStatusMgr.isNodeNumbersAreUpToDate(this))
         {
              result = true;
-             nodeNumbersAreUpToDate = true;
         }
         else
         {
@@ -689,7 +646,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
                 if (dlg.getBtnPressed() == CustomDialog.OK_BTN)
                 {
                     updateAllNodeNumbers(null);
-                    result = nodeNumbersAreUpToDate;                    
+                    result = TreeDefStatusMgr.isNodeNumbersAreUpToDate(this);                    
                 }
                 else
                 {
@@ -735,19 +692,20 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
      */
     public boolean checkNodeRenumberingLock()
     {
-        boolean result;
-        if (!TaskSemaphoreMgr.isLocked(getNodeNumberingLockTitle(), getNodeNumberingLockName(), TaskSemaphoreMgr.SCOPE.Discipline))
-        {
-             result = true;
-             isRenumberingNodes = false;
-        }
-        else
-        {
-            TaskSemaphoreMgr.USER_ACTION action = TaskSemaphoreMgr.lock(getNodeNumberingLockTitle(), getNodeNumberingLockName(), null,
-                                                                        TaskSemaphoreMgr.SCOPE.Discipline, false/*canOverrideLock()*/);
-            result = action == TaskSemaphoreMgr.USER_ACTION.OK;
-        }
-        return result;
+    	return !TreeDefStatusMgr.isRenumberingNodes(this);
+//        boolean result;
+//        if (!TaskSemaphoreMgr.isLocked(getNodeNumberingLockTitle(), getNodeNumberingLockName(), TaskSemaphoreMgr.SCOPE.Discipline))
+//        {
+//             result = true;
+//             isRenumberingNodes = false;
+//        }
+//        else
+//        {
+//            TaskSemaphoreMgr.USER_ACTION action = TaskSemaphoreMgr.lock(getNodeNumberingLockTitle(), getNodeNumberingLockName(), null,
+//                                                                        TaskSemaphoreMgr.SCOPE.Discipline, false/*canOverrideLock()*/);
+//            result = action == TaskSemaphoreMgr.USER_ACTION.OK;
+//        }
+//        return result;
     }
 
 	/* (non-Javadoc)
@@ -758,7 +716,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
 	public boolean isSynonymySupported() 
 	{
 		return false;
-	}
-    
+	}    
+	
     
 }

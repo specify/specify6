@@ -1071,14 +1071,26 @@ public class UploadTable implements Comparable<UploadTable>
                 {
                     if (isLatLongFld(ufld))
                     {
-                        try
-                        {
-                            fldStr = new GeoRefConverter().convert(fldStr, GeoRefFormat.D_PLUS_MINUS.name());
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new UploaderException(ex, UploaderException.INVALID_DATA);
-                        }
+                    	boolean gotANumber = true;
+                    	try
+                    	{
+                    		new BigDecimal(fldStr);
+                    	}
+                    	catch(NumberFormatException ex)
+                    	{
+                    		gotANumber = false;
+                    	}
+                    	if (!gotANumber)
+                    	{
+                    		try
+                    		{
+                    			fldStr = new GeoRefConverter().convert(fldStr, GeoRefFormat.D_PLUS_MINUS.name());
+                    		}
+                    		catch (Exception ex)
+                    		{
+                    			throw new UploaderException(ex, UploaderException.INVALID_DATA);
+                    		}
+                    	}
                     }
                     arg[0] = new BigDecimal(fldStr);
                 }
