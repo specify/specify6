@@ -8,7 +8,7 @@ public class GeoRefConverter implements StringConverter
 {
     public static enum GeoRefFormat
     {
-        DMS_PLUS_MINUS ("[\\+\\-]?\\d{1,3}[\\sd°]\\s?\\d{1,2}[\\s']\\s?\\d{1,2}(\\.\\d{0,}\\s*)?\"?")
+        DMS_PLUS_MINUS ("[\\+\\-]?\\d{1,3}[\\sd°|\\sd�]\\s?\\d{1,2}[\\s']\\s?\\d{1,2}(\\.\\d{0,}\\s*)?\"?")
         {
             @Override
             public BigDecimal convertToDecimalDegrees(String orig)
@@ -16,7 +16,7 @@ public class GeoRefConverter implements StringConverter
                 return LatLonConverter.convertDDMMSSStrToDDDDBD(orig);
             }
         },
-        DM_PLUS_MINUS  ("[\\+\\-]?\\d{1,3}[\\sd°]\\s?\\d{1,2}(\\.\\d{0,}\\s*)?'?")
+        DM_PLUS_MINUS  ("[\\+\\-]?\\d{1,3}[\\sd°|\\sd�]\\s?\\d{1,2}(\\.\\d{0,}\\s*)?'?")
         {
             @Override
             public BigDecimal convertToDecimalDegrees(String orig)
@@ -24,7 +24,7 @@ public class GeoRefConverter implements StringConverter
                 return LatLonConverter.convertDDMMMMStrToDDDDBD(orig);
             }
         },
-        D_PLUS_MINUS   ("[\\+\\-]?\\d{1,3}(\\.\\d{0,}\\s*)?[d°]?")
+        D_PLUS_MINUS   ("[\\+\\-]?\\d{1,3}(\\.\\d{0,}\\s*)?[d°|d�]?")
         {
             @Override
             public BigDecimal convertToDecimalDegrees(String orig)
@@ -32,7 +32,7 @@ public class GeoRefConverter implements StringConverter
                 return LatLonConverter.convertDDDDStrToDDDDBD(orig);
             }
         },
-        DMS_NSEW       ("\\d{1,3}[\\sd°]\\s?\\d{1,2}[\\s']\\s?\\d{1,2}(\\.\\d{0,})?\"?\\s?[NSEW]{1}.*")
+        DMS_NSEW       ("\\d{1,3}[\\sd°|\\sd�]\\s?\\d{1,2}[\\s']\\s?\\d{1,2}(\\.\\d{0,})?\"?\\s?[NSEW]{1}.*")
         {
             @Override
             public BigDecimal convertToDecimalDegrees(String orig)
@@ -40,7 +40,7 @@ public class GeoRefConverter implements StringConverter
                 return LatLonConverter.convertDirectionalDDMMSSToDDDD(orig);
             }
         },
-        DM_NSEW        ("\\d{1,3}[\\sd°]\\s?\\d{1,2}(\\.\\d{0,})?'?\\s?[NSEW]{1}.*")
+        DM_NSEW        ("\\d{1,3}[\\sd°|\\sd�]\\s?\\d{1,2}(\\.\\d{0,})?'?\\s?[NSEW]{1}.*")
         {
             @Override
             public BigDecimal convertToDecimalDegrees(String orig)
@@ -48,7 +48,7 @@ public class GeoRefConverter implements StringConverter
                 return LatLonConverter.convertDirectionalDDMMMMToDDDD(orig);
             }
         },
-        D_NSEW         ("\\d{1,3}(\\.\\d{0,})?[d°]?\\s?[NSEW]{1}.*")
+        D_NSEW         ("\\d{1,3}(\\.\\d{0,})?[d°|d�]?\\s?[NSEW]{1}.*")
         {
             @Override
             public BigDecimal convertToDecimalDegrees(String orig)
@@ -76,11 +76,19 @@ public class GeoRefConverter implements StringConverter
     {
         // nothing to do here
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.util.StringConverter#convert(java.lang.String, java.lang.String)
      */
     public String convert(final String original, final String destFormat) throws Exception
+    {
+    	return convert(original, destFormat, LatLonConverter.LATLON.Latitude/*dummy*/,
+    			LatLonConverter.DEGREES_FORMAT.None);
+    }
+
+    public String convert(final String original, final String destFormat,
+    		final LatLonConverter.LATLON llType, final LatLonConverter.DEGREES_FORMAT degFmt) 
+    	throws Exception
     {
         if (original == null)
         {
@@ -121,20 +129,49 @@ public class GeoRefConverter implements StringConverter
         
         if (destFormat == GeoRefFormat.DMS_PLUS_MINUS.name())
         {
-            return LatLonConverter.convertToSignedDDMMSS(degreesPlusMinus, decimalFmtLen);
+            return LatLonConverter.convertToSignedDDMMSS(degreesPlusMinus, decimalFmtLen, degFmt);
         }
         else if (destFormat == GeoRefFormat.DM_PLUS_MINUS.name())
         {
-            return LatLonConverter.convertToSignedDDMMMM(degreesPlusMinus, decimalFmtLen);
+            return LatLonConverter.convertToSignedDDMMMM(degreesPlusMinus, decimalFmtLen, degFmt);
         }
         else if (destFormat == GeoRefFormat.D_PLUS_MINUS.name())
         {
-            return LatLonConverter.convertToSignedDDDDDD(degreesPlusMinus, decimalFmtLen);
+            return LatLonConverter.convertToSignedDDDDDD(degreesPlusMinus, decimalFmtLen, degFmt);
         }
-        
+        else if (destFormat == GeoRefFormat.D_NSEW.name())
+        {
+        	return LatLonConverter.convertToDDDDDD(degreesPlusMinus, degFmt, getDir(llType), decimalFmtLen, true);
+        }
+        else if (destFormat == GeoRefFormat.DM_NSEW.name())
+        {
+        	return LatLonConverter.convertToDDMMMM(degreesPlusMinus, degFmt, getDir(llType), decimalFmtLen, true);
+        }
+        else if (destFormat == GeoRefFormat.DMS_NSEW.name())
+        {
+        	return LatLonConverter.convertToDDMMSS(degreesPlusMinus, degFmt, getDir(llType), decimalFmtLen, true);
+        }
         return null;
     }
 
+    /**
+     * @param llType
+     * @return direction appropriate for llType.
+     */
+    protected LatLonConverter.DIRECTION getDir(LatLonConverter.LATLON llType)
+    {
+    	if (llType.equals(LatLonConverter.LATLON.Latitude))
+    	{
+    		return LatLonConverter.DIRECTION.NorthSouth;
+    	}
+    	else if (llType.equals(LatLonConverter.LATLON.Longitude))
+    	{
+    		return LatLonConverter.DIRECTION.EastWest;
+    	}
+    	//else ???
+    	return LatLonConverter.DIRECTION.None;
+    }
+    
     /**
      * @param entry
      * @return the LatLonConverter FORMAT for entry.

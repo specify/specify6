@@ -343,14 +343,27 @@ public class LatLonConverter
     {
         return convertToDDMMSS(bd, DEGREES_FORMAT.None, DIRECTION.None, decimalLen);
     }
-    
+
     /**
      * @param bd
      * @param decimalLen
      * @return
      */
     public static String convertToSignedDDMMSS(final BigDecimal bd,
-                                               final int        decimalLen)
+    										  final int 		decimalLen)
+    {
+    	return convertToSignedDDMMSS(bd, decimalLen, DEGREES_FORMAT.None);
+    }
+
+    /**
+     * @param bd
+     * @param decimalLen
+     * @param degFmt
+     * @return
+     */
+    public static String convertToSignedDDMMSS(final BigDecimal bd,
+                                               final int        decimalLen,
+                                               final DEGREES_FORMAT degFmt)
     {
         String sign = "";
         if (bd.compareTo(bd.abs()) < 0)
@@ -358,7 +371,7 @@ public class LatLonConverter
             sign = "-";
         }
         
-        String convertedAbs = convertToDDMMSS(bd, decimalLen);
+        String convertedAbs = convertToDDMMSS(bd, degFmt, DIRECTION.None, decimalLen);
         return sign + convertedAbs;
     }
     
@@ -380,7 +393,7 @@ public class LatLonConverter
         }
         return decimalFmtLen;
     }
-    
+
     /**
      * Converts BigDecimal to Degrees, Minutes and Decimal Seconds.
      * @param bd the DigDecimal to be converted.
@@ -390,6 +403,20 @@ public class LatLonConverter
                                          final DEGREES_FORMAT degreesFMT,
                                          final DIRECTION      direction,
                                          final int            decimalLen)
+    {
+    	return convertToDDMMSS(bd, degreesFMT, direction, decimalLen, false);
+    }
+
+    /**
+     * Converts BigDecimal to Degrees, Minutes and Decimal Seconds.
+     * @param bd the DigDecimal to be converted.
+     * @return a 3 piece string
+     */
+    public static String convertToDDMMSS(final BigDecimal     bd, 
+                                         final DEGREES_FORMAT degreesFMT,
+                                         final DIRECTION      direction,
+                                         final int            decimalLen,
+                                         final boolean alwaysIncludeDir)
     {
         
         if (bd.doubleValue() == 0.0)
@@ -455,7 +482,7 @@ public class LatLonConverter
         sb.append(String.format("%2."+decimalLen+"f", seconds));
         if (addMinSecsSyms) sb.append("\"");
         
-        if (degreesFMT == DEGREES_FORMAT.String)
+        if (degreesFMT == DEGREES_FORMAT.String || alwaysIncludeDir)
         {
             int inx = bd.doubleValue() < 0.0 ? 1 : 0;
             if (direction != DIRECTION.None)
@@ -479,14 +506,27 @@ public class LatLonConverter
     {
         return convertToDDMMMM(bd, DEGREES_FORMAT.None, DIRECTION.None, decimalLen);
     }
-    
+
     /**
      * @param dd
      * @param decimalLen
      * @return
      */
     public static String convertToSignedDDMMMM(final BigDecimal dd,
-                                               final int        decimalLen)
+            final int        decimalLen)
+    {
+    	return convertToSignedDDMMMM(dd, decimalLen, DEGREES_FORMAT.None);
+    }
+
+    /**
+     * @param dd
+     * @param decimalLen
+     * @param degFmt
+     * @return
+     */
+    public static String convertToSignedDDMMMM(final BigDecimal dd,
+                                               final int        decimalLen,
+                                               final DEGREES_FORMAT degFmt)
     {
         String sign = "";
         if (dd.compareTo(dd.abs()) < 0)
@@ -494,8 +534,21 @@ public class LatLonConverter
             sign = "-";
         }
         
-        String convertedAbs = convertToDDMMMM(dd, decimalLen);
+        String convertedAbs = convertToDDMMMM(dd, degFmt, DIRECTION.None, decimalLen);
         return sign + convertedAbs;
+    }
+
+    /**
+     * Converts BigDecimal to Degrees and Decimal Minutes.
+     * @param bd the DigDecimal to be converted.
+     * @return a 2 piece string
+     */
+    public static String convertToDDMMMM(final BigDecimal     bd, 
+                                         final DEGREES_FORMAT degreesFMT,
+                                         final DIRECTION      direction,
+                                         final int            decimalLen)
+    {
+    	return convertToDDMMMM(bd, degreesFMT, direction, decimalLen, false);
     }
     
     /**
@@ -506,7 +559,8 @@ public class LatLonConverter
     public static String convertToDDMMMM(final BigDecimal     bd, 
                                          final DEGREES_FORMAT degreesFMT,
                                          final DIRECTION      direction,
-                                         final int            decimalLen)
+                                         final int            decimalLen,
+                                         final boolean alwaysIncludeDir)
     {
         if (bd.doubleValue() == 0.0)
         {
@@ -550,7 +604,7 @@ public class LatLonConverter
         sb.append(String.format("%"+decimalLen+"."+decimalLen+"f", minutes));
         if (addMinSecsSyms) sb.append("'");
         
-        if (degreesFMT == DEGREES_FORMAT.String)
+        if (degreesFMT == DEGREES_FORMAT.String || alwaysIncludeDir)
         {
             int inx = bd.doubleValue() < 0.0 ? 1 : 0;
             if (direction != DIRECTION.None)
@@ -574,14 +628,27 @@ public class LatLonConverter
     {
         return convertToDDDDDD(bd, DEGREES_FORMAT.String, DIRECTION.None, decimalLen);
     }
-    
+
     /**
      * @param dd
      * @param decimalLen
      * @return
      */
     public static String convertToSignedDDDDDD(final BigDecimal dd,
-                                               final int        decimalLen)
+            								   final int        decimalLen)
+    {
+    	return convertToSignedDDDDDD(dd, decimalLen, DEGREES_FORMAT.None);
+    }
+
+    /**
+     * @param dd
+     * @param decimalLen
+     * @param detFmt
+     * @return
+     */
+    public static String convertToSignedDDDDDD(final BigDecimal     dd,
+                                               final int            decimalLen,
+                                               final DEGREES_FORMAT degFmt)
     {
         String sign = "";
         if (dd.compareTo(dd.abs()) < 0)
@@ -589,9 +656,10 @@ public class LatLonConverter
             sign = "-";
         }
         
-        String convertedAbs = convertToDDDDDD(dd, decimalLen);
+        String convertedAbs = convertToDDDDDD(dd, degFmt, DIRECTION.None, decimalLen);
         return sign + convertedAbs;
     }
+ 
     
     /**
      * Converts BigDecimal to Decimal Degrees.
@@ -603,6 +671,21 @@ public class LatLonConverter
                                          final DEGREES_FORMAT degreesFMT,
                                          final DIRECTION      direction,
                                          final int            decimalLen)
+    {
+    	return convertToDDDDDD(bd, degreesFMT, direction, decimalLen, false);
+    }
+    
+    /**
+     * Converts BigDecimal to Decimal Degrees.
+     * @param bd the DigDecimal to be converted.
+     * @param degreesFMT indicates whether to include the degrees symbol
+     * @return a 1 piece string
+     */
+    public static String convertToDDDDDD(final BigDecimal     bd, 
+                                         final DEGREES_FORMAT degreesFMT,
+                                         final DIRECTION      direction,
+                                         final int            decimalLen,
+                                         final boolean        alwaysIncludeDir)
     {
         if (bd == null || bd.doubleValue() == 0.0)
         {
@@ -617,7 +700,8 @@ public class LatLonConverter
         {
             sb.append("\u00B0");
             
-        } else if (degreesFMT == DEGREES_FORMAT.String)
+        } 
+        if (degreesFMT == DEGREES_FORMAT.String || alwaysIncludeDir)
         {
             int inx = bd.doubleValue() < 0.0 ? 1 : 0;
             if (direction != DIRECTION.None)

@@ -63,6 +63,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.InputMap;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -177,8 +178,8 @@ import edu.ku.brc.ui.ToggleButtonChooserPanel.Type;
 import edu.ku.brc.ui.tmanfe.SearchReplacePanel;
 import edu.ku.brc.ui.tmanfe.SpreadSheet;
 import edu.ku.brc.util.GeoRefConverter;
+import edu.ku.brc.util.LatLonConverter;
 import edu.ku.brc.util.Pair;
-import edu.ku.brc.util.StringConverter;
 import edu.ku.brc.util.GeoRefConverter.GeoRefFormat;
 
 /**
@@ -1577,9 +1578,15 @@ public class WorkbenchPaneSS extends BaseSubPane
         String dddddd = getResourceString("DDDDDD");
         String ddmmmm = getResourceString("DDMMMM");
         String ddmmss = getResourceString("DDMMSS");
+        String ddddddnsew = getResourceString("DDDDDDNSEW");
+        String ddmmmmnsew = getResourceString("DDMMMMNSEW");
+        String ddmmssnsew = getResourceString("DDMMSSNSEW");
         outputFormats.add(dddddd);
         outputFormats.add(ddmmmm);
         outputFormats.add(ddmmss);
+        outputFormats.add(ddddddnsew);
+        outputFormats.add(ddmmmmnsew);
+        outputFormats.add(ddmmssnsew);
         
         final int locTabId = DBTableIdMgr.getInstance().getIdByClassName(Locality.class.getName());
         final int latColIndex = workbench.getColumnIndex(locTabId,"latitude1");
@@ -1589,9 +1596,14 @@ public class WorkbenchPaneSS extends BaseSubPane
 
         JFrame mainFrame = (JFrame)UIRegistry.getTopWindow();
         
-        String title       = "GeoRefConv";
-        String description = "GeoRefConvDesc";
-        ToggleButtonChooserDlg<String> dlg = new ToggleButtonChooserDlg<String>(mainFrame,title,description,outputFormats, CustomDialog.OKCANCEL, Type.RadioButton)
+        String title       = UIRegistry.getResourceString("GeoRefConv");
+        String description = UIRegistry.getResourceString("GeoRefConvDesc");
+        final ToggleButtonChooserPanel<String> toggle = new ToggleButtonChooserPanel<String>(outputFormats, description, Type.RadioButton);
+        final JCheckBox symbolCkBx = UIHelper.createCheckBox(UIRegistry.getResourceString("GEOREF_USE_SYMBOLS"));
+        JPanel pane = new JPanel(new BorderLayout());
+        pane.add(toggle, BorderLayout.CENTER);
+        pane.add(symbolCkBx, BorderLayout.SOUTH);
+        CustomDialog dlg = new CustomDialog(mainFrame, title, false, CustomDialog.OKCANCEL, pane)
         {
             
             @Override
@@ -1633,31 +1645,85 @@ public class WorkbenchPaneSS extends BaseSubPane
                 // don't call super.okButtonPressed() b/c it will close the window
                 isCancelled = false;
                 btnPressed  = OK_BTN;
+                LatLonConverter.DEGREES_FORMAT degFmt = symbolCkBx.isSelected() ?
+                		LatLonConverter.DEGREES_FORMAT.Symbol :
+                		LatLonConverter.DEGREES_FORMAT.None;
                 int unconverted = 0;
-                switch( getSelectedIndex() )
+                switch( toggle.getSelectedIndex() )
                 {
                     case 0:
                     {
-                        unconverted += convertColumnContents(latColIndex, selRows, new GeoRefConverter(), GeoRefFormat.D_PLUS_MINUS.name());
-                        unconverted += convertColumnContents(lonColIndex, selRows, new GeoRefConverter(), GeoRefFormat.D_PLUS_MINUS.name());
-                        unconverted += convertColumnContents(lat2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.D_PLUS_MINUS.name());
-                        unconverted += convertColumnContents(lon2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.D_PLUS_MINUS.name());
+                        unconverted += convertColumnContents(latColIndex, selRows, new GeoRefConverter(), GeoRefFormat.D_PLUS_MINUS.name(),
+                        		LatLonConverter.LATLON.Latitude, degFmt);
+                        unconverted += convertColumnContents(lonColIndex, selRows, new GeoRefConverter(), GeoRefFormat.D_PLUS_MINUS.name(),
+                        		LatLonConverter.LATLON.Longitude, degFmt);
+                        unconverted += convertColumnContents(lat2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.D_PLUS_MINUS.name(),
+                        		LatLonConverter.LATLON.Latitude, degFmt);
+                        unconverted += convertColumnContents(lon2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.D_PLUS_MINUS.name(),
+                        		LatLonConverter.LATLON.Longitude, degFmt);
                         break;
                     }
                     case 1:
                     {
-                    	unconverted += convertColumnContents(latColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DM_PLUS_MINUS.name());
-                    	unconverted += convertColumnContents(lonColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DM_PLUS_MINUS.name());
-                    	unconverted += convertColumnContents(lat2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DM_PLUS_MINUS.name());
-                    	unconverted += convertColumnContents(lon2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DM_PLUS_MINUS.name());
+                    	unconverted += convertColumnContents(latColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DM_PLUS_MINUS.name(),
+                    			LatLonConverter.LATLON.Latitude, degFmt);
+                    	unconverted += convertColumnContents(lonColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DM_PLUS_MINUS.name(),
+                    			LatLonConverter.LATLON.Longitude, degFmt);
+                    	unconverted += convertColumnContents(lat2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DM_PLUS_MINUS.name(),
+                    			LatLonConverter.LATLON.Latitude, degFmt);
+                    	unconverted += convertColumnContents(lon2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DM_PLUS_MINUS.name(),
+                    			LatLonConverter.LATLON.Longitude, degFmt);
                         break;
                     }
                     case 2:
                     {
-                    	unconverted += convertColumnContents(latColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DMS_PLUS_MINUS.name());
-                    	unconverted += convertColumnContents(lonColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DMS_PLUS_MINUS.name());
-                    	unconverted += convertColumnContents(lat2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DMS_PLUS_MINUS.name());
-                    	unconverted += convertColumnContents(lon2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DMS_PLUS_MINUS.name());
+                    	unconverted += convertColumnContents(latColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DMS_PLUS_MINUS.name(),
+                    			LatLonConverter.LATLON.Latitude, degFmt);
+                    	unconverted += convertColumnContents(lonColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DMS_PLUS_MINUS.name(),
+                    			LatLonConverter.LATLON.Longitude, degFmt);
+                    	unconverted += convertColumnContents(lat2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DMS_PLUS_MINUS.name(),
+                    			LatLonConverter.LATLON.Latitude, degFmt);
+                    	unconverted += convertColumnContents(lon2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DMS_PLUS_MINUS.name(),
+                    			LatLonConverter.LATLON.Longitude, degFmt);
+                        break;
+                    }
+                    case 3:
+                    {
+                    	unconverted += convertColumnContents(latColIndex, selRows, new GeoRefConverter(), GeoRefFormat.D_NSEW.name(),
+                    			LatLonConverter.LATLON.Latitude, degFmt);
+                    	unconverted += convertColumnContents(lonColIndex, selRows, new GeoRefConverter(), GeoRefFormat.D_NSEW.name(),
+                    			LatLonConverter.LATLON.Longitude, degFmt);
+                    	unconverted += convertColumnContents(lat2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.D_NSEW.name(),
+                    			LatLonConverter.LATLON.Latitude, degFmt);
+                    	unconverted += convertColumnContents(lon2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.D_NSEW.name(),
+                    			LatLonConverter.LATLON.Longitude, degFmt);
+
+                        break;
+                    }
+                    case 4:
+                    {
+                    	unconverted += convertColumnContents(latColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DM_NSEW.name(),
+                    			LatLonConverter.LATLON.Latitude, degFmt);
+                    	unconverted += convertColumnContents(lonColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DM_NSEW.name(),
+                    			LatLonConverter.LATLON.Longitude, degFmt);
+                    	unconverted += convertColumnContents(lat2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DM_NSEW.name(),
+                    			LatLonConverter.LATLON.Latitude, degFmt);
+                    	unconverted += convertColumnContents(lon2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DM_NSEW.name(),
+                    			LatLonConverter.LATLON.Longitude, degFmt);
+
+                        break;
+                    }
+                    case 5:
+                    {
+                    	unconverted += convertColumnContents(latColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DMS_NSEW.name(),
+                    			LatLonConverter.LATLON.Latitude, degFmt);
+                    	unconverted += convertColumnContents(lonColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DMS_NSEW.name(),
+                    			LatLonConverter.LATLON.Longitude, degFmt);
+                    	unconverted += convertColumnContents(lat2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DMS_NSEW.name(),
+                    			LatLonConverter.LATLON.Latitude, degFmt);
+                    	unconverted += convertColumnContents(lon2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DMS_NSEW.name(),
+                    			LatLonConverter.LATLON.Longitude, degFmt);
+
                         break;
                     }
                 }
@@ -1668,7 +1734,9 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
         };
         dlg.setModal(false);
-        dlg.setSelectedIndex(0);
+        toggle.setSelectedIndex(0);
+        toggle.setOkBtn(dlg.getOkBtn());
+        toggle.createUI();
         dlg.setOkLabel(getResourceString("APPLY"));
         dlg.setCancelLabel(getResourceString("CLOSE"));
         dlg.setVisible(true);
@@ -1838,28 +1906,37 @@ public class WorkbenchPaneSS extends BaseSubPane
     protected String getLatLonSrc(int columnIdx, int rowIndex)
     {
         WorkbenchTemplateMappingItem map = workbench.getMappingFromColumn((short )columnIdx);
+        String result = null;
         if (map.getTableName().equals("locality"))
         {
             if (map.getFieldName().equalsIgnoreCase("latitude1"))
             {
-                return workbench.getRow(rowIndex).getLat1Text();
+            	result = workbench.getRow(rowIndex).getLat1Text();
             }
             else if (map.getFieldName().equalsIgnoreCase("latitude2"))
             {
-                return workbench.getRow(rowIndex).getLat2Text();
+            	result = workbench.getRow(rowIndex).getLat2Text();
             }
             else if (map.getFieldName().equalsIgnoreCase("longitude1"))
             {
-                return workbench.getRow(rowIndex).getLong1Text();
+            	result = workbench.getRow(rowIndex).getLong1Text();
             }
             else if (map.getFieldName().equalsIgnoreCase("longitude2"))
             {
-                return workbench.getRow(rowIndex).getLong2Text();
+            	result = workbench.getRow(rowIndex).getLong2Text();
             }
+            return result ;
         }
+        
         return null;
     }
-    
+
+    protected int convertColumnContents(int columnIndex, int[] rows, GeoRefConverter converter, String outputFormat)
+    {
+    	return convertColumnContents(columnIndex, rows, converter, outputFormat, LatLonConverter.LATLON.Latitude /*dummy*/,
+    			LatLonConverter.DEGREES_FORMAT.None);
+    }
+
     /**
      * Converts the column contents from on format of Lat/Lon to another
      * @param columnIndex the index of the column being converted
@@ -1868,7 +1945,8 @@ public class WorkbenchPaneSS extends BaseSubPane
      * 
      * return number of non-blank cells that were NOT converted
      */
-    protected int convertColumnContents(int columnIndex, int[] rows, StringConverter converter, String outputFormat)
+    protected int convertColumnContents(int columnIndex, int[] rows, GeoRefConverter converter, String outputFormat,
+    		LatLonConverter.LATLON latOrLon, LatLonConverter.DEGREES_FORMAT degFmt)
     {
         if (columnIndex == -1)
         {
@@ -1897,7 +1975,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             String convertedValue;
             try
             {
-                convertedValue = converter.convert(currentValue, outputFormat);
+                convertedValue = converter.convert(currentValue, outputFormat, latOrLon, degFmt);
                 
             }
             catch (Exception e)
@@ -2207,7 +2285,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         command.setProperty("description",    workbench.getRemarks() != null ? workbench.getRemarks() : "");
         
         JStatusBar statusBar = UIRegistry.getStatusBar();
-        statusBar.setText("WB_OPENING_GOOGLE_EARTH");
+        statusBar.setText(UIRegistry.getResourceString("WB_OPENING_GOOGLE_EARTH"));
         CommandDispatcher.dispatch(command);
      }
     
