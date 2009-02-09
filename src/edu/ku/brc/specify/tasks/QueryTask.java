@@ -1445,12 +1445,12 @@ public class QueryTask extends BaseTask
      */
     protected void bldTableTrees()
     {        
-        if (tableTree == null || tableTree.get() == null)
+        if (tableTree == null || tableTree.get() == null || needToRebuildTableTree())
         {
             tableTreeHash = null;
             tableTree = new SoftReference<TableTree>(readTables());
         }
-        if (tableTreeHash == null || tableTreeHash.get() == null)
+        if (tableTreeHash == null || tableTreeHash.get() == null || needToRebuildTableTree())
         {
             tableTreeHash = new SoftReference<Hashtable<String, TableTree>>(buildTableTreeHash(tableTree.get()));
         }
@@ -1558,7 +1558,23 @@ public class QueryTask extends BaseTask
                 try
                 {
                    SpecifyAppContextMgr mgr = (SpecifyAppContextMgr )AppContextMgr.getInstance();
-                   TreeDefIface<?, ?, ?> treeDef = mgr.getTreeDefForClass((Class<? extends Treeable<?,?,?>>) tableInfo.getClassObj());
+                   TreeDefIface<?, ?, ?> deadTreeDef = mgr.getTreeDefForClass((Class<? extends Treeable<?,?,?>>) tableInfo.getClassObj());
+                   TreeDefIface<?,?,?> treeDef = null;
+                   DataProviderSessionIFace session = null;
+                   try
+                   {
+                       session = DataProviderFactory.getInstance().createSession();
+                       Object tdObj = session.get(deadTreeDef.getClass(), deadTreeDef.getTreeDefId());
+                       treeDef = (TreeDefIface )tdObj;
+                   }
+                   finally
+                   {
+                	   if (session != null)
+                	   {
+                		   session.close();
+                	   }
+                   }
+                   
                    SortedSet<TreeDefItemIface<?, ?, ?>> defItems = new TreeSet<TreeDefItemIface<?, ?, ?>>(
                             new Comparator<TreeDefItemIface<?, ?, ?>>()
                             {
