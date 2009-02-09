@@ -458,8 +458,11 @@ public class LatLonConverter
         if (degreesFMT == DEGREES_FORMAT.String)
         {
             int inx = bd.doubleValue() < 0.0 ? 1 : 0;
-            sb.append(' ');
-            sb.append(direction == DIRECTION.NorthSouth ? northSouth[inx] : eastWest[inx]);
+            if (direction != DIRECTION.None)
+            {
+            	sb.append(' ');
+            	sb.append(direction == DIRECTION.NorthSouth ? northSouth[inx] : eastWest[inx]);
+            }
         }
         System.err.println("["+sb.toString()+"]");
         //return whole + (DEGREES_FORMAT.None ? "\u00B0" : "") + " " + minutesWhole + " " + StringUtils.strip(String.format("%12.10f", new Object[] {seconds}), "0");
@@ -550,8 +553,11 @@ public class LatLonConverter
         if (degreesFMT == DEGREES_FORMAT.String)
         {
             int inx = bd.doubleValue() < 0.0 ? 1 : 0;
-            sb.append(' ');
-            sb.append(direction == DIRECTION.NorthSouth ? northSouth[inx] : eastWest[inx]);
+            if (direction != DIRECTION.None)
+            {
+            	sb.append(' ');
+            	sb.append(direction == DIRECTION.NorthSouth ? northSouth[inx] : eastWest[inx]);
+            }
         }
         //return whole + (degreesFMT == DEGREES_FORMAT.Symbol ? "\u00B0" : "") + " " + StringUtils.strip(String.format("%10.10f", new Object[] {minutes}), "0");
         return sb.toString();
@@ -614,8 +620,11 @@ public class LatLonConverter
         } else if (degreesFMT == DEGREES_FORMAT.String)
         {
             int inx = bd.doubleValue() < 0.0 ? 1 : 0;
-            sb.append(' ');
-            sb.append(direction == DIRECTION.NorthSouth ? northSouth[inx] : eastWest[inx]);
+            if (direction != DIRECTION.None)
+            {
+                sb.append(' ');
+            	sb.append(direction == DIRECTION.NorthSouth ? northSouth[inx] : eastWest[inx]);
+            }
         }
         //return format(bd.abs()) + (degreesFMT == DEGREES_FORMAT.Symbol ? "\u00B0" : "");
         return sb.toString();
