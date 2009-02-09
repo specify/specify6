@@ -1741,7 +1741,7 @@
 	          </row>
 	          
 	          <row>
-	              <cell type="subview" viewname="DNASequenceRun" id="21" name="dnaSequencingRuns" colspan="8" />
+	              <cell type="subview" viewname="DNASequenceRun" id="21" name="dnaSequencingRuns" colspan="6" />
 	          </row>
 	          
 	          <!--              <row>
