@@ -16,7 +16,7 @@
 <p>The tools in Schema Configuration give disciplines the ability to:</p>
 <p>Hide unused Tables or Fields.</p>
 <p>Change the label of Tables and Fields in Specify. The names in the schema are not editable, but the display names, referred to as labels, can be edited.</p>
-<p>Read/write usage notes (descriptions) for Tables and Fields.</p>
+<p>Read/write descriptions (usage notes ) for Tables and Fields.</p>
 <p>Format a Table.</p>
 <p>Aggregate a Table.</p>
 <p>Change a non-required field to a required field.</p>
@@ -42,169 +42,80 @@
 <p>&nbsp;</p>
 <h4><u>Table Tools</u></h4>
 <h4>Display Format</h4>
-<p>Tables with a many-to-one relationship to the primary table are formatted to be represented by at least one field in  a Query. These formats are used on forms and in search results as well as reports. Most tables are represented by only one field, (Collection Object shows the Catalog Number), but some are best represented by more than one field (Agent may be formatted to display last name, first name, middle initial). </p>
-<p>Fields are formatted in the Schema Configuration toll using the Field Formatter. It is important to note that Preferred Taxon, Geography, Chronostratigraphy and Lithostratigraphy fields use the Accepted Name as their format. This is configured in the Tree Definition.</p>
+<p>Tables can be formatted, or represented by at least one main field.  These formats are used on forms and in search results as well as reports. Most tables are represented by only one field, (Collection Object shows the Catalog Number), but some are best represented by more than one field (Agent may be formatted to display last name, first name, middle initial). </p>
+<p>It is important to note that Preferred Taxon, Geography, Chronostratigraphy and Lithostratigraphy fields use the Accepted Name as their format. This is configured in the Tree Definition.</p>
+<p>Open the Display Formatting Editor by first choosing a table to format from the Tables list, then clicking  the <em>...</em> (dialog) button next to the Display Format field. </p>
+<p>The first dialog that opens displays the name of the table, then displays any saved table formats for editing purposes. Buttons at the bottom of the dialog offer the following:</p>
+<ul>
+  <li><img src="../../images/check2.png" width="20" height="17" /> (checkmark) selects the saved format as the default, which will be used by the application.</li>
+  <li><img src="../../images/Edit-2-16x16.png" width="16" height="16" /> (edit) opens the format editor for editing a saved format.</li>
+  <li><img src="../../images/delete.png" width="16" height="16" /> (delete) removes the format.</li>
+  <li><img src="../../images/add.png" width="16" height="16" /> (add) opens the format editor for creating a new format.</li>
+</ul>
+<p>Clicking the<em> <img src="../../images/Edit-2-16x16.png" width="16" height="16" /></em>or<em> <img src="../../images/add.png" width="16" height="16" /></em>button opens the second format editor dialog.</p>
+<ul>
+  <li><strong>Name</strong> is used when storing the format in the database. This should be short so as not to take up too much space.</li>
+  <li><strong>Title</strong> is the name of the format and will appear in any table format lists (in the first format editor dialog and the Disply Format Pick List). This will link to the shorter name in the database, allowing the title to be more descriptive.</li>
+</ul>
+<p>There are two types of Display Formats, a 'Single display format' that links to one or more fields and a' Display depends on value of field, which displays different results based on a conditional field.</p>
+<p><strong>Single display format</strong></p>
+<p>The Single display format allows users to select fields from the Available Fields window to be used in the table format.</p>
+<ol>
+  <li>First, click the <strong>Single display format</strong> button.</li>
+  <li>Then select a <strong>Separator</strong>. These are typically commas.</li>
+  <li>Next, select a field from the <strong>Available Fields</strong> window by either double clicking on a field or selecting the field and clicking the <em>Add Field </em>button. The Available Fields lists related tables and their fields. Simply click on the file folder of a related table to display the available fields for the table. </li>
+</ol>
+<p><strong>Display depends on value of field:</strong></p>
+<p>This type of format is useful when the data in one field sets a condition for another field. A good example is a Current Determination in Ichthyology. A Collection Object can have many Determinations, but only one can be marked as Current. Rather than displaying all Determinations the table can be formatted to only display the Current Determination.</p>
+<p>First choose the Display depends on value of field button.</p>
+<p>The window will change to inclue a Field Value and Display Format.</p>
+<p>Then choose a conditional field by clicking the <img src="../../images/open_arrows.png" width="16" height="16" /> button on the Pick List and choosing a field from the list.</p>
+<p>Next, click the <img src="../../images/add.png" width="16" height="16" />(add) button at the bottom of the dialog. A <em>...</em> (dialog) button will appear in the window.</p>
+<p>Click the <em>...</em> (dialog) button. The Format Editor described above will appear. </p>
+<ol>
+  <li>Select a <strong>Separator</strong>. These are typically commas.</li>
+  <li>Next, select a field from the <strong>Available Fields</strong> window by either double clicking on a field or selecting the field and clicking the <em>Add Field </em>button. The Available Fields lists related tables and their fields. Simply click on the file folder of a related table to display the available fields for the table. </li>
+<li>Once the Display Format has been saved, type the Field Value into the box. These will vary depending on the table and fields for the format. In the above example the Field Value for Current would be <em>true</em> and <em>false</em>. The Field Value can also be set to the Value of fields in a Pick List (a good example of this is Agent).</li>
+</ol>
+
+<p>Once the Formats have been created the table will need to be linked to the format by selecting the table in the Table list, then selecting the format from the Pick List next to the Display Format field.</p>
 <h4>Aggregation </h4>
-<p>Tables with a one-to-many relationship  to the primary table can return more than one result when searched. Aggregating the table takes the multiple results and groups it into one reason the return data needs to be pulled together into a single To do this, the data is aggregated For example, a Collection Object can have many Preparations. The results of a query of Collection Objects wtih Preparations will return Preparations aggregated together in one column, separated by semi colons.</p>
-<table width="100%">
-  <tr>
-    <td width="18%"><u><strong>Table Preference</strong></u></td>
-    <td width="42%"><u><strong>Result</strong></u></td>
-    <td width="40%"><u><strong>Notes</strong></u></td>
-  </tr>
-  <tr>
-    <td>Name</td>
-    <td>Changes the name of the Table as represented in the Form System and Query Builder.</td>
-    <td>Changes to the Table Name will be reflected on the Forms during the current session, but Specify must be relaunchedfor the changes to be reflected in the Sidebar lists.</td>
-  </tr>
-  <tr>
-    <td>Hide Table</td>
-    <td>Hides the Table in the Schema. This will not remove the Table from the Form System. The Table will be removed from the Query Builder and Simple Search.</td>
-    <td><p>Hidden Tables that are used in the Form System will cause a Warning Dialog to appear when using the Form System. It is recommeded that Tables be removed from the Form System before being removed from the Schema. </p>
-    <p>Tables that are still used in the Form System but removed from the Schema are still editable and any changes made to the Table will be reflected in the Database. </p></td>
-  </tr>
-  <tr>
-    <td>Desc</td>
-    <td>Description of the Table.</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td>***Spell Check</td>
-    <td>Checks the spelling of words used in the Description.</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td>Display Format</td>
-    <td>Launches the Display Formatting Editor (explained below).</td>
-    <td>Tables with Many-to-One relationships are formatted to be represented by at least one field in both the Form System and Query Builder. Most tables are represented by only one field, (Collection Object shows the Catalog Number), but some are best represented by more than one field (Agent may be formatted to display last name, first name, middle initial). </td>
-  </tr>
-  <tr>
-    <td>Aggregate</td>
-    <td>Opens the Aggregation Editor (explained below).</td>
-    <td>Tables with a one-to-many relationship  return aggregated data in the Query Builder. For example, a Collection Object can have many Preparations. The results of a query of Collection Objects wtih Preparations will return Preparations aggregated together in one column, separated by semi colons.</td>
-  </tr>
-  <tr>
-    <td>Web Links</td>
-    <td>Opens the Web Link Editor (explained below).</td>
-    <td>&nbsp;</td>
-  </tr>
-</table>
+<p>Tables with a one-to-many relationship  to the primary table typically link multiple records to the primary table. Aggregating the related table takes uses the table format for each individual record and groups them together into one record.  These are useful when displaying data on forms, in search results and on reports. For example, a Collection Object can have many Preparations. The results of a query of Collection Objects with Preparations will return formated Preparations data aggregated together in one record, separated by semi colons.</p>
+<p>Open the Aggregation Editor by first choosing a table to aggregate from the Tables list, then clicking  the <em>...</em> (dialog) button next to the Aggregation field. </p>
+<p>The first dialog that opens displays the name of the table, then displays any saved aggregation formats for editing purposes. Buttons at the bottom of the dialog offer the following:</p>
+<ul>
+  <li><img src="../../images/check2.png" alt="check" width="20" height="17" /> (checkmark) selects the saved aggregation as the default, which will be used by the application.</li>
+  <li><img src="../../images/Edit-2-16x16.png" alt="edit" width="16" height="16" /> (edit) opens the aggregation editor for editing a saved aggregation.</li>
+  <li><img src="../../images/delete.png" alt="delete" width="16" height="16" /> (delete) removes the aggregation.</li>
+  <li><img src="../../images/add.png" alt="add" width="16" height="16" /> (add) opens the aggregation editor for creating a new aggregation.</li>
+</ul>
+<p>Clicking the<em> <img src="../../images/Edit-2-16x16.png" alt="edit" width="16" height="16" /></em> (edit) or<em> <img src="../../images/add.png" alt="add" width="16" height="16" /></em> (add) button opens the second aggregation editor dialog.</p>
+<p>Table lists the name of the table being aggregated.</p>
+<ul>
+  <li><strong>Name</strong> is used when storing the aggregation in the database. This should be short so as not to take up too much space.</li>
+  <li><strong>Title</strong> is the name of the aggregation and will appear in any aggregation format lists (in the first aggregation editor dialog and the Aggregation Pick List). This will link to the shorter name in the database, allowing the title to be more descriptive.</li>
+  <li><strong>Display</strong> offers a Pick List of formats for the table. The ... (dialog) button opens the Format Editor for creating a new format or editing an old one.</li>
+  <li>Separator refers to the punctuation that will separate the individual records from one another. </li>
+  <li>Count refers to the number of records you wish to display. The limit is 10.</li>
+  <li>Ending is required when choosing a Count. It is a text field for typing in the words that will mark the end of the aggregation. This is typically <em>et al</em>.</li>
+  <li>Sort by offers a Pick List of fields in the table for sorting the returns. </li>
+</ul>
+<p>Once the Aggregation has been created the table will need to be linked to it by selecting the table in the Table list, then selecting the aggregation from the Pick List next to the Aggregation field.</p>
+<p>Web Links</p>
+<p>See <a href="System/WebLinks.html">Web Links.</a></p>
 <p>&nbsp;</p>
-<p>Field Choices</p>
-<table width="100%">
-  <tr>
-    <td width="18%">Field Preference</td>
-    <td width="42%">Description</td>
-    <td width="40%">Notes</td>
-  </tr>
-  <tr>
-    <td>Label</td>
-    <td>Changes the name of the Field as represented in the Form System and Query Builder.</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td>Hide Field</td>
-    <td>Hides the Field in the Schema. This will not remove the Field from the Form System. The Field will be removed from the Query Builder and Simple Search.</td>
-    <td><p>Hidden Fields that are used in the Form System will cause a Warning Dialog to appear when using the Form System. It is recommeded that Fields be removed from the Form System before being removed from the Schema. </p>
-    <p>Fields that are still used in the Form System but removed from the Schema are still editable and any data changes made will be reflected in the Database. </p></td>
-  </tr>
-  <tr>
-    <td>Desc</td>
-    <td>Description of the Field.</td>
-    <td>&nbsp;</td>
-  </tr>
-  
-  <tr>
-    <td>Type</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-    <td>String</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-    <td>Date</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-    <td>Float</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-    <td>Byte</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-    <td>Boolean</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-    <td>Integer</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-    <td>Many-to-One</td>
-    <td>This represents a relationship to a Table, not an actual field.</td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-    <td>One-to-Many</td>
-    <td>This represents a relationship to a Table, not an actual field.</td>
-  </tr>
-  <tr>
-    <td>Is Required</td>
-    <td>Fields that are required in the Schema can not be changed, but fields that are not required can be changed to Required.</td>
-    <td>Relationships can not be edited to be required.</td>
-  </tr>
-  <tr>
-    <td>Length</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td>Format Type</td>
-    <td>relationships can be a picklisk</td>
-    <td>&nbsp;</td>
-  </tr>
-</table>
-<p>&nbsp;</p>
-<p>relationships -- Picklist</p>
-<p>string -- Format; Weblink; Picklist (this is not the same formatting as relationships but format as in CO number)</p>
-<p>* can only format strings that are 255 characters or less</p>
-<p>date -- none</p>
-<p>float -- none</p>
-<p>byte -- none</p>
-<p>boolean -- none</p>
-<p>integer -- none</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>Used by Query Builder, Forms, Simple Search, (anything with UI presented uses this)</p>
-<p>Great place to change labels</p>
-<p>overridden by forms so what is in the forms is not necessarily represented here</p>
-<p>this is the place to </p>
-<p>localize</p>
-<p>turn on/use fields</p>
-<p>format non-formatted fields (catalog number, accession number(repository agreement) loan number, gift number, shipment number</p>
-<p>coopt a text 1 field for a special number in a collection (new label </p>
-<p>all dates done in preferences</p>
-<p>&nbsp;</p>
-<p>Display Format -- what fields in that record do you want to display in the UI (representing a whole row as a single field)</p>
-<p> example -- agent as last, first</p>
-<p>display formats combine fields </p>
-<p>&nbsp;</p>
-<p>Aggragator -- for each of the things being put together what do you use? could be a semi colon and et all (only show 3)</p>
-<p>aggragators combine records </p>
-<p>give examples of things that are aggragated </p>
-<p>collectors are actually agents with an order -- agents have a format 	 </p>
+<h4><u>Field Tools</u></h4>
+<p>Fields have several properties that tables do not. </p>
+<p><strong>Type</strong> displays the type of field. These are:</p>
+<p>Bye = -127 to +127</p>
+<p>Short</p>
+<p>Integer </p>
+<p>Long</p>
+<p>String</p>
+<p><strong>Length</strong> tells the length of the field. This is particularly useful to know when adding text to remarks fields.</p>
+<p><strong>Is Required </strong>refers to the required fields on forms. Any fields that are required by the application can not be edited to no be required, but fields that are not required can be changed to a required field.</p>
+<p><strong>Format Type</strong> allows fields to be formatted into a Number Format, <a href="PickList/Pick_List.html">Pick List</a> or <a href="System/Web_Link.html">Web Link </a>depeding on the type of field.</p>
+<p>List Field types and what they can be formatted as.</p>
 <p>&nbsp;</p>
 </body>
 </html>

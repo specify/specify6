@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <link href="../../main.css" rel="stylesheet" type="text/css" media="screen"></link>
-<title>Schema Configuration</title>
+<title>Web Links</title>
 </head>
 
 <body bgcolor="#ffffff">
@@ -11,41 +11,74 @@
     <td>&nbsp;</td>
   </tr>
 </table>
-<h2>Web Links</h2>
+<table border="0">
+  <tr><td width="32"><img src="../../images/weblink.png" width="32" height="32" /></td>
+<td><h2>Web Links</h2></td></tr></table>
+<p>Many web sites currently offer services that Collection Managers find useful when entering or evaluating data within a collection. Specify includes a Web Links Editor that configures links to web addresses and can then launch an URL by clicking a web link button. At this time web links can not be inserted into forms automatically without editing the form manually. To do this the form will need to be exported out of Specify, edited and imported back into Specify.</p>
+<p>&nbsp;</p>
+<p>There are 4 types of web links. Each link requires that a button be placed on a form and configures that button for one of the following types of web link. </p>
+<p>1. A Global web link is not linked to a table or field, but offers a prompt for a value before launching. </p>
+<p><strong>2.</strong> A Field link sends data from an existing field to a web service, causing it to open to a specific page based on that data. </p>
+<p><strong>3.</strong> A New Field link creates a new field (not included in the Specify Schema) and launches the web site to a specific page based on teh data in that field when the <em>Web Link</em> button is pushed. This link would require that a field be added to a form next to the web link button.</p>
+<p><strong>4.</strong> A URL Field link allows an URL to be entered into a field, then launches the URL by clicking the web link button. This link would require that a field be added to a form next to the web link button.</p>
+<p>Web links are created using the Web Link Editor. It is highly recommended that the Desc (description) field in the Web Link Editor contain a description of exactly how the web link should work. This will be very useful when editing a form to include the web link as well as for future reference.</p>
+<p>&nbsp;</p>
+<h4>Web Link Editors</h4>
+<p>The Web Links editor can be opened from three different areas in Specify. </p>
+<p><u>System Configuration</u> (<em>System &gt; Collection Setup &gt; Configuration</em>) editor can be used to create a Global Web Link only and can edit any link. </p>
+<p><u>Schema Configuration Table</u> (<em>System &gt; Schema Configuration</em>) then choose a table from the Tables list and click the <em>...</em> (dialog) button next to the Web Links field. This editor can create a Global, Field or New Field link.</p>
+<p><a name="web_link_field" id="web_link_field"></a><u>Schema Configuration Field</u> (<em>System &gt; Schema Configuration</em>) then choose a table from the Tables list and a field from the Fields list.Then, in the Field pane, click the <em>Format Type</em> button and choose <em>Web Link</em> from the resulting list. This editor can create any of the web link types and is the only editor that can complete the creation of the URL Field link.</p>
+<p>Once a web link is created it will display in the Pick List next to the ... (dialog) button. When creating a Global, Field or New Field web link the name of the web link will need to be chosen from the pick list to link to the field. When creating an URL Field link the pick list will need to say 'none'.</p>
+<p>&nbsp;</p>
+<h4>Global Web Link</h4>
+<p>A global link is useful when a field does not exist for the information required by a web service. It can be created in the System Configuration (<em>System &gt; Collection Setup &gt; Configuration</em>) or the Schema Configuration (<em>System &gt; Schema Configuration</em>). </p>
+<p>Open the Web Link Editor by one of the methods above.</p>
+<p>Buttons at the  bottom of the dialog offers the following:</p>
+<ul>
+  <li><img src="../../images/Edit-2-16x16.png" alt="edit" width="16" height="16" /> (edit) opens the Web Link Editor for editing a saved web link.</li>
+  <li><img src="../../images/delete.png" alt="delete" width="16" height="16" /> (delete) removes the web link.</li>
+  <li><img src="../../images/add.png" alt="add" width="16" height="16" /> (add) opens the Web Link Editor for creating a new Web Link.</li>
+</ul>
+<p>Click the <img src="../../images/add.png" width="16" height="16" /> (add) button to add a web link, or the <img src="../../images/Edit-2-16x16.png" width="16" height="16" /> (edit) button to edit a web link.</p>
+<ul>
+  <li><strong>Name</strong> refers to the Name of the web link.</li>
+  <li>Type the URL into the <strong>Base URL</strong> field. </li>
+  <li>Type the name you wish the prompt to use at the end of the url with brackets on each end. Example; &lt;climate&gt;</li>
+</ul>
+<p>The name of the prompt will appear in both a Name and Title field in the editor. The Title is editable and is what will display for the prompt. The Name will appear in the web link lists. </p>
+<p>More than one prompt can be added by simply adding brackets, they do not require a separator</p>
+<h4>&nbsp;</h4>
+<h4>Field Link</h4>
+<p>A Field Link  can be very useful when linking to additional information for a particular specimen. This type of link is very useful for web services that return data based on data that is offered. For instance, FishBase returns information about a particular specimen based on genus and species information. This web link would be configured to include the genus and species field from a record and launch to the exact page rather than the Fish Base home page. </p>
+<p>Open the Web Link Editor by one of the methods above.</p>
+<p>Buttons at the bottom of the dialog offer the following:</p>
+<ul>
+  <li><img src="../../images/Edit-2-16x16.png" alt="edit" width="16" height="16" /> (edit) opens the Web Link Editor for editing a saved web link.</li>
+  <li><img src="../../images/delete.png" alt="delete" width="16" height="16" /> (delete) removes the web link.</li>
+  <li><img src="../../images/add.png" alt="add" width="16" height="16" /> (add) opens the Web Link Editor for creating a new Web Link.</li>
+</ul>
+<p>Click the <img src="../../images/add.png" alt="add" width="16" height="16" /> (add) button to add a web link, or the <img src="../../images/Edit-2-16x16.png" alt="edit" width="16" height="16" /> (edit) button to edit a web link.</p>
+<ul>
+  <li><strong>Name</strong> refers to the Name of the web link.</li>
+  <li>Type the URL into the <strong>Base URL</strong> field. </li>
+  <li>*Type the name of the field to be included in brackets in the correct part of the URL. Example &lt;genus&gt;.</li>
+</ul>
+<p>* Each web service will require the field name in a specific place and in a specific way. This information should be included on the web service site. </p>
+<p>When creating a web link using the Field Format Type an extra step exists. Once the web link is created it will be added to a pick list of web links in the Format Type field and must be selected from the pick list in order to be linked to the field.</p>
+<p></p>
+<h4>New Field Link</h4>
+<p>Create a New Field Link by following the steps above (Field Link), with one variation. Rather than typing the name of a field into the brackets type &lt;this&gt;. The name this will appear in the Fields window.  This link is useful when a field for required link information is not included in the Specify Schema. This link would require that a field and button be added to a form. Users would type the information into the field, then click the button and launch the site to a particular page, based on data sent to the site. </p>
+<p>When creating a web link using the Field Format Type an extra step exists. Once the web link is created it will be added to a pick list of web links in the Format Type field and must be selected from the pick list in order to be linked to the field.</p>
+<p>&nbsp;</p>
+<h4>URL Field</h4>
+<p>The URL Field web link can only be created using the <a href="../System/WebLinks.html#web_link_field">Schema Configuration Field</a> editor. </p>
+<p>Once the Web Link Editor is open fill in a name for the web link. </p>
+<p>In the Base URL text field do not type an URL, type &lt;this&gt;. 'this' will appear in the Name field of the Fields window. Specify will then know to take whatever is typed into the box and use it as an URL to launch a web site. </p>
+<p>The most important step to remember when creating an URL Field web link is to choose<em> none</em> as the web link pick list (middle button) next to the Web Link Format Type. </p>
 <p>&nbsp;</p>
 <p>&nbsp;</p>
-<p>Web Links</p>
-<p>Field Choices</p>
-<p>&nbsp;</p>
-<p>relationships -- Picklist</p>
-<p>string -- Format; Weblink; Picklist (this is not the same formatting as relationships but format as in CO number)</p>
-<p>* can only format strings that are 255 characters or less</p>
-<p>date -- none</p>
-<p>float -- none</p>
-<p>byte -- none</p>
-<p>boolean -- none</p>
-<p>integer -- none</p>
 <p>&nbsp;</p>
 <p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>Used by Query Builder, Forms, Simple Search, (anything with UI presented uses this)</p>
-<p>Great place to change labels</p>
-<p>overridden by forms so what is in the forms is not necessarily represented here</p>
-<p>this is the place to </p>
-<p>localize</p>
-<p>turn on/use fields</p>
-<p>format non-formatted fields (catalog number, accession number(repository agreement) loan number, gift number, shipment number</p>
-<p>coopt a text 1 field for a special number in a collection (new label </p>
-<p>all dates done in preferences</p>
-<p>&nbsp;</p>
-<p>Display Format -- what fields in that record do you want to display in the UI (representing a whole row as a single field)</p>
-<p> example -- agent as last, first</p>
-<p>display formats combine fields </p>
-<p>&nbsp;</p>
-<p>Aggragator -- for each of the things being put together what do you use? could be a semi colon and et all (only show 3)</p>
-<p>aggragators combine records </p>
-<p>give examples of things that are aggragated </p>
-<p>collectors are actually agents with an order -- agents have a format 	 </p>
 <p>&nbsp;</p>
 </body>
 </html>
