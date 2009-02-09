@@ -275,6 +275,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         Action closeCurrent = getAction("CloseCurrent"); //$NON-NLS-1$
         if (closeCurrent != null)
         {
+            System.err.println(panes.size() > 0);
             closeCurrent.setEnabled(panes.size() > 0);//  || TaskMgr.getToolbarTaskCount() > 1);
         }        
         
@@ -384,6 +385,8 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
             
             //log.debug("Putting SubPane ["+newPane.getPaneName()+"] ");
             panes.put(newPane.getPaneName(), newPane);
+            
+            adjustCloseAllMenu();
             
             checkForTaskableConfig();
             
@@ -869,7 +872,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
                 
                 // If there is only one pane left and there is only one tasks that provide UI
                 // then we cannot let it close.
-                boolean wasLastSingleTaskPane = (panes.size() == 1  && TaskMgr.getToolbarTaskCount() == 1) || subPane.getTask().isSingletonPane();
+                boolean wasLastSingleTaskPane = panes.size() == 1  && TaskMgr.getToolbarTaskCount() == 1;//) || subPane.getTask().isSingletonPane();
     
                 Taskable task = subPane.getTask();
                 if (task != null)

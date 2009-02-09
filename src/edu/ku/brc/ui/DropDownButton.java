@@ -78,6 +78,7 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
     
     protected EmptyBorder          emptyBorder;
     protected Border               focusBorder;
+    protected boolean              hasFocus             = false;
 
     protected JButton              mainBtn;
     protected JButton              arrowBtn             = null;
@@ -273,11 +274,13 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
         return new FocusListener() {
             public void focusGained(FocusEvent e)
             {
+                hasFocus = true;
                 setBorder(focusBorder);
                 repaint();
             }
             public void focusLost(FocusEvent e)
             {
+                hasFocus = false;
                 setBorder(emptyBorder);
                 repaint();
             }
@@ -596,7 +599,7 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
     {
         super.paint(g);
         
-        if (isHovering && !hasFocus() && isEnabled())
+        if (isHovering && !hasFocus && isEnabled())
         {
             g.setColor(hoverColor);
             

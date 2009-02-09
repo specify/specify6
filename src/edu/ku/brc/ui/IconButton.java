@@ -44,6 +44,7 @@ public class IconButton extends JButton
     protected static Border        emptyBorder;
     protected static Border        focusBorder = null;
     
+    protected boolean              hasFocus   = false;
     protected boolean              isHovering = false;
 
     /**
@@ -132,6 +133,7 @@ public class IconButton extends JButton
             addFocusListener(new FocusListener() {
                 public void focusGained(FocusEvent e)
                 {
+                    hasFocus = true;
                     if (((JButton)e.getSource()).isEnabled())
                     {
                         ((JButton)e.getSource()).setBorder(focusBorder);
@@ -139,6 +141,7 @@ public class IconButton extends JButton
                 }
                 public void focusLost(FocusEvent e)
                 {
+                    hasFocus = false;
                     if (((JButton)e.getSource()).isEnabled())
                     {               
                         ((JButton)e.getSource()).setBorder(emptyBorder);
@@ -158,7 +161,7 @@ public class IconButton extends JButton
     {
         super.paint(g);
         
-        if (isHovering && !hasFocus() && isEnabled())
+        if (isHovering && !hasFocus && isEnabled())
         {
             g.setColor(hoverColor);
             
