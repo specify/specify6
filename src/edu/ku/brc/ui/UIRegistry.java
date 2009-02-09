@@ -974,6 +974,23 @@ public class UIRegistry
     }
 
     /**
+     * Displays a message in the status bar (Note: this updates on the SwingThread via SwingUtilities)
+     * @param text the text to be displayed
+     */
+    public static void displayStatusBarErrMsg(final String text)
+    {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run()
+            {
+                if (instance.statusBar != null && text != null)
+                {
+                    instance.statusBar.setErrorMessage(text);
+                }                
+            }
+        });
+    }
+
+    /**
      * Displays a message in the status bar. (Note: this updates on the SwingThread via SwingUtilities)
      * @param key the key of the string that is to appear in the status bar. The resource string will be looked up
      * @param args for the message
@@ -986,6 +1003,23 @@ public class UIRegistry
         assert localizedStr != null : "Localized String for key["+key+"]";
 
         displayStatusBarText(String.format(localizedStr, args));
+
+
+    }
+
+    /**
+     * Displays an error message in the status bar. (Note: this updates on the SwingThread via SwingUtilities)
+     * @param key the key of the string that is to appear in the status bar. The resource string will be looked up
+     * @param args for the message
+     */
+    public static void displayLocalizedStatusBarError(final String key, final Object... args)
+    {
+        if (key == null) throw new NullPointerException("Call to displayLocalizedStatusBarText cannot be null!");
+
+        String localizedStr = instance.getResourceStringInternal(key);
+        assert localizedStr != null : "Localized String for key["+key+"]";
+
+        displayStatusBarErrMsg(String.format(localizedStr, args));
 
 
     }

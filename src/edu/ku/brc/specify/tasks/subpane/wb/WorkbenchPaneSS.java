@@ -1633,32 +1633,37 @@ public class WorkbenchPaneSS extends BaseSubPane
                 // don't call super.okButtonPressed() b/c it will close the window
                 isCancelled = false;
                 btnPressed  = OK_BTN;
+                int unconverted = 0;
                 switch( getSelectedIndex() )
                 {
                     case 0:
                     {
-                        convertColumnContents(latColIndex, selRows, new GeoRefConverter(), GeoRefFormat.D_PLUS_MINUS.name());
-                        convertColumnContents(lonColIndex, selRows, new GeoRefConverter(), GeoRefFormat.D_PLUS_MINUS.name());
-                        convertColumnContents(lat2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.D_PLUS_MINUS.name());
-                        convertColumnContents(lon2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.D_PLUS_MINUS.name());
+                        unconverted += convertColumnContents(latColIndex, selRows, new GeoRefConverter(), GeoRefFormat.D_PLUS_MINUS.name());
+                        unconverted += convertColumnContents(lonColIndex, selRows, new GeoRefConverter(), GeoRefFormat.D_PLUS_MINUS.name());
+                        unconverted += convertColumnContents(lat2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.D_PLUS_MINUS.name());
+                        unconverted += convertColumnContents(lon2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.D_PLUS_MINUS.name());
                         break;
                     }
                     case 1:
                     {
-                        convertColumnContents(latColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DM_PLUS_MINUS.name());
-                        convertColumnContents(lonColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DM_PLUS_MINUS.name());
-                        convertColumnContents(lat2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DM_PLUS_MINUS.name());
-                        convertColumnContents(lon2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DM_PLUS_MINUS.name());
+                    	unconverted += convertColumnContents(latColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DM_PLUS_MINUS.name());
+                    	unconverted += convertColumnContents(lonColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DM_PLUS_MINUS.name());
+                    	unconverted += convertColumnContents(lat2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DM_PLUS_MINUS.name());
+                    	unconverted += convertColumnContents(lon2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DM_PLUS_MINUS.name());
                         break;
                     }
                     case 2:
                     {
-                        convertColumnContents(latColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DMS_PLUS_MINUS.name());
-                        convertColumnContents(lonColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DMS_PLUS_MINUS.name());
-                        convertColumnContents(lat2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DMS_PLUS_MINUS.name());
-                        convertColumnContents(lon2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DMS_PLUS_MINUS.name());
+                    	unconverted += convertColumnContents(latColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DMS_PLUS_MINUS.name());
+                    	unconverted += convertColumnContents(lonColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DMS_PLUS_MINUS.name());
+                    	unconverted += convertColumnContents(lat2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DMS_PLUS_MINUS.name());
+                    	unconverted += convertColumnContents(lon2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DMS_PLUS_MINUS.name());
                         break;
                     }
+                }
+                if (unconverted != 0)
+                {
+                	UIRegistry.displayLocalizedStatusBarError("WB_UNCONVERTED_GEOREFS", unconverted);
                 }
             }
         };
@@ -1860,14 +1865,17 @@ public class WorkbenchPaneSS extends BaseSubPane
      * @param columnIndex the index of the column being converted
      * @param converter the converter to use
      * @param outputFormat the format string
+     * 
+     * return number of non-blank cells that were NOT converted
      */
-    protected void convertColumnContents(int columnIndex, int[] rows, StringConverter converter, String outputFormat)
+    protected int convertColumnContents(int columnIndex, int[] rows, StringConverter converter, String outputFormat)
     {
         if (columnIndex == -1)
         {
-            return;           
+            return 0;           
         }
         
+        int unconverted = 0;
         final int[] selectedRows = spreadSheet.getSelectedRows();
         final int[] selectedCols = spreadSheet.getSelectedColumns();
         for (int index = 0; index < rows.length; ++index)
@@ -1899,6 +1907,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                 // this value didn't convert correctly
                 // it would be nice to highlight that cell, but I don't know how we could do that
                 log.warn("Could not convert contents of cell (" + (rowIndex+1) + "," + (columnIndex+1) + ")");
+                unconverted++;
                 continue;
             }
             
@@ -1925,6 +1934,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                 }
             }
         });
+        return unconverted;
     }
     
     /**

@@ -141,6 +141,7 @@ public class WorkbenchRowPlacemarkWrapper implements GoogleEarthPlacemarkIFace
             if (wbtmi.getFieldName().equals("latitude1"))
             {
                 String valStr = wbdi.getCellData();
+                
                 if (StringUtils.isNotEmpty(valStr))
                 {
                     String latStr;
