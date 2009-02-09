@@ -83,7 +83,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
             String      columns   = QueryAdjusterForDomain.getInstance().getSpecialColumns(tableInfo, true);
             String      sql       = "FROM "+nodeClass.getSimpleName()+" as node WHERE "+columns+" AND node.name LIKE :name";
             Query q = session.createQuery(sql);
-            q.setParameter("name", name);
+            q.setParameter("name", name + "%");
             for (Object o: q.list())
             {
                 T t = (T)o;
