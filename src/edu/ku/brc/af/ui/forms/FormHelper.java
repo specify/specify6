@@ -517,7 +517,7 @@ public final class FormHelper
     }
 
     /**
-     * Creates a dialog for editting or viewing a data object.
+     * Creates a dialog for editing or viewing a data object.
      * @param altView the current AaltView
      * @param mainComp the mainComp that this is being launched from
      * @param dataObj the data object for the dialog (cannot be NULL)
@@ -546,6 +546,7 @@ public final class FormHelper
                                                                         getResourceString(isEditMode ? "Accept" : "CLOSE"),
                                                                         isEditMode,
                                                                         opts,
+                                                                        null,
                                                                         FRAME_TYPE.DIALOG);
             return dialog;
         }

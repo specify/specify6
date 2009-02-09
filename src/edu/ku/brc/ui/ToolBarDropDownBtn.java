@@ -14,23 +14,13 @@
  */
 package edu.ku.brc.ui;
 
-import java.awt.Color;
 import java.awt.Container;
-import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Insets;
-import java.awt.RenderingHints;
-import java.awt.geom.RoundRectangle2D;
 import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JToolBar;
-import javax.swing.UIManager;
-
-import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 
 import edu.ku.brc.af.prefs.AppPreferences;
 
@@ -45,7 +35,6 @@ import edu.ku.brc.af.prefs.AppPreferences;
 @SuppressWarnings("serial")
 public class ToolBarDropDownBtn extends DropDownButton implements CommandListener
 {
-    protected static Color hoverColor  = new Color(0, 0, 150, 100);
     protected static final String PREFS = "Preferences";
 
     /**
@@ -77,7 +66,6 @@ public class ToolBarDropDownBtn extends DropDownButton implements CommandListene
                               final boolean   addArrowBtn)
     {
         super(label, icon, toolTip, textPosition, addArrowBtn);
-        hoverBorder = emptyBorder;
         CommandDispatcher.register(PREFS, this);
     }
 
@@ -95,7 +83,6 @@ public class ToolBarDropDownBtn extends DropDownButton implements CommandListene
                               final List<JComponent> menus)
     {
         super(label, icon, vertTextPosition, menus);      
-        hoverBorder = emptyBorder;
         CommandDispatcher.register(PREFS, this);
     }
 
@@ -106,40 +93,7 @@ public class ToolBarDropDownBtn extends DropDownButton implements CommandListene
     public ToolBarDropDownBtn(final ImageIcon icon)
     {
         super(icon, false);
-        hoverBorder = emptyBorder;
         CommandDispatcher.register(PREFS, this);
-    }
-    
-    /**
-     * @param hoverColor the hoverColor to set
-     */
-    public static void setHoverColor(final Color hoverColor)
-    {
-        ToolBarDropDownBtn.hoverColor = hoverColor;
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.DropDownButton#paint(java.awt.Graphics)
-     */
-    public void paint(Graphics g)
-    {
-        super.paint(g);
-        
-        if (isHovering && !this.hasFocus())
-        {
-            Color color = (this.hasFocus() && UIManager.getLookAndFeel() instanceof PlasticLookAndFeel) ? PlasticLookAndFeel.getFocusColor() : hoverColor;
-            g.setColor(color);
-            
-            Insets    insets = getInsets();
-            Dimension size   = getSize();
-            
-            Graphics2D g2d = (Graphics2D)g;
-            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            RoundRectangle2D.Double rr = new RoundRectangle2D.Double(insets.left, insets.top, size.width-insets.right-insets.left, size.height-insets.bottom-insets.top, 10, 10);
-            g2d.draw(rr);
-            rr = new RoundRectangle2D.Double(insets.left+1, insets.top+1, size.width-insets.right-insets.left-2, size.height-insets.bottom-insets.top-2, 10, 10);
-            g2d.draw(rr);
-        }
     }
     
     /**

@@ -94,7 +94,7 @@ public class CollapsableSeparator extends JPanel
         this.includeMore = includeMore;
         init();
         
-        panelBldr = new PanelBuilder(new FormLayout((includeMore ? "p," : "") +"p,p,f:p:g", "b:p"), this);
+        panelBldr = new PanelBuilder(new FormLayout((includeMore ? "p," : "") +"p,p,f:p:g", "c:p"), this);
         CellConstraints cc        = new CellConstraints();
         
         subPanel = new JPanel(cardLayout);

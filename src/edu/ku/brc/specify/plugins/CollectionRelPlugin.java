@@ -82,6 +82,7 @@ public class CollectionRelPlugin extends UIPluginBase
                                 "CatalogNumber",
                                 null,
                                 "",
+                                null, // helpContext
                                 btnOpts);
         pb.add(cbx, cc.xy(1, 1));
         

@@ -6,15 +6,27 @@
  */
 package edu.ku.brc.ui;
 
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Insets;
+import java.awt.RenderingHints;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.geom.RoundRectangle2D;
 
-import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JButton;
+import javax.swing.UIManager;
 import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
+
+import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 
 /**
  * @author rod
@@ -26,16 +38,14 @@ import javax.swing.border.Border;
  */
 public class IconButton extends JButton
 {
-    protected static Border emptyBorder;
-    protected static Border focusBorder;
-
-    static
-    {
-        emptyBorder = BorderFactory.createEmptyBorder(3, 3, 3, 3);
-        //emptyBorder = UIHelper.isMacOS() ? BorderFactory.createEmptyBorder(3, 3, 3, 3) : BorderFactory.createEmptyBorder(1, 1, 1, 1);
-        focusBorder = UIHelper.isMacOS() ? new MacBtnBorder() : BorderFactory.createEmptyBorder(3, 3, 3, 3);//new LineBorder(UIManager.getColor("Button.focus") != null ?  UIManager.getColor("Button.focus") : Color.GRAY, 1, true);
-    }
+    protected static BasicStroke   lineStroke = new BasicStroke(1.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+    protected static Color         focusColor = null;
+    protected static Color         hoverColor = new Color(0, 0, 150, 100);
+    protected static Border        emptyBorder;
+    protected static Border        focusBorder = null;
     
+    protected boolean              isHovering = false;
+
     /**
      * @param icon
      */
@@ -44,7 +54,6 @@ public class IconButton extends JButton
     {
         super(icon);
         init(withEmptyBorder);
-        
     }
 
     /**
@@ -64,6 +73,33 @@ public class IconButton extends JButton
      */
     protected void init(final boolean withEmptyBorder)
     {
+        focusBorder = null;
+        if (focusBorder == null)
+        {
+            if (UIHelper.isMacOS())
+            {
+                focusBorder = new MacBtnBorder();
+                Insets fbInsets = focusBorder.getBorderInsets(this);
+                emptyBorder = new EmptyBorder(fbInsets);
+                
+            } else
+            {
+                if (UIManager.getLookAndFeel() instanceof PlasticLookAndFeel)
+                {
+                    focusColor = PlasticLookAndFeel.getFocusColor();
+                } else
+                {
+                    focusColor = UIManager.getColor("Button.focus");
+                }
+                if (focusColor == null)
+                {
+                    focusColor = Color.DARK_GRAY;
+                }
+                focusBorder = new LineBorder(focusColor, 1, true);
+                emptyBorder = new EmptyBorder(focusBorder.getBorderInsets(this));
+            }
+        }
+
         setOpaque(false);
         
         if (!withEmptyBorder)
@@ -72,19 +108,15 @@ public class IconButton extends JButton
                 @Override
                 public void mouseEntered(MouseEvent e)
                 {
-                    if (((JButton)e.getSource()).isEnabled())
-                    {
-                        //((JButton)e.getSource()).setBorder(focusBorder);
-                    }
+                    isHovering = true;
+                    repaint();
                     super.mouseEntered(e);
                 }
                 @Override
                 public void mouseExited(MouseEvent e)
                 {
-                    if (((JButton)e.getSource()).isEnabled())
-                    {               
-                        ((JButton)e.getSource()).setBorder(emptyBorder);
-                    }
+                    isHovering = false;
+                    repaint();
                     super.mouseExited(e);
                 }
                 /* (non-Javadoc)
@@ -94,7 +126,6 @@ public class IconButton extends JButton
                 public void mousePressed(MouseEvent e)
                 {
                     super.mousePressed(e);
-                    //((JButton)e.getSource()).setBorder(focusBorder);
                 }
                 
             });
@@ -119,6 +150,30 @@ public class IconButton extends JButton
         }
     }
     
+    /* (non-Javadoc)
+     * @see java.awt.Component#paint(java.awt.Graphics)
+     */
+    @Override
+    public void paint(Graphics g) 
+    {
+        super.paint(g);
+        
+        if (isHovering && !hasFocus() && isEnabled())
+        {
+            g.setColor(hoverColor);
+            
+            Insets    insets = getInsets();
+            Dimension size   = getSize();
+            
+            Graphics2D g2d = (Graphics2D)g;
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            RoundRectangle2D.Double rr = new RoundRectangle2D.Double(insets.left, insets.top, size.width-insets.right-insets.left, size.height-insets.bottom-insets.top, 10, 10);
+            g2d.setStroke(lineStroke);
+            g2d.draw(rr);
+            rr = new RoundRectangle2D.Double(insets.left+1, insets.top+1, size.width-insets.right-insets.left-2, size.height-insets.bottom-insets.top-2, 10, 10);
+            g2d.draw(rr);
+        }
+    }
 
     /* (non-Javadoc)
      * @see javax.swing.AbstractButton#setEnabled(boolean)

@@ -722,37 +722,18 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
     public Object clone() throws CloneNotSupportedException
     {
         Preparation obj = (Preparation)super.clone();
-        obj.initialize();
+        obj.init();
         
-        obj.text1        = text1;
-        obj.text2        = text2;
-        obj.count        = count;
-        obj.storageLocation = storageLocation;
-        obj.remarks      = remarks;
-        obj.preparedDate = preparedDate;
-        obj.status       = status;
-        obj.sampleNumber = sampleNumber;
-        
-        obj.number1      = number1;
-        obj.number2      = number2;
-        obj.yesNo1       = yesNo1;
-        obj.yesNo2       = yesNo2;
-        obj.yesNo3       = yesNo2;
-        obj.prepType     = prepType;
-        obj.preparedByAgent = preparedByAgent;
-        obj.collectionObject = collectionObject;
-        
-        // These are for documentation purposes (to know what isn't being cloned)
-        
-        //giftPreparations = new HashSet<GiftPreparation>();
-        //loanPreparations = new HashSet<LoanPreparation>();
-        //collectionObject = null;
-        //storage = null;
-        //deaccessionPreparations = new HashSet<DeaccessionPreparation>();
-        //preparationAttributes  = null;
-        //preparationAttrs       = new HashSet<PreparationAttr>();
-        //preparationAttachments = new HashSet<PreparationAttachment>();
-        
+        obj.preparationId           = null;
+        obj.loanPreparations        = new HashSet<LoanPreparation>();
+        obj.collectionObject        = null;
+        obj.deaccessionPreparations = new HashSet<DeaccessionPreparation>();
+        obj.preparationAttachments  = new HashSet<PreparationAttachment>();
+       
+        // Clone Attributes ????
+        obj.preparationAttribute    = null;
+        obj.preparationAttrs        = new HashSet<PreparationAttr>();
+         
         return obj;
     }
 

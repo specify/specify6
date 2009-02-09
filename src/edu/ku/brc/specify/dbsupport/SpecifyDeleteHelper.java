@@ -76,13 +76,15 @@ public class SpecifyDeleteHelper
         {
             statusBar = UIRegistry.getStatusBar();
         }
-        
+        /*
         DBConnection dbConn = DBConnection.createInstance("com.mysql.jdbc.Driver", 
                                                           "org.hibernate.dialect.MySQLDialect", 
                                                           "testfish", 
                                                           "jdbc:mysql://localhost/testfish", 
                                                           "Specify", 
                                                           "Specify");
+                                                          */
+        DBConnection dbConn = DBConnection.getInstance();
         connection = dbConn.createConnection();
 
         if (false)

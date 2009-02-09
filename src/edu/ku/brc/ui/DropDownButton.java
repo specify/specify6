@@ -14,16 +14,20 @@
  */
 package edu.ku.brc.ui;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Insets;
-import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
+import java.awt.geom.RoundRectangle2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -37,10 +41,10 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
-import javax.swing.border.BevelBorder;
+import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.SoftBevelBorder;
+import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.MouseInputAdapter;
@@ -50,6 +54,7 @@ import javax.swing.event.PopupMenuListener;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 
 
 /**
@@ -67,8 +72,12 @@ import com.jgoodies.forms.layout.FormLayout;
 public class DropDownButton extends JPanel implements ChangeListener, PopupMenuListener,
                                                       ActionListener, PropertyChangeListener
 {
+    protected static BasicStroke   lineStroke = new BasicStroke(1.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+    protected static Color         focusColor = null;
+    protected static Color         hoverColor = new Color(0, 0, 150, 100);
+    
     protected EmptyBorder          emptyBorder;
-    protected Border               hoverBorder;
+    protected Border               focusBorder;
 
     protected JButton              mainBtn;
     protected JButton              arrowBtn             = null;
@@ -79,7 +88,6 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
     protected List<ActionListener> listeners            = new ArrayList<ActionListener>();
     
     protected boolean              isHovering           = false;
-    protected boolean              hasFocus             = false; 
     protected JComponent           popupAnchorComponent = null;
     
     protected static ImageIcon     dropDownArrow;
@@ -217,8 +225,29 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
             pb.add(arrowBtn, cc.xy(2, 1));
         }
         
-        hoverBorder = new SoftBevelBorder(BevelBorder.RAISED);
-        emptyBorder = new EmptyBorder(hoverBorder.getBorderInsets(this));
+        if (UIHelper.isMacOS())
+        {
+            focusBorder = new MacBtnBorder();
+            emptyBorder = new EmptyBorder(focusBorder.getBorderInsets(this));
+            
+        } else
+        {
+            if (UIManager.getLookAndFeel() instanceof PlasticLookAndFeel)
+            {
+                focusColor = PlasticLookAndFeel.getFocusColor();
+            } else
+            {
+                focusColor = UIManager.getColor("Button.focus");
+            }
+            if (focusColor == null)
+            {
+                focusColor = Color.DARK_GRAY;
+            }
+             
+            focusBorder = new LineBorder(focusColor, 1, true);
+            emptyBorder = new EmptyBorder(focusBorder.getBorderInsets(this));
+        }
+        
         if (!overrideButtonBorder)
         {
             setBorder(emptyBorder);
@@ -229,22 +258,29 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
     }
      
     /**
+     * @param hoverColor the hoverColor to set
+     */
+    public static void setHoverColor(Color hoverColor)
+    {
+        DropDownButton.hoverColor = hoverColor;
+    }
+
+    /**
      * @return
      */
     public FocusListener createFocusListener()
     {
         return new FocusListener() {
-            public void focusGained(FocusEvent arg0)
+            public void focusGained(FocusEvent e)
             {
-                hasFocus = true;
+                setBorder(focusBorder);
                 repaint();
             }
-            public void focusLost(FocusEvent arg0)
+            public void focusLost(FocusEvent e)
             {
-                hasFocus = false;
+                setBorder(emptyBorder);
                 repaint();
             }
-            
         };
     }
 
@@ -261,10 +297,6 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
                 if (DropDownButton.this.isEnabled())
                 {
                     isHovering = true;
-                    if (!overrideButtonBorder)
-                    {
-                        setBorder(hoverBorder);
-                    }
                     if (statusBarHintText != null)
                     {
                         UIRegistry.displayStatusBarText(statusBarHintText);
@@ -280,10 +312,6 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
                 isHovering = false;
                 if (DropDownButton.this.isEnabled())
                 {
-                    if (!overrideButtonBorder)
-                    {
-                        setBorder(emptyBorder);
-                    }
                     UIRegistry.displayStatusBarText(null);
                      
                     if (popupVisible)
@@ -369,15 +397,6 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
         return arwBtn;
     }
     
-    /**
-     * Sets a new hover border
-     * @param hoverBorder the hover border
-     */
-    public void setHoverBorder(final Border raisedBorder)
-    {
-        this.hoverBorder = raisedBorder;
-    }
-
     /**
      * @param val
      * @param border
@@ -575,50 +594,23 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
     @Override
     public void paint(Graphics g) 
     {
-        //mainBtn.setMargin(new Insets(0,0,0,0));
-        
         super.paint(g);
         
-        if (getBorder() == hoverBorder && arrowBtn.isVisible())
+        if (isHovering && !hasFocus() && isEnabled())
         {
-
-            boolean isSoftBevel = hoverBorder instanceof SoftBevelBorder;
-            Color highlight = isSoftBevel ? ((SoftBevelBorder)hoverBorder).getHighlightInnerColor(mainBtn) : Color.LIGHT_GRAY;
-            Color shadow    = isSoftBevel ? ((SoftBevelBorder)hoverBorder).getShadowInnerColor(mainBtn) : Color.DARK_GRAY;
+            g.setColor(hoverColor);
             
-            g.setColor(shadow);
-            Rectangle r = mainBtn.getBounds();
-
-            int x = r.x + r.width;
-            int shrink = 0;
-            int y1 = r.y+shrink;
-            int y2 = r.y+r.height-(shrink*2);
-            g.drawLine(x-1, y1,   x,   y1+1);
-            g.drawLine(x,   y1+1, x,   y2-1);
-            g.drawLine(x,   y2-1, x-1, y2);
-            x++;
-            g.setColor(highlight);
-            g.drawLine(x-1, y1,   x,   y1+1);
-            g.drawLine(x,   y1+1, x,   y2-1);
-            g.drawLine(x,   y2-1, x-1, y2);
+            Insets    insets = getInsets();
+            Dimension size   = getSize();
+            
+            Graphics2D g2d = (Graphics2D)g;
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            RoundRectangle2D.Double rr = new RoundRectangle2D.Double(insets.left, insets.top, size.width-insets.right-insets.left, size.height-insets.bottom-insets.top, 10, 10);
+            g2d.setStroke(lineStroke);
+            g2d.draw(rr);
+            rr = new RoundRectangle2D.Double(insets.left+1, insets.top+1, size.width-insets.right-insets.left-2, size.height-insets.bottom-insets.top-2, 10, 10);
+            g2d.draw(rr);
         }
-        
-        /* Experiment
-        if (hasFocus)
-        {
-            Color focusColor = UIManager.getColor("Button.focus");
-            System.out.println(focusColor);
-            Dimension size = getSize();
-            g.setColor(new Color(217,236,234));
-            g.drawRect(0,0,size.width-1, size.height-1);
-            g.setColor(new Color(194,213,230));
-            g.drawRect(1,1,size.width-3, size.height-3);
-            g.setColor(new Color(169,199,225));
-            g.drawRect(2,2,size.width-5, size.height-5);
-            g.setColor(new Color(134,155,175));
-            g.drawRect(3,3,size.width-7, size.height-7);
-        }*/
-        
     }
     
     /**

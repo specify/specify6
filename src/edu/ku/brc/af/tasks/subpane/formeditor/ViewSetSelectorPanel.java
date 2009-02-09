@@ -388,9 +388,9 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
             {
                 if (e.isPopupTrigger()) 
                 {
-                    int x = e.getX();
-                    int y = e.getY();
-                    TreePath path = tree.getPathForLocation(x, y);
+                    int xc = e.getX();
+                    int yc = e.getY();
+                    TreePath path = tree.getPathForLocation(xc, yc);
                     if (path != null)
                     {
                         tree.setSelectionPath(path);
@@ -558,9 +558,9 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
     /**
      * @param viewDef
      * @param formRow
-     * @param selectedCell
+     * @param selectedCellArg
      */
-    protected void addControlTo(final FormCell selectedCell)
+    protected void addControlTo(final FormCell selectedCellArg)
     {
         List<ControlIFace> list = getControlsList(true);
 
@@ -570,7 +570,7 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
         
         if (!dlg.isCancelled())
         {
-            addControl(dlg.getSelectedObject(), selectedCell);
+            addControl(dlg.getSelectedObject(), selectedCellArg);
         }
     }
     

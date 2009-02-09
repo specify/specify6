@@ -182,7 +182,8 @@ public class TypeSearchForQueryFactory
      */
     public static ValComboBoxFromQuery createValComboBoxFromQuery(final String name, 
                                                                   final int btnOpts,
-                                                                  final String dataObjFormatterNameArg)
+                                                                  final String dataObjFormatterNameArg,
+                                                                  final String helpContextArg)
     {
         instance.load();
         
@@ -200,6 +201,7 @@ public class TypeSearchForQueryFactory
                                                 typeSearchInfo.getUiFieldFormatterName(),
                                                 dataObjFormatterNameArg,
                                                 typeSearchInfo.getSqlTemplate(),
+                                                helpContextArg,
                                                 btnOpts);
 
     

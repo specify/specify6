@@ -20,8 +20,6 @@ import static edu.ku.brc.ui.UIHelper.setControlSize;
 import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Rectangle;
-import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusListener;
@@ -56,7 +54,6 @@ import com.jgoodies.forms.layout.FormLayout;
 public class DropDownButtonStateful extends DropDownButton
 {
     protected List<DropDownMenuInfo>   menuInfoItems;
-    protected String                   currLabel     = null;
     protected int                      currInx       = 0;
     protected int                      nxtInx        = 0;
     protected Dimension                preferredSize = null;
@@ -214,6 +211,8 @@ public class DropDownButtonStateful extends DropDownButton
         int i = 0;
         for (DropDownMenuInfo mi : menuInfoItems)
         {
+            String label = menuInfoItems.get(i < menuInfoItems.size()-1 ? i+1 : 0).getLabel();
+            
             JMenuItem menuItem = new JMenuItem(mi.getLabel(), mi.getImageIcon());
             setControlSize(menuItem);
             menuItem.addActionListener(menuAL);
@@ -221,7 +220,7 @@ public class DropDownButtonStateful extends DropDownButton
             
             PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g,p", "p"));
 
-            JButton btn = createLabelBtn(mi.getLabel(), mi.getImageIcon(), mi.getTooltip(), this, focusListener, 
+            JButton btn = createLabelBtn(label, mi.getImageIcon(), mi.getTooltip(), this, focusListener, 
                                          mouseInputAdapter, btnAL, this, false);
             btns.add(btn);
             btn.setOpaque(false);
@@ -255,7 +254,7 @@ public class DropDownButtonStateful extends DropDownButton
     {
         super.paint(g);
         
-        if (isHovering)
+        /*if (isHovering && !hasFocus)
         {
             JButton   btn = btns.get(nxtInx);
             Rectangle r   = btn.getBounds();
@@ -269,7 +268,7 @@ public class DropDownButtonStateful extends DropDownButton
             g.setColor(SystemColor.controlShadow);
             g.drawLine(pr.x, pr.height-1, pr.width-1, pr.height-1);
             g.drawLine(pr.width-1, pr.y, pr.width-1, pr.height-1);
-        }
+        }*/
         
     }
 
@@ -291,7 +290,6 @@ public class DropDownButtonStateful extends DropDownButton
         currInx = index;
         nxtInx = doAdvance && !doShowCurrent ? getNextIndex() : index;
         cardLayout.show(cardPanel, Integer.toString(nxtInx));
-
     }
     
     /**

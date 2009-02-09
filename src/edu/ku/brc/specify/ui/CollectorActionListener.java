@@ -94,6 +94,7 @@ public class CollectorActionListener implements ActionListener
                                                                     isEditting ? getResourceString("OK") : getResourceString("CLOSE"),
                                                                     isEditting,
                                                                     options,
+                                                                    null,
                                                                     FRAME_TYPE.DIALOG);
         if (dialog != null)
         {

@@ -546,7 +546,9 @@ public class ViewFactory
             btnOpts |= cellField.getPropertyAsBoolean("newbtn", true) ? ValComboBoxFromQuery.CREATE_NEW_BTN : 0;
             btnOpts |= cellField.getPropertyAsBoolean("searchbtn", true) ? ValComboBoxFromQuery.CREATE_SEARCH_BTN : 0;
             
-            ValComboBoxFromQuery cbx = TypeSearchForQueryFactory.createValComboBoxFromQuery(cbxName, btnOpts, cellField.getFormatName());
+            String helpContext = cellField.getProperty("hc");
+            
+            ValComboBoxFromQuery cbx = TypeSearchForQueryFactory.createValComboBoxFromQuery(cbxName, btnOpts, cellField.getFormatName(), helpContext);
             cbx.setRequired(isRequired);
             cbx.setSearchDlgName(cellField.getProperty("searchdlg"));
             cbx.setDisplayDlgName(cellField.getProperty("displaydlg"));

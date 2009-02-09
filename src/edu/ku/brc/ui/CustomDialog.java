@@ -258,6 +258,11 @@ public class CustomDialog extends JDialog
      */
     public void createUI()
     {
+        /*if (helpContext == null)
+        {
+            whichBtns &= ~HELP_BTN; // Clear Bit for Help button if there is no HelpContext
+        }*/
+
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
         mainPanel = createMainPanel();

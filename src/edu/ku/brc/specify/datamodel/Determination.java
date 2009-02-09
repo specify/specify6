@@ -14,7 +14,6 @@
  */
 package edu.ku.brc.specify.datamodel;
 
-import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
@@ -601,29 +600,13 @@ public class Determination extends CollectionMember implements java.io.Serializa
     @Override
     public Object clone() throws CloneNotSupportedException
     {
-        Determination obj = (Determination)super.clone();
-        obj.initialize();
+        Determination 
+        obj = (Determination)super.clone();
+        obj.init();
+        obj.determinationId        = null;
+        obj.collectionObject       = null;
+        obj.determinationCitations = new HashSet<DeterminationCitation>();
         
-        obj.timestampCreated     = new Timestamp(System.currentTimeMillis());
-        obj.timestampModified    = timestampCreated;
-        
-        //obj.status = status;
-        obj.typeStatusName = typeStatusName;
-        obj.determinedDate = determinedDate;
-        obj.confidence = confidence;
-        obj.method = method;
-        obj.featureOrBasis = featureOrBasis;
-        obj.remarks = remarks;
-        obj.text1 = text1;
-        obj.text2 = text2;
-        obj.number1 = number1;
-        obj.number2 = number2;
-        obj.yesNo1 = yesNo1;
-        obj.yesNo2 = yesNo2;
-        obj.taxon = taxon;
-        obj.collectionObject = collectionObject;
-        obj.determiner = determiner;   
-       
         for (DeterminationCitation dc : determinationCitations)
         {
             DeterminationCitation newDC = (DeterminationCitation)dc.clone();

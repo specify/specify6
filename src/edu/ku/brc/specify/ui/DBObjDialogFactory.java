@@ -111,6 +111,7 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
                     String  type        = getAttr(fileElement, "type", "display");
                     String  name        = getAttr(fileElement, "name", null);
                     boolean isDisplay   = type.equals("display");
+                    System.err.println("HC: " +getAttr(fileElement, "helpcontext", ""));
                     
                     DialogInfo di = new DialogInfo(isDisplay ? null : getAttr(fileElement, "viewset", null),
                                                     getAttr(fileElement, "view", null),
@@ -196,6 +197,7 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
                                                final String     closeBtnTitleArg,
                                                final boolean    isEditArg,
                                                final int        optionsArg,
+                                               final String     helpContext,
                                                final FRAME_TYPE type)
     {
         boolean isEdit        = isEditArg;
@@ -306,6 +308,8 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
             
             if (viewDisplay != null)
             {
+                viewDisplay.setHelpContext(helpContext != null ? helpContext : info.getHelpContext());
+                
                 if (lockStatus == FormLockStatus.GotLock)
                 {
                     final String ERR_UNLOCKING_FORM = "DBObjDialogFactory.ERR_UNLOCKING_FORM";

@@ -24,7 +24,7 @@ There are three types of connection strings:
      -->
      
     <!-- NOTE: you must have Service Pack 4 applied to your SQL Server engine in order for JDBC connection to work -->
-    <!--  -->    
+    <!-- 
       <db name="SQLServer" driver="net.sourceforge.jtds.jdbc.Driver" dialect="org.hibernate.dialect.SQLServerDialect">
         <connection type="open">jdbc:jtds:sqlserver://SERVER:1433/DATABASE;User=USERNAME;Password=PASSWORD;SelectMethod=cursor</connection>
     </db> 

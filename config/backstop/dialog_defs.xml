@@ -26,60 +26,60 @@
     <dialog type="search" viewset="Search" view="RepositoryAgreementSearch" name="RepositoryAgreementSearch" class="edu.ku.brc.specify.datamodel.RepositoryAgreement" idfield="repositoryAgreementId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="TaxonSearch"              name="TaxonSearch"              class="edu.ku.brc.specify.datamodel.Taxon"          idfield="taxonId" helpcontext="CBXQSearch"/>
     
-    <dialog type="display" view="AccessionCO"        name="AccessionDisplay"         class="edu.ku.brc.specify.datamodel.Accession"/>
-    <dialog type="display" view="AccessionAgent"     name="AccessionAgentDisplay"    class="edu.ku.brc.specify.datamodel.Address"/>
-    <dialog type="display" view="Address"            name="AddressDisplay"           class="edu.ku.brc.specify.datamodel.Accession"/>
-    <dialog type="display" view="Agent"              name="AgentDisplay"             class="edu.ku.brc.specify.datamodel.Agent"/>
-    <dialog type="display" view="AgentVariant"       name="AgentVariant"             class="edu.ku.brc.specify.datamodel.AgentVariant"/>
-    <dialog type="display" view="Appraisal"          name="AppraisalDisplay"         class="edu.ku.brc.specify.datamodel.Appraisal"/>
-    <dialog type="display" view="AttachmentsForm"    name="AttachmentsForm"          class="edu.ku.brc.specify.datamodel.Attachment"/>
-    <dialog type="display" view="AutoNumberingScheme" name="AutoNumberingScheme"     class="edu.ku.brc.specify.datamodel.AutoNumberingScheme"/>
-    <dialog type="display" view="Author"             name="AuthorDisplay"            class="edu.ku.brc.specify.datamodel.Author"/>
-    <dialog type="display" view="BioStrat"           name="BioStratDisplay"          class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"/>
-    <dialog type="display" view="Collection"         name="Collection"               class="edu.ku.brc.specify.datamodel.Collection"/>
-    <dialog type="display" view="Collector"          name="CollectorDisplay"         class="edu.ku.brc.specify.datamodel.Collector"/>
-    <dialog type="display" view="CollectionObject"   name="CollectionObject"         class="edu.ku.brc.specify.datamodel.CollectionObject"/>
-    <dialog type="display" view="CollectingEvent"    name="CollectingEvent"          class="edu.ku.brc.specify.datamodel.CollectingEvent"/>
-    <dialog type="display" view="CollectingTrip"     name="CollectingTripDisplay"    class="edu.ku.brc.specify.datamodel.CollectingTrip"/>
-    <dialog type="display" view="Determination"      name="DeterminationDisplay"     class="edu.ku.brc.specify.datamodel.Determination"/>
-    <dialog type="display" view="Division"           name="DivisionDisplay"          class="edu.ku.brc.specify.datamodel.Division"/>
-    <dialog type="display" view="FieldNotebookPage"  name="FieldNotebookPageDisplay" class="edu.ku.brc.specify.datamodel.FieldNotebookPage"/>
-    <dialog type="display" view="ChronosStrat"       name="ChronosStratDisplay"      class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"/>
-    <dialog type="display" view="Geography"          name="GeographyDisplay"         class="edu.ku.brc.specify.datamodel.Geography"/>
-    <dialog type="display" view="GiftItems"          name="GiftItemsDisplay"         class="edu.ku.brc.specify.datamodel.GiftPreparation"/>
-    <dialog type="display" view="GroupPerson"        name="GroupPersonDisplay"       class="edu.ku.brc.specify.datamodel.GroupPerson"/>
-    <dialog type="display" view="Journal"            name="JournalDisplay"           class="edu.ku.brc.specify.datamodel.Journal"/>
-    <dialog type="display" view="LithoStrat"         name="LithoStratDisplay"        class="edu.ku.brc.specify.datamodel.LithoStrat"/>
-    <dialog type="display" view="LoanItems"          name="LoanItemsDisplay"         class="edu.ku.brc.specify.datamodel.LoanPreparation"/>
-    <dialog type="display" view="Locality"           name="LocalityDisplay"          class="edu.ku.brc.specify.datamodel.Locality"/>
-    <dialog type="display" view="Storage"            name="StorageDisplay"           class="edu.ku.brc.specify.datamodel.Storage"/>
-    <dialog type="display" view="Permit"             name="PermitDisplay"            class="edu.ku.brc.specify.datamodel.Agent"/>
-    <dialog type="display" view="Preparation"        name="PreparationDisplay"       class="edu.ku.brc.specify.datamodel.Preparation"/>
-    <dialog type="display" view="ProjectSub"         name="ProjectSubDisplay"        class="edu.ku.brc.specify.datamodel.Project"/>
-    <dialog type="display" view="ReferenceWork"      name="ReferenceWorkDisplay"     class="edu.ku.brc.specify.datamodel.ReferenceWork"/>
-    <dialog type="display" view="RepositoryAgreement" name="RepositoryAgreementDisplay" class="edu.ku.brc.specify.datamodel.RepositoryAgreement"/>
-    <dialog type="display" view="Taxon"              name="TaxonDisplay"             class="edu.ku.brc.specify.datamodel.Taxon"/>
+    <dialog type="display" view="AccessionCO"        name="AccessionDisplay"         class="edu.ku.brc.specify.datamodel.Accession" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="AccessionAgent"     name="AccessionAgentDisplay"    class="edu.ku.brc.specify.datamodel.Address" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="Address"            name="AddressDisplay"           class="edu.ku.brc.specify.datamodel.Accession" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="Agent"              name="AgentDisplay"             class="edu.ku.brc.specify.datamodel.Agent" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="AgentVariant"       name="AgentVariant"             class="edu.ku.brc.specify.datamodel.AgentVariant" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="Appraisal"          name="AppraisalDisplay"         class="edu.ku.brc.specify.datamodel.Appraisal" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="AttachmentsForm"    name="AttachmentsForm"          class="edu.ku.brc.specify.datamodel.Attachment" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="AutoNumberingScheme" name="AutoNumberingScheme"     class="edu.ku.brc.specify.datamodel.AutoNumberingScheme" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="Author"             name="AuthorDisplay"            class="edu.ku.brc.specify.datamodel.Author" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="BioStrat"           name="BioStratDisplay"          class="edu.ku.brc.specify.datamodel.GeologicTimePeriod" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="Collection"         name="Collection"               class="edu.ku.brc.specify.datamodel.Collection" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="Collector"          name="CollectorDisplay"         class="edu.ku.brc.specify.datamodel.Collector" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="CollectionObject"   name="CollectionObject"         class="edu.ku.brc.specify.datamodel.CollectionObject" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="CollectingEvent"    name="CollectingEvent"          class="edu.ku.brc.specify.datamodel.CollectingEvent" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="CollectingTrip"     name="CollectingTripDisplay"    class="edu.ku.brc.specify.datamodel.CollectingTrip" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="Determination"      name="DeterminationDisplay"     class="edu.ku.brc.specify.datamodel.Determination" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="Division"           name="DivisionDisplay"          class="edu.ku.brc.specify.datamodel.Division" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="FieldNotebookPage"  name="FieldNotebookPageDisplay" class="edu.ku.brc.specify.datamodel.FieldNotebookPage" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="ChronosStrat"       name="ChronosStratDisplay"      class="edu.ku.brc.specify.datamodel.GeologicTimePeriod" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="Geography"          name="GeographyDisplay"         class="edu.ku.brc.specify.datamodel.Geography" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="GiftItems"          name="GiftItemsDisplay"         class="edu.ku.brc.specify.datamodel.GiftPreparation" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="GroupPerson"        name="GroupPersonDisplay"       class="edu.ku.brc.specify.datamodel.GroupPerson" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="Journal"            name="JournalDisplay"           class="edu.ku.brc.specify.datamodel.Journal" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="LithoStrat"         name="LithoStratDisplay"        class="edu.ku.brc.specify.datamodel.LithoStrat" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="LoanItems"          name="LoanItemsDisplay"         class="edu.ku.brc.specify.datamodel.LoanPreparation" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="Locality"           name="LocalityDisplay"          class="edu.ku.brc.specify.datamodel.Locality" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="Permit"             name="PermitDisplay"            class="edu.ku.brc.specify.datamodel.Permit"  helpcontext="CBXQViewEditXX"/>
+    <dialog type="display" view="Preparation"        name="PreparationDisplay"       class="edu.ku.brc.specify.datamodel.Preparation" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="ProjectSub"         name="ProjectSubDisplay"        class="edu.ku.brc.specify.datamodel.Project" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="ReferenceWork"      name="ReferenceWorkDisplay"     class="edu.ku.brc.specify.datamodel.ReferenceWork" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="RepositoryAgreement" name="RepositoryAgreementDisplay" class="edu.ku.brc.specify.datamodel.RepositoryAgreement" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="Storage"            name="StorageDisplay"           class="edu.ku.brc.specify.datamodel.Storage" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="Taxon"              name="TaxonDisplay"             class="edu.ku.brc.specify.datamodel.Taxon" helpcontext="CBXQViewEdit"/>
 
 	<!-- Attachment-related displays -->
-    <dialog type="display" view="ObjectAttachment" name="AccessionAttachmentDisplay"            class="edu.ku.brc.specify.datamodel.AccessionAttachment"/>
-    <dialog type="display" view="ObjectAttachment" name="AgentAttachmentDisplay"                class="edu.ku.brc.specify.datamodel.AgentAttachment"/>
-    <dialog type="display" view="ObjectAttachment" name="CollectingEventAttachmentDisplay"      class="edu.ku.brc.specify.datamodel.CollectingEventAttachment"/>
-    <dialog type="display" view="ObjectAttachment" name="CollectionObjectAttachmentDisplay"     class="edu.ku.brc.specify.datamodel.CollectionObjectAttachment"/>
-    <dialog type="display" view="ObjectAttachment" name="ConservDescriptionAttachmentDisplay"   class="edu.ku.brc.specify.datamodel.ConservDescriptionAttachment"/>
-    <dialog type="display" view="ObjectAttachment" name="ConservEventAttachmentDisplay"         class="edu.ku.brc.specify.datamodel.ConservEventAttachment"/>
-    <dialog type="display" view="ObjectAttachment" name="DNASequencingRunAttachmentDisplay"     class="edu.ku.brc.specify.datamodel.DNASequencingRunAttachment"/>
-    <dialog type="display" view="ObjectAttachment" name="FieldNotebookAttachmentDisplay"        class="edu.ku.brc.specify.datamodel.FieldNotebookAttachment"/>
-    <dialog type="display" view="ObjectAttachment" name="FieldNotebookAttachmentPageDisplay"    class="edu.ku.brc.specify.datamodel.FieldNotebookPageAttachment"/>
-    <dialog type="display" view="ObjectAttachment" name="FieldNotebookAttachmentPageSetDisplay" class="edu.ku.brc.specify.datamodel.FieldNotebookPageSetAttachment"/>
-    <dialog type="display" view="ObjectAttachment" name="LoanAttachmentDisplay"                 class="edu.ku.brc.specify.datamodel.LoanAttachment"/>
-    <dialog type="display" view="ObjectAttachment" name="LocalityAttachmentDisplay"             class="edu.ku.brc.specify.datamodel.LocalityAttachment"/>
-    <dialog type="display" view="ObjectAttachment" name="PermitAttachmentDisplay"               class="edu.ku.brc.specify.datamodel.PermitAttachment"/>
-    <dialog type="display" view="ObjectAttachment" name="PreparationAttachmentDisplay"          class="edu.ku.brc.specify.datamodel.PreparationAttachment"/>
-    <dialog type="display" view="ObjectAttachment" name="RepositoryAgreementAttachmentDisplay"  class="edu.ku.brc.specify.datamodel.RepositoryAgreementAttachment"/>
-    <dialog type="display" view="ObjectAttachment" name="TaxonAttachmentDisplay"                class="edu.ku.brc.specify.datamodel.TaxonAttachment"/>
+    <dialog type="display" view="ObjectAttachment" name="AccessionAttachmentDisplay"            class="edu.ku.brc.specify.datamodel.AccessionAttachment" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="ObjectAttachment" name="AgentAttachmentDisplay"                class="edu.ku.brc.specify.datamodel.AgentAttachment" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="ObjectAttachment" name="CollectingEventAttachmentDisplay"      class="edu.ku.brc.specify.datamodel.CollectingEventAttachment" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="ObjectAttachment" name="CollectionObjectAttachmentDisplay"     class="edu.ku.brc.specify.datamodel.CollectionObjectAttachment" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="ObjectAttachment" name="ConservDescriptionAttachmentDisplay"   class="edu.ku.brc.specify.datamodel.ConservDescriptionAttachment" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="ObjectAttachment" name="ConservEventAttachmentDisplay"         class="edu.ku.brc.specify.datamodel.ConservEventAttachment" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="ObjectAttachment" name="DNASequencingRunAttachmentDisplay"     class="edu.ku.brc.specify.datamodel.DNASequencingRunAttachment" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="ObjectAttachment" name="FieldNotebookAttachmentDisplay"        class="edu.ku.brc.specify.datamodel.FieldNotebookAttachment" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="ObjectAttachment" name="FieldNotebookAttachmentPageDisplay"    class="edu.ku.brc.specify.datamodel.FieldNotebookPageAttachment" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="ObjectAttachment" name="FieldNotebookAttachmentPageSetDisplay" class="edu.ku.brc.specify.datamodel.FieldNotebookPageSetAttachment" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="ObjectAttachment" name="LoanAttachmentDisplay"                 class="edu.ku.brc.specify.datamodel.LoanAttachment" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="ObjectAttachment" name="LocalityAttachmentDisplay"             class="edu.ku.brc.specify.datamodel.LocalityAttachment" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="ObjectAttachment" name="PermitAttachmentDisplay"               class="edu.ku.brc.specify.datamodel.PermitAttachment" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="ObjectAttachment" name="PreparationAttachmentDisplay"          class="edu.ku.brc.specify.datamodel.PreparationAttachment" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="ObjectAttachment" name="RepositoryAgreementAttachmentDisplay"  class="edu.ku.brc.specify.datamodel.RepositoryAgreementAttachment" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="ObjectAttachment" name="TaxonAttachmentDisplay"                class="edu.ku.brc.specify.datamodel.TaxonAttachment" helpcontext="CBXQViewEdit"/>
 	
 
 	<!--  Plugin -->    
-    <dialog type="display" viewset="Fish Views" view="FishBase"           name="FishBase"                  title="FishBase"                class="org.dom4j.Element"/>
+    <dialog type="display" viewset="Fish Views" view="FishBase"           name="FishBase"                  title="FishBase"                class="org.dom4j.Element" helpcontext="CBXQViewEdit"/>
     
 </dialog>

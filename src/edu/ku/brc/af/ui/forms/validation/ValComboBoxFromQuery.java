@@ -138,6 +138,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     protected String             dataObjFormatterName;
     protected DataGetterForObj   getter   = null;
     protected String[]           fieldNames;
+    protected String             helpContext;
 
     protected FormDataObjIFace   dataObj     = null;
     protected FormDataObjIFace   newDataObj  = null;
@@ -160,19 +161,17 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     protected ViewBasedSearchQueryBuilderIFace builder = null;
     
     /**
-     *  Constructor.
-     * @param domName name of the table to be searched
-     * @param idColumn the column name that contains the record ID
-     * @param keyFieldName the column that is searched
-     * @param displayColumn a comma separated list of columns to be displayed and formatted by the format clause (null is OK)
-     * @param className the Class name of the java object that represents the table
-     * @param idName the POJO field name of the ID column
-     * @param keyName the POJO field name of the key column
-     * @param format the format specification (null is OK if displayNames is null)
-     * @param dataObjFormatterName the name of the pre-defined (user-defined) format
-     * @param searchDialogName the name to look up to display the search dialog (from the dialog factory)
-     * @param displayInfoDialogName the name to look up to display the info dialog (from the dialog factory)
-     * @param objTitle the title of a single object
+     * Constructor.
+     * @param tableInfo
+     * @param keyFieldName
+     * @param displayColumn
+     * @param keyName
+     * @param format
+     * @param uiFieldFormatterName
+     * @param dataObjFormatterName
+     * @param sqlTemplate
+     * @param helpContext
+     * @param btns
      */
     public ValComboBoxFromQuery(final DBTableInfo tableInfo,
                                 final String      keyFieldName,
@@ -182,6 +181,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                                 final String      uiFieldFormatterName,
                                 final String      dataObjFormatterName,
                                 final String      sqlTemplate,
+                                final String      helpContext,
                                 final int         btns)
     
     {
@@ -202,6 +202,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         this.keyName               = keyName;
         this.dataObjFormatterName  = dataObjFormatterName;
         this.frameTitle            = tableInfo.getTitle();
+        this.helpContext           = helpContext;
         
         textWithQuery = new TextFieldWithQuery(tableInfo, 
                                                keyFieldName, 
@@ -644,6 +645,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                                                                    closeBtnTitle,
                                                                    canModify,   // false means View Mode
                                                                    options,
+                                                                   helpContext,
                                                                    ViewBasedDialogFactoryIFace.FRAME_TYPE.DIALOG);
         if (frame == null)
         {

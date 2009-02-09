@@ -195,10 +195,9 @@ public class DeterminationCitation extends CollectionMember implements java.io.S
     public Object clone() throws CloneNotSupportedException
     {
         DeterminationCitation obj = (DeterminationCitation)super.clone();
-        obj.initialize();
-        obj.remarks       = remarks;
-        obj.referenceWork = referenceWork;
-        obj.determination = determination;
+        obj.init();
+        determinationCitationId = null;
+        obj.determination       = null;
         
         return obj;
     }

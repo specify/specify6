@@ -180,6 +180,7 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
                                                                getResourceString("CLOSE"), //$NON-NLS-1$
                                                                false,  // false means View mode
                                                                MultiView.NO_OPTIONS | MultiView.DONT_ADD_ALL_ALTVIEWS | MultiView.USE_ONLY_CREATION_MODE,
+                                                               null,
                                                                ViewBasedDialogFactoryIFace.FRAME_TYPE.FRAME);
         if (frame == null)
         {

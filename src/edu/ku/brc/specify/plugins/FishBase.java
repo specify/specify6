@@ -98,6 +98,7 @@ public class FishBase extends JPanel implements GetSetValueIFace, UIPluginable, 
                                                                    getResourceString("CLOSE"),
                                                                    false,
                                                                    MultiView.NO_OPTIONS,
+                                                                   null,
                                                                    ViewBasedDialogFactoryIFace.FRAME_TYPE.FRAME); // false means View mode
         frame.setData(null);
         frame.showDisplay(true);

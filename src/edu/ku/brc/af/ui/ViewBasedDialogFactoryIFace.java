@@ -67,6 +67,7 @@ public interface ViewBasedDialogFactoryIFace
                                                         String      closeBtnTitle,
                                                         boolean     isEdit,
                                                         int         options,
+                                                        String      helpContext,
                                                         FRAME_TYPE  type);
 
     /**
