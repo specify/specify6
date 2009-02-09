@@ -301,7 +301,6 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
                 if (item != null)
                 {
                     label.setIcon(item.second);
-                    System.out.println(item.first);
                     label.setText(UIRegistry.getResourceString(item.first));
                 }
                 return label;
