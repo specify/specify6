@@ -1177,7 +1177,7 @@
                 <rule id="hybridParent2"><![CDATA[isHybrid.isSelected()]]></rule>
                 <rule id="definitionItem"><![CDATA[parent.getValue() != null]]></rule>
             </enableRules>
-            <columnDef>200px,3dlu,p:g,3dlu,p</columnDef>
+            <columnDef>150px,3dlu,p:g,3dlu,p</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
@@ -1297,7 +1297,7 @@
                 <rule id="acceptedParent"><![CDATA[!isAccepted.isSelected()]]></rule>
                 <rule id="definitionItem"><![CDATA[parent.getValue() != null]]></rule>
             </enableRules>
-            <columnDef>200px,3dlu,p:g</columnDef>
+            <columnDef>159px,3dlu,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
 
             <rows>
