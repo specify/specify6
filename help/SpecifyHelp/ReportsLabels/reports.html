@@ -67,10 +67,16 @@
 <p><u>Import </u></p>
 <p>SpecifyiReports are based on queries and may not be shared outside their original location.</p>
 <p>Users that can program in MySQL can create their own report for inclusion in Specify 6. Create the Report including this Report Query Where clause: &quot;where co.collectionobjectid $P!{itemnum} . Also include a parameter named &quot;itemnum&quot;. </p>
-<ol>
-  <li>Choose Import and use the file dialog to locate the Report. This will add the report in the Sidebar.</li>
-  <li>Drop a Record Set on the Report to run it.</li>
-</ol>
+<ul>
+  <li>Choose Import and use the file dialog to locate the Report. </li>
+  <li>A Report Properties dialog will appear</li>
+  <ul>
+  <li><strong>Name</strong> refers to the name of the report</li>
+  <li><strong>Report Type</strong> refers to the location of the report on the Side Bar; Reports or Labels.</li>
+  <li><strong>Save For</strong> refers to level of access given to report. Discipline will allow all collections within the Discipline access to the report and Collection will limit the access to the current collection only.</li>
+  <li><strong>Table</strong> refers to the type of Record Set the report can accept, this is also determined by the fields in the query used to create the report.</li>
+  </ul>
+</ul>
 <p>&nbsp;</p>
 <p><u>Refresh</u></p>
 <p>Reports created in iReport are saved in the database and will not automatically appear on the Reports Sidebar. Click Refresh to add recently saved reports.</p>

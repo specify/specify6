@@ -12,42 +12,40 @@
   </tr>
 </table>
 <h2>Schema Configuration</h2>
-<p>The Schema Configuration module is a highly functional, though somewhat complex set of tools created to configure Specify for individual Discipline needs. Changes made in the Schema Configuration will affect all Collections in the Discipline. For this reason, each Discipline is encouraged to tailor Specify to their needs as part of the Specify Setup directions. </p>
-<p>The tools in Schema Configuration include:</p>
-<p>Hide unused Tables or Fields</p>
-<p>Change the label of Tables and Fields in Specify. The names in the schema are not editable, but the display names, referred to as labels can be edited.</p>
-<p>Read/write descriptions (usage notes) for Tables and Fields.</p>
-<p>Format a Table</p>
-<p>Aggregate a Table</p>
+<p>The Schema Configuration module is a highly functional, though somewhat complex set of tools created to configure Specify for individual discipline needs. Changes made in the Schema Configuration will affect all collections in the discipline. </p>
+<p>The tools in Schema Configuration give disciplines the ability to:</p>
+<p>Hide unused Tables or Fields.</p>
+<p>Change the label of Tables and Fields in Specify. The names in the schema are not editable, but the display names, referred to as labels, can be edited.</p>
+<p>Read/write usage notes (descriptions) for Tables and Fields.</p>
+<p>Format a Table.</p>
+<p>Aggregate a Table.</p>
+<p>Change a non-required field to a required field.</p>
 <p>Format a Field as a Pick List, Weblink or Numbering Format.</p>
-<p>Format a Field as a Weblink</p>
-<p>Specify 6 was created to handle  all disciplines. The Schema Configuration tool allows users to hide tables and/or fields that are not being used for a particular discipline. This not only customizes Specify 6 for a specific discipline but also enables the program to run more efficiently.</p>
-<p>The Schema Configuration tool can be used to:</p>
-<p>hide tables and/or fields not being used in an individual discipline</p>
-<p>label fields ***will this be shown on forms then?*** </p>
-<p>write descriptions (usage notes)</p>
-<p>associate a field to a pick list</p>
-<p>format a text field </p>
-<p>** Check to make sure that this is changing by Discipline and not just Collection!!!</p>
 <p>&nbsp;</p>
-<p><em><strong>Note:</strong></em> The Schema Configuration Tool is NOT a local tool, any changes made to the Schema will change every Collection throughout the Discipline. </p>
+<p>Close all tabs before opening Schema Configuration. Open Schema Configuration by clicking <em>System &gt; Schema Configuration</em>. </p>
+<ul>
+  <li>In the resulting dialog choose English for the Available Locales. The current release of Specify has not been translated and does not offer other languages. Because the Specify project is Open Source any interested third parties that are interested in translating Specify could easily do so by downloading the source code. If you are interested in translating Specify please contact the Specify Project at <a href="mailto:specify@ku.edu">specify@ku.edu</a>. </li><br />
+  <li>Next,  click the <em>Edit a Schema</em> button in the Tasks section of the dialog. Future releases of Specify will allow schemas to be both imported and exported. This can be a very powerful tool for collecting communities to share information. A Collection Manager that has both the Schema Configuration and the forms changed to manage his discipline could share both with the entire community, allowing all Collection Managers to have the exact same set-up for their collection data.</li>
+</ul>
 <p>&nbsp;</p>
-<p>Specify 6 was created to handle  all disciplines. The Schema Configuration tool allows users to hide tables and/or fields that are not being used for a particular discipline. This not only customizes Specify 6 for a specific discipline but also enables the program to run more efficiently.</p>
-<p>The Schema Configuration tool can be used to:</p>
-<p>hide tables and/or fields not being used in an individual discipline</p>
-<p>label fields ***will this be shown on forms then?*** </p>
-<p>write descriptions (usage notes)</p>
-<p>associate a field to a pick list</p>
-<p>format a text field </p>
+<p>The Schema Configuration tool opens with the schema listed on the left side and the tools on the right. The top left pane titled <em>Tables</em> lists all the tables in the Specify schema. The bottom left pane titled <em>Fields</em> lists the fields for each table. Click a table to display the available fields. Many of the fields listed are related fields, which belong to other tables. This will be discusses in more detail later. </p>
+<p>The available tools for the Tables are listed on the top right and the tools for Fields are listed on the bottom right</p>
+<h4><u>Table and Field Tools</u></h4>
+<h4>Change a Label for a Table or Field</h4>
+<p>The first tool  is  <em>Label</em> and is available for both Tables and Fields. Simply select a table or field from the appropriate list and type the new name into the <em>Label</em> field. The new label will appear on forms, in Query Creators and the Simple Search Configuration tool. It will not appear immediately in the Sidabar, but will change the next time Specify is launched.</p>
+<h4>&nbsp;</h4>
+<h4>Hide Table</h4>
+<p>Tables and fields that are not used by a discipline can be hidden. This will remove them from the Query Creators list and Simple Search Configuration choices. This will not remove the fields from forms. Data can still be added to the forms in the hidden field and will be saved in the database. This tool is mainly used to clean the lists presented for creating queries and simple searches. The hidden fields will not be removed from previously saved queries or reports. </p>
 <p>&nbsp;</p>
-<p>First dialog:</p>
-<p>Edit Schema</p>
-<p>Export Schema</p>
-<p>Import Schema</p>
+<p><strong>Usage Notes</strong></p>
+<p>Both the Tables and Fields have a description. This is useful when describing how fields and tables are used within individual disciplines. This is a typable field and can be edited. Field usage notes can be viewed in a form by double clicking on a field label. </p>
 <p>&nbsp;</p>
-<p>The Schema Configuration tool displays the Table configuration tools on the top and the Field configuration tools on the bottom. </p>
-<p>&nbsp;</p>
-<p>Table choices</p>
+<h4><u>Table Tools</u></h4>
+<h4>Display Format</h4>
+<p>Tables with a many-to-one relationship to the primary table are formatted to be represented by at least one field in  a Query. These formats are used on forms and in search results as well as reports. Most tables are represented by only one field, (Collection Object shows the Catalog Number), but some are best represented by more than one field (Agent may be formatted to display last name, first name, middle initial). </p>
+<p>Fields are formatted in the Schema Configuration toll using the Field Formatter. It is important to note that Preferred Taxon, Geography, Chronostratigraphy and Lithostratigraphy fields use the Accepted Name as their format. This is configured in the Tree Definition.</p>
+<h4>Aggregation </h4>
+<p>Tables with a one-to-many relationship  to the primary table can return more than one result when searched. Aggregating the table takes the multiple results and groups it into one reason the return data needs to be pulled together into a single To do this, the data is aggregated For example, a Collection Object can have many Preparations. The results of a query of Collection Objects wtih Preparations will return Preparations aggregated together in one column, separated by semi colons.</p>
 <table width="100%">
   <tr>
     <td width="18%"><u><strong>Table Preference</strong></u></td>
