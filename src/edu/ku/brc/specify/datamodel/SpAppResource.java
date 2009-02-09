@@ -56,6 +56,7 @@ import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * Clone does NOT clone the spAppResourceDirs hashSet, but it DOES clone the spAppResourceDatas HashSet
@@ -551,9 +552,15 @@ public class SpAppResource extends DataModelObjBase implements java.io.Serializa
         if (StringUtils.isNotEmpty(fileName))
         {
             File file = new File(fileName);
-            str = XMLHelper.getContents(file);
-            timestampCreated  = new Timestamp(file.lastModified());
-            //timestampModified = timestampCreated;
+            if (file.exists())
+            {
+                str = XMLHelper.getContents(file);
+                timestampCreated  = new Timestamp(file.lastModified());
+                //timestampModified = timestampCreated;
+            } else
+            {
+                UIRegistry.showError("The file in the app_resources.xml ["+fileName+"] is missing.");
+            }
         }
 
         if (str != null && str.length() > 0)
