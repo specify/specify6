@@ -1723,7 +1723,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 {
                     UIRegistry.showLocalizedMsg("QB_COUNT_TITLE", "QB_COUNT_MSG", runningResults.get().getQuery().getDataObjects().size());
                 }
-                else
+                else if (!countOnly)
                 {
                     PanelBuilder pb = new PanelBuilder(new FormLayout("5dlu, f:p:g, 5dlu", "5dlu, f:p:g, 2dlu, f:p:g, 2dlu, f:p:g, 5dlu"));
                     pb.add(new JLabel(String.format(UIRegistry.getResourceString("QB_CANT_DISPLAY_MSG1"), runningResults.get().getQuery().getDataObjects().size())), new CellConstraints().xy(2, 2));
