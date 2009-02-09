@@ -211,7 +211,7 @@ public class DropDownButtonStateful extends DropDownButton
         int i = 0;
         for (DropDownMenuInfo mi : menuInfoItems)
         {
-            String label = menuInfoItems.get(i < menuInfoItems.size()-1 ? i+1 : 0).getLabel();
+            int nextIndex = i < menuInfoItems.size()-1 ? i+1 : 0;
             
             JMenuItem menuItem = new JMenuItem(mi.getLabel(), mi.getImageIcon());
             setControlSize(menuItem);
@@ -220,7 +220,10 @@ public class DropDownButtonStateful extends DropDownButton
             
             PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g,p", "p"));
 
-            JButton btn = createLabelBtn(label, mi.getImageIcon(), mi.getTooltip(), this, focusListener, 
+            JButton btn = createLabelBtn(menuInfoItems.get(nextIndex).getLabel(), 
+                                         menuInfoItems.get(nextIndex).getImageIcon(), 
+                                         menuInfoItems.get(nextIndex).getTooltip(), 
+                                         this, focusListener, 
                                          mouseInputAdapter, btnAL, this, false);
             btns.add(btn);
             btn.setOpaque(false);
