@@ -649,6 +649,8 @@ public class LatLonConverter
     public static BigDecimal convertDDDDStrToDDDDBD(final String str)
     {
         String withoutDegSign = StringUtils.chomp(str, "Â°");
+        //above doesn't always work for Windows/Mac so try again...
+        withoutDegSign = StringUtils.chomp(withoutDegSign, "°");
         return new BigDecimal(withoutDegSign);
     }
     
