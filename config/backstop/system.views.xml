@@ -733,6 +733,7 @@
                     <cell type="field" id="6" name="description" uitype="textarea" colspan="10"/>
                 </row>
                  <row>
+                    <cell type="label" label="  "/>
                     <cell type="field" id="8" name="isAccessionBound" uitype="checkbox"/>
                 </row>
                 <row>
