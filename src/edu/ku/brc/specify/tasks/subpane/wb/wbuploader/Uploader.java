@@ -1339,14 +1339,6 @@ public class Uploader implements ActionListener, KeyListener
         
         UIRegistry.getStatusBar().setText(getResourceString(Uploader.VALIDATING_DATA));
         validateTask.start();
-        if (mainPanel == null)
-        {
-            initUI(Uploader.VALIDATING_DATA);
-        }
-        else
-        {
-            setCurrentOp(Uploader.VALIDATING_DATA);
-        }
     }
 
     protected synchronized void cancelTask(final UploaderTask task)
@@ -2835,6 +2827,8 @@ public class Uploader implements ActionListener, KeyListener
         mainPanel.setActionListener(this);
     }
 
+    //XXX debugging junk!
+    int thirdTime = 0; 
     /**
      * @param op
      * 
@@ -2955,12 +2949,19 @@ public class Uploader implements ActionListener, KeyListener
                    {
                        log.info("Only displaying " + String.valueOf(MAX_MSG_DISPLAY_COUNT) + " of " 
                                + String.valueOf(validationIssues.size()) + " validation errors ");
-                       JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
-                               String.format(getResourceString(WB_TOO_MANY_ERRORS), String.valueOf(MAX_MSG_DISPLAY_COUNT),
-                                           String.valueOf(validationIssues.size())), 
-                               getResourceString(WB_UPLOAD_FORM_TITLE), 
-                               JOptionPane.WARNING_MESSAGE,
-                               null);
+                       thirdTime = thirdTime + 1;
+                       SwingUtilities.invokeLater(new Runnable(){
+                    	   @Override
+                    	   public void run()
+                    	   {
+                               JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
+                                       String.format(getResourceString(WB_TOO_MANY_ERRORS), String.valueOf(MAX_MSG_DISPLAY_COUNT),
+                                                   String.valueOf(validationIssues.size())), 
+                                       getResourceString(WB_UPLOAD_FORM_TITLE), 
+                                       JOptionPane.WARNING_MESSAGE,
+                                       null);
+                    	   }
+                       });
                    }
                }
                mainPanel.getPrintBtn().setEnabled(validationIssues != null && validationIssues.size() > 0);
