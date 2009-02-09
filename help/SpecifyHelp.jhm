@@ -109,6 +109,7 @@
 	<mapID target="Reports"                 url="SpecifyHelp/ReportsLabels/reports.html" />
 	<mapID target="RunReportSettings"       url="SpecifyHelp/Dialogs/report_settings.html" />
     <mapID target="iReports"                url="SpecifyHelp/ReportsLabels/specifyireports.html" />
+    <mapID target="RepRunSettings"          url="SpecifyHelp/ReportsLabels/specifyireports.html" />    
 
 
 	
