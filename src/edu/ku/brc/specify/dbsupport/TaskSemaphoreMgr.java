@@ -439,17 +439,31 @@ public class TaskSemaphoreMgr
                         if (StringUtils.isNotEmpty(dbMachineName) && StringUtils.isNotEmpty(currMachineName) && currMachineName.equals(dbMachineName) &&
                             semaphore.getOwner() != null && user != null && user.getId().equals(semaphore.getOwner().getId()))
                         {
-                            int      options      = JOptionPane.YES_NO_OPTION;
-                            Object[] optionLabels = new String[] { getResourceString("SpTaskSemaphore.VIEWMODE"),  //$NON-NLS-1$
-                                                                   getResourceString("CANCEL")//$NON-NLS-1$
+                            if (allViewMode)
+                            {
+                                int      options      = JOptionPane.YES_NO_OPTION;
+                                Object[] optionLabels = new String[] { getResourceString("SpTaskSemaphore.VIEWMODE"),  //$NON-NLS-1$
+                                                                       getResourceString("CANCEL")//$NON-NLS-1$
+                                                                     };
+                                int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
+                                        getLocalizedMessage("SpTaskSemaphore.IN_USE_BY_YOU", title),
+                                        getResourceString("SpTaskSemaphore.IN_USE_TITLE"),  //$NON-NLS-1$
+                                        options,
+                                        JOptionPane.QUESTION_MESSAGE, null, optionLabels, 0);
+                                
+                                return userChoice == JOptionPane.NO_OPTION ? USER_ACTION.Cancel : USER_ACTION.ViewMode; // CHECKED
+                            }
+                            
+                            int      options      = JOptionPane.OK_OPTION;
+                            Object[] optionLabels = new String[] { getResourceString("OK")//$NON-NLS-1$
                                                                  };
-                            int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
+                            JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
                                     getLocalizedMessage("SpTaskSemaphore.IN_USE_BY_YOU", title),
                                     getResourceString("SpTaskSemaphore.IN_USE_TITLE"),  //$NON-NLS-1$
                                     options,
                                     JOptionPane.QUESTION_MESSAGE, null, optionLabels, 0);
                             
-                            return userChoice == JOptionPane.NO_OPTION ? USER_ACTION.Cancel : USER_ACTION.ViewMode; // CHECKED
+                            return USER_ACTION.Cancel;
                         }
                         
                         String userStr = prevLockedBy != null ? prevLockedBy : semaphore.getOwner().getIdentityTitle();
