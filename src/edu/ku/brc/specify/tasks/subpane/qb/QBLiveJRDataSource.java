@@ -112,23 +112,17 @@ public class QBLiveJRDataSource extends QBJRDataSourceBase
             log.error("field not found: " + arg0.getName());
             return null;
         }
-        int colInfoIdx = Collections.binarySearch(colNames, new SourceColumnInfo(arg0.getName(), null, null), colPairComparator);
-        return processValue(fldIdx, colNames.get(colInfoIdx).getColInfoIdx(), data.getCacheValueAt(row, fldIdx));
+        int colInfoIdx = Collections.binarySearch(colNames, new SourceColumnInfo(arg0.getName(), null, null), srcColNameComparator);
+        return processValue(colNames.get(colInfoIdx).getColInfoIdx(), data.getCacheValueAt(row, fldIdx));
     }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceBase#setUpCollNames()
      */
     @Override
-    protected void setUpCollNames()
+    protected void setUpColNames()
     {
-        int c = 0;
-        for (ERTICaptionInfoQB col : this.columnInfo) 
-        {
-        	colNames.add(new SourceColumnInfo(col.getColStringId(),
-					new Integer(c), new Integer(c)));
-        	c++;
-		}    	
+    	setUpColNamesPostProcess();
     }
 
     

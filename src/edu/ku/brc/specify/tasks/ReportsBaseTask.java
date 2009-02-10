@@ -199,8 +199,6 @@ public class ReportsBaseTask extends BaseTask
         excludedTableIds.add(79);
         for (AppResourceIFace ap : AppContextMgr.getInstance().getResourceByMimeType(mimeType))
         {
-        	System.out.println("ReportsBaseTask: checking resource: " + ap.getName());
-        	
         	Properties params = ap.getMetaDataMap();
 
             String tableid = params.getProperty("tableid"); //$NON-NLS-1$

@@ -52,19 +52,20 @@ public class QBJRDataSourceBase implements JRDataSource
      */
     protected int currentRowRepeats = 0;
 
-    protected final Comparator<SourceColumnInfo> colPairComparator = 
+    protected final Comparator<SourceColumnInfo> srcColNameComparator = 
         new Comparator<SourceColumnInfo>()
         {
             /* (non-Javadoc)
              * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
              */
-            //@Override
+            @Override
             public int compare(SourceColumnInfo o1, SourceColumnInfo o2)
             {
                 return o1.getName().compareTo(o2.getName());
             }
             
         };
+
 
         
     class SourceColumnInfo
@@ -164,8 +165,7 @@ public class QBJRDataSourceBase implements JRDataSource
     {
         this.columnInfo = columnInfo;
         this.recordIdsIncluded = recordIdsIncluded;
-        setUpCollNames();
-        Collections.sort(colNames, colPairComparator);
+        setUpColNames();
         if (repeats == null)
         {
             repeater = null;
@@ -190,7 +190,7 @@ public class QBJRDataSourceBase implements JRDataSource
     /**
      * creates mapping for fldnames to row and caption column indices.
      */
-    protected void setUpCollNames()
+    protected void setUpColNames()
     {
         int c = 0;
         int e = 0;
@@ -202,8 +202,27 @@ public class QBJRDataSourceBase implements JRDataSource
 			{
 				c += col.getColInfoList().size() - 1;
 			}
-		}    	
+		}  
+        Collections.sort(colNames, srcColNameComparator);
     }
+    
+    /**
+     * This sets up colNames when processing has already been done
+     * and no adjustments are necessary for PartialDates or other special cases.
+     */
+    protected void setUpColNamesPostProcess()
+    {
+        colNames.clear();
+    	int c = 0;
+        for (ERTICaptionInfoQB col : this.columnInfo) 
+        {
+        	colNames.add(new SourceColumnInfo(col.getColStringId(),
+					new Integer(c), new Integer(c)));
+        	c++;
+		}    	
+        Collections.sort(colNames, srcColNameComparator);
+    }
+
     /**
      * @param fldName
      * @return index for column named fldName.
@@ -211,14 +230,13 @@ public class QBJRDataSourceBase implements JRDataSource
     protected int getFldIdx(final String fldName)
     {
         int fldIdx = Collections.binarySearch(colNames, new SourceColumnInfo(fldName, null, null),
-                colPairComparator);
+                srcColNameComparator);
         if (fldIdx < 0)
             return -1;
         return colNames.get(fldIdx).getRowDataIdx();
     }
     
     /**
-     * @param fldIdx
      * @param obj
      * @return Possibly formatted version of obj.
      * 
@@ -228,7 +246,7 @@ public class QBJRDataSourceBase implements JRDataSource
      *
      * This code may be affected by changes to QBJRDataSourceConnection.getColClass, and vice-versa.
      */
-    protected Object processValue(final int fldIdx, final int colIdx, final Object obj)
+    protected Object processValue(final int colIdx, final Object obj)
     {    
 //        if (columnInfo.get(colIdx).getColInfoList() == null) 
 //        {

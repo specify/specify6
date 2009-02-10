@@ -115,20 +115,19 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
     @SuppressWarnings("unchecked")
     protected Object getFieldValue(final int fldIdx, final String fldName, final Class<?> fldClass)
     {
-        if (fldIdx < 0)
+         if (fldIdx < 0)
             return null;
-        int colInfoIdx = Collections.binarySearch(colNames, new SourceColumnInfo(fldName, null, null), colPairComparator);
-        if (colInfoIdx == -1)
+        int colInfoIdx = Collections.binarySearch(colNames, new SourceColumnInfo(fldName, null, null), srcColNameComparator);
+        if (colInfoIdx < 0)
         {
            if (fldClass.equals(String.class))
            {
                return String.format(UIRegistry.getResourceString("QBJRDS_UNKNOWN_FIELD"), fldName);
            }
-           log.error("field not found: " + fldName);
+           log.error("field not found: " + fldName + " (" + fldIdx + ")");
            return null;
         }
        
-        int colIdx = this.recordIdsIncluded ? fldIdx - 1 : fldIdx;       
         if (!processed)
         {
             int processIdx = colNames.get(colInfoIdx).getColInfoIdx();
@@ -149,10 +148,11 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
             {
             	value = ((Object[] )rowVals)[fldIdx];
             }
-            return processValue(fldIdx, processIdx, columnInfo.get(processIdx).processValue(value));
+            return processValue(processIdx, col.processValue(value));
         }
         //else processing already done
-        return ((Vector<Object> )rowVals).get(colIdx);
+        //int colIdx = this.recordIdsIncluded ? fldIdx - 1 : fldIdx;       
+        return ((Vector<Object> )rowVals).get(fldIdx);
     }
     
     /* (non-Javadoc)
@@ -239,7 +239,7 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.CustomQueryListener#exectionDone(edu.ku.brc.dbsupport.CustomQueryIFace)
      */
-    //@Override
+    @Override
     public void exectionDone(CustomQueryIFace customQuery)
     {
         resultSetSize.set(((JPAQuery)customQuery).getDataObjects().size()); 
@@ -248,16 +248,44 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
         if (sort != null && sort.size() > 0)
         {
             cache = new Vector<Vector<Object>>(resultSetSize.get());
+            
             while (doGetNext(true))
             {
                 Vector<Object> row = new Vector<Object>(((Object[] )rowVals).length);
-                for (int fldIdx = recordIdsIncluded ? 1 : 0; fldIdx < ((Object[] )rowVals).length; fldIdx++)
+                for (int fldIdx = 0, colIdx = 0; fldIdx < ((Object[] )rowVals).length; fldIdx++, colIdx++)
                 {
-                    row.add(getFieldValue(fldIdx, "nyx", String.class));
+                	if (recordIdsIncluded && fldIdx == 0)
+                	{
+                		row.add(((Object[] )rowVals)[fldIdx]);
+                		colIdx--;
+                	}
+                	else
+                	{
+                		ERTICaptionInfoQB col = this.columnInfo.get(colIdx);
+                		Object value;
+                        if (col.getColInfoList() != null && col.getColInfoList().size() > 1)
+                        {
+                        	//Then assume the values for the fields in the colInfo list are
+                        	//stored consecutively in the resultset.
+                        	value = new Object[col.getColInfoList().size()];
+                        	((Object[] )value)[0] = ((Object[] )rowVals)[fldIdx];
+                        	for (int i = 1; i < col.getColInfoList().size(); i++)
+                        	{
+                        		((Object[] )value)[i] = ((Object[] )rowVals)[fldIdx+i];
+                        	}
+                        	fldIdx += col.getColInfoList().size() - 1;
+                        }
+                		else
+                		{
+                			value = ((Object[] )rowVals)[fldIdx];
+                		}
+                		row.add(processValue(colIdx, col.processValue(value)));
+                	}
                 }
                 cache.add(row);
             }
-            Collections.sort(cache, new ResultRowComparator(sort));
+            this.setUpColNamesPostProcess();
+            Collections.sort(cache, new ResultRowComparator(sort, true));
             processed = true;
             firstRow = true;
             rows.set(cache.iterator());
@@ -288,7 +316,6 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
         this.hql = hql;
         this.params = params;
         this.sort = sort;
-        startDataAcquisition();
     }
     
     /**
@@ -306,7 +333,6 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
         this.hql = hql;
         this.params = params;
         this.sort = sort;
-        startDataAcquisition();
     }    
     
     /**
@@ -362,5 +388,4 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
         return this.resultSetSize.get();
     }
 
-    
 }

@@ -1580,7 +1580,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 QBJRDataSource src = new QBJRDataSource(sql.getHql(), sql.getArgs(), sql
                         .getSortElements(), getColumnInfo(qfps, true, rootQRI.getTableInfo()),
                         includeRecordIds, report.getRepeats());
-
+                src.startDataAcquisition();
                 final CommandAction cmd = new CommandAction(ReportsBaseTask.REPORTS,
                         ReportsBaseTask.PRINT_REPORT, src);
                 cmd.setProperty("title", title);

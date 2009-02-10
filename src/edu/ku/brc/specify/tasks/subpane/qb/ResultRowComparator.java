@@ -27,15 +27,31 @@ public class ResultRowComparator implements Comparator<Vector<Object>>
      * Describes the columns to be compared.
      */
     protected final List<SortElement> sortDef; 
+    /**
+     * Is the first column in the data being sorted a recId column?
+     */
+    protected final boolean adjustForRecIds;
     
     /**
      * @param sortDef
+     * @param adjustForRecIds
+     */
+    public ResultRowComparator(final List<SortElement> sortDef, final boolean adjustForRecIds)
+    {
+        this.sortDef = sortDef;
+        this.adjustForRecIds = adjustForRecIds;
+    }
+
+    /**
+     * @param sortDef
+     * @param adjustForRecIds
      */
     public ResultRowComparator(final List<SortElement> sortDef)
     {
         this.sortDef = sortDef;
+        this.adjustForRecIds = false;
     }
-
+    
     /* (non-Javadoc)
      * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
      */
@@ -64,8 +80,9 @@ public class ResultRowComparator implements Comparator<Vector<Object>>
     @SuppressWarnings("unchecked")
     protected int doCompare(SortElement s, Vector<Object> o1, Vector<Object> o2)
     {
-      Object obj1 = s.getDirection() == SortElement.ASCENDING ? o1.get(s.getColumn()) : o2.get(s.getColumn());
-      Object obj2 = s.getDirection() == SortElement.ASCENDING ? o2.get(s.getColumn()) : o1.get(s.getColumn());
+      int column = adjustForRecIds ? s.getColumn() + 1 : s.getColumn();
+      Object obj1 = s.getDirection() == SortElement.ASCENDING ? o1.get(column) : o2.get(column);
+      Object obj2 = s.getDirection() == SortElement.ASCENDING ? o2.get(column) : o1.get(column);
       if (obj1 == null && obj2 == null)
       {
           return 0;
