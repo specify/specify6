@@ -308,7 +308,7 @@
             <desc><![CDATA[DNA Sequencing form.]]></desc>
             <altviews>
                 <altview name="DNASequence View" viewdef="DNASequenceSubView" mode="view"/>
-                <!-- <altview name="DNASequence Edit" viewdef="DNASequenceSubView" mode="edit" default="true"/>  -->
+                <altview name="DNASequence Edit" viewdef="DNASequenceSubView" mode="edit" default="true"/>  
             </altviews>
         </view>
         
@@ -1791,13 +1791,13 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="geneName" uitype="text"/>
-                    <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="seqDate" uitype="formattedtext" uifieldformatter="Date" default="Today"/>
+                    <cell type="field" id="2" name="moleculeType" uitype="text"/>
+                    <cell type="label" labelfor="11"/>
+                    <cell type="field" id="11" name="boldBarcodeId" uitype="text"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="5"/>
-                    <cell type="field" id="5" name="sequencer" uitype="querycbx" initialize="name=Agent"/>
+                    <cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="boldLastUpdateDate" uitype="formattedtext" uifieldformatter="Date" default="Today"/>
                 </row>
                 <row>
                     <cell type="separator" label="Nucleotide Sequence" colspan="8"/>
@@ -1806,45 +1806,38 @@
                     <cell type="panel" id="16" name="outerPanel" coldef="120px,2px,p" rowdef="p,2px,p,2px,p,2px,p,2px,p,2px,p,2px" colspan="3">
                         <rows>
                             <row>
-                                 <cell type="label" label="Residues:" initialize="align=right"/>
-                                 <cell type="field" id="residues" name="residues" uitype="text" readonly="true"/>
+                                <cell type="label" label="Total Residues:" initialize="align=right"/>
+                                <cell type="field" id="residues" name="totalResidues" uitype="text" readonly="true"/>
                             </row>
                             <row>
-                                 <cell type="label" label="Comp A:" initialize="align=right;fg=0,190,0"/>
-                                 <cell type="field" id="compa" name="compa" uitype="text" readonly="true"/>
+                                <cell type="label" label="Comp A:" initialize="align=right;fg=0,190,0"/>
+                                <cell type="field" id="compA" name="compa" uitype="text" readonly="true"/>
                             </row>
                             <row>
-                                 <cell type="label" label="Comp G:" initialize="align=right"/>
-                                 <cell type="field" id="compg" name="compg" uitype="text" readonly="true"/>
+                                <cell type="label" label="Comp G:" initialize="align=right"/>
+                                <cell type="field" id="compG" name="compg" uitype="text" readonly="true"/>
                             </row>
                             <row>
-                                 <cell type="label" label="Comp C:" initialize="align=right;fg=0,0,190"/>
-                                 <cell type="field" id="compc" name="compc" uitype="text" readonly="true"/>
+                                <cell type="label" label="Comp C:" initialize="align=right;fg=0,0,190"/>
+                                <cell type="field" id="compC" name="compc" uitype="text" readonly="true"/>
                             </row>
                             <row>
-                                 <cell type="label" label="Comp T:" initialize="align=right;fg=190,0,0"/>
-                                 <cell type="field" id="compt" name="compt" uitype="text" readonly="true"/>
+                                <cell type="label" label="Comp T:" initialize="align=right;fg=190,0,0"/>
+                                <cell type="field" id="compT" name="compt" uitype="text" readonly="true"/>
                             </row>
                             <row>
-                                 <cell type="label" label="Ambiguous:" initialize="align=right"/>
-                                 <cell type="field" id="ambiguous" name="ambiguous" uitype="text" readonly="true"/>
+                                <cell type="label" label="Ambiguous:" initialize="align=right"/>
+                                <cell type="field" id="ambiguous" name="ambiguousResidues" uitype="text" readonly="true"/>
                             </row>
                         </rows>
                     </cell>
-                     <cell type="field" id="4" name="geneSequence" uitype="textarea" colspan="4" rows="8"/>
+                    <cell type="field" id="4" name="geneSequence" uitype="textarea" colspan="4" rows="8"/>
                 </row>
+                
                 <row>
-                    <cell type="separator" label="Illustrative Barcode" colspan="8"/>
+                    <cell type="subview" viewname="DNASequenceRun" id="21" name="dnaSequencingRuns" colspan="8" />
                 </row>
-                <row>
-                    <cell type="field" id="8" name="this" uitype="plugin" initialize="name=IllustrativeBarCodeUI" readonly="true" colspan="8"/>
-                </row>
-                <row>
-                    <cell type="separator" label="Attachments" colspan="8"/>
-                </row>
-                <row>
-                    <cell type="subview" id="6" name="attachments" viewname="ObjectAttachment" initialize="btn=true;icon=DNASequenceAttachment;addsearch=true"/>
-                </row>
+                
             </rows>
         </viewdef>
         
@@ -2364,7 +2357,7 @@
                     <cell type="label" labelfor="10"/>
                     <cell type="field" id="10" name="maxElevation" uitype="text" cols="20"/>
                     <cell type="label" labelfor="11"/>
-                    <cell type="field" id="11" name="elevationMethod" uitype="text" cols="1"/>
+                    <cell type="field" id="11" name="elevationMethod" uitype="text" cols="20"/>
                 </row>
                 <row>
                     <cell type="separator" label="Plugins" colspan="12"/>
@@ -2447,10 +2440,9 @@
                     
                     <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="township" uitype="text"/>
-                </row>
-                <row>
+   
                     <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="rangeDesc" uitype="textarea" colspan="10"/>
+                    <cell type="field" id="2" name="rangeDesc" uitype="text"/>
                 </row>
             </rows>
         </viewdef>
