@@ -120,6 +120,7 @@ import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.af.ui.forms.FormHelper;
 import edu.ku.brc.af.ui.forms.ResultSetController;
 import edu.ku.brc.af.ui.forms.ResultSetControllerListener;
+import edu.ku.brc.af.ui.forms.validation.FormValidator;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
@@ -745,7 +746,9 @@ public class WorkbenchPaneSS extends BaseSubPane
         
         // This panel contains just the ResultSetContoller, it's needed so the RSC gets centered
         PanelBuilder rsPanel = new PanelBuilder(new FormLayout("c:p:g", "c:p:g"));
-        resultsetController  = new ResultSetController(null, !isReadOnly, !isReadOnly, false, getResourceString("Record"), model.getRowCount(), true);
+        FormValidator dummy = new FormValidator(null);
+        dummy.setEnabled(true);
+        resultsetController  = new ResultSetController(dummy, !isReadOnly, !isReadOnly, false, getResourceString("Record"), model.getRowCount(), true);
         resultsetController.addListener(formPane);
         if (!isReadOnly)
         {

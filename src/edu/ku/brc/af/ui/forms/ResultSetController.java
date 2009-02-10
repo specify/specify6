@@ -498,7 +498,7 @@ public class ResultSetController implements ValidationListener
     public void updateUI()
     {
         if (panel == null) return;
-        
+                
         boolean isNewAndValid = newRecBtn == null ? true : newRecBtn.isEnabled();
         
         /*boolean isNewAndValid = true;
@@ -532,7 +532,7 @@ public class ResultSetController implements ValidationListener
                     (formValidator.getParent() != null ? formValidator.getParent().isEnabled() : formValidator.isEnabled()));
             newRecBtn.setEnabled(enable);
         }
-        
+ 
         panel.validate();
     }
     
