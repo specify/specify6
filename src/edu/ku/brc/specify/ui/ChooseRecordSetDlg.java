@@ -246,7 +246,7 @@ public class ChooseRecordSetDlg extends CustomDialog
         
         for (RecordSetIFace rsi : additionalRS)
         {
-            recordSets.add(new Pair<String, Integer>(rsi.getName(), rsi.getRecordSetId()));
+            recordSets.add(new Pair<String, Integer>(rsi.getName(), rsi.getOnlyItem().getRecordId()));
         }
     }
     
