@@ -263,7 +263,7 @@ public class LoanBusRules extends AttachmentOwnerBaseBusRules
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#processBusiessRules(java.lang.Object)
      */
-    public STATUS processBusinessRules(Object dataObj)
+    public STATUS processBusinessRules(final Object dataObj)
     {
         reasonList.clear();
         
@@ -271,10 +271,9 @@ public class LoanBusRules extends AttachmentOwnerBaseBusRules
         {
             return STATUS.Error;
         }
-        
-        /*
         Loan loan = (Loan)dataObj;
         
+        /*
         for (LoanAgent loanAgent : loan.getLoanAgents())
         {
             Agent agent = loanAgent.getAgent();
@@ -294,13 +293,16 @@ public class LoanBusRules extends AttachmentOwnerBaseBusRules
             }     
         }
         */  
-        
-        STATUS duplicateNumberStatus = isCheckDuplicateNumberOK("loanNumber", 
-                                                                (FormDataObjIFace)dataObj, 
-                                                                Loan.class, 
-                                                                "loanId");
-        
-        return duplicateNumberStatus;
+        if (loan.getId() == null)
+        {
+            STATUS duplicateNumberStatus = isCheckDuplicateNumberOK("loanNumber", 
+                                                                    (FormDataObjIFace)dataObj, 
+                                                                    Loan.class, 
+                                                                    "loanId");
+            
+            return duplicateNumberStatus;
+        }
+        return STATUS.OK;
     }
     
     /* (non-Javadoc)

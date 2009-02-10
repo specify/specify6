@@ -911,12 +911,15 @@ public class TableViewObj implements Viewable,
             DataProviderSessionIFace localSession = null;
             try
             {
-                if (dObj.getId() != null)
+                if (!isSkippingAttach)
                 {
-                    localSession = DataProviderFactory.getInstance().createSession();
-                    localSession.attach(dObj);
+                    if (dObj.getId() != null)
+                    {
+                        localSession = DataProviderFactory.getInstance().createSession();
+                        localSession.attach(dObj);
+                    }
+                    dialog.setSession(localSession);
                 }
-                dialog.setSession(localSession);
                 
                 dialog.setData(dObj);
                 dialog.showDisplay(true);
