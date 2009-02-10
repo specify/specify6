@@ -13,10 +13,12 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import edu.ku.brc.af.auth.UserAndMasterPasswordMgr;
+import edu.ku.brc.af.ui.PasswordStrengthUI;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.Viewable;
@@ -55,10 +57,11 @@ public class SpecifyUserBusRules extends BaseBusRules
     {
         super.initialize(viewableArg);
         
-        final JPasswordField pwdTxt = (JPasswordField)formViewObj.getCompById("3");
-        final JTextField keyTxt = (JTextField)formViewObj.getCompById("key");
-        final JButton    genBtn = (JButton)formViewObj.getCompById("GenerateKey");
-        final JButton    showPwdBtn = (JButton)formViewObj.getCompById("ShowPwd");
+        final JPasswordField     pwdTxt       = formViewObj.getCompById("3");
+        final JTextField         keyTxt       = formViewObj.getCompById("key");
+        final JButton            genBtn       = formViewObj.getCompById("GenerateKey");
+        final JButton            showPwdBtn   = formViewObj.getCompById("ShowPwd");
+        final PasswordStrengthUI pwdStrenthUI = formViewObj.getCompById("6");
         
         final char echoChar = pwdTxt.getEchoChar();
         currEcho = echoChar;
@@ -68,6 +71,16 @@ public class SpecifyUserBusRules extends BaseBusRules
             protected void update()
             {
                 genBtn.setEnabled(!((JTextField)pwdTxt).getText().isEmpty());
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run()
+                    {
+                        String  pwdStr  = new String(pwdTxt.getPassword());
+                        boolean pwdOK   = pwdStrenthUI.checkStrength(pwdStr);
+                        
+                        pwdStrenthUI.repaint();
+                    }
+                });
             }
             @Override
             public void changedUpdate(DocumentEvent e) { update(); }

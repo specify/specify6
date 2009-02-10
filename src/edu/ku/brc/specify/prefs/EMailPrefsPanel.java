@@ -24,7 +24,6 @@ import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -120,7 +119,7 @@ public class EMailPrefsPanel extends GenericPrefsPanel implements PrefsSavable, 
      * Sends a test mail message.
      * @return true if the message was sent ok, false if there was an error.
      */
-    protected boolean simpleTestSettings()
+    protected EMailHelper.ErrorType simpleTestSettings()
     {
         //((FormViewObj)formView).getDataFromUI();
         
@@ -179,7 +178,7 @@ public class EMailPrefsPanel extends GenericPrefsPanel implements PrefsSavable, 
         progressBar.setIndeterminate(true);
         row += 2;
 
-        builder.getPanel().setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
+        builder.setDefaultDialogBorder();
 
         checkPanel = builder.getPanel();
 
@@ -229,7 +228,7 @@ public class EMailPrefsPanel extends GenericPrefsPanel implements PrefsSavable, 
     public class EMailCheckerRunnable extends SwingWorker
     {
         protected JDialog parentDlg;
-        protected boolean status = false;
+        protected EMailHelper.ErrorType status = EMailHelper.ErrorType.OK;
 
         /**
          * Constructs a an object to execute an SQL staement and then notify the listener
@@ -248,14 +247,17 @@ public class EMailPrefsPanel extends GenericPrefsPanel implements PrefsSavable, 
         //Runs on the event-dispatching thread.
         public void finished()
         {
-            if (!status)
+            if (status != EMailHelper.ErrorType.Cancel)
             {
-                // XXX Get response error message from Helper and display it.
-                UIRegistry.showLocalizedError("EMailPrefsPanel.ERROR", EMailHelper.getLastErrorMsg()); // XXX I18N
-                
-            } else
-            {
-                UIRegistry.showLocalizedMsg(JOptionPane.INFORMATION_MESSAGE, "", "EMailPrefsPanel.OK");
+                if (status == EMailHelper.ErrorType.Error)
+                {
+                    // XXX Get response error message from Helper and display it.
+                    UIRegistry.showLocalizedError("EMailPrefsPanel.ERROR", EMailHelper.getLastErrorMsg()); // XXX I18N
+                    
+                } else
+                {
+                    UIRegistry.showLocalizedMsg(JOptionPane.INFORMATION_MESSAGE, "INFORMATION", "EMailPrefsPanel.OK");
+                }
             }
             parentDlg.setVisible(false);
             parentDlg.dispose();

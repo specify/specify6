@@ -78,6 +78,7 @@ public class EMailHelper
     private static final Logger log  = Logger.getLogger(EMailHelper.class);
 
     public enum AccountType {Unknown, POP3, IMAP}
+    public enum ErrorType   {OK, Cancel, Error}
 
     public static final String POP3_STR   = "POP3"; //$NON-NLS-1$
     public static final String IMAP_STR   = "IMAP"; //$NON-NLS-1$
@@ -119,17 +120,17 @@ public class EMailHelper
      * @param fileAttachment and optional file to be attached to the email
      * @return true if the msg was sent, false if not
      */
-    public static boolean sendMsg(final String host,
-                                  final String uName,
-                                  final String pWord,
-                                  final String fromEMailAddr,
-                                  final String toEMailAddr,
-                                  final String subject,
-                                  final String bodyText,
-                                  final String mimeType,
-                                  final String port,
-                                  final String security,
-                                  final File   fileAttachment)
+    public static ErrorType sendMsg(final String host,
+                                    final String uName,
+                                    final String pWord,
+                                    final String fromEMailAddr,
+                                    final String toEMailAddr,
+                                    final String subject,
+                                    final String bodyText,
+                                    final String mimeType,
+                                    final String port,
+                                    final String security,
+                                    final File   fileAttachment)
     {
         String userName = uName;
         String password = pWord;
@@ -287,22 +288,16 @@ public class EMailHelper
     
                 } catch (SendFailedException mex)
                 {
-                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(EMailHelper.class, mex);
                     mex.printStackTrace();
                     exception = mex;
                     
                 } catch (MessagingException mex)
                 {
-                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(EMailHelper.class, mex);
                     mex.printStackTrace();
                     exception = mex;
                     
                 } catch (Exception mex)
                 {
-                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(EMailHelper.class, mex);
                     mex.printStackTrace();
                     exception = mex;
                 
@@ -324,11 +319,14 @@ public class EMailHelper
                     //wrong username or password, get new one
                     if (exception.toString().equals("javax.mail.AuthenticationFailedException")) //$NON-NLS-1$
                     {
+                        UIRegistry.showLocalizedError("EMailHelper.UP_ERROR", userName);
+                        
                         userAndPass = askForUserAndPassword((Frame)UIRegistry.getTopWindow());
                         
                         if (userAndPass == null)
-                        {//the user is done
-                            return false;
+                        {   //the user is done
+                            instance.lastErrorMsg = null;
+                            return ErrorType.Cancel;
                         }
                         userName = userAndPass.get(0);
                         password = userAndPass.get(1);
@@ -341,8 +339,8 @@ public class EMailHelper
 
         } catch (Exception mex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(EMailHelper.class, mex);
+            //edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(EMailHelper.class, mex);
             instance.lastErrorMsg = mex.toString();
             
             mex.printStackTrace();
@@ -352,16 +350,16 @@ public class EMailHelper
               ex.printStackTrace();
               instance.lastErrorMsg = instance.lastErrorMsg + ", " + ex.toString(); //$NON-NLS-1$
             }
-            return false;
+            return ErrorType.Error;
             
         }
         
         if (fail)
         {
-            return false;
+            return ErrorType.Error;
         }//else
         
-        return true;
+        return ErrorType.OK;
     }
     
     /**

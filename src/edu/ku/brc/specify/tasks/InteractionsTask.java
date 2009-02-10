@@ -1588,18 +1588,26 @@ public class InteractionsTask extends BaseTask
                         
                         if (StringUtils.isNotEmpty(password))
                         {
-                            boolean status = EMailHelper.sendMsg(emailPrefs.get("smtp"), 
-                                                                   emailPrefs.get("username"), 
-                                                                   password, 
-                                                                   emailPrefs.get("email"), 
-                                                                   emailPrefs.get("to"), 
-                                                                   emailPrefs.get("subject"), 
-                                                                   text, 
-                                                                   EMailHelper.HTML_TEXT, 
-                                                                   emailPrefs.get("port"), 
-                                                                   emailPrefs.get("security"), 
-                                                                   excelFile);
-                            UIRegistry.displayLocalizedStatusBarText(status ? "EMAIL_SENT_OK" : "EMAIL_SENT_ERROR");
+                            final EMailHelper.ErrorType status = EMailHelper.sendMsg(emailPrefs.get("smtp"), 
+                                                                                       emailPrefs.get("username"), 
+                                                                                       password, 
+                                                                                       emailPrefs.get("email"), 
+                                                                                       emailPrefs.get("to"), 
+                                                                                       emailPrefs.get("subject"), 
+                                                                                       text, 
+                                                                                       EMailHelper.HTML_TEXT, 
+                                                                                       emailPrefs.get("port"), 
+                                                                                       emailPrefs.get("security"), 
+                                                                                       excelFile);
+                            if (status != EMailHelper.ErrorType.Cancel)
+                            {
+                                SwingUtilities.invokeLater(new Runnable() {
+                                    public void run()
+                                    {
+                                        UIRegistry.displayLocalizedStatusBarText(status == EMailHelper.ErrorType.Error ? "EMAIL_SENT_ERROR" : "EMAIL_SENT_OK");
+                                    }
+                                });
+                            }
                         }
                     }
                 }

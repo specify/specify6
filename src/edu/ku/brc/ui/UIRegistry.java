@@ -848,7 +848,7 @@ public class UIRegistry
     public static void showLocalizedMsg(final int iconType, final String titleKey, final String msgKey, final Object ... args)
     {
         JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
-                String.format(getResourceString(msgKey), args), 
+                (args.length == 0 ? getResourceString(msgKey) : String.format(getResourceString(msgKey), args)), 
                 getResourceString(StringUtils.isNotEmpty(titleKey) ? titleKey : "WARNING"), iconType);
     }
 

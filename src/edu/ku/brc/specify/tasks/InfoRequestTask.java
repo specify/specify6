@@ -436,23 +436,26 @@ public class InfoRequestTask extends BaseTask
                         
                         if (sendEMail)
                         {
-                            final boolean status = EMailHelper.sendMsg(emailPrefs.get("servername"), 
-                                                                       emailPrefs.get("username"), 
-                                                                       Encryption.decrypt(emailPrefs.get("password")), 
-                                                                       emailPrefs.get("email"), 
-                                                                       values.get("to"), 
-                                                                       values.get("subject"), 
-                                                                       text, 
-                                                                       EMailHelper.HTML_TEXT, 
-                                                                       emailPrefs.get("port"), 
-                                                                       emailPrefs.get("security"), 
-                                                                       excelFile);
-                            SwingUtilities.invokeLater(new Runnable() {
-                                public void run()
-                                {
-                                    UIRegistry.displayLocalizedStatusBarText(status ? "EMAIL_SENT_ERROR" : "EMAIL_SENT_OK");
-                                }
-                            });
+                            final EMailHelper.ErrorType status = EMailHelper.sendMsg(emailPrefs.get("servername"), 
+                                                                                       emailPrefs.get("username"), 
+                                                                                       Encryption.decrypt(emailPrefs.get("password")), 
+                                                                                       emailPrefs.get("email"), 
+                                                                                       values.get("to"), 
+                                                                                       values.get("subject"), 
+                                                                                       text, 
+                                                                                       EMailHelper.HTML_TEXT, 
+                                                                                       emailPrefs.get("port"), 
+                                                                                       emailPrefs.get("security"), 
+                                                                                       excelFile);
+                            if (status != EMailHelper.ErrorType.Cancel)
+                            {
+                                SwingUtilities.invokeLater(new Runnable() {
+                                    public void run()
+                                    {
+                                        UIRegistry.displayLocalizedStatusBarText(status == EMailHelper.ErrorType.Error ? "EMAIL_SENT_ERROR" : "EMAIL_SENT_OK");
+                                    }
+                                });
+                            }
                         }
                     }
                 }

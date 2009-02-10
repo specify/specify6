@@ -55,7 +55,7 @@ public class PasswordStrengthUI extends JPanel implements UIPluginable, GetSetVa
     private static final int PWD_NUMERIC    = 1;
     private static final int PWD_SPECIAL    = 1;
     
-    private String[] SCORE_KEYS = {"VERY_WEAK", "WEAK", "MEDIOCRE", "STRONG", "VERY_STRONG"};
+    private String[] SCORE_KEYS = {"VERY_WEAK",      "WEAK",           "MEDIOCRE",    "STRONG",         "VERY_STRONG"};
     private String[] ERR_KEYS   = {"PWD_MIN_LENGTH", "PWD_MAX_LENGTH", "PWD_NUMERIC", "PWD_MIXED_CASE", "PWD_SPECIAL"};
     
     private String[] scoreStrings;
@@ -334,6 +334,26 @@ public class PasswordStrengthUI extends JPanel implements UIPluginable, GetSetVa
         
         errReason = null;
         // Does it meet the password policy?
+        if (upper < PWD_MIXED_CASE || lower < PWD_MIXED_CASE)
+        {
+            errReason = errorStrings[3];
+            return false; 
+        }
+        if (numbers < PWD_NUMERIC)
+        {
+            errReason = errorStrings[2];
+            return false; 
+        }
+        if (special < PWD_SPECIAL)
+        {
+            errReason = errorStrings[4];
+            return false; 
+        }
+        /*if (score < PWD_STRENGTH)
+        {
+            errReason = UIRegistry.getResourceString(getKey("PWD_MIN_LENGTH"));
+            return false; 
+        }*/
         if (length < PWD_MIN_LENGTH)
         { 
             errReason = errorStrings[0];
@@ -344,26 +364,7 @@ public class PasswordStrengthUI extends JPanel implements UIPluginable, GetSetVa
             errReason = errorStrings[1];
             return false; 
         }
-        if (numbers < PWD_NUMERIC)
-        {
-            errReason = errorStrings[2];
-            return false; 
-        }
-        if (upper < PWD_MIXED_CASE || lower < PWD_MIXED_CASE)
-        {
-            errReason = errorStrings[3];
-            return false; 
-        }
-        /*if (score < PWD_STRENGTH)
-        {
-            errReason = UIRegistry.getResourceString(getKey("PWD_MIN_LENGTH"));
-            return false; 
-        }*/
-        if (special < PWD_SPECIAL)
-        {
-            errReason =errorStrings[4];
-            return false; 
-        }
+
         return true;
     }
 

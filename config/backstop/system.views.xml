@@ -847,6 +847,10 @@
                     <cell type="command" id="ShowPwd" name="ShowPwd" label="Show Password" ignore="true"/>
                 </row>
                 <row>
+                    <cell type="label" labelfor="6" label="Password Strength"/>
+                    <cell type="field" id="6" uitype="plugin" name="this" initialize="name=PasswordStrengthUI"/>
+                </row>
+                <row>
                     <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="email" uitype="text" cols="40" isrequired="true"/> 
                 </row>
