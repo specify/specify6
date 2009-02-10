@@ -1642,14 +1642,16 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="32"/>
-                    <cell type="field" id="32" name="pcrPrimerName" uitype="text" />
+                    <cell type="field" id="32" name="pcrPrimerName" uitype="text" cols="20"/>
                     <cell type="label" labelfor="34"/>
-                    <cell type="field" id="34" name="pcrForwardPrimerCode" uitype="text" />
+                    <cell type="field" id="34" name="pcrForwardPrimerCode" uitype="text" cols="20"/>
                 </row>
+                
                 <row>
                     <cell type="label" labelfor="35"/>
-                    <cell type="field" id="35" name="pcrPrimerSequence5_3" uitype="text" />
+                    <cell type="field" id="35" name="pcrPrimerSequence5_3" uitype="text" colspan="6" />
                 </row>
+                
                 <row>
                     <cell type="label" labelfor="36"/>
                     <cell type="field" id="36" name="sequencePrimerName" uitype="text" />
@@ -1658,20 +1660,23 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="38"/>
-                    <cell type="field" id="38" name="sequencePrimerSequence5_3" uitype="text" />
+                    <cell type="field" id="38" name="sequencePrimerSequence5_3" uitype="text" colspan="6"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="39"/>
                     <cell type="field" id="39" name="traceFileName" uitype="text" />
+                </row>
+                <row>
                     <cell type="label" labelfor="40"/>
                     <cell type="field" id="40" name="ScoreFileName" uitype="text" />
                 </row>
+                
                 <row>
                     <cell type="label" labelfor="41"/>
-                    <cell type="field" id="41" name="remarks" uitype="textarea" colspan="7" cols="50"/>
+                    <cell type="field" id="41" name="remarks" uitype="textarea" colspan="6" cols="30"/>
                 </row>
-                
             </rows>
+            
             
         </viewdef>
         
