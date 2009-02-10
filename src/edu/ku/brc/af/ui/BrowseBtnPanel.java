@@ -310,8 +310,13 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace, Document
         {
             if (useNativeFileDlg)
             {
-                
-                fileDlg = new FileDialog((Frame)getTopWindow(), getResourceString("CHOOSE_FILE"), FileDialog.LOAD);
+                if (isForInputBA)
+                {
+                    fileDlg = new FileDialog((Frame)getTopWindow(), getResourceString("CHOOSE_FILE"), FileDialog.LOAD);
+                } else
+                {
+                    fileDlg = new FileDialog((Frame)getTopWindow(), getResourceString("CHOOSE_FILE"), FileDialog.SAVE);
+                }
                 fileDlg.setVisible(true);
                 
                 if (StringUtils.isNotEmpty(fileDlg.getFile()))
