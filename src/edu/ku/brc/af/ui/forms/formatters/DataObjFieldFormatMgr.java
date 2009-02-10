@@ -83,6 +83,7 @@ public class DataObjFieldFormatMgr
     protected Object[]                                    args            = new Object[2]; // start with two slots
     
     protected Hashtable<String, Class<?>>                 typeHash        = new Hashtable<String, Class<?>>();
+    protected Hashtable<Class<?>, String>                 typeHashRevMap  = new Hashtable<Class<?>, String>(); // reverse mapping
     
     protected String                                      localFileName   = null;
     protected boolean                                     hasChanged      = false;
@@ -113,10 +114,18 @@ public class DataObjFieldFormatMgr
         for (int i=0;i<initTypeData.length;i++)
         {
             typeHash.put((String)initTypeData[i], (Class<?>)initTypeData[i+1]);
+            typeHashRevMap.put((Class<?>)initTypeData[i+1], (String)initTypeData[i]);
             i++;
         }
-        
-        
+    }
+    
+    /**
+     * @param cls the class
+     * @return the string for the java type class
+     */
+    public String getStrForType(final Class<?> cls)
+    {
+        return typeHashRevMap.get(cls);
     }
     
     /**
@@ -124,7 +133,7 @@ public class DataObjFieldFormatMgr
      * @param source Source to copy from, usually the static instance
      */
     @SuppressWarnings("unchecked")
-    public DataObjFieldFormatMgr(DataObjFieldFormatMgr source)
+    public DataObjFieldFormatMgr(final DataObjFieldFormatMgr source)
     {
         formatHash      = (Hashtable<String,   DataObjSwitchFormatter>) source.getFormatHash().clone();
         formatClassHash = (Hashtable<Class<?>, DataObjSwitchFormatter>) source.getFormatClassHash().clone();
@@ -730,7 +739,8 @@ public class DataObjFieldFormatMgr
                             }
                         } else
                         {
-                            log.error("Mismatch of types data retrieved as class["+value.getClass().getSimpleName()+"] and the format requires ["+field.getType().getSimpleName()+"]");
+                            log.error("Mismatch of types data retrieved as class["+(value != null ? value.getClass().getSimpleName() : "N/A")+
+                                    "] and the format requires ["+(field != null ? (field.getType() != null ? field.getType().getSimpleName() : "N/A 2") : "N/A")+"]");
                         }
                     }
                 }

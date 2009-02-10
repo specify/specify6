@@ -220,39 +220,39 @@ public class LocalityLatLonFormatter implements DataObjDataFieldFormatIFace
 
     public void toXML(StringBuilder sb)
     {
-        sb.append("      <external");
+        sb.append("          <external");
         xmlAttr(sb, "class", getClass().getName());
         sb.append(">\n");
 
         // param: type
-        sb.append("        <param");
+        sb.append("            <param");
         xmlAttr(sb, "name", "type");
         sb.append(">");
         sb.append(latLonType.name());
         sb.append("</param>\n");
         
         // param: dir
-        sb.append("        <param");
+        sb.append("            <param");
         xmlAttr(sb, "name", "dir");
         sb.append(">");
         sb.append("symbol");
         sb.append("</param>\n");
         
         // param: format
-        sb.append("        <param");
+        sb.append("            <param");
         xmlAttr(sb, "name", "dir");
         sb.append(">");
         sb.append(format.name());
         sb.append("</param>\n");
         
         // param: which
-        sb.append("        <param");
+        sb.append("            <param");
         xmlAttr(sb, "name", "which");
         sb.append(">");
         sb.append(which);
         sb.append("</param>\n");
         
-        sb.append("      </external>\n");
+        sb.append("          </external>\n");
     }
 
     /* (non-Javadoc)

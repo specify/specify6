@@ -210,7 +210,10 @@ public class DataObjDataFieldFormat implements DataObjDataFieldFormatIFace, Clon
 	 */
 	public void toXML(StringBuilder sb)
 	{
-        sb.append("      <fields");
+	    String space = "            ";
+	    
+        sb.append(space);
+        sb.append("<fields");
         if (StringUtils.isNotEmpty(value))
         {
             xmlAttr(sb, "value", value);
@@ -221,7 +224,8 @@ public class DataObjDataFieldFormat implements DataObjDataFieldFormatIFace, Clon
         {
         	field.toXML(sb);
         }
-        sb.append("      </fields>\n");
+        sb.append(space);
+        sb.append("</fields>\n");
 	}
 	
 	/* (non-Javadoc)

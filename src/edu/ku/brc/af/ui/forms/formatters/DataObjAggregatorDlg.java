@@ -136,27 +136,24 @@ public class DataObjAggregatorDlg extends CustomDialog implements DataChangeList
         {
             public void actionPerformed(ActionEvent e)
             {
-                int x = 0;
-                x++;
-                /*
                 // subtract 1 from selected index to account for empty entry at the beginning
                 // if selected index is zero, then select "new" entry in the dialog, which is the last one
-                int correctIndex = (displayCbo.getSelectedIndex() == 0)? displayCbo.getModel().getSize() - 1 : displayCbo.getSelectedIndex() - 1; 
-                DataObjFieldFormatDlg dlg = new DataObjFieldFormatDlg(aggDlgFrame, 
+                //int correctIndex = (displayCbo.getSelectedIndex() == 0)? displayCbo.getModel().getSize() - 1 : displayCbo.getSelectedIndex() - 1; 
+                
+                DataObjSwitchFormatter dosf = (DataObjSwitchFormatter)displayCbo.getSelectedItem();
+                DataObjFieldFormatDlg dlg = new DataObjFieldFormatDlg(null, 
                                                                       tableInfo, 
-                                                                      //correctIndex, 
                                                                       dataObjFieldFormatMgrCache, 
-                                                                      uiFieldFormatterMgrCache);
+                                                                      uiFieldFormatterMgrCache,
+                                                                      dosf);
                 dlg.setVisible(true);
                 
                 // set combo selection to formatter selected in dialog
                 if (dlg.getBtnPressed() == OK_BTN)
                 {
-                    DataObjSwitchFormatter format = dlg.getSelectedFormatter();
-                    selectedAggregator.setFormatName(format.getName());
+                    selectedAggregator.setFormatName(dosf.getName());
                     updateDisplayCombo();
                 }
-                */
             }
         };
         displayDlgBtn.addActionListener(displayDlgBtnAL);

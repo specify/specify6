@@ -331,21 +331,23 @@ public class CollectingEventDataObjFmt implements DataObjDataFieldFormatIFace
      */
     public void toXML(StringBuilder sb)
     {
-        sb.append("      <external");
+        sb.append("          <external");
         xmlAttr(sb, "class", getClass().getName());
-        sb.append(">\n");
         
         // param: format
         if (StringUtils.isNotEmpty(formatStr))
         {
-            sb.append("        <param");
+            sb.append(">\n");
+            sb.append("            <param");
             xmlAttr(sb, "name", "format");
             sb.append(">");
             sb.append(formatStr );
             sb.append("</param>\n");
+            sb.append("          </external>\n");
+        } else
+        {
+            sb.append("/>\n");
         }
-        
-        sb.append("      </external>\n");
     }
     
     /* (non-Javadoc)

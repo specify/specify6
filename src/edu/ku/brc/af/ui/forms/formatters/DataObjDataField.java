@@ -108,12 +108,14 @@ public class DataObjDataField implements Cloneable
 	 */
 	public void toXML(final StringBuilder sb)
 	{
-        sb.append("        <field");
+	    String spaces = "                ";
+        sb.append(spaces);
+        sb.append("<field");
 
         // omit type for Strings
         if (type != null && type != String.class)
         {
-            xmlAttr(sb, "type", type.getName());
+            xmlAttr(sb, "type", DataObjFieldFormatMgr.getInstance().getStrForType(type));
         }
         
         xmlAttr(sb, "format",    format);

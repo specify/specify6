@@ -76,7 +76,7 @@ public class SpecifyUserBusRules extends BaseBusRules
                     public void run()
                     {
                         String  pwdStr  = new String(pwdTxt.getPassword());
-                        boolean pwdOK   = pwdStrenthUI.checkStrength(pwdStr);
+                        pwdStrenthUI.checkStrength(pwdStr); // ignore return boolean
                         
                         pwdStrenthUI.repaint();
                     }

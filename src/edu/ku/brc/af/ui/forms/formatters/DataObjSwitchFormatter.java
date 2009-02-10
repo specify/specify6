@@ -386,22 +386,35 @@ public class DataObjSwitchFormatter implements Comparable<DataObjSwitchFormatter
      */
     public void toXML(StringBuilder sb)
     {
-        sb.append("  <format");
+        String spaces = "       ";
+        
+        sb.append("    <format\n");
+        sb.append(spaces);
         xmlAttr(sb, "name", name);
+        
+        sb.append("\n");
+        sb.append(spaces);
         xmlAttr(sb, "title", title);
         
         if (dataClass != null)
         {
+            sb.append("\n");
+            sb.append(spaces);
             xmlAttr(sb, "class", dataClass.getName());
         }
         
         if (isDefault)
         {
+            sb.append("\n");
+            sb.append(spaces);
             xmlAttr(sb, "default", isDefault);
         }
-        sb.append(">\n");
+        sb.append("\n");
+        sb.append(spaces);
+        sb.append(" >\n");
         
-        sb.append("    <switch");
+        sb.append(spaces);
+        sb.append(" <switch");
         xmlAttr(sb, "single", isSingle);
         xmlAttr(sb, "field", fieldName);
         sb.append(">\n");
@@ -418,8 +431,9 @@ public class DataObjSwitchFormatter implements Comparable<DataObjSwitchFormatter
             }
         }
 
-        sb.append("    </switch>\n");
-        sb.append("  </format>\n\n");
+        sb.append(spaces);
+        sb.append(" </switch>\n");
+        sb.append("    </format>\n\n");
     }
     
     
