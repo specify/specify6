@@ -275,7 +275,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
     protected void openTreeViewerInBGThread(final String titleArg, final boolean isEditModeArg)
     {
         
-    	if (!isOpeningTree)
+    	if (!isOpeningTree) // as oppose to opening the TreeDef
     	{
             final TaskSemaphoreMgr.USER_ACTION action = TaskSemaphoreMgr.lock(titleArg, treeDefClass.getSimpleName(), "def", TaskSemaphoreMgr.SCOPE.Discipline, true);
             final boolean isViewMode = action == TaskSemaphoreMgr.USER_ACTION.ViewMode;

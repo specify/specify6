@@ -247,7 +247,7 @@ public class TaskSemaphoreMgr
                                                            getResourceString("CANCEL")//$NON-NLS-1$
                                                          };
                     int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
-                            getLocalizedMessage("SpTaskSemaphore.IN_USE_BY_YOU_UNLK", title),
+                            getLocalizedMessage("SpTaskSemaphore.IN_USE_BY_YOU_UNLK", title, title),
                             getResourceString("SpTaskSemaphore.IN_USE_TITLE"),  //$NON-NLS-1$
                             options,
                             JOptionPane.QUESTION_MESSAGE, null, optionLabels, 1);
