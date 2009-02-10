@@ -146,10 +146,6 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         this.readOnly      = readOnly;
         dropFlavors.add(InputPanel.INPUTPANEL_FLAVOR);
         
-        buildUI();
-        
-        scrollPane = new JScrollPane(this, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        
         docListener = new DocumentAdaptor() {
             @Override
             protected void changed(DocumentEvent e)
@@ -165,6 +161,12 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
                 stateChange();
             }
         };
+        
+        buildUI();
+        
+        
+        scrollPane = new JScrollPane(this, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        
     }
     
     /**
