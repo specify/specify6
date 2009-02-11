@@ -3113,46 +3113,52 @@ public class Uploader implements ActionListener, KeyListener
                     {
                         for (rowUploading = 0; rowUploading < uploadData.getRows();)
                         {
-                            if (cancelled)
-                            {
-                                break;
-                            }
-                            logDebug("uploading row " + String.valueOf(rowUploading));
-                        
-                            if (rowUploading == 0)
-                            {
-                                showUploadProgress(1);  
-                            }
-                            for (UploadTable t : uploadTables)
-                            {
-                                if (cancelled)
-                                {
-                                    break;
-                                }
-                                try
-                                {
-                                    if (wbSS.getWorkbench().getRow(rowUploading).getUploadStatus() != WorkbenchRow.UPLD_SUCCESS)
-                                    {
-                                        uploadRow(t, rowUploading);
-                                    }
-                                    else
-                                    {
-                                        throw new UploaderException(getResourceString("WB_UPLOAD_ROW_ALREADY_UPLOADED"), 
-                                            UploaderException.ABORT_ROW);
-                                    }
-                                }
-                                catch (UploaderException ex)
-                                {
-                                    if (ex.getStatus() == UploaderException.ABORT_ROW)
-                                    {
-                                        logDebug(ex.getMessage());
-                                        abortRow(ex, rowUploading);
-                                        break;
-                                    }
-                                    throw ex;
-                                }
-                                updateObjectsCreated();
-                            }
+                        	if (cancelled)
+                        	{
+                        		break;
+                        	}
+                        	logDebug("uploading row "
+								+ String.valueOf(rowUploading));
+
+                        	if (rowUploading == 0)
+                        	{
+                        		showUploadProgress(1);
+                        	}
+
+                        	if (!uploadData.isEmptyRow(rowUploading))
+                        	{
+                        		for (UploadTable t : uploadTables)
+                        		{
+                        			if (cancelled)
+                        			{
+                        				break;
+                        			}
+                        			try
+                        			{
+                        				if (wbSS.getWorkbench()
+											.getRow(rowUploading)
+											.getUploadStatus() != WorkbenchRow.UPLD_SUCCESS)
+                        				{
+                        					uploadRow(t, rowUploading);
+                        				} else
+                        				{
+                        					throw new UploaderException(
+												getResourceString("WB_UPLOAD_ROW_ALREADY_UPLOADED"),
+												UploaderException.ABORT_ROW);
+                        				}
+                        			} catch (UploaderException ex)
+                        			{
+                        				if (ex.getStatus() == UploaderException.ABORT_ROW)
+                        				{
+                        					logDebug(ex.getMessage());
+                        					abortRow(ex, rowUploading);
+                        					break;
+                        				}
+                        				throw ex;
+                        			}
+                        			updateObjectsCreated();
+                        		}
+                        	}
 
                             wbSS.getWorkbench().getRow(rowUploading).setUploadStatus(
                                 WorkbenchRow.UPLD_SUCCESS);
@@ -3160,8 +3166,8 @@ public class Uploader implements ActionListener, KeyListener
                             showUploadProgress(rowUploading);
                         }
                         // But where is the best place to do this?
-                        //Potentially the longest step.
-                        //Need extra progress info...
+                        // Potentially the longest step.
+                        // Need extra progress info...
                         for (UploadTable t : uploadTables)
                         {
                         	t.finishUpload(cancelled);
