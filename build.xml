@@ -212,39 +212,39 @@
 		
 		<copy file="${jar.name}.jar" todir="${installer.dir}" />
 		
-		<copy file="${source.root}/edu/ku/brc/specify/images/specify16.png" todir="${installer.dir}" />
-		<copy file="${source.root}/edu/ku/brc/specify/images/specify32.png" todir="${installer.dir}" />
+		<copy file="${source.root}/edu/ku/brc/specify/images/specify16.png" todir="${installer.dir}/images" />
+		<copy file="${source.root}/edu/ku/brc/specify/images/specify32.png" todir="${installer.dir}/images" />
 		
-		<copy file="${source.root}/edu/ku/brc/specify/images/spireport32.png" todir="${installer.dir}" />
-		<copy file="${source.root}/edu/ku/brc/specify/images/spireport16.png" todir="${installer.dir}" />
+		<copy file="${source.root}/edu/ku/brc/specify/images/spireport32.png" todir="${installer.dir}/images" />
+		<copy file="${source.root}/edu/ku/brc/specify/images/spireport16.png" todir="${installer.dir}/images" />
 
-		<copy file="${source.root}/edu/ku/brc/specify/images/spbackup32.png" todir="${installer.dir}" />
-		<copy file="${source.root}/edu/ku/brc/specify/images/spbackup16.png" todir="${installer.dir}" />
+		<copy file="${source.root}/edu/ku/brc/specify/images/spbackup32.png" todir="${installer.dir}/images" />
+		<copy file="${source.root}/edu/ku/brc/specify/images/spbackup16.png" todir="${installer.dir}/images" />
 
-		<copy file="${source.root}/edu/ku/brc/specify/images/spwizard32.png" todir="${installer.dir}" />
-		<copy file="${source.root}/edu/ku/brc/specify/images/spwizard16.png" todir="${installer.dir}" />
+		<copy file="${source.root}/edu/ku/brc/specify/images/spwizard32.png" todir="${installer.dir}/images" />
+		<copy file="${source.root}/edu/ku/brc/specify/images/spwizard16.png" todir="${installer.dir}/images" />
 
-		<copy file="${source.root}/edu/ku/brc/specify/images/spbuilder32.png" todir="${installer.dir}" />
-		<copy file="${source.root}/edu/ku/brc/specify/images/spbuilder16.png" todir="${installer.dir}" />
+		<copy file="${source.root}/edu/ku/brc/specify/images/spbuilder32.png" todir="${installer.dir}/images" />
+		<copy file="${source.root}/edu/ku/brc/specify/images/spbuilder16.png" todir="${installer.dir}/images" />
 
-		<copy file="${source.root}/edu/ku/brc/specify/images/spstatistics32x32.png" todir="${installer.dir}" />
-		<copy file="${source.root}/edu/ku/brc/specify/images/spstatistics16x16.png" todir="${installer.dir}" />	
+		<copy file="${source.root}/edu/ku/brc/specify/images/spstatistics32x32.png" todir="${installer.dir}/images" />
+		<copy file="${source.root}/edu/ku/brc/specify/images/spstatistics16x16.png" todir="${installer.dir}/images" />	
 		
-		<copy file="${source.root}/edu/ku/brc/specify/images/specify32.ico" todir="${installer.dir}" />
-		<copy file="${source.root}/edu/ku/brc/specify/images/spbackup32.ico" todir="${installer.dir}" />
-		<copy file="${source.root}/edu/ku/brc/specify/images/spbuilder32x32.ico" todir="${installer.dir}" />
-		<copy file="${source.root}/edu/ku/brc/specify/images/spireport32.ico" todir="${installer.dir}" />
-		<copy file="${source.root}/edu/ku/brc/specify/images/spstatistics32x32.ico" todir="${installer.dir}" />
-		<copy file="${source.root}/edu/ku/brc/specify/images/spwizard32.ico" todir="${installer.dir}" />
+		<copy file="${source.root}/edu/ku/brc/specify/images/specify32.ico" todir="${installer.dir}/images" />
+		<copy file="${source.root}/edu/ku/brc/specify/images/spbackup32.ico" todir="${installer.dir}/images" />
+		<copy file="${source.root}/edu/ku/brc/specify/images/spbuilder32x32.ico" todir="${installer.dir}/images" />
+		<copy file="${source.root}/edu/ku/brc/specify/images/spireport32.ico" todir="${installer.dir}/images" />
+		<copy file="${source.root}/edu/ku/brc/specify/images/spstatistics32x32.ico" todir="${installer.dir}/images" />
+		<copy file="${source.root}/edu/ku/brc/specify/images/spwizard32.ico" todir="${installer.dir}/images" />
 				
 		
 		<!-- <copy file="${source.root}/edu/ku/brc/specify/images/SpecifyBigSplash.png" todir="${installer.dir}" /> -->
-		<copy file="packaging/specify.icns" todir="${installer.dir}" />
-		<copy file="packaging/spwizard.icns" todir="${installer.dir}" />
-		<copy file="packaging/backuprestore.icns" todir="${installer.dir}" />
-		<copy file="packaging/spireports.icns" todir="${installer.dir}" />
-		<copy file="packaging/spbuilder.icns" todir="${installer.dir}" />
-		<copy file="packaging/statistics.icns" todir="${installer.dir}" />
+		<copy file="packaging/specify.icns" todir="${installer.dir}/images" />
+		<copy file="packaging/spwizard.icns" todir="${installer.dir}/images" />
+		<copy file="packaging/backuprestore.icns" todir="${installer.dir}/images" />
+		<copy file="packaging/spireports.icns" todir="${installer.dir}/images" />
+		<copy file="packaging/spbuilder.icns" todir="${installer.dir}/images" />
+		<copy file="packaging/statistics.icns" todir="${installer.dir}/images" />
 		
 		<copy file="packaging/changelog.html" todir="${installer.dir}" />
 		<copy file="packaging/license_agreement.html" todir="${installer.dir}" />
