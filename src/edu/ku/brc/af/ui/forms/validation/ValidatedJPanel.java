@@ -34,22 +34,12 @@ public class ValidatedJPanel extends JPanel
     protected FormValidator formValidator = new FormValidator(null);
 
     /**
-     * Constructor of the EMail setting panel
+     * Constructor of the Validated setting panel
      */
     public ValidatedJPanel()
     {
         super(new BorderLayout()); 
         setOpaque(false);
-    }
-    
-    /**
-     * Constructor of the EMail setting panel
-     */
-    public ValidatedJPanel(JPanel panel)
-    {
-        this();
-        
-        add(panel, BorderLayout.CENTER);
     }
     
     /**

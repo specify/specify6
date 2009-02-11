@@ -99,7 +99,8 @@ public class FormValidator implements ValidationListener, DataChangeListener
     protected List<ValidationListener>              valListeners = new ArrayList<ValidationListener>();
 
     /**
-     *
+     * Constructor.
+     * @param parent the parent validator or null if top level
      */
     public FormValidator(final FormValidator parent)
     {
@@ -122,6 +123,10 @@ public class FormValidator implements ValidationListener, DataChangeListener
         return parent;
     }
 
+    /**
+     * @param saveComp
+     * @param saveEnableType
+     */
     public void setSaveComp(final JComponent saveComp, 
                             final EnableType saveEnableType)
     {

@@ -265,7 +265,6 @@ public class FormViewObj implements Viewable,
     // Security
     private PermissionSettings              perm = null;
 
-
     /**
      * Constructor with FormView definition.
      * @param view the definition of the view
@@ -418,7 +417,7 @@ public class FormViewObj implements Viewable,
             
             // We want it on the left side of other buttons
             // so wee need to add it before the Save button
-            JComponent valInfoBtn = createValidationIndicator(getUIComponent(), getValidator());
+            JComponent valInfoBtn = createValidationIndicator(getUIComponent(), formValidator);
             if (valInfoBtn != null)
             {
                 comps.add(valInfoBtn);
@@ -602,6 +601,14 @@ public class FormViewObj implements Viewable,
         return false;
     }
     
+    /**
+     * @return the cellName
+     */
+    public String getCellName()
+    {
+        return cellName;
+    }
+
     /**
      * @param mv
      * @param ev
@@ -2251,6 +2258,15 @@ public class FormViewObj implements Viewable,
      */
     protected SAVE_STATE saveToDB(final Object dataObjArg)
     {
+        if (dataObjArg == null)
+        {
+            if (saveControl != null)
+            {
+                saveControl.setEnabled(false);
+            }
+            return SAVE_STATE.SaveOK;
+        }
+        
         SAVE_STATE saveState = SAVE_STATE.Initial;
         
         boolean isDuplicateError = false;
@@ -2982,6 +2998,10 @@ public class FormViewObj implements Viewable,
             }
         }
         
+        if (saveControl != null && list != null && list.size() == 0)
+        {
+            saveControl.setEnabled(false);
+        }
     }
     
     /**
