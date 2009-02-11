@@ -2371,7 +2371,7 @@
         <names>
           <str language="en" country="" variant="">
             <version>0</version>
-            <text>User Type</text>
+            <text>User Group</text>
           </str>
         </names>
         <descs/>
@@ -19531,7 +19531,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         <names>
           <str language="en" country="" variant="">
             <version>0</version>
-            <text>User Type</text>
+            <text>User Group</text>
           </str>
         </names>
         <descs/>
