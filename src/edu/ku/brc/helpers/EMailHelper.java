@@ -135,6 +135,18 @@ public class EMailHelper
         String userName = uName;
         String password = pWord;
         
+        if (StringUtils.isEmpty(toEMailAddr))
+        {
+            UIRegistry.showLocalizedError("EMailHelper.NO_TO_ERR");
+            return ErrorType.Error;
+        }
+        
+        if (StringUtils.isEmpty(fromEMailAddr))
+        {
+            UIRegistry.showLocalizedError("EMailHelper.NO_FROM_ERR");
+            return ErrorType.Error;
+        }
+        
         //if (isGmailEmail())
         //{
         //    return sendMsgAsGMail(host, userName, password, fromEMailAddr, toEMailAddr, subject, bodyText, mimeType, port, security, fileAttachment);
@@ -223,8 +235,16 @@ public class EMailHelper
                 msg.setRecipients(Message.RecipientType.TO, address);
             } else
             {
-                InternetAddress[] address = {new InternetAddress(toEMailAddr)};
-                msg.setRecipients(Message.RecipientType.TO, address);
+                try
+                {
+                    InternetAddress[] address = {new InternetAddress(toEMailAddr)};
+                    msg.setRecipients(Message.RecipientType.TO, address);
+                    
+                } catch (javax.mail.internet.AddressException ex)
+                {
+                    UIRegistry.showLocalizedError("EMailHelper.TO_ADDR_ERR", toEMailAddr);
+                    return ErrorType.Error;
+                }
             }
             msg.setSubject(subject);
             

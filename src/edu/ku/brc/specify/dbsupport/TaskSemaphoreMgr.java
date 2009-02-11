@@ -22,6 +22,8 @@ import javax.swing.JOptionPane;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import com.sun.tools.internal.ws.processor.model.java.JavaException;
+
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -71,7 +73,7 @@ public class TaskSemaphoreMgr
         Discipline discipline = scope == SCOPE.Discipline ? AppContextMgr.getInstance().getClassObject(Discipline.class) : null;
         Collection collection = scope == SCOPE.Collection ? AppContextMgr.getInstance().getClassObject(Collection.class) : null;
        
-        Connection connection = DBConnection.getInstance().getConnection();
+        Connection connection = DBConnection.getInstance().createConnection();
         if (connection != null)
         {
             Statement  stmt = null;
@@ -92,10 +94,9 @@ public class TaskSemaphoreMgr
             } catch (Exception ex)
             {
                 ex.printStackTrace();
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TaskSemaphoreMgr.class, ex);
+                //edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TaskSemaphoreMgr.class, ex);
                 //log.error(ex);
-                
             } finally 
             {
                 try
