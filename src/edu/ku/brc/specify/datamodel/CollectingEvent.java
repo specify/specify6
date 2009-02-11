@@ -28,7 +28,6 @@
  */
 package edu.ku.brc.specify.datamodel;
 
-import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
@@ -140,9 +139,10 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
         verbatimLocality = null;
         remarks = null;
         visibility = null;
-        collectionObjects = new HashSet<CollectionObject>();
-        collectors = new HashSet<Collector>();
-        locality = null;
+        
+        collectionObjects            = new HashSet<CollectionObject>();
+        collectors                   = new HashSet<Collector>();
+        locality                     = null;
         
         collectingEventAttribute     = null;
         collectingEventAttrs         = new HashSet<CollectingEventAttr>();
@@ -542,34 +542,14 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
     public Object clone() throws CloneNotSupportedException
     {
         CollectingEvent obj = (CollectingEvent)super.clone();
-        obj.initialize();
+        obj.init();
         
         obj.collectingEventId = null;
-        obj.stationFieldNumber = stationFieldNumber;
-        obj.method = method;
-        obj.verbatimDate = verbatimDate;
-        obj.startDate = startDate;
-        obj.startDatePrecision = startDatePrecision;
-        obj.startDateVerbatim = startDateVerbatim;
-        obj.endDate = endDate;
-        obj.endDatePrecision = endDatePrecision;
-        obj.endDateVerbatim = endDateVerbatim;
-        obj.startTime = startTime;
-        obj.endTime = endTime;
-        obj.verbatimLocality = verbatimLocality;
-        obj.remarks = remarks;
-        obj.visibility = visibility;
-        obj.locality = locality;
-        
-        //obj.collectionObjects = new HashSet<CollectionObject>();
-        //obj.collectors = new HashSet<Collector>();
-        
-        //obj.collectingEventAttribute    = null;
-        //obj.collectingEventAttrs         = new HashSet<CollectingEventAttr>();
-        //obj.collectingEventAttachments   = new HashSet<CollectingEventAttachment>();
-        
-        obj.timestampCreated     = new Timestamp(System.currentTimeMillis());
-        obj.timestampModified    = timestampCreated;
+        obj.collectionObjects            = new HashSet<CollectionObject>();
+        obj.collectors                   = new HashSet<Collector>();
+        obj.collectingEventAttribute     = null;
+        obj.collectingEventAttrs         = new HashSet<CollectingEventAttr>();
+        obj.collectingEventAttachments   = new HashSet<CollectingEventAttachment>();
         
         for (Collector collector : collectors)
         {

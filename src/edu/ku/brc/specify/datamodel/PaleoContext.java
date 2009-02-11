@@ -48,7 +48,7 @@ import org.hibernate.annotations.Index;
 @org.hibernate.annotations.Table(appliesTo="paleocontext", indexes =
     {   @Index (name="PaleoCxtColMemIDX", columnNames={"CollectionMemberID"})
     })
-public class PaleoContext extends CollectionMember
+public class PaleoContext extends CollectionMember implements Cloneable
 {
     protected Integer paleoContextId;
     protected Float   topDistance;
@@ -381,6 +381,20 @@ public class PaleoContext extends CollectionMember
     {
         return 32;
     }
-
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#clone()
+     */
+    @Override
+    public Object clone() throws CloneNotSupportedException
+    {
+        PaleoContext pc = (PaleoContext)super.clone();
+        pc.init();
+        
+        pc.paleoContextId    = null;
+        pc.collectionObjects = new HashSet<CollectionObject>();
+        
+        return pc;
+    }
 
 }

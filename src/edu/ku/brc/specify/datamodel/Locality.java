@@ -71,7 +71,9 @@ import edu.ku.brc.ui.UIRegistry;
     {   @Index (name="localityNameIDX", columnNames={"LocalityName"}),
         @Index (name="LocalityDisciplineIDX", columnNames={"DisciplineID"})
     })
-public class Locality extends DisciplineMember implements AttachmentOwnerIFace<LocalityAttachment>, java.io.Serializable, MapLocationIFace 
+public class Locality extends DisciplineMember implements AttachmentOwnerIFace<LocalityAttachment>, 
+                                                          java.io.Serializable, 
+                                                          MapLocationIFace
 {
     // Fields    
     protected Integer               localityId;

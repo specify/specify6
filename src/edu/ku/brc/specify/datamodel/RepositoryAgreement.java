@@ -62,7 +62,8 @@ import org.hibernate.annotations.Index;
     {   @Index (name="RefWrkNumberIDX", columnNames={"RepositoryAgreementNumber"}),
         @Index (name="RefWrkStartDate", columnNames={"StartDate"})
     })
-public class RepositoryAgreement extends DataModelObjBase implements AttachmentOwnerIFace<RepositoryAgreementAttachment>, java.io.Serializable 
+public class RepositoryAgreement extends DataModelObjBase implements AttachmentOwnerIFace<RepositoryAgreementAttachment>, 
+                                                                     java.io.Serializable 
 {
 
     // Fields

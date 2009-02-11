@@ -34,7 +34,7 @@ import javax.persistence.Transient;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "localitydetail")
-public class LocalityDetail extends DataModelObjBase
+public class LocalityDetail extends DataModelObjBase implements Cloneable
 {
     // Fields    
     protected Integer               localityDetailId;
@@ -629,4 +629,20 @@ public class LocalityDetail extends DataModelObjBase
     {
         return 124;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#clone()
+     */
+    @Override
+    public Object clone() throws CloneNotSupportedException
+    {
+        LocalityDetail ld = (LocalityDetail)super.clone();
+        ld.init();
+        
+        ld.localityDetailId = null;
+        ld.locality         = null;
+        
+        return ld;
+    }
+
 }
