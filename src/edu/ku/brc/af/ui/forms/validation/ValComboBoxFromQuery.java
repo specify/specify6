@@ -911,9 +911,15 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                 textWithQuery.setSelectedId(dataObj != null ? dataObj.getId() : null); // needs to be done before and after
                 
                 final JTextField tf = textWithQuery.getTextField();
+                // rods 08/18/08 - doesn't seem to be needed it is already set correctly
+                //
                 // 02/06/09 - Commented out because it is causing the idList to be cleared
-                // If you turn it back on make sure you turn on ignoreDocChange in the TextFieldQithQuery
-                tf.setText(newVal.toString());   // rods 08/18/08 - doesn't seem to be needed it is already set correctly
+                // If you turn it back on make sure you turn on ignoreDocChange in the TextFieldWithQuery
+                //
+                // 02/10/09 - rods - Instead of call seTText directly on the TextField, it is called on the TextFieldWithQuery
+                // which disables Doc change notifications
+                textWithQuery.setText(newVal.toString());
+                
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run()
                     {
