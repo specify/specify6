@@ -10,6 +10,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Frame;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
@@ -107,6 +108,18 @@ public class DataObjAggregatorDlg extends CustomDialog implements DataChangeList
         validator.addDataChangeListener(this);
         validator.addEnableRule("DOA_ENDING", "DOA_COUNT.getIntValue() > 0");
     }
+    
+    /**
+     * @param key
+     * @return
+     */
+    protected JLabel createI18NFormLabelBold(final String key)
+    {
+        JLabel lbl = createI18NFormLabel(key);
+        Font   lblFont = lbl.getFont().deriveFont(Font.BOLD);
+        lbl.setFont(lblFont);
+        return lbl;
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.CustomDialog#createUI()
@@ -200,23 +213,23 @@ public class DataObjAggregatorDlg extends CustomDialog implements DataChangeList
         pb.addSeparator(" ", cc.xyw(1, y, 3));
         y += 2;
         
-        pb.add(createI18NFormLabel("DOA_NAME"), cc.xy(1, y)); 
+        pb.add(createI18NFormLabelBold("DOA_NAME"), cc.xy(1, y)); 
         add(pb, nameText, "DOA_NAME", "DOA_NAME.getText().length() > 0", cc.xyw(3, y, 2)); 
         y += 2;
 
-        pb.add(createI18NFormLabel("DOA_TITLE"), cc.xy(1, y)); 
+        pb.add(createI18NFormLabelBold("DOA_TITLE"), cc.xy(1, y)); 
         add(pb, titleText, "DOA_TITLE", "DOA_TITLE.getText().length() > 0", cc.xyw(3, y, 2)); 
         y += 2;
 
-        pb.add(createI18NFormLabel("DOA_DISPLAY"), cc.xy(1, y)); 
+        pb.add(createI18NFormLabelBold("DOA_DISPLAY"), cc.xy(1, y)); 
         pb.add(displayPB.getPanel(), cc.xyw(3, y, 2)); 
         y += 2;
         
-        pb.add(createI18NFormLabel("DOA_SEP"), cc.xy(1, y)); 
+        pb.add(createI18NFormLabelBold("DOA_SEP"), cc.xy(1, y)); 
         add(pb, sepText, "DOA_SEP", "DOA_SEP.getText().length() > 0", cc.xyw(3, y, 2)); 
         y += 2;
 
-        pb.add(createI18NFormLabel("DOA_COUNT"), cc.xy(1, y)); 
+        pb.add(createI18NFormLabelBold("DOA_COUNT"), cc.xy(1, y)); 
         add(pb, countSpinner, "DOA_COUNT", null, cc.xyw(3, y, 2)); 
         y += 2;
 

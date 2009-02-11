@@ -92,7 +92,7 @@ public abstract class FmtListEditorDlgBase extends CustomDialog
         CellConstraints cc = new CellConstraints();
        
         // table info
-        PanelBuilder tblInfoPB          = new PanelBuilder(new FormLayout("p,p", "p")/*, new FormDebugPanel()*/);
+        PanelBuilder tblInfoPB          = new PanelBuilder(new FormLayout("p,p:g", "p")/*, new FormDebugPanel()*/);
         JLabel       tableTitleLbl      = createI18NFormLabel("FmtListEditorBase." + (baseInfo instanceof DBTableInfo ? "TABLE" : "FIELD"));
         JLabel       tableTitleValueLbl = createLabel(baseInfo.getTitle());
         tableTitleValueLbl.setBackground(Color.WHITE);
