@@ -127,17 +127,27 @@ public final class FormHelper
     }
 
     /**
-      * Creates a new data object and initializes it
+      * Creates a new data object and initializes it.
       * @param newDataClass class of new Object to be created and initialized
-     */
+      */
     public static FormDataObjIFace createAndNewDataObj(final Class<?> newDataClass)
+    {
+        return createAndNewDataObj(newDataClass, null);
+    }
+
+    /**
+      * Creates a new data object and initializes it.
+      * @param newDataClass class of new Object to be created and initialized
+      * @param overrideAddKids whether to override the business rules as to whether to add children
+     */
+    public static FormDataObjIFace createAndNewDataObj(final Class<?> newDataClass, final Boolean overrideAddKids)
     {
         try
         {
             FormDataObjIFace formDataObj = (FormDataObjIFace)newDataClass.newInstance();
             formDataObj.initialize();
             BusinessRulesIFace br = DBTableIdMgr.getInstance().getBusinessRule(newDataClass);
-            if (br != null)
+            if (((overrideAddKids != null && overrideAddKids) || overrideAddKids == null) && br != null)
             {
                 br.addChildrenToNewDataObjects(formDataObj);
             }
@@ -161,14 +171,24 @@ public final class FormHelper
     }
 
     /**
-      * Creates a new data object and initializes it
-      * @param newDataClass class of new Object to be created and initialized
-     */
-    public static FormDataObjIFace createAndNewDataObj(final String newDataClassName)
-    {
+     * Creates a new data object and initializes it.
+     * @param newDataClass class of new Object to be created and initialized
+    */
+   public static FormDataObjIFace createAndNewDataObj(final String newDataClassName)
+   {
+       return createAndNewDataObj(newDataClassName, null);
+   }
+   
+   /**
+     * Creates a new data object and initializes it.
+     * @param newDataClass class of new Object to be created and initialized
+     * @param overrideAddKids whether to override the business rules as to whether to add children
+    */
+   public static FormDataObjIFace createAndNewDataObj(final String newDataClassName, final Boolean overrideAddKids)
+   {
         try
         {
-            return createAndNewDataObj(Class.forName(newDataClassName).asSubclass(FormDataObjIFace.class));
+            return createAndNewDataObj(Class.forName(newDataClassName).asSubclass(FormDataObjIFace.class), overrideAddKids);
             
         } catch (ClassNotFoundException ex)
         {

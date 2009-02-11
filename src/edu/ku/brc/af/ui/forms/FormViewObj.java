@@ -1806,14 +1806,16 @@ public class FormViewObj implements Viewable,
             }
         }
 
+        boolean shouldDoCarryForward = doCarryForward && carryFwdDataObj != null && carryFwdInfo != null;
+        
         //log.info("createNewDataObject "+hashCode() + " Session ["+(session != null ? session.hashCode() : "null")+"] ");
         FormDataObjIFace obj;
         if (classToCreate != null)
         {
-            obj = FormHelper.createAndNewDataObj(classToCreate);
+            obj = FormHelper.createAndNewDataObj(classToCreate, !shouldDoCarryForward);
         } else
         {
-            obj = FormHelper.createAndNewDataObj(view.getClassName());
+            obj = FormHelper.createAndNewDataObj(view.getClassName(), !shouldDoCarryForward);
         }
         
         // The order needs to be set here because some Sets are TreSets which
@@ -1874,8 +1876,8 @@ public class FormViewObj implements Viewable,
             FormHelper.addToParent(parentDataObj, obj);
         }
         
-        boolean doingCarryForward = false;
-        if (doCarryForward && carryFwdDataObj != null  && carryFwdInfo != null)
+        boolean didCarryForward = false;
+        if (shouldDoCarryForward)
         {
             // We don't need a Session when we are not cloning sets.
             if (false)
@@ -1890,7 +1892,7 @@ public class FormViewObj implements Viewable,
                     sessionLocal = DataProviderFactory.getInstance().createSession();
                     sessionLocal.attach(carryFwdDataObj);
                     carryFwdInfo.carryForward(businessRules, carryFwdDataObj, obj);
-                    doingCarryForward = true;
+                    didCarryForward = true;
                     
                 } catch (Exception ex)
                 {
@@ -2039,7 +2041,7 @@ public class FormViewObj implements Viewable,
         }
         
         // Make the save button enabled
-        if (doingCarryForward && formValidator != null)
+        if (didCarryForward && formValidator != null)
         {
             formValidator.setHasChanged(true);
             formValidator.updateSaveUIEnabledState();
