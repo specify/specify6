@@ -501,7 +501,7 @@ public class ResourceImportExportDlg extends CustomDialog
                     try
                     {
                         if ((appRes.getMimeType().equals(ReportsBaseTask.REPORTS_MIME) 
-                        		|| appRes.getMimeType().equals(ReportsBaseTask.LABELS_MIME)) && !isJasperReport(data))
+                        		|| appRes.getMimeType().equals(ReportsBaseTask.LABELS_MIME)) && isSpReportResource((SpAppResource )appRes))
                         {
                         	writeSpReportResToZipFile(expFile, data, appRes);
                         }
@@ -535,6 +535,24 @@ public class ResourceImportExportDlg extends CustomDialog
     	return data.indexOf("<reportresource name=") == 0; 
     }
     
+    protected boolean isSpReportResource(final SpAppResource res)
+    {
+        if (res.getId() == null)
+        {
+        	return false;
+        }
+        
+    	DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        try
+        {
+            return session.getData("from SpReport where appResourceId = " + res.getId()) != null;
+        }
+        finally
+        {
+        	session.close();
+        }
+
+    }
     /**
      * @param data
      * @return true if data is a Jasper report definition (a .jrxml file).
