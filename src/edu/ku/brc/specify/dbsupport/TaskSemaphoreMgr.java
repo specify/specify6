@@ -9,7 +9,8 @@
  */
 package edu.ku.brc.specify.dbsupport;
 
-import static edu.ku.brc.ui.UIRegistry.*;
+import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.net.InetAddress;
 import java.sql.Connection;
@@ -21,8 +22,6 @@ import javax.swing.JOptionPane;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-
-import com.sun.tools.internal.ws.processor.model.java.JavaException;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.dbsupport.DBConnection;
