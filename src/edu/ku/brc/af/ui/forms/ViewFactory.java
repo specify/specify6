@@ -1704,6 +1704,10 @@ public class ViewFactory
                             {
                                 ((TableViewObj)viewable).setVisibleRowCount(cellSubView.getTableRows());
                             }
+                            if (viewable.getValidator() != null)
+                            {
+                                viewable.getValidator().setRequired(childInfo.isRequired());
+                            }
                             bi.colInx += cell.getColspan() + 1;
                         }
                         bi.curMaxRow = rowInx;

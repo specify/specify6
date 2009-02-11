@@ -57,6 +57,7 @@ import edu.ku.brc.af.core.RecordSetFactory;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.TaskMgr;
+import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
@@ -1167,7 +1168,9 @@ public class InteractionsTask extends BaseTask
             
             if (recordSet.getOrderedItems() != null && recordSet.getNumItems() > 0)
             {
-                createFormPanel(name, view.getViewSetName(), view.getName(), "edit", infoRequest, MultiView.IS_NEW_OBJECT, null);
+                Taskable irTask = TaskMgr.getTask("InfoRequest");
+                createFormPanel(irTask.getTitle(), view.getViewSetName(), view.getName(), "edit", infoRequest, MultiView.IS_NEW_OBJECT, 
+                                irTask.getIcon(16));
                 
             } else
             {

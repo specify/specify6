@@ -170,13 +170,14 @@ public class SpecifyExceptionTracker extends ExceptionTracker
     @Override
     protected Vector<NameValuePair> collectionSecondaryInfo()
     {
+        AppContextMgr mgr = AppContextMgr.getInstance();
         Vector<NameValuePair> stats = new Vector<NameValuePair>();
-        if (AppContextMgr.getInstance().hasContext())
+        if (mgr.hasContext())
         {
-            Collection  collection  = AppContextMgr.getInstance().getClassObject(Collection.class);
-            Discipline  discipline  = AppContextMgr.getInstance().getClassObject(Discipline.class);
-            Division    division    = AppContextMgr.getInstance().getClassObject(Division.class);
-            Institution institution = AppContextMgr.getInstance().getClassObject(Institution.class);
+            Collection  collection  = mgr.getClassObject(Collection.class);
+            Discipline  discipline  = mgr.getClassObject(Discipline.class);
+            Division    division    = mgr.getClassObject(Division.class);
+            Institution institution = mgr.getClassObject(Institution.class);
             
             stats.add(new NameValuePair("collection",  collection != null  ? collection.getCollectionName() : "No Collection")); //$NON-NLS-1$
             stats.add(new NameValuePair("discipline",  discipline != null  ? discipline.getName() :           "No Discipline")); //$NON-NLS-1$

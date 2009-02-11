@@ -20,10 +20,8 @@ import static edu.ku.brc.ui.UIHelper.setControlSize;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
@@ -72,8 +70,8 @@ import edu.ku.brc.ui.UIHelper;
 public class ValComboBox extends JPanel implements UIValidatable, ListDataListener, GetSetValueIFace, AppPrefsChangeListener
 {
     protected static Color        defaultTextBGColor = null;
-    protected static ColorWrapper valtextcolor       = null;
-    protected static ColorWrapper requiredfieldcolor = null;
+    protected static ColorWrapper valTextColor       = null;
+    protected static ColorWrapper requiredFieldColor = null;
 
 
     protected UIValidatable.ErrorType valState  = UIValidatable.ErrorType.Valid;
@@ -293,10 +291,10 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
 
         comboBox.getModel().addListDataListener(this);
 
-        if (valtextcolor == null || requiredfieldcolor == null)
+        if (valTextColor == null || requiredFieldColor == null)
         {
-            valtextcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "valtextcolor");
-            requiredfieldcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");
+            valTextColor = AppPrefsCache.getColorWrapper("ui", "formatting", "valtextcolor");
+            requiredFieldColor = AppPrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");
         }
         AppPrefsCache.addChangeListener("ui.formatting.valtextcolor", this);
         AppPrefsCache.addChangeListener("ui.formatting.requiredfieldcolor", this);
@@ -385,11 +383,7 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
 
         if (!isNew && valState == UIValidatable.ErrorType.Error && isEnabled())
         {
-            Graphics2D g2d = (Graphics2D)g;
-            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            Dimension dim = getSize();
-            g2d.setColor(valtextcolor.getColor());
-            g2d.drawRect(0, 0, dim.width-1, dim.height-1);
+            UIHelper.drawRoundedRect((Graphics2D)g, valTextColor.getColor(), getSize(), 1);
         }
     }
 
@@ -491,7 +485,7 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
     {
         if (textEditor != null)
         {
-            textEditor.setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : defaultTextBGColor);
+            textEditor.setBackground(isRequired && isEnabled() ? requiredFieldColor.getColor() : defaultTextBGColor);
         }
         this.isRequired = isRequired;
     }
@@ -775,7 +769,7 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
         {
             if (textEditor != null)
             {
-                textEditor.setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : defaultTextBGColor);
+                textEditor.setBackground(isRequired && isEnabled() ? requiredFieldColor.getColor() : defaultTextBGColor);
             }
         }
     }

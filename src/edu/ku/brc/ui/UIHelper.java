@@ -164,6 +164,8 @@ public final class UIHelper
     protected static Calendar       calendar = new GregorianCalendar();
     protected static OSTYPE         oSType;
     protected static boolean        isMacOS_10_5_X   = false;
+    protected static BasicStroke    stdLineStroke    = new BasicStroke(1.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+
 
     protected static Object[]       values           = new Object[2];
     protected static DateWrapper    scrDateFormat    = null;
@@ -3135,5 +3137,33 @@ public final class UIHelper
         }
     }
 
+    /**
+     * @return the stdLineStroke
+     */
+    public static BasicStroke getStdLineStroke()
+    {
+        return stdLineStroke;
+    }
 
+    /**
+     * @param stdLineStroke the stdLineStroke to set
+     */
+    public static void setStdLineStroke(BasicStroke stdLineStroke)
+    {
+        UIHelper.stdLineStroke = stdLineStroke;
+    }
+    
+    /**
+     * @param g2d
+     * @param color
+     * @param size
+     * @param inset
+     */
+    public static void drawRoundedRect(final Graphics2D g2d, final Color color, final Dimension size, final int inset)
+    {
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2d.setStroke(UIHelper.getStdLineStroke());
+        g2d.setColor(color);
+        g2d.drawRoundRect(inset, inset, size.width-inset-1, size.height-inset-1, 5, 5);
+    }
 }

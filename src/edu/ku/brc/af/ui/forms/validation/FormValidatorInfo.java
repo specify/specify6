@@ -84,7 +84,7 @@ public class FormValidatorInfo extends JPanel
         {
             for (FormValidator kidValidator : validator.getKids())
             {
-                if (!kidValidator.isFormValid())
+                if (kidValidator.isRequired() && !kidValidator.isFormValid())
                 {
                     rows.add(new Pair<String, String>(kidValidator.getName(), kidValidator.getState().toString()));
                 }

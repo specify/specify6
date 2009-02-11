@@ -83,6 +83,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
     protected boolean                               enabled     = false;
     protected boolean                               hasChanged  = false;
     protected boolean                               isNewObj    = false;
+    protected boolean                               isRequired  = true;
     
     protected UIValidatable.ErrorType               formValidationState = UIValidatable.ErrorType.Valid;
     protected UIValidatable.ErrorType               kidsValState        = UIValidatable.ErrorType.Valid;
@@ -148,6 +149,22 @@ public class FormValidator implements ValidationListener, DataChangeListener
     protected List<UIValidator> getValidators()
     {
         return validators;
+    }
+
+    /**
+     * @return the isRequired
+     */
+    public boolean isRequired()
+    {
+        return isRequired;
+    }
+
+    /**
+     * @param isRequired the isRequired to set
+     */
+    public void setRequired(boolean isRequired)
+    {
+        this.isRequired = isRequired;
     }
 
     /**
@@ -565,14 +582,14 @@ public class FormValidator implements ValidationListener, DataChangeListener
     /**
      * @param textField textField to be hooked up
      * @param id id of control
-     * @param isRequired whether the field must be filled in
+     * @param isRequiredArg whether the field must be filled in
      * @param valType the type of validation to do
      * @param valStr the validation rule where the subject is its name
      * @param changeListenerOnly indicates whether to create a validator
      */
     public void hookupTextField(final JTextField       textField,
                                 final String           id,
-                                final boolean          isRequired,
+                                final boolean          isRequiredArg,
                                 final UIValidator.Type valType,
                                 final String           valStr,
                                 final boolean          changeListenerOnly)
@@ -580,7 +597,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
 
         fields.put(id, textField);
 
-        UIValidator.Type type = isRequired ? UIValidator.Type.Changed : valType;
+        UIValidator.Type type = isRequiredArg ? UIValidator.Type.Changed : valType;
 
         UIValidator uiv;
         if (StringUtils.isEmpty(valStr))
@@ -595,7 +612,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
 
         dcNotifiers.put(id, dcn);
 
-        if (type == UIValidator.Type.Changed || isRequired || changeListenerOnly)
+        if (type == UIValidator.Type.Changed || isRequiredArg || changeListenerOnly)
         {
             textField.getDocument().addDocumentListener(dcn);
 

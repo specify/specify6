@@ -39,7 +39,7 @@ import edu.ku.brc.ui.UIHelper;
  */
 public class ValSpinner extends JSpinner implements UIValidatable, GetSetValueIFace
 {
-    protected static ColorWrapper     requiredfieldcolor = null;
+    protected static ColorWrapper     requiredFieldColor = null;
 
     protected UIValidatable.ErrorType valState     = UIValidatable.ErrorType.Valid;
     protected boolean                 isRequired   = false;
@@ -126,9 +126,9 @@ public class ValSpinner extends JSpinner implements UIValidatable, GetSetValueIF
     {
         if (textField != null)
         {
-            if (requiredfieldcolor != null)
+            if (requiredFieldColor != null)
             {
-                textField.setBackground(this.isRequired && enabled ? requiredfieldcolor.getColor() : bgColor);
+                textField.setBackground(this.isRequired && enabled ? requiredFieldColor.getColor() : bgColor);
             }
         }
         super.setEnabled(enabled);
@@ -150,9 +150,9 @@ public class ValSpinner extends JSpinner implements UIValidatable, GetSetValueIF
     {
         setControlSize(this);
 
-        if (requiredfieldcolor == null)
+        if (requiredFieldColor == null)
         {
-            requiredfieldcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");
+            requiredFieldColor = AppPrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");
         }
         
         addChangeListener(new ChangeListener() {
@@ -171,9 +171,9 @@ public class ValSpinner extends JSpinner implements UIValidatable, GetSetValueIF
     {
         if (textField != null)
         {
-            if (requiredfieldcolor != null)
+            if (requiredFieldColor != null)
             {
-                textField.setBackground(requiredfieldcolor.getColor());
+                textField.setBackground(requiredFieldColor.getColor());
             } 
         }
     }

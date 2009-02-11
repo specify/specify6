@@ -19,10 +19,8 @@ import static edu.ku.brc.ui.UIHelper.setControlSize;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 
@@ -196,11 +194,7 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
 
         if (!isNew && valState == UIValidatable.ErrorType.Error && isEnabled())
         {
-            Graphics2D g2d = (Graphics2D)g;
-            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            Dimension dim = getSize();
-            g.setColor(valTextColor.getColor());
-            g.drawRect(1, 1, dim.width-2, dim.height-2);
+            UIHelper.drawRoundedRect((Graphics2D)g, valTextColor.getColor(), getSize(), 1);
         }
     }
 

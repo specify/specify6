@@ -26,7 +26,6 @@ import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.RenderingHints;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
@@ -60,6 +59,7 @@ import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.ui.GetSetValueIFace;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -429,11 +429,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
         //System.out.println(hashCode() + " " +isNew+" "+valState+"  "+isEnabled());
         if (!isNew && valState == UIValidatable.ErrorType.Error && isEnabled())
         {
-            Graphics2D g2d = (Graphics2D)g;
-            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            Dimension dim = getSize();
-            g.setColor(valTextColor.getColor());
-            g.drawRect(1, 1, dim.width-2, dim.height-2);
+            UIHelper.drawRoundedRect((Graphics2D)g, valTextColor.getColor(), getSize(), 1);
         }
     }
 
