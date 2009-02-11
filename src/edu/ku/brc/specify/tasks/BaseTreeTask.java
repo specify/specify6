@@ -591,7 +591,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
 	                    currentDefInUse = true;
 	                    visibleSubPane  = defEditor;
 	                }
-	                else if (visibleSubPane instanceof TreeDefinitionEditor || switchMode)
+	                else if (visibleSubPane instanceof TreeDefinitionEditor && switchMode)
 	                {
 	                    ((TreeDefinitionEditor<?,?,?>)visibleSubPane).setDoUnlock(false);
 	                    TreeTableViewer<T,D,I> treeViewer = createTreeViewer(tabTitle, isEditMode);
@@ -607,7 +607,10 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
 	            {
 	                super.finished();
 	                
-	                SubPaneMgr.getInstance().replacePane(oldPane, visibleSubPane);
+	                if (oldPane != null)
+	                {
+	                	SubPaneMgr.getInstance().replacePane(oldPane, visibleSubPane);
+	                }
 	                isOpeningTree = false;
 	            }
 	        };

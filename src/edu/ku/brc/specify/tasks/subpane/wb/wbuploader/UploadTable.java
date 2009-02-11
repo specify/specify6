@@ -2031,7 +2031,14 @@ public class UploadTable implements Comparable<UploadTable>
      */
     protected void validateRowValues(int row, UploadData uploadData, Vector<UploadTableInvalidValue> invalidValues)
     {
-        int seq = 0;
+        
+    	if (uploadData.isEmptyRow(row))
+    	{
+    		return;
+    	}
+    	
+    	
+    	int seq = 0;
         boolean gotABlank = false;
         int blankSeq = 0;
         

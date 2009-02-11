@@ -5,6 +5,8 @@ package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 
 import java.util.Vector;
 
+import org.apache.commons.lang.StringUtils;
+
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 
 /**
@@ -51,6 +53,26 @@ public class UploadData
         return wbRows.get(row).getData(col);
     }
 
+    /**
+     * @param row
+     * @return true if all cells in row are blank
+     */
+    public boolean isEmptyRow(int row)
+    {
+    	if (row < 0 || row >= getRows())
+    	{
+    		return true;
+    	}
+    	for (int col = 0; col < getCols(); col++)
+    	{
+    		String val = get(row, col);
+    		if (!StringUtils.isBlank(val))
+    		{
+    			return false;
+    		}
+    	}
+    	return true;
+    }
     /**
      * @return the number rows
      */
