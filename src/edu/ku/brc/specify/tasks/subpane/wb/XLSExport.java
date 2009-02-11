@@ -13,6 +13,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hpsf.CustomProperties;
@@ -82,14 +83,16 @@ public class XLSExport implements DataExport
      * @param workSheet
      * writes headers for imagePath and geocoord (bg) data columns
      */
-    protected void writeExtraHeaders(final HSSFSheet workSheet, int imgCols)
+    protected void writeExtraHeaders(final HSSFSheet workSheet, Vector<Short> imgCols, short geoDataCol)
     {
         HSSFRow hssfRow = workSheet.getRow(0);
-        short cellNum = hssfRow.getLastCellNum();
-        hssfRow.createCell(++cellNum).setCellValue(new HSSFRichTextString(DataImport.GEO_DATA_HEADING));
-        for (int c = 0; c < imgCols; c++)
+        if (geoDataCol != -1)
         {
-            hssfRow.createCell(++cellNum).setCellValue(new HSSFRichTextString(DataImport.IMAGE_PATH_HEADING));
+        	hssfRow.createCell(geoDataCol).setCellValue(new HSSFRichTextString(DataImport.GEO_DATA_HEADING));
+        }
+        for (Short c : imgCols)
+        {
+            hssfRow.createCell(c).setCellValue(new HSSFRichTextString(DataImport.IMAGE_PATH_HEADING));
         }
     }
 
@@ -228,8 +231,8 @@ public class XLSExport implements DataExport
                 Workbench         workBench = wbRow.getWorkbench();
                 WorkbenchTemplate template  = workBench.getWorkbenchTemplate();
                 short             numCols   = (short)template.getWorkbenchTemplateMappingItems().size();
-                boolean geoDataPresent = false;
-                int imgCols = 0;
+                short geoDataCol = -1;
+                Vector<Short> imgCols = new Vector<Short>();
                 
                 disciplinees = bldColTypes(template);
                 for (Object rowObj : data)
@@ -248,7 +251,7 @@ public class XLSExport implements DataExport
                     
                     if (row.getBioGeomancerResults() != null && !row.getBioGeomancerResults().equals(""))
                     {
-                        geoDataPresent = true;
+                        geoDataCol = colNum;
                         rowHasGeoData = true;
                         HSSFCell cell = hssfRow.createCell(colNum++);
                         cell.setCellType(HSSFCell.CELL_TYPE_STRING);
@@ -266,21 +269,21 @@ public class XLSExport implements DataExport
                         WorkbenchRowImage img = row.getRowImage(imgIdx++);
                         while (img != null)
                         {
-                            HSSFCell cell = hssfRow.createCell(colNum++);
+                            if (imgCols.indexOf(colNum) < 0)
+                            {
+                            	imgCols.add(colNum);
+                            }
+                        	HSSFCell cell = hssfRow.createCell(colNum++);
                             cell.setCellType(HSSFCell.CELL_TYPE_STRING);
                             setCellValue(cell, img.getCardImageFullPath());
                             img = row.getRowImage(imgIdx++);
                         }
-                        if (imgIdx-1 > imgCols)
-                        {
-                            imgCols = imgIdx-1;
-                        }
                     }
                     
                 }
-                if (imgCols > 0 || geoDataPresent)
+                if (imgCols.size() > 0 || geoDataCol != -1)
                 {
-                    writeExtraHeaders(workSheet, imgCols);
+                    writeExtraHeaders(workSheet, imgCols, geoDataCol);
                 }
             }
         }

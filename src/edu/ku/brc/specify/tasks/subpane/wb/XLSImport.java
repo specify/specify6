@@ -56,6 +56,7 @@ public class XLSImport extends DataImport implements DataImportIFace
         for (int c = headerRow.getFirstCellNum(); c <= headerRow.getLastCellNum(); c++)
         {
             HSSFCell cell = headerRow.getCell(c);
+            int nulls = 0;
             if (cell != null)
             {
                 String header = cell.getRichStringCellValue().getString();
@@ -63,13 +64,17 @@ public class XLSImport extends DataImport implements DataImportIFace
                 {
                     if (header.equals(IMAGE_PATH_HEADING))
                     {
-                        cardImageCols.add(c);
+                        cardImageCols.add(c - nulls);
                     }
                     if (header.equals(GEO_DATA_HEADING))
                     {
-                        geoCol = c;
+                        geoCol = c - nulls;
                     }
                 }
+            }
+            else
+            {
+            	nulls++;
             }
         }
     }
