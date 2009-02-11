@@ -97,24 +97,41 @@ public class DeterminationBusRules extends BaseBusRules
             determination = (Determination)formViewObj.getDataObj();
 
             //if determination exists and is new (no key) then set current true if CO has no other dets
-            Component currentComp     = formViewObj.getControlByName("isCurrent");
-            if (determination != null && determination.getDeterminationId() == null && currentComp != null)
+            Component currentComp = formViewObj.getControlByName("isCurrent");
+            if (determination != null && currentComp != null)
             {
-                if (determination.getCollectionObject() != null) //It should never be non null, but, currently, it does happen.
+                if (determination.getDeterminationId() == null)
                 {
-                	if (determination.getCollectionObject().getDeterminations().size() == 1)
-                	{
-                		if (currentComp instanceof ValCheckBox)
-                		{
-                		    // Do this instead of setSelected because
-                		    // this activates the DataChangeListener
-                			((ValCheckBox )currentComp).doClick();
-                			
-                		} else
-                		{
-                			log.error("IsCurrent not set to true because form control is of unexpected type: " + currentComp.getClass().getName());
-                		}
-                	}
+                    if (determination.getCollectionObject() != null) //It should never be non null, but, currently, it does happen.
+                    {
+                    	if (determination.getCollectionObject().getDeterminations().size() == 1)
+                    	{
+                    		if (currentComp instanceof ValCheckBox)
+                    		{
+                    		    // Do this instead of setSelected because
+                    		    // this activates the DataChangeListener
+                    			((ValCheckBox)currentComp).doClick();
+                    			
+                    			// Well, if it is already checked then we just checked it to the 'off' state,
+                    			// so we need to re-check it so it is in the "checked state"
+                    			// Note: As stated in the comment above the 'doClick' the easiest way to activate
+                    			// all the change listeners is by simulating a mouse click.
+                    			// Also keep in mind that the change listener is listening for ActionEvents for the
+                    			// checkbox instead of ChangeEvents (ChangeEvents cause to many problems).
+                    			if (!((ValCheckBox)currentComp).isSelected())
+                    			{
+                    			    ((ValCheckBox)currentComp).doClick(); 
+                    			}
+                    			
+                    		} else
+                    		{
+                    			log.error("IsCurrent not set to true because form control is of unexpected type: " + currentComp.getClass().getName());
+                    		}
+                    	}
+                    }
+                } else
+                {
+                    ((ValCheckBox)currentComp).setValue(determination.getIsCurrent(), null);
                 }
             }
             Component activeTax = formViewObj.getControlByName("preferredTaxon");
@@ -139,7 +156,7 @@ public class DeterminationBusRules extends BaseBusRules
             }
 
             
-            Component nameUsageComp     = formViewObj.getControlByName("nameUsage");
+            Component nameUsageComp = formViewObj.getControlByName("nameUsage");
             if (nameUsageComp instanceof ValComboBox)
             {
                 //XXX this is probably not necessary anymore...
