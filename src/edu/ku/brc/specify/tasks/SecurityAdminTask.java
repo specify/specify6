@@ -276,7 +276,7 @@ public class SecurityAdminTask extends BaseTask
             });
             MenuItemDesc mid = new MenuItemDesc(mi, menuDesc);
             mid.setPosition(MenuItemDesc.Position.After, getResourceString("SystemSetupTask.COLL_CONFIG"));
-            mid.setSepPosition(MenuItemDesc.Position.After);
+            //mid.setSepPosition(MenuItemDesc.Position.After);
             
             menuItems.add(mid);
             menuItems.add(showSummaryMenuDesc);
