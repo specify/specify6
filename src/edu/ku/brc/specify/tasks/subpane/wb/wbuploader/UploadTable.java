@@ -423,7 +423,6 @@ public class UploadTable implements Comparable<UploadTable>
      * Gets ready for an upload.
      * @throws UploaderException
      */
-    @SuppressWarnings("unused")
     public void prepareToUpload() throws UploaderException
     {
         uploadedRecs.clear();
@@ -583,7 +582,6 @@ public class UploadTable implements Comparable<UploadTable>
      * @param relatedClass.
      * @return true if the related class needs to be added as a requirement.
      */
-    @SuppressWarnings("unused")
     protected boolean addToReqRelClasses(Class<?> relatedClass)
     {
         return true;
@@ -595,7 +593,6 @@ public class UploadTable implements Comparable<UploadTable>
      * @return true if a value for the related class can be determined by the uploader.
      * @throws ClassNotFoundException
      */
-    @SuppressWarnings("unused")
     protected boolean findValueForReqRelClass(final RelatedClassSetter rce) throws ClassNotFoundException, UploaderException
     {
         for (Vector<ParentTableEntry> its : parentTables)
@@ -652,12 +649,19 @@ public class UploadTable implements Comparable<UploadTable>
         return true;
     }
 
+    /**
+     * @return
+     */
     protected Vector<Field> getMissingReqLocalFlds()
     {
         return new Vector<Field>();
     }
 
-    @SuppressWarnings("unused")
+    /**
+     * @return
+     * @throws UploaderException
+     * @throws ClassNotFoundException
+     */
     public Vector<InvalidStructure> verifyUploadability() throws UploaderException,
             ClassNotFoundException
     {
@@ -1572,7 +1576,6 @@ public class UploadTable implements Comparable<UploadTable>
      * @return the current value for the parent represented by pte.
      * @throws UploaderException
      */
-    @SuppressWarnings("unused")
     protected DataModelObjBase getParentRecord(final int recNum, UploadTable forChild) throws UploaderException
     {
         return getCurrentRecord(recNum);
@@ -1705,7 +1708,7 @@ public class UploadTable implements Comparable<UploadTable>
      * record is created and saved for the current value. If more than one match is found then
      * action depends on props of matchSetting member.
      */
-    @SuppressWarnings( { "unchecked", "unused" })
+    @SuppressWarnings("unchecked")
     protected boolean findMatch(int recNum, boolean forceMatch) throws UploaderException,
             InvocationTargetException, IllegalAccessException, ParseException,
             NoSuchMethodException
@@ -1817,7 +1820,6 @@ public class UploadTable implements Comparable<UploadTable>
      * 
      * Performs extra tasks to get rec ready to be saved to the database.
      */
-    @SuppressWarnings("unused")
     protected void finalizeWrite(DataModelObjBase rec, int recNum) throws UploaderException
     {
         finalizeDatePrecisionFields(rec);
@@ -1887,7 +1889,6 @@ public class UploadTable implements Comparable<UploadTable>
      * @param fld
      * @returns true if fld is empty and that is not OK.
      */
-    @SuppressWarnings("unused")
     protected boolean invalidNull(final UploadField fld,
                                   final UploadData uploadData,
                                   int row,
@@ -2669,7 +2670,6 @@ public class UploadTable implements Comparable<UploadTable>
         return result;
     }
 
-    @SuppressWarnings("unchecked")
     public Vector<Vector<String>> printUpload() throws InvocationTargetException,
             IllegalAccessException
     {
@@ -2908,16 +2908,20 @@ public class UploadTable implements Comparable<UploadTable>
     }
     
     /**
+     * @param cancelled
+     * @throws UploaderException
+     * 
      * cleans up and stuff?
      * Currently only used as a way of testing Tree updates.
      */
-    @SuppressWarnings("unused")
     public void finishUpload(boolean cancelled) throws UploaderException
     {
         //nothing to do here.
     }
     
-    @SuppressWarnings("unused")
+    /**
+     * @throws UploaderException
+     */
     public void shutdown() throws UploaderException
     {
         //nothing to do here.
