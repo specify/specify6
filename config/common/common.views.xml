@@ -1668,7 +1668,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="40"/>
-                    <cell type="field" id="40" name="ScoreFileName" uitype="text" />
+                    <cell type="field" id="40" name="scoreFileName" uitype="text" />
                 </row>
                 
                 <row>
@@ -1722,19 +1722,19 @@
 	                      </row>
 	                      <row>
 	                          <cell type="label" label="Comp A:" initialize="align=right;fg=0,190,0"/>
-	                          <cell type="field" id="compA" name="compa" uitype="text" readonly="true"/>
+	                          <cell type="field" id="compA" name="compA" uitype="text" readonly="true"/>
 	                      </row>
 	                      <row>
 	                          <cell type="label" label="Comp G:" initialize="align=right"/>
-	                          <cell type="field" id="compG" name="compg" uitype="text" readonly="true"/>
+	                          <cell type="field" id="compG" name="compG" uitype="text" readonly="true"/>
 	                      </row>
 	                      <row>
 	                          <cell type="label" label="Comp C:" initialize="align=right;fg=0,0,190"/>
-	                          <cell type="field" id="compC" name="compc" uitype="text" readonly="true"/>
+	                          <cell type="field" id="compC" name="compC" uitype="text" readonly="true"/>
 	                      </row>
 	                      <row>
 	                          <cell type="label" label="Comp T:" initialize="align=right;fg=190,0,0"/>
-	                          <cell type="field" id="compT" name="compt" uitype="text" readonly="true"/>
+	                          <cell type="field" id="compT" name="compT" uitype="text" readonly="true"/>
 	                      </row>
 	                      <row>
 	                          <cell type="label" label="Ambiguous:" initialize="align=right"/>
