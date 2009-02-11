@@ -3206,7 +3206,6 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             Vector<UploadMappingDef> maps = importMapper.getImporterMapping();
             DB db = new DB();
-            setAllUploadDatasetBtnEnabled(false);
             if (!Uploader.lockUpload())
             {
                 return;
@@ -3255,6 +3254,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                 ssFormSwitcher.setEnabled(false);
                 //next line causes some weird behavior: when an entire row is selected (highlighted), cells in the row will go into edit mode - sort of ?????
                 spreadSheet.setEnabled(false);
+                setToolBarBtnsEnabled(false);
                 datasetUploader.startUI();
              }
         }
@@ -3265,7 +3265,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             UIRegistry.getStatusBar().setErrorMessage(ex.getMessage());
             Uploader.unlockApp();
             Uploader.unlockUpload();
-            datasetUploader = null;
+            uploadDone();
         }
         finally
         {
@@ -3289,12 +3289,61 @@ public class WorkbenchPaneSS extends BaseSubPane
             showPanel(PanelType.Spreadsheet);
             mainPanel.validate();
             mainPanel.doLayout();
-            ssFormSwitcher.setEnabled(true);
-            spreadSheet.setEnabled(true);
-            setAllUploadDatasetBtnEnabled(true);
         }
+        ssFormSwitcher.setEnabled(true);
+        spreadSheet.setEnabled(true);
+        setToolBarBtnsEnabled(true);
+        setAllUploadDatasetBtnEnabled(true);
     }
         
+    protected void setToolBarBtnsEnabled(boolean enabled)
+    {
+    	if (deleteRowsBtn != null)
+    	{
+    		deleteRowsBtn.setEnabled(enabled);
+    	}
+    	if (clearCellsBtn != null)
+    	{
+    		clearCellsBtn.setEnabled(enabled);
+    	}
+    	if (addRowsBtn != null)
+    	{
+    		addRowsBtn.setEnabled(enabled);
+    	}
+    	if (carryForwardBtn != null)
+    	{
+    		carryForwardBtn.setEnabled(enabled);
+    	}
+    	if (toggleImageFrameBtn != null)
+    	{
+    		toggleImageFrameBtn.setEnabled(enabled);
+    	}
+    	if (showMapBtn != null)
+    	{
+    		showMapBtn.setEnabled(enabled);
+    	}
+    	if (controlPropsBtn != null)
+    	{
+    		controlPropsBtn.setEnabled(enabled);
+    	}
+    	if (exportKmlBtn != null)
+    	{
+    		exportKmlBtn.setEnabled(enabled);
+    	}
+    	if (biogeomancerBtn != null)
+    	{
+    		biogeomancerBtn.setEnabled(enabled);
+    	}
+    	if (convertGeoRefFormatBtn != null)
+    	{
+    		convertGeoRefFormatBtn.setEnabled(enabled);
+    	}
+    	if (exportExcelCsvBtn != null)
+    	{
+    		exportExcelCsvBtn.setEnabled(enabled);
+    	}
+    }
+    
     protected void setAllUploadDatasetBtnEnabled(boolean enabled)
     {
         for (SubPaneIFace sp : SubPaneMgr.getInstance().getSubPanes())
