@@ -10,7 +10,7 @@
     
     <!-- Labels -->  
     <file level="3" mimetype="jrxml/label" name="invertebrate_label.jrxml" description="Invertebrate Labels" file="invertebrate_label.jrxml" 
-        metadata="tableid=1;reqrs=true;type=Labels;action=PrintLabel;reporttype=CollectionObject"/>
+        metadata="tableid=1;reqrs=true;type=Report;action=PrintBasicLabel;reporttype=Report"/>
         
     <file level="3" mimetype="jrxml/report" name="invertebrate_LoanInvoice.jrxml" description="Loan Invoice" file="invertebrate_LoanInvoice.jrxml" 
         metadata="tableid=52;reqrs=true;type=Labels;action=PrintLabel;reporttype=Invoice;subreports=invertebrate_LoanInvoice_subreport1.jrxml"/>
@@ -27,8 +27,4 @@
 
     <file level="3" mimetype="jrxml/report" name="upload_problem_report.jrxml" description="Upload Report" file="upload_problem_report.jrxml" 
         metadata="type=Report;action=PrintUploadProblemReport;reporttype=Report;icon=Labels16"/>
-
-    <!--<file level="3" mimetype="jrxml/report" name="RunRunRun.jrxml" description="RunRunRun" file="RunRunRun.jrxml" 
-        metadata="tableid=10;type=Report;action=RunReport;reporttype=Report;icon=Labels16"/>-->
-        
 </files>

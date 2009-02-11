@@ -395,7 +395,7 @@ WHERE LoanID $P!{itemnum}]]></queryString>
 						<font size="11" isBold="true"/>
 					</textElement>
 				<text><![CDATA[INVOICE OF SPECIMENS
-Division of Ichthyology
+Division of Botany
 Biodiversity Research Center
 1345 Jayhawk Boulevard
 University of Kansas
@@ -472,7 +472,7 @@ e-mail: ABentley@ku.edu]]></text>
 					<textElement textAlignment="Center">
 						<font pdfFontName="Helvetica" size="10" isBold="false"/>
 					</textElement>
-				<text><![CDATA[Copies of any publications citing these specimens must be lodged with the KUNHM Ichthyology Division]]></text>
+				<text><![CDATA[Copies of any publications citing these specimens must be lodged with the KUNHM Botany Division]]></text>
 				</staticText>
 				<staticText>
 					<reportElement

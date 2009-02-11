@@ -9,8 +9,9 @@
     <file level="3" mimetype="text/xml" name="ExpressSearchConfig" description="ExpressSearchConfig" file="es_config.xml"/>    
     
     <!-- Labels -->  
+        
     <file level="3" mimetype="jrxml/label" name="amphibian_label.jrxml" description="Amphibian Labels" file="amphibian_label.jrxml" 
-        metadata="tableid=1;reqrs=true;type=Labels;action=PrintLabel;reporttype=CollectionObject"/>
+          metadata="tableid=1;reqrs=true;type=Report;action=PrintBasicLabel;reporttype=Report;icon=Labels16"/>    
         
     <file level="3" mimetype="jrxml/report" name="amphibian_LoanInvoice.jrxml" description="Loan Invoice" file="amphibian_LoanInvoice.jrxml" 
         metadata="tableid=52;reqrs=true;type=Labels;action=PrintLabel;reporttype=Invoice;subreports=amphibian_LoanInvoice_subreport1.jrxml"/>

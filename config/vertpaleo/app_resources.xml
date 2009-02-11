@@ -9,8 +9,9 @@
     <file level="3" mimetype="text/xml" name="ExpressSearchConfig" description="ExpressSearchConfig" file="es_config.xml"/>    
     
     <!-- Labels -->  
+        
     <file level="3" mimetype="jrxml/label" name="vertpaleo_label.jrxml" description="Vertpaleo Labels" file="vertpaleo_label.jrxml" 
-        metadata="tableid=1;reqrs=true;type=Labels;action=PrintLabel;reporttype=CollectionObject"/>
+          metadata="tableid=1;reqrs=true;type=Report;action=PrintBasicLabel;reporttype=Report;icon=Labels16"/>    
         
     <file level="3" mimetype="jrxml/report" name="vertpaleo_LoanInvoice.jrxml" description="Loan Invoice" file="vertpaleo_LoanInvoice.jrxml" 
         metadata="tableid=52;reqrs=true;type=Labels;action=PrintLabel;reporttype=Invoice;subreports=vertpaleo_LoanInvoice_subreport1.jrxml"/>

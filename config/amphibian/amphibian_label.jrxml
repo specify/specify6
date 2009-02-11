@@ -105,7 +105,7 @@ WHERE preptype.Name = 'jar' AND dt.IsCurrent <> 0 AND collectionobject.Collectio
 					<textElement textAlignment="Center" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<text><![CDATA[University of Kansas Museum of Natural History - Amphibian]]></text>
+				<text><![CDATA[University of Kansas Museum of Natural History - Herpetology]]></text>
 				</staticText>
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement

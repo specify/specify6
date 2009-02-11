@@ -23,9 +23,9 @@
 	<import value="net.sf.jasperreports.engine.*" />
 	<import value="net.sf.jasperreports.engine.data.*" />
 
-	<parameter name="itemnum" isForPrompting="true" class="java.lang.String"/>
-	<parameter name="colnum" isForPrompting="true" class="java.lang.String"/>
-	<parameter name="title" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="itemnum" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="colnum" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="title" isForPrompting="false" class="java.lang.String"/>
 	<queryString><![CDATA[SELECT distinct CellData as Name, count(CellData) as Cnt FROM workbenchdataitem di inner join workbenchrow rw on di.WorkbenchRowId = rw.WorkbenchRowId where rw.WorkBenchId $P!{itemnum} and WorkbenchTemplateMappingItemID = $P!{colnum} group by CellData order by Cnt desc, Name asc]]></queryString>
 
 	<field name="Name" class="java.lang.String"/>
