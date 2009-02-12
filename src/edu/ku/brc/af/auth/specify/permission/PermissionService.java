@@ -675,13 +675,9 @@ public class PermissionService
             return true;
         } catch (SecurityException e)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PermissionService.class, e);
             log.warn("runCheckPermssion - Does not have permission" + perm.toString()); //$NON-NLS-1$
         } catch (Exception ee)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PermissionService.class, ee);
             log.error("runCheckPermssion - exception caught"); //$NON-NLS-1$
             ee.printStackTrace();
             log.error(ee.getCause());
