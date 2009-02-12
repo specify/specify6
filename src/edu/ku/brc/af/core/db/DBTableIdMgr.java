@@ -19,6 +19,8 @@ import static edu.ku.brc.helpers.XMLHelper.getAttr;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.security.AccessController;
 import java.util.Collections;
 import java.util.Hashtable;
@@ -736,5 +738,34 @@ public class DBTableIdMgr
     public List<String> getTreeFieldNames(final DBTableInfo tableInfo)
     {
         return null;
+    }
+    
+    /**
+     * 
+     */
+    public void dumpTablesAsCSV()
+    {
+        try
+        {
+            PrintWriter pw = new PrintWriter("TablesAndField.csv");
+            for (DBTableInfo ti : getTables())
+            {
+                pw.write("\""+ti.getName()+"\",,\""+ti.getTitle()+"\",\""+ti.getDescription()+"\",\n");
+                for (DBFieldInfo fi : ti.getFields())
+                {
+                    pw.write(",\""+fi.getName()+"\",\""+fi.getTitle()+"\",\""+(StringUtils.isNotEmpty(fi.getDescription()) ? fi.getDescription() : "")+"\",\""+fi.getType()+"\"\n");
+                }
+                for (DBRelationshipInfo ri : ti.getRelationships())
+                {
+                    pw.write(",\""+ri.getName()+"\",\""+ri.getTitle()+"\",\""+(StringUtils.isNotEmpty(ri.getDescription()) ? ri.getDescription() : "")+"\",\""+ri.getType()+"\"\n");
+                }
+            }
+            
+            pw.close();
+            
+        } catch (IOException ex)
+        {
+            ex.printStackTrace();
+        }
     }
 }
