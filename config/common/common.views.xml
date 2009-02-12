@@ -1811,6 +1811,9 @@
                 <row>
                     <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="boldLastUpdateDate" uitype="formattedtext" uifieldformatter="Date" default="Today"/>
+                    <cell type="label" labelfor="22"/>
+                    <cell type="field" id="22" name="sequencer" uitype="querycbx" initialize="name=Agent"  />
+                    
                 </row>
                 <row>
                     <cell type="separator" label="Nucleotide Sequence" colspan="8"/>
