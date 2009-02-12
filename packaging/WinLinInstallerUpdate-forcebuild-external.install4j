@@ -480,6 +480,9 @@
                   <string>../src/edu/ku/brc/specify/images/specify60.png</string>
                 </object>
               </void>
+              <void property="watermark">
+                <boolean>false</boolean>
+              </void>
             </object>
           </java>
         </serializedBean>
@@ -586,6 +589,9 @@
               </void>
               <void property="useCustomIcon">
                 <boolean>true</boolean>
+              </void>
+              <void property="watermark">
+                <boolean>false</boolean>
               </void>
               <void property="windowTitle">
                 <string>${i18n:updater.WindowTitle("${compiler:sys.fullName}")}</string>
