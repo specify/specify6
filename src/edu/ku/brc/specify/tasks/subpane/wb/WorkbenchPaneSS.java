@@ -40,6 +40,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.awt.event.WindowStateListener;
 import java.io.File;
 import java.net.ConnectException;
 import java.util.Collections;
@@ -249,6 +250,8 @@ public class WorkbenchPaneSS extends BaseSubPane
     protected JLabel                mapImageLabel              = null;
     
     protected WindowListener        minMaxWindowListener       = null; 
+    
+    protected CustomDialog          geoRefConvertDlg           = null;
     
     /**
      * The currently active Uploader. 
@@ -1567,7 +1570,13 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     protected void showGeoRefConvertDialog()
     {
-        UsageTracker.incrUsageCount("WB.ShowGeoRefConverter");
+        if (geoRefConvertDlg != null)
+        {
+        	geoRefConvertDlg.toFront();
+        	return;
+        }
+        
+    	UsageTracker.incrUsageCount("WB.ShowGeoRefConverter");
         
         JStatusBar statusBar = UIRegistry.getStatusBar();
 
@@ -1606,7 +1615,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         JPanel pane = new JPanel(new BorderLayout());
         pane.add(toggle, BorderLayout.CENTER);
         pane.add(symbolCkBx, BorderLayout.SOUTH);
-        CustomDialog dlg = new CustomDialog(mainFrame, title, false, CustomDialog.OKCANCEL, pane)
+        geoRefConvertDlg = new CustomDialog(mainFrame, title, false, CustomDialog.OKCANCEL, pane)
         {
             
             @Override
@@ -1619,6 +1628,13 @@ public class WorkbenchPaneSS extends BaseSubPane
                 this.setSize(prefSize);
             }
 
+            @Override
+            protected void cancelButtonPressed()
+            {
+            	geoRefConvertDlg = null;
+            	super.cancelButtonPressed();
+            }
+            
             @Override
             protected void okButtonPressed()
             {
@@ -1736,13 +1752,85 @@ public class WorkbenchPaneSS extends BaseSubPane
                 }
             }
         };
-        dlg.setModal(false);
+        geoRefConvertDlg.setModal(false);
         toggle.setSelectedIndex(0);
-        toggle.setOkBtn(dlg.getOkBtn());
+        toggle.setOkBtn(geoRefConvertDlg.getOkBtn());
         toggle.createUI();
-        dlg.setOkLabel(getResourceString("APPLY"));
-        dlg.setCancelLabel(getResourceString("CLOSE"));
-        dlg.setVisible(true);
+        geoRefConvertDlg.addWindowListener(new WindowListener(){
+
+			/* (non-Javadoc)
+			 * @see java.awt.event.WindowStateListener#windowStateChanged(java.awt.event.WindowEvent)
+			 */
+			@Override
+			public void windowClosed(WindowEvent e)
+			{
+				geoRefConvertDlg = null;
+			}
+
+			/* (non-Javadoc)
+			 * @see java.awt.event.WindowListener#windowActivated(java.awt.event.WindowEvent)
+			 */
+			@Override
+			public void windowActivated(WindowEvent arg0)
+			{
+				// TODO Auto-generated method stub
+				
+			}
+
+			/* (non-Javadoc)
+			 * @see java.awt.event.WindowListener#windowClosing(java.awt.event.WindowEvent)
+			 */
+			@Override
+			public void windowClosing(WindowEvent arg0)
+			{
+				// TODO Auto-generated method stub
+				
+			}
+
+			/* (non-Javadoc)
+			 * @see java.awt.event.WindowListener#windowDeactivated(java.awt.event.WindowEvent)
+			 */
+			@Override
+			public void windowDeactivated(WindowEvent arg0)
+			{
+				// TODO Auto-generated method stub
+				
+			}
+
+			/* (non-Javadoc)
+			 * @see java.awt.event.WindowListener#windowDeiconified(java.awt.event.WindowEvent)
+			 */
+			@Override
+			public void windowDeiconified(WindowEvent arg0)
+			{
+				// TODO Auto-generated method stub
+				
+			}
+
+			/* (non-Javadoc)
+			 * @see java.awt.event.WindowListener#windowIconified(java.awt.event.WindowEvent)
+			 */
+			@Override
+			public void windowIconified(WindowEvent arg0)
+			{
+				// TODO Auto-generated method stub
+				
+			}
+
+			/* (non-Javadoc)
+			 * @see java.awt.event.WindowListener#windowOpened(java.awt.event.WindowEvent)
+			 */
+			@Override
+			public void windowOpened(WindowEvent arg0)
+			{
+				// TODO Auto-generated method stub
+				
+			}
+        	
+        });
+        geoRefConvertDlg.setOkLabel(getResourceString("APPLY"));
+        geoRefConvertDlg.setCancelLabel(getResourceString("CLOSE"));
+        geoRefConvertDlg.setVisible(true);
     }
     
     /**
@@ -3318,9 +3406,10 @@ public class WorkbenchPaneSS extends BaseSubPane
     	{
     		toggleImageFrameBtn.setEnabled(enabled);
     	}
+    	boolean missingGeoRefFlds = getMissingGeoRefFields().length > 0;
     	if (showMapBtn != null)
     	{
-    		showMapBtn.setEnabled(enabled);
+    		showMapBtn.setEnabled(enabled && !missingGeoRefFlds);
     	}
     	if (controlPropsBtn != null)
     	{
@@ -3328,7 +3417,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     	}
     	if (exportKmlBtn != null)
     	{
-    		exportKmlBtn.setEnabled(enabled);
+    		exportKmlBtn.setEnabled(enabled && !missingGeoRefFlds);
     	}
     	if (biogeomancerBtn != null)
     	{
@@ -3336,7 +3425,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     	}
     	if (convertGeoRefFormatBtn != null)
     	{
-    		convertGeoRefFormatBtn.setEnabled(enabled);
+    		convertGeoRefFormatBtn.setEnabled(enabled && !missingGeoRefFlds);
     	}
     	if (exportExcelCsvBtn != null)
     	{
