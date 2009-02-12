@@ -27,7 +27,9 @@ import org.apache.commons.lang.StringUtils;
  */
 public class LatLonConverter
 {
-    public final static String DEGREES_SYMBOL = "\u00b0";
+    public final  static char UNICODE_DEGREE = 0x00b0;
+    
+	public final static String DEGREES_SYMBOL = "\u00b0";
     public final static String SEPS           = DEGREES_SYMBOL + "'\" ";
     
     protected final static int DDDDDD_LEN = 7;
@@ -735,6 +737,8 @@ public class LatLonConverter
         String withoutDegSign = StringUtils.chomp(str, "Â°");
         //above doesn't always work for Windows/Mac so try again...
         withoutDegSign = StringUtils.chomp(withoutDegSign, "°");
+        //apparently need to do this on mac
+        withoutDegSign =  StringUtils.remove(withoutDegSign, UNICODE_DEGREE);
         return new BigDecimal(withoutDegSign);
     }
     

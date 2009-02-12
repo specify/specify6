@@ -6,25 +6,13 @@ import org.apache.commons.lang.StringUtils;
 
 public class GeoRefConverter implements StringConverter
 {
-    public static enum GeoRefFormat
+    //NOTE: on mac the order of the formats matters. 
+	//Some strings will (invalidly - at least according to windows/linux interpretation)
+	//match more than format. 
+	//Currently, For the mac, conversions will only work if formats are defined in the order below. 
+	public static enum GeoRefFormat
     {
-        DMS_PLUS_MINUS ("[\\+\\-]?\\d{1,3}[\\sdÂ°|\\sd°]\\s?\\d{1,2}[\\s']\\s?\\d{1,2}(\\.\\d{0,}\\s*)?\"?")
-        {
-            @Override
-            public BigDecimal convertToDecimalDegrees(String orig)
-            {
-                return LatLonConverter.convertDDMMSSStrToDDDDBD(orig);
-            }
-        },
-        DM_PLUS_MINUS  ("[\\+\\-]?\\d{1,3}[\\sdÂ°|\\sd°]\\s?\\d{1,2}(\\.\\d{0,}\\s*)?'?")
-        {
-            @Override
-            public BigDecimal convertToDecimalDegrees(String orig)
-            {
-                return LatLonConverter.convertDDMMMMStrToDDDDBD(orig);
-            }
-        },
-        D_PLUS_MINUS   ("[\\+\\-]?\\d{1,3}(\\.\\d{0,}\\s*)?[dÂ°|d°]?")
+        D_PLUS_MINUS   ("[\\+\\-]?\\d{1,3}(\\.\\d{0,}\\s*)?[dÂ°|d°|d¡|d\u00b0]?")
         {
             @Override
             public BigDecimal convertToDecimalDegrees(String orig)
@@ -32,7 +20,23 @@ public class GeoRefConverter implements StringConverter
                 return LatLonConverter.convertDDDDStrToDDDDBD(orig);
             }
         },
-        DMS_NSEW       ("\\d{1,3}[\\sdÂ°|\\sd°]\\s?\\d{1,2}[\\s']\\s?\\d{1,2}(\\.\\d{0,})?\"?\\s?[NSEW]{1}.*")
+        DM_PLUS_MINUS  ("[\\+\\-]?\\d{1,3}[\\sdÂ°|\\sd°|\\sd¡|\\sd|\u00b0]\\s?\\d{1,2}(\\.\\d{0,}\\s*)?'?")
+        {
+            @Override
+            public BigDecimal convertToDecimalDegrees(String orig)
+            {
+                return LatLonConverter.convertDDMMMMStrToDDDDBD(orig);
+            }
+        },
+        DMS_PLUS_MINUS ("[\\+\\-]?\\d{1,3}[\\sdÂ°|\\sd°|\\sd¡|\\sd\u00b0]\\s?\\d{1,2}[\\s']\\s?\\d{1,2}(\\.\\d{0,}\\s*)?\"?")
+        {
+            @Override
+            public BigDecimal convertToDecimalDegrees(String orig)
+            {
+                return LatLonConverter.convertDDMMSSStrToDDDDBD(orig);
+            }
+        },
+        DMS_NSEW       ("\\d{1,3}[\\sdÂ°|\\sd°|\\sd¡|\\sd\u00b0]\\s?\\d{1,2}[\\s']\\s?\\d{1,2}(\\.\\d{0,})?\"?\\s?[NSEW]{1}.*")
         {
             @Override
             public BigDecimal convertToDecimalDegrees(String orig)
@@ -40,7 +44,7 @@ public class GeoRefConverter implements StringConverter
                 return LatLonConverter.convertDirectionalDDMMSSToDDDD(orig);
             }
         },
-        DM_NSEW        ("\\d{1,3}[\\sdÂ°|\\sd°]\\s?\\d{1,2}(\\.\\d{0,})?'?\\s?[NSEW]{1}.*")
+        DM_NSEW        ("\\d{1,3}[\\sdÂ°|\\sd°|\\sd¡|\\sd\u00b0]\\s?\\d{1,2}(\\.\\d{0,})?'?\\s?[NSEW]{1}.*")
         {
             @Override
             public BigDecimal convertToDecimalDegrees(String orig)
@@ -48,7 +52,7 @@ public class GeoRefConverter implements StringConverter
                 return LatLonConverter.convertDirectionalDDMMMMToDDDD(orig);
             }
         },
-        D_NSEW         ("\\d{1,3}(\\.\\d{0,})?[dÂ°|d°]?\\s?[NSEW]{1}.*")
+        D_NSEW         ("\\d{1,3}(\\.\\d{0,})?[dÂ°|d°|d¡|\u00b0]?\\s?[NSEW]{1}.*")
         {
             @Override
             public BigDecimal convertToDecimalDegrees(String orig)
@@ -99,6 +103,7 @@ public class GeoRefConverter implements StringConverter
         // and convert to decimal degrees
         // then we convert to the requested format
 
+        
         BigDecimal degreesPlusMinus = null;
         for (GeoRefFormat format: GeoRefFormat.values())
         {
