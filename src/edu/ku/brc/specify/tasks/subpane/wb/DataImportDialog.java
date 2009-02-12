@@ -1010,8 +1010,7 @@ public class DataImportDialog extends JDialog implements ActionListener
         } 
         catch (IOException ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataImportDialog.class, ex);
+        	UIRegistry.displayStatusBarErrMsg(UIRegistry.getResourceString("WB_ERROR_READING_IMPORT_FILE"));
         	String[] columnNames = {};
         	String[][] blankData = {{}};
             model = new PreviewTableModel(columnNames, blankData);
