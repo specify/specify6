@@ -585,13 +585,24 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
 	            	
 	                if (visibleSubPane instanceof TreeTableViewer && !switchMode)
 	                {
-	                    ((TreeTableViewer<?,?,?>)visibleSubPane).setDoUnlock(false);
-	                    TreeDefinitionEditor<T,D,I> defEditor = createDefEditor(tabTitle);
-	                    oldPane         = visibleSubPane;
-	                    currentDefInUse = true;
-	                    visibleSubPane  = defEditor;
+	                    DBTableInfo treeTI  = DBTableIdMgr.getInstance().getByClassName(getTreeClass().getName());
+	                    String      trTitle = treeTI.getTitle();
+	                    String lockName     = treeDefClass.getSimpleName();
+	                    String formLockName = lockName + "Form";
+	                    
+	                    if (!TaskSemaphoreMgr.isLocked(trTitle, formLockName, TaskSemaphoreMgr.SCOPE.Discipline))
+	                    {
+    	                    ((TreeTableViewer<?,?,?>)visibleSubPane).setDoUnlock(false);
+    	                    TreeDefinitionEditor<T,D,I> defEditor = createDefEditor(tabTitle);
+    	                    oldPane         = visibleSubPane;
+    	                    currentDefInUse = true;
+    	                    visibleSubPane  = defEditor;
+	                    } else
+	                    {
+	                        UIRegistry.showLocalizedError("BaseTreeTask.NO_EDT_TRDEF", treeTI.getTitle());
+	                    }
 	                }
-	                else if (visibleSubPane instanceof TreeDefinitionEditor && switchMode)
+	                else if (visibleSubPane instanceof TreeDefinitionEditor || switchMode)
 	                {
 	                    ((TreeDefinitionEditor<?,?,?>)visibleSubPane).setDoUnlock(false);
 	                    TreeTableViewer<T,D,I> treeViewer = createTreeViewer(tabTitle, isEditMode);
