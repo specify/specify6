@@ -1633,7 +1633,7 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[DNA Sequenc]]></desc>
             <enableRules/>
-                <columnDef>120px,2px,p,2px,p,2px,p,p:g</columnDef>
+                <columnDef>150px,2px,p,2px,p,2px,p,p:g</columnDef>
                 <rowDef auto="true" cell="t:p" sep="2px"/>
             <rows>
                 <row>
@@ -1690,7 +1690,7 @@
       	<desc><![CDATA[DNA Sequence Form]]></desc>
         <enableRules/>
         
-            <columnDef>120px,2px,p,2px,p,2px,p,p:g</columnDef>
+            <columnDef>150px,2px,p,2px,p,2px,p,p:g</columnDef>
             <!--  <rowDef>p,2px,p,2px,p,2px,t:p:g,2px,p,2px,p,2px,p,2px,p,2px,p,2px,p,2px,p,2px</rowDef> -->
             <rowDef auto="true" cell="t:p" sep="2px"/>
             
@@ -1717,7 +1717,7 @@
 	              <cell type="separator" label="Nucleotide Sequence" colspan="8"/>
 	          </row>
 	          <row>
-	              <cell type="panel" id="16" name="outerPanel" coldef="120px,2px,p" rowdef="p,2px,p,2px,p,2px,p,2px,p,2px,p,2px" colspan="3">
+	              <cell type="panel" id="16" name="outerPanel" coldef="150px,2px,p" rowdef="p,2px,p,2px,p,2px,p,2px,p,2px,p,2px" colspan="3">
 	                  <rows>
 	                      <row>
 	                          <cell type="label" label="Total Residues:" initialize="align=right"/>
@@ -1797,7 +1797,7 @@
         <desc><![CDATA[DNA Sequence Form]]></desc>
         <enableRules/>
         
-            <columnDef>120px,2px,p,2px,p,2px,p,p:g</columnDef>
+            <columnDef>150px,2px,p,2px,p,2px,p,p:g</columnDef>
             <!--  <rowDef>p,2px,p,2px,p,2px,t:p:g,2px,p,2px,p,2px,p,2px,p,2px,p,2px,p,2px,p,2px</rowDef> -->
             <rowDef auto="true" cell="t:p" sep="2px"/>
             
@@ -1807,6 +1807,12 @@
                     <cell type="field" id="2" name="moleculeType" uitype="text"/>
                     <cell type="label" labelfor="11"/>
                     <cell type="field" id="11" name="boldBarcodeId" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="23"/>
+                    <cell type="field" id="23" name="genbankAccessionNumber" uitype="text"/>
+                    <cell type="label" labelfor="24"/>
+                    <cell type="field" id="24" name="BOLDSampleID" uitype="text"/> 
                 </row>
                 <row>
                     <cell type="label" labelfor="3"/>
@@ -1819,7 +1825,7 @@
                     <cell type="separator" label="Nucleotide Sequence" colspan="8"/>
                 </row>
                 <row>
-                    <cell type="panel" id="16" name="outerPanel" coldef="120px,2px,p" rowdef="p,2px,p,2px,p,2px,p,2px,p,2px,p,2px" colspan="3">
+                    <cell type="panel" id="16" name="outerPanel" coldef="150px,2px,p" rowdef="p,2px,p,2px,p,2px,p,2px,p,2px,p,2px" colspan="3">
                         <rows>
                             <row>
                                 <cell type="label" label="Total Residues:" initialize="align=right"/>
