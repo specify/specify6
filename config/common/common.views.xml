@@ -1704,6 +1704,9 @@
 	          <row>
 	              <cell type="label" labelfor="3"/>
 	              <cell type="field" id="3" name="boldLastUpdateDate" uitype="formattedtext" uifieldformatter="Date" default="Today"/>
+	              <cell type="label" labelfor="22"/>
+	              <cell type="field" id="22" name="sequencer" uitype="querycbx" initialize="name=Agent"  />
+	              
 	          </row>
 	          <row>
 	              <cell type="label" labelfor="7"/>
@@ -1744,9 +1747,19 @@
 	              </cell>
 	              <cell type="field" id="4" name="geneSequence" uitype="textarea" colspan="4" rows="8"/>
 	          </row>
+	          <!--
+	              <row>
+	              
+	              <cell type="separator" label="Illustrative Barcode" colspan="8"/>
+	              </row>
+	              <row>
+	              <cell type="field" id="8" name="this" uitype="plugin" initialize="name=IllustrativeBarCodeUI" readonly="true" colspan="8"/>
+	              </row>
+	          -->
+	          
 	          
 	          <row>
-	              <cell type="subview" viewname="DNASequenceRun" id="21" name="dnaSequencingRuns" colspan="6" />
+	              <cell type="subview" viewname="DNASequenceRun" id="21" name="dnaSequencingRuns" colspan="8" />
 	          </row>
 	          
 	          <!--              <row>
