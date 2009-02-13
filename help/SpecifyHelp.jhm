@@ -35,7 +35,8 @@
 	<mapID target="Welcome"             url="SpecifyHelp/Intro/welcome.html" />
 	<mapID target="Registration"        url="SpecifyHelp/Intro/welcome.html#registration" />
 	<mapID target="Services"            url="SpecifyHelp/Intro/welcome.html#services" />
-	<mapID target="Updating"            url="SpecifyHelp/Intro/welcome.html#phui" />
+	<mapID target="PHUI"            url="SpecifyHelp/Intro/welcome.html#phui" />
+	<mapID target="Updating"            url="SpecifyHelp/Intro/welcome.html#updates" />
 	<mapID target="Contact_Information"   url="SpecifyHelp/Intro/welcome.html#contacts" />
 
 	<!-- Other -->
@@ -52,7 +53,6 @@
 	
 	
 	<!-- Specify Setup -->
-	<mapID target="Permissions"  url="SpecifyHelp/Security/permissions.html" />
 	<mapID target="Inst_Hier"  url="SpecifyHelp/Configuration/institution_hierarchy.html" />
 	<mapID target="Add_Division"  url="SpecifyHelp/Configuration/institution_hierarchy.html#add_division" />
 	<mapID target="Add_Discipline"  url="SpecifyHelp/Configuration/institution_hierarchy.html#add_discipline" />
@@ -94,7 +94,7 @@
 	<mapID target="Forms_Field_Uses"   url="SpecifyHelp/Data_Entry/Using_Forms.html#forms_field_uses" />
 	<mapID target="Forms_Tools"   url="SpecifyHelp/Data_Entry/Using_Forms.html#forms_tools" />
 	<mapID target="Carry_Forward"   url="SpecifyHelp/Data_Entry/Using_Forms.html#carry_forward" />
-	<mapID target="Keyboard Functions"   url="SpecifyHelp/Data_Entry/Using_Forms.html#keyboard_functions" />
+	<mapID target="Keyboard_Functions"   url="SpecifyHelp/Data_Entry/Using_Forms.html#keyboard_functions" />
 	<mapID target="Auto_Numbering"   url="SpecifyHelp/Data_Entry/Using_Forms.html#auto_numbering" />
 	<mapID target="Editing_Related_Records"   url="SpecifyHelp/Data_Entry/Using_Forms.html#editing_related_records" />
 	<mapID target="Data_Entry_Sidebar"   url="SpecifyHelp/Data_Entry/Data_Entry.html#data_entry_configure" />
@@ -106,7 +106,7 @@
 	<mapID target="Data_Entry_Preparations"   url="SpecifyHelp/Data_Entry/Data_Entry.html#data_entry_preparations" />
 	<mapID target="Data_Entry_Attachments"   url="SpecifyHelp/Data_Entry/Data_Entry.html#data_entry_attachments" />
 	<mapID target="Int_Gifts_Loans"   url="SpecifyHelp/Interactions/Interactions.html#int_gifts_loans" />
-	<mapID target="Int_Return"   url="SpecifyHelp/Interactions/Interactions.html#int_return_loans" />
+	<mapID target="Int_Return_Loans"   url="SpecifyHelp/Interactions/Interactions.html#int_return_loans" />
 	<mapID target="Int_Info_Requests"   url="SpecifyHelp/Interactions/Interactions.html#int_info_request" />
 	<mapID target="Int_Borrows"   url="SpecifyHelp/Interactions/Interactions.html#int_borrows" />
 	<mapID target="Int_Exchange"   url="SpecifyHelp/Interactions/Interactions.html#int_exchange" />
@@ -161,6 +161,7 @@
 	<mapID target="Q_Wild"                url="SpecifyHelp/QueryBuilder/Query_Builder.html#q_wild" />
 	<mapID target="Q_Controls"            url="SpecifyHelp/QueryBuilder/Query_Builder.html#q_controls" />
 	<mapID target="Q_Edit"                url="SpecifyHelp/QueryBuilder/Query_Builder.html#q_edit" />
+	<mapID target="Q_Results"                url="SpecifyHelp/QueryBuilder/Query_Builder.html#q_results" />
 	<mapID target="Q_Saved"               url="SpecifyHelp/QueryBuilder/Query_Builder.html#q_saved" />
 	<mapID target="Q_Delete"              url="SpecifyHelp/QueryBuilder/Query_Builder.html#q_delete" />
     
@@ -185,13 +186,13 @@
 	<!-- Simple Search Help -->
     <mapID target="Simple_Search"           url="SpecifyHelp/Simple_Search/Simple_Search.html" />
     <mapID target="SS"                      url="SpecifyHelp/Simple_Search/SS_Overview.html" />
-	<mapID target="SS_Execute"              url="SpecifyHelp/Simple_Search/Simple_Search.htm#ss_executel" />
+	<mapID target="SS_Execute"              url="SpecifyHelp/Simple_Search/Simple_Search.htm#ss_execute" />
 	<mapID target="SS_Cards"                url="SpecifyHelp/Simple_Search/Simple_Search.html#ss_cards" />
 	<mapID target="SS_Results"              url="SpecifyHelp/Simple_Search/Simple_Search.html#ss_results" />
     <mapID target="Express_Search"          url="SpecifyHelp/Simple_Search/Simple_Search.html" />
 	<mapID target="ESTellMeMore"            url="SpecifyHelp/Simple_Search/Simple_Search.html#ss_results"/>
-    <mapID target="Simple_Search_Config"    url="SpecifyHelp/Simple_Search/Simple_Search_Config.html#searchfields"/>
-    <mapID target="ESConfigSearchFields"    url="SpecifyHelp/Simple_Search/Simple_Search_Config.html#searchfields"/>
+    <mapID target="Simple_Search_Config"    url="SpecifyHelp/Simple_Search/Simple_Search_Config.html#search_fields"/>
+    <mapID target="ESConfigSearchFields"    url="SpecifyHelp/Simple_Search/Simple_Search_Config.html#search_fields"/>
 	<mapID target="ESConfigResultsOrdering" url="SpecifyHelp/Simple_Search/Simple_Search_Config.html#results_ordering"/>
 	<mapID target="ESConfigRelatedTables"   url="SpecifyHelp/Simple_Search/Simple_Search_Config.html#related_tables"/>
 	
@@ -213,9 +214,11 @@
 	
 	<!-- Reports/Labels -->
 	<mapID target="Reports"                 url="SpecifyHelp/ReportsLabels/reports.html" />
+	<mapID target="Report_Sidebar"          url="SpecifyHelp/ReportsLabels/reports.html#report_sidebar" />
 	<mapID target="RunReportSettings"       url="SpecifyHelp/Dialogs/report_settings.html" />
 	<mapID target="ReportRunReport"         url="SpecifyHelp/ReportsLabels/reports.html" />
     <mapID target="IR_Create"               url="SpecifyHelp/ReportsLabels/specifyireports.html#ir_create" />
+    <mapID target="iReport"               url="SpecifyHelp/ReportsLabels/specifyireports.html" />
 	<mapID target="IR_Components"           url="SpecifyHelp/ReportsLabels/specifyireports.html#ir_components" />
 	<mapID target="IR_Properties"           url="SpecifyHelp/ReportsLabels/specifyireports.html#ir_properties" />
 	<mapID target="IR_Bands"                url="SpecifyHelp/ReportsLabels/specifyireports.html#ir_bands" />
@@ -235,27 +238,27 @@
 	<mapID target="Import"                  url="SpecifyHelp/Import/import_export.html" />
 	
 	<!-- System Tools -->
-	<mapID target="SL_HELP_CONTEXT"         url="SpecifyHelp/Schema_Config/schema_config.html"/>
-	<mapID target="SL_TOOLS_HELP_CONTEXT"   url="SpecifyHelp/Schema_Config/schema_config.html"/>
-	<mapID target="WEBLNK_EDITOR"           url="SpecifyHelp/Schema_Config/WebLinks.html"/>
-	<mapID target="WEBLNK_ARGS_EDITOR"      url="SpecifyHelp/Schema_Config/WebLinks.html"/>
-	<mapID target="Web_Global"      url="SpecifyHelp/Schema_ConfigWebLinks.html#web_global"/>
-	<mapID target="Web_Field"      url="SpecifyHelp/Schema_ConfigWebLinks.html#web_field"/>
-	<mapID target="Web_New_Field"      url="SpecifyHelp/Schema_Config/WebLinks.html#web_new_field"/>
-	<mapID target="Web_URL"      url="SpecifyHelp/Schema_Config/WebLinks.html#web_url"/>
+	<mapID target="SL_HELP_CONTEXT"         url="SpecifyHelp/SchemaConfig/schema_config.html"/>
+	<mapID target="SL_TOOLS_HELP_CONTEXT"   url="SpecifyHelp/SchemaConfig/schema_config.html"/>
+	<mapID target="WEBLNK_EDITOR"           url="SpecifyHelp/SchemaConfig/WebLinks.html"/>
+	<mapID target="WEBLNK_ARGS_EDITOR"      url="SpecifyHelp/SchemaConfig/WebLinks.html"/>
+	<mapID target="Web_Global"      url="SpecifyHelp/SchemaConfigWebLinks.html#web_global"/>
+	<mapID target="Web_Field"      url="SpecifyHelp/SchemaConfigWebLinks.html#web_field"/>
+	<mapID target="Web_New_Field"      url="SpecifyHelp/SchemaConfig/WebLinks.html#web_new_field"/>
+	<mapID target="Web_URL"      url="SpecifyHelp/SchemaConfig/WebLinks.html#web_url"/>
 	
 	<mapID target="PL_ITEM_EDITOR"          url="SpecifyHelp/PickList/system_picklist"/>
     <mapID target="PL_HELP_CONTEXT"         url="SpecifyHelp/PickList/system_picklist"/>
     <mapID target="Pick_List"               url="SpecifyHelp/PickList/system_picklist"/>
 	<mapID target="User_Pick_List"          url="SpecifyHelp/PickList/Pick_List"/>
 	
-	<mapID target="DOF_LIST_EDITOR"         url="SpecifyHelp/Schema_Config/schema_config.html#schema_format"/>
-	<mapID target="DOF_EDITOR"              url="SpecifyHelp/Schema_Config/schema_config.html#schema_format"/>
-	<mapID target="DOF_SINGLE_FF"           url="SpecifyHelp/Schema_Config/schema_config.html#schema_format"/>
-    <mapID target="UIF_LIST_EDITOR"         url="SpecifyHelp/Schema_Config/schema_config.html"/>
-	<mapID target="UIF_EDITOR"              url="SpecifyHelp/Schema_Config/schema_config.html"/>
-	<mapID target="DOA_LIST_EDITOR"         url="SpecifyHelp/Schema_Config/schema_config.html#schema_agg"/>
-	<mapID target="DOA_EDITOR"              url="SpecifyHelp/Schema_Config/schema_config.html#schema_agg"/>
+	<mapID target="DOF_LIST_EDITOR"         url="SpecifyHelp/SchemaConfig/schema_config.html#schema_format"/>
+	<mapID target="DOF_EDITOR"              url="SpecifyHelp/SchemaConfig/schema_config.html#schema_format"/>
+	<mapID target="DOF_SINGLE_FF"           url="SpecifyHelp/SchemaConfig/schema_config.html#schema_format"/>
+    <mapID target="UIF_LIST_EDITOR"         url="SpecifyHelp/SchemaConfig/schema_config.html"/>
+	<mapID target="UIF_EDITOR"              url="SpecifyHelp/SchemaConfig/schema_config.html"/>
+	<mapID target="DOA_LIST_EDITOR"         url="SpecifyHelp/SchemaConfig/schema_config.html#schema_agg"/>
+	<mapID target="DOA_EDITOR"              url="SpecifyHelp/SchemaConfig/schema_config.html#schema_agg"/>
 	
 	<!-- Security -->
 	<mapID target="SECURITY_SUMMARY"        url="SpecifyHelp/System/SecuritySummary.html"/>

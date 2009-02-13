@@ -27,9 +27,10 @@
 			<tocitem text="Using Help" target="Using_Help"/>
 		  </tocitem>
 		  
-		  <tocitem text="Welcome to Specify" target="About">
-		  	<tocitem text="Registration" target="About"/>
+		  <tocitem text="Welcome to Specify" target="Welcome">
+		  	<tocitem text="Registration" target="Registration"/>
 			<tocitem text="Services and Support" target="Services"/>
+            <tocitem text="PHUI Information" target="PHUI"/>
 			<tocitem text="Updating" target="Updating"/>
 			<tocitem text="Contact Information" target="Contact_Information"/>
 		  </tocitem>
@@ -53,7 +54,7 @@
 				<tocitem text="Adding Disciplines" target="Add_Discipline"/>
 				<tocitem text="Adding Collections" target="Add_Collection"/>
 			  </tocitem>
-			  <tocitem text="Permissions Overview" target="Permission">
+			  <tocitem text="Permissions Overview" target="Permissions">
 			 	<tocitem text="Adding a Users" target="Add_User"/>
 				<tocitem text="Setting User Permissions" target="Set_Permissions"/>
 			  </tocitem>
@@ -124,7 +125,7 @@
 			  <tocitem text="Using Trees" target="Trees_Using"/>
 			  <tocitem text="Tree Tools" target="Trees_Tools">
 			    <tocitem text="Expand" target="Trees_Expand"/>
-				<tocitem text="Toolbar Buttons" target="Trees_Buttons"/>
+				<tocitem text="Toolbar Buttons" target="Trees_Toolbar"/>
 				<tocitem text="Drag and Drop" target="Trees_Drag">
 					<tocitem text="Reparent Node" target="Trees_Reparent"/>
 					<tocitem text="Synonymize Node" target="SYNONIMIZE_NODE"/>
@@ -134,9 +135,9 @@
 				<tocitem text="Find" target="Trees_Find"/>
 			</tocitem>
 		    <tocitem text="Tree Definitions" target="TreeDef">
-			  <tocitem text="Edit the Tree Title" target="Tree_Title"/>
-			  <tocitem text="Tree Ranks" target="Tree_Ranks"/>
-			  <tocitem text="Predefined Ranks" target="Tree_Pre"/>
+			  <tocitem text="Edit the Tree Title" target="Trees_Title"/>
+			  <tocitem text="Tree Ranks" target="Trees_Ranks"/>
+			  <tocitem text="Predefined Ranks" target="Trees_Pre"/>
 			 </tocitem>
 			</tocitem>
 			
@@ -159,7 +160,7 @@
 				<tocitem text="Other Controls" target="Q_Controls"/>
 				<tocitem text="Editing a Query" target="Q_Edit"/>
 				<tocitem text="Query Results" target="Q_Results"/>
-				<tocitem text="Saved Queries" target="QSaved">
+				<tocitem text="Saved Queries" target="Q_Saved">
 					<tocitem text="Import and Export Saved Queries" target="QBImport"/>
 				</tocitem>
 				<tocitem text="Deleting a Query" target="Q_Delete"/>
@@ -170,20 +171,20 @@
 			  <tocitem text="Introduction to Record Sets" target="RecordSet"/>
 			  <tocitem text="Creating a Record Set" target="RS_Create"/>
 			  <tocitem text="Adding Records to an Existing Record Set" target="RS_Add"/>
-			  <tocitem text="Using Record Sets" target="RS_Using"/>
+			  <tocitem text="Using Record Sets" target="RS_Use"/>
 			  <tocitem text="Record Set Menus" target="RS_Menu"/>
 			</tocitem>
 			
 		  <tocitem text="Reports and Labels" target="Reports">
-		    <tocitem text="Reports Side Bar Tools" target="Reports"/>
-			<tocitem text="SpecifyiReport" target="iReports">
+		    <tocitem text="Reports Side Bar Tools" target="Report_Sidebar"/>
+			<tocitem text="SpecifyiReport" target="iReport">
 			  <tocitem text="Creating a Report from a Query" target="IR_Create"/>
-			  <tocitem text="Components of SpecifyiReport" target="IR_Coponents">
+			  <tocitem text="Components of SpecifyiReport" target="IR_Components">
 			    <tocitem text="Report Properties" target="IR_Properties"/>
 				<tocitem text="Report Bands" target="IR_Bands"/>
 				<tocitem text="Report Groups" target="IR_Groups"/>
 				<tocitem text="Report Panes" target="IR_Panes"/>
-				<tocitem text="Task Examples" target="IR_Task"/>
+				<tocitem text="Task Examples" target="IR_Tasks"/>
 				<tocitem text="Including Barcodes" target="IR_Barcodes"/>
 				<tocitem text="Saving a Report" target="IR_Save"/>
 			  </tocitem>
@@ -197,7 +198,7 @@
 			<tocitem text="GEOLocate" target="BioGeo"/>
 		  </tocitem>  
 			  
-		  <tocitem text="Importing and Exporting Resources" >
+		  <tocitem text="Importing and Exporting Resources" target="Import">
 			<tocitem text="Import and Export Forms" target="Import"/>
 			<tocitem text="User Defined Pick Lists" target="User_Pick_List"/>
 			<tocitem text="Web Links" target="WEBLNK_EDITOR">
