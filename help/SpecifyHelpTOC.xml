@@ -69,10 +69,7 @@
 		  
 		  <tocitem text="Using Specify">
 		    <tocitem text="Introduction to the Specify Components" target="Intro"/>
-		  </tocitem>
-
-
-		  
+		  </tocitem>  
 
 		  <tocitem text="Setting Specify Preferences" target="PreferencesOverview">
           	<tocitem text="EMail" target="PrefsEMail"/>
@@ -203,12 +200,13 @@
 		  <tocitem text="Importing and Exporting Resources" >
 			<tocitem text="Import and Export Forms" target="Import"/>
 			<tocitem text="User Defined Pick Lists" target="User_Pick_List"/>
-			<tocitem text="Web Links" target="Web_Link">
+			<tocitem text="Web Links" target="WEBLNK_EDITOR">
 			  <tocitem text="Global Web Links" target="Web_Global"/>
 			  <tocitem text="Field Web Links" target="Web_Field"/>
 			  <tocitem text="New Field Web Links" target="Web_New_Field"/>
 			  <tocitem text="URL Web Links" target="Web_URL"/>
 		    </tocitem>
+
 	      </tocitem>
 		  
 	
@@ -224,7 +222,11 @@
 				<tocitem text="Data Recovery" target="WorkbenchDataRecovery"/>
 				<tocitem text="Portability" target="WorkbenchPortability"/>
  			</tocitem>
+<<<<<<< .mine
+	-->
+=======
 			-->
+>>>>>>> .r6051
  			<tocitem text="Data Sets" target="WorkbenchDataSetOverview">
               	<tocitem text="New Data Set" target="WorkbenchNewDataSet"/>
               	<tocitem text="Import Data" target="WorkbenchImportData">
