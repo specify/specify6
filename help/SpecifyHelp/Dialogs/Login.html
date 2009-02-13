@@ -14,15 +14,17 @@
 <table border="0">
 <tr><td><img src="../../images/login.png"   alt=""/></td><td><h2>How to Login</h2></td></tr>
 </table>
-  <p>The security for Specify 6 uses both a Master Username and Password, which accesses  the MySQL Database, as well as a User Username and Password, which accesses the Specify application. Specify uses only one Master Username and Password, but encrypts the Master password with the User information. This creates a string of information.  To recap, the following information is required to login to Specify the first time (after that the login tool remembers the information of the last user).</p>
-  <ul>
+  <p>The security for Specify 6 uses both a Master Username and Password, which accesses  the MySQL Database, as well as a User Username and Password, which accesses the Specify application. Specify uses only one Master Username and Password for all users, but encrypts the Master password with the User information, created an encrypted string. This allows the Master information to become unique for each user. </p>
+  <p>In review, the following information is required to login to Specify the first time.</p>
+<ul>
     <li>User Username</li>
     <li>User Password</li>
     <li>Master Username</li>
     <li>Master Password</li>
     <li>Encrypted Username / Password (Encryption Key)</li>
-  </ul>
-  <p>It is important to note that the User Username and Password is stored on the users machine. To login to another machine the user will need their username and password and a valid Encryption Key.</p>
+</ul>
+<p>The login tool remembers the usernames and passwords of the last person to login. The encrypted string is stored </p>
+<p>It is important to note that the User Username and Password is stored on the users machine. To login to another machine the user will need their username and password and a valid Encryption Key.</p>
 <p>The login process includes dialogs for inputing both types of information. For more information regarding the Specify 6 security model please refer to <a href="../security/db_security.html">Specify Security.</a></p>
   <p><img src="../../images/login1a.png" width="360" height="146" /></p>
 <p>&nbsp;</p>

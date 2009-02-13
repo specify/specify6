@@ -16,7 +16,7 @@
       <tocitem text="Statistics" target="Statistics"/>
       <tocitem text="Search" target="Search"/>
 -->
-		  <tocitem text="About Specify" >
+		  <tocitem text="About Specify" target="About"/>
 		    <tocitem text="Overview" target="About"/>
 		    <tocitem text="User Forums" target="Forum"/>
 			<tocitem text="Sample Resources" target="Sample_Resources">
@@ -27,8 +27,8 @@
 			<tocitem text="Using Help" target="Using_Help"/>
 		  </tocitem>
 		  
-		  <tocitem text="Welcome to Specify" >
-		  	<tocitem text="Registration" target="Registration"/>
+		  <tocitem text="Welcome to Specify" target="About"/>
+		  	<tocitem text="Registration" target="About"/>
 			<tocitem text="Services and Support" target="Services"/>
 			<tocitem text="Updating" target="Updating"/>
 			<tocitem text="Contact Information" target="Contact_Information"/>
@@ -42,12 +42,12 @@
 
 		  
 		  
-		  <tocitem text="Starting Specify" >
+		  <tocitem text="Starting Specify" target="Login"/>
 		  	 <tocitem text="Login Procedure" target="Login"/>
 		  	 <tocitem text="Updating Procedure" target="Update"/>
 		  </tocitem>
 		  
-		  <tocitem text="Setting Up Specify" >
+		  <tocitem text="Setting Up Specify" target="Inst_Hier">
 		  	 <tocitem text="Institution Levels Overview" target="Inst_Hier">
 			 	<tocitem text="Adding Divisions" target="Add_Division"/>
 				<tocitem text="Adding Disciplines" target="Add_Discipline"/>
@@ -67,7 +67,7 @@
 	
 		  
 		  
-		  <tocitem text="Using Specify">
+		  <tocitem text="Using Specify" target="Intro"/>
 		    <tocitem text="Introduction to the Specify Components" target="Intro"/>
 		  </tocitem>  
 
@@ -82,7 +82,7 @@
 			<tocitem text="MySQL" target="PrefsMySQL"/>
 	      </tocitem>
 	      
-	      <tocitem text="Form System">
+	      <tocitem text="Form System" target="Using_Forms">
 		    	<tocitem text="Form System Overview" target="Using_Forms">
 					<tocitem text="Related Information" target="Forms_Related_Information"/>
 					<tocitem text="Form Controls" target="Forms_Controls"/>
@@ -117,7 +117,7 @@
 			</tocitem>
 			
 			
-			<tocitem text="Trees" >
+			<tocitem text="Trees" target="Trees_About"/>
 			  <tocitem text="Introduction" target="Trees_About"/>
 			  <tocitem text="Tree Terminology" target="Trees_Terms"/>
 			  <tocitem text="Building Trees" target="Trees_Build"/>
@@ -140,7 +140,7 @@
 			 </tocitem>
 			</tocitem>
 			
-			<tocitem text="Searching Data" >
+			<tocitem text="Searching Data" target="SS">
 			  <tocitem text="Simple Search" target="Simple_Search">
 			  	<tocitem text="Using Simple Search" target="SS_Execute"/>
 				<tocitem text="Simple Search Wild Cards" target="SS_Cards"/>
@@ -166,7 +166,7 @@
 			  </tocitem>
 		    </tocitem>
 			
-			<tocitem text="Record Sets" >
+			<tocitem text="Record Sets" target="RecordSet">
 			  <tocitem text="Introduction to Record Sets" target="RecordSet"/>
 			  <tocitem text="Creating a Record Set" target="RS_Create"/>
 			  <tocitem text="Adding Records to an Existing Record Set" target="RS_Add"/>
@@ -174,7 +174,7 @@
 			  <tocitem text="Record Set Menus" target="RS_Menu"/>
 			</tocitem>
 			
-		  <tocitem text="Reports and Labels" >
+		  <tocitem text="Reports and Labels" target="Reports"/>
 		    <tocitem text="Reports Side Bar Tools" target="Reports"/>
 			<tocitem text="SpecifyiReport" target="iReports">
 			  <tocitem text="Creating a Report from a Query" target="IR_Create"/>
@@ -190,7 +190,7 @@
 	        </tocitem>
 		  </tocitem>
 			
-		  <tocitem text="Plugins" >
+		  <tocitem text="Plugins" target="Plugins"/>
 		    <tocitem text="Overview" target="Plugins"/>
 		    <tocitem text="Google Earth" target="GE"/>
 			<tocitem text="BioGeomancer" target="BioGeo"/>

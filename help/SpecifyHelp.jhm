@@ -25,6 +25,7 @@
 	<!-- About -->
 	
 	<mapID target="Forum"               url="SpecifyHelp/Intro/about.html#user_forums" />
+	<mapID target="Sample_Resources"      url="SpecifyHelp/Intro/about.html#sample_resources" />
 	<mapID target="Sample_Queries"      url="SpecifyHelp/Intro/about.html#sample_resources" />
 	<mapID target="Sample_Reports"      url="SpecifyHelp/Intro/about.html#sample_resources" />
 	<mapID target="Sample_Labels"       url="SpecifyHelp/Intro/about.html#sample_resources" />
@@ -183,6 +184,7 @@
 	
 	<!-- Simple Search Help -->
     <mapID target="Simple_Search"           url="SpecifyHelp/Simple_Search/Simple_Search.html" />
+    <mapID target="SS"                      url="SpecifyHelp/Simple_Search/SS_Overview.html" />
 	<mapID target="SS_Execute"              url="SpecifyHelp/Simple_Search/Simple_Search.htm#ss_executel" />
 	<mapID target="SS_Cards"                url="SpecifyHelp/Simple_Search/Simple_Search.html#ss_cards" />
 	<mapID target="SS_Results"              url="SpecifyHelp/Simple_Search/Simple_Search.html#ss_results" />
