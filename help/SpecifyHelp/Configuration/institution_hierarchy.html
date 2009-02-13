@@ -11,32 +11,52 @@
     <td>&nbsp;</td>
   </tr>
 </table>
-<h2>Institution Hierarchy</h2>
-<p>The Institution Hierarchy should be configured to include the Divisions, Disciplines and Collections that will share one database within an Institution after running the Setup Wizard. It can also be edited at a later date to add or delete any of these institution levels.</p>
-<p>Other Specify modules can be open while adding to the hierarchy, so begin by closing all tabs.Tools for adding Divisions, Disciplines and Collections are found by clicking <em>System &gt; Collection Setup &gt; Configuration</em>. </p>
-<p>Start adding to the Institution Hierarchy at the Division level and work your way down to Collection. Each level is added at the level above it. For instance, Divisions are added to the Institution form. Click the Institution button on the Side Bar to add Divisions.</p>
-<h4><strong>Add Divisions</strong></h4>
-<p>At least one Division should appear in the Division sub form of the Institution form. </p>
+<h2>Institution Levels</h2>
+<p>Specify mirrors the common levels of heirarchy within institutions.</p>
+<ul>
+  <li>Institution</li>
+  <li>Division</li>
+  <li>Discipline</li>
+  <li>Collection</li>
+  <li>Group</li>
+  <li>Person</li>
+</ul>
+<p>After running the Setup Wizard the  Divisions, Disciplines and Collections for each institution will need to be configured. </p>
+<p> Tools for adding Divisions, Disciplines and Collections are found by clicking <em>System &gt; Collection Setup &gt; Configuration</em>. All tabs need to be closed before opening the Configuration.</p>
+<p>Start adding to the Institution Hierarchy at the Division level and work your way down to Collection. Each  is added at the level above it. For instance, Divisions are added to the Institution form. </p>
+<p>Editing an existing  Discipline must be executed on the Discipline form, as well as Division. A Collection can be edited either on the Discipline form or Collection form.</p>
+<h4><strong><a name="add_division" id="add_division"></a>Add Divisions</strong></h4>
+<p>Click the <img src="../../images/institution_16.png" width="16" height="16" /> <em>Institution</em> button on the Side Bar to add Divisions.</p>
+<p>At least one Division should appear in the Division sub form. </p>
 <p>Click the <img src="../../images/add.png" width="16" height="16" /> (add) button to add a Division.</p>
-<p>Name is the only required field and is used in any lists within Specify as well as the Institution Hierarchy.</p>
-<p>Alt Name provides another field for name. This is often useful when a particular Division may have changed names. </p>
+<p>Name is the only required field and is used in any lists of Divisions within Specify as well as in the Institution Hierarchy.</p>
+<p>Alt Name provides another field for name. This is often useful when a particular Division has changed names or uses a longer name than is applicable to the Hierarchy list. </p>
 <p>URI stands for Uniform Resource Identifier and refers to a  resource on the internet (a Division web site).</p>
 <p>Is Accession Bound tells Specify that this Division does not share Accessions within the institution  will have their own accession table and numbers.</p>
 <p>&nbsp;</p>
-<h4><strong>Add Disciplines</strong></h4>
-<p>Click the Division button on the Side Bar to add Disciplines.</p>
-<p>The Division form will filled-in information will appear and include a Discipline sub form. Use the navigation control at the bottom of the window to step to the correct Division for the Discipline that you wish to add.</p>
+<h4><strong><a name="add_discipline" id="add_discipline"></a>Add Disciplines</strong></h4>
+<p>Click the <img src="../../images/division_16.png" width="16" height="16" /> <em>Division</em> button on the Side Bar to add Disciplines.</p>
+<p>The Division form includes the information entered when the Discipline was added. The new Discipline will be added in the Division that is currently displayed in the Workspace. Use the navigation control at the bottom of the window to step to the  Division that will include the new Discipline. </p>
 <p><img src="../../images/next_bar.png" width="174" height="25" /></p>
 <p>In the Discipline sub form click the <img src="../../images/add.png" width="16" height="16" /> (add) button to add a Discipline.</p>
-<p>A dialog listing all available Discipline types will display. Choose a discipline from the list. The chosen type will appear in the Type field.</p>
+<p>A dialog listing all available Discipline types will display. Choose a discipline from the list. The chosen type will appear in the Type field. This name is used by the database in Specify.</p>
 <p>Data Type indicates that the data base is for biological collections and is not editable.</p>
-<p>Name allows the Discipline to be named anything. This name will display in any Discipline lists within Specify and on the Institution Hierarchy.</p>
+<p>Name allows the Discipline to be named by the Institution rather than by the provided Specify list. This name will display in any Discipline lists within Specify as well as on the Institution Hierarchy.</p>
+<p>The Collections form displays under Disciplines on this form. It is to view Collection data only, Collections can not be added or edited from the Division form.</p>
 <p>&nbsp;</p>
-<p><strong>Add Collections</strong></p>
-<p>Collections are added in the Discipline form. Click the Discipline button on the Side Bar.</p>
-<p>The Discipline information will appear at the top of the form with a Collections sub form underneath. Use the navigation control at the bottom of the window to step to the correct Division for the Discipline that you wish to add.</p>
+<p><strong><a name="add_collection" id="add_collection"></a>Add Collections</strong></p>
+<p>Collections are added in the Discipline form. Click the <img src="../../images/discipline_16.png" width="16" height="16" /> <em>Discipline</em> button on the Side Bar.</p>
+<p>The Discipline information will appear at the top of the form with a Collections sub form underneath. The new Collection will be added in the Discipline that is currently displayed in the Workspace. Use the navigation control at the bottom of the window to step to the  Discipline that will include the new Collection.</p>
 <p><img src="../../images/next_bar.png" width="174" height="25" /></p>
 <p>Click the <img src="../../images/add.png" width="16" height="16" />(add) button to add a Collection. </p>
+<p>A Numbering Scheme dialog will appear. This refers to the Catalog Number. Each Collection can either accept an existing numbering format for Catalog Numbers or create their own. </p>
+<p>To accept a numbering scheme simply click on the correct one in the list (or use the down-arrow key). </p>
+<p>To add a numbering scheme -- Work in Progress!</p>
+<p>&nbsp;</p>
+<p><u>Collection Form</u></p>
+<p>The <strong>Collection Name</strong> will be used on any Specify Collection lists as well as in the Institution Hierarchy. </p>
+<p><strong>Add Collecting Event Automatically</strong> creates a new, unique Collecting Event record for each Collection Object. This is typically used in Botany.</p>
+<p><strong>ABCD Schema Fields</strong> is a subform for adding this information to the Collection.</p>
 <p>&nbsp;</p>
 <p>&nbsp;</p>
 </body>

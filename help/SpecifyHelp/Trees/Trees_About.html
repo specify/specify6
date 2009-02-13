@@ -18,11 +18,11 @@
 
 <p>Specify 6 stores various table data in heirarchical Tree format. These include Taxon, Geography, Storage, Chronostratigraphy and Lithostratigraphy. These tables are also included in the form system, but the Tree offers a more broad, visual glimpse of the data. Data can be edited and entered using both the form and Tree system.</p>
 <p>&nbsp;</p>
-<h3>Specify Tree Terminology</h3>
+<h4><a name="trees_terms" id="trees_terms"></a>Specify Tree Terminology</h4>
 <p>The various Trees show  relationships in a hierarchical structure. All hierarchies are referred to as <strong>ranks</strong>. All nodes immediately under a rank are referred to as <strong>children</strong>. Any node with a child is referred to as a <strong>parent</strong>.</p>
 <p>Ranks are shown in columns on the Tree.<em><strong> </strong></em>Tree column colors can be set in <em>Preferences &gt; Tree</em>. See also <em><a href="../Prefs/Tree.html">Preferences</a></em></p>
 <p>&nbsp;</p>
-<h4><strong>Building Ranks</strong></h4>
+<h4><strong><a name="trees_build" id="trees_build"></a>Building Ranks</strong></h4>
 <p>Before creating a Tree it is first necessary to create the <a href="../Trees/editing_tree_def">Tree Definition </a>. This defines the Ranks for the Tree, as well as how the ranks are inforced and if they are included in the full name. At this time in Specify 6 the configuration of full name can not be edited once nodes are placed on the Tree.</p>
 <p>&nbsp;</p>
 <h4><strong>Building Trees</strong></h4>
@@ -41,11 +41,11 @@
 <p>The Lithostratigraphy Tree includes four predefined ranks only. </p>
 <p>Although it is possible to enter Trees in their entirety from within Specify 6, the Specify project does not recommend building  large Trees  manually. </p>
 <p>&nbsp;</p>
-<h3>Using Trees</h3>
+<h3><a name="trees_using" id="trees_using"></a>Using Trees</h3>
 <p>Trees are available through a Tree button on the Taskbar. The Taskbar is configurable in Preferences. Users that do not have the Tree button included on their Taskbar can add it by clicking <span class="MichaelsChanges"><em>Edit &gt; Preferences &gt; Taskbar on Windows, or Specify &gt; Preferences &gt; Taskbar</em> on the Mac, then checking the <em>Trees</em> box.</span></p>
 <p>Users without permission to view or edit the tree can not have access in Preferences or the Taskbar.</p>
 <p>Click <em><img src="../../images/Tree-32x32.png" width="20" height="20" /> Trees </em>on the Taskbar,  to open the Tree tool. Trees are grouped by their task on the Sidebar.</p>
-<p><strong>Edit Trees</strong> lists the Trees available for the collection. Click a Tree to open it in the Workspace.</p>
+<p><strong>Edit Trees</strong> lists the Trees available for the collection. Click a Tree to open it in the Workspace. </p>
 <p><strong>Edit Tree Definitions</strong> lists the Definitions for each Tree. This tool defines the ranks available in a  Tree as well as with how these ranks are enforced in data entry and used in aggregating the full name. <em> </em>Before adding nodes to an empty Tree, the Tree Definition must be completed. Please refer to <a href="../Trees/editing_tree_def.html">Tree Definitions.</a></p>
 <p><strong>Unlock a Tree</strong> is only available through permissions and is not  available to all users. </p>
 <p>Only one user may edit  a Tree, Tree Definition or the related data entry form at the same time. Simultaneous editing of a Tree, Tree Definition or data form is also not permitted by a single user. Trees and forms will still be available for viewing, searching or querying. In order for a second user to use the Tree or form, the first user must close the affected tab. </p>
@@ -53,17 +53,17 @@
 <p>When a Tree Definition is open and the same user opens the corresponding Tree the Tree Definition does not need to be closed, the Tree will display in the  Tree tab. The Definition is not available to View and those without editing priviledges may not access it.</p>
 <p>In the event that a Tree becomes locked and the user of that Tree can not be located, (which may occur due to improper shutdowns of the application), the Tree can be unlocked by clicking it under this heading<em></em>.</p>
 <p>&nbsp;</p>
-<h3> <u>Tree Tools</u></h3>
+<h3> <u><a name="trees_tools" id="trees_tools"></a>Tree Tools</u></h3>
 <p><b>Expand a Node</b></p>
 <p>Click the <img src="../../images/forward.png" alt="expand" width="16" height="16" /> (expand) icon to expand nodes on the Tree.</p>
 <p>&nbsp;</p>
-<h4>Expand a Tree Column</h4>
+<h4><a name="trees_expand" id="trees_expand"></a>Expand a Tree Column</h4>
 <ol>
   <li>Mouse over the header column until a crossbar appears.</li>
   <li>Right-click and drag to expand the column.</li>
 </ol>
 <p>&nbsp;</p>
-<h4>Toolbar Items</h4>
+<h4><a name="trees_toolbar" id="trees_toolbar"></a>Toolbar Buttons</h4>
 <table width=100% border="1" cellspacing="2" cellpadding="6">
   <tr>
     <td><div align="center"><u><strong>Button</strong></u></div></td>
@@ -173,10 +173,11 @@
 <p>Nodes can be dragged and dropped within the Tree module to move or synonymize nodes. When the screen is split, nodes can be dragged and dropped within the same screen or into the opposite screen. A highlight box will appear around any nodes that can accept the node being dragged. Once the node is dropped onto the accepting node a dialog will appear allowing the user to:</p>
 <p><strong>Reparent</strong> a node (and its children) to a new parent. Enforced ranks may not be skipped. This option is only available when dragging BETWEEN ranks.</p>
 <p><strong>Synonymize</strong> the node.   To undo a synonymy right-click on the node and choose <em>Undo Synonymy</em> in the context menu. Synonyms are differentiated from non-synonyms by their text color. Synonym text color can be set in <em><a href="trees.html">Preferences</a></em>. Synonyms  also show as a tool tip on the node. This option is only available when dragging  WITHIN a rank.</p>
+<p>To undo a synonymy right-click on the node, then click <em>Undo Synonymy</em> in the resulting Context Menu.</p>
 <p><em><strong>Note:</strong></em> Synonymys created in the Taxon Tree are captured in the Active Taxon field on the Determinations form.</p>
 <p>Select <strong>Cancel</strong> on the dialog to place the node back in its original position.</p>
 <p>&nbsp;</p>
-<h3>Collection Object Counts</h3>
+<h3><a name="trees_counts" id="trees_counts"></a>Collection Object Counts</h3>
 <p>Counts of collection objects associated with each node can be enabled for all Trees. This feature requires data processing and therefore is not enabled by default. Enable Collection Object Counts  on a Tree by choosing <em>Preferences &gt; Tree</em>. See also <em><a href="trees.html">Preferences</a></em></p>
 <p>Counts are displayed next to the Node as two numbers (<strong>X</strong>,<strong>Y</strong>):</p>
 <ul>
@@ -184,7 +185,7 @@
   <li><strong>Y</strong> represents the number of Collection Objects for the Rank and all nodes beneath it. </li>
 </ul>
 <p>&nbsp;</p>
-<p><strong>More Options</strong></p>
+<p><strong><a name="trees_more" id="trees_more"></a>More Options</strong></p>
 <p>A right-mouse click offers the following choices:</p>
 <table width=100% border="1" cellspacing="2" cellpadding="6">
   <tr>
@@ -222,7 +223,7 @@
 </table>
 <p><em><strong>Note:</strong></em> The Taxon Tree also includes an option to View an ITIS page.</p>
 <p>&nbsp;</p>
-<h3>Find</h3>
+<h3><a name="trees_find" id="trees_find"></a>Find</h3>
 <p>Click Cntl + F to open the Find tool (which opens under the Tree Workspace). This is particularly useful to expand the Tree to the end Nodes. The arrow icons  refer to the view that is appropriate for the search. </p>
 <table width="100%" border="1" cellspacing="2" cellpadding="6">
   <tr>

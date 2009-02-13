@@ -6,6 +6,7 @@
 </head>
 
 <BODY BGCOLOR=#ffffff>
+Exe
 <table width="100%" border="0" background="../../images/topbar.png">
   <tr>
     <td>&nbsp;</td>
@@ -19,7 +20,7 @@
 <p>To configure a more complicated search and choose from <em>all</em> the fields in Specify 6 use the Query tool. Please refer to <a href="../express_search/QueryBuilder.html">Query</a>.</p>
 <p><em><strong>Note:</strong></em> Simple Search results work best when a wild card, or asterisk, (*), is used.</p>
 <p>&nbsp;</p>
-<p><u><strong>Using Simple Search</strong></u></p>
+<p><u><strong><a name="ss_execute" id="ss_execute"></a>Using Simple Search</strong></u></p>
 <p>Simple Search is located in the upper right corner of Specify 6. Click the <img src="../../images/Down16x16.png" alt="" width="16" height="16" /> (down arrow) to display a menu of available tables. For information about adding tables to the menu and configuring preferences refer to <em><a href="../express_search/Search.html">Configure Simple Search</a></em>. </p>
 <p>&nbsp;</p>
 <p><strong>Execute a Simple Search:</strong></p>
@@ -29,13 +30,13 @@
   <li>Press the Return key.</li>
 </ol>
 <p>&nbsp;</p>
-<p><strong>Search Criteria</strong></p>
-<p>More than one word can be used as criteria, but the results will vary depending on the use of wildcards.  For example, if the Search criterion is Clinton Lake, the Simple Search  results will include instances where the full string is either Clinton or Lake; it will not find the string Clinton Lake. The search can be changed dramatically by using wild cards.</p>
+<p><strong><a name="ss_cards" id="ss_cards"></a>Wild Cards</strong></p>
+<p>More than one term can be used in a search specification, but the results will vary depending on the use of wild cards.  For example, if the search string is Clinton Lake, Simple Search results will include records which have either Clinton OR Lake in any search field.  Records which contain the phrase Clinton Lake in one field will also be found.</p>
 <p>Two types of wild cards can be used in Simple Search criteria. An asterisk, (*), allows the criteria to be found as part of a string, and single or double quotes, (' or &quot;), allow two or more words to be searched as a string rather than separate criteria.</p>
-<table width="75%" border="1" cellspacing="2" cellpadding="6">
+<table width="100%" border="1" cellspacing="2" cellpadding="6">
   <tr>
-    <td width="24%">*Clinton</td>
-    <td width="76%">Returns any string with Clinton at the end.</td>
+    <td width="26%">*Clinton</td>
+    <td width="74%">Returns any string with Clinton at the end.</td>
   </tr>
   <tr>
     <td>Clinton*</td>
@@ -60,7 +61,7 @@
 </table>
 <p>&nbsp;</p>
 <p><em><strong>Criteria Notes:</strong></em></p>
-<p>Numbers are searched in selected number and string fields in configured tables.</p>
+<p>Numbers are searched in both the number and string fields in the configured tables.</p>
 <p>When the criteria is a 4-digit number  between 1000 and 3000 and date fields are included in the search configuration, Simple Search will search  the year portion of all the date fields.</p>
 <p>When searching for a loan that uses a number scheme that includes a date plus a number, e.g. (2003-001), enter 2003* for the search criteria to find all 2003 results. </p>
 <p>&nbsp;</p>
@@ -70,7 +71,7 @@
 <p>Results can be viewed by clicking the <img src="../../images/express_search_expand.png" width="16" height="16" /> (Expand) button or double clicking the header bar.</p>
 <p>Results are displayed as a Grid. </p>
 <p>&nbsp;</p>
-<p><strong>Manipulate the results</strong></p>
+<h4><strong>Using Simple Search Results</strong></h4>
 <p>Choose one, several or all the records using the methods below, then click  a button from the results bar.</p>
 <ul>
   <li>Click a record to select a singe record.</li><br />
@@ -102,7 +103,8 @@
   </tr>
 </table>
 <p>&nbsp;</p>
-<p>Query results can also be used to add records to an existing Record Set.</p>
+<p>Search</p>
+<p> results can also be used to add records to an existing Record Set.</p>
 <p>Click the <img src="../../images/record_sets_dark_20.png" alt="record set" width="20" height="20" /> (Record Set) button at the bottom of the results window. The <em>Choose a Record Set</em> dialog will appear:</p>
 <ul>
   <li>Select a Record Set name in the list and click the <em>OK</em> button to add the selected records to the existing Record Set.</li>
