@@ -212,7 +212,7 @@
 	<!-- Reports/Labels -->
 	<mapID target="Reports"                 url="SpecifyHelp/ReportsLabels/reports.html" />
 	<mapID target="RunReportSettings"       url="SpecifyHelp/Dialogs/report_settings.html" />
-	<mapID target="ReportRunReport"       url="SpecifyHelp/Dialogs/ReportsLabels/reports.html" />
+	<mapID target="ReportRunReport"         url="SpecifyHelp/ReportsLabels/reports.html" />
     <mapID target="IR_Create"               url="SpecifyHelp/ReportsLabels/specifyireports.html#ir_create" />
 	<mapID target="IR_Components"           url="SpecifyHelp/ReportsLabels/specifyireports.html#ir_components" />
 	<mapID target="IR_Properties"           url="SpecifyHelp/ReportsLabels/specifyireports.html#ir_properties" />
