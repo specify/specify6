@@ -1065,9 +1065,10 @@ public class SpecifyDBConverter
                     
                     try
                     {
+                        // Ricardo
+                        // the SpecifyUser is already created it is called 'specifyUser'
+                        
                         Map<String, SpPrincipal> groupMap = null;
-                        // XXX where do we get the data to create the admin user??
-                        //groupMap = DataBuilder.createAdminGroupAndUser(institution, username, email, password, userType)Groups(institution);
                         List<SpPrincipal> groups = new ArrayList<SpPrincipal>(groupMap.values());
                         groupMap = DataBuilder.createStandardGroups(collection);
                         groups.addAll(groupMap.values());
