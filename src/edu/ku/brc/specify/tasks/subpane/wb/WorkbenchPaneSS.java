@@ -3384,6 +3384,12 @@ public class WorkbenchPaneSS extends BaseSubPane
         setAllUploadDatasetBtnEnabled(true);
     }
         
+    /**
+     * @param enabled
+     * 
+     * Enables buttons on the toolbar.
+     * If enabled is false open forms associated with buttons are closed.
+     */
     protected void setToolBarBtnsEnabled(boolean enabled)
     {
     	if (deleteRowsBtn != null)
@@ -3425,7 +3431,15 @@ public class WorkbenchPaneSS extends BaseSubPane
     	}
     	if (convertGeoRefFormatBtn != null)
     	{
+    		if (!enabled)
+    		{
+    			if (this.geoRefConvertDlg != null)
+    			{
+    				geoRefConvertDlg.setVisible(false);
+    			}
+    		}
     		convertGeoRefFormatBtn.setEnabled(enabled && !missingGeoRefFlds);
+    		
     	}
     	if (exportExcelCsvBtn != null)
     	{
