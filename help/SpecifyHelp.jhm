@@ -195,7 +195,7 @@
 	
 	<!-- Search Help -->
     <mapID target="CBXQSearch"              url="SpecifyHelp/Dialogs/CBXQSearch.html"/>
-    <mapID target="CBXQViewEdit"            url="SpecifyHelp/Dialogs/CBXQSearch.html"/>
+    <mapID target="CBXQViewEdit"            url="SpecifyHelp/Dialogs/CBXQView.html"/>
 	
 	<!-- RecordSets -->
 	<mapID target="ChooseRecordSet"         url="SpecifyHelp/Interactions/ChooseRecordSet.html" />
