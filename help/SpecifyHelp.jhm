@@ -247,7 +247,7 @@
     <mapID target="Pick_List"               url="SpecifyHelp/PickList/system_picklist"/>
 	<mapID target="User_Pick_List"          url="SpecifyHelp/PickList/Pick_List"/>
 	
-	<mapID target="DOF_LIST_EDITOR"         url="SpecifyHelp/Schema_Config/schema_config.html"#schema_format/>
+	<mapID target="DOF_LIST_EDITOR"         url="SpecifyHelp/Schema_Config/schema_config.html#schema_format"/>
 	<mapID target="DOF_EDITOR"              url="SpecifyHelp/Schema_Config/schema_config.html#schema_format"/>
 	<mapID target="DOF_SINGLE_FF"           url="SpecifyHelp/Schema_Config/schema_config.html#schema_format"/>
     <mapID target="UIF_LIST_EDITOR"         url="SpecifyHelp/Schema_Config/schema_config.html"/>
