@@ -138,10 +138,10 @@ public class PasswordStrengthUI extends JPanel implements UIPluginable, GetSetVa
         g.fillRect(ins.left, ins.top, halfBW/2, h);
         
         // Second Half
-        bg = new GradientPaint(new Point(halfBW/2,0), Color.YELLOW,
-                               new Point(barWidth,0), Color.GREEN);
+        bg = new GradientPaint(new Point(ins.left+halfBW/2,0), Color.YELLOW,
+                               new Point(ins.left+barWidth,0), Color.GREEN);
         g2.setPaint(bg);
-        g.fillRect(ins.left+halfBW/2, ins.top, halfBW, h);
+        g.fillRect(ins.left+halfBW/2, ins.top, halfBW*2, h);
         g.setClip(clipShape);
         
         g.setColor(Color.BLACK);
@@ -184,7 +184,7 @@ public class PasswordStrengthUI extends JPanel implements UIPluginable, GetSetVa
      */
     public int getScore()
     {
-        return Math.min((int)(score / 80.0 * 100.0), 100);
+        return Math.min((int)(score / 71.0 * 100.0), 100);
     }
 
     /**
@@ -241,9 +241,11 @@ public class PasswordStrengthUI extends JPanel implements UIPluginable, GetSetVa
         if (length < 5) // length 4 or less
         {
             score = (score + 3);
+            
         } else if (length > 4 && length < 8) // length between 5 and 7
         {
             score = (score + 6);
+            
         } else if (length > 7 && length < 16) // length between 8 and 15
         {
             score = (score + 12);
@@ -253,6 +255,8 @@ public class PasswordStrengthUI extends JPanel implements UIPluginable, GetSetVa
             score = (score + 18);
         }
         
+        // 36 sub-total
+        
         // Letters
         p = Pattern.compile(".??[a-z]");
         m = p.matcher(pwd);
@@ -260,9 +264,10 @@ public class PasswordStrengthUI extends JPanel implements UIPluginable, GetSetVa
         {
             lower += 1;
         }
+        
         if (lower > 0)
         {
-            score = (score + 1);
+            score = (score + 1); // 37
         }
         
         // Uppercase
@@ -272,9 +277,10 @@ public class PasswordStrengthUI extends JPanel implements UIPluginable, GetSetVa
         {
             upper += 1;
         }
+        
         if (upper > 0)
         {
-            score = (score + 5);
+            score = (score + 5); // 42
         }
         
         // Includes Numbers
@@ -286,13 +292,15 @@ public class PasswordStrengthUI extends JPanel implements UIPluginable, GetSetVa
         }
         if (numbers > 0)
         {
-            score = (score + 5);
+            score = (score + 5); // 47
+            
             if (numbers > 1)
             {
-                score = (score + 2);
+                score = (score + 2); // 49
+                
                 if (numbers > 2)
                 {
-                    score = (score + 3);
+                    score = (score + 3);  // 53
                 }
             }
         }
@@ -307,29 +315,30 @@ public class PasswordStrengthUI extends JPanel implements UIPluginable, GetSetVa
         
         if (special > 0)
         {
-            score = (score + 5);
+            score = (score + 5); // 58
+            
             if (special > 1)
             {
-                score += (score + 5);
+                score += (score + 5); // 63
             }
         }
         
         // Combinations
         if (upper > 0 && lower > 0) // both upper and lower case
         {
-            score = (score + 2);
+            score = (score + 2); // 65
         }
         if ((upper > 0 || lower > 0) && numbers > 0) // both letters and numbers
         {
-            score = (score + 2);
+            score = (score + 2); // 67
         }
         if ((upper > 0 || lower > 0) && numbers > 0 && special > 0) // letters, numbers, and special characters
         {
-            score = (score + 2);
+            score = (score + 2); // 69
         }
         if (upper > 0 && lower > 0 && numbers > 0 && special > 0) // upper, lower, numbers, and special characters
         {
-            score = (score + 2);
+            score = (score + 2); // 71
         }
         
         errReason = null;
