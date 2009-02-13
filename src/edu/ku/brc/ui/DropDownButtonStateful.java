@@ -256,23 +256,6 @@ public class DropDownButtonStateful extends DropDownButton
     public void paint(Graphics g)
     {
         super.paint(g);
-        
-        /*if (isHovering && !hasFocus)
-        {
-            JButton   btn = btns.get(nxtInx);
-            Rectangle r   = btn.getBounds();
-            Rectangle pr  = getBounds();
-            
-            pr.x = r.x;
-            g.setColor(SystemColor.controlLtHighlight);
-            g.drawLine(pr.x, pr.y, pr.width-1, pr.y);
-            g.drawLine(pr.x, pr.y, pr.x, pr.height-1);
-            
-            g.setColor(SystemColor.controlShadow);
-            g.drawLine(pr.x, pr.height-1, pr.width-1, pr.height-1);
-            g.drawLine(pr.width-1, pr.y, pr.width-1, pr.height-1);
-        }*/
-        
     }
 
     /**

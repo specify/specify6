@@ -44,7 +44,6 @@ import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.MouseInputAdapter;
@@ -72,12 +71,12 @@ import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 public class DropDownButton extends JPanel implements ChangeListener, PopupMenuListener,
                                                       ActionListener, PropertyChangeListener
 {
-    protected static BasicStroke   lineStroke = new BasicStroke(1.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+    protected static BasicStroke   lineStroke = new BasicStroke(2.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
     protected static Color         focusColor = null;
     protected static Color         hoverColor = new Color(0, 0, 150, 100);
     
-    protected EmptyBorder          emptyBorder;
-    protected Border               focusBorder;
+    protected EmptyBorder          emptyBorder          = null;
+    protected Border               focusBorder          = null;
     protected boolean              hasFocus             = false;
 
     protected JButton              mainBtn;
@@ -208,7 +207,7 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
     {
         setOpaque(false);
         
-        FocusListener     focusListener     = createFocusListener();
+        FocusListener     focusListener     = UIHelper.isMacOS() ? createFocusListener() : null;
         MouseInputAdapter mouseInputAdapter = createMouseInputAdapter();
 
         mainBtn  = createLabelBtn(label, icon, toolTip, this, focusListener, mouseInputAdapter, this, this, overrideButtonBorder);
@@ -245,8 +244,8 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
                 focusColor = Color.DARK_GRAY;
             }
              
-            focusBorder = new LineBorder(focusColor, 1, true);
-            emptyBorder = new EmptyBorder(focusBorder.getBorderInsets(this));
+            //focusBorder = new LineBorder(focusColor, 1, true);
+            //emptyBorder = new EmptyBorder(focusBorder.getBorderInsets(this));
         }
         
         if (!overrideButtonBorder)
@@ -608,10 +607,8 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
             
             Graphics2D g2d = (Graphics2D)g;
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            RoundRectangle2D.Double rr = new RoundRectangle2D.Double(insets.left, insets.top, size.width-insets.right-insets.left, size.height-insets.bottom-insets.top, 10, 10);
+            RoundRectangle2D.Double rr = new RoundRectangle2D.Double(insets.left+1, insets.top+1, size.width-insets.right-insets.left-3, size.height-insets.bottom-insets.top-3, 10, 10);
             g2d.setStroke(lineStroke);
-            g2d.draw(rr);
-            rr = new RoundRectangle2D.Double(insets.left+1, insets.top+1, size.width-insets.right-insets.left-2, size.height-insets.bottom-insets.top-2, 10, 10);
             g2d.draw(rr);
         }
     }

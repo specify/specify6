@@ -315,7 +315,7 @@
                     <cell type="separator" label="GEO_REF" colspan="5"/>
                 </row>
                 <row>
-                    <cell type="field" id="4" name="georef_tool" uitype="combobox" initialize="data=BioGeomancer,GEOLocate" default="BioGeomancer"/>
+                    <cell type="field" id="4" name="georef_tool" uitype="combobox" initialize="data=GEOLocate,BioGeomancer" default="GEOLocate"/>
                 </row>
                 <row>
                     <cell type="separator" label="CACHE" colspan="5"/>
