@@ -3305,6 +3305,13 @@ public class FormViewObj implements Viewable,
             Insets insets = new Insets(1,1,1,1);
             PanelBuilder rowBuilder = new PanelBuilder(new FormLayout("f:p:g,p,2px,p"+ (doAddSearch ? ",2px,p" : ""), "p"));
             
+            /*newRecBtn = new JButton("+") {
+                public void setEnabled(boolean enable)
+                {
+                    System.err.println("> "+enable);
+                    super.setEnabled(enable);
+                }
+            };*/
             newRecBtn = UIHelper.createIconBtn("NewRecord", null, null);
             newRecBtn.setToolTipText(ResultSetController.createTooltip("NewRecordTT", view.getObjTitle()));
             newRecBtn.setMargin(insets);
@@ -3350,7 +3357,8 @@ public class FormViewObj implements Viewable,
             // This is the new way
             sepController = rowBuilder.getPanel();
             
-            if (formValidator != null && newRecBtn != null)
+            // 2/13/09 - rods - The last two checks determine if it is a 'Single' item
+            if (formValidator != null && newRecBtn != null && rsController != null && origDataSet != null)
             {
                 formValidator.addEnableItem(newRecBtn, FormValidator.EnableType.ValidItems);
             }
