@@ -6,7 +6,7 @@
 		<sql><statement><![CDATA[SELECT name FROM workbench WHERE SpecifyUserID = SPECIFYUSERID]]></statement></sql>
       </box>
       -->
-        <box title="WorkBench DataSets" valcol="1" valtitle="WorkBench">
+        <box title="" valcol="1" valtitle="WorkBench">
               <sql>
                 <tables>
 		          <id>79</id>
