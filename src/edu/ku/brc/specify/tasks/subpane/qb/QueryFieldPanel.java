@@ -9,6 +9,7 @@
  */
 package edu.ku.brc.specify.tasks.subpane.qb;
 
+import static edu.ku.brc.ui.UIHelper.createIconBtn;
 import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
@@ -38,6 +39,7 @@ import java.util.List;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -101,7 +103,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
     protected Color            bgColor       = null;
     protected JLabel           fieldLabel;
     protected boolean          labelQualified = false; 
-    protected JLabel           closeBtn;
+    protected JButton          closeBtn;
     protected JLabel           iconLabel;
     protected ImageIcon        icon;
     protected JCheckBox        isNotCheckbox;
@@ -1167,7 +1169,15 @@ public class QueryFieldPanel extends JPanel implements ActionListener
             isPromptCkbx.addFocusListener(focusListener);
             isEnforcedCkbx = createCheckBox("isEnforcedCkbx");
             isEnforcedCkbx.addFocusListener(focusListener);
-            closeBtn = new JLabel(IconManager.getIcon("Close"));
+            closeBtn = createIconBtn("Close", "QB_REMOVE_FLD", new ActionListener()
+            {
+                public void actionPerformed(ActionEvent ae)
+                {
+                	ownerQuery.removeQueryFieldItem((QueryFieldPanel) ((JComponent) ae.getSource())
+                            .getParent());
+                }
+            });
+            closeBtn.setEnabled(true);
         }
         else
         {
@@ -1223,15 +1233,6 @@ public class QueryFieldPanel extends JPanel implements ActionListener
             isDisplayedCkbx.setSelected(true);
             isPromptCkbx.setSelected(!(fieldQRI instanceof RelQRI));
             isEnforcedCkbx.setSelected(false);
-            closeBtn.addMouseListener(new MouseAdapter()
-            {
-                @Override
-                public void mousePressed(MouseEvent e)
-                {
-                    ownerQuery.removeQueryFieldItem((QueryFieldPanel) ((JComponent) e.getSource())
-                            .getParent());
-                }
-            });
         }
 
         //for now
