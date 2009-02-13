@@ -12,6 +12,7 @@
 -->
 	
     <mapID target="specify"             url="http://specify6.specifysoftware.org" />
+    <mapID target="About"               url="SpecifyHelp/Intro/about.html" />
 	<mapID target="login"               url="SpecifyHelp/Dialogs/Login.html" />
     <mapID target="SetupSpecifyDB"      url="SpecifyHelp/Dialogs/Login.html" />
     <mapID target="MASTERPWD_MAIN"      url="SpecifyHelp/Dialogs/Login.html" />
@@ -22,7 +23,7 @@
 	
 	
 	<!-- About -->
-	<mapID target="About"               url="SpecifyHelp/Intro/about.html" />
+	
 	<mapID target="Forum"               url="SpecifyHelp/Intro/about.html#user_forums" />
 	<mapID target="Sample_Queries"      url="SpecifyHelp/Intro/about.html#sample_resources" />
 	<mapID target="Sample_Reports"      url="SpecifyHelp/Intro/about.html#sample_resources" />
@@ -126,9 +127,9 @@
 	<mapID target="Trees_Counts"         url="SpecifyHelp/Trees/Trees_About.html#trees_counts" />
 	<mapID target="Trees_More"         url="SpecifyHelp/Trees/Trees_About.html#trees_more" />
 	<mapID target="Trees_Find"         url="SpecifyHelp/Trees/Trees_About.html#trees_find" />
-	<mapID target="Trees_Title"         url="SpecifyHelp/Trees/Trees_About.html#trees_title" />
-	<mapID target="Trees_Ranks"         url="SpecifyHelp/Trees/Trees_About.html#trees_ranks" />
-	<mapID target="Trees_Pre"         url="SpecifyHelp/Trees/Trees_About.html#trees_pre" />
+	<mapID target="Trees_Title"         url="SpecifyHelp/Trees/editing_tree_def.html#trees_title" />
+	<mapID target="Trees_Ranks"         url="SpecifyHelp/Trees/editing_tree_def.html#trees_ranks" />
+	<mapID target="Trees_Pre"         url="SpecifyHelp/Trees/editing_tree_def.html#trees_pre" />
 	
     <mapID target="TreeDef"             url="SpecifyHelp/Trees/editing_tree_def.html" />
     <mapID target="SYNONIMIZE_NODE"     url="SpecifyHelp/Trees/Trees_About.html#drag_drop" />
@@ -188,9 +189,9 @@
     <mapID target="Express_Search"          url="SpecifyHelp/Simple_Search/Simple_Search.html" />
 	<mapID target="ESTellMeMore"            url="SpecifyHelp/Simple_Search/Simple_Search.html#ss_results"/>
     <mapID target="Simple_Search_Config"    url="SpecifyHelp/Simple_Search/Simple_Search_Config.html#searchfields"/>
-    <mapID target="ESConfigSearchFields"    url="SpecifyHelp/Simple_Search/Simple_Search.html#searchfields"/>
-	<mapID target="ESConfigResultsOrdering" url="SpecifyHelp/Simple_Search/Simple_Search.html#results_ordering"/>
-	<mapID target="ESConfigRelatedTables"   url="SpecifyHelp/Simple_Search/Simple_Search.html#related_tables"/>
+    <mapID target="ESConfigSearchFields"    url="SpecifyHelp/Simple_Search/Simple_Search_Config.html#searchfields"/>
+	<mapID target="ESConfigResultsOrdering" url="SpecifyHelp/Simple_Search/Simple_Search_Config.html#results_ordering"/>
+	<mapID target="ESConfigRelatedTables"   url="SpecifyHelp/Simple_Search/Simple_Search_Config.html#related_tables"/>
 	
 	<!-- Search Help -->
 	<mapID target="CBXQSearch"              url="SpecifyHelp/Dialogs/CBXQSearch.html"/>
@@ -230,27 +231,27 @@
 	<mapID target="Import"                  url="SpecifyHelp/Import/import_export.html" />
 	
 	<!-- System Tools -->
-	<mapID target="SL_HELP_CONTEXT"         url="SpecifyHelp/System/schema_config.html"/>
-	<mapID target="SL_TOOLS_HELP_CONTEXT"   url="SpecifyHelp/System/schema_config.html"/>
-	<mapID target="WEBLNK_EDITOR"           url="SpecifyHelp/System/WebLinks.html"/>
-	<mapID target="WEBLNK_ARGS_EDITOR"      url="SpecifyHelp/System/WebLinks.html"/>
-	<mapID target="Web_Global"      url="SpecifyHelp/System/WebLinks.html#web_global"/>
-	<mapID target="Web_Field"      url="SpecifyHelp/System/WebLinks.html#web_field"/>
-	<mapID target="Web_New_Field"      url="SpecifyHelp/System/WebLinks.html#web_new_field"/>
-	<mapID target="Web_URL"      url="SpecifyHelp/System/WebLinks.html#web_url"/>
+	<mapID target="SL_HELP_CONTEXT"         url="SpecifyHelp/Schema_Config/schema_config.html"/>
+	<mapID target="SL_TOOLS_HELP_CONTEXT"   url="SpecifyHelp/Schema_Config/schema_config.html"/>
+	<mapID target="WEBLNK_EDITOR"           url="SpecifyHelp/Schema_Config/WebLinks.html"/>
+	<mapID target="WEBLNK_ARGS_EDITOR"      url="SpecifyHelp/Schema_Config/WebLinks.html"/>
+	<mapID target="Web_Global"      url="SpecifyHelp/Schema_ConfigWebLinks.html#web_global"/>
+	<mapID target="Web_Field"      url="SpecifyHelp/Schema_ConfigWebLinks.html#web_field"/>
+	<mapID target="Web_New_Field"      url="SpecifyHelp/Schema_Config/WebLinks.html#web_new_field"/>
+	<mapID target="Web_URL"      url="SpecifyHelp/Schema_Config/WebLinks.html#web_url"/>
 	
 	<mapID target="PL_ITEM_EDITOR"          url="SpecifyHelp/PickList/system_picklist"/>
     <mapID target="PL_HELP_CONTEXT"         url="SpecifyHelp/PickList/system_picklist"/>
     <mapID target="Pick_List"               url="SpecifyHelp/PickList/system_picklist"/>
 	<mapID target="User_Pick_List"          url="SpecifyHelp/PickList/Pick_List"/>
 	
-	<mapID target="DOF_LIST_EDITOR"         url="SpecifyHelp/System/DataObjFmtListEditor.html"/>
-	<mapID target="DOF_EDITOR"              url="SpecifyHelp/System/DataObjFmtEditor.html"/>
-	<mapID target="DOF_SINGLE_FF"           url="SpecifyHelp/System/DataObjFmtSingleEditor.html"/>
-    <mapID target="UIF_LIST_EDITOR"         url="SpecifyHelp/System/UIFieldFmtListEditor.html"/>
-	<mapID target="UIF_EDITOR"              url="SpecifyHelp/System/UIfieldFmtEditor.html"/>
-	<mapID target="DOA_LIST_EDITOR"         url="SpecifyHelp/System/DataObjAggListEditor.html"/>
-	<mapID target="DOA_EDITOR"              url="SpecifyHelp/System/DataObjAggEditor.html"/>
+	<mapID target="DOF_LIST_EDITOR"         url="SpecifyHelp/Schema_Config/schema_config.html"#schema_format/>
+	<mapID target="DOF_EDITOR"              url="SpecifyHelp/Schema_Config/schema_config.html#schema_format"/>
+	<mapID target="DOF_SINGLE_FF"           url="SpecifyHelp/Schema_Config/schema_config.html#schema_format"/>
+    <mapID target="UIF_LIST_EDITOR"         url="SpecifyHelp/Schema_Config/schema_config.html"/>
+	<mapID target="UIF_EDITOR"              url="SpecifyHelp/Schema_Config/schema_config.html"/>
+	<mapID target="DOA_LIST_EDITOR"         url="SpecifyHelp/Schema_Config/schema_config.html#schema_agg"/>
+	<mapID target="DOA_EDITOR"              url="SpecifyHelp/Schema_Config/schema_config.html#schema_agg"/>
 	
 	<!-- Security -->
 	<mapID target="SECURITY_SUMMARY"        url="SpecifyHelp/System/SecuritySummary.html"/>
