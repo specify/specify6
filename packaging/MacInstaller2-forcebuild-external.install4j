@@ -206,6 +206,9 @@
                   <string>../InstallerFiles/images/specify32.png</string>
                 </object>
               </void>
+              <void property="frameHeight">
+                <int>440</int>
+              </void>
               <void property="frameWidth">
                 <int>600</int>
               </void>
@@ -470,6 +473,9 @@
                   <string>../src/edu/ku/brc/specify/images/specify60.png</string>
                 </object>
               </void>
+              <void property="frameHeight">
+                <int>440</int>
+              </void>
               <void property="watermark">
                 <boolean>false</boolean>
               </void>
@@ -576,6 +582,9 @@
               </void>
               <void property="executableName">
                 <string>Specify Updater</string>
+              </void>
+              <void property="frameHeight">
+                <int>440</int>
               </void>
               <void property="useCustomIcon">
                 <boolean>true</boolean>
