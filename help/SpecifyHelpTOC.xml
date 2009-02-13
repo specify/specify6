@@ -16,12 +16,65 @@
       <tocitem text="Statistics" target="Statistics"/>
       <tocitem text="Search" target="Search"/>
 -->
-          <tocitem text="Introduction" target="Intro"/>
-		  <tocitem text="Backup and Restore" target="Restore"/>
+		  <tocitem text="About Specify" >
+		    <tocitem text="Overview" target="About"/>
+		    <tocitem text="User Forums" target="Forum"/>
+			<tocitem text="Sample Resources" target="Sample_Resources">
+			    <tocitem text="Queries" target="Sample_Queries"/>
+				<tocitem text="Reports" target="Sample_Reports"/>
+				<tocitem text="Labels" target="Sample_Labels"/>
+			</tocitem>
+			<tocitem text="Using Help" target="Using_Help"/>
+		  </tocitem>
+		  
+		  <tocitem text="Welcome to Specify" >
+		  	<tocitem text="Registration" target="Registration"/>
+			<tocitem text="Services and Support" target="Services"/>
+			<tocitem text="Updating" target="Updating"/>
+			<tocitem text="Contact Information" target="Contact_Information"/>
+		  </tocitem>
+		  
+		  <tocitem text="Other Information" target="Other"/>
+	
+		  
+		  
+		  <tocitem text="Installing Specify" target="Installing"/>
+
+		  
+		  
+		  <tocitem text="Starting Specify" >
+		  	 <tocitem text="Login Procedure" target="Login"/>
+		  	 <tocitem text="Updating Procedure" target="Update"/>
+		  </tocitem>
+		  
+		  <tocitem text="Setting Up Specify" >
+		  	 <tocitem text="Institution Levels Overview" target="Inst_Hier">
+			 	<tocitem text="Adding Divisions" target="Add_Division"/>
+				<tocitem text="Adding Disciplines" target="Add_Discipline"/>
+				<tocitem text="Adding Collections" target="Add_Collection"/>
+			  </tocitem>
+			  <tocitem text="Permissions Overview" target="Permission">
+			 	<tocitem text="Adding a Users" target="Add_User"/>
+				<tocitem text="Setting User Permissions" target="Set_Permissions"/>
+			  </tocitem>
+			 <tocitem text="Setting Number Formats" target="Number_Formats" />
+			 <tocitem text="Using Backup and Restore" target="Backup_Restore" />
+			 <tocitem text="Editing System Pick Lists" target="System_Picklist" />
+			 <tocitem text="Editing Preparation Type" target="Prep_Type" />
+			 <tocitem text="Localizing the Specify Schema" target="Schema_Config" />
+		  </tocitem>
+	
+	
+		  
+		  
+		  <tocitem text="Using Specify">
+		    <tocitem text="Introduction to the Specify Components" target="Intro"/>
+		  </tocitem>
+
 
 		  
 
-		  <tocitem text="Preferences" target="PreferencesOverview">
+		  <tocitem text="Setting Specify Preferences" target="PreferencesOverview">
           	<tocitem text="EMail" target="PrefsEMail"/>
           	<tocitem text="Formatting" target="PrefsFormatting"/>
           	<tocitem text="GoogleEarth" target="PrefsGoogleEarth"/>
@@ -32,32 +85,136 @@
 			<tocitem text="MySQL" target="PrefsMySQL"/>
 	      </tocitem>
 	      
-	      <tocitem text="Form System" target="Using_Forms">
-		    <tocitem text="Data Entry" target="Data_Entry"/>
-          	<tocitem text="Interactions" target="Interactions"/>
-			<tocitem text="Using Bar Codes" target="Barcodes"/>
-			<tocitem text="Pick List" target="Pick_List"/>
+	      <tocitem text="Form System">
+		    	<tocitem text="Form System Overview" target="Using_Forms">
+					<tocitem text="Related Information" target="Forms_Related_Information"/>
+					<tocitem text="Form Controls" target="Forms_Controls"/>
+					<tocitem text="Unique Field Boxes" target="Forms_Unique_Boxes"/>
+					<tocitem text="Field Uses" target="Forms_Field_Uses"/>
+					<tocitem text="Form Tools" target="Forms_Tools">
+						<tocitem text="Keyboard Functions" target="Keyboard_Functions"/>
+						<tocitem text="Carry Forward" target="Carry_Forward"/>
+						<tocitem text="Auto Numbering" target="Auto_Numbering"/>
+					</tocitem>
+					<tocitem text="Using Bar Codes" target="Barcodes"/>
+					<tocitem text="How Editing Affects Related Records" target="Editing_Related_Records"/>
+				</tocitem>
+		      <tocitem text="Data Entry Forms" target="Data_Entry">
+			    <tocitem text="Side Bar Configuration" target="Data_Entry_Sidebar"/>
+				<tocitem text="Working with Forms and Trees" target="Data_Entry_Trees"/>
+				<tocitem text="Taxon Form" target="Data_Entry_Taxon"/>
+				<tocitem text="Determinations Form" target="Data_Entry_Determinations"/>
+				<tocitem text="Locality Form" target="Data_Entry_Locality"/>
+				<tocitem text="Agent Form" target="Data_Entry_Agent"/>
+				<tocitem text="Preparations Form" target="Data_Entry_Preparations"/>
+				<tocitem text="Attachments Form" target="Data_Entry_Attachments"/>
+		      </tocitem>
+           	  <tocitem text="Interactions Forms" target="Interactions">
+			    <tocitem text="Side Bar Configuration" target="InteractionsConfig"/>
+				<tocitem text="Gifts and Loans" target="Int_Gifts_Loans"/>
+				<tocitem text="Returning Loans" target="Int_Return_Loans"/>
+				<tocitem text="Information Requests" target="Int_Info_Requests"/>
+				<tocitem text="Borrows" target="Int_Borrows"/>
+				<tocitem text="Exchange In / Exchange Out" target="Int_Exchange"/>
+			  </tocitem>
+			</tocitem>
+			
+			
+			<tocitem text="Trees" >
+			  <tocitem text="Introduction" target="Trees_About"/>
+			  <tocitem text="Tree Terminology" target="Trees_Terms"/>
+			  <tocitem text="Building Trees" target="Trees_Build"/>
+			  <tocitem text="Using Trees" target="Trees_Using"/>
+			  <tocitem text="Tree Tools" target="Trees_Tools">
+			    <tocitem text="Expand" target="Trees_Expand"/>
+				<tocitem text="Toolbar Buttons" target="Trees_Buttons"/>
+				<tocitem text="Drag and Drop" target="Trees_Drag">
+					<tocitem text="Reparent Node" target="Trees_Reparent"/>
+					<tocitem text="Synonymize Node" target="SYNONIMIZE_NODE"/>
+				</tocitem>
+				<tocitem text="Collection Object Counts" target="Trees_Counts"/>
+				<tocitem text="More Options" target="Trees_More"/>
+				<tocitem text="Find" target="Trees_Find"/>
+			</tocitem>
+		    <tocitem text="Tree Definitions" target="TreeDef">
+			  <tocitem text="Edit the Tree Title" target="Tree_Title"/>
+			  <tocitem text="Tree Ranks" target="Tree_Ranks"/>
+			  <tocitem text="Predefined Ranks" target="Tree_Pre"/>
+			 </tocitem>
+			</tocitem>
+			
+			<tocitem text="Searching Data" >
+			  <tocitem text="Simple Search" target="Simple_Search">
+			  	<tocitem text="Using Simple Search" target="SS_Execute"/>
+				<tocitem text="Simple Search Wild Cards" target="SS_Cards"/>
+				<tocitem text="Search Results" target="SS_Results"/>
+			  </tocitem>
+	      	  <tocitem text="Configuring Simple Search" target="Simple_Search_Config">
+			  	<tocitem text="Configuring Search Fields" target="ESConfigSearchFields"/>
+				<tocitem text="Configuring Related Searches" target="ESConfigRelatedTables"/>
+				<tocitem text="Configuring the Order of Results" target="ESConfigResultsOrdering"/>
+			  </tocitem>
+			  <tocitem text="Query" target="Query">
+			    <tocitem text="Configure Query Side Bar" target="QBNewQueryConfig"/>
+				<tocitem text="Choose Tables and Fields" target="Q_Tables"/>
+				<tocitem text="Query Expressions" target="Q_Express"/>
+				<tocitem text="Using Wild Cards" target="Q_Wild"/>
+				<tocitem text="Other Controls" target="Q_Controls"/>
+				<tocitem text="Editing a Query" target="Q_Edit"/>
+				<tocitem text="Query Results" target="Q_Results"/>
+				<tocitem text="Saved Queries" target="QSaved">
+					<tocitem text="Import and Export Saved Queries" target="QBImport"/>
+				</tocitem>
+				<tocitem text="Deleting a Query" target="Q_Delete"/>
+			  </tocitem>
+		    </tocitem>
+			
+			<tocitem text="Record Sets" >
+			  <tocitem text="Introduction to Record Sets" target="RecordSet"/>
+			  <tocitem text="Creating a Record Set" target="RS_Create"/>
+			  <tocitem text="Adding Records to an Existing Record Set" target="RS_Add"/>
+			  <tocitem text="Using Record Sets" target="RS_Using"/>
+			  <tocitem text="Record Set Menus" target="RS_Menu"/>
+			</tocitem>
+			
+		  <tocitem text="Reports and Labels" >
+		    <tocitem text="Reports Side Bar Tools" target="Reports"/>
+			<tocitem text="SpecifyiReport" target="iReports">
+			  <tocitem text="Creating a Report from a Query" target="IR_Create"/>
+			  <tocitem text="Components of SpecifyiReport" target="IR_Coponents">
+			    <tocitem text="Report Properties" target="IR_Properties"/>
+				<tocitem text="Report Bands" target="IR_Bands"/>
+				<tocitem text="Report Groups" target="IR_Groups"/>
+				<tocitem text="Report Panes" target="IR_Panes"/>
+				<tocitem text="Task Examples" target="IR_Task"/>
+				<tocitem text="Including Barcodes" target="IR_Barcodes"/>
+				<tocitem text="Saving a Report" target="IR_Save"/>
+			  </tocitem>
+	        </tocitem>
+		  </tocitem>
+			
+		  <tocitem text="Plugins" >
+		    <tocitem text="Overview" target="Plugins"/>
+		    <tocitem text="Google Earth" target="GE"/>
+			<tocitem text="BioGeomancer" target="BioGeo"/>
+			<tocitem text="GEOLocate" target="BioGeo"/>
+		  </tocitem>  
+			  
+		  <tocitem text="Importing and Exporting Resources" >
 			<tocitem text="Import and Export Forms" target="Import"/>
+			<tocitem text="User Defined Pick Lists" target="User_Pick_List"/>
+			<tocitem text="Web Links" target="Web_Link">
+			  <tocitem text="Global Web Links" target="Web_Global"/>
+			  <tocitem text="Field Web Links" target="Web_Field"/>
+			  <tocitem text="New Field Web Links" target="Web_New_Field"/>
+			  <tocitem text="URL Web Links" target="Web_URL"/>
+		    </tocitem>
 	      </tocitem>
 		  
-		  <tocitem text="Trees" target="Trees_About">
-		    <tocitem text="Tree Definitions" target="TreeDef"/>
-	      </tocitem>
-	      
-	      <tocitem text="Simple Search" target="Simple_Search">
-          	<tocitem text="Configuring Simple Search" target="Simple_Search_Config"/>
-	      </tocitem>
-	      
-	      <tocitem text="Query Builder" target="Query">
-		   <tocitem text="Record Sets" target="RecordSet"/>
-		   <tocitem text="Reports and Labels" target="Reports"/>
-		   <tocitem text="Using iReports" target="iReport"/>
-	      </tocitem>
-	      
-          <tocitem text="Plugins" target="Plugins"/>
+	
 	      
           <tocitem text="WorkBench" target="WorkbenchOverview">
-          
+<!--          
           	<tocitem text="Examples" target="WorkbenchExamples"/>
           
           	<tocitem text="Technical Notes" target="WorkbenchTechnicalNotes"> 
@@ -67,6 +224,7 @@
 				<tocitem text="Data Recovery" target="WorkbenchDataRecovery"/>
 				<tocitem text="Portability" target="WorkbenchPortability"/>
  			</tocitem>
+			-->
  			<tocitem text="Data Sets" target="WorkbenchDataSetOverview">
               	<tocitem text="New Data Set" target="WorkbenchNewDataSet"/>
               	<tocitem text="Import Data" target="WorkbenchImportData">
