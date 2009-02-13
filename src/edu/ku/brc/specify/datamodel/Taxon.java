@@ -691,7 +691,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
      * 
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "VisibilitySeteByID", unique = false, nullable = true, insertable = true, updatable = true)
+    @JoinColumn(name = "VisibilitySetByID", unique = false, nullable = true, insertable = true, updatable = true)
     public SpecifyUser getVisibilitySetBy() {
         return this.visibilitySetBy;
     }
