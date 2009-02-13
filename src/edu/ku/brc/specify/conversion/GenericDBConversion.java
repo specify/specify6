@@ -358,7 +358,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         BasicSQLUtilsMapValueIFace versionValueMapper            = getVersionValueMapper();
         BasicSQLUtilsMapValueIFace divisionValueMapper           = getDivisionValueMapper();
 
-        columnValueMapper.put("CollectionMemberID", collectionMemberIDValueMapper);
+        columnValueMapper.put("CooutllectionMemberID", collectionMemberIDValueMapper);
         columnValueMapper.put("CreatedByAgentID",   agentCreatorValueMapper);
         columnValueMapper.put("ModifiedByAgentID",  agentModiferValueMapper);
         columnValueMapper.put("Version",            versionValueMapper);
@@ -968,6 +968,11 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 
                 "LoanAgents",    "AgentAddressID", 
                 "AgentAddress",  "AgentAddressID",
+                
+                //"CollectionObject", "ReferenceWorkID", 
+                //"ReferenceWork",  "ReferenceWorkID",
+                
+                
 
         // XXX "BorrowReturnMaterial", "ReturnedByID", "Agent", "AgentID",
         // XXX "Preparation", "PreparedByID", "Agent", "AgentID",
@@ -1206,7 +1211,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         tableMaps.put("borrowagent",            createFieldNameMap(new String[] { "AgentID", "AgentAddressID",  "BorrowAgentID", "BorrowAgentsID" }));
         tableMaps.put("borrowreturnmaterial",   createFieldNameMap(new String[] { "ReturnedDate", oldBorrowReturnMaterial_Date_FieldName }));
         tableMaps.put("borrowshipment",         createFieldNameMap(new String[] { "BorrowShipmentID", "BorrowShipmentsID" }));
-        tableMaps.put("collectingevent",        createFieldNameMap(new String[] { "TaxonID", "TaxonNameID" }));
+        tableMaps.put("collectingevent",        createFieldNameMap(new String[] { "TaxonID", "TaxonNameID", "Visibility", "GroupPermittedToView" }));
         tableMaps.put("collectionobjectcitation", createFieldNameMap(new String[] { "CollectionObjectID", "BiologicalObjectID" }));
         tableMaps.put("collector",              createFieldNameMap(new String[] { "OrderNumber", oldCollectors_Order_FieldName, "CollectorID", "CollectorsID" }));
         tableMaps.put("deaccession",            createFieldNameMap(new String[] { "DeaccessionDate", oldDeaccession_Date_FieldName }));
@@ -1326,7 +1331,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 
             } else if (fromTableName.equals("collectingevent"))
             {
-                String[] ignoredFields = { "Visibility", "VisibilitySetBy", "CollectingTripID",
+                String[] ignoredFields = {"VisibilitySetBy", "CollectingTripID",
                         "EndDateVerbatim", "EndDatePrecision", "StartDateVerbatim",
                         "StartDatePrecision", "HabitatAttributeID", "Version", "CreatedByAgentID",
                         "ModifiedByAgentID", "CollectionMemberID", "CollectingEventAttributeID", "DisciplineID" };
@@ -4243,8 +4248,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             
             Statement stmt2 = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 
-            int catNumInx  = oldNameIndex.get("CatalogNumber") + 1;
-            int catDateInx = oldNameIndex.get("CatalogedDate") + 1;
+            int catNumInx      = oldNameIndex.get("CatalogNumber") + 1;
+            int catDateInx     = oldNameIndex.get("CatalogedDate") + 1;
+            int grpPrmtViewInx = oldNameIndex.get("GroupPermittedToView") + 1;
             
             int     colObjAttrsNotMapped = 0;
             int     count                = 0;
@@ -4385,7 +4391,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     } else if (newFieldName.equals("CollectionMemberID")) // User/Security changes
                     {
                         str.append(getCollectionMemberId());
-
+                        
                     } else if (newFieldName.equals("PaleoContextID"))
                     {
                         str.append("NULL");// newCatSeriesId);
@@ -4435,7 +4441,11 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
                     } else if (newFieldName.equals("Visibility")) // User/Security changes
                     {
-                        str.append(defaultVisibilityLevel);
+                        str.append(rs.getObject(grpPrmtViewInx));
+
+                    } else if (newFieldName.equals("VisibilitySetByID")) // User/Security changes
+                    {
+                        str.append("NULL");
 
                     } else if (newFieldName.equals("CountAmt"))
                     {
@@ -4459,6 +4469,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                         if (index == null)
                         {
                             String msg = "Couldn't find new field name[" + newFieldName + "] in old field name in index Map";
+                            System.err.println(msg);
                             log.error(msg);
                             // for (String key : oldNameIndex.keySet())
                             // {
@@ -5712,9 +5723,12 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
         String sql = "select locality.*, geography.* from locality,geography where locality.GeographyID = geography.GeographyID";
 
+        Hashtable<String, String> newToOldColMap = new Hashtable<String, String>();
+        newToOldColMap.put("Visibility", "GroupPermittedToView");
+        
         String[] fieldsToIgnore = new String[] { "GML", "NamedPlaceExtent", "GeoRefAccuracyUnits",
                 "GeoRefDetRef", "GeoRefDetDate", "GeoRefDetBy", "NoGeoRefBecause", "GeoRefRemarks",
-                "GeoRefVerificationStatus", "NationalParkName", "Visibility", "VisibilitySetBy",
+                "GeoRefVerificationStatus", "NationalParkName", "VisibilitySetBy",
                 "GeoRefDetByID",
                 "Drainage",   // TODO make sure this is right, meg added due to conversion non-mapping errors????
                 "Island",     // TODO make sure this is right, meg added due to conversion non-mapping errors????
@@ -7210,7 +7224,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                                   "agentaddress.JobTitle", "agent.FirstName", "agent.LastName",
                                   "agent.MiddleInitial", "agent.Title", "agent.Interests", "agent.Abbreviation",
                                   "agentaddress.Email", "agentaddress.URL", "agent.Remarks",
-                                  "agent.TimestampCreated", "agent.Visibility", "agent.VisibilitySetBy",// User/Security changes
+                                  "agent.TimestampCreated",// User/Security changes
                                   "agent.ParentOrganizationID" };
 
         // See comments for agent Columns
@@ -7459,7 +7473,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     sqlStr.append("INSERT INTO agent ");
                     sqlStr.append("(AgentID, DivisionId, TimestampModified, AgentType, JobTitle, FirstName, LastName, MiddleInitial, ");
                     sqlStr.append("Title, Interests, Abbreviation, Email, URL, Remarks, TimestampCreated, ");
-                    sqlStr.append("Visibility, VisibilitySetBy, ParentOrganizationID, CreatedByAgentID, ModifiedByAgentID, Version)");
+                    sqlStr.append("ParentOrganizationID, CreatedByAgentID, ModifiedByAgentID, Version)");
                     sqlStr.append(" VALUES (");
 
                     for (int i = 0; i < agentColumns.length; i++)
@@ -7502,16 +7516,6 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                             int    srcColInx = agentType == 1 ? lastNameInx : nameInx;
                             String lName     = BasicSQLUtils.getStrValue(rs.getObject(srcColInx));
                             sqlStr.append(lName);
-
-                        } else if (agentColumns[i].equals("agent.Visibility"))// User/Security changes
-                        {
-                            if (debugAgents)log.info("Adding: "+agentColumns[i]);
-                            sqlStr.append(defaultVisibilityLevel);
-
-                        } else if (agentColumns[i].equals("agent.VisibilitySetBy")) // User/Security changes
-                        {
-                            if (debugAgents)log.info("Adding: "+agentColumns[i]);
-                            sqlStr.append("NULL");
 
                         } else
                         {
@@ -7773,7 +7777,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     // Create Agent
                     StringBuilder sqlStr = new StringBuilder("INSERT INTO agent ");
                     sqlStr.append("(AgentID, DivisionID, TimestampModified, AgentType, JobTitle, FirstName, LastName, MiddleInitial, Title, Interests, ");
-                    sqlStr.append("Abbreviation, Email, URL, Remarks, TimestampCreated, Visibility, VisibilitySetBy, ParentOrganizationID, ");
+                    sqlStr.append("Abbreviation, Email, URL, Remarks, TimestampCreated, ParentOrganizationID, ");
                     sqlStr.append("CreatedByAgentID, ModifiedByAgentID, Version)");
                     sqlStr.append(" VALUES (");
                     for (int i = 0; i < agentColumns.length; i++)
@@ -7789,18 +7793,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
                         } else if (i == lastEditInx)
                         {
-                            
                             // Skip the field
-
-                        } else if (agentColumns[i].equals("agent.Visibility"))// User/Security changes
-                        {
-                            if (debugAgents) log.info(agentColumns[i]);
-                            sqlStr.append(defaultVisibilityLevel);
-                            
-                        } else if (agentColumns[i].equals("agent.VisibilitySetBy"))// User/Security changes
-                        {
-                            if (debugAgents) log.info(agentColumns[i]);
-                            sqlStr.append("null");
 
                         } else if (agentColumns[i].equals("agent.LastName"))
                         {

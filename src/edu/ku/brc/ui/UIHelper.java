@@ -1964,7 +1964,7 @@ public final class UIHelper
             btn           = createButton(getResourceString(key));
             Font defFont  = UIRegistry.getDefaultFont();
             Font baseFont = UIRegistry.getDefaultFont();
-            Font btnFont  = baseFont.getSize() < defFont.getSize() ? baseFont : baseFont.deriveFont((float)defFont.getSize()-2f);
+            Font btnFont  = baseFont.getSize() < defFont.getSize() ? baseFont : baseFont.deriveFont(defFont.getSize()-2f);
             btn.setFont(btnFont);
         }
         return btn;
@@ -2887,20 +2887,15 @@ public final class UIHelper
     
     public static JLabel createI18NFormLabel(final String key, final int horzAlignment)
     {
-        return createFormLabel(getResourceString(key), null, horzAlignment);
+        return createFormLabel(getResourceString(key), horzAlignment);
     }
     
     public static JLabel createFormLabel(final String text)
     {
-        return createFormLabel(text, null, SwingConstants.RIGHT);
+        return createFormLabel(text, SwingConstants.RIGHT);
     }
     
     public static JLabel createFormLabel(final String text, final int horzAlignment)
-    {
-        return createFormLabel(text, null, horzAlignment);
-    }
-    
-    public static JLabel createFormLabel(final String text, final ImageIcon icon, final int horzAlignment)
     {
         JLabel lbl = new JLabel(text+":", horzAlignment);
         setControlSize(lbl);

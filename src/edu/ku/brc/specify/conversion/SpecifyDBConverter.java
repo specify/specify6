@@ -1063,75 +1063,78 @@ public class SpecifyDBConverter
                     AppContextMgr.getInstance().setClassObject(Division.class, division);
                     AppContextMgr.getInstance().setClassObject(Institution.class, institution);
                     
-                    try
+                    if (false)
                     {
-                        // Ricardo
-                        // the SpecifyUser is already created it is called 'specifyUser'
-                        
-                        Map<String, SpPrincipal> groupMap = null;
-                        List<SpPrincipal> groups = new ArrayList<SpPrincipal>(groupMap.values());
-                        groupMap = DataBuilder.createStandardGroups(collection);
-                        groups.addAll(groupMap.values());
-                        
-                        for (SpPrincipal prin : groups)
+                        try
                         {
-                            log.debug("Principal Name:["+prin.getName()+"]  Group["+prin.getGroupType()+"]");
-                        }
-                        
-                        Transaction trans = localSession.beginTransaction();
-                        for (Object obj : groups)
+                            // Ricardo
+                            // the SpecifyUser is already created it is called 'specifyUser'
+                            
+                            Map<String, SpPrincipal> groupMap = null;
+                            List<SpPrincipal> groups = new ArrayList<SpPrincipal>(groupMap.values());
+                            groupMap = DataBuilder.createStandardGroups(collection);
+                            groups.addAll(groupMap.values());
+                            
+                            for (SpPrincipal prin : groups)
+                            {
+                                log.debug("Principal Name:["+prin.getName()+"]  Group["+prin.getGroupType()+"]");
+                            }
+                            
+                            Transaction trans = localSession.beginTransaction();
+                            for (Object obj : groups)
+                            {
+                                localSession.saveOrUpdate(obj);
+                            }
+                            trans.commit();
+                            
+                            localSession.close();
+                            
+                            localSession = HibernateUtil.getNewSession();
+                            
+                            specifyUser = (SpecifyUser)localSession.merge(specifyUser);
+                            division    = (Division)localSession.merge(division);
+                            institution = (Institution)localSession.merge(institution);
+                            collection  = (Collection)localSession.merge(collection);
+                            
+                            AppContextMgr.getInstance().setClassObject(Collection.class, collection);
+                            AppContextMgr.getInstance().setClassObject(Division.class,   division);
+                            AppContextMgr.getInstance().setClassObject(Institution.class, institution);
+                            
+                            dscp = (Discipline)localSession.merge(dscp);
+                            dscp.getAgents();
+                            AppContextMgr.getInstance().setClassObject(Discipline.class, dscp);
+                            
+                            trans = localSession.beginTransaction();
+                            
+                            SpPrincipal userPrincipal  = DataBuilder.createUserPrincipal(specifyUser);
+                            SpPrincipal adminPrincipal = createAdminGroup("Administrator", institution);
+    
+                            specifyUser.addUserToSpPrincipalGroup(userPrincipal);
+                            specifyUser.addUserToSpPrincipalGroup(adminPrincipal);
+                            
+                            // Tester
+                            //Discipline disciplineCache = AppContextMgr.getInstance().getClassObject(Discipline.class);
+                            DataBuilder.createAndAddTesterToCollection("JoeTester", "joetester@brc.ku.edu", "JoeTester", 
+                                    "", "Joe", "", "Tester", "", dscp, division, groupMap, "Guest");
+                            
+                            for (Object obj : groups)
+                            {
+                                localSession.saveOrUpdate(obj);
+                            }
+                            
+                            localSession.saveOrUpdate(institution);
+                            localSession.saveOrUpdate(dscp);
+                            localSession.saveOrUpdate(collection);
+                            
+                            localSession.saveOrUpdate(specifyUser);
+                            
+                            trans.commit();
+                            localSession.flush();
+                            
+                        } catch (Exception ex)
                         {
-                            localSession.saveOrUpdate(obj);
+                            ex.printStackTrace();
                         }
-                        trans.commit();
-                        
-                        localSession.close();
-                        
-                        localSession = HibernateUtil.getNewSession();
-                        
-                        specifyUser = (SpecifyUser)localSession.merge(specifyUser);
-                        division    = (Division)localSession.merge(division);
-                        institution = (Institution)localSession.merge(institution);
-                        collection  = (Collection)localSession.merge(collection);
-                        
-                        AppContextMgr.getInstance().setClassObject(Collection.class, collection);
-                        AppContextMgr.getInstance().setClassObject(Division.class,   division);
-                        AppContextMgr.getInstance().setClassObject(Institution.class, institution);
-                        
-                        dscp = (Discipline)localSession.merge(dscp);
-                        dscp.getAgents();
-                        AppContextMgr.getInstance().setClassObject(Discipline.class, dscp);
-                        
-                        trans = localSession.beginTransaction();
-                        
-                        SpPrincipal userPrincipal  = DataBuilder.createUserPrincipal(specifyUser);
-                        SpPrincipal adminPrincipal = createAdminGroup("Administrator", institution);
-
-                        specifyUser.addUserToSpPrincipalGroup(userPrincipal);
-                        specifyUser.addUserToSpPrincipalGroup(adminPrincipal);
-                        
-                        // Tester
-                        //Discipline disciplineCache = AppContextMgr.getInstance().getClassObject(Discipline.class);
-                        DataBuilder.createAndAddTesterToCollection("JoeTester", "joetester@brc.ku.edu", "JoeTester", 
-                                "", "Joe", "", "Tester", "", dscp, division, groupMap, "Guest");
-                        
-                        for (Object obj : groups)
-                        {
-                            localSession.saveOrUpdate(obj);
-                        }
-                        
-                        localSession.saveOrUpdate(institution);
-                        localSession.saveOrUpdate(dscp);
-                        localSession.saveOrUpdate(collection);
-                        
-                        localSession.saveOrUpdate(specifyUser);
-                        
-                        trans.commit();
-                        localSession.flush();
-                        
-                    } catch (Exception ex)
-                    {
-                        ex.printStackTrace();
                     }
                     
                     status = true;
