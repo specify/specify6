@@ -130,9 +130,6 @@
                     <cell type="subview" viewname="Preparation" id="8" name="preparations" defaulttype="table" colspan="16"/>
                 </row>
                 <row>
-                    <cell type="separator" label="Attributes" collapse="collectionObjectAttribute" colspan="16"/>
-                </row>
-                <row>
                    <cell type="subview" viewname="Attributes" id="19" name="collectionObjectAttribute" colspan="16"/> 
                 </row>
                 <row>
