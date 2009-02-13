@@ -351,7 +351,7 @@ public class ResourceImportExportDlg extends CustomDialog
         {
             boolean enable = !viewSetsList.isSelectionEmpty();
             
-            importBtn.setEnabled(enable && levelCBX.getSelectedIndex() < 2);
+            importBtn.setEnabled(enable && levelCBX.getSelectedIndex() < 5);
             exportBtn.setEnabled(enable && viewSetsModel.size() > 0);
             
             SpViewSetObj vso = (SpViewSetObj)viewSetsList.getSelectedValue();
