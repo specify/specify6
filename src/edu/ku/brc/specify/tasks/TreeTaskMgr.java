@@ -117,7 +117,6 @@ public class TreeTaskMgr
         
         for (BaseTreeTask<?,?,?> treeTask : treeTasks)
         {
-            System.out.println(treeTask.getName()+"  "+treeTask.isTreeOnByDefault());
             if (treeTask.isTreeOnByDefault())
             {
                 DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(treeTask.getTreeClass().getName());

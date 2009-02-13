@@ -80,7 +80,7 @@ public class TaskSemaphoreMgr
             try
             {
                 String sql = buildSQL(name, scope, discipline, collection);
-                log.debug(sql);
+                //log.debug(sql);
                 
                 stmt = connection.createStatement();
                 rs = stmt.executeQuery(sql);

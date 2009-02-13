@@ -14,9 +14,8 @@
  */
 package edu.ku.brc.specify.datamodel.busrules;
 
-import static edu.ku.brc.ui.UIRegistry.*;
+import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 
-import java.util.Calendar;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -144,6 +143,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                 colObj.addReference(ce, "collectingEvent");
             }
             
+            /* Need to be able to configure this via prefs
             if (colObj.getPreparations().size() == 0)
             {
                 Preparation prep = new Preparation();
@@ -153,7 +153,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                 prep.setPreparedDate(Calendar.getInstance());
                 colObj.addReference(prep, "preparations");
                 prep.setPreparedByAgent(getDefaultPreparedByAgent());
-            }
+            }*/
         }
     }
 

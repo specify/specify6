@@ -1013,7 +1013,7 @@
             </detailView>
         </table>
         
-        <table id="110" tableid="46" name="GeologicTimePeriodSearch" priority="1" color="30, 144, 255">
+        <table id="110" tableid="46" name="ChronosStratSearch" priority="1" color="30, 144, 255">
             <detailView icon="">
                 <sql>
                     <![CDATA[SELECT GeologicTimePeriodID, FullName FROM geologictimeperiod WHERE GeologicTimePeriodTreeDefID = GTPTREEDEFID AND (%s)]]>

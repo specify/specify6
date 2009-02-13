@@ -233,7 +233,7 @@ public class ERDTable extends JPanel implements Comparable<ERDTable>
             
             pb.add(ERDVisualizer.mkLabel(italic, getResourceString("ERD_RELATIONSHIPS"), SwingConstants.CENTER), cc.xy(1,y)); y += 2;
             
-            String       colsDef = "p:g,4px,p:g,4px" + (doingAll ? ",p:g,4px," : "") + ",f:p:g";
+            String       colsDef = "p:g,4px,p:g,4px" + (doingAll ? ",p:g,4px" : "") + ",f:p:g";
             PanelBuilder relsPB = new PanelBuilder(new FormLayout(colsDef, UIHelper.createDuplicateJGoodiesDef("p", "2px", table.getRelationships().size()+1)));
             int yy = 1;
             

@@ -477,7 +477,7 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
                         @Override
                         public void run()
                         {
-                            rsc.getNewRecBtn().doClick();
+                            //rsc.getNewRecBtn().doClick();
                         }
                     });
                 }

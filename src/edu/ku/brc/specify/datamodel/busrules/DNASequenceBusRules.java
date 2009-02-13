@@ -1,16 +1,29 @@
 package edu.ku.brc.specify.datamodel.busrules;
 
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.ui.IllustrativeBarCodeUI;
 import edu.ku.brc.af.ui.forms.Viewable;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.datamodel.CollectingEvent;
+import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.DNASequence;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
+import edu.ku.brc.ui.DocumentAdaptor;
 
 public class DNASequenceBusRules extends AttachmentOwnerBaseBusRules implements CommandListener
 {
+    protected IllustrativeBarCodeUI  barCodeUI = null;
+    
+    /**
+     * 
+     */
     public DNASequenceBusRules()
     {
         super(DNASequence.class);
@@ -26,29 +39,79 @@ public class DNASequenceBusRules extends AttachmentOwnerBaseBusRules implements 
     {
         super.initialize(viewableArg);
         
-        /*if (formViewObj != null)
+        if (formViewObj != null)
         {
-            final JTextArea ta = (JTextArea)formViewObj.getCompById("4");
-            ta.getDocument().addDocumentListener(new DocumentAdaptor() {
-                @Override
-                protected void changed(DocumentEvent e)
-                {
-                    if (isEditMode())
+            barCodeUI = (IllustrativeBarCodeUI)formViewObj.getControlById("8");
+            if (barCodeUI == null)
+            {
+                barCodeUI = new IllustrativeBarCodeUI();
+            }
+            
+            if (barCodeUI != null)
+            {
+                final JTextArea ta = (JTextArea)formViewObj.getCompById("4");
+                ta.getDocument().addDocumentListener(new DocumentAdaptor() {
+                    @Override
+                    protected void changed(DocumentEvent e)
                     {
-                        IllustrativeBarCodeUI  barCodeUI = (IllustrativeBarCodeUI)formViewObj.getControlById("8");
-                        barCodeUI.setSequence(ta.getText());
-                        adjustTotals();
+                        if (isEditMode())
+                        {
+                            barCodeUI.setSequence(ta.getText());
+                            adjustTotals();
+                        }
                     }
-                }
-            });
-        }*/
+                });
+            }
+        }
     }
 
-
+    /*
+     * (non-Javadoc)
+     * 
+     * @see edu.ku.brc.ui.forms.BaseBusRules#beforeMerge(java.lang.Object,
+     *      edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    /*@Override
+    public void beforeMerge(final Object dataObj, 
+                            final DataProviderSessionIFace session)
+    {
+        super.beforeMerge(dataObj, session);
+        
+        DNASequence dnaSeq = (DNASequence)dataObj;
+        if (dnaSeq != null && AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent())
+        {
+            //CollectingEvent ce = colObj.getCollectingEvent();
+            //if (ce != null)
+            {
+                try
+                {
+                    session.saveOrUpdate(dnaSeq);
+                    
+                } catch (Exception ex)
+                {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(CollectionObjectBusRules.class, ex);
+                    ex.printStackTrace();
+                }
+            }
+        }
+    }*/
+    
+    /**
+     * @param id
+     * @param value
+     */
     private void setValue(final String id, final int value)
     {
         JTextField  tf = (JTextField)formViewObj.getControlById(id);
-        tf.setText(Integer.toString(value));
+        if (tf != null)
+        {
+            tf.setText(Integer.toString(value));    
+        } else
+        {
+            log.debug("Couldn't find id["+id+"] " + value);
+        }
+        
     }
     
     /**
@@ -56,18 +119,14 @@ public class DNASequenceBusRules extends AttachmentOwnerBaseBusRules implements 
      */
     private void adjustTotals()
     {
-        if (formViewObj != null)
+        if (formViewObj != null&& barCodeUI != null)
         {
-            IllustrativeBarCodeUI  barCodeUI = (IllustrativeBarCodeUI)formViewObj.getControlById("8");
-            if (barCodeUI != null)
-            {
-                setValue("residues", barCodeUI.getTotal('A')+barCodeUI.getTotal('G')+barCodeUI.getTotal('C')+barCodeUI.getTotal('T')+barCodeUI.getTotal('X'));
-                setValue("compa", barCodeUI.getTotal('A'));
-                setValue("compg", barCodeUI.getTotal('G'));
-                setValue("compt", barCodeUI.getTotal('T'));
-                setValue("compc", barCodeUI.getTotal('C'));
-                setValue("ambiguous", barCodeUI.getTotal('X'));
-            }
+            setValue("residues", barCodeUI.getTotal('A')+barCodeUI.getTotal('G')+barCodeUI.getTotal('C')+barCodeUI.getTotal('T')+barCodeUI.getTotal('X'));
+            setValue("compA", barCodeUI.getTotal('A'));
+            setValue("compG", barCodeUI.getTotal('G'));
+            setValue("compT", barCodeUI.getTotal('T'));
+            setValue("compC", barCodeUI.getTotal('C'));
+            setValue("ambiguous", barCodeUI.getTotal('X'));
         }
     }
     

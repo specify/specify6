@@ -222,11 +222,7 @@
 				<tocitem text="Data Recovery" target="WorkbenchDataRecovery"/>
 				<tocitem text="Portability" target="WorkbenchPortability"/>
  			</tocitem>
-<<<<<<< .mine
 	-->
-=======
-			-->
->>>>>>> .r6051
  			<tocitem text="Data Sets" target="WorkbenchDataSetOverview">
               	<tocitem text="New Data Set" target="WorkbenchNewDataSet"/>
               	<tocitem text="Import Data" target="WorkbenchImportData">

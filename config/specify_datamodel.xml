@@ -1484,7 +1484,7 @@
       <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Geography" relationshipname="treeEntries" othersidename="definitionItem" updatable="false" required="false" save="true"/>
     </table>
     <table classname="edu.ku.brc.specify.datamodel.GeologicTimePeriod" table="geologictimeperiod" tableid="46" searchable="true" businessrule="edu.ku.brc.specify.datamodel.busrules.GeologicTimePeriodBusRules" abbrv="gtp">
-      <display view="GeologicTimePeriod" dataobjformatter="GeologicTimePeriod" searchdlg="GeologicTimePeriodSearch" newobjdlg="GeologicTimePeriodDisplay"/>
+      <display view="GeologicTimePeriod" dataobjformatter="GeologicTimePeriod" searchdlg="ChronosStratSearch" newobjdlg="ChronosStratDisplay"/>
       <fieldalias vname="acceptedParent" aname="acceptedGeologicTimePeriod"/>
       <field column="EndPeriod" name="endPeriod" type="java.lang.Float" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
       <field column="EndUncertainty" name="endUncertainty" type="java.lang.Float" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>

@@ -181,7 +181,7 @@
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.GeographyBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.GeologicTimePeriod" abbrev="gtp" id="46" workbench="false" searchable="true">
-            <display view="GeologicTimePeriod" dataobjformatter="GeologicTimePeriod" searchdlg="GeologicTimePeriodSearch" newobjdlg="GeologicTimePeriodDisplay"/>
+            <display view="GeologicTimePeriod" dataobjformatter="GeologicTimePeriod" searchdlg="ChronosStratSearch" newobjdlg="ChronosStratDisplay"/>
             <businessrule>edu.ku.brc.specify.datamodel.busrules.GeologicTimePeriodBusRules</businessrule>          
             <fieldaliases>
                 <field vname="acceptedParent" aname="acceptedGeologicTimePeriod"/>
