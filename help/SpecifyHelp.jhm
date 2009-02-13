@@ -120,16 +120,16 @@
 	<mapID target="Trees_Using"         url="SpecifyHelp/Trees/Trees_About.html#trees_using" />
 	
 	<mapID target="Trees_Expand"         url="SpecifyHelp/Trees/Trees_About.html#trees_expand" />
-	<mapID target="Trees_Toolbar"         url="SpecifyHelp/Trees/Trees_About.html#trees_toolbar" />
-	<mapID target="Trees_Drag"         url="SpecifyHelp/Trees/Trees_About.html#drag_drop" />
-	<mapID target="Trees_Reparent"         url="SpecifyHelp/Trees/Trees_About.html#drag_drop" />
-	<mapID target="Trees_Synonymize"         url="SpecifyHelp/Trees/Trees_About.html#drag_drop" />
+	<mapID target="Trees_Toolbar"        url="SpecifyHelp/Trees/Trees_About.html#trees_toolbar" />
+	<mapID target="Trees_Drag"           url="SpecifyHelp/Trees/Trees_About.html#drag_drop" />
+	<mapID target="Trees_Reparent"       url="SpecifyHelp/Trees/Trees_About.html#drag_drop" />
+	<mapID target="Trees_Synonymize"     url="SpecifyHelp/Trees/Trees_About.html#drag_drop" />
 	<mapID target="Trees_Counts"         url="SpecifyHelp/Trees/Trees_About.html#trees_counts" />
-	<mapID target="Trees_More"         url="SpecifyHelp/Trees/Trees_About.html#trees_more" />
-	<mapID target="Trees_Find"         url="SpecifyHelp/Trees/Trees_About.html#trees_find" />
-	<mapID target="Trees_Title"         url="SpecifyHelp/Trees/editing_tree_def.html#trees_title" />
-	<mapID target="Trees_Ranks"         url="SpecifyHelp/Trees/editing_tree_def.html#trees_ranks" />
-	<mapID target="Trees_Pre"         url="SpecifyHelp/Trees/editing_tree_def.html#trees_pre" />
+	<mapID target="Trees_More"           url="SpecifyHelp/Trees/Trees_About.html#trees_more" />
+	<mapID target="Trees_Find"           url="SpecifyHelp/Trees/Trees_About.html#trees_find" />
+	<mapID target="Trees_Title"          url="SpecifyHelp/Trees/editing_tree_def.html#trees_title" />
+	<mapID target="Trees_Ranks"          url="SpecifyHelp/Trees/editing_tree_def.html#trees_ranks" />
+	<mapID target="Trees_Pre"            url="SpecifyHelp/Trees/editing_tree_def.html#trees_pre" />
 	
     <mapID target="TreeDef"             url="SpecifyHelp/Trees/editing_tree_def.html" />
     <mapID target="SYNONIMIZE_NODE"     url="SpecifyHelp/Trees/Trees_About.html#drag_drop" />
@@ -151,17 +151,17 @@
     <mapID target="QB"                    url="SpecifyHelp/QueryBuilder/Query_Builder.html" />
     <mapID target="QBSave"                url="SpecifyHelp/Dialogs/query_save.html" />
     <mapID target="QBTooManyRecordsForSort"   url="SpecifyHelp/Dialogs/query_limit.html" />
-    <mapID target="QBFieldRemovedAndReports"    url="SpecifyHelp/Dialogs/no_delete.html" />
+    <mapID target="QBFieldRemovedAndReports"  url="SpecifyHelp/Dialogs/no_delete.html" />
     <mapID target="QBImport"               url="SpecifyHelp/QueryBuilder/Query_Builder.html#import_query" />
     <mapID target="QBExport"              url="SpecifyHelp/QueryBuilder/Query_Builder.html#import_query" />
-    <mapID target="QBUndeletableReps"           url="SpecifyHelp/Dialogs/no_delete_query.html" />
+    <mapID target="QBUndeletableReps"     url="SpecifyHelp/Dialogs/no_delete_query.html" />
 	<mapID target="Q_Tables"              url="SpecifyHelp/QueryBuilder/Query_Builder.html#q_tables" />
 	<mapID target="Q_Express"             url="SpecifyHelp/QueryBuilder/Query_Builder.html#q_express" />
 	<mapID target="Q_Wild"                url="SpecifyHelp/QueryBuilder/Query_Builder.html#q_wild" />
 	<mapID target="Q_Controls"            url="SpecifyHelp/QueryBuilder/Query_Builder.html#q_controls" />
-	<mapID target="Q_Edit"              url="SpecifyHelp/QueryBuilder/Query_Builder.html#q_edit" />
-	<mapID target="Q_Saved"              url="SpecifyHelp/QueryBuilder/Query_Builder.html#q_saved" />
-	<mapID target="Q_Delete"                    url="SpecifyHelp/QueryBuilder/Query_Builder.html#q_delete" />
+	<mapID target="Q_Edit"                url="SpecifyHelp/QueryBuilder/Query_Builder.html#q_edit" />
+	<mapID target="Q_Saved"               url="SpecifyHelp/QueryBuilder/Query_Builder.html#q_saved" />
+	<mapID target="Q_Delete"              url="SpecifyHelp/QueryBuilder/Query_Builder.html#q_delete" />
     
    
 
@@ -169,8 +169,8 @@
 	
 	<!-- Other Tasks -->
 	<mapID target="Plugins"             url="SpecifyHelp/Plugins/Plugins.html" />
-	<mapID target="GE"             url="SpecifyHelp/Plugins/Plugins.html#ge" />
-	<mapID target="BioGeo"             url="SpecifyHelp/Plugins/Plugins.html#biogeo" />
+	<mapID target="GE"                  url="SpecifyHelp/Plugins/Plugins.html#ge" />
+	<mapID target="BioGeo"              url="SpecifyHelp/Plugins/Plugins.html#biogeo" />
 	
 	<mapID target="Statistics"          url="SpecifyHelp/Statistics/Statistics.html" />
     <mapID target="Interactions"        url="SpecifyHelp/Interactions/Interactions.html" />
@@ -183,9 +183,9 @@
 	
 	<!-- Simple Search Help -->
     <mapID target="Simple_Search"           url="SpecifyHelp/Simple_Search/Simple_Search.html" />
-	<mapID target="SS_Execute"           url="SpecifyHelp/Simple_Search/Simple_Search.htm#ss_executel" />
-	<mapID target="SS_Cards"           url="SpecifyHelp/Simple_Search/Simple_Search.html#ss_cards" />
-	<mapID target="SS_Results"           url="SpecifyHelp/Simple_Search/Simple_Search.html#ss_results" />
+	<mapID target="SS_Execute"              url="SpecifyHelp/Simple_Search/Simple_Search.htm#ss_executel" />
+	<mapID target="SS_Cards"                url="SpecifyHelp/Simple_Search/Simple_Search.html#ss_cards" />
+	<mapID target="SS_Results"              url="SpecifyHelp/Simple_Search/Simple_Search.html#ss_results" />
     <mapID target="Express_Search"          url="SpecifyHelp/Simple_Search/Simple_Search.html" />
 	<mapID target="ESTellMeMore"            url="SpecifyHelp/Simple_Search/Simple_Search.html#ss_results"/>
     <mapID target="Simple_Search_Config"    url="SpecifyHelp/Simple_Search/Simple_Search_Config.html#searchfields"/>
@@ -194,15 +194,16 @@
 	<mapID target="ESConfigRelatedTables"   url="SpecifyHelp/Simple_Search/Simple_Search_Config.html#related_tables"/>
 	
 	<!-- Search Help -->
-	<mapID target="CBXQSearch"              url="SpecifyHelp/Dialogs/CBXQSearch.html"/>
+    <mapID target="CBXQSearch"              url="SpecifyHelp/Dialogs/CBXQSearch.html"/>
+    <mapID target="CBXQViewEdit"            url="SpecifyHelp/Dialogs/CBXQSearch.html"/>
 	
 	<!-- RecordSets -->
 	<mapID target="ChooseRecordSet"         url="SpecifyHelp/Interactions/ChooseRecordSet.html" />
 	<mapID target="RecordSet"               url="SpecifyHelp/RecordSet/record_set.html" />
 	<mapID target="RS_Create"               url="SpecifyHelp/RecordSet/record_set.html#rs_create" />
-	<mapID target="RS_Add"               url="SpecifyHelp/RecordSet/record_set.html#record_set_add" />
-	<mapID target="RS_Use"               url="SpecifyHelp/RecordSet/record_set.html#rs_use" />
-	<mapID target="RS_Menu"               url="SpecifyHelp/RecordSet/record_set.html#rs_menu" />
+	<mapID target="RS_Add"                  url="SpecifyHelp/RecordSet/record_set.html#record_set_add" />
+	<mapID target="RS_Use"                  url="SpecifyHelp/RecordSet/record_set.html#rs_use" />
+	<mapID target="RS_Menu"                 url="SpecifyHelp/RecordSet/record_set.html#rs_menu" />
 
 	
 	<!-- Uploader -->
@@ -211,16 +212,16 @@
 	<!-- Reports/Labels -->
 	<mapID target="Reports"                 url="SpecifyHelp/ReportsLabels/reports.html" />
 	<mapID target="RunReportSettings"       url="SpecifyHelp/Dialogs/report_settings.html" />
-    <mapID target="IR_Create"             url="SpecifyHelp/ReportsLabels/specifyireports.html#ir_create" />
-	<mapID target="IR_Components"         url="SpecifyHelp/ReportsLabels/specifyireports.html#ir_components" />
-	<mapID target="IR_Properties"         url="SpecifyHelp/ReportsLabels/specifyireports.html#ir_properties" />
-	<mapID target="IR_Bands"              url="SpecifyHelp/ReportsLabels/specifyireports.html#ir_bands" />
-	<mapID target="IR_Groups"             url="SpecifyHelp/ReportsLabels/specifyireports.html#ir_groups" />
-	<mapID target="IR_Panes"             url="SpecifyHelp/ReportsLabels/specifyireports.html#ir_panes" />
+    <mapID target="IR_Create"               url="SpecifyHelp/ReportsLabels/specifyireports.html#ir_create" />
+	<mapID target="IR_Components"           url="SpecifyHelp/ReportsLabels/specifyireports.html#ir_components" />
+	<mapID target="IR_Properties"           url="SpecifyHelp/ReportsLabels/specifyireports.html#ir_properties" />
+	<mapID target="IR_Bands"                url="SpecifyHelp/ReportsLabels/specifyireports.html#ir_bands" />
+	<mapID target="IR_Groups"               url="SpecifyHelp/ReportsLabels/specifyireports.html#ir_groups" />
+	<mapID target="IR_Panes"                url="SpecifyHelp/ReportsLabels/specifyireports.html#ir_panes" />
 	
-	<mapID target="IR_Tasks"              url="SpecifyHelp/ReportsLabels/specifyireports.html#ir_tasks" />
-	<mapID target="IR_Barcodes"              url="SpecifyHelp/ReportsLabels/specifyireports.html#ir_barcodes" />
-	<mapID target="IR_Save"               url="SpecifyHelp/ReportsLabels/specifyireports.html#ir_save" />
+	<mapID target="IR_Tasks"                url="SpecifyHelp/ReportsLabels/specifyireports.html#ir_tasks" />
+	<mapID target="IR_Barcodes"             url="SpecifyHelp/ReportsLabels/specifyireports.html#ir_barcodes" />
+	<mapID target="IR_Save"                 url="SpecifyHelp/ReportsLabels/specifyireports.html#ir_save" />
 
 
 	
