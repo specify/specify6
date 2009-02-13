@@ -11,9 +11,12 @@ import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
+import java.awt.Rectangle;
 import java.awt.RenderingHints;
 
 import javax.swing.border.AbstractBorder;
+
+import edu.ku.brc.af.ui.SearchBox;
 
 /**
  * @author rod
@@ -33,6 +36,22 @@ public class SearchBorderMac extends AbstractBorder
     
     protected int   iconWidth     = 0;
     
+    // Focus Border Colors
+    private int extra = 5;
+    private static Color c5 = new Color(196, 206, 226);
+    private static Color c4 = new Color(153, 174, 213);
+    private static Color c3 = new Color(112, 143, 202);
+    private static Color c2 = new Color(170, 191, 230);
+    //private static Color c1 = new Color(211, 221, 241);
+    private static Color[] colors;
+    
+    //private Dimension arcSize = new Dimension(10, 10);
+    
+    static 
+    {
+        colors = new Color[] {c5, c4, c3, c2} ;
+    }
+    
     /**
      * @param iconWidth the width of the search icon
      */
@@ -50,7 +69,7 @@ public class SearchBorderMac extends AbstractBorder
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         int half = height / 2;
-        
+
         // First Line
         g.setColor(topColor1);
         g.drawArc(x, y, height, height, 90, 90);              // Top Left
@@ -89,6 +108,23 @@ public class SearchBorderMac extends AbstractBorder
         g.drawArc(x+1, y+1, hgt, hgt-1, 180, 90);                // Bottom Left
         g.drawArc(x+width-height-2, y+0, height-1, height-2, 270, 90); // Bottom Right
         g.drawLine(x+half, y+height-2, x+width-half-1, y+height-2);      // Bottom Line
+        
+        if (((SearchBox)c).getSearchText().hasFocus())
+        {
+            Rectangle r = new Rectangle(x, y, width-1, height-1);
+            int cnt = 0;
+            for (Color clr : colors)
+            {
+                g.setColor(clr);
+                //g.drawRect(r.x, r.y, r.width, r.height);
+                Graphics2D g2d = (Graphics2D)g;
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2d.setStroke(UIHelper.getStdLineStroke());
+                g2d.drawRoundRect(r.x, r.y, r.width, r.height, height, height);//arcSize.width, arcSize.height);
+                r.grow(-1, -1);
+                cnt++;
+            } 
+        }
     }
 
     /* (non-Javadoc)
@@ -96,7 +132,7 @@ public class SearchBorderMac extends AbstractBorder
      */
     public Insets getBorderInsets(Component c)
     {
-        return new Insets(6, 7+iconWidth, 3, 7);
+        return new Insets(6 + extra, 7+iconWidth + extra, 3 + extra, 7 + extra);
     }
 
     /* (non-Javadoc)
@@ -104,10 +140,10 @@ public class SearchBorderMac extends AbstractBorder
      */
     public Insets getBorderInsets(Component c, Insets i)
     {
-        i.top    = 6;
-        i.left   = 7+iconWidth;
-        i.bottom = 3;
-        i.right  = 7;
+        i.top    = 6 + extra;
+        i.left   = 7 + iconWidth + extra;
+        i.bottom = 3 + extra;
+        i.right  = 7 + extra;
         return i;
     }
 

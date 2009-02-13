@@ -209,7 +209,7 @@ public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener
         
         mainPanel = new MySQLPrefs(true);
 
-        int[] sections = {5, 5};
+        int[] sections = {5};
         statusField = new JStatusBar(sections);
         statusField.setErrorIcon(IconManager.getIcon("Error", IconManager.IconSize.Std16)); //$NON-NLS-1$
         statusField.setWarningIcon(IconManager.getIcon("Warning", IconManager.IconSize.Std16)); //$NON-NLS-1$

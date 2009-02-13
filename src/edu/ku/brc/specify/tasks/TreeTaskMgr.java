@@ -13,6 +13,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -112,46 +113,52 @@ public class TreeTaskMgr
                              final NavBox treeDefNB,
                              final NavBox unlockNB)
     {
+        Collections.sort(treeTasks);
+        
         for (BaseTreeTask<?,?,?> treeTask : treeTasks)
         {
-            DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(treeTask.getTreeClass().getName());
-            
-            Vector<RolloverCommand> rocs = unlockBtnHash.get(treeTask);
-            if (rocs == null)
+            System.out.println(treeTask.getName()+"  "+treeTask.isTreeOnByDefault());
+            if (treeTask.isTreeOnByDefault())
             {
-                rocs = new Vector<RolloverCommand>();
-                unlockBtnHash.put(treeTask, rocs);
-            }
-            
-            if (treeTask.getTreeEditAction() != null)
-            {
-                NavBoxItemIFace nb = BaseTask.makeDnDNavBtn(treeNB, ti.getTitle(), treeTask.getTreeClass().getSimpleName(), null, null, null, false, false);
-                RolloverCommand roc = (RolloverCommand)nb;
-                roc.addActionListener(treeTask.getTreeEditAction());
-                roc.setToolTip(getResourceString("TASK.SHRTDESC." + treeTask.getTreeClass().getSimpleName()));
-                treeNB.add(nb);
-                //rocs.add(roc);
-            }
-            
-            if (treeTask.getTreeDefEditAction() != null)
-            {
-                NavBoxItemIFace nb  = BaseTask.makeDnDNavBtn(treeDefNB, ti.getTitle(), treeTask.getTreeClass().getSimpleName(), null, null, null, false, false);
-                RolloverCommand roc = (RolloverCommand)nb;
-                roc.addActionListener(treeTask.getTreeDefEditAction());
-                roc.setToolTip(getResourceString("TASK.SHRTDESC." + treeTask.getTreeDefClass().getSimpleName()));
-                treeDefNB.add(nb);
-                //rocs.add(roc);
-            }
-            
-            if (treeTask.getTreeUnlockAction() != null)
-            {
-                NavBoxItemIFace nb  = BaseTask.makeDnDNavBtn(treeDefNB, ti.getTitle(), treeTask.getTreeClass().getSimpleName(), null, null, null, false, false);
-                RolloverCommand roc = (RolloverCommand)nb;
-                roc.addActionListener(treeTask.getTreeUnlockAction());
-                roc.setToolTip(getResourceString("TASK.UNLOCK." + treeTask.getTreeClass().getSimpleName()));
-                unlockNB.add(nb);
+                DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(treeTask.getTreeClass().getName());
                 
-                rocs.add(roc);
+                Vector<RolloverCommand> rocs = unlockBtnHash.get(treeTask);
+                if (rocs == null)
+                {
+                    rocs = new Vector<RolloverCommand>();
+                    unlockBtnHash.put(treeTask, rocs);
+                }
+                
+                if (treeTask.getTreeEditAction() != null)
+                {
+                    NavBoxItemIFace nb = BaseTask.makeDnDNavBtn(treeNB, ti.getTitle(), treeTask.getTreeClass().getSimpleName(), null, null, null, false, false);
+                    RolloverCommand roc = (RolloverCommand)nb;
+                    roc.addActionListener(treeTask.getTreeEditAction());
+                    roc.setToolTip(getResourceString("TASK.SHRTDESC." + treeTask.getTreeClass().getSimpleName()));
+                    treeNB.add(nb);
+                    //rocs.add(roc);
+                }
+                
+                if (treeTask.getTreeDefEditAction() != null)
+                {
+                    NavBoxItemIFace nb  = BaseTask.makeDnDNavBtn(treeDefNB, ti.getTitle(), treeTask.getTreeClass().getSimpleName(), null, null, null, false, false);
+                    RolloverCommand roc = (RolloverCommand)nb;
+                    roc.addActionListener(treeTask.getTreeDefEditAction());
+                    roc.setToolTip(getResourceString("TASK.SHRTDESC." + treeTask.getTreeDefClass().getSimpleName()));
+                    treeDefNB.add(nb);
+                    //rocs.add(roc);
+                }
+                
+                if (treeTask.getTreeUnlockAction() != null)
+                {
+                    NavBoxItemIFace nb  = BaseTask.makeDnDNavBtn(treeDefNB, ti.getTitle(), treeTask.getTreeClass().getSimpleName(), null, null, null, false, false);
+                    RolloverCommand roc = (RolloverCommand)nb;
+                    roc.addActionListener(treeTask.getTreeUnlockAction());
+                    roc.setToolTip(getResourceString("TASK.UNLOCK." + treeTask.getTreeClass().getSimpleName()));
+                    unlockNB.add(nb);
+                    
+                    rocs.add(roc);
+                }
             }
         }
     }

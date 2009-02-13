@@ -705,7 +705,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
 
         mainPanel = new MainPanel();
 
-        int[] sections = {5, 5};
+        int[] sections = {5, 5, 5};
         statusField = new JStatusBar(sections);
         statusField.setErrorIcon(IconManager.getIcon("Error", IconManager.IconSize.Std16)); //$NON-NLS-1$
         statusField.setWarningIcon(IconManager.getIcon("Warning", IconManager.IconSize.Std16)); //$NON-NLS-1$
@@ -2365,7 +2365,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         
         restartApp(window, databaseName, userName, false, firstTime);
         
-        statusField.setSectionText(0, userName);
+        statusField.setSectionText(2, userName);
         
     }
     
@@ -2374,9 +2374,11 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
      */
     protected void setDatabaseNameAndCollection()
     {
-        String divsionName = AppContextMgr.getInstance().getClassObject(Division.class).getName();
-        String divCollName = divsionName + (AppContextMgr.getInstance().getClassObject(Collection.class) != null ? " : "+AppContextMgr.getInstance().getClassObject(Collection.class).getCollectionName() :""); //$NON-NLS-1$ //$NON-NLS-2$
-        statusField.setSectionText(1, divCollName);
+        AppContextMgr mgr = AppContextMgr.getInstance();
+        String disciplineName = mgr.getClassObject(Discipline.class).getName();
+        String collectionName = mgr.getClassObject(Collection.class) != null ? mgr.getClassObject(Collection.class).getCollectionName() : ""; //$NON-NLS-1$ //$NON-NLS-2$
+        statusField.setSectionText(0, disciplineName);
+        statusField.setSectionText(1, collectionName);
         AppPreferences.getLocalPrefs().put("CURRENT_DB", databaseName);
     }
 

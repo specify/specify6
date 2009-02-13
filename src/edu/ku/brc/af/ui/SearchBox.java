@@ -19,6 +19,8 @@ import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
@@ -103,12 +105,6 @@ public class SearchBox extends JPanel implements ActionListener, PropertyChangeL
         widthAdjust  = 16 + iconWidth + triWidth;
         heightAdjust = 8;
         
-        /*JMenuItem mi = new JMenuItem("All");
-        mi.setIcon(icon);
-        menus.add(mi);
-        menus.add(new JMenuItem("Collection Object"));
-        menus.add(new JMenuItem("Agent")); */
-        
         final SearchBox p = this;
         
         if (menuCreator != null)
@@ -130,8 +126,34 @@ public class SearchBox extends JPanel implements ActionListener, PropertyChangeL
                 }
             });
         }
+        
+        searchText.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e)
+            {
+                super.focusGained(e);
+                repaint();
+            }
+            @Override
+            public void focusLost(FocusEvent e)
+            {
+                super.focusLost(e);
+                repaint();
+            }
+            
+        });
     }
     
+    
+    /**
+     * @return the searchText
+     */
+    public JAutoCompTextField getSearchText()
+    {
+        return searchText;
+    }
+
+
     /* (non-Javadoc)
      * @see javax.swing.JComponent#setEnabled(boolean)
      */
@@ -256,7 +278,7 @@ public class SearchBox extends JPanel implements ActionListener, PropertyChangeL
     protected void resizeSearchText(final int width, final int height)
     {
         Dimension d = searchText.getSize();
-        d.width     = width - widthAdjust;
+        d.width     = width - widthAdjust-5;
         d.height    = height - heightAdjust;
         searchText.setSize(d);
     }

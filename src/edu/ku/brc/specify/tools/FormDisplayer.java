@@ -142,7 +142,7 @@ public class FormDisplayer
             {
                 createFormImagesIndexFile();
             }
-            return;
+            //return;
         }
         
         int userChoice = JOptionPane.showConfirmDialog(getTopWindow(), 
@@ -263,11 +263,6 @@ public class FormDisplayer
             }
             
             createIndexFile();
-            
-            if (setup())
-            {
-                createFormImagesIndexFile();
-            }
             
             getStatusBar().setText("Done"); //$NON-NLS-1$
         }

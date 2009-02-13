@@ -68,7 +68,7 @@ import edu.ku.brc.ui.UIRegistry;
 public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
 							        D extends TreeDefIface<T,D,I>,
 							        I extends TreeDefItemIface<T,D,I>>
-							        extends BaseTask
+							        extends BaseTask implements Comparable<BaseTreeTask<?,?,?>>
 {
     protected static final Logger log = Logger.getLogger(BaseTreeTask.class);
     protected static DataFlavor TREE_DEF_FLAVOR = new DataFlavor(TreeDefIface.class,TreeDefIface.class.getName());
@@ -117,6 +117,8 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         CommandDispatcher.register(DataEntryTask.DATA_ENTRY, this);
         
         setIconName("TreePref");
+        
+        TreeTaskMgr.getInstance().add(this);
 	}
 
 	/* (non-Javadoc)
@@ -129,8 +131,6 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         {
             isInitialized = true;
             
-            TreeTaskMgr.getInstance().add(this);
-
             currentDef   = getCurrentTreeDef();
             menuItems    = createMenus();
 
@@ -216,7 +216,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
             }
         }
         
-        if (isTreeOnByDefault())
+        //if (isTreeOnByDefault())
         {
             TreeTaskMgr.getInstance().fillNavBoxes(treeNavBox, treeDefNavBox, unlockNavBox);
             for (NavBoxItemIFace nbi : treeNavBox.getItems())
@@ -708,8 +708,6 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
             loadTreeNavBoxes();
         }
     }
-    
-    
 
     /**
      * Runs the query synchronously and filles the vector.
@@ -776,6 +774,21 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
          * Probably can't get here when uploading but just in case
          */
         return Uploader.checkUploadLock();
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    @Override
+    public int compareTo(BaseTreeTask<?, ?, ?> obj)
+    {
+        if (getTreeClass() != null && obj.getTreeClass() != null)
+        {
+            DBTableInfo treeTI  = DBTableIdMgr.getInstance().getByClassName(getTreeClass().getName());
+            DBTableInfo treeTI2 = DBTableIdMgr.getInstance().getByClassName(obj.getTreeClass().getName());
+            return treeTI.getTitle().compareTo(treeTI2.getTitle());
+        } 
+        return 1;
     }
 
 }

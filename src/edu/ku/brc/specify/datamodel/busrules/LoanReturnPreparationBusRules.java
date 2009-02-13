@@ -127,7 +127,7 @@ public class LoanReturnPreparationBusRules extends BaseBusRules
     {
         super.afterFillForm(dataObj);
         
-        if (dataObj != null && formViewObj != null)
+        if (dataObj != null && formViewObj != null && formViewObj.getMVParent() != null && formViewObj.getMVParent().getMultiViewParent() != null)
         {
             formViewObj.setSkippingAttach(true);
             

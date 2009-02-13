@@ -3901,11 +3901,11 @@ public class FormViewObj implements Viewable,
             rsController.updateUI();
         }
         
-        log.debug("----------------- "+formViewDef.getName()+"----------------- ");
+        //log.debug("----------------- "+formViewDef.getName()+"----------------- ");
         if (delRecBtn != null && !isJavaCollection())
         {
             boolean enableDelBtn = dataObj != null && (businessRules == null || businessRules.okToEnableDelete(this.dataObj));
-            log.debug("1----------------- Del "+formViewDef.getName()+"  "+enableDelBtn+"----------------- ");
+            //log.debug("1----------------- Del "+formViewDef.getName()+"  "+enableDelBtn+"----------------- ");
             
             delRecBtn.setEnabled(enableDelBtn);
         }
