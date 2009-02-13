@@ -1210,24 +1210,6 @@ if (wizardContext != null) {
                     </serializedBean>
                     <initScript />
                   </formComponent>
-                  <formComponent name="Execute launcher" id="189" beanClass="com.install4j.runtime.beans.formcomponents.CheckboxComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
-                    <serializedBean>
-                      <java class="java.beans.XMLDecoder">
-                        <object class="com.install4j.runtime.beans.formcomponents.CheckboxComponent">
-                          <void property="checkboxText">
-                            <string>${i18n:RunEntryExec("${compiler:sys.fullName}")}</string>
-                          </void>
-                          <void property="initiallySelected">
-                            <boolean>true</boolean>
-                          </void>
-                          <void property="variableName">
-                            <string>executeLauncherAction</string>
-                          </void>
-                        </object>
-                      </java>
-                    </serializedBean>
-                    <initScript />
-                  </formComponent>
                 </formComponents>
               </screen>
             </beans>
