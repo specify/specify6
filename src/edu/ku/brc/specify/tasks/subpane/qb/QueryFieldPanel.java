@@ -1178,6 +1178,24 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                 }
             });
             closeBtn.setEnabled(true);
+            closeBtn.setFocusable(false);
+            closeBtn.addMouseListener(new MouseAdapter() {
+
+                @Override
+                public void mouseEntered(MouseEvent e)
+                {
+                    ((JButton)e.getSource()).setIcon(IconManager.getIcon("CloseHover"));
+                    super.mouseEntered(e);
+                }
+
+                @Override
+                public void mouseExited(MouseEvent e)
+                {
+                    ((JButton)e.getSource()).setIcon(IconManager.getIcon("Close"));
+                    super.mouseExited(e);
+                }
+                
+            });
         }
         else
         {

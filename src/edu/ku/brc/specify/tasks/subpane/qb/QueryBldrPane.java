@@ -1539,6 +1539,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                         .getResourceString("QB_GET_REPORT_CONTENTS_TITLE"), true, CustomDialog.OKCANCELHELP,
                         pane);
                 cd.setHelpContext("RepRunSettings");
+                cd.createUI();
+                Dimension ps = cd.getPreferredSize();
+                ps.setSize(ps.getWidth()*1.3, ps.getHeight());
+                cd.setSize(ps);
                 UIHelper.centerAndShow(cd);
                 go = !cd.isCancelled();
                 cd.dispose();

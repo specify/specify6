@@ -40,7 +40,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.awt.event.WindowStateListener;
 import java.io.File;
 import java.net.ConnectException;
 import java.util.Collections;
@@ -549,15 +548,18 @@ public class WorkbenchPaneSS extends BaseSubPane
         }
         else
         {
-            biogeomancerBtn = createIconBtn("BioGeoMancer", IconManager.IconSize.NonStd,
-                    "WB_DO_BIOGEOMANCER_LOOKUP", false, new ActionListener()
+            AppPreferences remotePrefs = AppPreferences.getRemote();
+            final String tool = remotePrefs.get("georef_tool", "");
+            String iconName = "BioGeoMancer"; //tool.equalsIgnoreCase("geolocate") ? "GeoLocate" : "BioGeoMancer";
+            String toolTip = tool.equalsIgnoreCase("geolocate") ? "WB_DO_GEOLOCATE_LOOKUP"
+            		: "WB_DO_BIOGEOMANCER_LOOKUP";
+            biogeomancerBtn = createIconBtn(iconName, IconManager.IconSize.NonStd,
+                    toolTip, false, new ActionListener()
                     {
                         public void actionPerformed(ActionEvent ae)
                         {
                             spreadSheet.clearSorter();
 
-                            AppPreferences remotePrefs = AppPreferences.getRemote();
-                            String tool = remotePrefs.get("georef_tool", "");
                             if (tool.equalsIgnoreCase("geolocate"))
                             {
                                 doGeoRef(new GeoCoordGeoLocateProvider(), "WB.GeoLocateRows");
