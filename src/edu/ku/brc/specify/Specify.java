@@ -2366,6 +2366,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         restartApp(window, databaseName, userName, false, firstTime);
         
         statusField.setSectionText(2, userName);
+        statusField.setSectionToolTipText(2, DBTableIdMgr.getInstance().getTitleForId(SpecifyUser.getClassTableId()));
         
     }
     
@@ -2379,6 +2380,10 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         String collectionName = mgr.getClassObject(Collection.class) != null ? mgr.getClassObject(Collection.class).getCollectionName() : ""; //$NON-NLS-1$ //$NON-NLS-2$
         statusField.setSectionText(0, disciplineName);
         statusField.setSectionText(1, collectionName);
+        
+        statusField.setSectionToolTipText(0, DBTableIdMgr.getInstance().getTitleForId(Discipline.getClassTableId()));
+        statusField.setSectionToolTipText(1, DBTableIdMgr.getInstance().getTitleForId(Collection.getClassTableId()));
+        
         AppPreferences.getLocalPrefs().put("CURRENT_DB", databaseName);
     }
 

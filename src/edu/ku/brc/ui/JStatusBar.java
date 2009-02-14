@@ -197,6 +197,20 @@ public class JStatusBar extends JPanel
     }
 
     /**
+     * Sets the tooltip text into the statusbar's section.
+     * 
+     * @param sectionInxwhich section text to sets
+     * @param text the tooltip text of the status bar
+     */
+    public void setSectionToolTipText(final int sectionInx, final String text)
+    {
+        if (labels != null && sectionInx > -1 && sectionInx < labels.length)
+        {
+            labels[sectionInx].setToolTipText(text);
+        }
+    }
+
+    /**
      * Sets the given message into the statusbar.  The message is displayed
      * using the current error color and icon.
      * 
