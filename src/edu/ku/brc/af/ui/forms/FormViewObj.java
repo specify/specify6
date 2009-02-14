@@ -206,6 +206,7 @@ public class FormViewObj implements Viewable,
     
     protected FormLayout                    formLayout;
     protected PanelBuilder                  builder;
+    protected boolean                       isBuildValid     = false;
 
     protected boolean                       isSkippingAttach = false; // Indicates whether to skip before setting data into the form
     protected Boolean                       isJavaCollection = null;
@@ -320,10 +321,18 @@ public class FormViewObj implements Viewable,
         this.formViewDef = (FormViewDef)altView.getViewDef();
         
         // Figure columns
-        
-        JPanel panel = useDebugForm ? new FormDebugPanel() : (restrictablePanel = new RestrictablePanel());
-        formLayout = new FormLayout(formViewDef.getColumnDef(), formViewDef.getRowDef());
-        builder    = new PanelBuilder(formLayout, panel);
+        try
+        {
+            JPanel panel = useDebugForm ? new FormDebugPanel() : (restrictablePanel = new RestrictablePanel());
+            formLayout = new FormLayout(formViewDef.getColumnDef(), formViewDef.getRowDef());
+            builder    = new PanelBuilder(formLayout, panel);
+            
+        } catch (java.lang.NumberFormatException ex)
+        {
+            String msg = "Error in row or column definition for form: `"+view.getName() + "`\n" + ex.getMessage();
+            UIRegistry.showError(msg);
+            return;
+        }
         
         mainComp = new JPanel(new BorderLayout());
         mainComp.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
@@ -572,8 +581,18 @@ public class FormViewObj implements Viewable,
         {
             rsController.setNewObj(isNewlyCreatedDataObj);
         }
+        
+        isBuildValid = true;
     }
     
+    /**
+     * @return the isBuildValid
+     */
+    public boolean isBuildValid()
+    {
+        return isBuildValid;
+    }
+
     /**
      * Helper method for discovering the type of objects it will hold.
      */
@@ -2290,6 +2309,8 @@ public class FormViewObj implements Viewable,
                     if (count == null || count == 0)
                     {
                         UIRegistry.showLocalizedError("FormViewObj.DATA_OBJ_MISSING");
+                        setHasNewData(false);
+                        removeObject(false);
                         return SAVE_STATE.Error;
                     }
                 }
@@ -2776,7 +2797,7 @@ public class FormViewObj implements Viewable,
     {
         if (doDelete)
         {
-            removeObject();
+            removeObject(true);
             
         } else
         {
@@ -2801,7 +2822,7 @@ public class FormViewObj implements Viewable,
     /**
      * Save any changes to the current object
      */
-    protected void removeObject()
+    protected void removeObject(final boolean doSkipAlreadyDelMsg)
     {
         // This shouldn't happen
         if (session != null)
@@ -2949,7 +2970,10 @@ public class FormViewObj implements Viewable,
                     } else
                     {
                         doClearObj = true;
-                        UIRegistry.showLocalizedMsg("OBJ_ALREADY_DEL");
+                        if (!doSkipAlreadyDelMsg)
+                        {
+                            UIRegistry.showLocalizedMsg("OBJ_ALREADY_DEL");
+                        }
                     }
                     
                     updateAfterRemove(false);
@@ -4221,6 +4245,17 @@ public class FormViewObj implements Viewable,
         {
             compFI.setEnabled(true);
         }
+        
+        /*if (!enabled)
+        {
+            for (MultiView kid : kids)
+            {
+                if (kid.getCurrentViewAsFormViewObj() != null)
+                {
+                    kid.getCurrentViewAsFormViewObj().setFormEnabled(enabled);
+                }
+            }
+        }*/
     }
     
     /**

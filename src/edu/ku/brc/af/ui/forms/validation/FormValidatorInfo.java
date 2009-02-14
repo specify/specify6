@@ -95,19 +95,24 @@ public class FormValidatorInfo extends JPanel
                 if (dcn.getUIV() != null)
                 {
                     UIValidatable uval =  dcn.getUIV().getUIV();
-                    if (uval != null && uval.getValidatableUIComp().isEnabled() && uval.getState() != UIValidatable.ErrorType.Valid)
+                    if (uval != null && uval.getValidatableUIComp().isEnabled())
                     {
-                        String titleStr = validator.getLabelTextForId(dcn.getId());
-                        if (titleStr == null || titleStr.trim().length() == 0)
+                        // Items that aren't required can be incomplete.
+                        if ((uval.isRequired() && uval.getState() != UIValidatable.ErrorType.Valid) ||
+                            (!uval.isRequired() && uval.getState() == UIValidatable.ErrorType.Error))
                         {
-                            titleStr = uval.getValidatableUIComp().getClass().getSimpleName();
+                            String titleStr = validator.getLabelTextForId(dcn.getId());
+                            if (titleStr == null || titleStr.trim().length() == 0)
+                            {
+                                titleStr = uval.getValidatableUIComp().getClass().getSimpleName();
+                            }
+                            String reason = uval.getReason();
+                            if (StringUtils.isEmpty(reason))
+                            {
+                                reason = uval.getState().toString();
+                            }
+                            rows.add(new Pair<String, String>(titleStr, reason));
                         }
-                        String reason = uval.getReason();
-                        if (StringUtils.isEmpty(reason))
-                        {
-                            reason = uval.getState().toString();
-                        }
-                        rows.add(new Pair<String, String>(titleStr, reason));
                     }
                 }
             }

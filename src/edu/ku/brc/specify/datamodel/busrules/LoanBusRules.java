@@ -228,7 +228,7 @@ public class LoanBusRules extends AttachmentOwnerBaseBusRules
         {
             if (shipment.getShipmentId() == null)
             {
-                shipment.setShipmentNumber(loan.getLoanNumber());
+                //shipment.setShipmentNumber(loan.getLoanNumber());
             }
         }
     }

@@ -645,7 +645,7 @@ public class SelectPrepsDlg extends CustomDialog
             "INNER JOIN loan ON lp.LoanID = loan.LoanID " +
             "WHERE p.PreparationID = " + prepId;
             
-            System.out.println(sql);
+            //System.out.println(sql);
             //System.out.println(" prep.getPreparationId() "+prep.getPreparationId());
             
             StringBuilder sb = new StringBuilder();

@@ -999,18 +999,18 @@ public class ViewFactory
     }
 
 
-    protected void createItem(final DBTableChildIFace           childInfo,
-                              final MultiView                   parent,
-                              final FormViewDefIFace            formViewDef,
-                              final FormValidator               validator,
-                              final ViewBuilderIFace            viewBldObj,
-                              final AltViewIFace.CreationMode   mode,
-                              final Hashtable<String, JLabel>   labelsForHash,
-                              final Object                      currDataObj,
-                              final FormCellIFace               cell,
-                              final boolean                     isEditOnCreateOnly,
-                              final int                         rowInx,
-                              final BuildInfoStruct             bi)
+    protected boolean createItem(final DBTableChildIFace           childInfo,
+                                 final MultiView                   parent,
+                                 final FormViewDefIFace            formViewDef,
+                                 final FormValidator               validator,
+                                 final ViewBuilderIFace            viewBldObj,
+                                 final AltViewIFace.CreationMode   mode,
+                                 final Hashtable<String, JLabel>   labelsForHash,
+                                 final Object                      currDataObj,
+                                 final FormCellIFace               cell,
+                                 final boolean                     isEditOnCreateOnly,
+                                 final int                         rowInx,
+                                 final BuildInfoStruct             bi)
     {
         bi.compToAdd      = null;
         bi.compToReg      = null;
@@ -1666,7 +1666,17 @@ public class ViewFactory
                             bi.doAddToValidator   = false;
                             bi.compToAdd          = subViewBtn;
                             
-                            addControl(validator, viewBldObj, rowInx, cell, bi);
+                            try
+                            {
+                                addControl(validator, viewBldObj, rowInx, cell, bi);
+                                
+                            } catch (java.lang.IndexOutOfBoundsException ex)
+                            {
+                                String msg = "Error adding control type: `"+cell.getType()+"` id: `"+cell.getIdent()+"` name: `"+cell.getName()+"` on row: "+rowInx+" column: "+bi.colInx + 
+                                             "\n" + ex.getMessage();
+                                UIRegistry.showError(msg);
+                                return false;
+                            }
                             
                             bi.doRegControl     = false;
                             bi.compToAdd        = null;
@@ -1780,6 +1790,8 @@ public class ViewFactory
         {
             bi.compToAdd.setVisible(false);
         }
+        
+        return true;
     }
     
     /**
@@ -1832,12 +1844,25 @@ public class ViewFactory
                     ((FormCellField)cell).setEditOnCreate(true);
                 }
                 
-                createItem(childInfo, parent, formViewDef, validator, viewBldObj, mode, labelsForHash, currDataObj, cell, isEditOnCreateOnly, rowInx, bi);
+                if (!createItem(childInfo, parent, formViewDef, validator, viewBldObj, mode, labelsForHash, currDataObj, cell, isEditOnCreateOnly, rowInx, bi))
+                {
+                    return;
+                }
                 
                 //log.debug(cell.getType()+" "+cell.getName()+" col: "+bi.colInx);
                 if (bi.compToAdd != null)
                 {
-                    addControl(validator, viewBldObj, rowInx, cell, bi);
+                    try
+                    {
+                        addControl(validator, viewBldObj, rowInx, cell, bi);
+                        
+                    } catch (java.lang.IndexOutOfBoundsException ex)
+                    {
+                        String msg = "Error adding control type: `"+cell.getType()+"` id: `"+cell.getIdent()+"` name: `"+cell.getName()+"` on row: "+rowInx+" column: "+bi.colInx + 
+                                     "\n" + ex.getMessage();
+                        UIRegistry.showError(msg);
+                        return;
+                    }
                 }
                 
                 if (isEditOnCreateOnly)
@@ -2196,6 +2221,10 @@ public class ViewFactory
             }
 
             FormViewObj formViewObj = new FormViewObj(view, altView, parentView, validator, options, bgColor);
+            if (!formViewObj.isBuildValid())
+            {
+                return null;
+            }
 
             Object currDataObj = formViewObj.getCurrentDataObj();
             

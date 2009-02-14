@@ -114,17 +114,20 @@ public class GenericPrefsPanel extends JPanel implements PrefsSavable, PrefsPane
             
             ViewFactory.setFormTransparent(true);
             form = ViewFactory.createFormView(null, formView, null, null, MultiView.NO_OPTIONS, null);
-            ViewFactory.setFormTransparent(false);
-            form.setDataObj(AppPreferences.getRemote());
-            UIValidator.setIgnoreAllValidation(this, false);
-            
-            if (form.getUIComponent() instanceof JPanel)
+            if (form != null)
             {
-                ((JPanel)form.getUIComponent()).setOpaque(false);
+                ViewFactory.setFormTransparent(false);
+                form.setDataObj(AppPreferences.getRemote());
+                UIValidator.setIgnoreAllValidation(this, false);
+                
+                if (form.getUIComponent() instanceof JPanel)
+                {
+                    ((JPanel)form.getUIComponent()).setOpaque(false);
+                }
+                add(form.getUIComponent(), BorderLayout.CENTER);
+                
+                form.getValidator().validateForm();
             }
-            add(form.getUIComponent(), BorderLayout.CENTER);
-            
-            form.getValidator().validateForm();
 
         } else
         {

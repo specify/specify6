@@ -1465,12 +1465,28 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     try
                     {
                         //log.error(vso.getFileName());
-                        
                         // This call assumes there is already a Session open and attached
-                        Element root = XMLHelper.readStrToDOM4J(vso.getDataAsString());
-                        ViewSet vs = new ViewSet(root, true);
-                        vs.setFileName(vso.getFileName());
-                        viewSetList.add(vs);
+                        Element root = null;
+                        try
+                        {
+                            XMLHelper.readStrToDOM4J(vso.getDataAsString());
+                            
+                        } catch (Exception ex)
+                        {
+                            String msg = "Error error parsing XML: `"+vso.getName() + "`\n" + StringUtils.replace(ex.getMessage(), "Nested", "\nNested");
+                            UIRegistry.showError(msg);
+                            return viewSetList;
+                        }
+                        
+                        if (root != null)
+                        {
+                            ViewSet vs = new ViewSet(root, true);
+                            vs.setFileName(vso.getFileName());
+                            viewSetList.add(vs);
+                        } else
+                        {
+                            return viewSetList;
+                        }
     
                     } catch (org.dom4j.DocumentException ex)
                     {

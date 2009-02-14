@@ -227,7 +227,7 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
      * @param type the type of Partial Date formatter.
      * @return the formatter
      */
-    public UIFieldFormatterIFace getDateFormmater(final UIFieldFormatter.PartialDateEnum type)
+    public UIFieldFormatterIFace getDateFormatter(final UIFieldFormatter.PartialDateEnum type)
     {
         for (Enumeration<UIFieldFormatterIFace> e = hash.elements(); e.hasMoreElements();)
         {

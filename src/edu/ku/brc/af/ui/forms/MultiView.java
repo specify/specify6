@@ -466,7 +466,10 @@ public class MultiView extends JPanel
      */
     public void focus()
     {
-        currentViewable.focus(); 
+        if (currentViewable != null)
+        {
+            currentViewable.focus();
+        }
     }
     
     /**

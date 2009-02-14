@@ -60,7 +60,7 @@ public class LoanGiftShipmentBusRules extends BaseBusRules
                     Borrow      borrow      = shipment.getBorrow();
                     
                     String controlName = null;
-                    if (loan != null)
+                    /*if (loan != null)
                     {
                         if (StringUtils.isEmpty(shipment.getShipmentNumber()))
                         {
@@ -87,7 +87,7 @@ public class LoanGiftShipmentBusRules extends BaseBusRules
                             shipment.setShipmentNumber(borrow.getInvoiceNumber());
                         }
                         controlName = "invoiceNumber";
-                    }
+                    }*/
                     
                     if (controlName != null)
                     {

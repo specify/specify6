@@ -53,7 +53,7 @@ public class GiftBusRules extends BaseBusRules
         {
             if (shipment.getShipmentId() == null)
             {
-                shipment.setShipmentNumber(gift.getGiftNumber());
+                //shipment.setShipmentNumber(gift.getGiftNumber());
             }
         }
     }
