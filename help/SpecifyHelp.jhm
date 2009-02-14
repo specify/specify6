@@ -18,7 +18,7 @@
     <mapID target="MASTERPWD_MAIN"      url="SpecifyHelp/Dialogs/Login.html" />
     <mapID target="MASTERPWD_GEN"       url="SpecifyHelp/Dialogs/Login.html" />
     <mapID target="CHANGE_PWD"          url="SpecifyHelp/Dialogs/change_password.html" />
-	<mapID target="Startup"             url="SpecifyHelp/Dialogs/Login.html" />
+	<mapID target="Startup"             url="SpecifyHelp/Intro/about.html" />
 	<mapID target="Intro"               url="SpecifyHelp/Intro/intro.html" />
 	
 	
