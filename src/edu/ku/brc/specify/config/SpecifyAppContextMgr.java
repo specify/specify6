@@ -1462,65 +1462,27 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 viewSetList = new Vector<ViewSetIFace>();
                 for (SpViewSetObj vso : dir.getSpViewSets())
                 {
+                    // This call assumes there is already a Session open and attached
+                    Element root = null;
                     try
                     {
-                        //log.error(vso.getFileName());
-                        // This call assumes there is already a Session open and attached
-                        Element root = null;
-                        try
-                        {
-                            XMLHelper.readStrToDOM4J(vso.getDataAsString());
-                            
-                        } catch (Exception ex)
-                        {
-                            String msg = "Error error parsing XML: `"+vso.getName() + "`\n" + StringUtils.replace(ex.getMessage(), "Nested", "\nNested");
-                            UIRegistry.showError(msg);
-                            return viewSetList;
-                        }
+                        XMLHelper.readStrToDOM4J(vso.getDataAsString());
                         
-                        if (root != null)
-                        {
-                            ViewSet vs = new ViewSet(root, true);
-                            vs.setFileName(vso.getFileName());
-                            viewSetList.add(vs);
-                        } else
-                        {
-                            return viewSetList;
-                        }
-    
-                    } catch (org.dom4j.DocumentException ex)
+                    } catch (Exception ex)
                     {
-                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
-                        /*if (dlg == null)
-                        {
-                            dlg = new UnhandledExceptionDialog("SAX Parser", ex);
-                            dlg.setModal(true);
-                            dlg.setVisible(true);
-                            dlg = null;
-                            return viewSetList;
-                        }*/
-                        log.error(ex);
-                        
-                    } catch (final Exception ex)
+                        String msg = "Error error parsing XML: `"+vso.getName() + "`\n" + StringUtils.replace(ex.getMessage(), "Nested", "\nNested");
+                        UIRegistry.showError(msg);
+                        return viewSetList;
+                    }
+                    
+                    if (root != null)
                     {
-                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
-                        log.error(vso.getName());
-                        log.error(ex);
-                        ex.printStackTrace();
-                        
-                        // This way we don't send a stack trace
-                        /*SwingUtilities.invokeLater(new Runnable() {
-                            public void run()
-                            {
-                                //UnhandledExceptionDialog dlg = new UnhandledExceptionDialog(ex);
-                                //dlg.setVisible(true);
-                                String str = ex.toString();
-                                JOptionPane.showConfirmDialog((Frame)getTopWindow(), "Error parsing Form", ex.toString(), JOptionPane.ERROR_MESSAGE);
-                            }
-                            
-                        });*/
+                        ViewSet vs = new ViewSet(root, true);
+                        vs.setFileName(vso.getFileName());
+                        viewSetList.add(vs);
+                    } else
+                    {
+                        return viewSetList;
                     }
                 }
             } catch (Exception ex)
