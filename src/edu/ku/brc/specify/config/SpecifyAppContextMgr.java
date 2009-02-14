@@ -1466,7 +1466,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     Element root = null;
                     try
                     {
-                        XMLHelper.readStrToDOM4J(vso.getDataAsString());
+                        root = XMLHelper.readStrToDOM4J(vso.getDataAsString());
                         
                     } catch (Exception ex)
                     {
@@ -1475,15 +1475,10 @@ public class SpecifyAppContextMgr extends AppContextMgr
                         return viewSetList;
                     }
                     
-                    if (root != null)
-                    {
-                        ViewSet vs = new ViewSet(root, true);
-                        vs.setFileName(vso.getFileName());
-                        viewSetList.add(vs);
-                    } else
-                    {
-                        return viewSetList;
-                    }
+                    ViewSet vs = new ViewSet(root, true);
+                    vs.setFileName(vso.getFileName());
+                    viewSetList.add(vs);
+                    
                 }
             } catch (Exception ex)
             {
