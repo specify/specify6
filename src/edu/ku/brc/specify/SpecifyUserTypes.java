@@ -19,12 +19,14 @@ package edu.ku.brc.specify;
 public class SpecifyUserTypes
 {
 
-    public enum UserType 
+    public enum UserType {Manager, FullAccess, LimitedAccess, Guest}
+    
+    /*public enum UserType 
     {
-        Manager(0, "Manager"),
-        FullAccess(1, "FullAccess"),
+        Manager(0,       "Manager"),
+        FullAccess(1,    "FullAccess"),
         LimitedAccess(2, "LimitedAccess"),
-        Guest(3, "Guest");
+        Guest(3,         "Guest");
 
         UserType(final int id, final String name)
         {
@@ -41,6 +43,6 @@ public class SpecifyUserTypes
         
         @Override
         public String  toString()       { return name; }
-    }
+    }*/
 
 }
