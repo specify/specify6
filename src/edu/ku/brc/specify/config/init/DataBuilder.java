@@ -34,6 +34,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.helpers.HTTPGetter;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.SpecifyUserTypes;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.AccessionAgent;
 import edu.ku.brc.specify.datamodel.AccessionAuthorization;
@@ -2418,9 +2419,10 @@ public class DataBuilder
         }
         
         usertypeToDefaultGroup = new HashMap<String, String>();
-        usertypeToDefaultGroup.put("CollectionManager", "Collection Managers");
-        usertypeToDefaultGroup.put("DataEntry", "Data Entry");
-        usertypeToDefaultGroup.put("Guest", "Guests");
+        usertypeToDefaultGroup.put(SpecifyUserTypes.UserType.Manager.toString(),       "Collection Managers");
+        usertypeToDefaultGroup.put(SpecifyUserTypes.UserType.FullAccess.toString(),    "Full Access Users");
+        usertypeToDefaultGroup.put(SpecifyUserTypes.UserType.LimitedAccess.toString(), "Limited Access Users");
+        usertypeToDefaultGroup.put(SpecifyUserTypes.UserType.Guest.toString(),         "Guests");
     }
 
     /**

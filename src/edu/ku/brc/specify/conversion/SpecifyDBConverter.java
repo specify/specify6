@@ -1,9 +1,6 @@
 package edu.ku.brc.specify.conversion;
 
 import static edu.ku.brc.specify.config.init.DataBuilder.createAdminGroup;
-import static edu.ku.brc.specify.config.init.DataBuilder.createAgent;
-import static edu.ku.brc.specify.config.init.DataBuilder.createAndAddTesterToCollection;
-import static edu.ku.brc.specify.config.init.DataBuilder.createSpecifyUser;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -57,6 +54,7 @@ import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.dbsupport.ResultsPager;
 import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.specify.SpecifyUserTypes;
 import edu.ku.brc.specify.config.init.DataBuilder;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Collection;
@@ -698,14 +696,14 @@ public class SpecifyDBConverter
                 if (convertDiscipline || doAll)
                 {
                     String           username         = initPrefs.getProperty("initializer.username", "testuser");
-                    String           title            = initPrefs.getProperty("useragent.title",    "Mr.");
-                    String           firstName        = initPrefs.getProperty("useragent.firstname", "Test");
-                    String           lastName         = initPrefs.getProperty("useragent.lastname", "User");
-                    String           midInit          = initPrefs.getProperty("useragent.midinit", "C");
-                    String           abbrev           = initPrefs.getProperty("useragent.abbrev", "tcu");
-                    String           email            = initPrefs.getProperty("useragent.email", "testuser@ku.edu");
-                    String           userType         = initPrefs.getProperty("useragent.usertype", "CollectionManager");   
-                    String           password         = initPrefs.getProperty("useragent.password", "testuser");
+                    String           title            = initPrefs.getProperty("useragent.title",      "Mr.");
+                    String           firstName        = initPrefs.getProperty("useragent.firstname",  "Test");
+                    String           lastName         = initPrefs.getProperty("useragent.lastname",   "User");
+                    String           midInit          = initPrefs.getProperty("useragent.midinit",    "C");
+                    String           abbrev           = initPrefs.getProperty("useragent.abbrev",     "tcu");
+                    String           email            = initPrefs.getProperty("useragent.email",      "testuser@ku.edu");
+                    String           userType         = initPrefs.getProperty("useragent.usertype",   SpecifyUserTypes.UserType.Manager.toString());   
+                    String           password         = initPrefs.getProperty("useragent.password",   "testuser");
                     
                     Agent userAgent   = null;
                     
@@ -1226,7 +1224,7 @@ public class SpecifyDBConverter
 
                     DataType          dataType  = createDataType("Animal");
                     UserGroup         userGroup = createUserGroup("Fish");
-                    SpecifyUser       user      = createSpecifyUser("rods", "rods@ku.edu", (short)0, new UserGroup[] {userGroup}, "CollectionManager");
+                    SpecifyUser       user      = createSpecifyUser("rods", "rods@ku.edu", (short)0, new UserGroup[] {userGroup}, SpecifyUserTypes.UserType.Manager.toString());
 
 
 

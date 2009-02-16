@@ -30,6 +30,7 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
+import edu.ku.brc.specify.SpecifyUserTypes;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.dbsupport.TreeDefStatusMgr;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable;
@@ -605,7 +606,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
     protected boolean canOverrideLock()
     {
         //XXX Probably a better way to do this...
-        return AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getUserType().equals("CollectionManager");
+        return AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getUserType().equals(SpecifyUserTypes.UserType.Manager.toString());
     }
     
     /**

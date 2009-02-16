@@ -66,6 +66,7 @@ import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
+import edu.ku.brc.specify.SpecifyUserTypes;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
 import edu.ku.brc.ui.IconManager;
@@ -198,7 +199,7 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
             props.put("phone", "785-864-5555");
         }
 
-        props.put("userType", "CollectionManager");
+        props.put("userType", SpecifyUserTypes.UserType.Manager.toString());
         
         userPanel = new DatabasePanel(nextBtn, true);
         panels.add(userPanel);

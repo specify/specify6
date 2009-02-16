@@ -343,7 +343,7 @@ public class BaseBusRules implements BusinessRulesIFace
                                  final Integer...ids)
     {
         Integer recCount = getCount(stmt, tableName, columnName, ids);
-        return recCount != null && recCount == count;
+        return recCount != null && recCount <= count;
     }
     
     /**

@@ -26,6 +26,7 @@ import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.specify.SpecifyUserTypes;
 import edu.ku.brc.specify.datamodel.Address;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
@@ -540,7 +541,7 @@ public class RegisterSpecify
         AppPreferences localPrefs = AppPreferences.getLocalPrefs();
         
         SpecifyUser spUser = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
-        if (forceRegistration && !spUser.getUserType().equals("CollectionManager"))
+        if (forceRegistration && !spUser.getUserType().equals(SpecifyUserTypes.UserType.Manager.toString()))
         {
             if (forceRegistration)
             {
@@ -648,7 +649,7 @@ public class RegisterSpecify
     public static void registerISA()
     {
         SpecifyUser spUser = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
-        if (!spUser.getUserType().equals("CollectionManager"))
+        if (!spUser.getUserType().equals(SpecifyUserTypes.UserType.Manager.toString()))
         {
             UIRegistry.showLocalizedMsg("", "SpReg.MUSTBECM");
             return;

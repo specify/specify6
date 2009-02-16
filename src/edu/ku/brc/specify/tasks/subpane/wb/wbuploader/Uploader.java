@@ -49,6 +49,7 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.specify.SpecifyUserTypes;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
@@ -3875,7 +3876,7 @@ public class Uploader implements ActionListener, KeyListener
     protected static boolean canOverrideLock()
     {
         //XXX Probably a better way to do this...
-        return AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getUserType().equals("CollectionManager");
+        return AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getUserType().equals(SpecifyUserTypes.UserType.Manager.toString());
     }
     
     /**

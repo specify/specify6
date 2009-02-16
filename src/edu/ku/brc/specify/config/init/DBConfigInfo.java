@@ -10,6 +10,7 @@
 package edu.ku.brc.specify.config.init;
 
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
+import edu.ku.brc.specify.SpecifyUserTypes;
 import edu.ku.brc.specify.config.DisciplineType;
 
 /**
@@ -31,7 +32,7 @@ public class DBConfigInfo
     protected String lastName; 
     protected String email;
     protected DisciplineType disciplineType;
-    protected String userType = "CollectionManager";
+    protected String userType = SpecifyUserTypes.UserType.Manager.toString();
     
     protected String instName;
     protected String instTitle = null;

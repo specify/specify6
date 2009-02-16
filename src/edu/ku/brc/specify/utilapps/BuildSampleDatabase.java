@@ -132,6 +132,7 @@ import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
+import edu.ku.brc.specify.SpecifyUserTypes;
 import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.config.init.BldrPickList;
 import edu.ku.brc.specify.config.init.BldrPickListItem;
@@ -574,12 +575,12 @@ public class BuildSampleDatabase
         Map<String, SpPrincipal> groupMap = DataBuilder.createStandardGroups(collection);
 
         // add the administrator as a Collections Manager in this group
-        specifyAdminUser.addUserToSpPrincipalGroup(groupMap.get("CollectionManager"));
+        specifyAdminUser.addUserToSpPrincipalGroup(groupMap.get(SpecifyUserTypes.UserType.Manager.toString()));
 
         // add tester
         String dspAbbrev = disciplineType.getAbbrev();
         createAndAddTesterToCollection(dspAbbrev+"Tester", dspAbbrev+"tester@brc.ku.edu", dspAbbrev+"Tester", 
-                "", dspAbbrev, "", "Tester", "", discipline, division, groupMap, "CollectionManager");
+                "", dspAbbrev, "", "Tester", "", discipline, division, groupMap, SpecifyUserTypes.UserType.Manager.toString());
         
         DataBuilder.setSession(dataBuilderSession);
 
@@ -972,7 +973,7 @@ public class BuildSampleDatabase
         String           midInit          = initPrefs.getProperty("useragent.midinit", "A");
         String           abbrev           = initPrefs.getProperty("useragent.abbrev", "tu");
         String           email            = initPrefs.getProperty("useragent.email", "testuser@ku.edu");
-        String           userType         = initPrefs.getProperty("useragent.usertype", "CollectionManager");
+        String           userType         = initPrefs.getProperty("useragent.usertype", SpecifyUserTypes.UserType.Manager.toString());
         //String           password         = initPrefs.getProperty("useragent.password", "rods");
         
         System.out.println("----- User Agent -----");
@@ -1017,7 +1018,7 @@ public class BuildSampleDatabase
         Map<String, SpPrincipal> groupMap = DataBuilder.createStandardGroups(collection);
 
         // add the administrator as a Collections Manager in this group
-        user.addUserToSpPrincipalGroup(groupMap.get("CollectionManager"));
+        user.addUserToSpPrincipalGroup(groupMap.get(SpecifyUserTypes.UserType.Manager.toString()));
 
         // Tester
         createAndAddTesterToCollection("botanyuser", "botanyuser@ku.edu", "botanyuser", "mr", "Bob", "", "Botony", "",  
@@ -1778,7 +1779,7 @@ public class BuildSampleDatabase
         String           midInit          = initPrefs.getProperty("useragent.midinit", "A");
         String           abbrev           = initPrefs.getProperty("useragent.abbrev", "tu");
         String           email            = initPrefs.getProperty("useragent.email", "testuser@ku.edu");
-        String           userType         = initPrefs.getProperty("useragent.usertype", "CollectionManager");
+        String           userType         = initPrefs.getProperty("useragent.usertype", SpecifyUserTypes.UserType.Manager.toString());
         
         System.out.println("----- User Agent -----");
         System.out.println("Title:     "+title);
@@ -2231,7 +2232,7 @@ public class BuildSampleDatabase
         String           midInit          = initPrefs.getProperty("useragent.midinit", "A");
         String           abbrev           = initPrefs.getProperty("useragent.abbrev", "tu");
         String           email            = initPrefs.getProperty("useragent.email", "testuser@ku.edu");
-        String           userType         = initPrefs.getProperty("useragent.usertype", "CollectionManager");
+        String           userType         = initPrefs.getProperty("useragent.usertype", SpecifyUserTypes.UserType.Manager.toString());
         
         System.out.println("----- User Agent -----");
         System.out.println("Title:     "+title);
@@ -2284,7 +2285,7 @@ public class BuildSampleDatabase
         Map<String, SpPrincipal> groupMap = DataBuilder.createStandardGroups(collection);
 
         // add the administrator as a Collections Manager in this group
-        user.addUserToSpPrincipalGroup(groupMap.get("CollectionManager"));
+        user.addUserToSpPrincipalGroup(groupMap.get(SpecifyUserTypes.UserType.Manager.toString()));
 
         // Tester
         createAndAddTesterToCollection("ivpuser", "InvertPaleo@ku.edu", "ivpuser", "mr", "Joe", "", "InvertPaleo", "",
@@ -3287,7 +3288,7 @@ public class BuildSampleDatabase
         String           midInit          = initPrefs.getProperty("useragent.midinit", "A");
         String           abbrev           = initPrefs.getProperty("useragent.abbrev", "tu");
         String           email            = initPrefs.getProperty("useragent.email", "testuser@ku.edu");
-        String           userType         = initPrefs.getProperty("useragent.usertype", "CollectionManager");
+        String           userType         = initPrefs.getProperty("useragent.usertype", SpecifyUserTypes.UserType.Manager.toString());
         
         System.out.println("----- User Agent -----");
         System.out.println("Title:     "+title);
@@ -3334,7 +3335,7 @@ public class BuildSampleDatabase
         Map<String, SpPrincipal> groupMap = DataBuilder.createStandardGroups(collection);
 
         // add the administrator as a Collections Manager in this group
-        user.addUserToSpPrincipalGroup(groupMap.get("CollectionManager"));
+        user.addUserToSpPrincipalGroup(groupMap.get(SpecifyUserTypes.UserType.Manager.toString()));
 
         // Tester
         String dspAbbrev = disciplineType.getAbbrev();
@@ -4344,7 +4345,7 @@ public class BuildSampleDatabase
         String           midInit          = initPrefs.getProperty("useragent.midinit", "A");
         String           abbrev           = initPrefs.getProperty("useragent.abbrev", "tu");
         String           email            = initPrefs.getProperty("useragent.email", "testuser@ku.edu");
-        String           userType         = initPrefs.getProperty("useragent.usertype", "CollectionManager");
+        String           userType         = initPrefs.getProperty("useragent.usertype", SpecifyUserTypes.UserType.Manager.toString());
         
         System.out.println("----- User Agent -----");
         System.out.println("Title:     "+title);
@@ -4710,7 +4711,7 @@ public class BuildSampleDatabase
         Map<String, SpPrincipal> groupMap = DataBuilder.createStandardGroups(collection);
 
         // add the administrator as a Collections Manager in this group
-        user.addUserToSpPrincipalGroup(groupMap.get("CollectionManager"));
+        user.addUserToSpPrincipalGroup(groupMap.get(SpecifyUserTypes.UserType.Manager.toString()));
 
         // Tester
         String userPrefix = (isVoucherCol)? "Voucher" : "";
@@ -5909,7 +5910,7 @@ public class BuildSampleDatabase
         ////////////////////////////////
         String           username         = initPrefs.getProperty("useragent.username", usernameArg);
         String           email            = initPrefs.getProperty("useragent.email", "ku@ku.edu");
-        String           userType         = initPrefs.getProperty("useragent.usertype", "CollectionManager");
+        String           userType         = initPrefs.getProperty("useragent.usertype", SpecifyUserTypes.UserType.Manager.toString());
         String           password         = initPrefs.getProperty("useragent.password", passwordArg);
         
         System.out.println("----- User Agent -----");

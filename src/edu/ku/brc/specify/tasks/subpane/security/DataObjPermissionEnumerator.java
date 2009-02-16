@@ -15,6 +15,7 @@ import edu.ku.brc.af.auth.SecurityOptionIFace;
 import edu.ku.brc.af.core.PermissionIFace;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.specify.SpecifyUserTypes;
 import edu.ku.brc.specify.datamodel.AttributeDef;
 import edu.ku.brc.specify.datamodel.AutoNumberingScheme;
 import edu.ku.brc.specify.datamodel.CollectingEventAttr;
@@ -121,10 +122,16 @@ public class DataObjPermissionEnumerator extends PermissionEnumerator
                         {
                             isOK = false;
                         }
+                        String mgrStr    = SpecifyUserTypes.UserType.Manager.toString();
+                        String fulAccStr = SpecifyUserTypes.UserType.FullAccess.toString();
+                        String limAccStr = SpecifyUserTypes.UserType.LimitedAccess.toString();
+                        String guestStr = SpecifyUserTypes.UserType.Guest.toString();
+                        
                         Hashtable<String, PermissionOptionPersist> hashItem = new Hashtable<String, PermissionOptionPersist>();
-                        hashItem.put("CollectionManager", new PermissionOptionPersist(name, "CollectionManager", true, true, true, true));
-                        hashItem.put("Guest",             new PermissionOptionPersist(name, "Guest",             isOK, false, false, false));
-                        hashItem.put("DataEntry",         new PermissionOptionPersist(name, "DataEntry",         isOK, isOK, false, true));
+                        hashItem.put(mgrStr,    new PermissionOptionPersist(name, mgrStr, true, true, true, true));
+                        hashItem.put(fulAccStr, new PermissionOptionPersist(name, fulAccStr,             isOK, false, false, false));
+                        hashItem.put(limAccStr, new PermissionOptionPersist(name, limAccStr,         isOK, isOK, false, true));
+                        hashItem.put(guestStr,  new PermissionOptionPersist(name, guestStr,         isOK, isOK, false, true));
                     
                         hash.put(name, hashItem);
                     }

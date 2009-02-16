@@ -21,6 +21,7 @@ import edu.ku.brc.af.core.PermissionIFace;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.SpecifyUserTypes;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -34,9 +35,10 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public abstract class BaseTask extends edu.ku.brc.af.tasks.BaseTask
 {
-    protected static final String COLLECTION_MANAGER = "CollectionManager";
-    protected static final String GUEST              = "Guest";
-    protected static final String DataENTRY          = "DataEntry";
+    //protected static final String MANAGER        = SpecifyUserTypes.UserType.Manager.toString();
+    //protected static final String FULL_ACCESS    = SpecifyUserTypes.UserType.FullAccess.toString();
+    //protected static final String LIMITED_ACCESS = SpecifyUserTypes.UserType.LimitedAccess.toString();
+    //protected static final String GUEST          = SpecifyUserTypes.UserType.Guest.toString();
     
     protected static WeakReference<Hashtable<String, PermissionOptionPersist>> taskPermsListWR = null;
     

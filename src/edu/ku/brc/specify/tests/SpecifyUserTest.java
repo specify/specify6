@@ -278,7 +278,7 @@ public class SpecifyUserTest extends TestCase
 //        {
 //            log.info("Creating SpecifyUser");
 //            log.info("createSpecifyUser");
-//            SpecifyUser  user         = createSpecifyUser("rods", "rods@ku.edu", /*(short) 0,*/ "rods" );//,"CollectionManager");
+//            SpecifyUser  user         = createSpecifyUser("rods", "rods@ku.edu", /*(short) 0,*/ "rods" );//,SpecifyUserTypes.UserType.Manager.toString());
 //            TaxonTreeDef taxonTreeDef = createTaxonTreeDef("Sample Taxon Tree Def");
 //            LithoStratTreeDef lithoStratTreeDef = createLithoStratTreeDef("Sample Litho Tree Def");
 //            
@@ -357,7 +357,7 @@ public class SpecifyUserTest extends TestCase
 //            DataType         dataType         = createDataType("fish");
 //            
 //            log.info("createSpecifyUser");
-//            SpecifyUser      user             = createSpecifyUser("admin", "admin@ku.edu", /*(short) 0,*/ "embeddedSpecifyAppRootPwd");//,spPrincipal);//, "CollectionManager");
+//            SpecifyUser      user             = createSpecifyUser("admin", "admin@ku.edu", /*(short) 0,*/ "embeddedSpecifyAppRootPwd");//,spPrincipal);//, SpecifyUserTypes.UserType.Manager.toString());
 //
 //            Institution    institution    = createInstitution("Natural History Museum");
 //            Division       division       = createDivision(institution, "fish", "Icthyology", "IT", "Icthyology");
