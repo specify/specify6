@@ -53,6 +53,7 @@
 	
 	
 	<!-- Specify Setup -->
+	<mapID target="Config_Overview"  url="SpecifyHelp/Configuration/config_overview.html" />
 	<mapID target="Inst_Hier"  url="SpecifyHelp/Configuration/institution_hierarchy.html" />
 	<mapID target="Add_Division"  url="SpecifyHelp/Configuration/institution_hierarchy.html#add_division" />
 	<mapID target="Add_Discipline"  url="SpecifyHelp/Configuration/institution_hierarchy.html#add_discipline" />
@@ -87,7 +88,7 @@
     <mapID target="SUBVIEW_FORM_HELP"   url="SpecifyHelp/Dialogs/subform_dialog.html" />
 	<mapID target="Using_Forms"         url="SpecifyHelp/Data_Entry/Using_Forms.html" />
     <mapID target="Data_Entry"          url="SpecifyHelp/Data_Entry/Data_Entry.html" />
-	<mapID target="Barcodes"           url="SpecifyHelp/Data_Entry/using_barcodes.html" />
+	<mapID target="Barcodes"           url="SpecifyHelp/Data_Entry/Using_Forms.html#forms_barcodes" />
 	<mapID target="Forms_Related_Information"   url="SpecifyHelp/Data_Entry/Using_Forms.html#forms_related_information" />
 	<mapID target="Forms_Controls"   url="SpecifyHelp/Data_Entry/Using_Forms.html#forms_controls" />
 	<mapID target="Forms_Unique_Boxes"   url="SpecifyHelp/Data_Entry/Using_Forms.html#forms_unique_boxes" />

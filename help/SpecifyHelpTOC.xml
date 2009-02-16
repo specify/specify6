@@ -48,7 +48,7 @@
 		  	 <tocitem text="Updating Procedure" target="Update"/>
 		  </tocitem>
 		  
-		  <tocitem text="Setting Up Specify" target="Inst_Hier">
+		  <tocitem text="Setting Up Specify" target="Config_Overview">
 		  	 <tocitem text="Institution Levels Overview" target="Inst_Hier">
 			 	<tocitem text="Adding Divisions" target="Add_Division"/>
 				<tocitem text="Adding Disciplines" target="Add_Discipline"/>
