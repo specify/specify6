@@ -7,12 +7,16 @@
         <tp name="BackupTask" type="Guest" view="true" modify="true" del="true" add="true"/>
       </entry>
       <entry>
-        <string>DataEntry</string>
-        <tp name="BackupTask" type="DataEntry" view="true" modify="true" del="true" add="true"/>
+        <string>FullAccess</string>
+        <tp name="BackupTask" type="FullAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
       <entry>
-        <string>CollectionManager</string>
-        <tp name="BackupTask" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+        <string>LimitedAccess</string>
+        <tp name="BackupTask" type="LimitedAccess" view="false" modify="false" del="false" add="false"/>
+      </entry>
+      <entry>
+        <string>Manager</string>
+        <tp name="BackupTask" type="Manager" view="true" modify="true" del="true" add="true"/>
       </entry>
     </hashtable>
   </entry>

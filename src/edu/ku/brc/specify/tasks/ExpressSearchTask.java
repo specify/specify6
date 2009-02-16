@@ -191,7 +191,10 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
     public void setEnabled(boolean enabled)
     {
         super.setEnabled(enabled);
-        searchBox.setEnabled(enabled);
+        if (searchBox != null)
+        {
+            searchBox.setEnabled(enabled);
+        }
     }
 
     /**

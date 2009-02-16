@@ -177,7 +177,7 @@
         <descs>
           <str language="en" country="" variant="">
             <version>0</version>
-            <text>Source of Accession, e.g. &amp;apos;Collecting&amp;apos;, &amp;apos;Gift&amp;apos;, &amp;apos;Bequest&amp;apos; ...</text>
+            <text>Source of Accession, e.g. `Collecting`, `Gift`, `Bequest` ...</text>
           </str>
         </descs>
       </item>
@@ -334,7 +334,7 @@
         <descs>
           <str language="en" country="" variant="">
             <version>0</version>
-            <text>Status of Accession, e.g. &amp;apos;In process&amp;apos;, &amp;apos;Complete&amp;apos; ...</text>
+            <text>Status of Accession, e.g. `In process`, `Complete` ...</text>
           </str>
         </descs>
       </item>
@@ -1562,7 +1562,7 @@
         <descs>
           <str language="en" country="" variant="">
             <version>0</version>
-            <text>Agent&amp;apos;s (person) job title at specified address and organization</text>
+            <text>Agent`s (person) job title at specified address and organization</text>
           </str>
         </descs>
       </item>
@@ -3406,7 +3406,7 @@
         <descs>
           <str language="en" country="" variant="">
             <version>0</version>
-            <text>Lender&amp;apos;s loan number</text>
+            <text>Lender`s loan number</text>
           </str>
         </descs>
       </item>
@@ -3922,7 +3922,7 @@
         <descs>
           <str language="en" country="" variant="">
             <version>0</version>
-            <text>Description of the material. &amp;apos;e.g. Bufo bufo skull&amp;apos;</text>
+            <text>Description of the material. `e.g. Bufo bufo skull`</text>
           </str>
         </descs>
       </item>
@@ -3963,7 +3963,7 @@
         <descs>
           <str language="en" country="" variant="">
             <version>0</version>
-            <text>e.g. &amp;apos;FMNH 223456&amp;apos;</text>
+            <text>e.g. `FMNH 223456`</text>
           </str>
         </descs>
       </item>
@@ -7215,7 +7215,7 @@ observation as a part of a museum collection. </text>
         <descs>
           <str language="en" country="" variant="">
             <version>0</version>
-            <text>The units for the measurements (&amp;apos;feet&amp;apos; or &amp;apos;meters&amp;apos;)</text>
+            <text>The units for the measurements (`feet` or `meters`)</text>
           </str>
         </descs>
       </item>
@@ -8900,7 +8900,7 @@ comparisons with previously cataloged specimens.</text>
         <descs>
           <str language="en" country="" variant="">
             <version>0</version>
-            <text>e.g. &amp;apos;Holotype&amp;apos;, &amp;apos;Paratype&amp;apos;...</text>
+            <text>e.g. `Holotype`, `Paratype`...</text>
           </str>
         </descs>
       </item>
@@ -10665,7 +10665,7 @@ Specify, determiner information is stored in the Agent table.</text>
         <descs>
           <str language="en" country="" variant="">
             <version>0</version>
-            <text>&amp;apos;Yes&amp;apos; if the Name and/or Geographic/Political entity is currently valid</text>
+            <text>`Yes` if the Name and/or Geographic/Political entity is currently valid</text>
           </str>
         </descs>
       </item>
@@ -16613,7 +16613,7 @@ incremented when a loan is made. </text>
         <descs>
           <str language="en" country="" variant="">
             <version>0</version>
-            <text>Permit category - &amp;apos;CITES&amp;apos;, &amp;apos;Migratory Bird Treaty Act&amp;apos;, ...</text>
+            <text>Permit category - `CITES`, `Migratory Bird Treaty Act`, ...</text>
           </str>
         </descs>
       </item>
@@ -19400,7 +19400,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         <descs>
           <str language="en" country="" variant="">
             <version>0</version>
-            <text>Shipper&amp;apos;s tracking number</text>
+            <text>Shipper`s tracking number</text>
           </str>
         </descs>
       </item>
@@ -19504,7 +19504,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         <descs>
           <str language="en" country="" variant="">
             <version>0</version>
-            <text>Description of shipment. E.g. &amp;apos;Hand-carried&amp;apos;, &amp;apos;Overnight&amp;apos;, &amp;apos;Air&amp;apos;, &amp;apos;Land&amp;apos;, &amp;apos;Sea&amp;apos;, ...</text>
+            <text>Description of shipment. E.g. `Hand-carried`, `Overnight`, `Air`, `Land`, `Sea`, ...</text>
           </str>
         </descs>
       </item>

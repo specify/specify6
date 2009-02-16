@@ -4709,7 +4709,7 @@ public class BuildSampleDatabase
         ////////////////////////////////
         Session dataBuilderSession = switchDataBuilderSession();
         Map<String, SpPrincipal> groupMap = DataBuilder.createStandardGroups(collection);
-
+        
         // add the administrator as a Collections Manager in this group
         user.addUserToSpPrincipalGroup(groupMap.get(SpecifyUserTypes.UserType.Manager.toString()));
 

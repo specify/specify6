@@ -6,7 +6,7 @@
         <!-- Defines default user groups to be created under this scope -->
         <UserGroup name="Administrators"
                    spPrincipalClass="edu.ku.brc.af.auth.specify.principal.AdminPrincipal"
-                   userType="CollectionManager">
+                   userType="Manager">
 
             <!-- Administrators have permission to do everything in the system.
                  That behaviour is hardcoded into the application so there
@@ -22,9 +22,9 @@
 
     <DefaultUserGroups scope="Collection">
         <UserGroup 
-        		name="Collection Manager"
+        		name="Manager"
             	spPrincipalClass="edu.ku.brc.af.auth.specify.principal.GroupPrincipal"
-            	userType="CollectionManager">
+            	userType="Manager">
 
             <Permissions>
                 <Permission name="View.*" actions="view,add,modify,delete"/>
@@ -33,9 +33,20 @@
         </UserGroup>
         
         <UserGroup
-        		name="Data Entry"
+                name="Full Access"
                 spPrincipalClass="edu.ku.brc.af.auth.specify.principal.GroupPrincipal"
-                userType="DataEntry">
+                userType="FullAccess">
+
+            <Permissions>
+                <Permission name="View.*" actions="view,add,modify,delete"/>
+                <Permission name="SensitiveData" actions="view"/>
+            </Permissions>
+        </UserGroup>
+        
+        <UserGroup
+                name="Limited Access"
+                spPrincipalClass="edu.ku.brc.af.auth.specify.principal.GroupPrincipal"
+                userType="LimitedAccess">
 
             <Permissions>
                 <Permission name="View.*" actions="view,add,modify"/>

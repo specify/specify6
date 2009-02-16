@@ -2419,7 +2419,7 @@ public class DataBuilder
         }
         
         usertypeToDefaultGroup = new HashMap<String, String>();
-        usertypeToDefaultGroup.put(SpecifyUserTypes.UserType.Manager.toString(),       "Collection Managers");
+        usertypeToDefaultGroup.put(SpecifyUserTypes.UserType.Manager.toString(),       "Managers");
         usertypeToDefaultGroup.put(SpecifyUserTypes.UserType.FullAccess.toString(),    "Full Access Users");
         usertypeToDefaultGroup.put(SpecifyUserTypes.UserType.LimitedAccess.toString(), "Limited Access Users");
         usertypeToDefaultGroup.put(SpecifyUserTypes.UserType.Guest.toString(),         "Guests");
@@ -2435,7 +2435,8 @@ public class DataBuilder
         
         Map<String, SpPrincipal> groupMap = new HashMap<String, SpPrincipal>();
 
-        for (String usertype : usertypeToDefaultGroup.keySet()) {
+        for (String usertype : usertypeToDefaultGroup.keySet()) 
+        {
             SpPrincipal group = createGroup(usertypeToDefaultGroup.get(usertype), usertype, scope);
             groupMap.put(usertype, group);
         }
@@ -2455,18 +2456,18 @@ public class DataBuilder
                                                 final String      prefix,
                                                 final Map<String, SpPrincipal> groupMap)
     {
-        Hashtable<String, Hashtable<String, PermissionOptionPersist>> mainHash = 
-            BaseTask.readDefaultPrefsFromXML(filename);
-        
-        Enumeration<String> mainHashKeys = mainHash.keys();
-        while (mainHashKeys.hasMoreElements())
+        Hashtable<String, Hashtable<String, PermissionOptionPersist>> mainHash = BaseTask.readDefaultPrefsFromXML(filename);
+
+        for (SpPrincipal p : groupMap.values())
         {
-            String permName = mainHashKeys.nextElement();
+            persist(p);
+        }
+
+        for (String permName : mainHash.keySet())
+        {
             Hashtable<String, PermissionOptionPersist> hash = mainHash.get(permName);
-            Enumeration<String> hashKeys = hash.keys();
-            while (hashKeys.hasMoreElements()) 
+            for (String userType : hash.keySet()) 
             {
-                String userType = hashKeys.nextElement();
                 PermissionOptionPersist tp = hash.get(userType);
                 SpPermission perm = tp.getSpPermission();
                 persist(perm);
