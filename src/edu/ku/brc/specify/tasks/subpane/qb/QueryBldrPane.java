@@ -1032,8 +1032,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         }
         catch (Exception ex)
         {
-            UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryBldrPane.class, ex);
             UIRegistry.getStatusBar().setErrorMessage(ex.getLocalizedMessage(), ex);
             UIRegistry.writeTimedSimpleGlassPaneMsg(ex.getLocalizedMessage(), Color.RED);
             runningResults.set(null);
