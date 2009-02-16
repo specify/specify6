@@ -844,8 +844,6 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                         }
                         catch (ParseException ex)
                         {
-                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryFieldPanel.class, ex);
                             throw new ParseException(getLabel()
                                     + " - "
                                     + String.format(UIRegistry.getResourceString("QB_PARSE_ERROR"),
