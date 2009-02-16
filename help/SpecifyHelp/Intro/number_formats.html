@@ -12,29 +12,67 @@
   </tr>
 </table>
 <h2>Creating Number Formats</h2>
-<p>This needs a white paper and more work as well!</p>
+<p>Specify serves several collection disciplines, each with its own practices and traditions. Some of the concepts that underlie Specify will be familiar to some collections and unfamiliar to others. However, a few basic concepts deserve mention. Specify requires a unique catalog number for each specimen. It does not matter what catalog number you use for a specimen as long as the number is unique for the catalog series. Many museums routinely assign catalog numbers to incoming specimens. Those institutions can simply enter catalog numbers determined through the museum's accepted cataloging practices. Some institutions do not use catalog numbers. Many herbaria, for example, have never maintained a printed catalog. Those institutions may question the need to assign each specimen a catalog number in Specify. But nothing in the Specify environment requires changes to your existing methods for organizing and storing specimens. For example, you can still store sheets by genus and species in phylogenetic or alphabetical order if that is your established procedure. If you do not use catalog numbers and do not want to assign a number just for Specify, you can configure Specify to automatically assign a catalog number to each new specimen and then ignore the numbers for all practical purposes. </p>
+<p>For institutions that have an existing format for their catalog number, Specify offers a number formatting tool that can accomodate numbers, institution codes and years. Accessions, Loans and Gifts also require unique numbers and can be formatted using the formatting tool.</p>
 <p>&nbsp;</p>
-<h3>Attachments</h3>
-<p>Many tables in Specify 6 allow  Attachments. Specify copies any attached files to a specified Attachment Repository using a designated path. It is necessary to create the storage location before users will be allowed to create attachments. It is recommended that the attachment repository be on a shared network drive that all users have been given Read/Write/Delete permission for, rather than on a personal (local) computer. If attachments are stored locally they can not be shared.</p>
-<p>Once the attachment repository has been designated it is necessary to communicate the path to the attachment repository. Users will then need to enter this Attachment path in their user Preferences.</p>
-<ul>
-  <li>For Mac: <em>Specify &gt; Preferences &gt; System &gt; Attachment Storage Location. </em> </li>
-  <li>For PC and Linux: Choose <em>Edit &gt; Preferences &gt; System &gt; Attachment Storage Location</em>.</li>
-</ul>
-<p><em><strong>Note:</strong></em> if the attached file is an image, Specify also creates and stores an icon for the image in the Attachment Storage Location.</p>
-<p>If a path does not exist or Specify is not able to connect to the path the Attachment button will become disabled on the forms.</p>
-<p>Accepted Attachment files include:</p>
-<ul>
-  <li>text </li>
-  <li>audio </li>
-  <li>binary </li>
-  <li>pdf </li>
-  <li>image 
-    
-    (jpg, png, gif) </li>
-  <li>html </li>
-  <li>spreadsheet</li>
-</ul>
+<p>Once created, the formats are available for use by any collection or division by ...</p>
+<p>The formatting tool is accessible ...</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<h3><img src="../../images/number_format_screen.png" width="360" height="180" /></h3>
+<p><strong>Name</strong> refers to the name of the format and will display an any format lists. </p>
+<p><strong>Title</strong> refers to the name stored in the database. The title should be short and not contain spaces. </p>
+<p><strong>Pattern</strong> refers to the format of the number as designated by the code used for the type of data entered. Enter the pattern using the code listed in the Help section, located on the right side of the formatting tool. For example, the catalog number 'KU 4434' would use the pattern &quot;aa ####&quot;. </p>
+<p>Alphanumeric allows alphabet and integers (numbers) and is designated by an 'A'. This is often useful when accomodating more than one legacy format.</p>
+<p>Alphabetic allows only alphabet to be entered. This is often used for institution codes and is designated by an 'a'.</p>
+<p>Integer  allows only numbers to be entered.</p>
+<p>Auto-incrementing number allows only numbers to be entered and can be auto incremented or entered manually by turning the Auto Numbering tool off. </p>
+<p>Example codes and patterns:</p>
+<table width="51%" border="1" cellspacing="2" cellpadding="6">
+  <tr>
+    <td width="40%"><u><strong>Number Format</strong></u></td>
+    <td width="34%"><u><strong>Pattern</strong></u></td>
+    <td width="26%"><u><strong>Auto Incremented</strong></u></td>
+  </tr>
+  <tr>
+    <td>KU 4434</td>
+    <td>aa ####</td>
+    <td>yes</td>
+  </tr>
+  <tr>
+    <td>KU-4434</td>
+    <td>aa-NNNN</td>
+    <td>no</td>
+  </tr>
+  <tr>
+    <td>KU/443A</td>
+    <td>aa/AAAA</td>
+    <td>no</td>
+  </tr>
+  <tr>
+    <td>2009-KU-4434</td>
+    <td>YEAR-aa-####</td>
+    <td>yes</td>
+  </tr>
+  <tr>
+    <td>anything</td>
+    <td>AAAAAAAAAA</td>
+    <td>no</td>
+  </tr>
+  <tr>
+    <td>0000000001</td>
+    <td>##########</td>
+    <td>yes</td>
+  </tr>
+  <tr>
+    <td>*0000000001</td>
+    <td>NNNNNNNNNN</td>
+    <td>no</td>
+  </tr>
+</table>
+<p>When manually entering numbers it is paramount that numbers be padded with 0's. For example, if 3 numbers are available in a numbering scheme (###) and the desired number is 1, then 001 must be entered. If only 1 is entered, then Specify will read this as 100. This will produce incorrect results in searches, queries and reports. </p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
 <p>&nbsp;</p>
 <p>&nbsp;</p>
 </body>
