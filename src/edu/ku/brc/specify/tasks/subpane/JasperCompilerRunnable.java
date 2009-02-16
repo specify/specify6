@@ -29,7 +29,7 @@ public class JasperCompilerRunnable implements Runnable
     protected final String	               resourceName;
     protected Vector<ReportCompileInfo> 	files = null;
     protected boolean compileRequired     	= true;
-
+    
     /**
      * Constructs a an object to execute an SQL staement and then notify the listener
      * @param listener the listener
@@ -168,6 +168,7 @@ public class JasperCompilerRunnable implements Runnable
         }
         thread = null;
         notifyAll();
+        listener.compileComplete(null);
     }
 
     /**
@@ -201,7 +202,7 @@ public class JasperCompilerRunnable implements Runnable
             ex.printStackTrace();
             if (listener != null)
             {
-                listener.compileComplete(null);
+            	listener.compileComplete(null);
             }
         }
     }

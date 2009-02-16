@@ -26,6 +26,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -87,7 +88,8 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
     protected AsynchronousFillHandle asyncFillHandler = null;
     protected JLabel                 label            = null;
     protected JasperCompilerRunnable compiler         = null;
-
+    protected AtomicBoolean			 compiling        = new AtomicBoolean(false);
+    protected AtomicBoolean			 filling          = new AtomicBoolean(false);
     protected RecordSetIFace         recordSet        = null;
     protected JRDataSource           dataSource       = null;
     protected File                   cachePath        = null;
@@ -108,11 +110,38 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
                       final Taskable   task, 
                       final Properties params)
     {
-        super(name, task);
+        super(name, task, true, true);
         
         this.params = params;
        
         cachePath = JasperReportsCache.checkAndCreateReportsCache();
+        
+        progressCancelBtn.addActionListener(new ActionListener(){
+
+			/* (non-Javadoc)
+			 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+			 */
+			@Override
+			public void actionPerformed(ActionEvent arg0)
+			{
+				System.out.println(compiling.get() + ", " + filling.get());
+				if (compiler != null && compiling.get())
+				{
+					compiler.stop();
+				}
+				else if (asyncFillHandler != null && filling.get())
+				{
+					try
+					{
+						asyncFillHandler.cancellFill();
+					} catch (JRException ex)
+					{
+						log.error(ex);
+					}
+				}
+			}
+        	
+        });
         
     }
 
@@ -239,6 +268,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
         {
             progressLabel.setText(getResourceString("JasperReportCompiling"));            
             compiler = new JasperCompilerRunnable(this, mainReportName, resName); 
+            compiling.set(true);
             compiler.start();
         }        
     }
@@ -249,7 +279,8 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
      */
     public void compileComplete(final File compiledFile)
     {
-        if (compiledFile != null)
+        compiling.set(false);
+    	if (compiledFile != null)
         {
             try
             {
@@ -350,6 +381,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
                                     parameters, dataSource);
                         }
                         asyncFillHandler.addListener(this);
+                        filling.set(true);
                         asyncFillHandler.startFill();
                     }
                     else
@@ -388,7 +420,10 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
      */
     public void reportCancelled()
     {
+        removeAll();
+        setLabelText(getResourceString("JasperReportCancelled"));
         asyncFillHandler = null;
+        closeSession();
     }
     
     protected void closeSession()
@@ -472,7 +507,8 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
      */
     public void reportFinished(JasperPrint print)
     {
-        try
+        filling.set(false);
+    	try
         {
             removeAll();
             label = null;

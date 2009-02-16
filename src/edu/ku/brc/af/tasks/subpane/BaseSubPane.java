@@ -36,6 +36,7 @@ import java.awt.print.PrinterJob;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
@@ -54,6 +55,7 @@ import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.ui.GraphicsUtils;
 import edu.ku.brc.ui.JTiledPanel;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.skin.SkinItem;
 import edu.ku.brc.ui.skin.SkinsMgr;
@@ -79,6 +81,7 @@ public class BaseSubPane extends JTiledPanel implements SubPaneIFace, Printable
     protected JLabel            progressLabel;
     
     protected JPanel			progressBarPanel;
+    protected JButton           progressCancelBtn = null;
 
 
     /**
@@ -92,9 +95,20 @@ public class BaseSubPane extends JTiledPanel implements SubPaneIFace, Printable
     public BaseSubPane(final String name,
                        final Taskable task)
     {
-        this(name, task, true);
+        this(name, task, true, false);
     }
     
+    /**
+     * @param name
+     * @param task
+     * @param buildProgressUI
+     */
+    public BaseSubPane(final String name,
+                       final Taskable task,
+                       final boolean  buildProgressUI)
+    {
+    	this(name, task, buildProgressUI, false);
+    }
     /**
      * Constructs a base class that implements the SubPanelIFace interface
      * which enables derived classes to participate in the main pane.
@@ -106,7 +120,8 @@ public class BaseSubPane extends JTiledPanel implements SubPaneIFace, Printable
      */
     public BaseSubPane(final String name,
                        final Taskable task,
-                       final boolean  buildProgressUI)
+                       final boolean  buildProgressUI,
+                       final boolean includeProgressCancelBtn)
     {
         this.name    = name;
         this.task    = task;
@@ -124,10 +139,16 @@ public class BaseSubPane extends JTiledPanel implements SubPaneIFace, Printable
     
             builder.add(progressBar, cc.xy(1,1));
             builder.add(progressLabel = createLabel("", SwingConstants.CENTER), cc.xy(1,3)); //$NON-NLS-1$
-    
-            PanelBuilder    builder2    = new PanelBuilder(new FormLayout("center:p:g", "center:p:g")); //$NON-NLS-1$ //$NON-NLS-2$
+            PanelBuilder    builder2    = includeProgressCancelBtn ?
+            		new PanelBuilder(new FormLayout("center:p:g", "center:p:g, p, top:p")): 
+            		new PanelBuilder(new FormLayout("center:p:g", "center:p:g")); //$NON-NLS-1$ //$NON-NLS-2$
+            		
             builder2.add(builder.getPanel(), cc.xy(1,1));
-    
+            if (includeProgressCancelBtn)
+            {
+            	progressCancelBtn = UIHelper.createButton(UIRegistry.getResourceString("CANCEL"));
+            	builder2.add(progressCancelBtn, cc.xy(1, 3));
+            }
             progressBarPanel = builder2.getPanel();
             add(progressBarPanel, BorderLayout.CENTER);
         }
@@ -377,5 +398,13 @@ public class BaseSubPane extends JTiledPanel implements SubPaneIFace, Printable
      */
     public void shutdown()
     {
+    }
+    
+    /**
+     * @return true if progressBarPanel should contain a cancel button.
+     */
+    protected boolean allowProgressCancel()
+    {
+    	return false;
     }
 }
