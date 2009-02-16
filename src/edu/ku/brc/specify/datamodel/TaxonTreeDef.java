@@ -74,6 +74,7 @@ public class TaxonTreeDef extends BaseTreeDef<Taxon, TaxonTreeDef, TaxonTreeDefI
     protected Discipline            discipline;
     protected Set<Taxon>            treeEntries;
     protected Set<TaxonTreeDefItem> treeDefItems;
+    protected List<TreeDefItemStandardEntry> stdLevels = null;
     
     /** default constructor */
     public TaxonTreeDef()
@@ -88,43 +89,62 @@ public class TaxonTreeDef extends BaseTreeDef<Taxon, TaxonTreeDef, TaxonTreeDefI
     @Transient
     public List<TreeDefItemStandardEntry> getStandardLevels()
     {
-        List<TreeDefItemStandardEntry> result = new LinkedList<TreeDefItemStandardEntry>();
+        if (stdLevels == null)
+        {
+        	stdLevels = new LinkedList<TreeDefItemStandardEntry>();
        
-        result.add(new TreeDefItemStandardEntry(getLocalizedLevelName(TAXONOMY_ROOT), TAXONOMY_ROOT));
-        result.add(new TreeDefItemStandardEntry(getLocalizedLevelName(KINGDOM), KINGDOM));
-        result.add(new TreeDefItemStandardEntry(getLocalizedLevelName(SUBKINGDOM), SUBKINGDOM));
-        result.add(new TreeDefItemStandardEntry(getLocalizedLevelName(DIVISION), DIVISION));
-        result.add(new TreeDefItemStandardEntry(getLocalizedLevelName(PHYLUM+1), PHYLUM));
-        result.add(new TreeDefItemStandardEntry(getLocalizedLevelName(SUBDIVISION), SUBDIVISION));
-        result.add(new TreeDefItemStandardEntry(getLocalizedLevelName(SUBPHYLUM+1), SUBPHYLUM));
-        result.add(new TreeDefItemStandardEntry(getLocalizedLevelName(SUPERCLASS), SUPERCLASS));
-        result.add(new TreeDefItemStandardEntry(getLocalizedLevelName(CLASS), CLASS));
-        result.add(new TreeDefItemStandardEntry(getLocalizedLevelName(SUBCLASS), SUBCLASS));
-        result.add(new TreeDefItemStandardEntry(getLocalizedLevelName(INFRACLASS), INFRACLASS));
-        result.add(new TreeDefItemStandardEntry(getLocalizedLevelName(SUPERORDER), SUPERORDER));
-        result.add(new TreeDefItemStandardEntry(getLocalizedLevelName(ORDER), ORDER));
-        result.add(new TreeDefItemStandardEntry(getLocalizedLevelName(SUBORDER), SUBORDER));
-        result.add(new TreeDefItemStandardEntry(getLocalizedLevelName(INFRAORDER), INFRAORDER));
-        result.add(new TreeDefItemStandardEntry(getLocalizedLevelName(SUPERFAMILY), SUPERFAMILY));
-        result.add(new TreeDefItemStandardEntry(getLocalizedLevelName(FAMILY), FAMILY));
-        result.add(new TreeDefItemStandardEntry(getLocalizedLevelName(SUBFAMILY), SUBFAMILY));
-        result.add(new TreeDefItemStandardEntry(getLocalizedLevelName(TRIBE), TRIBE));
-        result.add(new TreeDefItemStandardEntry(getLocalizedLevelName(SUBTRIBE), SUBTRIBE));
-        result.add(new TreeDefItemStandardEntry(getLocalizedLevelName(GENUS), GENUS));
-        result.add(new TreeDefItemStandardEntry(getLocalizedLevelName(SUBGENUS), SUBGENUS));
-        result.add(new TreeDefItemStandardEntry(getLocalizedLevelName(SECTION), SECTION));
-        result.add(new TreeDefItemStandardEntry(getLocalizedLevelName(SUBSECTION), SUBSECTION));
-        result.add(new TreeDefItemStandardEntry(getLocalizedLevelName(SPECIES), SPECIES));
-        result.add(new TreeDefItemStandardEntry(getLocalizedLevelName(SUBSPECIES), SUBSPECIES));
-        result.add(new TreeDefItemStandardEntry(getLocalizedLevelName(VARIETY), VARIETY));
-        result.add(new TreeDefItemStandardEntry(getLocalizedLevelName(SUBVARIETY), SUBVARIETY));
-        result.add(new TreeDefItemStandardEntry(getLocalizedLevelName(FORMA), FORMA));
-        result.add(new TreeDefItemStandardEntry(getLocalizedLevelName(SUBFORMA), SUBFORMA));
-        
-        return result;
+        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(TAXONOMY_ROOT), TAXONOMY_ROOT));
+        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(KINGDOM), KINGDOM));
+        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(SUBKINGDOM), SUBKINGDOM));
+        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(DIVISION), DIVISION));
+        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(PHYLUM+1), PHYLUM));
+        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(SUBDIVISION), SUBDIVISION));
+        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(SUBPHYLUM+1), SUBPHYLUM));
+        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(SUPERCLASS), SUPERCLASS));
+        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(CLASS), CLASS));
+        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(SUBCLASS), SUBCLASS));
+        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(INFRACLASS), INFRACLASS));
+        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(SUPERORDER), SUPERORDER));
+        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(ORDER), ORDER));
+        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(SUBORDER), SUBORDER));
+        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(INFRAORDER), INFRAORDER));
+        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(SUPERFAMILY), SUPERFAMILY));
+        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(FAMILY), FAMILY));
+        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(SUBFAMILY), SUBFAMILY));
+        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(TRIBE), TRIBE));
+        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(SUBTRIBE), SUBTRIBE));
+        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(GENUS), GENUS));
+        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(SUBGENUS), SUBGENUS));
+        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(SECTION), SECTION));
+        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(SUBSECTION), SUBSECTION));
+        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(SPECIES), SPECIES));
+        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(SUBSPECIES), SUBSPECIES));
+        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(VARIETY), VARIETY));
+        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(SUBVARIETY), SUBVARIETY));
+        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(FORMA), FORMA));
+        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(SUBFORMA), SUBFORMA));
+        }
+        return new LinkedList<TreeDefItemStandardEntry>(stdLevels);
     }
+    
+    /* (non-Javadoc)
+	 * @see edu.ku.brc.specify.datamodel.BaseTreeDef#isRequiredLevel(int)
+	 */
+	@Override
+	@Transient
+	public boolean isRequiredLevel(int levelRank)
+	{
+		return levelRank == KINGDOM
+			|| levelRank == DIVISION
+			|| levelRank == PHYLUM
+			|| levelRank == CLASS
+			|| levelRank == ORDER
+			|| levelRank == FAMILY
+			|| levelRank == GENUS
+			|| levelRank == SPECIES;
+	}
 
-    /**
+	/**
      * @param levelRank
      * @return localized text corresponding to levelRank.
      */
@@ -391,7 +411,7 @@ public class TaxonTreeDef extends BaseTreeDef<Taxon, TaxonTreeDef, TaxonTreeDefI
     @Transient
     public int getSynonymizedLevel()
     {
-        return TaxonTreeDef.GENUS;
+        return TaxonTreeDef.FAMILY;
     }
 
 	/* (non-Javadoc)

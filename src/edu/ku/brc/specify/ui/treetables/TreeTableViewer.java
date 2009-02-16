@@ -83,6 +83,7 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.StaleObjectException;
 import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
@@ -2571,7 +2572,13 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         {
 	        if (draggedNode.isHasChildren())
 	        {
-	            return false;
+	            Integer acceptedChildren = BasicSQLUtils.getCount("select count(*) from "
+	            		+ treeDef.getNodeClass().getSimpleName().toLowerCase() + " where ParentId = "
+	            		+ draggedNode.getId() + " and IsAccepted");
+	        	if (acceptedChildren != null && acceptedChildren.intValue() > 0)
+	        	{
+	        		return false;
+	        	}
 	        }
 	        
 	        int draggedRankId = draggedNode.getRank();
@@ -2602,7 +2609,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	{
 	    return 
 	        TreeHelper.canChildBeReparentedToNode(draggedNode.getRank(), droppedOnNode.getRank(), treeDef)
-	        && draggedNode.getParentId() != droppedOnNode.getId();
+	        && draggedNode.getParentId() != droppedOnNode.getId()
+	        && droppedOnNode.getAcceptedParentId() == null;
 	}
 	
     /* (non-Javadoc)

@@ -717,6 +717,26 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
 	public boolean isSynonymySupported() 
 	{
 		return false;
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.datamodel.TreeDefIface#isRequiredLevel(int)
+	 */
+	@Override
+	@Transient
+	public boolean isRequiredLevel(int levelRank)
+	{
+		return false;
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.datamodel.DataModelObjBase#initialize()
+	 */
+	@Override
+	public void initialize()
+	{
+		// TODO Auto-generated method stub
+		
 	}    
 	
     
