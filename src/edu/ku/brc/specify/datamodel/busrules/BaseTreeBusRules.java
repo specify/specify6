@@ -168,7 +168,29 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
 
     public abstract String[] getRelatedTableAndColumnNames();
     
-    /**
+    
+    /* (non-Javadoc)
+	 * @see edu.ku.brc.af.ui.forms.BaseBusRules#okToEnableDelete(java.lang.Object)
+	 */
+    @SuppressWarnings("unchecked")
+	@Override
+	public boolean okToEnableDelete(Object dataObj)
+	{
+        // This is a little weak and chessey, but it gets the job done.
+        // Becase both the Tree and Definition want/need to share Business Rules.
+        String viewName = formViewObj.getView().getName();
+        if (StringUtils.contains(viewName, "TreeDef"))
+        {
+            final I treeDefItem = (I)dataObj;
+            if (treeDefItem != null && treeDefItem.getTreeDef() != null)
+            {
+            	return treeDefItem.getTreeDef().isRequiredLevel(treeDefItem.getRankId());
+            }
+        }
+        return super.okToEnableDelete(dataObj);
+	}
+
+	/**
      * @param node
      * @return
      */
@@ -385,20 +407,6 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
                     parentComboBox.requestFocus();
                 }
                 rankChanged(formViewObj, parentComboBox, rankComboBox, acceptedCheckBox, acceptedParentWidget);
-//                if (canAccessSynonymy(formNode))
-//                {
-//                    boolean canSynonymize = formNode.getDefinition()
-//                    .getSynonymizedLevel() <= formNode.getRankId()
-//                    && formNode.getDescendantCount() == 0;
-//
-//                	acceptedCheckBox.setEnabled(canSynonymize && theParent != null);
-//                	if (!acceptedCheckBox.isSelected() && acceptedCheckBox.isEnabled())
-//                	{
-//                        acceptedParentWidget.setValue(null, null);
-//                        acceptedParentWidget.setChanged(true); // This should be done automatically
-//                        acceptedParentWidget.setEnabled(false);
-//                	}
-//                }
                 form.getValidator().validateForm();
             }
         });
@@ -542,16 +550,16 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
             if (nodeInForm != null && nodeInForm.getTreeDef() != null)
             {
                 List<TreeDefItemStandardEntry> stds = nodeInForm.getTreeDef().getStandardLevels();
-                boolean isStandardLevel = false;
+                TreeDefItemStandardEntry stdLevel = null;
                 for (TreeDefItemStandardEntry std : stds)
                 {
                     if (std.getName().equals(nodeInForm.getName()) && std.getRank() == nodeInForm.getRankId())
                     {
-                        isStandardLevel = true;
+                        stdLevel = std;
                         break;
                     }
                 }
-                if (isStandardLevel)
+                if (stdLevel != null)
                 {
                     ValTextField nameCtrl = (ValTextField )formViewObj.getControlByName("name");
                     Component rankCtrl = formViewObj.getControlByName("rankId");
@@ -562,6 +570,14 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
                     if (rankCtrl != null)
                     {
                         rankCtrl.setEnabled(false);
+                    }
+                    if (nodeInForm.getTreeDef().isRequiredLevel(stdLevel.getRank()))
+                    {
+                        Component enforcedCtrl = formViewObj.getControlByName("isEnforced");
+                        if (enforcedCtrl != null)
+                        {
+                        	enforcedCtrl.setEnabled(false);
+                        }
                     }
                 }
             }

@@ -905,7 +905,9 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 		    return;
 		}
         newItem.setRankId(rank);
-        if (stdLevel != null)
+        final boolean isRequiredLevel = displayedDef.isRequiredLevel(stdLevel.getRank());
+        newItem.setIsEnforced(isRequiredLevel);
+        if (stdLevel.getRank() != -1 )
         {
             newItem.setName(stdLevel.getName());
         }
@@ -961,6 +963,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                 @Override
                 public Object construct()
                 {
+                    success = true;
                     // determine if the change can be made without requiring tree node changes
                     if (newItem.getIsEnforced() != null && newItem.getIsEnforced().booleanValue() == true)
                     {
@@ -968,7 +971,19 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                         if (nodesToChange != null && nodesToChange.size() > 0)
                         {
                             StringBuilder message = new StringBuilder("<html><h3><center>"); //$NON-NLS-1$
-                            message.append(getResourceString("TDE_CantEnforceNewLevel")); //$NON-NLS-1$
+                            if (isRequiredLevel)
+                            {
+                            	//This should only be possible if required levels were not added when
+                            	//a treeDef was originally created. 
+                            	//Since new treeDefs cannot be created in Specify6.0, it should never happen,
+                            	//as long as db wizards and converters ensure that all required levels
+                            	//are present in treeDefs.
+                            	message.append(getResourceString("TDE_CantAddNewEnforcedLevel"));
+                            }
+                            else
+                            {
+                            	message.append(getResourceString("TDE_CantEnforceNewLevel")); //$NON-NLS-1$
+                            }
                             message.append("</center></h3><ul>"); //$NON-NLS-1$
                             for (String node: nodesToChange)
                             {
@@ -988,85 +1003,108 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                             errorDialog.setSize(650, 200);
                             errorDialog.setVisible(true);
                             
-                            newItem.setIsEnforced(false);
-                        }
-                    }
-
-                    // save the node and update the tree viewer appropriately
-                    DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-                    success = true;
-                    
-                    if (businessRules != null)
-                    {
-                        businessRules.beforeSave(newItem,session);
-                        if (origChild != null)
-                        {
-                            businessRules.beforeSave(origChild, session);
-                        }
-                    }
-                    
-                    try
-                    {
-                        session.beginTransaction();
-                        session.saveOrUpdate(newItem);
-                        if (businessRules != null)
-                        {
-                            if (!businessRules.beforeSaveCommit(newItem, session))
+                            if (isRequiredLevel)
                             {
-                                throw new Exception("Business rules processing failed"); //$NON-NLS-1$
+                            	success = false;
                             }
-                            if (origChild != null)
+                            else
                             {
-                                if (!businessRules.beforeSaveCommit(origChild, session))
-                                {
-                                    throw new Exception("Business rules processing failed"); //$NON-NLS-1$
-                                }
+                            	newItem.setIsEnforced(false);
                             }
                         }
-                        session.commit();
-                        //Rank-checking requires displayedDef to up-to-date wrt inserts and deletes:
-                        displayedDef.getTreeDefItems().add(newItem);
-
-                        notifyApplication(newItem, NEW_ITEM);
-                        
-                        log.info("Successfully saved changes to " + newItem.getName()); //$NON-NLS-1$
-                        
-                    }
-                    catch (Exception e)
-                    {
-                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TreeDefinitionEditor.class, e);
-                        success = false;
-                        UIRegistry.showLocalizedError("UNRECOVERABLE_DB_ERROR"); //$NON-NLS-1$
-
-                        log.error("Error while saving node changes.  Rolling back transaction.", e); //$NON-NLS-1$
-                        session.rollback();
-                    }
-                    finally
-                    {
-                        session.close();
-                    }
-                    
-                    // at this point, the new node is in the DB (if success == true)
-
-                    session = DataProviderFactory.getInstance().createSession();
-                    session.refresh(newItem);
-                    session.refresh(parent);
-                    if (origChild != null)
-                    {
-                        session.refresh(origChild);
                     }
 
-                    if (businessRules != null && success == true)
-                    {
-                        businessRules.afterSaveCommit(newItem, session);
-                        if (origChild != null)
-                        {
-                            businessRules.afterSaveCommit(origChild, session);
-                        }
-                    }
-                    session.close();
-                    
+                    if (success)
+					{
+						// save the node and update the tree viewer
+						// appropriately
+						DataProviderSessionIFace session = DataProviderFactory
+								.getInstance().createSession();
+
+						if (businessRules != null)
+						{
+							businessRules.beforeSave(newItem, session);
+							if (origChild != null)
+							{
+								businessRules.beforeSave(origChild, session);
+							}
+						}
+
+						try
+						{
+							session.beginTransaction();
+							session.saveOrUpdate(newItem);
+							if (businessRules != null)
+							{
+								if (!businessRules.beforeSaveCommit(newItem,
+										session))
+								{
+									throw new Exception(
+											"Business rules processing failed"); //$NON-NLS-1$
+								}
+								if (origChild != null)
+								{
+									if (!businessRules.beforeSaveCommit(
+											origChild, session))
+									{
+										throw new Exception(
+												"Business rules processing failed"); //$NON-NLS-1$
+									}
+								}
+							}
+							session.commit();
+							// Rank-checking requires displayedDef to up-to-date
+							// wrt inserts and deletes:
+							displayedDef.getTreeDefItems().add(newItem);
+
+							notifyApplication(newItem, NEW_ITEM);
+
+							log
+									.info("Successfully saved changes to " + newItem.getName()); //$NON-NLS-1$
+
+						} catch (Exception e)
+						{
+							edu.ku.brc.af.core.UsageTracker
+									.incrHandledUsageCount();
+							edu.ku.brc.exceptions.ExceptionTracker
+									.getInstance().capture(
+											TreeDefinitionEditor.class, e);
+							success = false;
+							UIRegistry
+									.showLocalizedError("UNRECOVERABLE_DB_ERROR"); //$NON-NLS-1$
+
+							log
+									.error(
+											"Error while saving node changes.  Rolling back transaction.", e); //$NON-NLS-1$
+							session.rollback();
+						} finally
+						{
+							session.close();
+						}
+
+						// at this point, the new node is in the DB (if success
+						// == true)
+
+						session = DataProviderFactory.getInstance()
+								.createSession();
+						session.refresh(newItem);
+						session.refresh(parent);
+						if (origChild != null)
+						{
+							session.refresh(origChild);
+						}
+
+						if (businessRules != null && success == true)
+						{
+							businessRules.afterSaveCommit(newItem, session);
+							if (origChild != null)
+							{
+								businessRules.afterSaveCommit(origChild,
+										session);
+							}
+						}
+						session.close();
+					}   
                     return success;
                 }
 
