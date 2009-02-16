@@ -709,8 +709,16 @@ public class SpecifyAppContextMgr extends AppContextMgr
                                             final String         localizedTitle,
                                             final boolean        createWhenNotFound)
     {
-        StringBuilder sb = new StringBuilder("FROM SpAppResourceDir WHERE specifyUserId = "); //$NON-NLS-1$
-        sb.append(specifyUser.getSpecifyUserId());
+        //StringBuilder sb = new StringBuilder("FROM SpAppResourceDir WHERE specifyUserId = "); //$NON-NLS-1$
+        //sb.append(specifyUser.getSpecifyUserId());
+        StringBuilder sb = new StringBuilder("FROM SpAppResourceDir WHERE");
+        sb.append(" isPersonal = "); //$NON-NLS-1$
+        sb.append(isPersonal);
+        if (isPersonal)
+        {
+        	sb.append(" AND specifyUserId = ");
+        	sb.append(specifyUser.getSpecifyUserId());
+        }
         if (discipline != null)
         {
             sb.append(" AND disciplineId = "); //$NON-NLS-1$
@@ -739,8 +747,6 @@ public class SpecifyAppContextMgr extends AppContextMgr
             sb.append(" AND userType is null"); //$NON-NLS-1$
         }
         
-        sb.append(" AND isPersonal = "); //$NON-NLS-1$
-        sb.append(isPersonal);
         
         log.debug(sb.toString());
         
