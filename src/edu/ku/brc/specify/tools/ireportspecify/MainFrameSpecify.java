@@ -1460,7 +1460,9 @@ public class MainFrameSpecify extends MainFrame
         final AppPreferences localPrefs = AppPreferences.getLocalPrefs();
         localPrefs.setDirPath(UIRegistry.getAppDataDir());
         adjustLocaleFromPrefs();
-
+    	final String iRepPrefDir = localPrefs.getDirPath(); 
+        int mark = iRepPrefDir.lastIndexOf(UIRegistry.getAppName(), iRepPrefDir.length());
+        final String SpPrefDir = iRepPrefDir.substring(0, mark) + "Specify";
         HibernateUtil.setListener("post-commit-update", new edu.ku.brc.specify.dbsupport.PostUpdateEventListener()); //$NON-NLS-1$
         HibernateUtil.setListener("post-commit-insert", new edu.ku.brc.specify.dbsupport.PostInsertEventListener()); //$NON-NLS-1$
         HibernateUtil.setListener("post-commit-delete", new edu.ku.brc.specify.dbsupport.PostDeleteEventListener()); //$NON-NLS-1$
@@ -1499,7 +1501,30 @@ public class MainFrameSpecify extends MainFrame
                         {
                             UserAndMasterPasswordMgr.getInstance().setUsersUserName(username);
                             UserAndMasterPasswordMgr.getInstance().setUsersPassword(password);
-                            return UserAndMasterPasswordMgr.getInstance().hasMasterUsernameAndPassword();
+                            boolean result = false;
+                            try
+                            {
+                            	try
+                            	{
+                            		AppPreferences.getLocalPrefs().flush();
+                            		AppPreferences.getLocalPrefs().setDirPath(SpPrefDir);
+                            		AppPreferences.getLocalPrefs().setProperties(null);
+                            		result = UserAndMasterPasswordMgr.getInstance().hasMasterUsernameAndPassword();
+                            	}
+                            	finally
+                            	{
+                            		AppPreferences.getLocalPrefs().flush();
+                            		AppPreferences.getLocalPrefs().setDirPath(iRepPrefDir);
+                            		AppPreferences.getLocalPrefs().setProperties(null);
+                            	}
+                            } catch (Exception e)
+                            {
+                            	edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                            	edu.ku.brc.exceptions.ExceptionTracker.getInstance()
+    								.capture(MainFrameSpecify.class, e);
+                            	result = false;
+                            }
+                            return result;
                         }
                         return false;
                     }
@@ -1509,19 +1534,80 @@ public class MainFrameSpecify extends MainFrame
                     {
                         UserAndMasterPasswordMgr.getInstance().setUsersUserName(username);
                         UserAndMasterPasswordMgr.getInstance().setUsersPassword(password);
-                        
-                        Pair<String, String> usrPwd = UserAndMasterPasswordMgr.getInstance().getUserNamePasswordForDB();
-                        
-                        return usrPwd;
+                        Pair<String, String> result = null;
+                        try
+                        {
+                        	try
+                        	{
+                        		AppPreferences.getLocalPrefs().flush();
+                        		AppPreferences.getLocalPrefs().setDirPath(SpPrefDir);
+                        		AppPreferences.getLocalPrefs().setProperties(null);
+                        		result = UserAndMasterPasswordMgr.getInstance().getUserNamePasswordForDB();
+                        	}
+                        	finally
+                        	{
+                        		AppPreferences.getLocalPrefs().flush();
+                        		AppPreferences.getLocalPrefs().setDirPath(iRepPrefDir);
+                        		AppPreferences.getLocalPrefs().setProperties(null);
+                        	}
+                        } catch (Exception e)
+                        {
+                        	edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        	edu.ku.brc.exceptions.ExceptionTracker.getInstance()
+								.capture(MainFrameSpecify.class, e);
+                        	result = null;
+                        }
+                        return result;
                     }
                     @Override
                     public boolean editMasterInfo(final String username, final boolean askFroCredentials)
                     {
-                        return UserAndMasterPasswordMgr.getInstance().editMasterInfo(username, askFroCredentials);
-                    }
+                        boolean result = false;
+                    	try
+                        {
+                        	try
+                        	{
+                        		AppPreferences.getLocalPrefs().flush();
+                        		AppPreferences.getLocalPrefs()
+									.setDirPath(SpPrefDir);
+                        		AppPreferences.getLocalPrefs().setProperties(null);
+                        		result =  UserAndMasterPasswordMgr
+									.getInstance()
+									.editMasterInfo(username, askFroCredentials);
+                        	} finally
+                        	{
+                        		AppPreferences.getLocalPrefs().flush();
+                        		AppPreferences.getLocalPrefs().setDirPath(
+									iRepPrefDir);
+                        		AppPreferences.getLocalPrefs().setProperties(null);
+                        	}
+                        } catch (Exception e)
+                        {
+                        	edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        	edu.ku.brc.exceptions.ExceptionTracker.getInstance()
+								.capture(MainFrameSpecify.class, e);
+                        	result = false;
+                        }
+                    	return result;
+                   }
                 };
                 String nameAndTitle = "Specify iReport"; // I18N
-                UIHelper.doLogin(usrPwdProvider, false, false, new IReportLauncher(), "SPIReports", nameAndTitle, nameAndTitle); // true means do auto login if it can, second bool means use dialog instead of frame
+                UIHelper.doLogin(usrPwdProvider, false, false, new IReportLauncher(), "SPIReports", nameAndTitle, nameAndTitle); // true
+																																	// means
+																																	// do
+																																	// auto
+																																	// login
+																																	// if
+																																	// it
+																																	// can,
+																																	// second
+																																	// bool
+																																	// means
+																																	// use
+																																	// dialog
+																																	// instead
+																																	// of
+																																	// frame
                 
                 localPrefs.load();
                 
