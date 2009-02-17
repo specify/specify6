@@ -214,6 +214,7 @@
 	<mapID target="uploading"               url="SpecifyHelp/Uploading/wb_uploader.html" />
 	
 	<!-- Reports/Labels -->
+    <mapID target="RepRunSettings"          url="SpecifyHelp/ReportsLabels/reports.html#report_sidebar" />
 	<mapID target="Reports"                 url="SpecifyHelp/ReportsLabels/reports.html" />
 	<mapID target="Report_Sidebar"          url="SpecifyHelp/ReportsLabels/reports.html#report_sidebar" />
 	<mapID target="RunReportSettings"       url="SpecifyHelp/Dialogs/report_settings.html" />
