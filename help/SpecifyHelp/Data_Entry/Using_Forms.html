@@ -65,7 +65,7 @@
   <tr>
     <td><img src="../../images/delete.png" width="16" height="16"></td>
     <td>Delete</td>
-    <td>Deletes the record.</td>
+    <td>Deletes the record. A Collection Object can not be deleted if it links to any other records.</td>
   </tr>
   <tr>
     <td><img src="../../images/Edit-2-16x16.png" alt="a" width="16" height="16"></td>
@@ -239,7 +239,7 @@
   <li>Choose <em>Data &gt; Config. Carry Forward</em> or right-button click within the form and choose <em>Configure Carry Forward</em> in the context menu. </li>
   <li>Choose individual fields or click the <em>Select All</em> button and then the <em>OK</em> button in the resulting dialog.</li>
 </ol>
-<p>Sub forms that contain more than one value will carry forward all the values. For example: if a Collection Object has 6 Determinations associated with it and Carry Forward is enabled <strong>all</strong> 6 of the Determinations will carry forward into the new record. </p>
+<p>Sub forms that represent a one-to-many relationship to the primary table do not carry forward EXCEPT the Determinations table for Colletion Objects, Collectors for Collecting Events and Citations for Collection Objects. These three will carry forward all the associated records. For example: if a Collection Object has 6 Determinations associated with it and Carry Forward is enabled <strong>all</strong> 6 of the Determinations will carry forward into the new record. </p>
 <p><em><strong>Note:</strong></em> fields that are check boxes, or use an auto-formatter <strong>will not</strong> carry forward. However, auto-formatted fields will still update using Auto Numbering. For instance,  Catalog Number is a field that is always formatted for a numbering scheme. If the Catalog Number (C#)is 1234  and Carry Forward is turned on but Auto Numbering is turned off then the the next record will not include a C# (one will need to be entered manually). If the C# is 1234 and Carry Forward and Auto Numbering are both turned on then the next record added will include a C# of 1235.</p>
 <p>&nbsp;</p>
 <h4><a name="auto_numbering"></a>Auto Numbering</h4>
