@@ -1336,6 +1336,17 @@ public class Uploader implements ActionListener, KeyListener
                 }
             }
 
+			/* (non-Javadoc)
+			 * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader.UploaderTask#cancelTask()
+			 */
+			@Override
+			public synchronized void cancelTask()
+			{
+				super.cancelTask();
+				interrupt();
+			}
+
+            
         };
         
         UIRegistry.getStatusBar().setText(getResourceString(Uploader.VALIDATING_DATA));
@@ -3562,45 +3573,8 @@ public class Uploader implements ActionListener, KeyListener
             {
                 try
                 {
-//                    initProgressBar(0, uploadTables.size(), true, 
-//                            getResourceString("WB_UPLOAD_RETRIEVING") + " " + getResourceString("ERD_TABLE"), false);
-//                    for (int progress = 0; progress < uploadTables.size();)
-//                    {
-//                        if (cancelled)
-//                        {
-//                            break;
-//                        }
-//                        UploadTable ut = uploadTables.get(progress);
-//                        setCurrentOpProgress(progress + 1, false);
-//                        try
-//                        {
-//                            Vector<Vector<String>> vals = ut.printUpload();
-//                            if (vals.size() > 0)
-//                            {
-//                                String title = ut.getWriteTable().getName();
-//                                if (!bogusStorages.containsKey(title))
-//                                {
-//                                    bogusStorages.put(title, vals);
-//                                }
-//                                else
-//                                {
-//                                    // delete header
-//                                    vals.remove(0);
-//                                    bogusStorages.get(title).addAll(vals);
-//                                }
-//                            }
-//                        }
-//                        catch (InvocationTargetException ex)
-//                        {
-//                            log.error(ex);
-//                        }
-//                        catch (IllegalAccessException ex)
-//                        {
-//                            log.error(ex);
-//                        }
-//                        progress++;
-//                    }
-                    return true;
+                    //
+                	return true;
                 }
                 catch (Exception ex)
                 {
@@ -3626,6 +3600,17 @@ public class Uploader implements ActionListener, KeyListener
                     mainPanel.addMsg(new BaseUploadMessage(getResourceString("RetrievalWB_UPLOAD_FETCH_CANCELLED cancelled")));
                 }
             }
+
+			/* (non-Javadoc)
+			 * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader.UploaderTask#cancelTask()
+			 */
+			@Override
+			public synchronized void cancelTask()
+			{
+				super.cancelTask();
+				interrupt();
+			}
+            
 
         };
         
