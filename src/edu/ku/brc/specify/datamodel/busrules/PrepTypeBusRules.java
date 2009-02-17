@@ -136,12 +136,15 @@ public class PrepTypeBusRules extends BaseBusRules
         
         if (dataObj instanceof PrepType)
         {
-            STATUS duplicateNameStatus = isCheckDuplicateNumberOK("name", 
-                    (FormDataObjIFace)dataObj, 
-                    PrepType.class, 
-                    "prepTypeId");
+            PrepType prepType = (PrepType)dataObj;
             
-            return duplicateNameStatus;
+            if (prepType.getId() == null)
+            {
+                return isCheckDuplicateNumberOK("name", 
+                                                (FormDataObjIFace)dataObj, 
+                                                PrepType.class, 
+                                                "prepTypeId");
+            }
         }
         
         return STATUS.OK;
