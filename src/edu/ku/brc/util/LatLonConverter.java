@@ -322,6 +322,9 @@ public class LatLonConverter
                 case DDMMSS:
                     bd = convertDDMMSSStrToDDDDBD(str);
                     break;
+                    
+                case None:
+                    break;
             }
             
             String outStr = format(bd, latOrLon, toFmt, DEGREES_FORMAT.Symbol, DECIMAL_SIZES[toFmt.ordinal()]);
@@ -493,7 +496,7 @@ public class LatLonConverter
             	sb.append(direction == DIRECTION.NorthSouth ? northSouth[inx] : eastWest[inx]);
             }
         }
-        System.err.println("["+sb.toString()+"]");
+        //System.err.println("["+sb.toString()+"]");
         //return whole + (DEGREES_FORMAT.None ? "\u00B0" : "") + " " + minutesWhole + " " + StringUtils.strip(String.format("%12.10f", new Object[] {seconds}), "0");
         return sb.toString();
     }
@@ -736,7 +739,7 @@ public class LatLonConverter
     {
         String withoutDegSign = StringUtils.chomp(str, "Â°");
         //above doesn't always work for Windows/Mac so try again...
-        withoutDegSign = StringUtils.chomp(withoutDegSign, "°");
+        withoutDegSign = StringUtils.chomp(withoutDegSign, "ï¿½");
         //apparently need to do this on mac
         withoutDegSign =  StringUtils.remove(withoutDegSign, UNICODE_DEGREE);
         return new BigDecimal(withoutDegSign);
@@ -912,6 +915,9 @@ public class LatLonConverter
                 
             case DDMMSS: 
                 return convertToDDMMSS(value, degreesFMT, dir, decimalLen);
+                
+            case None:
+                break;
         }
         return "";
     }

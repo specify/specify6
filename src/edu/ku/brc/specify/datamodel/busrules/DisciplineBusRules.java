@@ -146,7 +146,6 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
             } else if (comp instanceof ValTextField && discipline.getType() != null)
             {
                 ValTextField tf = (ValTextField)comp;
-                System.err.println(discipline.getType());
                 tf.setValue(DisciplineType.getByName(discipline.getType()), "");
             }
         }

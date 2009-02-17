@@ -126,7 +126,7 @@ public class AutoNumberGeneric implements AutoNumberIFace
                 sb.append(" substring("+fieldName+","+(pos.first+1)+","+pos.second+") desc"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
             }
             
-            System.err.println(sb.toString());
+            //System.err.println(sb.toString());
             List<?> list = session.createQuery(sb.toString()).setMaxResults(1).list();
             if (list.size() == 1)
             {

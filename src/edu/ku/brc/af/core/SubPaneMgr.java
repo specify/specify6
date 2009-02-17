@@ -275,7 +275,6 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         Action closeCurrent = getAction("CloseCurrent"); //$NON-NLS-1$
         if (closeCurrent != null)
         {
-            System.err.println(panes.size() > 0);
             closeCurrent.setEnabled(panes.size() > 0);//  || TaskMgr.getToolbarTaskCount() > 1);
         }        
         
