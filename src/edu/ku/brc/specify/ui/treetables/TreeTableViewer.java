@@ -2585,7 +2585,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	        int droppedRankId = droppedOnNode.getRank();
 	        //System.out.println("draggedRankId "+draggedRankId+"  droppedRankId "+droppedRankId+"  rankLevel "+rankLevel);
 	        
-    	    if (rankLevel == -1 || (draggedRankId >= rankLevel && droppedRankId >= rankLevel))
+    	    if (rankLevel == -1 || (draggedRankId >= rankLevel && droppedRankId >= rankLevel)
+    	    		|| draggedRankId == droppedRankId)
             {
                 boolean descendant = listModel.isDescendantOfNode(droppedOnNode, draggedNode);
                 if (!descendant)
