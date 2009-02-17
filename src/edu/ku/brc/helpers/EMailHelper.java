@@ -157,19 +157,29 @@ public class EMailHelper
         
         boolean isSSL = security.equals("SSL");
         
+        String[] keys = {"mail.smtp.host", "mail.smtp.port", "mail.smtp.auth", "mail.smtp.starttls.enable", "mail.smtp.socketFactory.port", 
+                         "mail.smtp.socketFactory.class", "mail.smtp.socketFactory.fallback", "mail.imap.auth.plain.disable",};
         Properties props = System.getProperties();
+        for (String key : keys)
+        {
+            props.remove(key); 
+        }
+        
         props.put("mail.smtp.host", host); //$NON-NLS-1$
 
         if (StringUtils.isNotEmpty(port) && StringUtils.isNumeric(port))
         {
             props.put("mail.smtp.port", port); //$NON-NLS-1$ //$NON-NLS-2$
+        } else
+        {
+            props.remove("mail.smtp.port");
         }
         
         if (StringUtils.isNotEmpty(security))
         {
             if (security.equals("TLS"))
             {
-                props.put( "mail.smtp.auth", "true"); //$NON-NLS-1$ //$NON-NLS-2$
+                props.put("mail.smtp.auth", "true"); //$NON-NLS-1$ //$NON-NLS-2$
                 props.put("mail.smtp.starttls.enable", "true"); //$NON-NLS-1$ //$NON-NLS-2$
                 
             } else if (isSSL)
