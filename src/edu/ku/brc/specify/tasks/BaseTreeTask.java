@@ -157,7 +157,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
                 
                 if (UIHelper.isSecurityOn())
                 {
-                    System.out.println(treeTI.getTitle()+ " "+treePerms.toString());
+                    //System.out.println(treeTI.getTitle()+ " "+treePerms.toString());
                     if (treePerms.canView())
                     {
                         treeEditAction = createActionForTreeEditing(treeTI.getTitle(), treePerms.canModify());                        
@@ -397,7 +397,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
                     }
                     else // Otherwise a def editor must be open.  Close it and open a TTV.
                     {
-                        switchViewType(isEditMode, false);
+                        switchViewType(isEditMode, true);
                     }
                     TreeTaskMgr.checkLocks();
                 }
@@ -602,7 +602,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
 	                        UIRegistry.showLocalizedError("BaseTreeTask.NO_EDT_TRDEF", treeTI.getTitle());
 	                    }
 	                }
-	                else if (visibleSubPane instanceof TreeDefinitionEditor || switchMode)
+	                else if (visibleSubPane instanceof TreeDefinitionEditor && switchMode)
 	                {
 	                    ((TreeDefinitionEditor<?,?,?>)visibleSubPane).setDoUnlock(false);
 	                    TreeTableViewer<T,D,I> treeViewer = createTreeViewer(tabTitle, isEditMode);
