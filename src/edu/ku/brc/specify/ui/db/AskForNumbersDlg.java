@@ -162,7 +162,8 @@ public class AskForNumbersDlg extends CustomDialog
                     
                     if (StringUtils.isNotEmpty(catNumForDB))
                     {
-                        String sql = QueryAdjusterForDomain.getInstance().adjustSQL("SELECT id FROM "+ti.getClassName()+" WHERE "+fieldName+" = '"+catNumForDB+"' AND CollectionmemberID = COLLID");
+                        String sql = QueryAdjusterForDomain.getInstance().adjustSQL("SELECT id FROM "+ti.getClassName()+" WHERE "+fieldName+" = '"+catNumForDB+"' AND CollectionMemberID = COLLID");
+                        //log.debug(sql);
                         Integer colObjId = (Integer)session.getData(sql);
                         
                         if (colObjId != null)

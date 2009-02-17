@@ -433,7 +433,7 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
                     StringBuilder sb = new StringBuilder();
                     sb.append("SELECT co.CollectionObjectID, p.PreparationID, gp.Quantity " +
                              "FROM preparation AS p INNER JOIN collectionobject AS co ON p.CollectionObjectID = co.CollectionObjectID " +
-                             "INNER JOIN giftpreparation AS gp ON p.PreparationID = gp.GiftPreparationID " +
+                             "INNER JOIN giftpreparation AS gp ON p.PreparationID = gp.PreparationID " +
                              "WHERE co.CollectionMemberID = COLMEMID AND co.CollectionObjectID in (");
                    for (Object[] row : coIdRows)
                    {
@@ -463,7 +463,7 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
                    {
                        for (Object[] row : rows)
                        {
-                           prepIdToGiftQnt.put((Integer)row[0], (Integer)row[1]);
+                           prepIdToGiftQnt.put((Integer)row[1], (Integer)row[2]);
                        }
                    }
                    
