@@ -1231,7 +1231,34 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
     public List<PickList> getPickLists(final String disciplineName)
     {
         List<PickList>     pickLists     = new Vector<PickList>();
-        List<BldrPickList> bdlrPickLists = DataBuilder.getBldrPickLists(disciplineName != null ? disciplineName : "common");
+        List<BldrPickList> bdlrPickLists;
+        
+        if (disciplineName == null)
+        {
+            bdlrPickLists = DataBuilder.getBldrPickLists("common");
+            
+            Hashtable<String, Boolean> nameHash = new Hashtable<String, Boolean>();
+            for (DisciplineType dt : DisciplineType.getDisciplineList())
+            {
+                List<BldrPickList> list = DataBuilder.getBldrPickLists(dt.getName());
+                if (list != null)
+                {
+                    for (BldrPickList bpl : list)
+                    {
+                       if (nameHash.get(bpl.getName()) == null)
+                       {
+                           nameHash.put(bpl.getName(), true);
+                           bdlrPickLists.add(bpl);
+                       }
+                    }
+                }
+            }
+            
+        } else
+        {
+            bdlrPickLists = DataBuilder.getBldrPickLists(disciplineName != null ? disciplineName : "common");
+        }
+            
         
         for (BldrPickList pl : bdlrPickLists)
         {
