@@ -107,7 +107,28 @@ public class TreeableSearchQueryBuilder implements ViewBasedSearchQueryBuilderIF
                 Object rank = rankCombo.getValue();
                 if (rank != null)
                 {
-                    queryStr += " and n.rankId < " + rank;
+                    //Actually, it seems that this case is impossible, because for new nodes RankCombo is cleared when
+                	//parent control is modified. And when editing existing nodes, the parent control is not editable.
+                	
+                	queryStr += " and n.rankId < " + rank;
+                    //Now force rank to be greater than or equal the nearest required rank in the tree                    
+                    int minRank = 0;
+                    for (TreeDefItemIface defItem : treeDef.getTreeDefItems())
+                    {
+                        if (defItem.getRankId() == ((Number )rank).intValue())
+                        {
+                        	break;
+                        }
+                    	if (defItem.getIsEnforced())
+                        {
+                    		minRank = defItem.getRankId();
+                        }
+                    }
+                    if (minRank > 0)
+                    {
+                    	queryStr += " and n.rankId >= " + minRank;
+                    }
+                    
                 }
                 else
                 {
