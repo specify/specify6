@@ -355,7 +355,11 @@
           <screen name="" id="6" beanClass="com.install4j.runtime.beans.screens.InstallationScreen" enabled="true" commentSet="false" comment="" rollbackBarrier="true" backButton="2" finishScreen="false">
             <serializedBean>
               <java class="java.beans.XMLDecoder">
-                <object class="com.install4j.runtime.beans.screens.InstallationScreen" />
+                <object class="com.install4j.runtime.beans.screens.InstallationScreen">
+                  <void property="cancelEnabled">
+                    <boolean>false</boolean>
+                  </void>
+                </object>
               </java>
             </serializedBean>
             <condition />
