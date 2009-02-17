@@ -1354,7 +1354,7 @@ public class Uploader implements ActionListener, KeyListener
             if (!task.isDone())
             {
                 task.setUndo(false);
-                task.interrupt();
+                task.cancelTask();
             }
             else
             {
@@ -3103,7 +3103,7 @@ public class Uploader implements ActionListener, KeyListener
             final UploaderTask uploadTask = new UploaderTask(true, "WB_CANCEL_UPLOAD_MSG")
             {
                 boolean success = false;
-            
+                boolean paused = false;
                 @SuppressWarnings("synthetic-access")
                 @Override
                 public Object construct()
@@ -3116,6 +3116,7 @@ public class Uploader implements ActionListener, KeyListener
                         {
                         	if (cancelled)
                         	{
+                        		paused = true;
                         		break;
                         	}
                         	logDebug("uploading row "
@@ -3171,7 +3172,7 @@ public class Uploader implements ActionListener, KeyListener
                         // Need extra progress info...
                         for (UploadTable t : uploadTables)
                         {
-                        	t.finishUpload(cancelled);
+                        	t.finishUpload(cancelled && paused);
                         }
                     }
                     catch (Exception ex)
@@ -3179,7 +3180,7 @@ public class Uploader implements ActionListener, KeyListener
                         setOpKiller(ex);
                         return false;
                     }
-                    success = !cancelled;
+                    success = !cancelled || (cancelled && !paused);
                     return success;
                 }
 
@@ -3485,14 +3486,7 @@ public class Uploader implements ActionListener, KeyListener
             startTime = System.nanoTime();
             super.start();
         }
-        
-        @Override
-        public void interrupt()
-        {
-            super.interrupt();
-            cancelled = true;
-        }
-        
+                
         @Override
         public void finished()
         {
@@ -3501,6 +3495,15 @@ public class Uploader implements ActionListener, KeyListener
             done = true;
             endTime = System.nanoTime();
             logDebug("UploaderTask time elapsed: " + Long.toString((endTime-startTime)/1000000000L));
+        }
+        
+        /**
+         * Cancels the task. Subclasses need to take specific action
+         * such as interrupting thread or whatever.
+         */
+        public synchronized void cancelTask()
+        {
+        	cancelled = true;
         }
         
         public synchronized boolean isDone()
