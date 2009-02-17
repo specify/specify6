@@ -14,18 +14,31 @@ import javax.swing.Icon;
  */
 public class BorderedIcon implements Icon
 {
-	protected Icon image;
-	protected int leftWidth;
-	protected int topWidth;
-	protected int rightWidth;
-	protected int bottomWidth;
+	protected Icon  image;
+	protected int   leftWidth;
+	protected int   topWidth;
+	protected int   rightWidth;
+	protected int   bottomWidth;
 	protected Color borderColor;
 	
+	/**
+	 * @param image
+	 * @param borderWidth
+	 * @param borderColor
+	 */
 	public BorderedIcon( Icon image, int borderWidth, Color borderColor )
 	{
 		this(image,borderWidth,borderWidth,borderWidth,borderWidth,borderColor);
 	}
 
+	/**
+	 * @param image
+	 * @param leftWidth
+	 * @param topWidth
+	 * @param rightWidth
+	 * @param bottomWidth
+	 * @param borderColor
+	 */
 	public BorderedIcon(Icon image,
 						int leftWidth,
 						int topWidth,
@@ -43,18 +56,27 @@ public class BorderedIcon implements Icon
 		this.borderColor = borderColor;
 	}
 
-	public void paintIcon(Component c, Graphics graphics, int x, int y)
+	/* (non-Javadoc)
+	 * @see javax.swing.Icon#paintIcon(java.awt.Component, java.awt.Graphics, int, int)
+	 */
+	public void paintIcon(Component c, Graphics g, int x, int y)
 	{	
-		graphics.setColor(borderColor);
-		graphics.drawRect(x, y, getIconWidth(), getIconHeight()-1);
-		image.paintIcon(c, graphics, x+this.rightWidth, y+this.topWidth);
+		g.setColor(borderColor);
+		g.drawRect(x, y, getIconWidth(), getIconHeight()-1);
+		image.paintIcon(c, g, x+this.rightWidth, y+this.topWidth);
 	}
 
+	/* (non-Javadoc)
+	 * @see javax.swing.Icon#getIconWidth()
+	 */
 	public int getIconWidth()
 	{
 		return image.getIconWidth() + this.leftWidth + this.rightWidth;
 	}
 
+	/* (non-Javadoc)
+	 * @see javax.swing.Icon#getIconHeight()
+	 */
 	public int getIconHeight()
 	{
 		return image.getIconHeight() + this.topWidth + this.bottomWidth;

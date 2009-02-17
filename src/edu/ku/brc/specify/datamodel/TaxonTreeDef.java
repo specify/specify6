@@ -132,17 +132,26 @@ public class TaxonTreeDef extends BaseTreeDef<Taxon, TaxonTreeDef, TaxonTreeDefI
 	 */
 	@Override
 	@Transient
-	public boolean isRequiredLevel(int levelRank)
-	{
-		return levelRank == KINGDOM
-			|| levelRank == DIVISION
-			|| levelRank == PHYLUM
-			|| levelRank == CLASS
-			|| levelRank == ORDER
-			|| levelRank == FAMILY
-			|| levelRank == GENUS
-			|| levelRank == SPECIES;
-	}
+    public boolean isRequiredLevel(int levelRank)
+    {
+        return isStdRequiredLevel(levelRank);
+    }
+
+    /**
+     * @param levelRank
+     * @return
+     */
+    public static boolean isStdRequiredLevel(int levelRank)
+    {
+        return levelRank == KINGDOM
+            || levelRank == DIVISION
+            || levelRank == PHYLUM
+            || levelRank == CLASS
+            || levelRank == ORDER
+            || levelRank == FAMILY
+            || levelRank == GENUS
+            || levelRank == SPECIES;
+    }
 
 	/**
      * @param levelRank

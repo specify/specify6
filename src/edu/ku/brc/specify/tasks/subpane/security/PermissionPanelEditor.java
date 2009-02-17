@@ -10,6 +10,7 @@
 package edu.ku.brc.specify.tasks.subpane.security;
 
 import java.awt.CardLayout;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Hashtable;
@@ -63,11 +64,10 @@ public class PermissionPanelEditor extends JPanel
         PanelBuilder topPB = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g", "p"));
         topPB.add(switcherCBX, cc.xy(2, 1));
         
-        PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g", "p,10px,f:p:g"), this);
+        PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g", "p,10px,p:g"), this);
         pb.add(topPB.getPanel(), cc.xy(1, 1));
         pb.add(cardPanel,        cc.xy(1, 3));
         
-        cardPanel.setBorder(BorderFactory.createEtchedBorder());
         switcherCBX.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e)
@@ -75,6 +75,9 @@ public class PermissionPanelEditor extends JPanel
                 cardLayout.show(cardPanel, switcherCBX.getSelectedItem().toString());
             }
         });
+        
+        cardPanel.setBackground(Color.CYAN);
+        setBackground(Color.GREEN);
     }
     
     /**

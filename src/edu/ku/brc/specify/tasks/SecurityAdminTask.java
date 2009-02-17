@@ -105,7 +105,7 @@ public class SecurityAdminTask extends BaseTask
             }
         }
         
-        if (starterPane == null)
+        //if (starterPane == null)
         {
         	SecurityAdminPane userGroupAdminPane = new SecurityAdminPane(title, this);
         	userGroupAdminPane.createMainControlUI();

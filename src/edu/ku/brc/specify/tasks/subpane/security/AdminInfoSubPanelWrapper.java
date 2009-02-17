@@ -166,6 +166,7 @@ public class AdminInfoSubPanelWrapper
         
         Object obj = mv.getData();
         
+        obj = session.merge(obj);
         session.update(obj);
         session.update(principal);
         

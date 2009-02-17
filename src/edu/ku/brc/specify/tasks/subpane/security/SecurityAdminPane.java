@@ -142,13 +142,16 @@ public class SecurityAdminPane extends BaseSubPane
                 securityAdminPanel);
         final CellConstraints cc = new CellConstraints();
         
-        mainPB.add(createNavigationPanel(),  cc.xy(2, 2));
+        mainPB.add(UIHelper.createScrollPane(createNavigationPanel()),  cc.xy(2, 2));
         mainPB.add(new VerticalSeparator(new Color(224, 224, 224), new Color(124, 124, 124)),  cc.xy(4, 2));
-        mainPB.add(createInformationPanel(), cc.xy(6, 2));
+        mainPB.add(UIHelper.createScrollPane(createInformationPanel()), cc.xy(6, 2));
         
         updateUIEnabled(null);
         
-        this.add(securityAdminPanel, BorderLayout.CENTER);
+        mainPB.getPanel().setBackground(Color.RED);
+        setBackground(Color.ORANGE);
+        
+        this.add(UIHelper.createScrollPane(securityAdminPanel), BorderLayout.CENTER);
         return securityAdminPanel;
     }
     
@@ -715,9 +718,9 @@ public class SecurityAdminPane extends BaseSubPane
 
         infoSubPanels = new Hashtable<String, AdminInfoSubPanelWrapper>();
         
-        createInfoSubPanel("SystemSetup", "Institution", "Institution", Institution.class, "institutionId", editing, formOptions);
-        createInfoSubPanel("SystemSetup", "DisciplineWithoutCollections", "Discipline", Discipline.class, "disciplineId", editing, formOptions);
-        createInfoSubPanel("SystemSetup", "Collection", "Collection", Collection.class, "collectionId", editing, formOptions);
+        //createInfoSubPanel("SystemSetup", "Institution", "Institution", Institution.class, "institutionId", editing, formOptions);
+        //createInfoSubPanel("SystemSetup", "DisciplineWithoutCollections", "Discipline", Discipline.class, "disciplineId", editing, formOptions);
+        //createInfoSubPanel("SystemSetup", "Collection", "Collection", Collection.class, "collectionId", editing, formOptions);
         
         createUserPanel();
         createGroupPanel();
@@ -779,7 +782,7 @@ public class SecurityAdminPane extends BaseSubPane
         tabbedPane.addTab("General", generalEditor); // I18N
         tabbedPane.addTab("Objects", objEditor);  // I18N
         
-        final PanelBuilder mainPB = new PanelBuilder(new FormLayout("f:p:g", "t:p,4px,p,5px,f:p:g,2dlu,p"), infoPanel);
+        final PanelBuilder mainPB = new PanelBuilder(new FormLayout("f:p:g", "t:p,4px,p,5px,p,2dlu,p"), infoPanel);
         
         // lay out controls on panel
         int y = 1;
@@ -794,17 +797,24 @@ public class SecurityAdminPane extends BaseSubPane
         panel.getMultiView().getCurrentValidator().setValidationBtn(valBtn);
         saveBtnPB.add(valBtn, cc.xy(2, 1)); 
         saveBtnPB.add(infoPanel.getSaveBtn(), cc.xy(4, 1));
-
+        
+        saveBtnPB.getPanel().setBackground(Color.RED);
+        
         mainPB.add(saveBtnPB.getPanel(), cc.xy(1, y)); y += 2;
+        infoPanel.setBackground(Color.ORANGE);
         
         String className = SpecifyUser.class.getCanonicalName();
-        infoCards.add(infoPanel, className);
+        infoCards.add(UIHelper.createScrollPane(infoPanel), className);
         
         AdminInfoSubPanelWrapper subPanel = new AdminInfoSubPanelWrapper(panel);
+        panel.setBackground(Color.BLUE);
+        
         subPanel.addPermissionEditor(generalEditor);
         subPanel.addPermissionEditor(objEditor);
         infoSubPanels.put(className, subPanel);
         editorPanels.put(className, infoPanel);
+        
+        setBackground(new Color(200,100,50));
     }
     
     /**
@@ -848,6 +858,8 @@ public class SecurityAdminPane extends BaseSubPane
         subPanel.addPermissionEditor(generalEditor);
         infoSubPanels.put(className, subPanel);
         editorPanels.put(className, infoPanel);
+        
+        infoPanel.setBackground(Color.PINK);
     }
 
     /**

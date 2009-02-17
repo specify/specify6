@@ -103,8 +103,8 @@ public class StatGroupTable extends JPanel
         this.skinItem = SkinsMgr.getSkinItem("StatGroup");
 
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        setBorder(BorderFactory.createCompoundBorder(new CurvedBorder(new Color(160,160,160)), BorderFactory.createEmptyBorder(15, 2, 2, 2)));
-        setBackground(Color.WHITE);
+        //setBorder(BorderFactory.createCompoundBorder(new CurvedBorder(new Color(160,160,160)), BorderFactory.createEmptyBorder(15, 2, 2, 2)));
+        //setBackground(Color.WHITE);
         
         setOpaque(SkinsMgr.shouldBeOpaque(skinItem));
         
