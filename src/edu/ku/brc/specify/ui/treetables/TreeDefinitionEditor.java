@@ -990,18 +990,6 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                                 message.append("<li>" + node); //$NON-NLS-1$
                             }
                             message.append("</ul></html>"); //$NON-NLS-1$
-//                            JLabel label = createLabel(""); //$NON-NLS-1$
-//                            label.setText(message.toString());
-//                            Window w = UIRegistry.getMostRecentWindow();
-//                            JFrame frameParent = null;
-//                            if (w instanceof JFrame)
-//                            {
-//                                frameParent = (JFrame)w;
-//                            }
-//                            CustomDialog errorDialog = new CustomDialog(frameParent,getResourceString("Error"),true,CustomDialog.OK_BTN, new JScrollPane(label)); //$NON-NLS-1$
-//                            errorDialog.createUI();
-//                            errorDialog.setSize(650, 200);
-//                            errorDialog.setVisible(true);
                             UIRegistry.showLocalizedError(message.toString());
                             if (isRequiredLevel)
                             {
