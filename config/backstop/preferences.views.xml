@@ -442,7 +442,7 @@
             <desc><![CDATA[Tree Options Preference Form.]]></desc>
 
             <columnDef>f:p:g,10px,f:p:g</columnDef>
-            <rowDef>p,4px,p,15px,p,15px,p,15px,p</rowDef>
+            <rowDef>p,4px,p,4px,p,15px,p,15px,p,15px,p</rowDef>
 
             <rows>
                 <row>
@@ -450,6 +450,9 @@
                 </row>
                 <row>
                     <cell type="field" id="20" name="TreeEditor.RestoreTreeExpansionState" uitype="checkbox" label="RESTORE_EXPANSION_STATE" colspan="1"/>
+                </row>
+                <row>
+                    <cell type="field" id="-20" name="Determination.PromptToReplaceSynonym" uitype="checkbox" label="PROMPT_TO_REPLACE_SYNONYM" colspan="1"/>
                 </row>
                 
                 <row>

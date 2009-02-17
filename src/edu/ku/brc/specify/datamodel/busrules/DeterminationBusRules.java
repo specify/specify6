@@ -32,6 +32,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.af.ui.db.PickListItemIFace;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
@@ -445,7 +446,7 @@ public class DeterminationBusRules extends BaseBusRules
         // set the tree def for the object being edited by using the parent node's tree def
         if (taxon != null)
         {
-        	if (!taxon.getIsAccepted())
+        	if (!taxon.getIsAccepted() && AppPreferences.getRemote().getBoolean("Determination.PromptToReplaceSynonym", true))
             {
                 PanelBuilder pb = new PanelBuilder(new FormLayout("5dlu, f:p:g, 5dlu", "7dlu, c:p, 5dlu, c:p, 10dlu"));
                 String msg1 = String.format(UIRegistry.getResourceString("DeterminationBusRule.SynChoiceMsg1"), 
