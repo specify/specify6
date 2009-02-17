@@ -65,7 +65,7 @@ public class MacBtnBorder implements Border
     @Override
     public Insets getBorderInsets(Component c)
     {
-        return insets;
+        return new Insets(insets.left, insets.top, insets.right, insets.bottom);
     }
 
     /* (non-Javadoc)

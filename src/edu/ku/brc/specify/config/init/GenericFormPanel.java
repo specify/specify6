@@ -9,6 +9,7 @@
  */
 package edu.ku.brc.specify.config.init;
 
+import static edu.ku.brc.ui.UIHelper.createDuplicateJGoodiesDef;
 import static edu.ku.brc.ui.UIHelper.createI18NLabel;
 
 import java.util.Hashtable;
@@ -28,8 +29,8 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.af.ui.forms.DataGetterForObj;
 import edu.ku.brc.af.ui.forms.DataSetterForObj;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
-import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.Pair;
 
 /**
  * @author rod
@@ -48,7 +49,13 @@ public class GenericFormPanel extends BaseSetupPanel
     protected DataSetterForObj setter    = null;
     protected Hashtable<String, Boolean> reqHash  = null;
 
+    protected PanelBuilder     builder   = null;
+    protected int              row       = 1;
     
+    /**
+     * @param panelName
+     * @param nextBtn
+     */
     /**
      * @param panelName
      * @param nextBtn
@@ -59,6 +66,13 @@ public class GenericFormPanel extends BaseSetupPanel
         super(panelName, nextBtn);
     }
 
+    /**
+     * @param name
+     * @param title
+     * @param labels
+     * @param fields
+     * @param nextBtn
+     */
     public GenericFormPanel(final String   name,
                             final String   title,
                             final String[] labels,
@@ -68,6 +82,14 @@ public class GenericFormPanel extends BaseSetupPanel
         this(null, name, title, labels, fields, null, nextBtn);
     }
     
+    /**
+     * @param name
+     * @param title
+     * @param labels
+     * @param fields
+     * @param required
+     * @param nextBtn
+     */
     public GenericFormPanel(final String   name,
                             final String   title,
                             final String[] labels,
@@ -79,6 +101,15 @@ public class GenericFormPanel extends BaseSetupPanel
         
     }
     
+    /**
+     * @param dataObj
+     * @param name
+     * @param title
+     * @param labels
+     * @param fields
+     * @param required
+     * @param nextBtn
+     */
     public GenericFormPanel(final FormDataObjIFace dataObj,
                             final String   name,
                             final String   title,
@@ -92,13 +123,26 @@ public class GenericFormPanel extends BaseSetupPanel
         this.dataObj     = dataObj;
         this.fieldsNames = fields;
         
-        //DBTableInfo tblInfo = dataObj != null ? DBTableIdMgr.getInstance().getInfoById(dataObj.getTableId()) : null;
-        
+        init(title, labels, fields, required);
+    }
+    
+    /**
+     * @param title
+     * @param labels
+     * @param fields
+     * @param required
+     */
+    protected void init(final String title, 
+                        final String[] labels, 
+                        final String[] fields, 
+                        final boolean[] required)
+    {
         CellConstraints cc = new CellConstraints();
         
-        PanelBuilder builder = new PanelBuilder(new FormLayout("p,2px,p,f:p:g", "p,5px," + 
-                                               UIHelper.createDuplicateJGoodiesDef("p", "2px", fields.length)+",p:g"), this);
-        int row = 1;
+        Pair<String, String> rowCol  = getRowColDefs();
+        
+        builder = new PanelBuilder(new FormLayout(rowCol.first, rowCol.second), this);
+        row = 1;
         
         builder.add(createI18NLabel(title, SwingConstants.CENTER), cc.xywh(1,row,3,1));row += 2;
 
@@ -127,21 +171,51 @@ public class GenericFormPanel extends BaseSetupPanel
         updateBtnUI();
     }
     
+    /**
+     * @return the Row and Column JGoodies definitions
+     */
+    protected Pair<String, String> getRowColDefs()
+    {
+        return new Pair<String, String>("p,2px,p,f:p:g", 
+                                        "p,5px," + createDuplicateJGoodiesDef("p", "2px", fieldsNames.length) +
+                                        getAdditionalRowDefs() + ",p:g");
+    }
+    
+    /**
+     * @return any additional row definitions to be inserted before the final "p:g"
+     */
+    protected String getAdditionalRowDefs()
+    {
+        return "";
+    }
+    
+    /**
+     * @return
+     */
     public DataGetterForObj getGetter()
     {
         return getter;
     }
 
+    /**
+     * @param getter
+     */
     public void setGetter(DataGetterForObj getter)
     {
         this.getter = getter;
     }
 
+    /**
+     * @return
+     */
     public DataSetterForObj getSetter()
     {
         return setter;
     }
 
+    /**
+     * @param setter
+     */
     public void setSetter(DataSetterForObj setter)
     {
         this.setter = setter;

@@ -73,7 +73,9 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
 {
     protected static BasicStroke   lineStroke = new BasicStroke(2.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
     protected static Color         focusColor = null;
-    protected static Color         hoverColor = new Color(0, 0, 150, 100);
+    
+    
+    protected Color                hoverColor           = UIHelper.getHoverColor();
     
     protected EmptyBorder          emptyBorder          = null;
     protected Border               focusBorder          = null;
@@ -257,14 +259,6 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
         addMouseMotionListener(mouseInputAdapter);
     }
      
-    /**
-     * @param hoverColor the hoverColor to set
-     */
-    public static void setHoverColor(Color hoverColor)
-    {
-        DropDownButton.hoverColor = hoverColor;
-    }
-
     /**
      * @return
      */

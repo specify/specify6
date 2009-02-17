@@ -102,6 +102,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.plaf.ColorUIResource;
@@ -120,6 +121,7 @@ import org.dom4j.Element;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.UsageTracker;
@@ -144,6 +146,7 @@ import edu.ku.brc.specify.conversion.CustomDBConverter;
 import edu.ku.brc.specify.conversion.CustomDBConverterDlg;
 import edu.ku.brc.specify.conversion.CustomDBConverterListener;
 import edu.ku.brc.ui.dnd.GhostDataAggregatable;
+import edu.ku.brc.util.Triple;
 
 /**
  * A Helper class that has a very wide array of misc methods for helping out. (Is that meaningless or what?)
@@ -176,11 +179,13 @@ public final class UIHelper
     protected static Hashtable<String, Boolean> baseClassHash = new Hashtable<String, Boolean>();
     protected static CONTROLSIZE     controlSize     = CONTROLSIZE.regular;
     protected static boolean         isSecurityOn    = false;
+    protected static Color           hoverColor      = new Color(0, 0, 150, 100);
     
     private static final Color clrGlowInnerHi = new Color(253, 239, 175, 148);
     private static final Color clrGlowInnerLo = new Color(255, 209, 0);
     private static final Color clrGlowOuterHi = new Color(253, 239, 175, 124);
     private static final Color clrGlowOuterLo = new Color(255, 179, 0);
+    
 
     static {
 
@@ -3154,11 +3159,106 @@ public final class UIHelper
      * @param size
      * @param inset
      */
-    public static void drawRoundedRect(final Graphics2D g2d, final Color color, final Dimension size, final int inset)
+    public static void drawRoundedRect(final Graphics2D g2d, 
+                                       final Color      color, 
+                                       final Dimension  size, 
+                                       final int        inset)
+    {
+        drawRoundedRect(g2d, color, size, inset, 5);
+    }
+    
+    /**
+     * @return a Triple containing the platform specific Focus Border, Empty Border and Focus Color
+     */
+    public static Triple<Border, Border, Color> getFocusBorders(final Component comp)
+    {
+        Triple<Border, Border, Color> focusInfo = new Triple<Border, Border, Color>();
+        if (focusInfo.first == null)
+        {
+            if (UIHelper.isMacOS())
+            {
+                focusInfo.first  = new MacBtnBorder();
+                Insets fbInsets  = focusInfo.first.getBorderInsets(comp);
+                focusInfo.second = new EmptyBorder(fbInsets);
+                
+            } else
+            {
+                if (UIManager.getLookAndFeel() instanceof PlasticLookAndFeel)
+                {
+                    focusInfo.third = PlasticLookAndFeel.getFocusColor();
+                } else
+                {
+                    focusInfo.third = UIManager.getColor("Button.focus");
+                }
+                
+                if (focusInfo.third == null) // Shouldn't happen
+                {
+                    focusInfo.third = Color.YELLOW;
+                }
+                
+                focusInfo.first  = new LineBorder(focusInfo.third, 1, true);
+                focusInfo.second = new EmptyBorder(focusBorder.getBorderInsets(comp));
+            }
+        }
+        return focusInfo;
+    }
+
+    /**
+     * @param g2d
+     * @param color
+     * @param size
+     * @param inset
+     * @param arcSize 
+     */
+    public static void drawRoundedRect(final Graphics2D g2d, 
+                                       final Color      color, 
+                                       final Dimension  size, 
+                                       final int        inset,
+                                       final int        arcSize)
+    {
+        drawRoundedRect(g2d, color, inset, inset, size.width-(inset*2), size.height-(inset*2), arcSize, arcSize);
+    }
+
+    /**
+     * @param g2d
+     * @param color
+     * @param x
+     * @param y
+     * @param w
+     * @param h
+     * @param arcSizeW
+     * @param arcSizeH
+     */
+    public static void drawRoundedRect(final Graphics2D g2d, 
+                                       final Color      color, 
+                                       final int        x,
+                                       final int        y,
+                                       final int        w,
+                                       final int        h,
+                                       final int        arcSizeW,
+                                       final int        arcSizeH)
     {
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setStroke(UIHelper.getStdLineStroke());
         g2d.setColor(color);
-        g2d.drawRoundRect(inset, inset, size.width-inset-1, size.height-inset-1, 5, 5);
+        g2d.drawRoundRect(x, y, w, h, arcSizeW, arcSizeH);
     }
+
+    /**
+     * @return the hoverColor
+     */
+    public static Color getHoverColor()
+    {
+        return hoverColor;
+    }
+
+    /**
+     * @param hoverColor the hoverColor to set
+     */
+    public static void setHoverColor(Color hoverColor)
+    {
+        UIHelper.hoverColor = hoverColor;
+    }
+    
+    
 }

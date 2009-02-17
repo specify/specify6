@@ -37,6 +37,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
@@ -55,6 +56,7 @@ import edu.ku.brc.af.ui.forms.validation.UIValidatable;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.plugins.UIPluginBase;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.MacBtnBorder;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
@@ -103,7 +105,7 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
     protected boolean                  stateChangeOK = true;
     protected String[]                 fieldNames;
 
-    protected Hashtable<BorderedRadioButton, LatLonUIIFace.LatLonType> selectedTypeHash = new Hashtable<BorderedRadioButton, LatLonUIIFace.LatLonType>();
+    protected Hashtable<JToggleButton, LatLonUIIFace.LatLonType> selectedTypeHash = new Hashtable<JToggleButton, LatLonUIIFace.LatLonType>();
     
     protected ImageIcon[]           pointImages;
     protected JComponent[]          latLonPanes;
@@ -116,7 +118,7 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
     protected Border                panelBorder = BorderFactory.createEtchedBorder();
     protected JLabel                typeLabel   = null;
     protected int                   currentInx  = -1;
-    protected BorderedRadioButton[] botBtns  = null;
+    protected JToggleButton[]        botBtns  = null;
     
     protected Locality             locality;
     protected DDDDPanel[]          panels;
@@ -293,21 +295,55 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
         
         PanelBuilder botBtnBar = new PanelBuilder(new FormLayout("p:g,p,10px,p,10px,p,p:g", "p"));
         
-        BorderedRadioButton.setSelectedBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
-        BorderedRadioButton.setUnselectedBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
         ButtonGroup btnGroup = new ButtonGroup();
-        botBtns = new BorderedRadioButton[typeNames.length];
+        botBtns = new JToggleButton[typeNames.length];
+        
+        if (UIHelper.isMacOS())
+        {
+            /*for (int i=0;i<botBtns.length;i++)
+            {
+                ImageIcon selIcon   = IconManager.getIcon(typeNames[i]+"Sel", IconManager.IconSize.Std16);
+                ImageIcon unselIcon = IconManager.getIcon(typeNames[i], IconManager.IconSize.Std16);
+                
+                MacIconRadioButton rb = new MacIconRadioButton(selIcon, unselIcon);
+                botBtns[i] = rb;
+                rb.setBorder(new MacBtnBorder());
+                
+                Dimension size = rb.getPreferredSize();
+                int max = Math.max(size.width, size.height);
+                size.setSize(max, max);
+                rb.setPreferredSize(size);
+            }*/
+            
+            BorderedRadioButton.setSelectedBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
+            BorderedRadioButton.setUnselectedBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
+            for (int i=0;i<botBtns.length;i++)
+            {
+                BorderedRadioButton rb = new BorderedRadioButton(IconManager.getIcon(typeNames[i], IconManager.IconSize.Std16));
+                botBtns[i] = rb;
+                rb.makeSquare();
+                rb.setBorder(new MacBtnBorder());
+            }
+        } else
+        {
+            BorderedRadioButton.setSelectedBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
+            BorderedRadioButton.setUnselectedBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
+            for (int i=0;i<botBtns.length;i++)
+            {
+                BorderedRadioButton rb = new BorderedRadioButton(IconManager.getIcon(typeNames[i], IconManager.IconSize.Std16));
+                botBtns[i] = rb;
+                rb.makeSquare();
+            }
+        }
+        
         for (int i=0;i<botBtns.length;i++)
         {
-            BorderedRadioButton rb = new BorderedRadioButton(IconManager.getIcon(typeNames[i], IconManager.IconSize.Std16));
-            rb.setToolTipText(typeToolTips[i]);
-            botBtnBar.add(rb, cc.xy((i*2)+2, 1));
-            btnGroup.add(rb);
-            botBtns[i] = rb;
-            rb.makeSquare();
-            selectedTypeHash.put(rb, types[i]);
+            botBtns[i].setToolTipText(typeToolTips[i]);
+            botBtnBar.add(botBtns[i], cc.xy((i*2)+2, 1));
+            btnGroup.add(botBtns[i]);
+            selectedTypeHash.put(botBtns[i], types[i]);
             
-            rb.addActionListener(new ActionListener(){
+            botBtns[i].addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent ce)
                 {
                     stateChanged(null);
@@ -320,7 +356,7 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
         
         if (isViewMode)
         {
-            typeLabel   = createLabel(" ");
+            typeLabel = createLabel(" ");
         }
 
         PanelBuilder topPane = new PanelBuilder(new FormLayout("l:p, c:p:g", "p"));
@@ -349,7 +385,7 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
         
         if (botBtns != null)
         {
-            for (BorderedRadioButton brb : botBtns)
+            for (JToggleButton brb : botBtns)
             {
                 brb.setEnabled(enabled);
             }
@@ -492,7 +528,7 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
         }
         
         // Set the radio button accordingly
-        for (BorderedRadioButton rb : selectedTypeHash.keySet())
+        for (JToggleButton rb : selectedTypeHash.keySet())
         {
             if (selectedTypeHash.get(rb).ordinal() == type.ordinal())
             {

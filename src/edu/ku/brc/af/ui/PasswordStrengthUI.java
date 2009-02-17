@@ -23,16 +23,22 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.UIPluginable;
+import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -93,6 +99,36 @@ public class PasswordStrengthUI extends JPanel implements UIPluginable, GetSetVa
         UIRegistry.popResourceBundle();
         
         setBorder(BorderFactory.createLoweredBevelBorder());
+    }
+    
+    /**
+     * Hooks up a Password field to the Strength UI
+     * @param pwdTF the password text field to be be hooked up to this
+     * @param btn optional button that will be enabled when the PasswordText is not empty
+     */
+    public void setPasswordField(final JTextField pwdTF, final JButton btn)
+    {
+        DocumentListener listener = new DocumentAdaptor()
+        {
+            @Override
+            protected void changed(DocumentEvent e)
+            {
+                if (btn != null)
+                {
+                    btn.setEnabled(!((JTextField)pwdTF).getText().isEmpty());
+                }
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run()
+                    {
+                        checkStrength(pwdTF.getText()); // ignore return boolean
+                        repaint();
+                    }
+                });
+            }
+        };
+        
+        pwdTF.getDocument().addDocumentListener(listener);
     }
     
     /* (non-Javadoc)

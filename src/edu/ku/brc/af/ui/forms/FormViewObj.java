@@ -5634,7 +5634,7 @@ public class FormViewObj implements Viewable,
                                     if (e.getClickCount() == 2)
                                     {
                                         JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow(),
-                                                tci.getDescription(), 
+                                                "<html>"+tci.getDescription(), 
                                                 UIRegistry.getResourceString("FormViewObj.UNOTES"), 
                                                 JOptionPane.INFORMATION_MESSAGE);
                                     }

@@ -13,9 +13,6 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 
 import edu.ku.brc.af.auth.UserAndMasterPasswordMgr;
 import edu.ku.brc.af.ui.PasswordStrengthUI;
@@ -66,31 +63,7 @@ public class SpecifyUserBusRules extends BaseBusRules
         final char echoChar = pwdTxt.getEchoChar();
         currEcho = echoChar;
         
-        DocumentListener listener = new DocumentListener()
-        {
-            protected void update()
-            {
-                genBtn.setEnabled(!((JTextField)pwdTxt).getText().isEmpty());
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run()
-                    {
-                        String  pwdStr  = new String(pwdTxt.getPassword());
-                        pwdStrenthUI.checkStrength(pwdStr); // ignore return boolean
-                        
-                        pwdStrenthUI.repaint();
-                    }
-                });
-            }
-            @Override
-            public void changedUpdate(DocumentEvent e) { update(); }
-            @Override
-            public void insertUpdate(DocumentEvent e) { update(); }
-            @Override
-            public void removeUpdate(DocumentEvent e) { update(); }
-        };
-        
-        pwdTxt.getDocument().addDocumentListener(listener);
+        pwdStrenthUI.setPasswordField(pwdTxt, genBtn);
         
         genBtn.addActionListener(new ActionListener() {
             @Override

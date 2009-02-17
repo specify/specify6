@@ -213,6 +213,10 @@
     <icon name="LatLonRectTopLeft"     file="LatLonRectLeft32x32.png"   sizes="all"/>
     <icon name="LatLonRectBottomRight" file="LatLonRectRight32x32.png"  sizes="all"/>
     
+    <icon name="LatLonPointSel"        file="LatLonPoint32x32Sel.png"   sizes="all"/>
+    <icon name="LatLonLineSel"         file="LatLonLine32x32Sel.png"    sizes="all"/>
+    <icon name="LatLonRectSel"         file="LatLonRect32x32Sel.png"    sizes="all"/>
+    
     <!-- Tree Node Find Widget -->
     <icon name="Top"                   file="RightSideUp.png"     sizes="all"/>
     <icon name="Bottom"                file="LeftSideDown.png"    sizes="all"/>
