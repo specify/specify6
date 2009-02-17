@@ -55,7 +55,7 @@
   </picklist>
   <picklist name="AccessionStatus" issystem="true" type="0" readonly="true" sizelimit="3">
     <items>
-      <picklistitem title="nodata" value="nodata"/>
+      <picklistitem title="No Data" value="nodata"/>
       <picklistitem title="In Process" value="inprocess"/>
       <picklistitem title="Complete" value="complete"/>
     </items>
