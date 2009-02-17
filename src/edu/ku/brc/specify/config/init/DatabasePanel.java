@@ -94,7 +94,7 @@ public class DatabasePanel extends BaseSetupPanel
         CellConstraints cc = new CellConstraints();
         
         int numRows = 4 + (doLoginOnly ? 0 : 2);
-        PanelBuilder builder = new PanelBuilder(new FormLayout("p,2px,p:g", "p:g,2px," + UIHelper.createDuplicateJGoodiesDef("p", "2px", numRows)+",p:g"), this);
+        PanelBuilder builder = new PanelBuilder(new FormLayout("p,2px,p:g", "p,2px," + UIHelper.createDuplicateJGoodiesDef("p", "2px", numRows)+",p:g"), this);
         int row = 1;
         
         builder.add(createLabel(header, SwingConstants.CENTER), cc.xywh(1,row,3,1));row += 2;

@@ -9,14 +9,18 @@
  */
 package edu.ku.brc.specify.config.init;
 
-import static edu.ku.brc.ui.UIHelper.*;
+import static edu.ku.brc.ui.UIHelper.createI18NFormLabel;
 
 import javax.swing.JButton;
 import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
 
 import com.jgoodies.forms.layout.CellConstraints;
 
 import edu.ku.brc.af.ui.PasswordStrengthUI;
+import edu.ku.brc.af.ui.forms.ViewFactory;
+import edu.ku.brc.helpers.Encryption;
+import edu.ku.brc.ui.DocumentAdaptor;
 
 /**
  * @author rod
@@ -48,7 +52,7 @@ public class UserInfoPanel extends GenericFormPanel
     @Override
     protected String getAdditionalRowDefs()
     {
-        return ",2px,p";
+        return ",2px,p,2px,p";
     }
 
     /* (non-Javadoc)
@@ -66,11 +70,23 @@ public class UserInfoPanel extends GenericFormPanel
         
         PasswordStrengthUI pwdStrength = new PasswordStrengthUI();
         builder.add(createI18NFormLabel("PWDSTRENGTH"), cc.xy(1, row));
-        builder.add(pwdStrength, cc.xy(3, row));
+        builder.add(pwdStrength,                        cc.xy(3, row)); row += 2;
         
-        JTextField pwdTF = (JTextField)comps.get("usrPassword");
+        final JTextField pwdTF = (JTextField)comps.get("usrPassword");
         pwdStrength.setPasswordField(pwdTF, null);
         
+        final JTextField encryptedTF = new JTextField(20);
+        ViewFactory.changeTextFieldUIForDisplay(encryptedTF, false);
+        builder.add(createI18NFormLabel("ENCRYPT_KEY"), cc.xy(1, row));
+        builder.add(encryptedTF,                        cc.xy(3, row));
+        
+        pwdTF.getDocument().addDocumentListener(new DocumentAdaptor() {
+            @Override
+            protected void changed(DocumentEvent e)
+            {
+                encryptedTF.setText(Encryption.encrypt(pwdTF.getText()));
+            }
+        });
     }
 
     

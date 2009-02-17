@@ -601,8 +601,8 @@ public class BuildSampleDatabase
         
         startTx();
         
-        createTaxonTreeDefFromXML(taxonTreeDef, disciplineType);
-        persist(taxonTreeDef);
+        //createTaxonTreeDefFromXML(taxonTreeDef, disciplineType);
+        //persist(taxonTreeDef);
         
         //DBTableIdMgr schema = new DBTableIdMgr(false);
         //schema.initialize(new File(XMLHelper.getConfigDirPath("specify_datamodel.xml")));
@@ -621,7 +621,54 @@ public class BuildSampleDatabase
         ////////////////////////////////
         frame.setDesc("Building Trees...");
         Vector<Object> taxa = new Vector<Object>();
-        createTaxonTreeFromXML(taxa, taxonTreeDef, disciplineType);
+        //createTaxonTreeFromXML(taxa, taxonTreeDef, disciplineType);
+        
+        // Create Tree Definition
+        taxonTreeDef.setDiscipline(discipline);
+        taxa.add(taxonTreeDef);
+
+        String dataStr = props.getProperty("taxontreedefs");
+        if (StringUtils.isNotEmpty(dataStr))
+        {
+            TaxonTreeDefItem parent = null;
+            String[] tokens = StringUtils.split(dataStr, ',');
+            for (int i=0;i<tokens.length;i++)
+            {
+                String name = tokens[i];
+                i++;
+                int    rank = Integer.parseInt(tokens[i]);
+                boolean isStd = TaxonTreeDef.isStdRequiredLevel(rank) || rank == 0;
+                
+                TaxonTreeDefItem ttdi = new TaxonTreeDefItem();
+                ttdi.initialize();
+                ttdi.setTreeDef(taxonTreeDef);
+                taxonTreeDef.getTreeDefItems().add(ttdi);
+                ttdi.setName(name);
+                ttdi.setRankId(rank);
+                ttdi.setParent(parent);
+                ttdi.setFullNameSeparator(" ");
+                ttdi.setIsEnforced(isStd);
+                ttdi.setIsInFullName(rank == 180 || rank == 220);
+                
+                taxa.add(ttdi);
+                
+                if (i == 1)
+                {
+                    Taxon tx = new Taxon();
+                    tx.initialize();
+                    tx.setDefinition(taxonTreeDef);
+                    tx.setDefinitionItem(ttdi);
+                    ttdi.getTreeEntries().add(tx);
+                    tx.setName("Life");
+                }
+               
+                if (parent != null)
+                {
+                    parent.getChildren().add(ttdi);
+                }
+                parent = ttdi;
+            }
+        }
         
         boolean isPaleo = disciplineType.getDisciplineType() == DisciplineType.STD_DISCIPLINES.paleobotany ||
                           disciplineType.getDisciplineType() == DisciplineType.STD_DISCIPLINES.vertpaleo ||

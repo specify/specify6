@@ -32,6 +32,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
@@ -314,8 +315,10 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         
         JPanel mainPanel = new JPanel(new BorderLayout());
-        PanelBuilder    iconBldr    = new PanelBuilder(new FormLayout("8px, f:p:g,130px,f:p:g", "8px,f:p:g,130px,f:p:g, 8px"));
-        iconBldr.add(new JLabel(IconManager.getIcon("WizardIcon")), cc.xy(3, 3));
+        PanelBuilder    iconBldr    = new PanelBuilder(new FormLayout("20px, f:p:g,p,f:p:g,8px", "20px,t:p,f:p:g, 8px"));
+        JLabel iconLbl = new JLabel(IconManager.getIcon("WizardIcon"));
+        iconLbl.setVerticalAlignment(SwingConstants.TOP);
+        iconBldr.add(iconLbl, cc.xy(2, 3));
         mainPanel.add(iconBldr.getPanel(), BorderLayout.WEST);
         mainPanel.add(builder.getPanel(), BorderLayout.CENTER);
         
@@ -339,12 +342,12 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
         if (step == lastStep-1)
         {
             nextBtn.setEnabled(panels.get(step).isUIValid());
-            nextBtn.setText("Finished");
+            nextBtn.setText(getResourceString("FINISHED"));
             
         } else
         {
             nextBtn.setEnabled(panels.get(step).isUIValid());
-            nextBtn.setText("Next");
+            nextBtn.setText(getResourceString("NEXT"));
         }
         
         backBtn.setEnabled(step > 0); 
@@ -461,8 +464,8 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
                             
                         } catch (Exception ex)
                         {
-                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyDBSetupWizard.class, ex);
+                            //edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                            //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyDBSetupWizard.class, ex);
                             ex.printStackTrace();
                         }
                         return null;

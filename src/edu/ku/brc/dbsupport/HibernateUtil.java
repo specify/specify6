@@ -309,8 +309,9 @@ public class HibernateUtil {
             sf = sessionFactory;
         }
         if (sf == null)
+        {
             throw new IllegalStateException("SessionFactory not available."); //$NON-NLS-1$
-        
+        }
         //log.info("** getSessionFactory ["+Thread.currentThread().hashCode()+"]["+sf.hashCode()+"]");
         
         return sf;

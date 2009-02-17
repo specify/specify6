@@ -20,6 +20,7 @@ package edu.ku.brc.specify.config;
 import java.util.Locale;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -114,7 +115,7 @@ public class SpecifySchemaI18NService extends SchemaI18NService
             DBTableInfo ti = mgr.getInfoByTableName(row[0].toString());
             if (ti != null)
             {
-                ti.setDescription(row[1] != null ? row[1].toString() : null);
+                ti.setDescription(StringEscapeUtils.unescapeXml(row[1] != null ? row[1].toString() : null ));
 
             } else
             {
