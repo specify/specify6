@@ -1172,7 +1172,7 @@
             
             <desc><![CDATA[New Taxon Node Form]]></desc>
             <enableRules>
-                <rule id="acceptedParent"><![CDATA[!isAccepted.isSelected()]]></rule>
+                <!-- <rule id="acceptedParent"><![CDATA[!isAccepted.isSelected()]]></rule> -->
                 <rule id="hybridParent1"><![CDATA[isHybrid.isSelected()]]></rule>
                 <rule id="hybridParent2"><![CDATA[isHybrid.isSelected()]]></rule>
                 <rule id="definitionItem"><![CDATA[parent.getValue() != null]]></rule>

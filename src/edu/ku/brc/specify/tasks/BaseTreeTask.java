@@ -534,7 +534,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
      * @return the editor
      */
     @SuppressWarnings("unchecked")
-    protected TreeDefinitionEditor<T,D,I> createDefEditor(@SuppressWarnings("unused") final String titleArg)
+    protected TreeDefinitionEditor<T,D,I> createDefEditor(final String titleArg)
 	{
         DataProviderSessionIFace session = null;
         try
@@ -682,7 +682,6 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
     /* (non-Javadoc)
      * @see edu.ku.brc.af.tasks.BaseTask#subPaneRemoved(edu.ku.brc.af.core.SubPaneIFace)
      */
-    @SuppressWarnings("unchecked")
     @Override
 	public void subPaneRemoved(SubPaneIFace subPane)
 	{

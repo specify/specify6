@@ -98,9 +98,26 @@ public class TreeableSearchQueryBuilder implements ViewBasedSearchQueryBuilderIF
             queryStr = String.format(queryFormatStr, tableInfo.getShortClassName(), searchText.toLowerCase() + "%", treeDefId);
             
             Integer nodeId = nodeInForm == null ? null : nodeInForm.getTreeId();
-            Integer nodeNumber = nodeInForm == null ? null : nodeInForm.getNodeNumber();
-            Integer highestChildNodeNumber = nodeInForm == null ? null : nodeInForm.getHighestChildNodeNumber();
-            
+            Integer nodeNumber = null;
+            Integer highestChildNodeNumber = null;
+            if (nodeInForm != null)
+            {
+            	if (lookupType == ACCEPTED_PARENT && nodeId == null)
+            	{
+            	    //if doing acceptedParent lookup for new record, since no children can
+            		//be present for new records, can use parent's node numbers to
+            		// prevent ancestors being available for accepted parent 
+            		//(this restriction is enforced by TreeTableViewer)
+            		Treeable<?, ?, ?> parentNode = nodeInForm.getParent();
+            		nodeNumber = parentNode == null ? null : parentNode.getNodeNumber();
+            		highestChildNodeNumber = parentNode == null ? null : parentNode.getHighestChildNodeNumber();
+            	}
+            	else
+            	{
+            		nodeNumber = nodeInForm.getNodeNumber();
+            		highestChildNodeNumber = nodeInForm.getHighestChildNodeNumber();
+            	}
+            }
             if (nodeId != null)
             {
                 queryStr += " and n.id != " + nodeId;

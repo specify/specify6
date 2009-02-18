@@ -260,7 +260,17 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
         return false;
     }
 
+    
     /* (non-Javadoc)
+	 * @see edu.ku.brc.specify.datamodel.busrules.BaseTreeBusRules#canAccessSynonymy(edu.ku.brc.specify.datamodel.Treeable, int)
+	 */
+	@Override
+	protected boolean canAccessSynonymy(Taxon dataObj, int rank)
+	{
+		return false;
+	}
+
+	/* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.busrules.BaseTreeBusRules#afterFillForm(java.lang.Object)
      */
     @Override

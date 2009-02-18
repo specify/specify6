@@ -387,9 +387,11 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
         }
         
         // set the tree def for the object being edited by using the parent node's tree def
+        // set the parent too??? (lookups for the AcceptedParent QueryComboBox need this) 
         if (parent != null)
         {
             formNode.setDefinition(parent.getDefinition());
+            formNode.setParent(parent);
         }
 
         SwingUtilities.invokeLater(new Runnable() {
@@ -635,37 +637,41 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
                         .getControlByName("isAccepted");
                 final ValComboBoxFromQuery acceptedParentWidget = (ValComboBoxFromQuery) formViewObj
                         .getControlByName("acceptedParent");
-                if (acceptedCheckBox != null && acceptedParentWidget != null)
-                {
-                    if (acceptedCheckBox.isSelected() && nodeInForm != null
-                            && nodeInForm.getDefinition() != null)
-                    {
-                        // disable if necessary
-                        boolean canSynonymize = nodeInForm.getDefinition()
-                                .getSynonymizedLevel() <= nodeInForm.getRankId()
-                                && nodeInForm.getDescendantCount() == 0;
-                        acceptedCheckBox.setEnabled(canSynonymize);
-                    }
-                    acceptedParentWidget.setEnabled(!acceptedCheckBox.isSelected()
-                                && acceptedCheckBox.isEnabled());
-                    if (acceptedCheckBox.isSelected())
-                    {
-                        acceptedParentWidget.setValue(null, null);
-                    }
+                if (canAccessSynonymy(nodeInForm))
+				{
+					if (acceptedCheckBox != null
+							&& acceptedParentWidget != null)
+					{
+						if (acceptedCheckBox.isSelected() && nodeInForm != null
+								&& nodeInForm.getDefinition() != null)
+						{
+							// disable if necessary
+							boolean canSynonymize = nodeInForm.getDefinition()
+									.getSynonymizedLevel() <= nodeInForm
+									.getRankId()
+									&& nodeInForm.getDescendantCount() == 0;
+							acceptedCheckBox.setEnabled(canSynonymize);
+						}
+						acceptedParentWidget.setEnabled(!acceptedCheckBox
+								.isSelected()
+								&& acceptedCheckBox.isEnabled());
+						if (acceptedCheckBox.isSelected())
+						{
+							acceptedParentWidget.setValue(null, null);
+						}
 
-                    if (nodeInForm != null && acceptedParentWidget != null && rankComboBox != null)
-                    {
-                        //Can't fully implement synonymization validation without node numbers
-                    	if (nodeInForm.getNodeNumber() != null && nodeInForm.getHighestChildNodeNumber() != null)
-                    	{
-                    		acceptedParentWidget
-                                .registerQueryBuilder(new TreeableSearchQueryBuilder(
-                                        nodeInForm, rankComboBox, TreeableSearchQueryBuilder.ACCEPTED_PARENT));
-                    	}
-                    }
-                }
-                
-                if (!canAccessSynonymy(nodeInForm))
+						if (nodeInForm != null && acceptedParentWidget != null
+								&& rankComboBox != null)
+						{
+							acceptedParentWidget
+									.registerQueryBuilder(new TreeableSearchQueryBuilder(
+											nodeInForm,
+											rankComboBox,
+											TreeableSearchQueryBuilder.ACCEPTED_PARENT));
+						}
+					}
+				}
+                else
                 {
                     if (acceptedCheckBox != null)
                     {
