@@ -6,6 +6,9 @@
  */
 package edu.ku.brc.specify.tasks.subpane.security;
 
+import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIHelper.createScrollPane;
+import static edu.ku.brc.ui.UIHelper.isMacOS;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
@@ -73,7 +76,6 @@ import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.UserGroupScope;
 import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.VerticalSeparator;
 import edu.ku.brc.util.ComparatorByStringRepresentation;
@@ -105,6 +107,7 @@ public class SecurityAdminPane extends BaseSubPane
     private NavigationTreeMgr navTreeMgr;
 
     
+    @SuppressWarnings("unused")
     private boolean hasPermissionToModify = false;
     @SuppressWarnings("unused")
     private boolean hasPermissionToAdd    = false;
@@ -114,6 +117,7 @@ public class SecurityAdminPane extends BaseSubPane
     private DataModelObjBaseWrapper objWrapper       = null;
     private DataModelObjBaseWrapper secondObjWrapper = null;
     
+    @SuppressWarnings("unused")
     private final int formOptions = MultiView.IS_EDITTING | MultiView.IS_NEW_OBJECT;
     
     /**
@@ -150,9 +154,9 @@ public class SecurityAdminPane extends BaseSubPane
 
         if (SecurityAdminPane.isDoDebug())
         {
-            mainPB.add(UIHelper.createScrollPane(createNavigationPanel()),  cc.xy(2, 2));
+            mainPB.add(createScrollPane(createNavigationPanel()),  cc.xy(2, 2));
             mainPB.add(new VerticalSeparator(new Color(224, 224, 224), new Color(124, 124, 124)),  cc.xy(4, 2));
-            mainPB.add(UIHelper.createScrollPane(createInformationPanel()), cc.xy(6, 2));
+            mainPB.add(createScrollPane(createInformationPanel()), cc.xy(6, 2));
         } else
         {
             mainPB.add(createNavigationPanel(),  cc.xy(2, 2));
@@ -169,7 +173,7 @@ public class SecurityAdminPane extends BaseSubPane
         
         if (isDoDebug())
         {
-            this.add(UIHelper.createScrollPane(securityAdminPanel), BorderLayout.CENTER);
+            this.add(createScrollPane(securityAdminPanel), BorderLayout.CENTER);
         } else
         {
             this.add(securityAdminPanel, BorderLayout.CENTER);
@@ -203,7 +207,7 @@ public class SecurityAdminPane extends BaseSubPane
             }
         };
         
-        searchText = new JAutoCompTextField(UIHelper.isMacOS() ? 15 : 22);
+        searchText = new JAutoCompTextField(isMacOS() ? 15 : 22);
         searchText.getDocument().addDocumentListener(searchDL);
         SearchBox searchBox = new SearchBox(searchText, null);
         
@@ -281,7 +285,7 @@ public class SecurityAdminPane extends BaseSubPane
         
         IconManager.IconSize iconSize = IconManager.IconSize.Std20;
         ImageIcon sysIcon = IconManager.getIcon("SystemSetup", iconSize);
-        JLabel label = UIHelper.createLabel("XXXX");
+        JLabel label = createLabel("XXXX");
         label.setIcon(sysIcon);
         label.setBorder(BorderFactory.createEmptyBorder(1, 0, 0, 0));
         
@@ -471,7 +475,7 @@ public class SecurityAdminPane extends BaseSubPane
         //JList userList = createUserList();
         
         String helpStr = getResourceString("ADD_USER_HINT");
-        JLabel userDnDHelp = UIHelper.createLabel(helpStr);
+        JLabel userDnDHelp = createLabel(helpStr);
         
         // adding the tree as f:p:g makes it grow too large
         final PanelBuilder mainPB = new PanelBuilder(new FormLayout("min(210px;p):g", 
@@ -759,6 +763,7 @@ public class SecurityAdminPane extends BaseSubPane
      * @param editing
      * @param formOptionsArg
      */
+    @SuppressWarnings("unused")
     private void createInfoSubPanel(final String formViewSet, 
                                     final String formView, 
                                     final String displayName, 
@@ -834,7 +839,7 @@ public class SecurityAdminPane extends BaseSubPane
         String className = SpecifyUser.class.getCanonicalName();
         if (isDoDebug())
         {
-            infoCards.add(UIHelper.createScrollPane(infoPanel), className);
+            infoCards.add(createScrollPane(infoPanel), className);
         } else
         {
             infoCards.add(infoPanel, className);
