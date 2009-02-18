@@ -340,11 +340,11 @@ public class UIFormatterListEdtDlg extends CustomDialog
                 setHasChanged(true);
             }
             
-        } catch (CloneNotSupportedException ex)
+        } catch (Exception ex)
         {
+            ex.printStackTrace();
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UIFormatterListEdtDlg.class, ex);
-            ex.printStackTrace();
         }
     }
     
