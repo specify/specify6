@@ -2310,7 +2310,7 @@ public class FormViewObj implements Viewable,
                     {
                         UIRegistry.showLocalizedError("FormViewObj.DATA_OBJ_MISSING");
                         setHasNewData(false);
-                        removeObject(false);
+                        removeObject(true);
                         return SAVE_STATE.Error;
                     }
                 }
@@ -2797,7 +2797,7 @@ public class FormViewObj implements Viewable,
     {
         if (doDelete)
         {
-            removeObject(true);
+            removeObject(false);
             
         } else
         {
