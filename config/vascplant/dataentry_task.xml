@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<views>
+	<std>
+	    
+		<view sidebar="false" name="Determination"      view="Determination"      iconname="Determination"      tooltip=""/>	     
+	    <view sidebar="true"  name="Collection Object"  view="CollectionObject"   iconname="CollectionObject"   tooltip=""/>    
+	    <view sidebar="true"  name="Collecting Event"   view="CollectingEvent"    iconname="CollectingEvent"    tooltip=""/>    
+	    <view sidebar="true"  name="Taxon"              view="Taxon"              iconname="Taxon"              tooltip=""/> 
+	    <view sidebar="true"  name="Agent"              view="Agent"              iconname="Agent"              tooltip=""/>    
+	    <view sidebar="true"  name="Geography"          view="Geography"          iconname="Geography"          tooltip=""/> 
+	    <view sidebar="false" name="Loan"               view="Loan"               iconname="Loan"               tooltip=""/>    
+		<view sidebar="false" name="Accession"          view="Accession"          iconname="Accession"          tooltip=""/>    
+		<view sidebar="false" name="Permit"             view="Permit"             iconname="Permit"             tooltip=""/>    
+		<view sidebar="false" name="Gift"               view="Gift"               iconname="Gift"               tooltip=""/> 
+		<view sidebar="false" name="Borrow"             view="Borrow"             iconname="Borrow"             tooltip=""/>    
+		<view sidebar="false" name="ExchangeIn"         view="ExchangeIn"         iconname="ExchangeIn"         tooltip=""/> 
+		<view sidebar="false" name="ExchangeOut"        view="ExchangeOut"        iconname="ExchangeOut"         tooltip=""/>    
+		<view sidebar="true"  name="Locality"           view="Locality"           iconname="Locality"           tooltip=""/> 
+		<view sidebar="false" name="ConservEvent"       view="ConservEvent"       iconname="ConservEvent"       tooltip=""/>
+		<view sidebar="false" name="FieldNotebookPage"  view="FieldNotebookPage"  iconname="FieldNotebookPage"  tooltip=""/>
+		<view sidebar="false" name="FieldNotebookPageSet" view="FieldNotebookPageSet" iconname="FieldNotebookPageSet" tooltip=""/>
+		<view sidebar="false" name="CommonNameTx"       view="CommonNameTx"       iconname="CommonNameTx"       tooltip=""/>
+		<view sidebar="false" name="Division"           view="Division"           iconname="Division"           tooltip=""/>
+	    <view sidebar="false" name="TreatmentEvent"     view="TreatmentEvent"     iconname="TreatmentEvent"     tooltip=""/>
+	    <view sidebar="false" name="CollectingTrip"     view="CollectingTripForm" iconname="CollectingTrip"     tooltip=""/>
+	    <view sidebar="false" name="Journal"            view="Journal"            iconname="Journal"            tooltip=""/>
+	    <view sidebar="false" name="DNASequence"        view="DNASequence"        iconname="DNASequence"        tooltip=""/>
+	    <view sidebar="false" name="Project"            view="Project"            iconname="Project"            tooltip=""/>
+	    <view sidebar="false" name="Appraisal"          view="Appraisal"          iconname="Appraisal"          tooltip=""/>
+	    <view sidebar="false" name="ReferenceWork"      view="ReferenceWork"      iconname="ReferenceWork"      tooltip=""/>
+	    <view sidebar="false" name="FieldNotebook"      view="FieldNotebook"      iconname="FieldNotebook"      tooltip=""/>
+	    <view sidebar="false" name="ConservDescription" view="ConservDescription" iconname="ConservDescription" tooltip=""/>
+	</std>
+	
+	<misc>
+        <!-- <view sidebar="true"  name="Deaccession"        viewset="Common"       view="Deaccession"        iconname="Deaccession"        tooltip=""/> --> 
+		<view sidebar="true"  name="Storage"            view="Storage"            iconname="Storage"           tooltip=""/>
+	</misc>
+</views>
