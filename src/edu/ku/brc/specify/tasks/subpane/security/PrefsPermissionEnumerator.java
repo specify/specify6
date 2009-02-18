@@ -8,6 +8,7 @@ package edu.ku.brc.specify.tasks.subpane.security;
 
 import static edu.ku.brc.helpers.XMLHelper.getAttr;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -15,9 +16,12 @@ import java.util.List;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.dom4j.Node;
+
+import com.thoughtworks.xstream.XStream;
 
 import edu.ku.brc.af.auth.SecurityOption;
 import edu.ku.brc.af.auth.SecurityOptionIFace;
@@ -100,10 +104,10 @@ public class PrefsPermissionEnumerator extends PermissionEnumerator
                             Hashtable<String, PermissionOptionPersist> hash = mainHash.get(name);
                             if (hash != null)
                             {
-                                for (PermissionOptionPersist tp : hash.values())
+                                for (PermissionOptionPersist pp : hash.values())
                                 {
-                                    PermissionIFace defPerm = tp.getDefaultPerms();
-                                    securityOption.addDefaultPerm(tp.getUserType(), defPerm);
+                                    PermissionIFace defPerm = pp.getDefaultPerms();
+                                    securityOption.addDefaultPerm(pp.getUserType(), defPerm);
                                 }
                             }
                         }
@@ -118,12 +122,74 @@ public class PrefsPermissionEnumerator extends PermissionEnumerator
         }
 	}
     
+    /**
+     * 
+     */
+    protected void createDefaultPrefPerms() 
+    {
+        prefOptions = new ArrayList<SecurityOptionIFace>();
+        try
+        {
+            XStream xstream = new XStream();
+            PermissionOptionPersist.config(xstream);
+            Hashtable<String, Hashtable<String, PermissionOptionPersist>> hash = new Hashtable<String, Hashtable<String, PermissionOptionPersist>>();
+
+            Element root = XMLHelper.readDOMFromConfigDir("prefs_init.xml"); //$NON-NLS-1$
+            if (root != null)
+            {
+                List<?> sections = root.selectNodes("/prefs/section/pref"); //$NON-NLS-1$
+                for ( Iterator<?> iter = sections.iterator(); iter.hasNext(); )
+                {
+                    org.dom4j.Element pref = (org.dom4j.Element)iter.next();
+                    String name = getAttr(pref, "name", null);
+                    if (StringUtils.isNotEmpty(name))
+                    {
+                        Hashtable<String, PermissionOptionPersist> hashItem = new Hashtable<String, PermissionOptionPersist>();
+                        hash.put(name, hashItem);
+
+                        List<?> defPerms = pref.selectNodes("defperm"); //$NON-NLS-1$
+                        if (defPerms != null && !defPerms.isEmpty())
+                        {
+                            for ( Iterator<?> iter2 = defPerms.iterator(); iter2.hasNext(); )
+                            {
+                                org.dom4j.Element defPref = (org.dom4j.Element)iter2.next();
+                                String defPermName = getAttr(defPref, "name", null);
+                                String perms       = getAttr(defPref, "perm", null);
+                                if (StringUtils.isNotEmpty(defPermName) && StringUtils.isNotEmpty(perms))
+                                {
+                                    String[] p = StringUtils.split(perms, ',');
+                                    if (p.length == 4)
+                                    {
+                                        boolean[] b = new boolean[4];
+                                        for (int i=0;i<b.length;i++)
+                                        {
+                                            b[i] = Boolean.parseBoolean(p[i]);
+                                        }
+                                        PermissionOptionPersist securityOption = new PermissionOptionPersist(name, defPermName, b[0], b[1], b[2], b[3]);
+                                        hashItem.put(defPermName, securityOption);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            FileUtils.writeStringToFile(new File("prefsperms.xml"), xstream.toXML(hash)); //$NON-NLS-1$
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.security.PermissionEnumerator#getSecurityOptions()
      */
     @Override
     protected List<SecurityOptionIFace> getSecurityOptions()
     {
+        //createDefaultPrefPerms();
+        
         if (prefOptions == null)
         {
             loadPrefs();
