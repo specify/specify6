@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2007  The University of Kansas
+ *
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
+ *
+ */
 package edu.ku.brc.specify.tasks.subpane.security;
 
 import static edu.ku.brc.ui.UIRegistry.getMostRecentWindow;
@@ -117,6 +123,9 @@ public class NavigationTreeMgr
         return result;
     }
     
+    /**
+     * @param userNode
+     */
     public void removeUserFromGroup(final DefaultMutableTreeNode userNode)
     {
         DataModelObjBaseWrapper wrapper = (DataModelObjBaseWrapper) userNode.getUserObject();
@@ -167,6 +176,10 @@ public class NavigationTreeMgr
         }
     }
     
+    /**
+     * @param userNode
+     * @return
+     */
     public boolean canDeleteUser(final DefaultMutableTreeNode userNode)
     {
         // get the user who's logged in

@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2007  The University of Kansas
+ *
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
+ *
+ */
 package edu.ku.brc.specify.tasks.subpane.security;
 
 import java.awt.event.ActionEvent;
@@ -15,8 +21,6 @@ import javax.swing.tree.TreePath;
 
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.specify.datamodel.Collection;
-import edu.ku.brc.specify.datamodel.Discipline;
-import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 

@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2007  The University of Kansas
+ *
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
+ *
+ */
 package edu.ku.brc.specify.tasks.subpane.security;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
@@ -11,6 +17,13 @@ import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 
+/**
+ * @author rod
+ *
+ * @code_status Alpha
+ *
+ *
+ */
 @SuppressWarnings("serial")
 public class YesNoCellRenderer extends DefaultTableCellRenderer
 {

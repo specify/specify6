@@ -147,42 +147,45 @@ public class PasswordStrengthUI extends JPanel implements UIPluginable, GetSetVa
     {
         super.paintComponent(g);
         
-        Graphics2D g2 = (Graphics2D)g;
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setColor(this.getBackground());
-        
-        FontMetrics fm = g2.getFontMetrics();
-        
-        String    text      = errReason != null ? errReason : getScoreDesc();
-        int       textWidth = fm.stringWidth(text);
-        Dimension size      = getSize();
-        
-        Insets ins   = getInsets();
-        int barWidth = size.width - ins.left - ins.right;
-        int w        = (int)(barWidth * (getScore() / 100.0));
-        int h        = size.height-ins.top-ins.bottom;
-        
-        int halfBW = barWidth / 2;
-        GradientPaint bg = new GradientPaint(new Point(0, 0), Color.RED,
-                                             new Point(halfBW/2,0), Color.YELLOW);
-        g2.setPaint(bg);
-        
-        Shape clipShape = g.getClip();
-        
-        g2.setClip(ins.left, ins.top, ins.left+w, h);
-        
-        g.fillRect(ins.left, ins.top, halfBW/2, h);
-        
-        // Second Half
-        bg = new GradientPaint(new Point(ins.left+halfBW/2,0), Color.YELLOW,
-                               new Point(ins.left+barWidth,0), Color.GREEN);
-        g2.setPaint(bg);
-        g.fillRect(ins.left+halfBW/2, ins.top, halfBW*2, h);
-        g.setClip(clipShape);
-        
-        g.setColor(Color.BLACK);
-        //System.out.println(score+"  "+getScore()+"  w: "+w+"  BW: "+barWidth);
-        g.drawString(text, (size.width-textWidth)/2, size.height - ((size.height-fm.getAscent())/2) - ins.bottom);
+        if (isEnabled())
+        {
+            Graphics2D g2 = (Graphics2D)g;
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setColor(this.getBackground());
+            
+            FontMetrics fm = g2.getFontMetrics();
+            
+            String    text      = errReason != null ? errReason : getScoreDesc();
+            int       textWidth = fm.stringWidth(text);
+            Dimension size      = getSize();
+            
+            Insets ins   = getInsets();
+            int barWidth = size.width - ins.left - ins.right;
+            int w        = (int)(barWidth * (getScore() / 100.0));
+            int h        = size.height-ins.top-ins.bottom;
+            
+            int halfBW = barWidth / 2;
+            GradientPaint bg = new GradientPaint(new Point(0, 0), Color.RED,
+                                                 new Point(halfBW/2,0), Color.YELLOW);
+            g2.setPaint(bg);
+            
+            Shape clipShape = g.getClip();
+            
+            g2.setClip(ins.left, ins.top, ins.left+w, h);
+            
+            g.fillRect(ins.left, ins.top, halfBW/2, h);
+            
+            // Second Half
+            bg = new GradientPaint(new Point(ins.left+halfBW/2,0), Color.YELLOW,
+                                   new Point(ins.left+barWidth,0), Color.GREEN);
+            g2.setPaint(bg);
+            g.fillRect(ins.left+halfBW/2, ins.top, halfBW*2, h);
+            g.setClip(clipShape);
+            
+            g.setColor(Color.BLACK);
+            //System.out.println(score+"  "+getScore()+"  w: "+w+"  BW: "+barWidth);
+            g.drawString(text, (size.width-textWidth)/2, size.height - ((size.height-fm.getAscent())/2) - ins.bottom);
+        }
     }
     
     /**

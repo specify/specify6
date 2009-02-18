@@ -6,7 +6,7 @@
  */
 package edu.ku.brc.specify.tasks.subpane.security;
 
-import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIHelper.*;
 import static edu.ku.brc.ui.UIHelper.createScrollPane;
 import static edu.ku.brc.ui.UIHelper.isMacOS;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
@@ -479,19 +479,32 @@ public class SecurityAdminPane extends BaseSubPane
         
         // adding the tree as f:p:g makes it grow too large
         final PanelBuilder mainPB = new PanelBuilder(new FormLayout("min(210px;p):g", 
-                                                                    "min(500px;p),p,15px,p,p,p")/*, new FormDebugPanel()*/);
+                                                                    "min(500px;p),p,15px,p,p,p,5px,p")/*, new FormDebugPanel()*/);
         final CellConstraints cc = new CellConstraints();
 
         final PanelBuilder tbRightPB = new PanelBuilder(new FormLayout("f:p:g,p", "p"));
         
-        JScrollPane sp = new JScrollPane(tree, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        mainPB.add(sp,                        cc.xy(1, 1));
-        mainPB.add(tbRightPB.getPanel(),      cc.xy(1, 2));
+        mainPB.add(createScrollPane(tree, true), cc.xy(1, 1));
+        mainPB.add(tbRightPB.getPanel(),         cc.xy(1, 2));
+        
 //        mainPB.addSeparator("Users",          cc.xy(1, 4)); // I18N
 //        
 //        sp = new JScrollPane(userList, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 //        mainPB.add(sp,                        cc.xy(1, 5));
+        int y = 1;
+        PanelBuilder lpb = new PanelBuilder(new FormLayout("p,10px,p:g", "p,2px,p,2px,p,2px,p,2px"));
+        lpb.addSeparator(getResourceString("SEC_LGND"), cc.xyw(1, y, 3)); y += 2;
+        
+        String[] lbl = {"SEC_ADMINGRP", "SEC_PERSON", "SEC_COLL"};
+        String[] icn = {"AdminGroup",   "person",     "Collection"};
+        for (int i=0;i<lbl.length;i++)
+        {
+            lpb.add(createLabel("", IconManager.getIcon(icn[i], IconManager.STD_ICON_SIZE)), cc.xy(1,y));
+            lpb.add(createI18NLabel(lbl[i]), cc.xy(3,y)); y+= 2;
+        }
+        
         mainPB.add(userDnDHelp,               cc.xy(1, 6));
+        mainPB.add(lpb.getPanel(),            cc.xy(1, 8));
 
         return mainPB.getPanel();
     }
