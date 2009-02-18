@@ -12,15 +12,20 @@
   </tr>
 </table>
 <h2>Specify Setup</h2>
-<p>Once the Specify Database Setup Wizard  has been completed a blank database will be attached to Specify. The blank database includes one user and one division, with one discipline within the division, and one collection within the discipline. The database will need to be expanded to include all the necessary users, collections, divisions and disciplines, with each being configured to include schema and tree information. The following setup will create new users, collections, disciplines and divisions:</p>
-<p><a href="../Configuration/institution_hierarchy.html">Instution levels</a></p>
-<p><a href="../Intro/number_formats.html">Number formats</a> </p>
-<p><a href="../Security/permissions.html">Adding users and permissions</a></p>
-<p>&nbsp;</p>
+<p>Specify's flexible design can accomodate a single user with a single collection or multiple collections representing multiple disciplines within an institution all sharing the same database. This is accomplished by creating relationships among collection data as well as modeling how collections are organized within institutions themselves and configuring components within Specify specifically for each institution level. </p>
+<p><a href="../Configuration/institution_hierarchy.html">Add instution levels</a></p>
+<p>Once the Specify Database Setup Wizard  has been completed a blank database will be attached to Specify. The blank database includes one institution with one division,  one discipline within the division, and one collection within the discipline, as well as one uset. The database will need to be expanded to include all the necessary users, collections, divisions and disciplines, with each being configured to for specific schema and tree information. </p>
+<p><a href="../Intro/number_formats.html">Format number schemes</a> </p>
+<p>Specify 6 provides a very powerful formatting and auto-numbering facility. There are several fields (e.g. Catalog Number, Loan Number and Accession Number) that users may wish to define a specific format and possibly have one segment of the number be automatically incremented. Then during data entry the format should be used as a 'template' so all the values are uniform. Specify 6 allows any 'string' data entry field to have a format, thus providing an incredible amount of flexibility.</p>
+<p><a href="../Security/permissions.html">Add users and permissions</a></p>
+<p>Specify has a comprehensive system for granting permission to program tools and to data. When Specify starts up it checks the user permissions and loads various components accordingly. &nbsp;Users that are not given permission to use modules in Specify will not see the corresponding buttons that connect users to that module. For instance, users that are not given permission to edit Trees will not have a Tree button on the Taskbar or have the ability to add the Tree button in the user Preferences tool.</p>
+<p>Currently, it is not possible to search for collection objects across collections in Specify 6  but that is a capability we are committed to in a future release. This is specifically tailored for Registrars, Directors and Conservators. </p>
 <p>When institution levels and users are in place, information specific to each discipline should be configured:</p>
-<p><a href="../Trees/editing_tree_def.html">Creating tree definitions</a></p>
-<p><a href="../SchemaConfig/schema_config.html">Schema configuration tool</a></p>
-<p><a href="../PickList/system_picklist.html">System pick lists</a></p>
+<p><a href="../Trees/editing_tree_def.html">Create tree definitions</a></p>
+<p>Specify 6 stores various table data in heirarchical Tree format. These include Taxon, Geography, Storage, Chronostratigraphy and Lithostratigraphy. These tables are also included in the form system, but the Tree offers a more broad, visual glimpse of the data.</p>
+<p>In the current release of Specify the Full Name may not be edited once nodes are active on a tree; therefore it is highly recommended that the tree definitions be completed before entering collection data into Specify. It may also be helpful to complete the trees themselves</p>
+<p><a href="../SchemaConfig/schema_config.html">Edit  configuration tool</a></p>
+<p><a href="../PickList/system_picklist.html">Edit system pick lists</a></p>
 <p><a href="../Configuration/prep_type.html">Preparation Type table</a></p>
 <p>&nbsp;</p>
 <p>The system itself should include an attachment repository and backup functions:</p>
