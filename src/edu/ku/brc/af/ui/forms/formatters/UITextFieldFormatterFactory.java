@@ -71,32 +71,41 @@ public class UITextFieldFormatterFactory extends UIFieldFormatterFactory
 
 		// separators and split pattern strings
 		Pattern splitPattern = Pattern.compile("([\\/\\-\\_ ])+");
-		Matcher matcher = splitPattern.matcher(formattingString);
+		Matcher matcher      = splitPattern.matcher(formattingString);
 
 		// Find all the separator matches and create individual fields by
 		// calling formatter field factory
 		UIFieldFormatterField field;
-		String fieldString = "";
-		int begin = 0;
+		String                fieldString   = "";
+		int                   begin         = 0;
+		boolean               isIncrementer = false;
 		while (matcher.find())
 		{
 			// create a field with what's before the current separator
 			fieldString = formattingString.substring(begin, matcher.start());
-			field = UIFieldFormatterField.factory(fieldString);
+			field       = UIFieldFormatterField.factory(fieldString);
 			fmt.addField(field);
 			begin = matcher.end();
+			if (field.isIncrementer())
+			{
+			    isIncrementer = true;
+			}
 
 			// create separator field
 			String value = matcher.group();
-			field = new UIFieldFormatterField(FieldType.separator, value
-					.length(), value, false);
+			field = new UIFieldFormatterField(FieldType.separator, value.length(), value, false);
 			fmt.addField(field);
 		}
 
 		// create last bit of formatter
 		fieldString = formattingString.substring(begin);
-		field = UIFieldFormatterField.factory(fieldString);
+		field       = UIFieldFormatterField.factory(fieldString);
 		fmt.addField(field);
+        if (field.isIncrementer())
+        {
+            isIncrementer = true;
+        }
+		fmt.setIncrementer(isIncrementer);
 
 		return fmt;
 	}

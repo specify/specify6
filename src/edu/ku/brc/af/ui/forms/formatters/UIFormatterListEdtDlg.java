@@ -401,6 +401,15 @@ public class UIFormatterListEdtDlg extends CustomDialog
         return (UIFieldFormatterIFace)formatList.getSelectedValue();
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.CustomDialog#okButtonPressed()
+     */
+    @Override
+    protected void okButtonPressed()
+    {
+        super.okButtonPressed();
+    }
+
     //-----------------------------------------------------------
     //-- List Renderer
     //-----------------------------------------------------------
