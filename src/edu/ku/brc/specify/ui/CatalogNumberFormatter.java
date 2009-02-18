@@ -32,7 +32,7 @@ import edu.ku.brc.af.ui.forms.formatters.DataObjSwitchFormatter;
  * Created Date: Jan 17, 2007
  *
  */
-public class CatalogNumberFormatter implements DataObjDataFieldFormatIFace
+public class CatalogNumberFormatter implements DataObjDataFieldFormatIFace, Cloneable
 {
     protected String name;
     

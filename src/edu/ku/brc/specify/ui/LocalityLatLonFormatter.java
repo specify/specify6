@@ -37,7 +37,7 @@ import edu.ku.brc.util.LatLonConverter;
  * Created Date: Jan 17, 2007
  *
  */
-public class LocalityLatLonFormatter implements DataObjDataFieldFormatIFace
+public class LocalityLatLonFormatter implements DataObjDataFieldFormatIFace, Cloneable
 {
     protected String                         name       = null;
     protected LatLonConverter.LATLON         latLonType = LatLonConverter.LATLON.Latitude;

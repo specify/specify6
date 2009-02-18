@@ -39,7 +39,7 @@ import edu.ku.brc.ui.UIHelper;
  * Mar 26, 2008
  *
  */
-public class CollectingEventDataObjFmt implements DataObjDataFieldFormatIFace
+public class CollectingEventDataObjFmt implements DataObjDataFieldFormatIFace, Cloneable
 {
     protected static final String securityPrefix = "DO.";
 
