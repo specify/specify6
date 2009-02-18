@@ -89,6 +89,8 @@ public class SecurityAdminPane extends BaseSubPane
     @SuppressWarnings("unused")
     private static final Logger log = Logger.getLogger(SecurityAdminPane.class);
 
+    private static boolean doDebug = false;
+    
     private JTree                                       tree;
     private JPanel                                      infoCards;
     private Set<SpecifyUser>                           spUsers;
@@ -131,6 +133,9 @@ public class SecurityAdminPane extends BaseSubPane
         hasPermissionToDelete = SecurityMgr.getInstance().checkPermission("Task.SecurityAdmin", "delete");
     }
     
+    /**
+     * @return
+     */
     public JPanel createMainControlUI()
     {
         JPanel securityAdminPanel = new JPanel();
@@ -142,16 +147,34 @@ public class SecurityAdminPane extends BaseSubPane
                 securityAdminPanel);
         final CellConstraints cc = new CellConstraints();
         
-        mainPB.add(UIHelper.createScrollPane(createNavigationPanel()),  cc.xy(2, 2));
-        mainPB.add(new VerticalSeparator(new Color(224, 224, 224), new Color(124, 124, 124)),  cc.xy(4, 2));
-        mainPB.add(UIHelper.createScrollPane(createInformationPanel()), cc.xy(6, 2));
-        
+
+        if (SecurityAdminPane.isDoDebug())
+        {
+            mainPB.add(UIHelper.createScrollPane(createNavigationPanel()),  cc.xy(2, 2));
+            mainPB.add(new VerticalSeparator(new Color(224, 224, 224), new Color(124, 124, 124)),  cc.xy(4, 2));
+            mainPB.add(UIHelper.createScrollPane(createInformationPanel()), cc.xy(6, 2));
+        } else
+        {
+            mainPB.add(createNavigationPanel(),  cc.xy(2, 2));
+            mainPB.add(new VerticalSeparator(new Color(224, 224, 224), new Color(124, 124, 124)),  cc.xy(4, 2));
+            mainPB.add(createInformationPanel(), cc.xy(6, 2));
+        }
         updateUIEnabled(null);
         
-        mainPB.getPanel().setBackground(Color.RED);
-        setBackground(Color.ORANGE);
+        if (SecurityAdminPane.isDoDebug())
+        {
+            mainPB.getPanel().setBackground(Color.RED);
+            setBackground(Color.ORANGE);
+        }
         
-        this.add(UIHelper.createScrollPane(securityAdminPanel), BorderLayout.CENTER);
+        if (isDoDebug())
+        {
+            this.add(UIHelper.createScrollPane(securityAdminPanel), BorderLayout.CENTER);
+        } else
+        {
+            this.add(securityAdminPanel, BorderLayout.CENTER);
+        }
+        
         return securityAdminPanel;
     }
     
@@ -798,23 +821,32 @@ public class SecurityAdminPane extends BaseSubPane
         saveBtnPB.add(valBtn, cc.xy(2, 1)); 
         saveBtnPB.add(infoPanel.getSaveBtn(), cc.xy(4, 1));
         
-        saveBtnPB.getPanel().setBackground(Color.RED);
+        if (SecurityAdminPane.isDoDebug())
+        {
+            saveBtnPB.getPanel().setBackground(Color.RED);
+            infoPanel.setBackground(Color.ORANGE);
+            panel.setBackground(Color.BLUE);
+            setBackground(new Color(200,100,50));
+        }
         
         mainPB.add(saveBtnPB.getPanel(), cc.xy(1, y)); y += 2;
-        infoPanel.setBackground(Color.ORANGE);
         
         String className = SpecifyUser.class.getCanonicalName();
-        infoCards.add(UIHelper.createScrollPane(infoPanel), className);
+        if (isDoDebug())
+        {
+            infoCards.add(UIHelper.createScrollPane(infoPanel), className);
+        } else
+        {
+            infoCards.add(infoPanel, className);
+        }
         
         AdminInfoSubPanelWrapper subPanel = new AdminInfoSubPanelWrapper(panel);
-        panel.setBackground(Color.BLUE);
         
         subPanel.addPermissionEditor(generalEditor);
         subPanel.addPermissionEditor(objEditor);
         infoSubPanels.put(className, subPanel);
         editorPanels.put(className, infoPanel);
         
-        setBackground(new Color(200,100,50));
     }
     
     /**
@@ -859,7 +891,10 @@ public class SecurityAdminPane extends BaseSubPane
         infoSubPanels.put(className, subPanel);
         editorPanels.put(className, infoPanel);
         
-        infoPanel.setBackground(Color.PINK);
+        if (SecurityAdminPane.isDoDebug())
+        {
+            infoPanel.setBackground(Color.PINK);
+        }
     }
 
     /**
@@ -988,6 +1023,16 @@ public class SecurityAdminPane extends BaseSubPane
         return result;
     }
 
+
+    /**
+     * @return the doDebug
+     */
+    public static boolean isDoDebug()
+    {
+        return doDebug;
+    }
+    
+    //--------------------------------------------------------------------
     private class MyTreeCellRenderer extends DefaultTreeCellRenderer
     {
         public MyTreeCellRenderer()
@@ -1025,4 +1070,5 @@ public class SecurityAdminPane extends BaseSubPane
             return this;
         }
     }
+
 }

@@ -75,8 +75,11 @@ public class PermissionPanelEditor extends JPanel
             }
         });
         
-        cardPanel.setBackground(Color.CYAN);
-        setBackground(Color.GREEN);
+        if (SecurityAdminPane.isDoDebug())
+        {
+            cardPanel.setBackground(Color.CYAN);
+            setBackground(Color.GREEN);
+        }
     }
     
     /**
