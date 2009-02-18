@@ -11,6 +11,8 @@ import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Component;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
@@ -29,6 +31,7 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JDialog;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
@@ -50,6 +53,8 @@ import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.ui.IconEntry;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.JStatusBar;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.FileStoreAttachmentManager;
@@ -86,16 +91,7 @@ public class SystemPrefs extends GenericPrefsPanel
         clearCache.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
-                Specify.getCacheManager().clearAll();
-                
-                // Tell the OK btn a change has occurred and update the OK btn
-                FormValidator validator = ((FormViewObj)form).getValidator();
-                if (validator != null)
-                {
-                    validator.setHasChanged(true);
-                    validator.wasValidated(null);
-                    validator.dataChanged(null, null, null);
-                }
+                clearCache();
             }
         });
         
@@ -219,6 +215,77 @@ public class SystemPrefs extends GenericPrefsPanel
                 }
             }
          });
+    }
+    
+    protected void clearCache()
+    {
+        final String CLEAR_CACHE = "CLEAR_CACHE";
+        final JStatusBar statusBar = UIRegistry.getStatusBar();
+        statusBar.setIndeterminate(CLEAR_CACHE, true);
+        
+        Component dlg = getParent();
+        while (dlg != null && !(dlg instanceof JDialog))
+        {
+            dlg = dlg.getParent();
+        }
+        Point loc = null;
+        if (dlg != null)
+        {
+            loc = dlg.getLocation();
+        }
+        
+        final JDialog parentDlg = (JDialog)dlg;
+        
+        Rectangle screenRect = dlg.getGraphicsConfiguration().getBounds();
+        parentDlg.setLocation(loc.x, screenRect.height);
+        
+        javax.swing.SwingWorker<Integer, Integer> backupWorker = new javax.swing.SwingWorker<Integer, Integer>()
+        {
+            /* (non-Javadoc)
+             * @see javax.swing.SwingWorker#doInBackground()
+             */
+            @Override
+            protected Integer doInBackground() throws Exception
+            {
+                try
+                {
+                    long startTm = System.currentTimeMillis();
+                    
+                    Specify.getCacheManager().clearAll();
+                    
+                    // Tell the OK btn a change has occurred and update the OK btn
+                    FormValidator validator = ((FormViewObj)form).getValidator();
+                    if (validator != null)
+                    {
+                        validator.setHasChanged(true);
+                        validator.wasValidated(null);
+                        validator.dataChanged(null, null, null);
+                    }
+                    
+                    Thread.sleep(Math.max(0, 2000 - (System.currentTimeMillis() -startTm)));
+                    
+                } catch (Exception ex) {}
+                
+                return null;
+            }
+
+            @Override
+            protected void done()
+            {
+                super.done();
+                
+                statusBar.setProgressDone(CLEAR_CACHE);
+                
+                UIRegistry.clearSimpleGlassPaneMsg();
+                
+                UIRegistry.displayLocalizedStatusBarText("SystemPrefs.CACHE_CLEARED");
+                
+                UIHelper.centerWindow(parentDlg);
+            }
+        };
+        
+        UIRegistry.writeSimpleGlassPaneMsg(getLocalizedMessage("SystemPrefs.CLEARING_CACHE"), 24);
+        backupWorker.execute();
     }
 
     /* (non-Javadoc)
