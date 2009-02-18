@@ -96,7 +96,7 @@ public class RegisterApp extends JPanel
     protected String                    username   = "rods";
     protected String                    password   = "rods";
 
-    protected boolean                   doLocal = true;
+    protected boolean                   doLocal = false;
     protected JFrame                    frame;
     protected String                    title = "Registration and Statistics Tool";
     protected JTree                     tree;
@@ -1429,12 +1429,25 @@ public class RegisterApp extends JPanel
     /**
      * @param args
      */
-    public static void main(String[] args)
+    public static void main(final String[] args)
     {
         SwingUtilities.invokeLater(new Runnable()
         {
             public void run()
             {
+                // This is for Windows and Exe4J, turn the args into System Properties
+                for (String s : args)
+                {
+                    String[] pairs = s.split("="); //$NON-NLS-1$
+                    if (pairs.length == 2)
+                    {
+                        if (pairs[0].startsWith("-D")) //$NON-NLS-1$
+                        {
+                            System.setProperty(pairs[0].substring(2, pairs[0].length()), pairs[1]);
+                        } 
+                    }
+                }
+                
                 String appDir = System.getProperty("appdir"); //$NON-NLS-1$
                 if (StringUtils.isNotEmpty(appDir))
                 {
