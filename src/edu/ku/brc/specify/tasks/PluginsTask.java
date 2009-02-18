@@ -87,8 +87,8 @@ public class PluginsTask extends BaseTask
     public static final String GE_BALLOON_SECONDARY_URL       = "google.earth.secondaryurl";
     public static final String GE_BALLOON_SECONDARY_URL_TITLE = "google.earth.secondaryurltitle";
     
-    public static String GE_BALLOON_PRIMARY_URL_STR   = "http://www.fishbase.org/Summary/speciesSummary.php?genusname=%s&speciesname=%s";
-    public static String GE_BALLOON_SECONDARY_URL_STR = "http://animaldiversity.ummz.umich.edu/site/accounts/information/%s-%s";
+    public static String GE_BALLOON_PRIMARY_URL_STR   = "";//http://www.fishbase.org/Summary/speciesSummary.php?genusname=%s&speciesname=%s";
+    public static String GE_BALLOON_SECONDARY_URL_STR = "";//http://animaldiversity.ummz.umich.edu/site/accounts/information/%s-%s";
 
     public static String GE_BALLOON_PRIMARY_URL_TITLE_STR   = "fb";
     public static String GE_BALLOON_SECONDARY_URL_TITLE_STR = "ad";
