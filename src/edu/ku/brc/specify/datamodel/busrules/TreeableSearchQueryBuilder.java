@@ -43,21 +43,25 @@ import edu.ku.brc.specify.datamodel.Treeable;
  */
 public class TreeableSearchQueryBuilder implements ViewBasedSearchQueryBuilderIFace
 {
-    protected Treeable<?, ?, ?>     nodeInForm;
+    public static final int         PARENT = 0;
+    public static final int         ACCEPTED_PARENT = 1;
+    public static final int         HYBRID_PARENT = 2;
+    
+	protected Treeable<?, ?, ?>     nodeInForm;
     protected ValComboBox           rankCombo;
     protected boolean               accepted;
-    protected boolean               parentSearch;
+    protected int                   lookupType;
     protected List<ERTICaptionInfo> cols = new Vector<ERTICaptionInfo>();
     
     /**
      * @param nodeInForm
      */
-    public TreeableSearchQueryBuilder(final Treeable<?,?,?> nodeInForm, final ValComboBox rankCombo, final boolean accepted)
+    public TreeableSearchQueryBuilder(final Treeable<?,?,?> nodeInForm, final ValComboBox rankCombo, final int lookupType)
     {
         this.nodeInForm = nodeInForm;
         this.rankCombo = rankCombo;
-        this.parentSearch = rankCombo != null;
-        this.accepted = accepted;
+        this.lookupType = lookupType;
+        this.accepted = lookupType != HYBRID_PARENT;
     }
     
     /* (non-Javadoc)
@@ -104,49 +108,68 @@ public class TreeableSearchQueryBuilder implements ViewBasedSearchQueryBuilderIF
             
             if (rankCombo != null && rankCombo.getComboBox() != null)
             {
-                Object rank = rankCombo.getValue();
+                TreeDefItemIface<?,?,?> rank = (TreeDefItemIface<?,?,?> )rankCombo.getValue();
                 if (rank != null)
                 {
-                    //Actually, it seems that this case is impossible, because for new nodes RankCombo is cleared when
-                	//parent control is modified. And when editing existing nodes, the parent control is not editable.
+                    if (lookupType == ACCEPTED_PARENT)
+                    {
+                    	queryStr += " and (n.rankId = " + rank.getRankId() + " or n.rankId >= " + treeDef.getSynonymizedLevel() + ") ";
+                    }
+                    else
+                    {
+                    	//Actually, it seems that this case is impossible, because for new nodes RankCombo is cleared when
+                    	//parent control is modified. And when editing existing nodes, the parent control is not editable.
                 	
-                	queryStr += " and n.rankId < " + rank;
-                    //Now force rank to be greater than or equal the nearest required rank in the tree                    
-                    int minRank = 0;
-                    for (TreeDefItemIface defItem : treeDef.getTreeDefItems())
-                    {
-                        if (defItem.getRankId() == ((Number )rank).intValue())
-                        {
-                        	break;
-                        }
-                    	if (defItem.getIsEnforced())
-                        {
-                    		minRank = defItem.getRankId();
-                        }
+                    	queryStr += " and n.rankId < " + rank.getRankId();
+                    	//Now force rank to be greater than or equal the nearest required rank in the tree                    
+                    	int minRank = 0;
+                    	for (TreeDefItemIface defItem : treeDef.getTreeDefItems())
+                    	{
+                    		if (defItem.getRankId() == ((Number )rank).intValue())
+                    		{
+                    			break;
+                    		}
+                    		if (defItem.getIsEnforced())
+                    		{
+                    			minRank = defItem.getRankId();
+                    		}
+                    	}
+                    	if (minRank > 0)
+                    	{
+                    		queryStr += " and n.rankId >= " + minRank;
+                    	}
                     }
-                    if (minRank > 0)
-                    {
-                    	queryStr += " and n.rankId >= " + minRank;
-                    }
-                    
                 }
                 else
                 {
-                    int maxRank = 0;
-                    for (TreeDefItemIface defItem : treeDef.getTreeDefItems())
+                    if (lookupType == ACCEPTED_PARENT)
                     {
-                        if (defItem.getRankId() > maxRank)
-                        {
-                            maxRank = defItem.getRankId();
-                        }
+                    	queryStr += " and n.rankId >= " + treeDef.getSynonymizedLevel();
                     }
-                    queryStr += " and n.rankId < " + maxRank;
+                    else
+                    {
+                    	int maxRank = 0;
+                    	for (TreeDefItemIface defItem : treeDef.getTreeDefItems())
+                    	{
+                    		if (defItem.getRankId() > maxRank)
+                    		{
+                    			maxRank = defItem.getRankId();
+                    		}
+                    	}
+                    	queryStr += " and n.rankId < " + maxRank;
+                    }
                 }
             }
-            else if (nodeNumber != null && highestChildNodeNumber != null)
+            if (nodeNumber != null && highestChildNodeNumber != null)
             {
                 //don't allow children to be used as (for example). hybrid parents
                 queryStr += " and (n.nodeNumber not between " + nodeNumber + " and " + highestChildNodeNumber + ")";
+                if (lookupType == ACCEPTED_PARENT)
+                {
+                	//don't allow ancestors to be accpeted parents. 
+                	//The tree viewer enforces this -- although we are not sure why.
+                	queryStr += " and (" + nodeNumber + " not between n.nodeNumber and n.highestChildNodeNumber)";
+                }
             }
             
             if (accepted)

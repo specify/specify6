@@ -615,7 +615,7 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
                     if (parentCBX != null && rankComboBox != null && nodeInForm != null)
                     {
                     	parentCBX.registerQueryBuilder(new TreeableSearchQueryBuilder(nodeInForm,
-                                rankComboBox, true));
+                                rankComboBox, TreeableSearchQueryBuilder.PARENT));
                     }
                 }
 
@@ -635,35 +635,37 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
                         .getControlByName("isAccepted");
                 final ValComboBoxFromQuery acceptedParentWidget = (ValComboBoxFromQuery) formViewObj
                         .getControlByName("acceptedParent");
-                if (canAccessSynonymy(nodeInForm))
+                if (acceptedCheckBox != null && acceptedParentWidget != null)
                 {
-                    if (acceptedCheckBox != null && acceptedParentWidget != null)
+                    if (acceptedCheckBox.isSelected() && nodeInForm != null
+                            && nodeInForm.getDefinition() != null)
                     {
-                        if (acceptedCheckBox.isSelected() && nodeInForm != null
-                                && nodeInForm.getDefinition() != null)
-                        {
-                            // disable if necessary
-                            boolean canSynonymize = nodeInForm.getDefinition()
-                                    .getSynonymizedLevel() <= nodeInForm.getRankId()
-                                    && nodeInForm.getDescendantCount() == 0;
-                            acceptedCheckBox.setEnabled(canSynonymize);
-                        }
-                        acceptedParentWidget.setEnabled(!acceptedCheckBox.isSelected()
+                        // disable if necessary
+                        boolean canSynonymize = nodeInForm.getDefinition()
+                                .getSynonymizedLevel() <= nodeInForm.getRankId()
+                                && nodeInForm.getDescendantCount() == 0;
+                        acceptedCheckBox.setEnabled(canSynonymize);
+                    }
+                    acceptedParentWidget.setEnabled(!acceptedCheckBox.isSelected()
                                 && acceptedCheckBox.isEnabled());
-                        if (acceptedCheckBox.isSelected())
-                        {
-                            acceptedParentWidget.setValue(null, null);
-                        }
+                    if (acceptedCheckBox.isSelected())
+                    {
+                        acceptedParentWidget.setValue(null, null);
+                    }
 
-                        if (acceptedParentWidget != null && rankComboBox != null)
-                        {
-                            acceptedParentWidget
-                                    .registerQueryBuilder(new TreeableSearchQueryBuilder(
-                                            nodeInForm, null, true));
-                        }
+                    if (nodeInForm != null && acceptedParentWidget != null && rankComboBox != null)
+                    {
+                        //Can't fully implement synonymization validation without node numbers
+                    	if (nodeInForm.getNodeNumber() != null && nodeInForm.getHighestChildNodeNumber() != null)
+                    	{
+                    		acceptedParentWidget
+                                .registerQueryBuilder(new TreeableSearchQueryBuilder(
+                                        nodeInForm, rankComboBox, TreeableSearchQueryBuilder.ACCEPTED_PARENT));
+                    	}
                     }
                 }
-                else
+                
+                if (!canAccessSynonymy(nodeInForm))
                 {
                     if (acceptedCheckBox != null)
                     {

@@ -285,8 +285,8 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
                 if (hybridCheckBox != null && nodeInForm != null)
                 {
                     //XXX TaxonSearchBuilder will still allow both hybrid parents to be the same.
-                    hybrid1Widget.registerQueryBuilder(new TreeableSearchQueryBuilder(nodeInForm, null, false));
-                    hybrid2Widget.registerQueryBuilder(new TreeableSearchQueryBuilder(nodeInForm, null, false));
+                    hybrid1Widget.registerQueryBuilder(new TreeableSearchQueryBuilder(nodeInForm, null, TreeableSearchQueryBuilder.HYBRID_PARENT));
+                    hybrid2Widget.registerQueryBuilder(new TreeableSearchQueryBuilder(nodeInForm, null, TreeableSearchQueryBuilder.HYBRID_PARENT));
                 }
             }
         }
