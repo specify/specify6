@@ -51,6 +51,7 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.DocumentAdaptor;
 
 /**
  * @author rod
@@ -377,17 +378,11 @@ public class UIFormatterEditorDlg extends CustomDialog
         }
         catch (UIFieldFormatterInvalidatesExistingValueException e1)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UIFormatterEditorDlg.class, e1);
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UIFormatterEditorDlg.class, e1);
             fmtErrMsg = getResourceString("FFE_INVALID_FORMAT") + " (*)";
             setError(fmtErrMsg, true); 
         }
         catch (UIFieldFormatterParsingException e2) 
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UIFormatterEditorDlg.class, e2);
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UIFormatterEditorDlg.class, e2);
             fmtErrMsg = getResourceString("FFE_INVALID_FORMAT");
             setError(fmtErrMsg, true); 
         }
@@ -398,22 +393,10 @@ public class UIFormatterEditorDlg extends CustomDialog
      */
     private void hookTextChangeListener(final JTextField txtFld, final String errMsgKey)
     {
-        txtFld.getDocument().addDocumentListener(new DocumentListener()
+        txtFld.getDocument().addDocumentListener(new DocumentAdaptor()
         {
-            public void removeUpdate(DocumentEvent e) 
-            {
-                changed(e);
-            }
-            public void insertUpdate(DocumentEvent e)
-            {
-                changed(e);
-            }
-            public void changedUpdate(DocumentEvent e)
-            {
-                changed(e);
-            }
-
-            private void changed(@SuppressWarnings("unused")DocumentEvent e)
+            @Override
+            protected void changed(DocumentEvent e)
             {
                 if (StringUtils.isEmpty(txtFld.getText()))
                 {
@@ -428,7 +411,7 @@ public class UIFormatterEditorDlg extends CustomDialog
                     updateSample();
                 }
                 hasChanged = true;
-            }               
+            }
         });
     }
 
