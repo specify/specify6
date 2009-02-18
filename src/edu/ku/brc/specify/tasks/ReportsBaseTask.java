@@ -1420,5 +1420,16 @@ public class ReportsBaseTask extends BaseTask
         return REPORTS;
     }
 
+    /**
+     * @return the permissions array
+     */
+    @Override
+    protected boolean[][] getPermsArray()
+    {
+        return new boolean[][] {{true, true, true, true},
+                                {true, true, true, true},
+                                {true, true, false, false},
+                                {true, false, false, false}};
+    }
 
 }

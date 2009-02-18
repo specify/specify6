@@ -350,4 +350,16 @@ public class SecurityAdminTask extends BaseTask
     {
         log.error("not implemented");         //$NON-NLS-1$
     }
+    
+    /**
+     * @return the permissions array
+     */
+    @Override
+    protected boolean[][] getPermsArray()
+    {
+        return new boolean[][] {{true, true, true, true},
+                                {false, false, false, false},
+                                {false, false, false, false},
+                                {false, false, false, false}};
+    }
 }

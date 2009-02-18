@@ -6,13 +6,10 @@
  */
 package edu.ku.brc.specify.tasks.subpane.security;
 
-import static edu.ku.brc.ui.UIRegistry.getResourceString;
-
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import edu.ku.brc.af.auth.specify.permission.PermissionService;
@@ -22,7 +19,6 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.SpPermission;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
-import edu.ku.brc.ui.UIRegistry;
 
 /**
  * Wraps a JPanel with a permission editor (if panel for group or user) 
@@ -61,7 +57,7 @@ public class AdminInfoSubPanelWrapper
     /**
      * @param permissionEditor
      */
-    public void addPermissionEditor(PermissionPanelEditor permissionEditor)
+    public void addPermissionEditor(final PermissionPanelEditor permissionEditor)
     {
         permissionEditors.add(permissionEditor);
     }
@@ -93,8 +89,8 @@ public class AdminInfoSubPanelWrapper
     /**
      * Set form data based on a given persistent object
      * If first object is a SpecifyUser, secondObject is the group (GroupPrincipal) a user belongs to
-     * @param dataObj
-     * @param secondObject
+     * @param firstWrp
+     * @param secondWrp
      * @return whether new data was set (usually from setting defaults)
      */
     public boolean setData(final DataModelObjBaseWrapper firstWrp, 

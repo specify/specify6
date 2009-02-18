@@ -2444,18 +2444,26 @@ public class DataBuilder
         return groupMap;
     }
 
+    /**
+     * @param groupMap
+     */
     public static void createDefaultPermissions(final Map<String, SpPrincipal> groupMap)
     {
-        createDefaultPermissions("dataobjs.xml", "DO.", groupMap);
+        createDefaultPermissions("dataobjs.xml",   "DO.",    groupMap);
         createDefaultPermissions("prefsperms.xml", "Prefs.", groupMap);
-        //createDefaultPermissions("tasks.xml", "Tasks.", groupMap);
+        createDefaultPermissions("tasks.xml",      "Task.",  groupMap);
     }
     
+    /**
+     * @param filename
+     * @param prefix
+     * @param groupMap
+     */
     public static void createDefaultPermissions(final String      filename,
                                                 final String      prefix,
                                                 final Map<String, SpPrincipal> groupMap)
     {
-        Hashtable<String, Hashtable<String, PermissionOptionPersist>> mainHash = BaseTask.readDefaultPrefsFromXML(filename);
+        Hashtable<String, Hashtable<String, PermissionOptionPersist>> mainHash = BaseTask.readDefaultPermsFromXML(filename);
 
         for (SpPrincipal p : groupMap.values())
         {

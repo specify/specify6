@@ -56,7 +56,7 @@ public class PrefsPermissionEnumerator extends PermissionEnumerator
             Element root = XMLHelper.readDOMFromConfigDir("prefs_init.xml"); //$NON-NLS-1$
             if (root != null)
             {
-                Hashtable<String, Hashtable<String, PermissionOptionPersist>> mainHash = BaseTask.readDefaultPrefsFromXML("prefsperms.xml");
+                Hashtable<String, Hashtable<String, PermissionOptionPersist>> mainHash = BaseTask.readDefaultPermsFromXML("prefsperms.xml");
 
                 Node           prefsNode        = root.selectSingleNode("/prefs");
                 String         i18NResourceName = getAttr((Element)prefsNode, "i18nresname", (String)null);

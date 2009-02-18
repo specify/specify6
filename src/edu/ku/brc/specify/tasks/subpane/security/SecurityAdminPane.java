@@ -714,7 +714,7 @@ public class SecurityAdminPane extends BaseSubPane
      */
     private void createInitialInfoSubPanels()
     {
-        boolean editing = hasPermissionToModify;
+        //boolean editing = hasPermissionToModify;
 
         infoSubPanels = new Hashtable<String, AdminInfoSubPanelWrapper>();
         

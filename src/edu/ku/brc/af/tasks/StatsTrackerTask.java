@@ -432,6 +432,19 @@ public class StatsTrackerTask extends BaseTask
         super.doCommand(cmdAction);
     }
     
+    
+    /**
+     * @return the permissions array
+     */
+    @Override
+    protected boolean[][] getPermsArray()
+    {
+        return new boolean[][] {{true, true, true, true},
+                                {true, true, true, true},
+                                {true, true, false, false},
+                                {true, false, false, false}};
+    }
+    
     //--------------------------------------------------------------------------
     //-- 
     //--------------------------------------------------------------------------

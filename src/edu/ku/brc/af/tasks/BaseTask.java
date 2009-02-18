@@ -22,6 +22,7 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
@@ -37,6 +38,7 @@ import javax.swing.SwingConstants;
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.auth.PermissionEditorIFace;
+import edu.ku.brc.af.auth.PermissionSettings;
 import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.auth.SecurityOptionIFace;
 import edu.ku.brc.af.core.AppContextMgr;
@@ -66,6 +68,7 @@ import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.dbsupport.RecordSetIFace;
+import edu.ku.brc.specify.SpecifyUserTypes;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.tasks.RecordSetTask;
@@ -150,6 +153,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     
     // Security
     protected PermissionIFace     permissions          = null;
+    protected Hashtable<String, PermissionIFace> defPermsHash = new Hashtable<String, PermissionIFace>();
     
     /**
      * Default Constructor 
@@ -1519,7 +1523,37 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     @Override
     public PermissionIFace getDefaultPermissions(String userType)
     {
-        return null;
+        if (defPermsHash.size() == 0)
+        {
+            loadDefaultPerms();
+        }
+        return defPermsHash.get(userType);
     }
     
+    /**
+     * @return
+     */
+    protected boolean[][] getPermsArray()
+    {
+        return new boolean[][] {{false, false, false, false},
+                                {false, false, false, false},
+                                {false, false, false, false},
+                                {false, false, false, false}};
+    }
+    
+    /**
+     * Method for asking a task for a default set of permissions to start out with.
+     * @return a list of permissions in an array where the array has 4 elements that
+     * correspond to view, modify, delete, add
+     */
+    protected void loadDefaultPerms()
+    {
+        boolean[][] perms = getPermsArray();
+        int utInx = 0;
+        for (SpecifyUserTypes.UserType userType : SpecifyUserTypes.UserType.values())
+        {
+            defPermsHash.put(userType.toString(), new PermissionSettings(perms[utInx][0], perms[utInx][1], perms[utInx][2], perms[utInx][3]));
+            utInx++;
+        }
+    }
 }

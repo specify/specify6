@@ -1854,8 +1854,18 @@ public class QueryTask extends BaseTask
         }
     }
     
+    /**
+     * @return the permissions array
+     */
+    @Override
+    protected boolean[][] getPermsArray()
+    {
+        return new boolean[][] {{true, true, true, true},
+                                {true, true, true, true},
+                                {true, true, false, false},
+                                {true, false, false, false}};
+    }
     
-
     /**
      * @param treeRoot
      * @return a Hashtable of top-level tables in tableTree.
@@ -1930,6 +1940,7 @@ public class QueryTask extends BaseTask
             }
         });
     }
+    
     protected class NewQueryWorker extends OpenQueryWorker
     {
         protected final DBTableInfo tableInfo;
@@ -1990,6 +2001,5 @@ public class QueryTask extends BaseTask
             super.finished();
             editQuery(queryId);
         }
-
     }
 }

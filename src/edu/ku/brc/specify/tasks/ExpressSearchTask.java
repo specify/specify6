@@ -1308,6 +1308,19 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
         completionUIHelper(customQuery);
     }
     
+    
+    /**
+     * @return the permissions array
+     */
+    @Override
+    protected boolean[][] getPermsArray()
+    {
+        return new boolean[][] {{true, true, true, true},
+                                {true, true, true, true},
+                                {true, true, false, false},
+                                {true, false, false, false}};
+    }
+    
     //-------------------------------------------------------------------------
     //-- CustomQueryListener Interface
     //-------------------------------------------------------------------------

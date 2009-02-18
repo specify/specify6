@@ -15,7 +15,6 @@ import edu.ku.brc.af.auth.SecurityOptionIFace;
 import edu.ku.brc.af.core.PermissionIFace;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
-import edu.ku.brc.specify.SpecifyUserTypes;
 import edu.ku.brc.specify.datamodel.AttributeDef;
 import edu.ku.brc.specify.datamodel.AutoNumberingScheme;
 import edu.ku.brc.specify.datamodel.CollectingEventAttr;
@@ -145,7 +144,7 @@ public class DataObjPermissionEnumerator extends PermissionEnumerator
             }*/
             tableOptions = new ArrayList<SecurityOptionIFace>();
             
-            Hashtable<String, Hashtable<String, PermissionOptionPersist>> mainHash = BaseTask.readDefaultPrefsFromXML("dataobjs.xml");
+            Hashtable<String, Hashtable<String, PermissionOptionPersist>> mainHash = BaseTask.readDefaultPermsFromXML("dataobjs.xml");
             
             for (DBTableInfo tblInfo : DBTableIdMgr.getInstance().getTables())
             {

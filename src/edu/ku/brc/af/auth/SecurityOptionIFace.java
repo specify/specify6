@@ -74,6 +74,6 @@ public interface SecurityOptionIFace
      * @param userType the type of use, this value is implementation dependent, it can be null
      * @return the default permissions for a user type
      */
-    public PermissionIFace getDefaultPermissions(String userType);
+    public abstract PermissionIFace getDefaultPermissions(String userType);
      
 }

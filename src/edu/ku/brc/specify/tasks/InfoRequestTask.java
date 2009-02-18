@@ -548,4 +548,15 @@ public class InfoRequestTask extends BaseTask
         }
     }
     
+    /**
+     * @return the permissions array
+     */
+    @Override
+    protected boolean[][] getPermsArray()
+    {
+        return new boolean[][] {{true, true, true, true},
+                                {true, true, true, true},
+                                {true, true, false, true},
+                                {false, false, false, false}};
+    }
 }

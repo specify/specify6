@@ -1404,6 +1404,19 @@ public class DataEntryTask extends BaseTask
         }
     }
     
+    
+    /**
+     * @return the permissions array
+     */
+    @Override
+    protected boolean[][] getPermsArray()
+    {
+        return new boolean[][] {{true, true, true, true},
+                                {true, true, true, true},
+                                {true, true, false, true},
+                                {true, true, true, true}};
+    }
+
     /**
      * @param cmdAction
      * @param list
@@ -1497,6 +1510,27 @@ public class DataEntryTask extends BaseTask
             prefsChanged((AppPreferences)cmdAction.getData());
         }
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#canRequestContext()
+     */
+    @Override
+    protected boolean canRequestContext()
+    {
+        return Uploader.checkUploadLock();
+    }
+    
+    /**
+     * Configures inner classes for XStream.
+     * @param xstream the xstream
+     */
+    protected static void config(final XStream xstream)
+    {
+        DataEntryXML.config(xstream);
+        DataEntryView.config(xstream);
+    }
+
+
     
     /**
      * @param nameArg
@@ -1606,23 +1640,5 @@ public class DataEntryTask extends BaseTask
             // nothing going on for now (should probably be removed)
         }
     }
-    
-    /**
-     * Configures inner classes for XStream.
-     * @param xstream the xstream
-     */
-    protected static void config(final XStream xstream)
-    {
-        DataEntryXML.config(xstream);
-        DataEntryView.config(xstream);
-    }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.tasks.BaseTask#canRequestContext()
-     */
-    @Override
-    protected boolean canRequestContext()
-    {
-        return Uploader.checkUploadLock();
-    }
 }

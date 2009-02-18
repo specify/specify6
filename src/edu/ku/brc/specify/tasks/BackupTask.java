@@ -61,4 +61,17 @@ public class BackupTask extends BaseTask
     {
         return baseBackupTask.getPermEditorPanel();
     }
+    
+    
+    /**
+     * @return the permissions array
+     */
+    @Override
+    protected boolean[][] getPermsArray()
+    {
+        return new boolean[][] {{true, true, true, true},
+                                {true, true, true, true},
+                                {false, false, false, false},
+                                {false, false, false, false}};
+    }
 }

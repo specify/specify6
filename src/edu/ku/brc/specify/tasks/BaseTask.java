@@ -8,7 +8,7 @@ package edu.ku.brc.specify.tasks;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.ref.WeakReference;
+import java.lang.ref.SoftReference;
 import java.util.Collection;
 import java.util.Hashtable;
 
@@ -34,12 +34,7 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public abstract class BaseTask extends edu.ku.brc.af.tasks.BaseTask
 {
-    //protected static final String MANAGER        = SpecifyUserTypes.UserType.Manager.toString();
-    //protected static final String FULL_ACCESS    = SpecifyUserTypes.UserType.FullAccess.toString();
-    //protected static final String LIMITED_ACCESS = SpecifyUserTypes.UserType.LimitedAccess.toString();
-    //protected static final String GUEST          = SpecifyUserTypes.UserType.Guest.toString();
-    
-    protected static WeakReference<Hashtable<String, PermissionOptionPersist>> taskPermsListWR = null;
+    protected static SoftReference<Hashtable<String, PermissionOptionPersist>> taskPermsListSR = null;
     
     /**
      * @param name the name of the task and should have an icon of the same name
@@ -55,7 +50,7 @@ public abstract class BaseTask extends edu.ku.brc.af.tasks.BaseTask
      * @return a double hashtable first hashed by Permissions name and then hased by User Type
      */
     @SuppressWarnings("unchecked")
-    public static Hashtable<String, Hashtable<String, PermissionOptionPersist>> readDefaultPrefsFromXML(final String fileName)
+    public static Hashtable<String, Hashtable<String, PermissionOptionPersist>> readDefaultPermsFromXML(final String fileName)
     {
         Hashtable<String, Hashtable<String, PermissionOptionPersist>> hash = new Hashtable<String, Hashtable<String, PermissionOptionPersist>>();
         
@@ -90,57 +85,30 @@ public abstract class BaseTask extends edu.ku.brc.af.tasks.BaseTask
     }
     
     /**
-     * @return the Hashtable from the WeakReference
+     * @return the Hashtable from the SoftReference
      */
     protected Hashtable<String, PermissionOptionPersist> getAndSetDefPerms()
     {
-        if (taskPermsListWR == null)
+        if (taskPermsListSR == null)
         {
-            taskPermsListWR = new WeakReference<Hashtable<String, PermissionOptionPersist>>(null);
+            taskPermsListSR = new SoftReference<Hashtable<String, PermissionOptionPersist>>(null);
         }
         
-        Hashtable<String, PermissionOptionPersist> hash = taskPermsListWR.get();
+        Hashtable<String, PermissionOptionPersist> hash = taskPermsListSR.get();
         
         if (hash == null)
         {
-            Hashtable<String, Hashtable<String, PermissionOptionPersist>> taskHash = readDefaultPrefsFromXML("task.xml");
+            Hashtable<String, Hashtable<String, PermissionOptionPersist>> taskHash = readDefaultPermsFromXML("task.xml");
             if (taskHash != null)
             {
                 hash = taskHash.get(name);
                 if (hash != null)
                 {
-                    taskPermsListWR = new WeakReference<Hashtable<String, PermissionOptionPersist>>(hash);
+                    taskPermsListSR = new SoftReference<Hashtable<String, PermissionOptionPersist>>(hash);
                 }
             }
         }
         
-        if (false)
-        {
-            XStream xstream = new XStream();
-            PermissionOptionPersist.config(xstream);
-            
-            try
-            {
-                Hashtable<String, PermissionOptionPersist> hashItem = new Hashtable<String, PermissionOptionPersist>();
-                // XXX Fix me - for new User Types
-                hashItem.put("Manager", new PermissionOptionPersist(name, "Manager", true, true, true,true));
-                hashItem.put("Guest",             new PermissionOptionPersist(name, "Guest",             true, true, true,true));
-                hashItem.put("FullAccess",         new PermissionOptionPersist(name, "FullAccess",         true, true, true,true));
-                
-                Hashtable<String, Hashtable<String, PermissionOptionPersist>> mainHash = new Hashtable<String, Hashtable<String, PermissionOptionPersist>>();
-                mainHash.put(name, hashItem);
-
-                System.out.println("***** : "+name);
-                FileUtils.writeStringToFile(new File("taskperms.xml"), xstream.toXML(mainHash)); //$NON-NLS-1$
-                //System.out.println(xstream.toXML(config));
-                
-            } catch (IOException ex)
-            {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BaseTask.class, ex);
-                ex.printStackTrace();
-            }
-        }
         return hash;
     }
     

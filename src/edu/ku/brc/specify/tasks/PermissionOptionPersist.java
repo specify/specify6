@@ -30,6 +30,9 @@ public class PermissionOptionPersist
     protected boolean canDel;
     protected boolean canAdd;
     
+    /**
+     * 
+     */
     public PermissionOptionPersist()
     {
         super();
@@ -37,6 +40,7 @@ public class PermissionOptionPersist
 
     /**
      * @param taskName
+     * @param userType
      * @param canView
      * @param canModify
      * @param canDel
@@ -57,6 +61,19 @@ public class PermissionOptionPersist
         this.canDel = canDel;
         this.canAdd = canAdd;
     }
+    
+    /**
+     * @param taskName
+     * @param userType
+     * @param perm
+     */
+    public PermissionOptionPersist(String taskName, 
+                                   String userType,
+                                   PermissionIFace perm)
+    {
+        this(taskName, userType, perm.canView(), perm.canModify(), perm.canDelete(), perm.canAdd());
+    }
+    
 
     public String getTaskName()
     {

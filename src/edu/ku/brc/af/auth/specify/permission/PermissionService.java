@@ -52,7 +52,7 @@ public class PermissionService
      * @param id
      * @throws SQLException
      */
-    static public void removePermission(Integer id)
+    public static void removePermission(Integer id)
     {
         removePrincipalPermissions(Collections.singleton(id));
     }
@@ -61,7 +61,7 @@ public class PermissionService
      * @param ids
      * @throws SQLException
      */
-    static public void removePrincipalPermissions(final Set<?> ids)
+    public static void removePrincipalPermissions(final Set<?> ids)
     {
         Connection conn = null;
         PreparedStatement tiePstmt = null;
@@ -110,7 +110,7 @@ public class PermissionService
      * @return
      * @throws SQLException
      */
-    static public List<Permission> findPrincipalPermissions(final Set<Integer> principalIds) 
+    public static List<Permission> findPrincipalPermissions(final Set<Integer> principalIds) 
     {
         if(debug)log.debug("findPrincipalPermissions"); //$NON-NLS-1$
         List<Permission> permissions = new ArrayList<Permission>();
@@ -123,7 +123,13 @@ public class PermissionService
         return permissions;
     }
     
-    static private List<SpPrincipal> getGroupPrincipals(final SpecifyUser user) {
+    /**
+     * @param user
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    private static List<SpPrincipal> getGroupPrincipals(final SpecifyUser user) 
+    {
 
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try
@@ -155,7 +161,7 @@ public class PermissionService
      * @param user
      * @return
      */
-    static public Hashtable<String, SpPermission> getOverridingPermissions(final SpecifyUser user) 
+    public static Hashtable<String, SpPermission> getOverridingPermissions(final SpecifyUser user) 
     {
         Hashtable<String, SpPermission> hash        = new Hashtable<String, SpPermission>();
         DataProviderSessionIFace        session     = DataProviderFactory.getInstance().createSession();
@@ -210,18 +216,20 @@ public class PermissionService
      * @param principalId
      * @return
      */
-    static public Hashtable<String, SpPermission> getExistingPermissions(final Integer principalId)
+    public static Hashtable<String, SpPermission> getExistingPermissions(final Integer principalId)
     {
     	Hashtable<String, SpPermission> hash    = new Hashtable<String, SpPermission>();
-        DataProviderSessionIFace        session = DataProviderFactory.getInstance().createSession();
+        DataProviderSessionIFace        session = null;
         try
         {
+            session = DataProviderFactory.getInstance().createSession();
+            
         	List<?> perms = session.getDataList("SELECT pm FROM SpPermission as pm INNER JOIN FETCH pm.principals as pc WHERE pc.id = " + principalId);
         	for (Object permObj : perms)
         	{
         		SpPermission perm = (SpPermission)permObj;
         		hash.put(perm.getName(), perm);
-        		log.debug(perm.getName()+"  "+perm.getActions());
+        		log.debug(principalId+"  "+perm.getName()+"  "+perm.getActions());
         	}
         }
         catch (Exception e)
@@ -232,7 +240,10 @@ public class PermissionService
         }
         finally
         {
-        	session.close();
+            if (session != null)
+            {
+                session.close();
+            }
         }
         
         return hash;
@@ -244,7 +255,7 @@ public class PermissionService
      * @return
      * @throws SQLException
      */
-    static public List<Permission> findPrincipalBasedPermissions(Integer principalId)
+    public static List<Permission> findPrincipalBasedPermissions(Integer principalId)
     {
         if(debug)log.debug("findPrincipalBasedPermissions - principalId: "+ principalId); //$NON-NLS-1$
         if (principalId == 3)
@@ -402,7 +413,7 @@ public class PermissionService
 //     * @param dbPermission
 //     * @throws SQLException
 //     */
-//    static public void addPermission(Integer principalId, DatabasePermission dbPermission) throws SQLException
+//    public static void addPermission(Integer principalId, DatabasePermission dbPermission) throws SQLException
 //    {
 //        addPermission( principalId, /*dbPermission.getId(),*/ dbPermission);
 //    }
@@ -572,7 +583,7 @@ public class PermissionService
      * @param sp
      * @param permission
      */
-    static public void giveSpPrincipalPermission(SpPrincipal sp, Permission permission)
+    public static void giveSpPrincipalPermission(SpPrincipal sp, Permission permission)
     {
         createPermission(permission);
         joinSpPrincipalPermission(sp, permission);

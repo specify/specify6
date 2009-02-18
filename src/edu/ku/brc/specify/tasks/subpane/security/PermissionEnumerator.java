@@ -16,7 +16,6 @@ import edu.ku.brc.af.auth.PermissionEditorIFace;
 import edu.ku.brc.af.auth.SecurityOptionIFace;
 import edu.ku.brc.af.auth.specify.permission.BasicSpPermission;
 import edu.ku.brc.af.auth.specify.principal.UserPrincipalSQLService;
-import edu.ku.brc.af.core.PermissionIFace;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.specify.datamodel.SpPermission;
 import edu.ku.brc.specify.datamodel.SpPrincipal;

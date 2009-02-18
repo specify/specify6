@@ -154,5 +154,16 @@ public class StartUpTask extends BaseTask
             starterPane = null; // should have already been removed
         }
     }
-
+    
+    /**
+     * @return the permissions array
+     */
+    @Override
+    protected boolean[][] getPermsArray()
+    {
+        return new boolean[][] {{true, true, true, true},
+                                {true, true, true, true},
+                                {true, true, false, false},
+                                {true, false, false, false}};
+    }
 }

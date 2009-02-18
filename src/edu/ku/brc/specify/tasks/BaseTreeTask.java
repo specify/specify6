@@ -775,6 +775,19 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
          */
         return Uploader.checkUploadLock();
     }
+    
+    
+    /**
+     * @return the permissions array
+     */
+    @Override
+    protected boolean[][] getPermsArray()
+    {
+        return new boolean[][] {{true, true, true, true},
+                                {true, true, true, true},
+                                {true, true, false, false},
+                                {true, false, false, false}};
+    }
 
     /* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
