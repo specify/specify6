@@ -1634,7 +1634,7 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[DNA Sequenc]]></desc>
             <enableRules/>
-                <columnDef>150px,2px,p,2px,p,2px,p,p:g</columnDef>
+                <columnDef>215px,2px,p,2px,p,2px,p,p:g</columnDef>
                 <rowDef auto="true" cell="t:p" sep="2px"/>
             <rows>
                 <row>
