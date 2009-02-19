@@ -28,6 +28,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
@@ -197,7 +199,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
             throw new NullPointerException("Null name or pane when adding to SubPaneMgr"); //$NON-NLS-1$
         }
         
-        int     maxNumPanes = AppPreferences.getRemote().getInt("SubPaneMgr.MaxPanes", 10); //$NON-NLS-1$
+        int maxNumPanes = AppPreferences.getRemote().getInt("SubPaneMgr.MaxPanes", 10); //$NON-NLS-1$
         if (getComponentCount() >= maxNumPanes)
         {
             boolean doAsk = AppPreferences.getRemote().getBoolean("tabs.askb4close", false); //$NON-NLS-1$
@@ -224,17 +226,13 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
                            
                         } else
                         {
-                            SubPaneIFace oldestPane = getSubPaneAt(0);
-                            if (oldestPane != null)
-                            {
-                                removePane(oldestPane);
-                            }
+                            closeOldestPane();
                         }                    
                     }
                 });
             } else
             {
-                // 
+                closeOldestPane();
             }
         }
         
@@ -273,6 +271,67 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         return pane;
     }
     
+    /**
+     * Finds the Oldest 'best' pane and closes it. First anything without a form, then anything with a form that is in view mode,
+     * then a form in edit mode that isn't changed, then whatever is the oldest.
+     */
+    protected void closeOldestPane()
+    {
+        SubPaneIFace pane = getOldestPane();
+        if (pane != null)
+        {
+            removePane(pane);
+        }
+    }
+    
+    /**
+     * @return the old pane see {@link #closeOldestPane()}
+     */
+    protected SubPaneIFace getOldestPane()
+    {
+        ArrayList<SubPaneIFace> subPanes = new ArrayList<SubPaneIFace>(instance.panes.values());
+        Collections.sort(subPanes, new Comparator<SubPaneIFace>() {
+            @Override
+            public int compare(SubPaneIFace o1, SubPaneIFace o2)
+            {
+                return o1.getCreateTime().compareTo(o2.getCreateTime());
+            }
+        });
+        
+        // Anything without a form
+        for (SubPaneIFace sp : subPanes)
+        {
+            if (sp.getMultiView() == null)
+            {
+                return sp;
+            }
+            
+        }
+        
+        // Check viewable forms
+        for (SubPaneIFace sp : subPanes)
+        {
+            if (sp.getMultiView() != null && !sp.getMultiView().isEditable())
+            {
+                return sp;
+            }
+            
+        }
+        
+        // Check editable forms that haven't changed
+        for (SubPaneIFace sp : subPanes)
+        {
+            if (sp.getMultiView() != null && sp.getMultiView().isEditable() && !sp.getMultiView().hasChanged())
+            {
+                return sp;
+            }
+        }
+        
+        // take the oldest subpane
+        return subPanes.get(0);
+    }
+    
+
     /**
      * Enables the Close All action as to whether there state is right in the UI. 
      */
