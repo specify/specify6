@@ -620,11 +620,11 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         editNode0.setSize(20,20);
         if (isEditMode)
         {
-        	editNode0.setToolTipText("TreeTableViewer.EditSelectedNode"); 
+        	editNode0.setToolTipText(getResourceString("TreeTableViewer.EditSelectedNode")); 
         }
         else
         {
-        	editNode0.setToolTipText("TreeTableViewer.ViewSelectedNode");
+        	editNode0.setToolTipText(getResourceString("TreeTableViewer.ViewSelectedNode"));
         }
         editNode0.addActionListener(new ActionListener()
         {
