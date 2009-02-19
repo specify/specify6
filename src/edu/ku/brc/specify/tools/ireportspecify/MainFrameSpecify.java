@@ -70,6 +70,7 @@ import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.SpAppResource;
 import edu.ku.brc.specify.datamodel.SpAppResourceData;
+import edu.ku.brc.specify.datamodel.SpAppResourceDir;
 import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpReport;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
@@ -335,26 +336,6 @@ public class MainFrameSpecify extends MainFrame
         boolean newRep = ((SpAppResource)appRes).getId() == null;
         try
         {
-            if (!newRep)
-            {
-                //The stuff in this block is necessary to prevent no session and lazy initialization errors
-                //in the "AppContextMgr.getInstance().saveResource(appRes)" call below.
-                session.attach(appRes);
-                for (SpAppResourceData spad : ((SpAppResource )appRes).getSpAppResourceDatas())
-                {
-                    spad.getId();
-                }
-                if (((SpAppResource )appRes).getSpAppResourceDir() != null)
-                {
-                    session.attach(((SpAppResource )appRes).getSpAppResourceDir());
-                    Set<SpAppResource> spapps = ((SpAppResource )appRes).getSpAppResourceDir().getSpPersistedAppResources();
-                    for (SpAppResource spapp : spapps)
-                    {
-                        spapp.getName();
-                    }
-                    session.evict(((SpAppResource )appRes).getSpAppResourceDir());
-                }
-            }
             String xmlString = xml.toString();
             if (rep != null)
             {
@@ -743,10 +724,15 @@ public class MainFrameSpecify extends MainFrame
             else
             {
                 modifiedRes = appRes;
+                String dirName = propPanel.getResDirCombo().getSelectedItem().toString();
+                SpAppResourceDir dir = ((SpecifyAppContextMgr) AppContextMgr.getInstance()).getSpAppResourceDirByName(dirName);
+                ((SpAppResource )modifiedRes).setSpAppResourceDir(dir);
             }
             modifiedRes.setName(propPanel.getNameTxt().getText().trim());
             modifiedRes.setDescription(propPanel.getNameTxt().getText().trim());
             modifiedRes.setLevel(Short.valueOf(propPanel.getLevelTxt().getText()));
+            
+            propPanel.getResDirCombo().getSelectedItem();
             String metaDataStr = "tableid=" + propPanel.getTableId() + ";";
             if (propPanel.getTypeCombo().getSelectedIndex() == 2)
             {
