@@ -189,17 +189,14 @@ public class RepResourcePropsPanel extends JPanel
         if (rep != null && rep.getAppResource() != null)
         {
         	SpAppResource repRes = (SpAppResource )rep.getAppResource();
-        	String name = ((SpecifyAppContextMgr )AppContextMgr.getInstance()).getDirName(repRes.getSpAppResourceDir());
-        	if (name != null)
+        	//XXX Assuming contents of combo are: Discipline, Personal.
+        	if (repRes.getSpAppResourceDir().getIsPersonal())
         	{
-        		for (int i = 0; i < resDirCombo.getItemCount(); i++)
-        		{
-        			if (name.equals(resDirCombo.getItemAt(i).toString()))
-        			{
-        				resDirCombo.setSelectedIndex(i);
-        				break;
-        			}
-        		}
+        		resDirCombo.setSelectedIndex(1);
+        	}
+        	else
+        	{
+        		resDirCombo.setSelectedIndex(0);
         	}
         }
         

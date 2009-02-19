@@ -1658,7 +1658,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 session = DataProviderFactory.getInstance().createSession();
                 session.beginTransaction();
                 session.saveOrUpdate(appResDir);
-                //saveOrCommit() shouldn't be necessary, it also shouldn't cause
+                //saveOrUpdate() shouldn't be necessary, it also shouldn't cause
                 //problems, but it has been removed because it often does generate 
                 //hibernate exceptions for newly created resources.
                 //session.saveOrUpdate(spAppResource);
@@ -1802,6 +1802,16 @@ public class SpecifyAppContextMgr extends AppContextMgr
         return null;
     }
 
+    
+    /**
+     * @param appResDirName
+     * @return Directory with the supplied name.
+     */
+    public SpAppResourceDir getSpAppResourceDirByName(final String appResDirName)
+    {
+    	return spAppResourceHash.get(appResDirName);
+    }
+    
     /**
      * @param appResDir
      * @return appResDir name.

@@ -329,28 +329,43 @@ public class MainFrameSpecify extends MainFrame
      */
     protected static boolean saveXML(final ByteArrayOutputStream xml, final AppResAndProps apr, final ReportSpecify rep, boolean saveAs)
     {
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        boolean result = false;
-        boolean transOpen = false;
         AppResourceIFace appRes = apr.getAppRes();
         boolean newRep = ((SpAppResource)appRes).getId() == null;
+        boolean result = false;
+        boolean savedAppRes = false;
+        String xmlString = xml.toString();
+        if (rep != null)
+        {
+            xmlString = modifyXMLForSaving(xmlString, rep);
+        }
+        appRes.setDataAsString(xmlString);
         try
         {
-            String xmlString = xml.toString();
-            if (rep != null)
+        	savedAppRes = AppContextMgr.getInstance().saveResource(appRes);
+        }
+        catch (Exception ex)
+        {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(MainFrameSpecify.class, ex);
+            return false;
+        }
+        
+        if (!savedAppRes)
+        {
+        	return false;
+        }
+        
+        if (rep == null)
+        {
+            return true;
+        }
+        else
+        {
+            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            boolean transOpen = false;
+            boolean createReport = true;
+            try
             {
-                xmlString = modifyXMLForSaving(xmlString, rep);
-            }
-            appRes.setDataAsString(xmlString);
-            AppContextMgr.getInstance().saveResource(appRes);
-            
-            if (rep == null)
-            {
-                result = true;
-            }
-            else
-            {
-                boolean createReport = true;
                 if (rep.getSpReport() != null && !saveAs)
                 {
                     try
@@ -375,7 +390,9 @@ public class MainFrameSpecify extends MainFrame
                     spRep = rep.getSpReport();
                 }
                 spRep.setName(appRes.getName());
-                spRep.setAppResource((SpAppResource) appRes);
+                SpAppResource freshRes = session.get(SpAppResource.class, ((SpAppResource )appRes).getId());
+                rep.setAppResource(freshRes);
+                spRep.setAppResource((SpAppResource) freshRes);
                 spRep.setRepeats(apr.getRepeats());
                 SpQuery q = rep.getConnection().getQuery();
                 // getting a fresh copy of the Query might be helpful
@@ -392,35 +409,40 @@ public class MainFrameSpecify extends MainFrame
                     session.save(spRep);
                     session.commit();
                     transOpen = false;
+                    //refresh report, just because...
+                    session.refresh(spRep);
                     rep.setSpReport(spRep);
                     result = true;
                 }
-            }               
-        } catch (Exception ex)
-        {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(MainFrameSpecify.class, ex);
-            if (transOpen)
+            }catch (Exception ex)
             {
-               session.rollback();
-            }
-            throw new RuntimeException(ex);
-        } finally
-        {
-            if (!newRep)
-            {
-                session.evict(appRes);
-            }
-            if (newRep && !result)
-            {
-            	SpecifyAppContextMgr spMgr = (SpecifyAppContextMgr)AppContextMgr.getInstance();
-            	SpAppResource spRes = (SpAppResource )appRes;
-                spMgr.removeAppResourceSp(spRes.getSpAppResourceDir(), spRes);
-            }
-            session.close();
-        }
-        return result;
-    }
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(MainFrameSpecify.class, ex);
+                if (transOpen)
+                {
+                   session.rollback();
+                }
+                throw new RuntimeException(ex);
+            }        
+            finally
+			{
+				if (!newRep)
+				{
+					session.evict(appRes);
+				}
+				if (newRep && !result)
+				{
+					SpecifyAppContextMgr spMgr = (SpecifyAppContextMgr) AppContextMgr
+							.getInstance();
+					SpAppResource spRes = (SpAppResource) appRes;
+					spMgr.removeAppResourceSp(spRes.getSpAppResourceDir(),
+							spRes);
+				}
+				session.close();
+			}
+			return result;
+		}               
+    }     
     
     /*
      * (non-Javadoc) Saves a jasper report as a Specify resource. @param jrf - the report to be
@@ -480,7 +502,7 @@ public class MainFrameSpecify extends MainFrame
             if (success)
             {
                 jrf.setIsDocDirty(false);
-                jrf.getReport().setReportChanges(0);
+                jrf.getReport().setReportChanges(0);                
             }
             else
             {
