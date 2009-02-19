@@ -2348,8 +2348,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             		: getResourceString("TreeTableView.MOVE_NODE");
             String descStr = isSynonymizeOK ?
             		String.format(getResourceString("TreeTableViewer.SynonymizeText"),
-                    		droppedOnRecord.getFullName(), draggedRecord.getFullName(), 
-                    		draggedRecord.getFullName(), droppedOnRecord.getFullName()) :
+                    		draggedRecord.getFullName(), droppedOnRecord.getFullName(), 
+                    		droppedOnRecord.getFullName(), draggedRecord.getFullName()) :
                     String.format(getResourceString("TreeTableViewer.MoveText"),
                        		draggedRecord.getFullName(), droppedOnNode.getFullName());			
             pb.add(createLabel("<html><b>" + actionStr + ":</b></html>"), cc.xy(1, 1));
@@ -2357,7 +2357,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             tab.setEditable(false);
             tab.setLineWrap(true);
             tab.setWrapStyleWord(true);
-            tab.setRows(numOptions == 3 ? (isSynonymizeOK ? 4 : 6) : 4);
+            tab.setRows(numOptions == 3 ? (isSynonymizeOK ? 6 : 10) : 6);
             tab.setText(descStr);
         	pb.add(tab, cc.xy(3, 1));
             if (numOptions == 4)
@@ -2367,7 +2367,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             	tac.setEditable(false);
             	tac.setLineWrap(true);
             	tac.setWrapStyleWord(true);
-            	tac.setRows(7);
+            	tac.setRows(10);
             	tac.setText(String.format(getResourceString("TreeTableViewer.MoveText"),
             		draggedRecord.getFullName(), droppedOnNode.getFullName()));
             	pb.add(tac, cc.xy(3, 3));
