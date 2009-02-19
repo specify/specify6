@@ -916,7 +916,6 @@ public class DatabaseLoginPanel extends JTiledPanel
                 } else if (usrPwd == null)
                 {
                     isLoginCancelled = true;
-                    setMessage("  ", false);
                     return null;
                 }
 

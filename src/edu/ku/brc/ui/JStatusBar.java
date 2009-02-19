@@ -37,8 +37,6 @@ import javax.swing.JProgressBar;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -101,7 +99,8 @@ public class JStatusBar extends JPanel
         statusLabel.setPreferredSize(new Dimension(100, statusLabel.getPreferredSize().height));
         progressBar.setPreferredSize(new Dimension(150, statusLabel.getPreferredSize().height));
         
-        PanelBuilder builder = new PanelBuilder(new FormLayout("f:p:g,2px,right:p" + (UIHelper.getOSType() == UIHelper.OSTYPE.MacOSX ? ",15px" : ""), "p"), this);
+        PanelBuilder builder = new PanelBuilder(new FormLayout("f:p:g,2px,right:p" + 
+                (UIHelper.getOSType() == UIHelper.OSTYPE.MacOSX ? ",15px" : ""), "p"), this);
         CellConstraints cc = new CellConstraints();
         if (sectionSize == null)
         {
@@ -112,19 +111,26 @@ public class JStatusBar extends JPanel
             StringBuilder str = new StringBuilder("f:p:g");
             for (int size : sectionSize)
             {
-                str.append(",max(p;" + size + "dlu)");
-                str.append(",p");
+                str.append(",1px,p,1px,max(p;" + size + "dlu)");
             }
-            PanelBuilder sbBldr = new PanelBuilder(new FormLayout(str.toString(), "p"));
+            System.out.println(str.toString());
+            PanelBuilder sbBldr = new PanelBuilder(new FormLayout(str.toString(), "f:p:g"));
             sbBldr.add(statusLabel, cc.xy(1, 1));
             
             labels = new JLabel[sectionSize.length];
+            int col = 3;
             for (int i=0;i<sectionSize.length;i++)
             {
+                
                 labels[i] = new JLabel(" ", SwingConstants.CENTER);
                 setControlSize(labels[i]);
-                labels[i].setBorder(new CompoundBorder(new EndsBorder(i == sectionSize.length-1), new EmptyBorder(0,5,0,5)));
-                sbBldr.add(labels[i], cc.xy(i+2, 1));
+                Color bg = getBackground();
+                System.out.println(col);
+                sbBldr.add(new VerticalSeparator(bg.darker(), bg.brighter()), cc.xy(col, 1)); 
+                col += 2;
+                System.out.println(col);
+                sbBldr.add(labels[i], cc.xy(col, 1)); 
+                col += 2;
             }
             builder.add(sbBldr.getPanel(), cc.xy(1,1));
         }
@@ -171,6 +177,15 @@ public class JStatusBar extends JPanel
         statusLabel.setToolTipText(text);
         statusLabel.setIcon(null);
         statusLabel.repaint();
+    }
+    
+    /**
+     * @param sectionInx
+     * @return
+     */
+    public JLabel getSectionLabel(final int sectionInx)
+    {
+        return sectionInx > -1 && sectionInx < labels.length ? labels[sectionInx] : null;
     }
     
     /**

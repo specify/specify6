@@ -226,6 +226,8 @@
     <icon name="MiscPref"              file="Miscellaneous32x32.png" sizes="all"/>
     <icon name="TreePref"              file="Tree32x32.png" sizes="all"/>
     <icon name="Security"              file="security.png" sizes="all"/>
+    <icon name="SecurityOn"            file="security_on.png" sizes="all"/>
+    <icon name="SecurityOff"           file="security_off.png" sizes="all"/>
     <icon name="Login"                 file="login.png" sizes="all"/>
     <icon name="MySQL"                 file="mysql_logo.png" sizes="all"/>
     

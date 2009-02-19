@@ -52,6 +52,7 @@ import java.util.prefs.BackingStoreException;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
@@ -444,7 +445,8 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         // NOT FOR RELEASE
         /////////////////////////////////////////////
         
-        UIHelper.setSecurityOn(AppPreferences.getLocalPrefs().getBoolean("security", false));
+        boolean isSecurityOn = AppPreferences.getLocalPrefs().getBoolean("security", false);
+        UIHelper.setSecurityOn(isSecurityOn);
         
         String schemaKey = "schemaSize";
         int    schemaFileSize = 0;
@@ -705,11 +707,22 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
 
         mainPanel = new MainPanel();
 
-        int[] sections = {5, 5, 5};
+        int[] sections = {5, 5, 5, 1};
         statusField = new JStatusBar(sections);
         statusField.setErrorIcon(IconManager.getIcon("Error", IconManager.IconSize.Std16)); //$NON-NLS-1$
         statusField.setWarningIcon(IconManager.getIcon("Warning", IconManager.IconSize.Std16)); //$NON-NLS-1$
         UIRegistry.setStatusBar(statusField);
+        
+        boolean isSecurityOn = AppPreferences.getLocalPrefs().getBoolean("security", false);
+        JLabel secLbl = statusField.getSectionLabel(3);
+        if (secLbl != null)
+        {
+            secLbl.setIcon(IconManager.getImage(isSecurityOn ? "SecurityOn" : "SecurityOff", IconManager.IconSize.Std16));
+            secLbl.setHorizontalAlignment(SwingConstants.CENTER);
+            secLbl.setHorizontalTextPosition(SwingConstants.LEFT);
+            secLbl.setText("");
+            secLbl.setToolTipText(getResourceString("Specify.SEC_" + (isSecurityOn ? "ON" : "OFF")));
+        }
 
         add(statusField, BorderLayout.SOUTH);
     }
@@ -1301,12 +1314,19 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         cbMenuItem.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent ae)
                     {
-                        boolean isOn = !UIHelper.isSecurityOn()   ;                 
-                        AppPreferences.getLocalPrefs().putBoolean("security", isOn);
-                        UIHelper.setSecurityOn(isOn);
-                        ((JMenuItem)ae.getSource()).setSelected(isOn);
+                        boolean isSecurityOn = !UIHelper.isSecurityOn()   ;                 
+                        AppPreferences.getLocalPrefs().putBoolean("security", isSecurityOn);
+                        UIHelper.setSecurityOn(isSecurityOn);
+                        ((JMenuItem)ae.getSource()).setSelected(isSecurityOn);
+                        
+                        JLabel secLbl = statusField.getSectionLabel(3);
+                        if (secLbl != null)
+                        {
+                            secLbl.setIcon(IconManager.getImage(isSecurityOn ? "SecurityOn" : "SecurityOff", IconManager.IconSize.Std16));
+                            secLbl.setHorizontalAlignment(SwingConstants.CENTER);
+                            secLbl.setToolTipText(getResourceString("Specify.SEC_" + (isSecurityOn ? "ON" : "OFF")));
+                        }
                     }});
-
         //----------------------------------------------------
         //-- Helper Menu
         //----------------------------------------------------

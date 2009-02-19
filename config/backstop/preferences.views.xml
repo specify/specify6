@@ -186,16 +186,22 @@
             
             <desc><![CDATA[Formatting Preference Form.]]></desc>
             
-            <columnDef>p,2px,p,2px,p:g,2px,p:g,6px,p,2px,p,2px,p</columnDef>
+            <columnDef>p,2px,p,2px,p,2px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
                 <row>
-                    <cell type="separator" label="FORMATTING" colspan="13"/>
+                    <cell type="separator" label="FORMATTING" colspan="7"/>
                 </row>
                 <row>
                     <cell type="label" name="scrdateformatLabel" labelfor="scrdateformat" label="SCRN_DATE_FORMAT"/>
-                    <cell type="field" uitype="combobox" id="scrdateformat" name="ui.formatting.scrdateformat" isrequired="true" colspan="5"/>
+                    <cell type="panel" id="date" name="date" coldef="p,f:p:g" rowdef="p" colspan="5">
+                        <rows>
+                            <row>
+                                <cell type="field" uitype="combobox" id="scrdateformat" name="ui.formatting.scrdateformat" isrequired="true" colspan="1"/>
+                            </row>
+                        </rows>
+                    </cell>
                 </row>
                 <row>
                     <cell type="label" labelfor="valtextcolor" label="ERROR_CLR"/>
@@ -213,36 +219,53 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="fontNames" label="FORM_FONT"/>
-                    <cell type="field" uitype="combobox" id="fontNames" name="ui.formatting.fontNames" readonly="true" changesonly="true" colspan="5"/>
-                    <cell type="label" id="fontSizesLabel" labelfor="fontSizes" label="FONT_SIZE"/>
-                    <cell type="field" uitype="combobox" id="fontSizes" name="ui.formatting.fontSize" readonly="true" changesonly="true"/>
-                    <cell type="field" uitype="dsptextfield" id="fontTest" name="fontTest" readonly="true"/>
+                    <cell type="panel" id="22" name="font" coldef="p,2px,p,2px,p,2px,p" rowdef="p" colspan="5">
+                        <rows>
+                            <row>
+			                    <cell type="field" uitype="combobox" id="fontNames" name="ui.formatting.fontNames" readonly="true" changesonly="true"/>
+			                    <cell type="label" id="fontSizesLabel" labelfor="fontSizes" label="FONT_SIZE"/>
+			                    <cell type="field" uitype="combobox" id="fontSizes" name="ui.formatting.fontSize" readonly="true" changesonly="true"/>
+			                    <cell type="field" uitype="dsptextfield" id="fontTest" name="fontTest" readonly="true"/>
+                            </row>
+                        </rows>
+                    </cell>
                 </row>
                 <row>
                     <cell type="label" label="  "/>
-                    <cell type="command" id="ResetDefFontBtn" name="ResetDefFontBtn" label="RESET_DEF_FONT" ignore="true"/>
+                    <cell type="panel" id="24" name="resetbtn" coldef="p,f:p:g" rowdef="p" colspan="5">
+                        <rows>
+                            <row>
+                                <cell type="command" id="ResetDefFontBtn" name="ResetDefFontBtn" label="RESET_DEF_FONT" ignore="true"/>
+                            </row>
+                        </rows>
+                    </cell>
                 </row>
                 <row>
                     <cell type="label" labelfor="controlSizes" label="CONTROL_SIZE"/>
                     <cell type="field" uitype="combobox" id="controlSizes" name="ui.formatting.controlSizes" readonly="true" changesonly="true" colspan="3"/>
                 </row>
                 <row>
-                    <cell type="separator" label="CO_ICON" colspan="13"/>
+                    <cell type="separator" label="CO_ICON" colspan="7"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="disciplineIcon" label="DISC_ICON"/>
-                    <cell type="field" uitype="label" id="disciplineIcon" label="" ignore="true"/>
-                    
-                    <cell type="label" labelfor="disciplineIconCBX" label="CHOOSE"/>
-                    <cell type="field" uitype="combobox" id="disciplineIconCBX" readonly="true" changesonly="true" />
+                    <cell type="panel" id="23" name="icon" coldef="p,10px,p,2px,p" rowdef="p" colspan="5">
+                        <rows>
+                            <row>
+			                    <cell type="field" uitype="label" id="disciplineIcon" label="" ignore="true"/>
+			                    <cell type="label" labelfor="disciplineIconCBX" label="CHOOSE"/>
+			                    <cell type="field" uitype="combobox" id="disciplineIconCBX" readonly="true" changesonly="true" />
+                            </row>
+                        </rows>
+                    </cell>
                 </row>
                 <row>
-                    <cell type="separator" label="APP_ICON_SEP" colspan="13"/>
+                    <cell type="separator" label="APP_ICON_SEP" colspan="7"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="appIcon" label="APP_ICON"/>
                     <cell type="field" uitype="label" id="appIcon" label="" ignore="true"/>
-                    <cell type="panel" id="16" name="btnpanel" coldef="25px,2px,p,5px,p,f:p:g" rowdef="p" colspan="9">
+                    <cell type="panel" id="16" name="btnpanel" coldef="25px,2px,p,5px,p,f:p:g" rowdef="p" colspan="3">
                         <rows>
                             <row>
                                 <cell type="field" uitype="label" id="0" label=" " ignore="true"/>
@@ -294,31 +317,49 @@
             
             <desc><![CDATA[System Preference Form.]]></desc>
             
-            <columnDef>p:g,2px,max(150px;p):g,280px,f:p:g</columnDef>
+            <columnDef>p,4px,p,f:p:g</columnDef>
             <rowDef>p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px</rowDef>
-            
+               
             <rows>
                 <row>
-                    <cell type="separator" label="LOCALE" colspan="5"/>
+                    <cell type="separator" label="TABS.TITLE" colspan="4"/>
                 </row>
                 <row>
-                    <cell type="panel" id="16" name="treepanel" coldef="max(p;150px):g,2px,p,f:p:g" rowdef="p" colspan="5">
+                    <cell type="field" id="10" name="tabs.askb4close" uitype="checkbox" label="TABS.ASKB4CLOSE" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="separator" label="SPECIFY_BG_IMG" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="field" id="7" name="specify.bg.image" cols="30" uitype="browse" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="separator" label="ATTCH_PATH" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="field" id="8" name="attachment.path" cols="30" uitype="browse" initialize="dirsonly=true" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="separator" label="GEO_REF" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="field" id="4" name="georef_tool" uitype="combobox" initialize="data=GEOLocate,BioGeomancer" default="GEOLocate"/>
+                </row>
+                <row>
+                    <cell type="separator" label="LOCALE" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="panel" id="lp" name="localepanel" coldef="p,2px,p,f:p:g" rowdef="p" colspan="4">
 	                    <rows>
 			                <row>
-                                <cell type="field" id="5" name="locale" uitype="combobox" colspan="2"/>
+                                <cell type="field" id="5" name="locale" uitype="combobox" colspan="1"/>
                                 <cell type="field" uitype="dsptextfield" id="6" name="6" ignore="true" default="Loading..." initialize="transparent=true"/>
 			                </row>
                         </rows>
                     </cell>
                 </row>
                 <row>
-                    <cell type="separator" label="GEO_REF" colspan="5"/>
-                </row>
-                <row>
-                    <cell type="field" id="4" name="georef_tool" uitype="combobox" initialize="data=GEOLocate,BioGeomancer" default="GEOLocate"/>
-                </row>
-                <row>
-                    <cell type="separator" label="CACHE" colspan="5"/>
+                    <cell type="separator" label="CACHE" colspan="4"/>
                 </row>
                 <row>
                     <cell type="command" id="clearcache" name="clearcache" label="CACHE_CLR" commandtype="ClearCache" action="ClearCache"/>
@@ -337,10 +378,10 @@
                 </row>
                 -->
                 <row>
-                    <cell type="separator" label="VERS_CHECK" colspan="5"/>
+                    <cell type="separator" label="VERS_CHECK" colspan="4"/>
                 </row>
                 <row>
-                    <cell type="panel" id="99" name="cfu" coldef="p,10px,p,f:p:g" rowdef="p" colspan="5">
+                    <cell type="panel" id="99" name="cfu" coldef="p,10px,p,f:p:g" rowdef="p" colspan="4">
                         <rows>
                             <row>
                                 <cell type="field" id="2" name="version_check.auto" uitype="checkbox" label="CHECK_UPDATES_STARTUP"/>
@@ -350,28 +391,17 @@
                     </cell>
                 </row>
                 <row>
-                    <cell type="separator" label="USAGE_STATS" colspan="5"/>
+                    <cell type="separator" label="USAGE_STATS" colspan="4"/>
                 </row>
                 <row>
-                    <cell type="field" id="3" name="usage_tracking.send_stats" uitype="checkbox" label="SEND_USAGE" colspan="3"/>
-                </row>
-                <row>
-                    <cell type="separator" label="ISA_USAGE_STATS" colspan="5"/>
-                </row>
-                <row>
-                    <cell type="field" id="9" name="usage_tracking.send_isa_stats" uitype="checkbox" label="ISA_SEND_STATS" colspan="3"/>
-                </row>
-                <row>
-                    <cell type="separator" label="SPECIFY_BG_IMG" colspan="5"/>
-                </row>
-                <row>
-                    <cell type="field" id="7" name="specify.bg.image" cols="30" uitype="browse" colspan="4"/>
-                </row>
-                <row>
-                    <cell type="separator" label="ATTCH_PATH" colspan="5"/>
-                </row>
-                <row>
-                    <cell type="field" id="8" name="attachment.path" cols="30" uitype="browse" initialize="dirsonly=true" colspan="4"/>
+                    <cell type="panel" id="stats" name="stats" coldef="p,10px,p" rowdef="p" colspan="4">
+                        <rows>
+                            <row>
+                                <cell type="field" id="3" name="usage_tracking.send_stats" uitype="checkbox" label="SEND_USAGE"/>
+                                <cell type="field" id="9" name="usage_tracking.send_isa_stats" uitype="checkbox" label="ISA_SEND_STATS"/>
+                            </row>
+                        </rows>
+                    </cell>
                 </row>
             </rows>
         </viewdef>
@@ -449,12 +479,11 @@
                     <cell type="separator" label="ALL_TREES" colspan="3"/>
                 </row>
                 <row>
-                    <cell type="field" id="20" name="TreeEditor.RestoreTreeExpansionState" uitype="checkbox" label="RESTORE_EXPANSION_STATE" colspan="1"/>
+                    <cell type="field" id="20" name="TreeEditor.RestoreTreeExpansionState" uitype="checkbox" label="RESTORE_EXPANSION_STATE" colspan="3"/>
                 </row>
                 <row>
-                    <cell type="field" id="-20" name="Determination.PromptToReplaceSynonym" uitype="checkbox" label="PROMPT_TO_REPLACE_SYNONYM" colspan="1"/>
+                    <cell type="field" id="-20" name="Determination.PromptToReplaceSynonym" uitype="checkbox" label="PROMPT_TO_REPLACE_SYNONYM" colspan="3"/>
                 </row>
-                
                 <row>
 	                <cell type="panel" id="16" name="treepanel" coldef="p,2px,p,p:g,f:p:g" rowdef="p,2px,p,2px,p,2px,p,2px,p">
 	                    <rows>

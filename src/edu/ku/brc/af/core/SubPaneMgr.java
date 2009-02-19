@@ -197,39 +197,45 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
             throw new NullPointerException("Null name or pane when adding to SubPaneMgr"); //$NON-NLS-1$
         }
         
-        int maxNumPanes = AppPreferences.getRemote().getInt("SubPaneMgr.MaxPanes", 12); //$NON-NLS-1$
+        int     maxNumPanes = AppPreferences.getRemote().getInt("SubPaneMgr.MaxPanes", 10); //$NON-NLS-1$
         if (getComponentCount() >= maxNumPanes)
         {
-            SwingUtilities.invokeLater(new Runnable() {
-
-                /* (non-Javadoc)
-                 * @see java.lang.Runnable#run()
-                 */
-                public void run()
-                {
-                    Object[] options = { getResourceString("SubPaneMgr.SUBPANE_OPTIONS_CLOSE_ALLBUT"),  //$NON-NLS-1$
-                            getResourceString("SubPaneMgr.SUBPANE_OPTIONS_CLOSE_OLDEST")  //$NON-NLS-1$
-                          };
-                    int userChoice = JOptionPane.showOptionDialog(getTopWindow(), 
-                                                                 getResourceString("SubPaneMgr.SUBPANE_OPTIONS_MAX_TABS"),  //$NON-NLS-1$
-                                                                 getResourceString("SubPaneMgr.SUBPANE_OPTIONS_TOO_MANY"),  //$NON-NLS-1$
-                                                                 JOptionPane.YES_NO_CANCEL_OPTION,
-                                                                 JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-                    if (userChoice == JOptionPane.YES_OPTION)
+            boolean doAsk = AppPreferences.getRemote().getBoolean("tabs.askb4close", false); //$NON-NLS-1$
+            if (doAsk)
+            {
+                SwingUtilities.invokeLater(new Runnable() {
+    
+                    /* (non-Javadoc)
+                     * @see java.lang.Runnable#run()
+                     */
+                    public void run()
                     {
-                        closeAll(false); // false means don't close current tab
-                       
-                    } else
-                    {
-                        SubPaneIFace oldestPane = getSubPaneAt(0);
-                        if (oldestPane != null)
+                        Object[] options = { getResourceString("SubPaneMgr.SUBPANE_OPTIONS_CLOSE_ALLBUT"),  //$NON-NLS-1$
+                                getResourceString("SubPaneMgr.SUBPANE_OPTIONS_CLOSE_OLDEST")  //$NON-NLS-1$
+                              };
+                        int userChoice = JOptionPane.showOptionDialog(getTopWindow(), 
+                                                                     getResourceString("SubPaneMgr.SUBPANE_OPTIONS_MAX_TABS"),  //$NON-NLS-1$
+                                                                     getResourceString("SubPaneMgr.SUBPANE_OPTIONS_TOO_MANY"),  //$NON-NLS-1$
+                                                                     JOptionPane.YES_NO_CANCEL_OPTION,
+                                                                     JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+                        if (userChoice == JOptionPane.YES_OPTION)
                         {
-                            removePane(oldestPane);
-                        }
-                    }                    
-                }
-            });
-
+                            closeAll(false); // false means don't close current tab
+                           
+                        } else
+                        {
+                            SubPaneIFace oldestPane = getSubPaneAt(0);
+                            if (oldestPane != null)
+                            {
+                                removePane(oldestPane);
+                            }
+                        }                    
+                    }
+                });
+            } else
+            {
+                // 
+            }
         }
         
         Component firstFocusable = pane.getFirstFocusable();
