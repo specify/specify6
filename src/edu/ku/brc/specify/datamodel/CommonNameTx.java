@@ -17,9 +17,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
 /**
@@ -238,4 +241,23 @@ public class CommonNameTx extends DataModelObjBase implements Serializable
         return this.name != null ? this.name : super.getIdentityTitle();
     }
 
+	/**
+	 * @return the citations
+	 */
+    @OneToMany(mappedBy = "commonNameTx")
+    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
+	public Set<CommonNameTxCitation> getCitations()
+	{
+		return citations;
+	}
+
+	/**
+	 * @param citations the citations to set
+	 */
+	public void setCitations(Set<CommonNameTxCitation> citations)
+	{
+		this.citations = citations;
+	}
+
+    
 }
