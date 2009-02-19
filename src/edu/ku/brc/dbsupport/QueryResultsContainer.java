@@ -111,7 +111,10 @@ public class QueryResultsContainer implements QueryResultsContainerIFace, SQLExe
                                 
                             } else if (row != prvRow) 
                             {
-                                resultSet.absolute(row);
+                                if (!resultSet.absolute(row))
+                                {
+                                    break;
+                                }
                             }
                             qrdo.setResult(resultSet.getObject(col)); // XXX Clone ???
                         }
