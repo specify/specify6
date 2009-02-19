@@ -500,8 +500,9 @@ public class ResourceImportExportDlg extends CustomDialog
                     File expFile  = new File(dirStr + File.separator + fileName);
                     try
                     {
-                        if ((appRes.getMimeType().equals(ReportsBaseTask.REPORTS_MIME) 
-                        		|| appRes.getMimeType().equals(ReportsBaseTask.LABELS_MIME)) && isSpReportResource((SpAppResource )appRes))
+                        if (appRes != null && appRes.getMimeType() != null && 
+                        		((appRes.getMimeType().equals(ReportsBaseTask.REPORTS_MIME) 
+                        		|| appRes.getMimeType().equals(ReportsBaseTask.LABELS_MIME)) && isSpReportResource((SpAppResource )appRes)))
                         {
                         	writeSpReportResToZipFile(expFile, data, appRes);
                         }
