@@ -403,7 +403,11 @@
         <table name="TaxonCitation" field="taxonCitations">
            	<alias name="ReferenceWork"/>
         </table>
-        <table name="CommonNameTx" field="commonNames" />
+        <table name="CommonNameTx" field="commonNames" >
+        	<table name="CommonNameTxCitation" field="citations">
+        		<alias name="ReferenceWork"/>
+        	</table>
+        </table>
         <table name="Determination" field="determinations" title="Determinations">
             <alias name="CollectionObject"/>
             <table name="DeterminationCitation" field="determinationCitations">
