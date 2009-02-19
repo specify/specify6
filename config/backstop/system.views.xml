@@ -355,7 +355,6 @@
             <desc><![CDATA[Send Mail Email Form]]></desc>
             <columnDef>p,3dlu,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
-            
             <rows>
                 <row>
                     <cell type="label" labelfor="1" label="From"/>
@@ -363,7 +362,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="2" label="To"/>
-                    <cell type="field" id="2" name="to" uitype="text"/>
+                    <cell type="field" id="2" name="to" uitype="text" isrequired="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="3" label="Subject"/>
