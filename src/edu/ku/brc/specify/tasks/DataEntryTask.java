@@ -1517,7 +1517,7 @@ public class DataEntryTask extends BaseTask
     @Override
     protected boolean canRequestContext()
     {
-        return Uploader.checkUploadLock();
+        return Uploader.checkUploadLock(this);
     }
     
     /**

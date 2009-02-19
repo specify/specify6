@@ -50,6 +50,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
 import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
@@ -2337,25 +2338,42 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         } else
         {
             int numOptions = 2 + (isSynonymizeOK ? 1 : 0) + (isMoveOK ? 1 : 0);
-
-            String msg = UIRegistry.getLocalizedMessage("TreeTableView.NODE_MSG", draggedRecord.getFullName(), droppedOnRecord.getFullName());
-            
-            JTextArea ta = createTextArea();
-            ta.setEditable(false);
-            ta.setText(msg);
-            JScrollPane sp = new JScrollPane(ta, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-            sp.setBorder(BorderFactory.createEmptyBorder());
             
             CellConstraints cc = new CellConstraints();
-            PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g", "p,2px,f:p:g"));
-            //pb.add(createLabel(getResourceString("TreeTableView.NODE_ACTION")), cc.xy(1,1));
-            pb.add(sp, cc.xy(1,3));
+            
+            String rowLayout = numOptions == 4 ? "t:p:g, 10dlu, t:p:g, f:p:g" : "t:p:g, f:p:g";
+            PanelBuilder    pb = new PanelBuilder(new FormLayout("r:p, 2dlu, f:p:g", rowLayout));
+            
+            String actionStr = isSynonymizeOK ? getResourceString("TreeTableView.SYNONIMIZE_NODE")
+            		: getResourceString("TreeTableView.MOVE_NODE");
+            String descStr = isSynonymizeOK ?
+            		String.format(getResourceString("TreeTableViewer.SynonymizeText"),
+                    		droppedOnRecord.getFullName(), draggedRecord.getFullName(), 
+                    		draggedRecord.getFullName(), droppedOnRecord.getFullName()) :
+                    String.format(getResourceString("TreeTableViewer.MoveText"),
+                       		draggedRecord.getFullName(), droppedOnNode.getFullName());			
+            pb.add(createLabel("<html><b>" + actionStr + ":</b></html>"), cc.xy(1, 1));
+            JTextArea tab = createTextArea();
+            tab.setEditable(false);
+            tab.setLineWrap(true);
+            tab.setWrapStyleWord(true);
+            tab.setRows(numOptions == 3 ? (isSynonymizeOK ? 4 : 6) : 4);
+            tab.setText(descStr);
+        	pb.add(tab, cc.xy(3, 1));
+            if (numOptions == 4)
+            {
+            	pb.add(createLabel("<html><b>" + getResourceString("TreeTableView.MOVE_NODE") + ":</b></html>"), cc.xy(1, 3));
+            	JTextArea tac = createTextArea();
+            	tac.setEditable(false);
+            	tac.setLineWrap(true);
+            	tac.setWrapStyleWord(true);
+            	tac.setRows(7);
+            	tac.setText(String.format(getResourceString("TreeTableViewer.MoveText"),
+            		draggedRecord.getFullName(), droppedOnNode.getFullName()));
+            	pb.add(tac, cc.xy(3, 3));
+            }
             pb.setDefaultDialogBorder();
-            
-            sp.setBackground(pb.getPanel().getBackground());
-            ta.setOpaque(false);
-            sp.getViewport().setBackground(pb.getPanel().getBackground());
-            
+                        
             CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), 
                                                 getResourceString("TreeTableView.NODE_ACTION_TITLE"),
                                                 true,
@@ -2378,8 +2396,11 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                     dlg.setOkLabel(getResourceString("TreeTableView.MOVE_NODE"));
                 }
             }
-            
-            dlg.setVisible(true);
+            dlg.createUI();
+            Dimension ps = dlg.getPreferredSize();
+            ps.setSize(ps.getWidth()*1.5, ps.getHeight());
+            dlg.setSize(ps);
+            UIHelper.centerAndShow(dlg);
             
             int btn = dlg.getBtnPressed();
             if (!dlg.isCancelled() && btn != CustomDialog.HELP_BTN)

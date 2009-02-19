@@ -3296,7 +3296,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             Vector<UploadMappingDef> maps = importMapper.getImporterMapping();
             DB db = new DB();
-            if (!Uploader.lockUpload())
+            if (!Uploader.lockUpload(null))
             {
                 return;
             }

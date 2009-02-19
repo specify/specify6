@@ -16,6 +16,7 @@ import java.net.InetAddress;
 import javax.swing.JOptionPane;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.specify.datamodel.SpTaskSemaphore;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgrCallerIFace;
@@ -32,17 +33,20 @@ public class UploadLocker implements TaskSemaphoreMgrCallerIFace
 {
     protected final boolean canOverride;
     protected final boolean canUnlock;
+    protected final Taskable task;
 
     public UploadLocker()
     {
         canOverride = false;
         canUnlock = false;
+        task = null;
     }
 
-    public UploadLocker(boolean canOverride, boolean canUnlock)
+    public UploadLocker(boolean canOverride, boolean canUnlock, final Taskable task)
     {
         this.canOverride = canOverride;
         this.canUnlock = canUnlock;
+        this.task = task;
     }
 
     /* (non-Javadoc)
@@ -66,20 +70,31 @@ public class UploadLocker implements TaskSemaphoreMgrCallerIFace
             String msg;
             int      options;
             int      defBtn = 0;
-            int      msgType;
+            int      msgType;  
             Object[] optionLabels;
             if (sameUser && sameMachine)
-            {
-                msg = "The task " + Uploader.getLockTitle() + " is currently locked by "
-                    + " you. ";
-
-            }
-            else
-            {
-                msg = "The task " + Uploader.getLockTitle() + " is currently locked by "
-                    + lockUser.getIdentityTitle() + " on " + lockMachineName;
-            }
-            System.out.println(msg);
+			{
+				msg = "The " + Uploader.getLockTitle()
+						+ " task is currently locked by " + " you. ";
+				if (task != null)
+				{
+					msg += " The "
+							+ task.getTitle()
+							+ " task is unavailable while the Uploader is in use.";
+				}
+			} else
+			{
+				msg = "The " + Uploader.getLockTitle()
+						+ " task is currently locked by "
+						+ lockUser.getIdentityTitle() + " on "
+						+ lockMachineName;
+				if (task != null)
+				{
+					msg += " The "
+							+ task.getTitle()
+							+ " task is unavailable while the Uploader is in use.";
+				}
+			}
             
             if (canOverride)
             {

@@ -772,7 +772,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         /*
          * Probably can't get here when uploading but just in case
          */
-        return Uploader.checkUploadLock();
+        return Uploader.checkUploadLock(this);
     }
     
     

@@ -44,6 +44,7 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.ServiceInfo;
+import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -3881,7 +3882,7 @@ public class Uploader implements ActionListener, KeyListener
      * @return true if no lock is present or lock is overridden. Else return false.
      *  
      */
-    public static boolean checkUploadLock()
+    public static boolean checkUploadLock(final Taskable caller)
     {
         if (isLockOverridden)
         {
@@ -3891,7 +3892,7 @@ public class Uploader implements ActionListener, KeyListener
         {
             return true;
         }
-        boolean result = lockUpload();
+        boolean result = lockUpload(caller);
         isLockOverridden = result;
         return result;
     }
@@ -3905,11 +3906,13 @@ public class Uploader implements ActionListener, KeyListener
      * 
      * @return true is successful.
      */
-    public static boolean lockUpload()
+    public static boolean lockUpload(final Taskable caller)
     {
-        return TaskSemaphoreMgr.lock(getLockTitle(), 
+        
+    	return TaskSemaphoreMgr.lock(getLockTitle(), 
                 "WORKBENCHUPLOAD", null,
-                TaskSemaphoreMgr.SCOPE.Discipline, false, new UploadLocker(canOverrideLock(), canRemoveLock())) == TaskSemaphoreMgr.USER_ACTION.OK;
+                TaskSemaphoreMgr.SCOPE.Discipline, false, 
+                new UploadLocker(canOverrideLock(), canRemoveLock(), caller)) == TaskSemaphoreMgr.USER_ACTION.OK;
     }
     
     /**
