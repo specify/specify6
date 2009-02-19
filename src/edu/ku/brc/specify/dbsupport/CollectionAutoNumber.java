@@ -78,8 +78,12 @@ public class CollectionAutoNumber extends AutoNumberGeneric
     {
         boolean doDebug = true;
         
-        AutoNumberingScheme catNumScheme = AppContextMgr.getInstance().getClassObject(Collection.class).getNumberingSchemesByType(CollectionObject.getClassTableId());
-        
+        Collection          currCol      = AppContextMgr.getInstance().getClassObject(Collection.class);
+        AutoNumberingScheme catNumScheme = currCol.getNumberingSchemesByType(CollectionObject.getClassTableId());
+        if (catNumScheme == null)
+        {
+            throw new RuntimeException("The Catalog Numbering Scheme cannot be null! Collection Table ID: "+CollectionObject.getClassTableId());
+        }
         catNumScheme = (AutoNumberingScheme)session.merge(catNumScheme);
         
         if (doDebug) System.out.println("CatNumScheme: "+catNumScheme.getSchemeName());

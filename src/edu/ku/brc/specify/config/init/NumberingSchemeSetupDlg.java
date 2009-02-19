@@ -31,6 +31,7 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.AutoNumberingScheme;
 import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.ui.CustomDialog;
@@ -170,6 +171,10 @@ public class NumberingSchemeSetupDlg extends CustomDialog
                 if (cbx.getSelectedIndex() == 1)
                 {
                     createNewAutoNumberingScheme();
+                    if (numScheme != null)
+                    {
+                        numScheme.setTableNumber(CollectionObject.getClassTableId());
+                    }
                     
                 } else if (cbx.getSelectedIndex() > 1)
                 {

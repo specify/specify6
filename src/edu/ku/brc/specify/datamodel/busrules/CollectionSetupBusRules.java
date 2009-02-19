@@ -25,6 +25,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.config.init.NumberingSchemeSetupDlg;
 import edu.ku.brc.specify.datamodel.AutoNumberingScheme;
 import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.ui.UIHelper;
@@ -68,6 +69,19 @@ public class CollectionSetupBusRules extends BaseBusRules
     public void beforeMerge(Object dataObj, DataProviderSessionIFace session)
     {
         super.beforeMerge(dataObj, session);
+        
+        Collection col = (Collection)dataObj;
+        try
+        {
+            for (AutoNumberingScheme ns : col.getNumberingSchemes())
+            {
+                session.attach(ns);
+            }
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
     }
 
     /* (non-Javadoc)
@@ -92,7 +106,7 @@ public class CollectionSetupBusRules extends BaseBusRules
      * @see edu.ku.brc.af.ui.forms.BaseBusRules#addChildrenToNewDataObjects(java.lang.Object)
      */
     @Override
-    public void addChildrenToNewDataObjects(Object newDataObj)
+    public void addChildrenToNewDataObjects(final Object newDataObj)
     {
         super.addChildrenToNewDataObjects(newDataObj);
         
@@ -151,13 +165,27 @@ public class CollectionSetupBusRules extends BaseBusRules
         }
     }
     
+    
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#beforeDelete(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public void beforeDelete(Object dataObj, DataProviderSessionIFace session)
+    {
+        super.beforeDelete(dataObj, session);
+    }
+
+    /**
+     * 
+     */
     protected void createNewNumScheme()
     {
         ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog((Dialog)UIRegistry.getMostRecentWindow(),
                 null,
                 "CatAutoNumberingScheme",
                 null,
-                "Create Numbering Scheme",
+                "Create Numbering Scheme", // I18N ?
                 null,
                 AutoNumberingScheme.class.getName(),
                 "autoNumberingSchemeId",
@@ -165,7 +193,7 @@ public class CollectionSetupBusRules extends BaseBusRules
                 MultiView.HIDE_SAVE_BTN);
         AutoNumberingScheme scheme = new AutoNumberingScheme();
         scheme.initialize();
-        scheme.setTableNumber(Collection.getClassTableId());
+        scheme.setTableNumber(CollectionObject.getClassTableId());
         dlg.setData(scheme);
         UIHelper.centerAndShow(dlg);
         if (!dlg.isCancelled())

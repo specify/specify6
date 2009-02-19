@@ -49,6 +49,7 @@ import edu.ku.brc.af.ui.forms.validation.ValTextField;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.datamodel.AutoNumberingScheme;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.Discipline;
@@ -255,6 +256,24 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
                 if (dt != null)
                 {
                     discipline.setType(dt.getName());
+                }
+            }
+            
+            for (Collection col : discipline.getCollections())
+            {
+                if (col.getId() == null)
+                {
+                    try
+                    {
+                        for (AutoNumberingScheme ns : col.getNumberingSchemes())
+                        {
+                            session.saveOrUpdate(ns);
+                        }
+                        
+                    } catch (Exception ex)
+                    {
+                        ex.printStackTrace();
+                    }
                 }
             }
         }

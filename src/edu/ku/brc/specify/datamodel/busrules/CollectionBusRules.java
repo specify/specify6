@@ -33,6 +33,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.config.init.NumberingSchemeSetupDlg;
 import edu.ku.brc.specify.datamodel.AutoNumberingScheme;
 import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.dbsupport.SpecifyDeleteHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -175,7 +176,7 @@ public class CollectionBusRules extends BaseBusRules
         if (!dlg.isCancelled())
         {
             AutoNumberingScheme ns = dlg.getNumScheme();
-            ns.setTableNumber(Collection.getClassTableId());
+            ns.setTableNumber(CollectionObject.getClassTableId());
             
             DataProviderSessionIFace session = null;
             try
