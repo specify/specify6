@@ -792,7 +792,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         }
         else
         {
-        	editNode1.setToolTipText(getResourceString("TreeTableViewer.EditSelectedNode"));
+        	editNode1.setToolTipText(getResourceString("TreeTableViewer.ViewSelectedNode"));
         }
         editNode1.addActionListener(new ActionListener()
         {
@@ -838,8 +838,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         	editLabel1.setSize(32,editLabel1.getHeight());
         	buttonPanel1.add(editLabel1);
         	editLabel1.setAlignmentX(Component.CENTER_ALIGNMENT);
-        	buttonPanel1.add(editNode1);
         }
+    	buttonPanel1.add(editNode1);
         editNode1.setAlignmentX(Component.CENTER_ALIGNMENT);
         if (isEditMode)
         {
