@@ -8,6 +8,7 @@ package edu.ku.brc.specify.tasks.subpane.wb;
 
 import java.io.File;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 
@@ -150,7 +151,11 @@ public class WorkbenchBackupMgr
             command.setProperty("tool", ExportToFile.class);
             command.setProperty("statusmsgkey", "WB_BACKUP_TO");
             command.setProperty("statusdonemsgkey", "WB_BACKUP_TO_DONE");
-            command.setData(workbench.getWorkbenchRowsAsList());
+            List<?> rowData = workbench.getWorkbenchRowsAsList();
+            Vector<Object> exportData = new Vector<Object>(rowData.size() + 1);
+            exportData.add(workbench.getWorkbenchTemplate());
+            exportData.addAll(rowData);
+            command.setData(exportData);
 
             // XXX the command has to be sent synchronously so the backup happens before the save,
             // so when dispatchCommand goes asynchronous

@@ -206,87 +206,81 @@ public class XLSExport implements DataExport
                 workSheet.setColumnWidth(i, (short)(StringUtils.isNotEmpty(headers[i]) ? (256 * headers[i].length()) : 2560));
             }
             
-            if (data.get(0).getClass().equals(WorkbenchTemplate.class))
-            {
-                mappings = writeMappings((WorkbenchTemplate)data.get(0));
-            }
-            else
-            {
-                mappings = writeMappings(((WorkbenchRow)data.get(0)).getWorkbench().getWorkbenchTemplate());
-            }
+            //first row should always be the template
+            mappings = writeMappings((WorkbenchTemplate)data.get(0));
         }
         
-        if (data.size() > 0)
-        {
-            int[] disciplinees;
-            if (data.get(0).getClass().equals(WorkbenchTemplate.class))
-            {
-                disciplinees = bldColTypes((WorkbenchTemplate) data.get(0));
-                // now set up cell types and formats for a bunch of empty rows....
-                
-            }
-            else
-            {
-                WorkbenchRow      wbRow     = (WorkbenchRow) data.get(0);
-                Workbench         workBench = wbRow.getWorkbench();
-                WorkbenchTemplate template  = workBench.getWorkbenchTemplate();
-                short             numCols   = (short)template.getWorkbenchTemplateMappingItems().size();
-                short geoDataCol = -1;
-                Vector<Short> imgCols = new Vector<Short>();
-                
-                disciplinees = bldColTypes(template);
-                for (Object rowObj : data)
-                {
-                    WorkbenchRow row     = (WorkbenchRow)rowObj;
-                    HSSFRow      hssfRow = workSheet.createRow(rowNum++);
-                    short colNum;
-                    boolean rowHasGeoData = false;
-                    
-                    for (colNum = 0; colNum < numCols; colNum++)
-                    {
-                        HSSFCell cell = hssfRow.createCell(colNum);
-                        cell.setCellType(disciplinees[colNum]);
-                        setCellValue(cell, row.getData(colNum));
-                    }
-                    
-                    if (row.getBioGeomancerResults() != null && !row.getBioGeomancerResults().equals(""))
-                    {
-                        geoDataCol = colNum;
-                        rowHasGeoData = true;
-                        HSSFCell cell = hssfRow.createCell(colNum++);
-                        cell.setCellType(HSSFCell.CELL_TYPE_STRING);
-                        setCellValue(cell, row.getBioGeomancerResults());
-                    }
+        if (data.size() > 1)
+		{
+			int[] disciplinees;
+			disciplinees = bldColTypes((WorkbenchTemplate) data.get(0));
+			WorkbenchRow wbRow = (WorkbenchRow) data.get(1);
+			Workbench workBench = wbRow.getWorkbench();
+			WorkbenchTemplate template = workBench.getWorkbenchTemplate();
+			short numCols = (short) template.getWorkbenchTemplateMappingItems()
+					.size();
+			short geoDataCol = -1;
+			Vector<Short> imgCols = new Vector<Short>();
 
-                    //if (row.getCardImage() != null)
-                    if (row.getRowImage(0) != null)
-                    {
-                        if (!rowHasGeoData)
-                        {
-                           colNum++; 
-                        }
-                        int imgIdx = 0;
-                        WorkbenchRowImage img = row.getRowImage(imgIdx++);
-                        while (img != null)
-                        {
-                            if (imgCols.indexOf(colNum) < 0)
-                            {
-                            	imgCols.add(colNum);
-                            }
-                        	HSSFCell cell = hssfRow.createCell(colNum++);
-                            cell.setCellType(HSSFCell.CELL_TYPE_STRING);
-                            setCellValue(cell, img.getCardImageFullPath());
-                            img = row.getRowImage(imgIdx++);
-                        }
-                    }
-                    
-                }
-                if (imgCols.size() > 0 || geoDataCol != -1)
-                {
-                    writeExtraHeaders(workSheet, imgCols, geoDataCol);
-                }
-            }
-        }
+			disciplinees = bldColTypes(template);
+			for (Object rowObj : data)
+			{
+				if (rowObj instanceof WorkbenchTemplate)
+				{
+					continue;
+				}
+
+				WorkbenchRow row = (WorkbenchRow) rowObj;
+				HSSFRow hssfRow = workSheet.createRow(rowNum++);
+				short colNum;
+				boolean rowHasGeoData = false;
+
+				for (colNum = 0; colNum < numCols; colNum++)
+				{
+					HSSFCell cell = hssfRow.createCell(colNum);
+					cell.setCellType(disciplinees[colNum]);
+					setCellValue(cell, row.getData(colNum));
+				}
+
+				if (row.getBioGeomancerResults() != null
+						&& !row.getBioGeomancerResults().equals(""))
+				{
+					geoDataCol = colNum;
+					rowHasGeoData = true;
+					HSSFCell cell = hssfRow.createCell(colNum++);
+					cell.setCellType(HSSFCell.CELL_TYPE_STRING);
+					setCellValue(cell, row.getBioGeomancerResults());
+				}
+
+				// if (row.getCardImage() != null)
+				if (row.getRowImage(0) != null)
+				{
+					if (!rowHasGeoData)
+					{
+						colNum++;
+					}
+					int imgIdx = 0;
+					WorkbenchRowImage img = row.getRowImage(imgIdx++);
+					while (img != null)
+					{
+						if (imgCols.indexOf(colNum) < 0)
+						{
+							imgCols.add(colNum);
+						}
+						HSSFCell cell = hssfRow.createCell(colNum++);
+						cell.setCellType(HSSFCell.CELL_TYPE_STRING);
+						setCellValue(cell, img.getCardImageFullPath());
+						img = row.getRowImage(imgIdx++);
+					}
+				}
+
+			}
+			if (imgCols.size() > 0 || geoDataCol != -1)
+			{
+				writeExtraHeaders(workSheet, imgCols, geoDataCol);
+			}
+
+		}
         try
         {
             //write the workbook

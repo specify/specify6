@@ -1118,7 +1118,11 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
            {
                session.attach(workbench);
                workbench.forceLoad();
-               command.setData(workbench.getWorkbenchRowsAsList());
+               List<?> rowData = workbench.getWorkbenchRowsAsList();
+               List<Object> exportData = new Vector<Object>(rowData.size() + 1);
+               exportData.add(workbench.getWorkbenchTemplate());
+               exportData.addAll(rowData);
+               command.setData(exportData);
 
                Properties props = new Properties();
 
