@@ -212,7 +212,7 @@ public class ResourceImportExportDlg extends CustomDialog
         resPanel.add(sp, cc.xy(1,3));
 
         tabbedPane.addTab(getResourceString("RIE_VIEWSETS"), viewPanel.getPanel());
-        tabbedPane.addTab(getResourceString("RIE_OTHER_RES"), resPanel.getPanel());
+        //tabbedPane.addTab(getResourceString("RIE_OTHER_RES"), resPanel.getPanel());
         
         PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g", "p,4px,p,2px,p"));
         pb.add(centerPB.getPanel(), cc.xy(1,1));
