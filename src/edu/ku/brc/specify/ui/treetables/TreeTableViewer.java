@@ -37,7 +37,6 @@ import java.util.concurrent.Executors;
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
 import javax.swing.Action;
-import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
@@ -50,11 +49,11 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
-import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
 import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
 import javax.swing.Timer;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -85,6 +84,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.StaleObjectException;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
@@ -2280,6 +2280,23 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         return isEditMode;
     }
     
+    protected String getSynonymizeTextKey()
+    {
+    	if (treeDef.getNodeClass().equals(Taxon.class))
+    	{
+    		return "TreeTableViewer.SynonymizeTextTaxon";
+    	}
+    	return "TreeTableViewer.SynonymizeText";
+    }
+    
+    protected String getMoveTextKey()
+    {
+    	if (treeDef.getNodeClass().equals(Taxon.class))
+    	{
+    		return "TreeTableViewer.MoveTextTaxon";
+    	}
+    	return "TreeTableViewer.MoveText";
+    }
     /**
      * @param draggedRecord
      * @param droppedRecord
@@ -2347,28 +2364,36 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             String actionStr = isSynonymizeOK ? getResourceString("TreeTableView.SYNONIMIZE_NODE")
             		: getResourceString("TreeTableView.MOVE_NODE");
             String descStr = isSynonymizeOK ?
-            		String.format(getResourceString("TreeTableViewer.SynonymizeText"),
+            		String.format(getResourceString(getSynonymizeTextKey()),
                     		draggedRecord.getFullName(), droppedOnRecord.getFullName(), 
                     		droppedOnRecord.getFullName(), draggedRecord.getFullName()) :
-                    String.format(getResourceString("TreeTableViewer.MoveText"),
+                    String.format(getResourceString(getMoveTextKey()),
                        		draggedRecord.getFullName(), droppedOnNode.getFullName());			
-            pb.add(createLabel("<html><b>" + actionStr + ":</b></html>"), cc.xy(1, 1));
+            JLabel actionLbl = createLabel("<html><b>" + actionStr + ":</b></html>");
+            actionLbl.setVerticalAlignment(SwingConstants.BOTTOM);
+            actionLbl.setVerticalTextPosition(SwingConstants.BOTTOM);
+            pb.add(actionLbl, cc.xy(1, 1));
             JTextArea tab = createTextArea();
             tab.setEditable(false);
             tab.setLineWrap(true);
             tab.setWrapStyleWord(true);
-            tab.setRows(numOptions == 3 ? (isSynonymizeOK ? 6 : 10) : 6);
+            int big = treeDef.getNodeClass().equals(Taxon.class) ? 10 : 1;
+            int small = treeDef.getNodeClass().equals(Taxon.class) ? 6 : 1;
+            tab.setRows(numOptions == 3 ? (isSynonymizeOK ? small : big) : small);
             tab.setText(descStr);
         	pb.add(tab, cc.xy(3, 1));
             if (numOptions == 4)
             {
-            	pb.add(createLabel("<html><b>" + getResourceString("TreeTableView.MOVE_NODE") + ":</b></html>"), cc.xy(1, 3));
+            	JLabel lbl = createLabel("<html><b>" + getResourceString("TreeTableView.MOVE_NODE") + ":</b></html>");
+            	lbl.setVerticalAlignment(SwingConstants.BOTTOM);
+            	lbl.setVerticalTextPosition(SwingConstants.BOTTOM);
+            	pb.add(lbl, cc.xy(1, 3));
             	JTextArea tac = createTextArea();
             	tac.setEditable(false);
             	tac.setLineWrap(true);
             	tac.setWrapStyleWord(true);
-            	tac.setRows(10);
-            	tac.setText(String.format(getResourceString("TreeTableViewer.MoveText"),
+            	tac.setRows(big);
+            	tac.setText(String.format(getResourceString(getMoveTextKey()),
             		draggedRecord.getFullName(), droppedOnNode.getFullName()));
             	pb.add(tac, cc.xy(3, 3));
             }
@@ -2397,9 +2422,12 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                 }
             }
             dlg.createUI();
-            Dimension ps = dlg.getPreferredSize();
-            ps.setSize(ps.getWidth()*1.5, ps.getHeight());
-            dlg.setSize(ps);
+            if (treeDef.getNodeClass().equals(Taxon.class))
+            {
+            	Dimension ps = dlg.getPreferredSize();
+            	ps.setSize(ps.getWidth()*1.5, ps.getHeight());
+            	dlg.setSize(ps);
+            }
             UIHelper.centerAndShow(dlg);
             
             int btn = dlg.getBtnPressed();
