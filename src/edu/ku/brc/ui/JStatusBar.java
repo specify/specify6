@@ -113,7 +113,6 @@ public class JStatusBar extends JPanel
             {
                 str.append(",1px,p,1px,max(p;" + size + "dlu)");
             }
-            System.out.println(str.toString());
             PanelBuilder sbBldr = new PanelBuilder(new FormLayout(str.toString(), "f:p:g"));
             sbBldr.add(statusLabel, cc.xy(1, 1));
             
@@ -125,10 +124,8 @@ public class JStatusBar extends JPanel
                 labels[i] = new JLabel(" ", SwingConstants.CENTER);
                 setControlSize(labels[i]);
                 Color bg = getBackground();
-                System.out.println(col);
                 sbBldr.add(new VerticalSeparator(bg.darker(), bg.brighter()), cc.xy(col, 1)); 
                 col += 2;
-                System.out.println(col);
                 sbBldr.add(labels[i], cc.xy(col, 1)); 
                 col += 2;
             }

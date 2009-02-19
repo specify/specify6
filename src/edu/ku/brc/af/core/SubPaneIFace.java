@@ -96,6 +96,11 @@ public interface SubPaneIFace
     public abstract void showingPane(boolean show);
     
     /**
+     * @return the time in millisecond when the pane was created
+     */
+    public abstract Long getCreateTime();
+    
+    /**
      * Returns the string of the Java Help target that should be displayed.
      * @return the string of the Java Help target that should be displayed.
      */

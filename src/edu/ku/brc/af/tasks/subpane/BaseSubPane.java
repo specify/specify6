@@ -33,6 +33,7 @@ import java.awt.print.PageFormat;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
+import java.util.Calendar;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -76,6 +77,7 @@ public class BaseSubPane extends JTiledPanel implements SubPaneIFace, Printable
 
     protected String            name;
     protected Taskable          task;
+    protected Long              createTime = Calendar.getInstance().getTime().getTime(); // in milliseconds
 
     protected JProgressBar      progressBar;
     protected JLabel            progressLabel;
@@ -297,6 +299,16 @@ public class BaseSubPane extends JTiledPanel implements SubPaneIFace, Printable
     // SubPaneIFace
     //----------------------------------
 
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.SubPaneIFace#getCreateTime()
+     */
+    @Override
+    public Long getCreateTime()
+    {
+        return createTime;
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.SubPaneIFace#getTitle()
      */
@@ -407,4 +419,5 @@ public class BaseSubPane extends JTiledPanel implements SubPaneIFace, Printable
     {
     	return false;
     }
+
 }
