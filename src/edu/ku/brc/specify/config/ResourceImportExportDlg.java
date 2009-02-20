@@ -873,7 +873,6 @@ public class ResourceImportExportDlg extends CustomDialog
     		}
     		String data = readZipEntryToString(zin, entry);
     		zin.closeEntry();
-    		zin.close();
     		
             appRes = ((SpecifyAppContextMgr )AppContextMgr.getInstance()).createAppResourceForDir(dir);
             appRes.setDataAsString(data);
@@ -931,6 +930,7 @@ public class ResourceImportExportDlg extends CustomDialog
                 	session.close();
                 }
             }
+    		zin.close();
         }
     	catch (Exception e)
     	{
@@ -1253,7 +1253,7 @@ public class ResourceImportExportDlg extends CustomDialog
         {
             for (SpAppResource ar : dir.getSpAppResources())
             {
-                if (ar.getName().equals(name))
+                if (ar.getName() != null && ar.getName().equals(name))
                 {
                     return ar;
                 }

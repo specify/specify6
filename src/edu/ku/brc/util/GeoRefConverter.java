@@ -187,8 +187,10 @@ public class GeoRefConverter implements StringConverter
         {
             for (GeoRefFormat format: GeoRefFormat.values())
             {
-                if (format.matches(entry))
+                System.out.println("matching: " + entry + " with " + format.name());
+            	if (format.matches(entry))
                 {
+                    System.out.println("matched: " + entry + " with " + format.name());
                     if (format.equals(GeoRefFormat.D_NSEW) || format.equals(GeoRefFormat.D_PLUS_MINUS))
                     {
                         return LatLonConverter.FORMAT.DDDDDD;
