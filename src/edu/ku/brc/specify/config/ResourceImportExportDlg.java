@@ -110,7 +110,7 @@ public class ResourceImportExportDlg extends CustomDialog
     
     protected JButton                exportBtn;
     protected JButton                importBtn;
-    protected JButton                reverBtn;
+    protected JButton                revertBtn;
 
     protected List<SpAppResource>    resources = new Vector<SpAppResource>();
     protected List<SpAppResourceDir> dirs;
@@ -222,11 +222,11 @@ public class ResourceImportExportDlg extends CustomDialog
         
         exportBtn = createButton(getResourceString("RIE_EXPORT"));
         importBtn = createButton(getResourceString("RIE_IMPORT"));
-        reverBtn  = createButton(getResourceString("RIE_REVERT"));
+        revertBtn  = createButton(getResourceString("RIE_REVERT"));
         PanelBuilder btnPB = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g,p,f:p:g,p,f:p:g", "p,10px"));
         btnPB.add(exportBtn, cc.xy(2,1));
         btnPB.add(importBtn, cc.xy(4,1));
-        btnPB.add(reverBtn,  cc.xy(6,1));
+        btnPB.add(revertBtn,  cc.xy(6,1));
         
         pb.add(btnPB.getPanel(), cc.xy(1,5));
         
@@ -280,7 +280,7 @@ public class ResourceImportExportDlg extends CustomDialog
             }
         });
         
-        reverBtn.addActionListener(new ActionListener() {
+        revertBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
                 revertResource();
@@ -358,7 +358,7 @@ public class ResourceImportExportDlg extends CustomDialog
             
             SpViewSetObj vso = (SpViewSetObj)viewSetsList.getSelectedValue();
             
-            reverBtn.setEnabled(vso != null && vso.getId() != null);
+            revertBtn.setEnabled(vso != null && vso.getId() != null);
             
         } else // Resources
         {
@@ -366,7 +366,7 @@ public class ResourceImportExportDlg extends CustomDialog
             {
                 importBtn.setEnabled(true);
                 exportBtn.setEnabled(false);
-                reverBtn.setEnabled(false);
+                revertBtn.setEnabled(false);
                 
             } else
             {
@@ -376,7 +376,7 @@ public class ResourceImportExportDlg extends CustomDialog
                 exportBtn.setEnabled(enable && resModel.size() > 1);
                 
                 SpAppResource appRes = (SpAppResource)resList.getSelectedValue();
-                boolean enabled = false;
+                enable = false;
                 if (appRes != null && appRes.getId() != null)
                 {
                 	if (appRes.getMimeType() != null && 
@@ -386,12 +386,12 @@ public class ResourceImportExportDlg extends CustomDialog
                 		if (!isSpReportResource((SpAppResource )appRes))
                 		{
                 			//XXX what if appres is imported report with no config file???
-                			enabled = true;
+                			enable = true;
                 		}
                 		
                 	}
                 }
-                reverBtn.setEnabled(enabled);
+                revertBtn.setEnabled(enable);
             }
         }
         
@@ -873,6 +873,7 @@ public class ResourceImportExportDlg extends CustomDialog
     		}
     		String data = readZipEntryToString(zin, entry);
     		zin.closeEntry();
+    		zin.close();
     		
             appRes = ((SpecifyAppContextMgr )AppContextMgr.getInstance()).createAppResourceForDir(dir);
             appRes.setDataAsString(data);
@@ -1148,7 +1149,7 @@ public class ResourceImportExportDlg extends CustomDialog
 						            levelSelected();
 								}
 							}
-
+							
 							else
 							{
 								if (fndAppRes != null) // overriding

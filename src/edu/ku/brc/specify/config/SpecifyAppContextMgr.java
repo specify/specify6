@@ -786,6 +786,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         return null;
     }
     
+    
     /**
      * @param virtualDirName
      */
@@ -796,21 +797,24 @@ public class SpecifyAppContextMgr extends AppContextMgr
         String[] levels = getVirtualDirNames();
         
         SpAppResource    fndAppRes = null;
-        SpAppResourceDir fndAppDir = null;
         for (int i=virtualNameIndex;i<levels.length;i++)
         {
-            fndAppDir = spAppResourceList.get(i);
+        	SpAppResourceDir fndAppDir = spAppResourceList.get(i);
             for (SpAppResource appRes : (new ArrayList<SpAppResource>(fndAppDir.getSpAppResources())))
             {
                 //System.out.println(appRes.getFileName());
                 
-                if (appRes.getName().equals(appResource.getName()))
+                if (appRes.getName() != null && appRes.getName().equals(appResource.getName()))
                 {
                     fndAppRes = appRes;
                     
                     if (fndAppRes.getSpAppResourceId() == null)
                     {
-                        break;
+                    	break;
+                    }
+                    else
+                    {
+                        fndAppRes = null;
                     }
                 }
             }

@@ -536,6 +536,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
         asyncFillHandler = null;
     }
 
+    
     //------------------------------------------------------------
     // Inner Classes
     //------------------------------------------------------------
