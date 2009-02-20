@@ -32,7 +32,8 @@ public class DeleteEventListener implements org.hibernate.event.DeleteEventListe
     /* (non-Javadoc)
      * @see org.hibernate.event.DeleteEventListener#onDelete(org.hibernate.event.DeleteEvent)
      */
-    public void onDelete(DeleteEvent event) throws HibernateException
+    @Override
+   public void onDelete(DeleteEvent event) throws HibernateException
     {
 
     }
@@ -40,6 +41,8 @@ public class DeleteEventListener implements org.hibernate.event.DeleteEventListe
     /* (non-Javadoc)
      * @see org.hibernate.event.DeleteEventListener#onDelete(org.hibernate.event.DeleteEvent, java.util.Set)
      */
+    @SuppressWarnings("unchecked")
+    @Override
     public void onDelete(DeleteEvent event, Set transientEntities) throws HibernateException
     {
 
