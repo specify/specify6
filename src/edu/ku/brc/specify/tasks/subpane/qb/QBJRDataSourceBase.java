@@ -15,6 +15,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 import net.sf.jasperreports.engine.JRDataSource;
@@ -43,6 +44,9 @@ public class QBJRDataSourceBase implements JRDataSource
     protected final List<ERTICaptionInfoQB> columnInfo;
     protected final boolean recordIdsIncluded;
     protected final ArrayList<SourceColumnInfo> colNames = new ArrayList<SourceColumnInfo>();
+    protected final List<QBJRDataSourceListenerIFace> listeners = new LinkedList<QBJRDataSourceListenerIFace>();
+    
+    
     /**
      * Sends repeats of rows to consumer of this source.
      */
@@ -158,6 +162,22 @@ public class QBJRDataSourceBase implements JRDataSource
         return null;
     }
     
+    /**
+     * @param listener the listener to add.
+     */
+    public synchronized void addListener(final QBJRDataSourceListenerIFace listener)
+    {
+    	listeners.add(listener);
+    	updateNewListener(listener);
+    }
+    
+    /**
+     * @param listener newly added listener.
+     */
+    protected void updateNewListener(final QBJRDataSourceListenerIFace listener)
+    {
+    	listener.rowCount(size());
+    }
     /**
      * @param columnInfo
      */

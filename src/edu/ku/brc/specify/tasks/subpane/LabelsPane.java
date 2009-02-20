@@ -59,7 +59,9 @@ import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.dbsupport.RecordSetIFace;
+import edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSource;
 import edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceBase;
+import edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceListenerIFace;
 import edu.ku.brc.specify.tasks.subpane.qb.ReportParametersPanel;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
@@ -77,7 +79,8 @@ import edu.ku.brc.util.Pair;
  *
  */
 @SuppressWarnings("serial")
-public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener, JasperCompileListener
+public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener, 
+ 	JasperCompileListener, QBJRDataSourceListenerIFace
 {
     // Static Data Members
     protected static final Logger    log = Logger.getLogger(LabelsPane.class);
@@ -90,6 +93,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
     protected JasperCompilerRunnable compiler         = null;
     protected AtomicBoolean			 compiling        = new AtomicBoolean(false);
     protected AtomicBoolean			 filling          = new AtomicBoolean(false);
+    protected AtomicBoolean          loading          = new AtomicBoolean(false);
     protected RecordSetIFace         recordSet        = null;
     protected JRDataSource           dataSource       = null;
     protected File                   cachePath        = null;
@@ -124,7 +128,6 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
 			@Override
 			public void actionPerformed(ActionEvent arg0)
 			{
-				System.out.println(compiling.get() + ", " + filling.get());
 				if (compiler != null && compiling.get())
 				{
 					compiler.stop();
@@ -134,6 +137,11 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
 					try
 					{
 						asyncFillHandler.cancellFill();
+						if (dataSource != null && (dataSource instanceof QBJRDataSource)
+								&& loading.get())
+						{
+							((QBJRDataSource )dataSource).cancelLoad();
+						}
 					} catch (JRException ex)
 					{
 						log.error(ex);
@@ -339,7 +347,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
                         parameters.put("SUBREPORT_DIR", cachePath.getAbsoluteFile()
                                 + File.separator);
                         parameters.put("DATASOURCE", dataSource);
-
+                        
                         if (size > virtualizerThresholdSize)
                         {
                             JRFileVirtualizer fileVirtualizer = new JRFileVirtualizer(10);
@@ -369,7 +377,15 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
                                     session);
                         }
 
-                        progressLabel.setText(getResourceString("JasperReportFilling"));
+                        if (dataSource instanceof QBJRDataSourceBase)
+                        {
+                        	((QBJRDataSourceBase )dataSource).addListener(this);
+                        	progressLabel.setText(getResourceString("LabelsPane.LoadingReportData"));
+                        }
+                        else
+                        {
+                        	progressLabel.setText(getResourceString("JasperReportFilling"));
+                        }
                         if (recordSet != null || (recordSet == null && dataSource == null))
                         {
                             asyncFillHandler = AsynchronousFillHandle.createHandle(jasperReport,
@@ -535,6 +551,122 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
         }
         asyncFillHandler = null;
     }
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceListenerIFace#currentRow(int)
+	 */
+	@Override
+	public void currentRow(final int currentRow)
+	{
+		SwingUtilities.invokeLater(new Runnable(){
+
+			/* (non-Javadoc)
+			 * @see java.lang.Runnable#run()
+			 */
+			@Override
+			public void run()
+			{
+				if (progressBar.isIndeterminate() && dataSource instanceof QBJRDataSource)
+				{
+					progressBar.setMinimum(0);
+					progressBar.setMaximum(((QBJRDataSource )dataSource).size());
+					progressBar.setIndeterminate(false);
+				}
+				progressBar.setValue(currentRow);
+			}
+			
+		});
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceListenerIFace#done(int)
+	 */
+	@Override
+	public void done(int rows)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceListenerIFace#filling()
+	 */
+	@Override
+	public void filling()
+	{
+		SwingUtilities.invokeLater(new Runnable(){
+
+			/* (non-Javadoc)
+			 * @see java.lang.Runnable#run()
+			 */
+			@Override
+			public void run()
+			{
+				progressBar.setValue(0);
+				progressLabel.setText(getResourceString("JasperReportFilling"));
+			}
+			
+		});
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceListenerIFace#loaded()
+	 */
+	@Override
+	public void loaded()
+	{
+		loading.set(false);
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceListenerIFace#loading()
+	 */
+	@Override
+	public void loading()
+	{
+		loading.set(true);
+		SwingUtilities.invokeLater(new Runnable(){
+
+			/* (non-Javadoc)
+			 * @see java.lang.Runnable#run()
+			 */
+			@Override
+			public void run()
+			{
+				progressLabel.setText(getResourceString("LabelsPane.LoadingReportData"));
+			}
+			
+		});
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceListenerIFace#rowCount(int)
+	 */
+	@Override
+	public void rowCount(final int rowCount)
+	{
+		if (rowCount > 0)
+		{
+			SwingUtilities.invokeLater(new Runnable()
+			{
+
+				/*
+				 * (non-Javadoc)
+				 * 
+				 * @see java.lang.Runnable#run()
+				 */
+				@Override
+				public void run()
+				{
+					progressBar.setMinimum(0);
+					progressBar.setMaximum(rowCount);
+					progressBar.setValue(0);
+					progressBar.setIndeterminate(false);
+				}
+
+			});
+		}
+	}
 
     
     //------------------------------------------------------------

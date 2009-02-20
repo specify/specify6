@@ -40,7 +40,11 @@ import edu.ku.brc.util.Pair;
 public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryListener
 {
     protected static final Logger log = Logger.getLogger(QBJRDataSource.class);
+    
+    protected final AtomicBoolean loadCancelled = new AtomicBoolean(false);
+    
     protected boolean firstRow = true;
+    protected int currentRow = 0;
     
     /**
      * hql that produces the data.
@@ -177,12 +181,38 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
             log.debug("... " + this + " got rows");
         }
         
-        return doGetNext(false);
+
+        boolean result = doGetNext(false);
+        if (result)
+        {
+            for (QBJRDataSourceListenerIFace listener : listeners)
+            {
+            	listener.currentRow(++currentRow);
+            }
+        }
+        else
+        {
+            if (loadCancelled.get())
+            {
+            	return true; //this is to work around JasperReports behavior.
+            				//returning true prevents "Document Contained No Pages" message
+            }
+        	for (QBJRDataSourceListenerIFace listener : listeners)
+            {
+            	listener.done(currentRow);
+            }
+        }
+        return result;
     }
 
     protected boolean doGetNext(final boolean sorting)
     {
-        if (rows.get().hasNext())
+//        if (loadCancelled.get())
+//        {
+//        	return false;
+//        }
+        
+    	if (rows.get().hasNext())
         {
             if (!firstRow)
             {
@@ -243,14 +273,26 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
     public void exectionDone(CustomQueryIFace customQuery)
     {
         resultSetSize.set(((JPAQuery)customQuery).getDataObjects().size()); 
+        for (QBJRDataSourceListenerIFace listener : listeners)
+        {
+        	listener.rowCount(resultSetSize.get());
+        }
         rows.set(((JPAQuery)customQuery).getDataObjects().iterator());
         //cache rows and sort
         if (sort != null && sort.size() > 0)
         {
             cache = new Vector<Vector<Object>>(resultSetSize.get());
+            for (QBJRDataSourceListenerIFace listener : listeners)
+            {
+            	listener.loading();
+            }
             
             while (doGetNext(true))
             {
+                for (QBJRDataSourceListenerIFace listener : listeners)
+                {
+                	listener.currentRow(++currentRow);
+                }
                 Vector<Object> row = new Vector<Object>(((Object[] )rowVals).length);
                 for (int fldIdx = 0, colIdx = 0; fldIdx < ((Object[] )rowVals).length; fldIdx++, colIdx++)
                 {
@@ -288,9 +330,18 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
             Collections.sort(cache, new ResultRowComparator(sort, true));
             processed = true;
             firstRow = true;
+            currentRow = 0;
             rows.set(cache.iterator());
+            for (QBJRDataSourceListenerIFace listener : listeners)
+            {
+            	listener.loaded();
+            }
         }
         processing.set(false);
+        for (QBJRDataSourceListenerIFace listener : listeners)
+        {
+        	listener.filling();
+        }
     }
 
     /* (non-Javadoc)
@@ -388,4 +439,35 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
         return this.resultSetSize.get();
     }
 
+	/**
+	 * cancels the "pre-processing" loop in the exectionDone method.
+	 */
+	public synchronized void cancelLoad()
+	{
+		loadCancelled.set(true);
+		Iterator<?> r = rows.get();
+		while (r.hasNext())
+		{
+			r.next();
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceBase#updateNewListener(edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceListenerIFace)
+	 */
+	@Override
+	protected void updateNewListener(QBJRDataSourceListenerIFace listener)
+	{
+		super.updateNewListener(listener);
+		if (processing.get())
+		{
+			listener.loading();
+		}
+		else if (currentRow < size())
+		{
+			listener.filling();
+		}
+	}
+
+    
 }
