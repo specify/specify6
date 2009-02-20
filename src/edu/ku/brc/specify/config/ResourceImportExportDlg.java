@@ -40,6 +40,7 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
@@ -207,12 +208,13 @@ public class ResourceImportExportDlg extends CustomDialog
         PanelBuilder resPanel = new PanelBuilder(new FormLayout("f:p:g", "p,2px,p"));
         resPanel.add(createLabel(getResourceString("RIE_OTHER_RES"), SwingConstants.CENTER), cc.xy(1,1));
         resList   = new JList(resModel);
+        resList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         resList.setCellRenderer(new ARListRenderer());
         sp = new JScrollPane(resList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         resPanel.add(sp, cc.xy(1,3));
 
         tabbedPane.addTab(getResourceString("RIE_VIEWSETS"), viewPanel.getPanel());
-        //tabbedPane.addTab(getResourceString("RIE_OTHER_RES"), resPanel.getPanel());
+        tabbedPane.addTab(getResourceString("RIE_OTHER_RES"), resPanel.getPanel());
         
         PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g", "p,4px,p,2px,p"));
         pb.add(centerPB.getPanel(), cc.xy(1,1));
@@ -374,7 +376,22 @@ public class ResourceImportExportDlg extends CustomDialog
                 exportBtn.setEnabled(enable && resModel.size() > 1);
                 
                 SpAppResource appRes = (SpAppResource)resList.getSelectedValue();
-                reverBtn.setEnabled(appRes != null && appRes.getId() != null);
+                boolean enabled = false;
+                if (appRes != null && appRes.getId() != null)
+                {
+                	if (appRes.getMimeType() != null && 
+                			(appRes.getMimeType().equals(ReportsBaseTask.REPORTS_MIME) 
+                					|| appRes.getMimeType().equals(ReportsBaseTask.LABELS_MIME)))
+                	{
+                		if (!isSpReportResource((SpAppResource )appRes))
+                		{
+                			//XXX what if appres is imported report with no config file???
+                			enabled = true;
+                		}
+                		
+                	}
+                }
+                reverBtn.setEnabled(enabled);
             }
         }
         
@@ -1128,6 +1145,7 @@ public class ResourceImportExportDlg extends CustomDialog
 								{
 						            CommandDispatcher.dispatch(new CommandAction(ReportsBaseTask.REPORTS, ReportsBaseTask.REFRESH, null));
 						            CommandDispatcher.dispatch(new CommandAction(QueryTask.QUERY, QueryTask.REFRESH_QUERIES, null));
+						            levelSelected();
 								}
 							}
 

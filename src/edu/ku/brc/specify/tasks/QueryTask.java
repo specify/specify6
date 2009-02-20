@@ -873,6 +873,7 @@ public class QueryTask extends BaseTask
         {
             super.initialize(); // sets isInitialized to false
 
+            navBox = new DroppableNavBox(getResourceString("QUERIES"), QUERY_FLAVOR, QUERY, SAVE_QUERY);
             loadQueries();
             
             navBoxes.add(actionNavBox);
@@ -952,7 +953,6 @@ public class QueryTask extends BaseTask
      */
     protected void loadQueries()
     {
-        navBox = new DroppableNavBox(getResourceString("QUERIES"), QUERY_FLAVOR, QUERY, SAVE_QUERY);
         // XXX Users will probably want to share queries??
         String sqlStr = "From SpQuery as sq Inner Join sq.specifyUser as user where sq.isFavorite = true AND user.specifyUserId = "
                 + AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getSpecifyUserId()
@@ -1275,9 +1275,15 @@ public class QueryTask extends BaseTask
         
         if (cmdAction.isAction(REFRESH_QUERIES))
         {
-        	navBoxes.remove(navBox);
+        	navBox.clear();
         	loadQueries();
-        	navBoxes.add(navBox);
+        	navBox.invalidate();
+        	navBox.doLayout();
+        	navBox.repaint();
+        	NavBoxMgr.getInstance().invalidate();
+        	NavBoxMgr.getInstance().doLayout();
+        	NavBoxMgr.getInstance().repaint();
+        	UIRegistry.forceTopFrameRepaint();
         	return;
         }
         
