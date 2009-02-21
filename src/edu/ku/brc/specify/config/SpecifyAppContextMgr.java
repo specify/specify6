@@ -2736,9 +2736,11 @@ public class SpecifyAppContextMgr extends AppContextMgr
         sb.append("INNER JOIN spprincipal ON specifyuser_spprincipal.SpPrincipalID = spprincipal.SpPrincipalID ");
         if (discipline != null)
         {
-            sb.append("WHERE spprincipal.userGroupScopeID = ");
+            sb.append("WHERE (spprincipal.userGroupScopeID = ");
             sb.append(discipline.getId());
-            sb.append(" AND specifyuser.IsLoggedIn <> 0");
+            sb.append(" or spprincipal.userGroupScopeID in(select userGroupscopeID from collection col where col.disciplineid = ");
+            sb.append(discipline.getId());
+            sb.append(")) AND specifyuser.IsLoggedIn <> 0");
         }
         else
         {
