@@ -70,6 +70,7 @@ import java.awt.Dimension;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -104,6 +105,11 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.dom4j.Element;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -693,7 +699,6 @@ public class BuildSampleDatabase
         List<Object> gtps        = createSimpleGeologicTimePeriod(gtpTreeDef, false);
         List<Object> lithoStrats = isPaleo ? null : createSimpleLithoStrat(lithoStratTreeDef, false);
         
-        //persist(journal);
         persist(taxa);
         persist(geos);
         persist(gtps);
@@ -712,6 +717,8 @@ public class BuildSampleDatabase
             //}  
         }
         commitTx();
+        
+        convertGeographyFromXLS(geoTreeDef);
         
         frame.setProcess(++createStep);
         
@@ -3149,6 +3156,129 @@ public class BuildSampleDatabase
         return earth;
     }
     
+    
+    /**
+     * @param treeDef
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public Geography convertGeographyFromXLS(final GeographyTreeDef treeDef)
+    {
+        //String fileName = "Geography.csv";
+        String fileName = "Geography.xls";
+        
+        Hashtable<String, Geography> geoHash = new Hashtable<String, Geography>();
+        
+        geoHash.clear();
+
+        File file = new File("demo_files/"+fileName);
+        if (!file.exists())
+        {
+            log.error("Couldn't file[" + file.getAbsolutePath() + "] checking the config dir");
+            file = XMLHelper.getConfigDir(fileName);
+            if (!file.exists())
+            {
+                file = new File("Specify/demo_files/"+fileName);
+            }
+        }
+
+        if (file == null || !file.exists())
+        {
+            log.error("Couldn't file[" + file.getAbsolutePath() + "]");
+            return null;
+        }
+        
+        // setup the root Geography record (planet Earth)
+        Geography earth = new Geography();
+        earth.initialize();
+        earth.setName("Earth");
+        earth.setRankId(0);
+        earth.setDefinition(treeDef);
+        GeographyTreeDefItem defItem = treeDef.getDefItemByRank(0);
+        earth.setDefinitionItem(defItem);
+
+        int counter = 0;
+        
+        try
+        {
+            startTx();
+            
+            persist(earth);
+            
+            String[]        cells    = new String[4];
+            InputStream     input    = new FileInputStream(file);
+            POIFSFileSystem fs       = new POIFSFileSystem(input);
+            HSSFWorkbook    workBook = new HSSFWorkbook(fs);
+            HSSFSheet       sheet    = workBook.getSheetAt(0);
+            Iterator<?> rows = sheet.rowIterator();
+            while (rows.hasNext())
+            {
+                if (counter == 0)
+                {
+                    counter = 1;
+                    continue;
+                }
+                if (counter % 100 == 0)
+                {
+                    if (frame != null) frame.setProcess(counter);
+                    log.info("Converted " + counter + " Geography records");
+                }
+                
+                HSSFRow row = (HSSFRow) rows.next();
+                Iterator<?> cellsIter = row.cellIterator();
+                int i = 0;
+                while (cellsIter.hasNext() && i < 4)
+                {
+                    HSSFCell cell = (HSSFCell)cellsIter.next();
+                    if (cell != null)
+                    {
+                        cells[i] = StringUtils.trim(cell.getRichStringCellValue().getString());
+                        i++;
+                    }
+                }
+                for (int j=i;j<4;j++)
+                {
+                    cells[j] = null;
+                }
+                //System.out.println();
+                @SuppressWarnings("unused")
+                Geography newGeo = convertGeographyRecord(cells[0], cells[1], cells[2], cells[3], earth);
+    
+                counter++;
+            }
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+
+        if (frame != null) frame.setProcess(counter);
+        
+        log.info("Converted " + counter + " Geography records");
+
+        TreeHelper.fixFullnameForNodeAndDescendants(earth);
+        earth.setNodeNumber(1);
+        fixNodeNumbersFromRoot(earth);
+        
+        commitTx();
+        
+        /*startTx();
+        TreeHelper.fixFullnameForNodeAndDescendants(earth);
+        earth.setNodeNumber(1);
+        fixNodeNumbersFromRoot(earth);
+        
+        printTree(earth, 0);
+        saveTree(earth);
+
+        commitTx();*/
+        
+        log.info("Converted " + counter + " Stratigraphy records");
+
+        // set up Geography foreign key mapping for locality
+        geoHash.clear();
+
+        return earth;
+    }
     /**
      * @param root
      */
@@ -3267,6 +3397,94 @@ public class BuildSampleDatabase
         persist(newStrat);
         
         return newStrat;
+    }
+    
+    /**
+     * @param continent
+     * @param country
+     * @param state
+     * @param county
+     * @param geoRoot
+     * @return
+     */
+    protected Geography convertGeographyRecord(final String    continent,
+                                               final String    country,
+                                               final String    state,
+                                               final String    county,
+                                               final Geography geoRoot)
+    {
+        String levelNames[] = { continent, country, state, county };
+        int levelsToBuild = 0;
+        for (int i = levelNames.length; i > 0; --i)
+        {
+            if (StringUtils.isNotEmpty(levelNames[i - 1]))
+            {
+                levelsToBuild = i;
+                break;
+            }
+        }
+
+        for (int i = 0; i < levelsToBuild; i++)
+        {
+            if (StringUtils.isEmpty(levelNames[i]))
+            {
+                levelNames[i] = "(Empty)";
+            }
+        }
+
+        Geography prevLevelGeo = geoRoot;
+        for (int i = 0; i < levelsToBuild; ++i)
+        {
+            Geography newLevelGeo = buildGeographyLevel(levelNames[i], prevLevelGeo);
+            prevLevelGeo = newLevelGeo;
+        }
+
+        return prevLevelGeo;
+    }
+
+    /**
+     * @param nameArg
+     * @param parentArg
+     * @return
+     */
+    protected Geography buildGeographyLevel(final String    nameArg,
+                                            final Geography parentArg)
+    {
+        String name = nameArg;
+        if (name == null)
+        {
+            name = "N/A";
+        }
+
+        // search through all of parent's children to see if one already exists with the same name
+        Set<Geography> children = parentArg.getChildren();
+        for (Geography child : children)
+        {
+            if (name.equalsIgnoreCase(child.getName()))
+            {
+                // this parent already has a child by the given name
+                // don't create a new one, just return this one
+                return child;
+            }
+        }
+
+        // we didn't find a child by the given name
+        // we need to create a new Geography record
+        Geography newGeo = new Geography();
+        newGeo.initialize();
+        newGeo.setName(name);
+        newGeo.setParent(parentArg);
+        parentArg.addChild(newGeo);
+        newGeo.setDefinition(parentArg.getDefinition());
+        int newGeoRank = parentArg.getRankId() + 100;
+        
+        GeographyTreeDefItem defItem = parentArg.getDefinition().getDefItemByRank(newGeoRank);
+        newGeo.setDefinitionItem(defItem);
+        newGeo.setRankId(newGeoRank);
+
+        persist(newGeo);
+        
+        return newGeo;
     }
 
     /**
@@ -6177,13 +6395,13 @@ public class BuildSampleDatabase
         List<Object> newObjs = new Vector<Object>();
 
         // create the geo tree def items
-        GeographyTreeDefItem root = createGeographyTreeDefItem(null, geoTreeDef, "GeoRoot", 0);
+        GeographyTreeDefItem root = createGeographyTreeDefItem(null,       geoTreeDef, "   ", 0);
         root.setIsEnforced(true);
-        GeographyTreeDefItem cont = createGeographyTreeDefItem(root, geoTreeDef, "Continent", 100);
-        GeographyTreeDefItem country = createGeographyTreeDefItem(cont, geoTreeDef, "Country", 200);
-        GeographyTreeDefItem state = createGeographyTreeDefItem(country, geoTreeDef, "State", 300);
+        GeographyTreeDefItem cont    = createGeographyTreeDefItem(root,    geoTreeDef, "Continent", 100);
+        GeographyTreeDefItem country = createGeographyTreeDefItem(cont,    geoTreeDef, "Country", 200);
+        GeographyTreeDefItem state   = createGeographyTreeDefItem(country, geoTreeDef, "State", 300);
         state.setIsInFullName(true);
-        GeographyTreeDefItem county = createGeographyTreeDefItem(state, geoTreeDef, "County", 400);
+        GeographyTreeDefItem county  = createGeographyTreeDefItem(state,   geoTreeDef, "County", 400);
         county.setIsInFullName(true);
         //county.setTextAfter(" Co.");
 
@@ -6198,14 +6416,16 @@ public class BuildSampleDatabase
         // 4
         newObjs.add(county);
 
-        // Create the planet Earth.
-        // That seems like a big task for 5 lines of code.
-        Geography earth = createGeography(geoTreeDef, null, "Earth", root.getRankId());
-        // 5
-        newObjs.add(earth);
+        Geography earth = null;
         
         if (doAddTreeNodes)
         {
+            // Create the planet Earth.
+            // That seems like a big task for 5 lines of code.
+            earth = createGeography(geoTreeDef, null, "Earth", root.getRankId());
+            // 5
+            newObjs.add(earth);
+            
             Geography northAmerica = createGeography(geoTreeDef, earth, "North America", cont.getRankId());
             Geography us = createGeography(geoTreeDef, northAmerica, "United States", country.getRankId());
             List<Geography> states = createGeographyChildren(geoTreeDef, us,
@@ -6242,9 +6462,12 @@ public class BuildSampleDatabase
             i++;
         }
         
-        TreeHelper.fixFullnameForNodeAndDescendants(earth);
-        earth.setNodeNumber(1);
-        fixNodeNumbersFromRoot(earth);
+        if (doAddTreeNodes)
+        {
+            TreeHelper.fixFullnameForNodeAndDescendants(earth);
+            earth.setNodeNumber(1);
+            fixNodeNumbersFromRoot(earth);
+        }
 
         return newObjs;
     }

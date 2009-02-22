@@ -117,6 +117,12 @@ public interface UIFieldFormatterIFace
      * @return true if this formatter has an incrementer field.
      */
     public abstract boolean isIncrementer();
+    
+    /**
+     * Sets whether the formatter is an incrementer.
+     * @param isIncrementer true is incrementer
+     */
+    public abstract void setIncrementer(boolean isIncrementer);
 
     /**
      * NOTE: If you are getting the length just to compare if the length is OK, then use @see #isLengthOK(int)
@@ -235,6 +241,8 @@ public interface UIFieldFormatterIFace
     //-----------------------------------------------------------------------
     // The Data Specific Methods
     //-----------------------------------------------------------------------
+    
+    public abstract void setType(FormatterType type);
     
     /**
      * Quick way to find out if it is a date formatter.

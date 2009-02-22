@@ -128,9 +128,10 @@ public class UIFormatterEditorDlg extends CustomDialog
     protected String                    fmtErrMsg                   = null;
     
     /**
-     * @param frame
+     * @param parentDlg
      * @param fieldInfo
      * @param selectedFormat
+     * @param isNew
      * @param uiFieldFormatterMgrCache
      * @throws HeadlessException
      */
@@ -138,6 +139,7 @@ public class UIFormatterEditorDlg extends CustomDialog
                                 final DBFieldInfo           fieldInfo,
                                 final UIFieldFormatterIFace selectedFormat,
                                 final boolean               isNew,
+                                final boolean               doProcessSamples,
                                 final UIFieldFormatterMgr	uiFieldFormatterMgrCache) throws HeadlessException
     {
         super(parentDlg, getResourceString("FFE_DLG_TITLE"), true, OKCANCELHELP, null);
@@ -146,7 +148,7 @@ public class UIFormatterEditorDlg extends CustomDialog
         this.selectedFormat              = selectedFormat;
         this.uiFieldFormatterMgrCache    = uiFieldFormatterMgrCache;
         this.isNew                       = isNew;
-        this.fieldFormatterSampler       = new UIFieldFormatterSampler(fieldInfo);
+        this.fieldFormatterSampler       = doProcessSamples ? new UIFieldFormatterSampler(fieldInfo) : null;
         this.formatFactory               = UIFieldFormatterMgr.getFormatFactory(fieldInfo);
         this.helpContext                 = "UIF_EDITOR";
         
@@ -658,6 +660,24 @@ public class UIFormatterEditorDlg extends CustomDialog
         selectedFormat.setDefault(false);
         selectedFormat.setDataClass(fieldInfo.getTableInfo().getClassObj());
         selectedFormat.setFieldName(fieldInfo != null ? fieldInfo.getName() : null);
+        
+        selectedFormat.setIncrementer(false);
+        for (UIFieldFormatterField f : fields)
+        {
+            if (f.isIncrementer())
+            {
+                selectedFormat.setIncrementer(true);
+                break;
+            }
+        }
+        
+        if (fields.size() == 1 && fields.get(0).getType() == FieldType.numeric)
+        {
+            selectedFormat.setType(UIFieldFormatterIFace.FormatterType.numeric);
+        } else
+        {
+            selectedFormat.setType(UIFieldFormatterIFace.FormatterType.generic);
+        }
     }
 
     /* (non-Javadoc)
@@ -864,12 +884,10 @@ public class UIFormatterEditorDlg extends CustomDialog
                 case 0 : return fld.getType();
                 case 1 : return fld.getValue();
                 case 2 : return fld.getType() == FieldType.separator ? "" : fld.getSize();
-                case 3 : return fld.getType() == FieldType.separator ? "" : UIRegistry.getResourceString(fld.isByYear() ? "WB_YES" : "WB_NO");
-                case 4 : return fld.getType() == FieldType.separator ? "" : UIRegistry.getResourceString(fld.isIncrementer() ? "WB_YES" : "WB_NO");
-                
+                case 3 : return fld.getType() == FieldType.separator ? "" : UIRegistry.getResourceString(fld.isByYear() ? "YES" : "NO");
+                case 4 : return fld.getType() == FieldType.separator ? "" : UIRegistry.getResourceString(fld.isIncrementer() ? "YES" : "NO");
             }
             return null;
         }
-        
     }
 }

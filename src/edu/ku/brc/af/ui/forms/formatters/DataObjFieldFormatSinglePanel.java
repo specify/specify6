@@ -514,7 +514,7 @@ public class DataObjFieldFormatSinglePanel extends DataObjFieldFormatPanel
                     // open UI field formatter dialog to format this field 
                     DBFieldInfo    fi  = dataObjFieldWrapper.getFormatterField().getFieldInfo();
                     UIFormatterListEdtDlg dlg = new UIFormatterListEdtDlg((Frame) UIRegistry.getTopWindow(),
-                                                                          fi, uiFieldFormatterMgrCache);
+                                                                          fi, true, uiFieldFormatterMgrCache);
                     dlg.setVisible(true);
                     
                     if (dlg.getBtnPressed() == CustomDialog.OK_BTN)

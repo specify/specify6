@@ -345,8 +345,9 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
                 public void actionPerformed(ActionEvent e)
                 {
                     UIFormatterListEdtDlg dlg = new UIFormatterListEdtDlg((Frame)UIRegistry.getTopWindow(),
-                                                            fieldInfo,
-                                                            schemaPanel.getUiFieldFormatterMgrCache());
+                                                                            fieldInfo,
+                                                                            true,
+                                                                            schemaPanel.getUiFieldFormatterMgrCache());
                     dlg.setVisible(true);
                     if (!dlg.isCancelled() && dlg.hasChanged())
                     {

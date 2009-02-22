@@ -207,7 +207,6 @@ public class SpecifySchemaGenerator
     protected static void fixFloatFields(final DBConnection dbConnection) throws SQLException
     {
         Connection connection = dbConnection.createConnection();
-        int x = 1;
         if (connection != null)
         {
             Statement stmt = connection.createStatement();
@@ -254,7 +253,7 @@ public class SpecifySchemaGenerator
         {
             Statement  stmt       = connection.createStatement();
             log.info("Creating database "+dbName);        
-            stmt.execute("create database "+ dbName);        
+            stmt.execute("create database "+dbName+" default charset utf8;");        
             log.info("Created database "+dbName);        
             stmt.close();
             connection.close();            

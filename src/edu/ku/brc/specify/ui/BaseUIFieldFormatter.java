@@ -128,6 +128,14 @@ public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     }
 
     /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace#setType(edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace.FormatterType)
+     */
+    @Override
+    public void setType(FormatterType type)
+    {
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getSample()
      */
     @Override
@@ -285,6 +293,14 @@ public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     public boolean isIncrementer()
     {
         return isIncrementer;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace#setIncrementer(boolean)
+     */
+    @Override
+    public void setIncrementer(boolean isIncrementer)
+    {
     }
 
     /* (non-Javadoc)

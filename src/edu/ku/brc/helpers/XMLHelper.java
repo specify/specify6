@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Properties;
 
 import javax.swing.JOptionPane;
+import javax.xml.parsers.SAXParserFactory;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -64,6 +65,11 @@ public class XMLHelper
     private static File    configDir     = null;
     private static boolean isEmptyAttrOK = false;
 
+    static 
+    {
+        SAXParserFactory spf = SAXParserFactory.newInstance();
+        spf.setNamespaceAware(false);
+    }
     
    /**
      * @param isEmptyAttrOK the isEmptyAttrOK to set
@@ -116,6 +122,9 @@ public class XMLHelper
 
        saxReader.setValidation(false);
        saxReader.setStripWhitespaceText(true);
+       
+       saxReader.setFeature("http://xml.org/sax/features/namespaces", false);
+       saxReader.getXMLReader().setFeature("http://xml.org/sax/features/namespaces",false);
 
        //saxReader.setFeature("http://apache.org/xml/features/validation/schema", false);
        //saxReader.setFeature("http://xml.org/sax/features/validation", false);
@@ -132,7 +141,9 @@ public class XMLHelper
 
        saxReader.setValidation(false);
        saxReader.setStripWhitespaceText(true);
-
+       saxReader.setFeature("http://xml.org/sax/features/namespaces", false);
+       saxReader.getXMLReader().setFeature("http://xml.org/sax/features/namespaces",false);
+       
        //saxReader.setFeature("http://apache.org/xml/features/validation/schema", false);
        //saxReader.setFeature("http://xml.org/sax/features/validation", false);
        //saxReader.setProperty("http://apache.org/xml/properties/schema/external-noNamespaceSchemaLocation",

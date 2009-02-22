@@ -76,7 +76,8 @@ public class UIFormatterListEdtDlg extends CustomDialog
     protected JList                     formatList;
     protected DefEditDeleteAddPanel     dedaPanel;
     protected ListSelectionListener     formatListSelectionListener = null;
-    protected boolean                   hasChanged = false;
+    protected boolean                   hasChanged                  = false;
+    protected boolean                   doProcessSamples;
     
     /**
      * @param dialog
@@ -88,6 +89,7 @@ public class UIFormatterListEdtDlg extends CustomDialog
      */
     public UIFormatterListEdtDlg(final Frame               frame, 
                                  final DBFieldInfo         fieldInfo, 
+                                 final boolean             doProcessSamples,
                                  final UIFieldFormatterMgr uiFieldFormatterMgrCache) throws HeadlessException
     {
         super(frame, getResourceString("FFE_DLG_TITLE"), true, OKCANCELHELP, null);
@@ -96,7 +98,7 @@ public class UIFormatterListEdtDlg extends CustomDialog
         this.uiFieldFormatterMgrCache    = uiFieldFormatterMgrCache;
         this.formatFactory               = UIFieldFormatterMgr.getFormatFactory(fieldInfo);
         this.helpContext                 = "UIF_LIST_EDITOR";
-
+        this.doProcessSamples            = doProcessSamples;
     }
     
     /* (non-Javadoc)
@@ -115,7 +117,7 @@ public class UIFormatterListEdtDlg extends CustomDialog
         Collections.sort(fmtrs, new Comparator<UIFieldFormatterIFace>() {
             public int compare(UIFieldFormatterIFace o1, UIFieldFormatterIFace o2)
             {
-                return o1.toPattern().compareTo(o2.toPattern());
+                return o1.getName().compareTo(o2.getName());
             }
         });
 
@@ -312,7 +314,7 @@ public class UIFormatterListEdtDlg extends CustomDialog
             UIFieldFormatterIFace tempCopy = isNew ? uif : (UIFieldFormatterIFace)uif.clone();
             boolean isDefault = tempCopy.isDefault();
             
-            UIFormatterEditorDlg dlg = new UIFormatterEditorDlg(this, fieldInfo, tempCopy, isNew, uiFieldFormatterMgrCache);
+            UIFormatterEditorDlg dlg = new UIFormatterEditorDlg(this, fieldInfo, tempCopy, isNew, doProcessSamples, uiFieldFormatterMgrCache);
             dlg.setVisible(true);
             if (!dlg.isCancelled())
             {

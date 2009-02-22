@@ -823,6 +823,9 @@ public class SecurityAdminPane extends BaseSubPane
         tabbedPane.addTab("General", generalEditor); // I18N
         tabbedPane.addTab("Objects", objEditor);  // I18N
         
+        tabbedPane.setBorder(BorderFactory.createLineBorder(Color.RED));
+        infoPanel.setBorder(BorderFactory.createLineBorder(Color.GREEN));
+        
         final PanelBuilder mainPB = new PanelBuilder(new FormLayout("f:p:g", "t:p,4px,p,5px,p,2dlu,p"), infoPanel);
         
         // lay out controls on panel

@@ -205,9 +205,6 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
         userPanel = new DatabasePanel(nextBtn, true);
         panels.add(userPanel);
                
-        taxonTDPanel = new TaxonTreeDefPanel(nextBtn, userPanel);
-        panels.add(taxonTDPanel);
-               
         UIFieldFormatterMgr.setDoingLocal(true);
         
         panels.add(new GenericFormPanel("sa", 
@@ -240,6 +237,9 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
                 new String[] { "NAME",    "ABBREV"}, 
                 new String[] { "divName", "divAbbrev"}, 
                 nextBtn));
+        
+        taxonTDPanel = new TaxonTreeDefPanel(nextBtn, userPanel);
+        panels.add(taxonTDPanel);
          
         panels.add(new GenericFormPanel("collection", 
                 "ENTER_COL_INFO",

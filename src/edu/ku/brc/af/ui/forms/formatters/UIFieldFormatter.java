@@ -949,6 +949,9 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
 		this.dataClass = dataClass;
 	}
 
+	/**
+	 * @param type
+	 */
 	public void setType(FormatterType type) 
 	{
 		this.type = type;
