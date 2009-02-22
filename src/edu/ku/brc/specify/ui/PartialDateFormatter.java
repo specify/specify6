@@ -11,7 +11,7 @@ package edu.ku.brc.specify.ui;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
+import java.util.Vector;
 
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatter;
@@ -59,7 +59,7 @@ public class PartialDateFormatter extends UIFieldFormatter
                                 final Class<?> dataClass,
                                 final boolean isDefault, 
                                 final boolean isIncrementer, 
-                                final List<UIFieldFormatterField> fields)
+                                final Vector<UIFieldFormatterField> fields)
     {
         super(name, isSystem, fieldName, type, partialDateType, dataClass, isDefault, isIncrementer, fields);
     }

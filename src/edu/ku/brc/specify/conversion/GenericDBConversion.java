@@ -5301,10 +5301,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
      */
     public void convertTaxonRecords()
     {
-        BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "taxon",
-                BasicSQLUtils.myDestinationServerType);
-        BasicSQLUtils.setIdentityInsertONCommandForSQLServer(newDBConn, "taxon",
-                BasicSQLUtils.myDestinationServerType);
+        BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "taxon", BasicSQLUtils.myDestinationServerType);
+        BasicSQLUtils.setIdentityInsertONCommandForSQLServer(newDBConn, "taxon", BasicSQLUtils.myDestinationServerType);
+        
         // Meg had to removed the inner order by statement, becuase SQL Server does not allow order
         // bys in subqueries. it is assumed that this is okay because we are calling an
         // "in" function on the result of subquery so the order should not matter
@@ -5314,20 +5313,20 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
 
         Hashtable<String, String> newToOldColMap = new Hashtable<String, String>();
-        newToOldColMap.put("TaxonID", "TaxonNameID");
-        newToOldColMap.put("ParentID", "ParentTaxonNameID");
-        newToOldColMap.put("TaxonTreeDefID", "TaxonomyTypeID");
+        newToOldColMap.put("TaxonID",            "TaxonNameID");
+        newToOldColMap.put("ParentID",           "ParentTaxonNameID");
+        newToOldColMap.put("TaxonTreeDefID",     "TaxonomyTypeID");
         newToOldColMap.put("TaxonTreeDefItemID", "TaxonomicUnitTypeID");
-        newToOldColMap.put("Name", "TaxonName");
-        newToOldColMap.put("FullName", "FullTaxonName");
-        newToOldColMap.put("IsAccepted", "Accepted");
+        newToOldColMap.put("Name",               "TaxonName");
+        newToOldColMap.put("FullName",           "FullTaxonName");
+        newToOldColMap.put("IsAccepted",         "Accepted");
 
         // Ignore new fields
         // These were added for supporting the new security model and hybrids
         String[] ignoredFields = { "GUID", "Visibility", "VisibilitySetBy", "IsHybrid",
-                "HybridParent1ID", "HybridParent2ID", "EsaStatus", "CitesStatus", "UsfwsCode",
-                "IsisNumber", "Text1", "Text2", "NcbiTaxonNumber", "Number1", "Number2",
-                "CreatedByAgentID", "ModifiedByAgentID", "Version", "CultivarName", "LabelFormat"};
+                                    "HybridParent1ID", "HybridParent2ID", "EsaStatus", "CitesStatus", "UsfwsCode",
+                                    "IsisNumber", "Text1", "Text2", "NcbiTaxonNumber", "Number1", "Number2",
+                                    "CreatedByAgentID", "ModifiedByAgentID", "Version", "CultivarName", "LabelFormat"};
 
         BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);
 
@@ -5389,7 +5388,6 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         def.setFullNameDirection(TreeDefIface.REVERSE);
 
         // session.save(def);
-
 
         GeographyTreeDefItem planet = new GeographyTreeDefItem();
         planet.initialize();
@@ -5467,21 +5465,27 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         return def;
     }
 
+    /**
+     * @param dbConn
+     * @return
+     */
     @SuppressWarnings("unchecked")
     public static LithoStratTreeDef createStandardLithoStratDefinitionAndItems(final Connection dbConn)
     {
         // empty out any pre-existing tree definitions
-        BasicSQLUtils.deleteAllRecordsFromTable(dbConn, "lithostrattreedef",
-                BasicSQLUtils.myDestinationServerType);
-        BasicSQLUtils.deleteAllRecordsFromTable(dbConn, "lithostrattreedefitem",
-                BasicSQLUtils.myDestinationServerType);
+        BasicSQLUtils.deleteAllRecordsFromTable(dbConn, 
+                                                "lithostrattreedef",
+                                                BasicSQLUtils.myDestinationServerType);
+        BasicSQLUtils.deleteAllRecordsFromTable(dbConn, 
+                                                "lithostrattreedefitem",
+                                                BasicSQLUtils.myDestinationServerType);
 
         Session localSession = HibernateUtil.getCurrentSession();
 
         HibernateUtil.beginTransaction();
 
         LithoStratTreeDef def = DataBuilder.createLithoStratTreeDef("Standard LithoStrat Tree");
-        BuildSampleDatabase.createSimpleLithoStrat(def);
+        BuildSampleDatabase.createSimpleLithoStrat(def, true);
 
         localSession.save(def);
 

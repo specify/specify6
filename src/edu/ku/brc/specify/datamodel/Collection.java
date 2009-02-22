@@ -52,6 +52,7 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
     
     // Fields
     protected String                     collectionName;
+    protected String                     catalogNumFormatName;
     protected String                     code; // Collection Acronym
     protected Boolean                    isEmbeddedCollectingEvent;
     protected String                     regNumber;
@@ -110,6 +111,7 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
     {
         super.init();
         collectionName         = null;
+        catalogNumFormatName   = null;
         code                   = null;
         isEmbeddedCollectingEvent = true;
         regNumber              = null;
@@ -199,6 +201,23 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
 
     public void setCollectionName(String collectionName) {
         this.collectionName = collectionName;
+    }
+
+    /**
+     * @return the catalogNumFormatName
+     */
+    @Column(name = "CatalogFormatNumName", unique = false, nullable = false, insertable = true, updatable = true, length = 64)
+    public String getCatalogNumFormatName()
+    {
+        return catalogNumFormatName;
+    }
+
+    /**
+     * @param catalogNumFormatName the catalogFormatName to set
+     */
+    public void setCatalogNumFormatName(String catalogNumFormatName)
+    {
+        this.catalogNumFormatName = catalogNumFormatName;
     }
 
     /**

@@ -33,6 +33,8 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
+
 /**
  * @author rods
  *
@@ -55,11 +57,15 @@ public class AutoNumberingScheme extends DataModelObjBase implements java.io.Ser
     protected Integer         tableNumber; // Table Id number that matched DBTableIDMgr
     protected String          schemeName;
     protected String          schemeClassName;
+    protected String          formatName;
     protected Boolean         isNumericOnly;
     
     protected Set<Collection> collections;
     protected Set<Division>   divisions;
     protected Set<Discipline> disciplines;
+    
+    // Transient 
+    protected UIFieldFormatterIFace formatter;
     
     public AutoNumberingScheme()
     {
@@ -81,10 +87,13 @@ public class AutoNumberingScheme extends DataModelObjBase implements java.io.Ser
         autoNumberingSchemeId = null;
         schemeName           = null;
         schemeClassName      = null;
+        formatName           = null;
         collections          = new HashSet<Collection>();
         divisions            = new HashSet<Division>();
         disciplines          = new HashSet<Discipline>();
         isNumericOnly        = false;
+        
+        formatter            = null;
     }
     
     // End Initializer
@@ -131,6 +140,23 @@ public class AutoNumberingScheme extends DataModelObjBase implements java.io.Ser
     public void setSchemeClassName(String schemeClassName)
     {
         this.schemeClassName = schemeClassName;
+    }
+
+    /**
+     * @return the formatName
+     */
+    @Column(name = "FormatName", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+    public String getFormatName()
+    {
+        return formatName;
+    }
+
+    /**
+     * @param formatName the formatName to set
+     */
+    public void setFormatName(String formatName)
+    {
+        this.formatName = formatName;
     }
 
     @Column(name="IsNumericOnly", unique=false, nullable=false, updatable=true, insertable=true)
@@ -235,6 +261,23 @@ public class AutoNumberingScheme extends DataModelObjBase implements java.io.Ser
         return getClassTableId();
     }
     
+    /**
+     * @return the formatter
+     */
+    @Transient
+    public UIFieldFormatterIFace getFormatter()
+    {
+        return formatter;
+    }
+
+    /**
+     * @param formatter the formatter to set
+     */
+    public void setFormatter(UIFieldFormatterIFace formatter)
+    {
+        this.formatter = formatter;
+    }
+
     /**
      * @return the Table ID for the class.
      */

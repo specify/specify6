@@ -564,7 +564,7 @@ public class SpecifyDBConverter
                 
                 if (false)
                 {
-                    addStorageTreeFomrXML();
+                    addStorageTreeFomrXML(true);
                     return;
                 }
                 
@@ -1324,7 +1324,7 @@ public class SpecifyDBConverter
     /**
      * 
      */
-    public static void addStorageTreeFomrXML()
+    public static void addStorageTreeFomrXML(final boolean doAddTreeNodes)
     {
         BuildSampleDatabase bsd = new BuildSampleDatabase();
         Session tmpSession = HibernateUtil.getNewSession();
@@ -1370,7 +1370,7 @@ public class SpecifyDBConverter
                     trans = tmpSession.beginTransaction();
                     
                     Vector<Object> storages = new Vector<Object>();
-                    bsd.createStorageTreeDefFromXML(storages, domFile, std);
+                    bsd.createStorageTreeDefFromXML(storages, domFile, std, doAddTreeNodes);
                     trans.commit();
                     
                 } else

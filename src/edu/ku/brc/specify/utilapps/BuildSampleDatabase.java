@@ -209,6 +209,7 @@ import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchRowImage;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
+import edu.ku.brc.specify.dbsupport.SpecifyDeleteHelper;
 import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
 import edu.ku.brc.specify.tools.schemalocale.SchemaLocalizerXMLHelper;
 import edu.ku.brc.specify.treeutils.TreeFactory;
@@ -416,7 +417,6 @@ public class BuildSampleDatabase
         System.out.println("Userame:   "+username);
         
         institution = createInstitution(props.getProperty("instName"));
-        //institution.setTitle(props.getProperty("instTitle"));
         institution.setCode(props.getProperty("instAbbrev"));
         
         Address instAddress = new Address();
@@ -432,9 +432,9 @@ public class BuildSampleDatabase
         institution.setAddress(instAddress);
         instAddress.getInsitutions().add(institution);
         
-        Session dataBuilderSession = switchDataBuilderSession();
-        SpecifyUser specifyAdminUser = DataBuilder.createAdminGroupAndUser(institution, 
-                username, email, password, userType);
+        Session     dataBuilderSession = switchDataBuilderSession();
+        SpecifyUser specifyAdminUser   = DataBuilder.createAdminGroupAndUser(institution, username, email, password, userType);
+        
         DataBuilder.setSession(dataBuilderSession);
         
         dataType = createDataType("Biota");
@@ -461,12 +461,10 @@ public class BuildSampleDatabase
         GeologicTimePeriodTreeDef gtpTreeDef        = createGeologicTimePeriodTreeDef("Chronos Stratigraphy");
         LithoStratTreeDef         lithoStratTreeDef = createLithoStratTreeDef("LithoStrat");
         
-        boolean buildStorageTree = false;
         if (stgTreeDef == null)
         {
-            stgTreeDef        = createStorageTreeDef("Storage");
+            stgTreeDef = createStorageTreeDef("Storage");
             institution.setStorageTreeDef(stgTreeDef);
-            buildStorageTree = true;
         }
         
         discipline = createDiscipline(division, 
@@ -478,9 +476,9 @@ public class BuildSampleDatabase
                                       gtpTreeDef, 
                                       lithoStratTreeDef);
         
-        AppContextMgr.getInstance().setClassObject(Discipline.class, discipline);
+        AppContextMgr.getInstance().setClassObject(Discipline.class,  discipline);
         AppContextMgr.getInstance().setClassObject(Institution.class, institution);
-        AppContextMgr.getInstance().setClassObject(Division.class, division);
+        AppContextMgr.getInstance().setClassObject(Division.class,    division);
         
         persist(institution);
         persist(division);
@@ -534,14 +532,16 @@ public class BuildSampleDatabase
         persist(userAgent);
         
         UIFieldFormatterIFace fmt = UIFieldFormatterMgr.getInstance().getFormatter(catNumFmt);
-        AutoNumberingScheme catANS = createAutoNumberingScheme("Catalog Numbering Scheme", "", fmt.isNumeric(), CollectionObject.getClassTableId());
+        AutoNumberingScheme catANS = createAutoNumberingScheme("Catalog Numbering Scheme", "", 
+                                         catNumFmt, fmt.isNumeric(), CollectionObject.getClassTableId());
         persist(catANS);
         
         AutoNumberingScheme accANS = null;
         if (accNumFmt != null)
         {
-            fmt = UIFieldFormatterMgr.getInstance().getFormatter(catNumFmt);
-            accANS = createAutoNumberingScheme("Accession Numbering Scheme", "", fmt.isNumeric(), Accession.getClassTableId());
+            fmt    = UIFieldFormatterMgr.getInstance().getFormatter(catNumFmt);
+            accANS = createAutoNumberingScheme("Accession Numbering Scheme", "",  
+                                                 accNumFmt, fmt.isNumeric(),Accession.getClassTableId());
             persist(accANS);
         }
         
@@ -559,6 +559,7 @@ public class BuildSampleDatabase
         
         Collection collection = createCollection(props.getProperty("collPrefix"), 
                                                  props.getProperty("collName"), 
+                                                 catNumFmt,
                                                  catANS,
                                                  discipline, 
                                                  disciplineType.isEmbeddedCollecingEvent());
@@ -568,6 +569,9 @@ public class BuildSampleDatabase
         
         persist(collection);
         
+        ////////////////////////////////
+        // Default user groups and test user
+        ////////////////////////////////
 
         // create the standard user groups for this collection
         dataBuilderSession = switchDataBuilderSession();
@@ -577,14 +581,13 @@ public class BuildSampleDatabase
         specifyAdminUser.addUserToSpPrincipalGroup(groupMap.get(SpecifyUserTypes.UserType.Manager.toString()));
 
         // add tester
-        String dspAbbrev = disciplineType.getAbbrev();
-        createAndAddTesterToCollection(dspAbbrev+"Tester", dspAbbrev+"tester@brc.ku.edu", dspAbbrev+"Tester", 
-                "", dspAbbrev, "", "Tester", "", discipline, division, groupMap, SpecifyUserTypes.UserType.Manager.toString());
+        //String dspAbbrev = disciplineType.getAbbrev();
+        //createAndAddTesterToCollection(dspAbbrev+"Tester", dspAbbrev+"tester@brc.ku.edu", dspAbbrev+"Tester", 
+        //        "", dspAbbrev, "", "Tester", "", discipline, division, groupMap, SpecifyUserTypes.UserType.Manager.toString());
         
         DataBuilder.setSession(dataBuilderSession);
 
         AppContextMgr.getInstance().setClassObject(Collection.class, collection);
-
         
         if (accANS != null)
         {
@@ -614,7 +617,7 @@ public class BuildSampleDatabase
         
         persist(specifyAdminUser);
 
-        Journal journal = createJournalsAndReferenceWork();
+        //Journal journal = createJournalsAndReferenceWork();
         
         ////////////////////////////////
         // build the tree def items and nodes
@@ -686,14 +689,13 @@ public class BuildSampleDatabase
             persist(earth);
         }
         
-        List<Object> geos        = createSimpleGeography(geoTreeDef);
-        List<Object> gtps        = createSimpleGeologicTimePeriod(gtpTreeDef);
-        List<Object> lithoStrats = isPaleo ? null : createSimpleLithoStrat(lithoStratTreeDef);
+        List<Object> geos        = createSimpleGeography(geoTreeDef, false);
+        List<Object> gtps        = createSimpleGeologicTimePeriod(gtpTreeDef, false);
+        List<Object> lithoStrats = isPaleo ? null : createSimpleLithoStrat(lithoStratTreeDef, false);
         
-        persist(journal);
+        //persist(journal);
         persist(taxa);
         persist(geos);
-        persist(buildStorageTree ? createSimpleStorage(stgTreeDef) : null);
         persist(gtps);
         
         if (lithoStrats != null)
@@ -702,12 +704,12 @@ public class BuildSampleDatabase
             
         } else if (isPaleo)
         {
-            LithoStrat earthLithoStrat = convertLithoStratFromCSV(lithoStratTreeDef);
-            if (earthLithoStrat == null)
-            {
-                lithoStrats = createSimpleLithoStrat(lithoStratTreeDef);
+            //LithoStrat earthLithoStrat = convertLithoStratFromCSV(lithoStratTreeDef);
+            //if (earthLithoStrat == null)
+            //{
+                lithoStrats = createSimpleLithoStrat(lithoStratTreeDef, false);
                 persist(lithoStrats);
-            }  
+            //}  
         }
         commitTx();
         
@@ -1056,7 +1058,7 @@ public class BuildSampleDatabase
         // Create Collection
         ////////////////////////////////
         log.info("Creating a Collection");
-        Collection collection = createCollection("KUBOT", "Botany", cns, discipline);
+        Collection collection = createCollection("KUBOT", "Botany", choice.getCatalogNumberingFmtName(), cns, discipline);
         persist(collection);
         
         Session dataBuilderSession = switchDataBuilderSession();
@@ -1106,9 +1108,9 @@ public class BuildSampleDatabase
         // build the tree def items and nodes
         ////////////////////////////////
         List<Object> taxa        = createSimpleBotanyTaxonTree(taxonTreeDef);
-        List<Object> geos        = createSimpleGeography(geoTreeDef);
-        List<Object> gtps        = createSimpleGeologicTimePeriod(gtpTreeDef);
-        List<Object> lithoStrats = createSimpleLithoStrat(lithoStratTreeDef);
+        List<Object> geos        = createSimpleGeography(geoTreeDef, true);
+        List<Object> gtps        = createSimpleGeologicTimePeriod(gtpTreeDef, true);
+        List<Object> lithoStrats = createSimpleLithoStrat(lithoStratTreeDef, true);
         
         institution.setStorageTreeDef(stgTreeDef);
 
@@ -1863,7 +1865,7 @@ public class BuildSampleDatabase
         // Create Collection
         ////////////////////////////////
         log.info("Creating a Collection");
-        Collection collection = createCollection("KUBOT", "Botany", cns, discipline);
+        Collection collection = createCollection("KUBOT", "Botany", choice.getCatalogNumberingFmtName(), cns, discipline);
         persist(collection);
         
         AppContextMgr.getInstance().setClassObject(Collection.class, collection);
@@ -1898,9 +1900,9 @@ public class BuildSampleDatabase
         // build the tree def items and nodes
         ////////////////////////////////
         List<Object> taxa        = createSimpleBotanyTaxonTree(taxonTreeDef);
-        List<Object> geos        = createSimpleGeography(geoTreeDef);
-        List<Object> gtps        = createSimpleGeologicTimePeriod(gtpTreeDef);
-        List<Object> lithoStrats = createSimpleLithoStrat(lithoStratTreeDef);
+        List<Object> geos        = createSimpleGeography(geoTreeDef, true);
+        List<Object> gtps        = createSimpleGeologicTimePeriod(gtpTreeDef, true);
+        List<Object> lithoStrats = createSimpleLithoStrat(lithoStratTreeDef, true);
         
         persist(journal);
         persist(taxa);
@@ -2323,7 +2325,7 @@ public class BuildSampleDatabase
         // Create Collection
         ////////////////////////////////
         log.info("Creating a Collection");
-        Collection collection = createCollection("KUIVP", disciplineType.getTitle(), cns, discipline);
+        Collection collection = createCollection("KUIVP", disciplineType.getTitle(), choice.getCatalogNumberingFmtName(), cns, discipline);
         persist(collection);
         
         Session dataBuilderSession = switchDataBuilderSession();
@@ -2370,9 +2372,9 @@ public class BuildSampleDatabase
         // build the tree def items and nodes
         ////////////////////////////////
         List<Object> taxa        = createSimpleBotanyTaxonTree(taxonTreeDef);
-        List<Object> geos        = createSimpleGeography(geoTreeDef);
-        List<Object> gtps        = createSimpleGeologicTimePeriod(gtpTreeDef);
-        //List<Object> lithoStrats = createSimpleLithoStrat(lithoStratTreeDef);
+        List<Object> geos        = createSimpleGeography(geoTreeDef, true);
+        List<Object> gtps        = createSimpleGeologicTimePeriod(gtpTreeDef, true);
+        //List<Object> lithoStrats = createSimpleLithoStrat(lithoStratTreeDef, true);
         
         persist(journal);
         persist(taxa);
@@ -2388,7 +2390,7 @@ public class BuildSampleDatabase
         {
             //throw new RuntimeException("No Tree");
             startTx();
-            List<Object> lithoStrats = createSimpleLithoStrat(lithoStratTreeDef);
+            List<Object> lithoStrats = createSimpleLithoStrat(lithoStratTreeDef, true);
             persist(lithoStrats);
             commitTx();
         }
@@ -3373,7 +3375,9 @@ public class BuildSampleDatabase
         log.info("Creating a Collection");
         frame.setDesc("Creating a Collection");
         
-        Collection collection = createCollection("KU", disciplineType.getTitle(), cns, discipline, disciplineType.isEmbeddedCollecingEvent());
+        Collection collection = createCollection("KU", disciplineType.getTitle(), 
+                                                 choice.getCatalogNumberingFmtName(), 
+                                                 cns, discipline, disciplineType.isEmbeddedCollecingEvent());
         persist(collection);
         
         Session dataBuilderSession = switchDataBuilderSession();
@@ -3445,9 +3449,9 @@ public class BuildSampleDatabase
             persist(earth);
         }
         
-        List<Object> geos        = createSimpleGeography(geoTreeDef);
-        List<Object> gtps        = createSimpleGeologicTimePeriod(gtpTreeDef);
-        List<Object> lithoStrats = isPaleo ? null : createSimpleLithoStrat(lithoStratTreeDef);
+        List<Object> geos        = createSimpleGeography(geoTreeDef, true);
+        List<Object> gtps        = createSimpleGeologicTimePeriod(gtpTreeDef, true);
+        List<Object> lithoStrats = isPaleo ? null : createSimpleLithoStrat(lithoStratTreeDef, true);
         
         persist(journal);
         persist(taxa);
@@ -3464,7 +3468,7 @@ public class BuildSampleDatabase
             LithoStrat earthLithoStrat = convertLithoStratFromCSV(lithoStratTreeDef);
             if (earthLithoStrat == null)
             {
-                lithoStrats = createSimpleLithoStrat(lithoStratTreeDef);
+                lithoStrats = createSimpleLithoStrat(lithoStratTreeDef, true);
                 persist(lithoStrats);
             }  
         }
@@ -4119,8 +4123,9 @@ public class BuildSampleDatabase
      */
     @SuppressWarnings("unchecked")
     public void createStorageTreeDefFromXML(final Vector<Object> storageList, 
-                                            final File domFile,
-                                            final StorageTreeDef treeDef) throws Exception
+                                            final File           domFile,
+                                            final StorageTreeDef treeDef,
+                                            final boolean        doAddTreeNodes) throws Exception
     {
         StorageTreeDefItem parent = null;
         
@@ -4149,14 +4154,15 @@ public class BuildSampleDatabase
             parent = tdi;
         }
         
-        createStorageTreeFromXML(storageList, root, treeDef);
+        createStorageTreeFromXML(storageList, root, treeDef, doAddTreeNodes);
 
     }
     
     @SuppressWarnings("unchecked")
     protected void createStorageTreeFromXML(final Vector<Object> storageList, 
                                             final Element        root,
-                                            final StorageTreeDef treeDef)
+                                            final StorageTreeDef treeDef,
+                                            final boolean doAddTreeNodes)
     {
         StorageTreeDefItem rootTTD = null;
         Hashtable<Integer, StorageTreeDefItem> treeDefItemHash = new Hashtable<Integer, StorageTreeDefItem>();
@@ -4181,9 +4187,12 @@ public class BuildSampleDatabase
         persist(storage);
         storageList.add(storage);
         
-        for (Element node : (List<Element>)root.selectNodes("/tree/nodes/node"))
+        if (doAddTreeNodes)
         {
-            traverseTree(storageList, treeDefItemHash, treeDef, node, storage);
+            for (Element node : (List<Element>)root.selectNodes("/tree/nodes/node"))
+            {
+                traverseTree(storageList, treeDefItemHash, treeDef, node, storage);
+            }
         }
         
         TreeHelper.fixFullnameForNodeAndDescendants(storage);
@@ -4430,9 +4439,9 @@ public class BuildSampleDatabase
         ////////////////////////////////
         Journal      journal     = createJournalsAndReferenceWork();
         List<Object> taxa        = createSimpleFishTaxonTree(taxonTreeDef, doShallowTaxonTree);
-        List<Object> geos        = createSimpleGeography(geoTreeDef);
-        List<Object> gtps        = createSimpleGeologicTimePeriod(gtpTreeDef);
-        List<Object> lithoStrats = createSimpleLithoStrat(lithoStratTreeDef);
+        List<Object> geos        = createSimpleGeography(geoTreeDef, true);
+        List<Object> gtps        = createSimpleGeologicTimePeriod(gtpTreeDef, true);
+        List<Object> lithoStrats = createSimpleLithoStrat(lithoStratTreeDef, true);
         
         startTx();        
         persist(journal);
@@ -4655,7 +4664,7 @@ public class BuildSampleDatabase
             AutoNumberingScheme catANS = getAutoNumberingScheme(CollectionObject.class, catGroup);
             if (catANS == null)
             {
-                catANS = createAutoNumberingScheme(catGroup, "", false, CollectionObject.getClassTableId());
+                catANS = createAutoNumberingScheme(catGroup, "", cc.getCatalogNumberingFmtName(), false, CollectionObject.getClassTableId());
                 addAutoNumberingScheme(CollectionObject.class, catANS);
             }
             pair.first = catANS;
@@ -4667,7 +4676,7 @@ public class BuildSampleDatabase
             AutoNumberingScheme accANS = getAutoNumberingScheme(Accession.class, accGroup);
             if (accANS == null)
             {
-                accANS = createAutoNumberingScheme(accGroup, "", false, Accession.getClassTableId());
+                accANS = createAutoNumberingScheme(accGroup, "", cc.getAccessionNumberingFmtName(), false, Accession.getClassTableId());
                 addAutoNumberingScheme(Accession.class, accANS);
             }
             pair.second = accANS;
@@ -4686,7 +4695,8 @@ public class BuildSampleDatabase
      * return old DataBuilder session so it can be later restored.
      * @return
      */
-    private Session switchDataBuilderSession() {
+    private Session switchDataBuilderSession() 
+    {
         Session oldSession = DataBuilder.getSession();
         DataBuilder.setSession(session);
         return oldSession;
@@ -4741,7 +4751,7 @@ public class BuildSampleDatabase
         // Create Collection
         ////////////////////////////////
         log.info("Creating a Collection");
-        Collection collection = createCollection(colPrefix, colName, cns, discipline, false);
+        Collection collection = createCollection(colPrefix, colName, choice.getCatalogNumberingFmtName(), cns, discipline, false);
         persist(collection);
         
 
@@ -4760,9 +4770,9 @@ public class BuildSampleDatabase
         user.addUserToSpPrincipalGroup(groupMap.get(SpecifyUserTypes.UserType.Manager.toString()));
 
         // Tester
-        String userPrefix = (isVoucherCol)? "Voucher" : "";
-        createAndAddTesterToCollection(userPrefix + "FishTester", "fishtester@brc.ku.edu", userPrefix + "FishTester", 
-                "", "Fish", "", "Tester", "", discipline, division, groupMap, "Guest");
+        //String userPrefix = (isVoucherCol)? "Voucher" : "";
+        //createAndAddTesterToCollection(userPrefix + "FishTester", "fishtester@brc.ku.edu", userPrefix + "FishTester", 
+        //        "", "Fish", "", "Tester", "", discipline, division, groupMap, "Guest");
         
         DataBuilder.setSession(dataBuilderSession);
         commitTx();
@@ -5932,6 +5942,8 @@ public class BuildSampleDatabase
             commitTx();
         }
         frame.setProcess(++createStep);
+        
+        //SpecifyDeleteHelper.showTableCounts("EmptyDB.txt", true);
 
         return collection;
     }
@@ -5962,11 +5974,10 @@ public class BuildSampleDatabase
         System.out.println("----- User Agent -----");
         System.out.println("Userame:   "+username);
         
-        Institution    institution    = createInstitution("Natural History Museum");        
+        Institution institution = createInstitution("Natural History Museum");        
         
         Session dataBuilderSession = switchDataBuilderSession();
-        SpecifyUser specifyAdminUser = DataBuilder.createAdminGroupAndUser(institution, 
-                username, email, password, userType);
+        SpecifyUser specifyAdminUser = DataBuilder.createAdminGroupAndUser(institution,  username, email, password, userType);
         DataBuilder.setSession(dataBuilderSession);
         
         dataType = createDataType("Biota");
@@ -5993,7 +6004,7 @@ public class BuildSampleDatabase
         if (isChoosen(DisciplineType.STD_DISCIPLINES.invertpaleo, false))
         {
             createSingleInvertPaleoCollection(DisciplineType.getDiscipline("invertpaleo"), institution, specifyAdminUser, 
-                    getChoice(DisciplineType.STD_DISCIPLINES.invertpaleo, false));
+                                              getChoice(DisciplineType.STD_DISCIPLINES.invertpaleo, false));
             //done = true;
         }
         frame.setOverall(steps++);
@@ -6003,11 +6014,11 @@ public class BuildSampleDatabase
             if (!doHugeBotany)
             {
                 createSingleBotanyCollection(DisciplineType.getDiscipline("botany"), institution, specifyAdminUser, 
-                        getChoice(DisciplineType.STD_DISCIPLINES.botany, false));
+                                             getChoice(DisciplineType.STD_DISCIPLINES.botany, false));
             } else
             {
                 createHugeBotanyCollection(DisciplineType.getDiscipline("botany"), institution, specifyAdminUser, 
-                        getChoice(DisciplineType.STD_DISCIPLINES.botany, false));
+                                           getChoice(DisciplineType.STD_DISCIPLINES.botany, false));
             }
             //done = true;
         }
@@ -6059,7 +6070,7 @@ public class BuildSampleDatabase
      * @param def
      * @return
      */
-    public static List<Object> createSimpleLithoStrat(LithoStratTreeDef def)
+    public static List<Object> createSimpleLithoStrat(final LithoStratTreeDef def, final boolean doAddTreeNodes)
     {
         log.info("createSimpleLithoStrat " + def.getName());
 
@@ -6106,52 +6117,60 @@ public class BuildSampleDatabase
         bed.setIsInFullName(true);
         bed.setFullNameSeparator(", ");
 
-        // setup parents
-        bed.setParent(member);
-        member.setParent(formation);
-        formation.setParent(group);
-        group.setParent(superLitho);
-        superLitho.setParent(planet);
-
-        // set the tree def for each tree def item
         planet.setTreeDef(def);
-        superLitho.setTreeDef(def);
-        group.setTreeDef(def);
-        formation.setTreeDef(def);
-        member.setTreeDef(def);
-        bed.setTreeDef(def);
-        
         Set<LithoStratTreeDefItem> defItems = def.getTreeDefItems();
         defItems.add(planet);
-        defItems.add(superLitho);
-        defItems.add(group);
-        defItems.add(formation);
-        defItems.add(member);
-        defItems.add(bed);
-        
         newObjs.add(planet);
-        newObjs.add(superLitho);
-        newObjs.add(group);
-        newObjs.add(formation);
-        newObjs.add(member);
-        newObjs.add(bed);
-        
-        LithoStrat earth = new LithoStrat();
-        earth.initialize();
-        earth.setName("Earth");
-        earth.setFullName("Earth");
-        earth.setDefinition(def);
-        earth.setDefinitionItem(planet);
-        earth.setNodeNumber(1);
-        earth.setHighestChildNodeNumber(1);
-        earth.setIsAccepted(true);
-        
-        newObjs.add(earth);
+
+        if (doAddTreeNodes)
+        {
+            // setup parents
+            bed.setParent(member);
+            member.setParent(formation);
+            formation.setParent(group);
+            group.setParent(superLitho);
+            superLitho.setParent(planet);
+    
+            // set the tree def for each tree def item
+            superLitho.setTreeDef(def);
+            group.setTreeDef(def);
+            formation.setTreeDef(def);
+            member.setTreeDef(def);
+            bed.setTreeDef(def);
+            
+            defItems.add(superLitho);
+            defItems.add(group);
+            defItems.add(formation);
+            defItems.add(member);
+            defItems.add(bed);
+            
+            newObjs.add(superLitho);
+            newObjs.add(group);
+            newObjs.add(formation);
+            newObjs.add(member);
+            newObjs.add(bed);
+            
+            LithoStrat earth = new LithoStrat();
+            earth.initialize();
+            earth.setName("Earth");
+            earth.setFullName("Earth");
+            earth.setDefinition(def);
+            earth.setDefinitionItem(planet);
+            earth.setNodeNumber(1);
+            earth.setHighestChildNodeNumber(1);
+            earth.setIsAccepted(true);
+            newObjs.add(earth);
+        }
         
         return newObjs;
     }
 
-    public static List<Object> createSimpleGeography(final GeographyTreeDef geoTreeDef)
+    /**
+     * @param geoTreeDef
+     * @param doAddTreeNodes
+     * @return
+     */
+    public static List<Object> createSimpleGeography(final GeographyTreeDef geoTreeDef, final boolean doAddTreeNodes)
     {
         log.info("createSimpleGeography " + geoTreeDef.getName());
 
@@ -6182,35 +6201,37 @@ public class BuildSampleDatabase
         // Create the planet Earth.
         // That seems like a big task for 5 lines of code.
         Geography earth = createGeography(geoTreeDef, null, "Earth", root.getRankId());
-        Geography northAmerica = createGeography(geoTreeDef, earth, "North America", cont.getRankId());
-        Geography us = createGeography(geoTreeDef, northAmerica, "United States", country.getRankId());
-        List<Geography> states = createGeographyChildren(geoTreeDef, us,
-                new String[] { "Kansas", "Iowa", "Nebraska" }, state.getRankId());
         // 5
         newObjs.add(earth);
-        // 6
-        newObjs.add(northAmerica);
-        // 7
-        newObjs.add(us);
-        // 8, 9, 10
-        newObjs.addAll(states);
+        
+        if (doAddTreeNodes)
+        {
+            Geography northAmerica = createGeography(geoTreeDef, earth, "North America", cont.getRankId());
+            Geography us = createGeography(geoTreeDef, northAmerica, "United States", country.getRankId());
+            List<Geography> states = createGeographyChildren(geoTreeDef, us,
+                    new String[] { "Kansas", "Iowa", "Nebraska" }, state.getRankId());
+            // 6
+            newObjs.add(northAmerica);
+            // 7
+            newObjs.add(us);
+            // 8, 9, 10
+            newObjs.addAll(states);
 
-        
-        
-        // Create Kansas and a few counties
-        List<Geography> counties = createGeographyChildren(geoTreeDef, states.get(0),
-                new String[] { "Cherokee", "Douglas", "Johnson", "Osage", "Sedgwick" }, county.getRankId());
-        // 11, 12, 13, 14
-        newObjs.addAll(counties);
-        counties = createGeographyChildren(geoTreeDef, states.get(1),
-                new String[] { "Blackhawk", "Fayette", "Polk", "Woodbury", "Johnson" }, county.getRankId());
-        // 15, 16, 17, 18, 19
-        newObjs.addAll(counties);
-        counties = createGeographyChildren(geoTreeDef, states.get(2),
-                new String[] { "Dakota", "Logan", "Valley", "Wheeler", "Johnson" }, county.getRankId());
-        // 20, 21, 22, 23, 24
-        newObjs.addAll(counties);
-        
+            // Create Kansas and a few counties
+            List<Geography> counties = createGeographyChildren(geoTreeDef, states.get(0),
+                    new String[] { "Cherokee", "Douglas", "Johnson", "Osage", "Sedgwick" }, county.getRankId());
+            // 11, 12, 13, 14
+            newObjs.addAll(counties);
+            counties = createGeographyChildren(geoTreeDef, states.get(1),
+                    new String[] { "Blackhawk", "Fayette", "Polk", "Woodbury", "Johnson" }, county.getRankId());
+            // 15, 16, 17, 18, 19
+            newObjs.addAll(counties);
+            counties = createGeographyChildren(geoTreeDef, states.get(2),
+                    new String[] { "Dakota", "Logan", "Valley", "Wheeler", "Johnson" }, county.getRankId());
+            // 20, 21, 22, 23, 24
+            newObjs.addAll(counties);
+        }
+
         int i = 0;
         for (Object geo : newObjs)
         {
@@ -6229,7 +6250,13 @@ public class BuildSampleDatabase
     }
 
 
-    public static List<Object> createSimpleGeologicTimePeriod(final GeologicTimePeriodTreeDef treeDef)
+    /**
+     * @param treeDef
+     * @param doAddTreeNode
+     * @return
+     */
+    public static List<Object> createSimpleGeologicTimePeriod(final GeologicTimePeriodTreeDef treeDef, 
+                                                              final boolean doAddTreeNode)
     {
         log.info("createSimpleGeologicTimePeriod " + treeDef.getName());
 
@@ -6251,23 +6278,27 @@ public class BuildSampleDatabase
 
         // Create the defItemLevel0
         GeologicTimePeriod level0 = createGeologicTimePeriod(treeDef, null,
-                "Time As We Know It", 10.0f, 0.0f, defItemLevel0.getRankId());
-        GeologicTimePeriod level1 = createGeologicTimePeriod(treeDef, level0,
-                "Some Really Big Time Period", 5.0f, 0.0f, defItemLevel1.getRankId());
-        GeologicTimePeriod level2 = createGeologicTimePeriod(treeDef, level1,
-                "A Slightly Smaller Time Period", 1.74f, 0.0f, defItemLevel2.getRankId());
-        GeologicTimePeriod level3_1 = createGeologicTimePeriod(treeDef, level2,
-                "Yesterday", 0.1f, 0.0f, defItemLevel3.getRankId());
-        GeologicTimePeriod level3_2 = createGeologicTimePeriod(treeDef, level2,
-                "A couple of days ago", 0.2f, 0.1f, defItemLevel3.getRankId());
-        GeologicTimePeriod level3_3 = createGeologicTimePeriod(treeDef, level2,
-                "Last week", 0.7f, 1.4f, defItemLevel3.getRankId());
+                "Place Holder", 10.0f, 0.0f, defItemLevel0.getRankId());
         newObjs.add(level0);
-        newObjs.add(level1);
-        newObjs.add(level2);
-        newObjs.add(level3_1);
-        newObjs.add(level3_2);
-        newObjs.add(level3_3);
+
+        if (doAddTreeNode)
+        {
+            GeologicTimePeriod level1 = createGeologicTimePeriod(treeDef, level0,
+                    "Some Really Big Time Period", 5.0f, 0.0f, defItemLevel1.getRankId());
+            GeologicTimePeriod level2 = createGeologicTimePeriod(treeDef, level1,
+                    "A Slightly Smaller Time Period", 1.74f, 0.0f, defItemLevel2.getRankId());
+            GeologicTimePeriod level3_1 = createGeologicTimePeriod(treeDef, level2,
+                    "Yesterday", 0.1f, 0.0f, defItemLevel3.getRankId());
+            GeologicTimePeriod level3_2 = createGeologicTimePeriod(treeDef, level2,
+                    "A couple of days ago", 0.2f, 0.1f, defItemLevel3.getRankId());
+            GeologicTimePeriod level3_3 = createGeologicTimePeriod(treeDef, level2,
+                    "Last week", 0.7f, 1.4f, defItemLevel3.getRankId());
+            newObjs.add(level1);
+            newObjs.add(level2);
+            newObjs.add(level3_1);
+            newObjs.add(level3_2);
+            newObjs.add(level3_3);
+        }
 
         TreeHelper.fixFullnameForNodeAndDescendants(level0);
         level0.setNodeNumber(1);
@@ -7256,6 +7287,8 @@ public class BuildSampleDatabase
             
             frame.setVisible(false);
             frame.dispose();
+            
+            SpecifyDeleteHelper.showTableCounts("EmptyDB.txt", true);
             
             return true;
             

@@ -66,6 +66,7 @@ public class Institution extends UserGroupScope implements java.io.Serializable
      
      protected Boolean       isAnonymous;
      protected Boolean       hasBeenAsked;
+     protected Boolean       isSecurityOn;
      
      protected Address       address;
      protected Set<Agent>    technicalContacts;
@@ -109,6 +110,7 @@ public class Institution extends UserGroupScope implements java.io.Serializable
         isAnonymous       = null;
         hasBeenAsked      = null;
         regNumber         = null;
+        isSecurityOn      = true;
         technicalContacts = new HashSet<Agent>();
         contentContacts   = new HashSet<Agent>();
         divisions         = new HashSet<Division>();
@@ -325,6 +327,15 @@ public class Institution extends UserGroupScope implements java.io.Serializable
     }
 
     /**
+     * @return the isSecurityOn
+     */
+    @Column(name = "IsSecurityOn", unique = false, nullable = false, insertable = true, updatable = true)
+    public Boolean getIsSecurityOn()
+    {
+        return isSecurityOn;
+    }
+
+    /**
      * @param contentContacts the contentContacts to set
      */
     public void setContentContacts(Set<Agent> contentContacts)
@@ -458,6 +469,14 @@ public class Institution extends UserGroupScope implements java.io.Serializable
     public void setRegNumber(String regNumber)
     {
         this.regNumber = regNumber;
+    }
+
+    /**
+     * @param isSecurityOn the isSecurityOn to set
+     */
+    public void setIsSecurityOn(Boolean isSecurityOn)
+    {
+        this.isSecurityOn = isSecurityOn;
     }
 
     /**

@@ -22,6 +22,7 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.SchemaI18NService;
@@ -84,7 +85,7 @@ public class SpecifySchemaI18NServiceXML extends SchemaI18NService
             SpLocaleItemStr str = iter.next();
             if (str.getLanguage().equals(currentLocale.getLanguage()))
             {
-                info.setDescription(str.getText());
+                info.setDescription(StringEscapeUtils.unescapeXml(str.getText()));
                 break;
             }
         }

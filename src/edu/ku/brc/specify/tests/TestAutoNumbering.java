@@ -355,7 +355,7 @@ public class TestAutoNumbering extends TestCase
         Discipline discipline = (Discipline)session.createCriteria(Discipline.class).list().get(0);
         AppContextMgr.getInstance().setClassObject(Discipline.class, discipline);
         
-        Collection collection2 = createCollection("Fish", "Fish Tissue", collection.getNumberingSchemesByType(CollectionObject.getClassTableId()), discipline);
+        Collection collection2 = createCollection("Fish", "Fish Tissue", null, collection.getNumberingSchemesByType(CollectionObject.getClassTableId()), discipline);
         HibernateUtil.beginTransaction();
         persist(collection2);
         HibernateUtil.commitTransaction();
@@ -406,12 +406,12 @@ public class TestAutoNumbering extends TestCase
         Discipline discipline = (Discipline)session.createCriteria(Discipline.class).list().get(0);
         AppContextMgr.getInstance().setClassObject(Discipline.class, discipline);
         
-        AutoNumberingScheme catNumSchemeAlphaNumeric = createAutoNumberingScheme("CatalogNumberAN", "", false, CollectionObject.getClassTableId());
+        AutoNumberingScheme catNumSchemeAlphaNumeric = createAutoNumberingScheme("CatalogNumberAN", "", null, false, CollectionObject.getClassTableId());
         HibernateUtil.beginTransaction();
         persist(catNumSchemeAlphaNumeric);
         HibernateUtil.commitTransaction();
         
-        Collection collection = createCollection("Fish", "Fish Tissue", catNumSchemeAlphaNumeric, discipline);
+        Collection collection = createCollection("Fish", "Fish Tissue", null, catNumSchemeAlphaNumeric, discipline);
 
         HibernateUtil.beginTransaction();
         persist(collection);
@@ -456,12 +456,12 @@ public class TestAutoNumbering extends TestCase
         Discipline     discipline = (Discipline)session.createCriteria(Discipline.class).list().get(0);
         AppContextMgr.getInstance().setClassObject(Discipline.class, discipline);
         
-        AutoNumberingScheme catNumSchemeAlphaNumeric = createAutoNumberingScheme("CatalogNumberAN", "", false, CollectionObject.getClassTableId());
+        AutoNumberingScheme catNumSchemeAlphaNumeric = createAutoNumberingScheme("CatalogNumberAN", "", null, false, CollectionObject.getClassTableId());
         HibernateUtil.beginTransaction();
         persist(catNumSchemeAlphaNumeric);
         HibernateUtil.commitTransaction();
 
-        Collection collection = createCollection("Fish", "Fish Tissue", catNumSchemeAlphaNumeric, discipline);
+        Collection collection = createCollection("Fish", "Fish Tissue", null, catNumSchemeAlphaNumeric, discipline);
         HibernateUtil.beginTransaction();
         persist(collection);
         HibernateUtil.commitTransaction();
@@ -513,24 +513,24 @@ public class TestAutoNumbering extends TestCase
         Discipline     discipline    = (Discipline)session.createCriteria(Discipline.class).list().get(0);
         AppContextMgr.getInstance().setClassObject(Discipline.class, discipline);
         
-        AutoNumberingScheme catNumSchemeAlphaNumeric = createAutoNumberingScheme("CatalogNumberAN", "", false, CollectionObject.getClassTableId());
+        AutoNumberingScheme catNumSchemeAlphaNumeric = createAutoNumberingScheme("CatalogNumberAN", "", null, false, CollectionObject.getClassTableId());
         HibernateUtil.beginTransaction();
         persist(catNumSchemeAlphaNumeric);
         HibernateUtil.commitTransaction();
 
-        Collection collection1 = createCollection("Fish", "Fish Two",       catNumSchemeAlphaNumeric, discipline);
-        Collection collection2 = createCollection("Fish", "Fish Tissue Two",catNumSchemeAlphaNumeric, discipline);
+        Collection collection1 = createCollection("Fish", "Fish Two",       null, catNumSchemeAlphaNumeric, discipline);
+        Collection collection2 = createCollection("Fish", "Fish Tissue Two",null, catNumSchemeAlphaNumeric, discipline);
         HibernateUtil.beginTransaction();
         persist(collection1);
         persist(collection2);
         HibernateUtil.commitTransaction();
         
-        AutoNumberingScheme catNumSchemeAlphaNumeric3 = createAutoNumberingScheme("CatalogNumber3", "", false, CollectionObject.getClassTableId());
+        AutoNumberingScheme catNumSchemeAlphaNumeric3 = createAutoNumberingScheme("CatalogNumber3", "", null, false, CollectionObject.getClassTableId());
         HibernateUtil.beginTransaction();
         persist(catNumSchemeAlphaNumeric3);
         HibernateUtil.commitTransaction();
 
-        Collection collection3 = createCollection("Fish", "Fish Three", catNumSchemeAlphaNumeric3, discipline);
+        Collection collection3 = createCollection("Fish", "Fish Three", null, catNumSchemeAlphaNumeric3, discipline);
         HibernateUtil.beginTransaction();
         persist(collection3);
         HibernateUtil.commitTransaction();
@@ -614,24 +614,24 @@ public class TestAutoNumbering extends TestCase
         Discipline     discipline    = (Discipline)session.createCriteria(Discipline.class).list().get(0);
         AppContextMgr.getInstance().setClassObject(Discipline.class, discipline);
         
-        AutoNumberingScheme catNumSchemeAlphaNumeric = createAutoNumberingScheme("CatalogNumberAlphaNumByYear", "", false, CollectionObject.getClassTableId());
+        AutoNumberingScheme catNumSchemeAlphaNumeric = createAutoNumberingScheme("CatalogNumberAlphaNumByYear", "", null, false, CollectionObject.getClassTableId());
         HibernateUtil.beginTransaction();
         persist(catNumSchemeAlphaNumeric);
         HibernateUtil.commitTransaction();
 
-        Collection collection1 = createCollection("Fish", "Fish Two",       catNumSchemeAlphaNumeric, discipline);
-        Collection collection2 = createCollection("Fish", "Fish Tissue Two",catNumSchemeAlphaNumeric, discipline);
+        Collection collection1 = createCollection("Fish", "Fish Two",       null, catNumSchemeAlphaNumeric, discipline);
+        Collection collection2 = createCollection("Fish", "Fish Tissue Two",null, catNumSchemeAlphaNumeric, discipline);
         HibernateUtil.beginTransaction();
         persist(collection1);
         persist(collection2);
         HibernateUtil.commitTransaction();
 
-        AutoNumberingScheme catNumSchemeAlphaNumeric3 = createAutoNumberingScheme("CatalogNumber3", "", false, CollectionObject.getClassTableId());
+        AutoNumberingScheme catNumSchemeAlphaNumeric3 = createAutoNumberingScheme("CatalogNumber3", "", null, false, CollectionObject.getClassTableId());
         HibernateUtil.beginTransaction();
         persist(catNumSchemeAlphaNumeric3);
         HibernateUtil.commitTransaction();
 
-        Collection collection3 = createCollection("Fish", "Fish Three", catNumSchemeAlphaNumeric3, discipline);
+        Collection collection3 = createCollection("Fish", "Fish Three", null, catNumSchemeAlphaNumeric3, discipline);
         HibernateUtil.beginTransaction();
         persist(collection3);
         HibernateUtil.commitTransaction();
@@ -713,24 +713,24 @@ public class TestAutoNumbering extends TestCase
         Discipline     discipline    = (Discipline)session.createCriteria(Discipline.class).list().get(0);
         AppContextMgr.getInstance().setClassObject(Discipline.class, discipline);
         
-        AutoNumberingScheme catNumSchemeAlphaNumeric = createAutoNumberingScheme("CatalogNumberAlphaNumByYear", "", false, CollectionObject.getClassTableId());
+        AutoNumberingScheme catNumSchemeAlphaNumeric = createAutoNumberingScheme("CatalogNumberAlphaNumByYear", "", null, false, CollectionObject.getClassTableId());
         HibernateUtil.beginTransaction();
         persist(catNumSchemeAlphaNumeric);
         HibernateUtil.commitTransaction();
 
-        Collection collection1 = createCollection("Fish", "Fish Two",       catNumSchemeAlphaNumeric, discipline);
-        Collection collection2 = createCollection("Fish", "Fish Tissue Two",catNumSchemeAlphaNumeric, discipline);
+        Collection collection1 = createCollection("Fish", "Fish Two",       null, catNumSchemeAlphaNumeric, discipline);
+        Collection collection2 = createCollection("Fish", "Fish Tissue Two",null, catNumSchemeAlphaNumeric, discipline);
         HibernateUtil.beginTransaction();
         persist(collection1);
         persist(collection2);
         HibernateUtil.commitTransaction();
 
-        AutoNumberingScheme catNumSchemeAlphaNumeric3 = createAutoNumberingScheme("CatalogNumber3", "", false, CollectionObject.getClassTableId());
+        AutoNumberingScheme catNumSchemeAlphaNumeric3 = createAutoNumberingScheme("CatalogNumber3", "", null, false, CollectionObject.getClassTableId());
         HibernateUtil.beginTransaction();
         persist(catNumSchemeAlphaNumeric3);
         HibernateUtil.commitTransaction();
 
-        Collection collection3 = createCollection("Fish", "Fish Three", catNumSchemeAlphaNumeric3, discipline);
+        Collection collection3 = createCollection("Fish", "Fish Three", null, catNumSchemeAlphaNumeric3, discipline);
         HibernateUtil.beginTransaction();
         persist(collection3);
         HibernateUtil.commitTransaction();

@@ -15,6 +15,7 @@ import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
+import javax.swing.JList;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
@@ -50,6 +51,9 @@ public class NumberingSchemeSetupDlg extends CustomDialog
 {
     protected JComboBox            cbx;
     protected JTextField           numSchemeTxt;
+    protected JTextField           formatNameTxt;
+    protected JList                collectionList;
+    
     protected AutoNumberingScheme  numScheme = null;
     protected JTextField           divisionTxt;
     protected JTextField           disciplineTxt;

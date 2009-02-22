@@ -17,7 +17,6 @@ package edu.ku.brc.af.ui.forms.formatters;
 import java.math.BigDecimal;
 import java.security.AccessController;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -305,7 +304,7 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
         for (Enumeration<UIFieldFormatterIFace> e = hash.elements(); e.hasMoreElements();)
         {
             UIFieldFormatterIFace fmt = e.nextElement();
-            //log.debug(fmt.getTitle()+" -  "+fmt.getDataClass().getSimpleName());
+            //log.debug(fmt.getTitle()+" - "+fmt.getDataClass().getSimpleName()+" - "+clazz.getSimpleName());
             if (clazz == fmt.getDataClass() && (fieldName == null || 
                 (fieldName.equals(fmt.getFieldName()) || fieldName.equals("*"))))
             {
@@ -508,10 +507,10 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
                         }
                     }
                     
-                    List<?>                     fieldsList = formatElement.selectNodes("field");
-                    List<UIFieldFormatterField> fields     = new ArrayList<UIFieldFormatterField>();
-                    boolean                     isInc      = false;
-                    String                      partialDateTypeStr = formatElement.attributeValue("partialdate");
+                    List<?>                       fieldsList = formatElement.selectNodes("field");
+                    Vector<UIFieldFormatterField> fields     = new Vector<UIFieldFormatterField>();
+                    boolean                       isInc      = false;
+                    String                        partialDateTypeStr = formatElement.attributeValue("partialdate");
                     for (Object fldObj : fieldsList)
                     {
                         Element fldElement = (Element) fldObj;

@@ -11,7 +11,6 @@ package edu.ku.brc.specify.ui;
 
 import static edu.ku.brc.helpers.XMLHelper.xmlAttr;
 
-import java.util.List;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
@@ -47,7 +46,7 @@ public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     protected int                   uiLength;        
     protected AutoNumberIFace       autoNumber;
     protected UIFieldFormatterField field;
-    protected List<UIFieldFormatterField> fields           = null;
+    protected Vector<UIFieldFormatterField> fields         = null;
     protected Pair<Integer, Integer> incPos;
     protected String                 pattern;
     protected boolean                isDefault             = false;
@@ -100,6 +99,15 @@ public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     public String getFieldName()
     {
         return "catalogNumber"; //$NON-NLS-1$
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace#setFieldName(java.lang.String)
+     */
+    @Override
+    public void setFieldName(String fieldName)
+    {
+        // no op
     }
 
     /* (non-Javadoc)
@@ -162,7 +170,7 @@ public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getFields()
      */
     @Override
-    public List<UIFieldFormatterField> getFields()
+    public Vector<UIFieldFormatterField> getFields()
     {
         return fields;
     }

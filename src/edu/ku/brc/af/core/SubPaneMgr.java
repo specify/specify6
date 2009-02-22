@@ -877,11 +877,11 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
                 Vector<SubPaneIFace> paneList = new Vector<SubPaneIFace>(panes.values()); // Not sure we need to create a new list
                 for (SubPaneIFace pane : paneList)
                 {
+                    showPane(pane);
                     if ((includeCurrent || (!includeCurrent && pane != subPane)) && !removePane(pane))
                     {
                         return false;
                     }
-                    
                 }
                 if (includeCurrent)
                 {

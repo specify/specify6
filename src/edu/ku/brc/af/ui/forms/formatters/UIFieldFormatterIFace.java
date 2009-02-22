@@ -15,7 +15,7 @@
 
 package edu.ku.brc.af.ui.forms.formatters;
 
-import java.util.List;
+import java.util.Vector;
 
 import edu.ku.brc.af.core.db.AutoNumberIFace;
 import edu.ku.brc.ui.DateWrapper;
@@ -46,7 +46,7 @@ public interface UIFieldFormatterIFace
     /**
      * @return the list of fields for the format.
      */
-    public abstract List<UIFieldFormatterField> getFields();
+    public abstract Vector<UIFieldFormatterField> getFields();
     
     /**
      * Returns the format field for year. There should only ever be one, but if there is more than one
@@ -70,6 +70,11 @@ public interface UIFieldFormatterIFace
      * @return The unique name of the field it can be applied to (unless it is a date).
      */
     public abstract String getFieldName();
+    
+    /**
+     * @param fieldName unique name of the field it is attached to
+     */
+    public abstract void setFieldName(String fieldName);
 
      /**
      * @return A sample of the formatted field

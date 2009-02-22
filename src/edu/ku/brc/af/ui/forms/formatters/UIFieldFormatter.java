@@ -21,9 +21,7 @@ import static org.apache.commons.lang.StringUtils.isEmpty;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
@@ -60,7 +58,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     protected FormatterType        type;
     protected PartialDateEnum      partialDateType;
     protected boolean              isDefault;
-    protected List<UIFieldFormatterField> fields;
+    protected Vector<UIFieldFormatterField> fields;
     protected boolean              isIncrementer;
     protected DateWrapper          dateWrapper = null;
     protected AutoNumberIFace      autoNumber  = null;
@@ -99,7 +97,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
                             final Class<?>        dataClass,
                             final boolean         isDefault,
                             final boolean         isIncrementer,
-                            final List<UIFieldFormatterField> fields)
+                            final Vector<UIFieldFormatterField> fields)
     {
         this.name            = name;
         this.isSystem        = isSystem;
@@ -160,7 +158,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getFields()
      */
     @Override
-    public List<UIFieldFormatterField> getFields()
+    public Vector<UIFieldFormatterField> getFields()
     {
         return fields;
     }
@@ -184,7 +182,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
      */
     public void resetFields()
     {
-   		fields = new ArrayList<UIFieldFormatterField>();
+   		fields = new Vector<UIFieldFormatterField>();
     }
 
     /* (non-Javadoc)

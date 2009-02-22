@@ -9,11 +9,16 @@
  */
 package edu.ku.brc.specify.dbsupport;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Stack;
 import java.util.Vector;
@@ -1311,6 +1316,48 @@ public class SpecifyDeleteHelper
         public void setBuildingDelSQL(boolean isBuildingDelSQL)
         {
             this.isBuildingDelSQL = isBuildingDelSQL;
+        }
+    }
+    
+    /**
+     * Lists the tables and their record counts in alphabetical order.
+     */
+    public static void showTableCounts(final String fileName, final boolean filterEmpty)
+    {
+        try
+        {
+            PrintWriter pw = new PrintWriter(new File(fileName));
+            ArrayList<String> tblNames = new ArrayList<String>(DBTableIdMgr.getInstance().getTables().size());
+            for (DBTableInfo ti : DBTableIdMgr.getInstance().getTables())
+            {
+                tblNames.add(ti.getName());
+            }
+            Collections.sort(tblNames);
+            
+            int total    = 0;
+            int tblCount = 0;
+            for (String name : tblNames)
+            {
+                Integer count = BasicSQLUtils.getCount("SELECT count(*) FROM "+name);
+                if (count != null && ( !filterEmpty || count > 0))
+                {
+                    int cnt = count == 0 ? 0 : count;
+                    System.out.println(String.format("%5d - %s", cnt, name));
+                    pw.println(String.format("%5d - %s", cnt, name));
+                    total += cnt;
+                    tblCount++;
+                }
+            }
+            System.out.println(String.format("%5d - %s", total, "Total"));
+            pw.println(String.format("%5d - %s", total, "Total"));
+            
+            System.out.println(String.format("%5d - %s", tblCount, "Total Tables"));
+            pw.println(String.format("%5d - %s", tblCount, "Total Tables"));
+            pw.close();
+            
+        } catch (IOException ex)
+        {
+            ex.printStackTrace();
         }
     }
     

@@ -17,7 +17,7 @@
  */
 package edu.ku.brc.af.ui.forms.formatters;
 
-import java.util.ArrayList;
+import java.util.Vector;
 
 
 /**
@@ -52,7 +52,7 @@ public class NumberMinMaxFormatter extends UIFieldFormatter
         this.maxValue = maxValue;
 
         UIFieldFormatterField field = new UIFieldFormatterField(UIFieldFormatterField.FieldType.numeric, len, "#", false, false);
-        fields = new ArrayList<UIFieldFormatterField>(1);
+        fields = new Vector<UIFieldFormatterField>(1);
         fields.add(field);
     }
 }

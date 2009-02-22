@@ -58,7 +58,14 @@ public class UIFieldFormatterField implements Cloneable
     /**
      * Default constructor
      */
-    public UIFieldFormatterField() {}
+    public UIFieldFormatterField()
+    {
+        type        = FieldType.alphanumeric;
+        size        = 1;
+        value       = "";
+        incrementer = false;
+        byYear      = false;
+    }
     
     /**
      * @param type

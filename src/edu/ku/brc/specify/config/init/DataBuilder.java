@@ -398,12 +398,14 @@ public class DataBuilder
      */
     public static Collection createCollection(final String prefix,
                                               final String name,
+                                              final String catalogNumFormatName,
                                               final AutoNumberingScheme catalogNumberingScheme,
                                               final Discipline[] disciplines,
                                               final boolean isEmbeddedCollectingEvent)
     {
         Collection collection = new Collection();
         collection.initialize();
+        collection.setCatalogNumFormatName(catalogNumFormatName);
         collection.setCode(prefix);
         collection.setModifiedByAgent(null);
         collection.setCollectionName(name);
@@ -429,10 +431,11 @@ public class DataBuilder
      */
     public static Collection createCollection(final String prefix,
                                               final String name,
+                                              final String catalogNumFormatName,
                                               final AutoNumberingScheme numberingScheme,
                                               final Discipline discipline)
     {
-        return createCollection(prefix, name, numberingScheme, discipline, true);
+        return createCollection(prefix, name, catalogNumFormatName, numberingScheme, discipline, true);
     }
 
     /**
@@ -443,11 +446,12 @@ public class DataBuilder
      */
     public static Collection createCollection(final String prefix,
                                               final String name,
+                                              final String catalogNumFormatName,
                                               final AutoNumberingScheme numberingScheme,
                                               final Discipline discipline,
                                               final boolean isEmbeddedCE)
     {
-        return createCollection(prefix, name, numberingScheme, new Discipline[] { discipline }, isEmbeddedCE);
+        return createCollection(prefix, name, catalogNumFormatName, numberingScheme, new Discipline[] { discipline }, isEmbeddedCE);
     }
 
     /**
@@ -1488,21 +1492,6 @@ public class DataBuilder
 //        return borrowshipment;
 //    }
 
-    public static Collection createCollection(final String seriesName,
-                                              final String collectionPrefix)//,
-                                              //final Collection tissue)
-    {
-        Collection collection = new Collection();
-        collection.initialize();
-        collection.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-        //collection.setIsTissueSeries(isTissueSeries);
-        collection.setCollectionName(seriesName);
-        collection.setCode(collectionPrefix);
-        //collection.setTissue(tissue);
-        persist(collection);
-        return collection;
-    }
-
     public static CollectingEvent createCollectingEvent(final String   stationFieldNumber,
                                                         final String   method,
                                                         final String   verbatimDate,
@@ -2374,11 +2363,13 @@ public class DataBuilder
     
     public static AutoNumberingScheme createAutoNumberingScheme(final String schemeName,
                                                                 final String schemeClassName,
+                                                                final String formatName,
                                                                 final boolean isNumericOnly,
                                                                 final int   tableNumber)
     {
         AutoNumberingScheme cns = new AutoNumberingScheme();
         cns.initialize();
+        cns.setFormatName(formatName);
         cns.setTableNumber(tableNumber);
         cns.setSchemeName(schemeName);
         cns.setSchemeClassName(schemeClassName);
@@ -3019,15 +3010,29 @@ public class DataBuilder
      * @param userType
      * @return
      */
-    public static SpecifyUser createAdminGroupAndUser(Institution institution, String username,
-            String email, String password, String userType) 
+    public static SpecifyUser createAdminGroupAndUser(final Institution institution, 
+                                                      final String      username,
+                                                      final String      email, 
+                                                      final String      password, 
+                                                      final String      userType) 
     {
         
         SpecifyUser specifyAdminUser = createSpecifyUser(username, email, password, userType);
-        SpPrincipal adminGroup       = createAdminGroup("Administrator", institution);
+        
+        return createAdminGroupWithSpUser(institution, specifyAdminUser);
+    }
+    
+    /**
+     * @param institution
+     * @param specifyAdminUser
+     * @return
+     */
+    public static SpecifyUser createAdminGroupWithSpUser(final Institution institution, 
+                                                         final SpecifyUser specifyAdminUser) 
+    {
+        SpPrincipal adminGroup = createAdminGroup("Administrator", institution);
         specifyAdminUser.addUserToSpPrincipalGroup(adminGroup);
         createUserPrincipal(specifyAdminUser);
-        
         return specifyAdminUser;
     }
 }
