@@ -70,6 +70,7 @@ import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.ui.HelpMgr;
+import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.JTiledPanel;
@@ -351,10 +352,6 @@ public class DatabaseLoginPanel extends JTiledPanel
         
         FocusAdapter focusAdp = new FocusAdapter()
         {
-
-            /* (non-Javadoc)
-             * @see java.awt.event.FocusAdapter#focusGained(java.awt.event.FocusEvent)
-             */
             @Override
             public void focusGained(FocusEvent e)
             {
@@ -628,19 +625,10 @@ public class DatabaseLoginPanel extends JTiledPanel
      */
     protected void addDocListenerForTextComp(final JTextComponent textField)
     {
-        textField.getDocument().addDocumentListener(new DocumentListener()
+        textField.getDocument().addDocumentListener(new DocumentAdaptor()
         {
-            public void changedUpdate(DocumentEvent e)
-            {
-                updateUIControls();
-            }
-
-            public void insertUpdate(DocumentEvent e)
-            {
-                updateUIControls();
-            }
-
-            public void removeUpdate(DocumentEvent e)
+            @Override
+            protected void changed(DocumentEvent e)
             {
                 updateUIControls();
             }
@@ -861,6 +849,7 @@ public class DatabaseLoginPanel extends JTiledPanel
         {
             if (!masterUsrPwdProvider.editMasterInfo(getUserName(), true))
             {
+                isLoggingIn = false;
                 return;
             }
         }
@@ -1030,6 +1019,7 @@ public class DatabaseLoginPanel extends JTiledPanel
                     }
                     
                     enableUI(true);
+                    isLoggingIn = false;
                 }
 
                 if (isAutoClose)
