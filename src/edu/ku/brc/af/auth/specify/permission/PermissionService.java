@@ -169,7 +169,7 @@ public class PermissionService
         String                          strSet      = getPrincipalSet(principals); 
         try
         {
-            List<?> perms = session.getDataList("SELECT pm FROM SpPermission as pm INNER JOIN pm.principals as pc WHERE pc.id in " + strSet);
+            List<?> perms = session.getDataList("SELECT pm FROM SpPermission as pm INNER JOIN FETCH pm.principals as pc WHERE pc.id in " + strSet);
             for (Object permObj : perms)
             {
                 SpPermission perm = (SpPermission)permObj;
