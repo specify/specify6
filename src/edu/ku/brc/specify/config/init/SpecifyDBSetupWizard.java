@@ -205,8 +205,8 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
 
         props.put("userType", SpecifyUserTypes.UserType.Manager.toString());
         
-        panels.add(new FormatterPickerPanel(nextBtn, true));
-        panels.add(new FormatterPickerPanel(nextBtn, false));
+        //panels.add(new FormatterPickerPanel(nextBtn, true));
+        //panels.add(new FormatterPickerPanel(nextBtn, false));
 
         
         userPanel = new DatabasePanel(nextBtn, true);
