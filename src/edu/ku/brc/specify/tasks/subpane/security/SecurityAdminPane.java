@@ -758,42 +758,25 @@ public class SecurityAdminPane extends BaseSubPane
 
         infoSubPanels = new Hashtable<String, AdminInfoSubPanelWrapper>();
         
-        //createInfoSubPanel("SystemSetup", "Institution", "Institution", Institution.class, "institutionId", editing, formOptions);
-        //createInfoSubPanel("SystemSetup", "DisciplineWithoutCollections", "Discipline", Discipline.class, "disciplineId", editing, formOptions);
-        //createInfoSubPanel("SystemSetup", "Collection", "Collection", Collection.class, "collectionId", editing, formOptions);
+        JPanel blankPanel = new JPanel();
+        createBlankInfoSubPanel(Institution.class, blankPanel);
+        createBlankInfoSubPanel(Discipline.class, blankPanel);
+        createBlankInfoSubPanel(Collection.class, blankPanel);
         
         createUserPanel();
         createGroupPanel();
     }
     
     /**
-     * Creates an info sub panel for a given object type and adds it to the card layout panel  
-     * @param formViewSet Name of the form view set to use
-     * @param formView Name of the form within the specified set
-     * @param displayName
-     * @param clazz
-     * @param idFieldName
-     * @param editing
-     * @param formOptionsArg
+     * Creates an info sub panel for a given object type and adds it to the card layout panel.
+     *   
+     * @param clazz used to get the class name which is the key into the infoSubPanels map.
      */
-    @SuppressWarnings("unused")
-    private void createInfoSubPanel(final String formViewSet, 
-                                    final String formView, 
-                                    final String displayName, 
-                                    final Class<?> clazz, 
-                                    final String idFieldName, 
-                                    final boolean editing,
-                                    final int formOptionsArg)
+    private void createBlankInfoSubPanel(final Class<?> clazz, final JPanel panel)
     {
-        String className = clazz.getCanonicalName();
-        
-        ViewBasedDisplayPanel panel = new ViewBasedDisplayPanel(null, formViewSet, formView, displayName,
-                                                                className, idFieldName, editing, formOptionsArg);
-
         AdminInfoSubPanelWrapper panelWrapper = new AdminInfoSubPanelWrapper(panel);
-        
-        infoCards.add(panel, className);
-        infoSubPanels.put(className, panelWrapper);
+        infoCards.add(panel, clazz.getCanonicalName());
+        infoSubPanels.put(clazz.getCanonicalName(), panelWrapper);
     }
     
     /**
