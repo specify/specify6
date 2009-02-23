@@ -1708,7 +1708,25 @@ public class SpecifyAppContextMgr extends AppContextMgr
         {
             SpAppResource    spAppResource = (SpAppResource)appRes;
             SpAppResourceDir appResDir     = spAppResource.getSpAppResourceDir(); 
-            if (!appResDir.getSpPersistedAppResources().contains(spAppResource))
+            
+            //See if spAppResource is already saved.
+            //getSpPersistedAppResources().contains(spAppResource) should
+            //use SpAppResource.equals() right? 
+            //But it doesn't, so need to check SpAppResourceIds explicitly.
+            boolean dirContainsResource = false;
+            if (spAppResource.getId() != null)
+            {
+            	for (SpAppResource persisted : appResDir.getSpPersistedAppResources())
+            	{
+            		if (spAppResource.getId().equals(persisted.getId()))
+            		{
+            			dirContainsResource = true;
+            			break;
+            		}
+            	}
+            }
+            
+            if (!dirContainsResource)
             {
                 appResDir.getSpPersistedAppResources().add(spAppResource);
             }
@@ -1719,11 +1737,18 @@ public class SpecifyAppContextMgr extends AppContextMgr
             {
                 session = DataProviderFactory.getInstance().createSession();
                 session.beginTransaction();
-                session.saveOrUpdate(appResDir);
-                //saveOrUpdate() shouldn't be necessary, it also shouldn't cause
-                //problems, but it has been removed because it often does generate 
-                //hibernate exceptions for newly created resources.
-                //session.saveOrUpdate(spAppResource);
+                if (!dirContainsResource)
+                {
+                	session.saveOrUpdate(appResDir);
+                }
+                else
+                {
+                    //saveOrUpdate(spAppResource) shouldn't be necessary if resource is new, 
+                	//it also shouldn't cause problems, but it is only called if resource 
+                	//already existed in the directory, because it often generates 
+                    //hibernate exceptions for newly created resources.
+                    session.saveOrUpdate(spAppResource);
+                }
                 session.commit();
                 session.flush();
                 return true;
