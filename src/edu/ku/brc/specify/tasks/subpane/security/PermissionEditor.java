@@ -357,7 +357,6 @@ public class PermissionEditor extends JPanel implements PermissionPanelContainer
 				if (perm.getId() == null)
 				{
 					// permission doesn't yet exist in database: attach it to its principal
-					principal.getPermissions().add(perm);
 					perm.getPrincipals().add(principal);
 				}
 				session.saveOrUpdate(session.merge(perm));

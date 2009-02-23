@@ -164,6 +164,7 @@ public class AdminInfoSubPanelWrapper
         
         obj = session.merge(obj);
         session.update(obj);
+        principal = session.merge(principal);
         session.update(principal);
         
         for (PermissionPanelEditor editor : permissionEditors)
