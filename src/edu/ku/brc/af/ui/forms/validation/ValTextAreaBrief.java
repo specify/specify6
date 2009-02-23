@@ -121,7 +121,7 @@ public class ValTextAreaBrief extends ValTextArea
         iconButton = new IconButton(IconManager.getIcon(isEditting ? "FormEdit" : "InfoIcon", IconManager.IconSize.Std16), false);
         
         CellConstraints cc = new CellConstraints();
-        PanelBuilder    pb = new PanelBuilder(new FormLayout("p,2px,p", "t:p:g"));
+        PanelBuilder    pb = new PanelBuilder(new FormLayout("p:g,2px,p", "t:p:g"));
         pb.add(new JScrollPane(this, ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER), cc.xy(1,1));
         pb.add(iconButton, cc.xy(3,1));
         

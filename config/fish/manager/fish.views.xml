@@ -185,7 +185,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="6"/>
-                    <cell type="field" id="6" name="remarks" uitype="textareabrief" colspan="10" cols="50" rows="2"/>
+                    <cell type="field" id="6" name="remarks" uitype="textareabrief" colspan="10" rows="2"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="5"/>
