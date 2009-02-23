@@ -146,8 +146,6 @@ public abstract class TreeTraversalWorker<T extends Treeable<T, D, I>, D extends
             }
             catch (HibernateException ex)
             {
-                edu.ku.brc.af.core.UsageTracker.incrHQLUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TreeTraversalWorker.class, ex);
                 //continue
             }
             T result = rootDefItem.getTreeEntries().iterator().next();

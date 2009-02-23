@@ -461,7 +461,8 @@ public class UploadTable implements Comparable<UploadTable>
             if (a != null && b == null)
             {
                 javax.persistence.Column col = (javax.persistence.Column) a;
-                if (!col.nullable() && !col.name().startsWith("Timestamp"))
+                if (!col.nullable() && !col.name().startsWith("Timestamp") 
+                		&& !col.name().equalsIgnoreCase("srcLatLongUnit"))
                 {
                     if (!fldInDataset(col.name()))
                     {
@@ -1684,12 +1685,10 @@ public class UploadTable implements Comparable<UploadTable>
             critter.add(Restrictions.eq(rce.getPropertyName(), rce.getDefaultObj(recNum)));
         }
         for (DefaultFieldEntry dfe : missingRequiredFlds)
-        {
-            {
-                critter.add(Restrictions.eq(deCapitalize(dfe.getFldName()), dfe
-                        .getDefaultValue(recNum)));
-            }
-        }
+		{
+			critter.add(Restrictions.eq(deCapitalize(dfe.getFldName()), dfe
+					.getDefaultValue(recNum)));
+		}
 
         addDomainCriteria(critter);
         

@@ -74,25 +74,21 @@ public class UploadLocker implements TaskSemaphoreMgrCallerIFace
             Object[] optionLabels;
             if (sameUser && sameMachine)
 			{
-				msg = "The " + Uploader.getLockTitle()
-						+ " task is currently locked by " + " you. ";
+				msg = String.format(UIRegistry.getResourceString("UploadLocker.LockedByYou"),
+						Uploader.getLockTitle());
 				if (task != null)
 				{
-					msg += " The "
-							+ task.getTitle()
-							+ " task is unavailable while the Uploader is in use.";
+					msg += String.format(UIRegistry.getResourceString("UploadLocker.TaskUnavailable"),
+							task.getTitle(), Uploader.getLockTitle());
 				}
 			} else
 			{
-				msg = "The " + Uploader.getLockTitle()
-						+ " task is currently locked by "
-						+ lockUser.getIdentityTitle() + " on "
-						+ lockMachineName;
+				msg = String.format(UIRegistry.getResourceString("UploaderLocker.LockedByUserMachine"),
+						Uploader.getLockTitle(), lockUser.getIdentityTitle(), lockMachineName);
 				if (task != null)
 				{
-					msg += " The "
-							+ task.getTitle()
-							+ " task is unavailable while the Uploader is in use.";
+					msg += String.format(UIRegistry.getResourceString("UploadLocker.TaskUnavailable"),
+							task.getTitle(), Uploader.getLockTitle());
 				}
 			}
             
@@ -122,7 +118,7 @@ public class UploadLocker implements TaskSemaphoreMgrCallerIFace
                 msgType = JOptionPane.INFORMATION_MESSAGE;
                 options = JOptionPane.YES_OPTION;
                 optionLabels = new String[] {
-                        getResourceString("UploadLocker.Exit")
+                        getResourceString("OK")
                 };
             }
             int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 

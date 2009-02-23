@@ -1232,17 +1232,43 @@ public class SpecifyAppContextMgr extends AppContextMgr
             //--------------------------------------------------------------------------------
             
             boolean noLocks = Uploader.checkUploadLock(null);
-            
-            noLocks &= discipline.getTaxonTreeDef().checkNodeRenumberingLock();
-            noLocks &= discipline.getGeographyTreeDef().checkNodeRenumberingLock();
+            if (noLocks)
+            {
+            	if (!discipline.getTaxonTreeDef().checkNodeRenumberingLock())
+            	{
+            		noLocks = false;
+            		DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(discipline.getTaxonTreeDef().getTableId());
+            		UIRegistry.showLocalizedError("Specify.TreeUpdateLock", tblInfo.getTitle());
+            	}
+            }
+            if (noLocks)
+            {
+            	if (!discipline.getGeographyTreeDef().checkNodeRenumberingLock())
+            	{
+            		noLocks = false;
+            		DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(discipline.getGeographyTreeDef().getTableId());
+            		UIRegistry.showLocalizedError("Specify.TreeUpdateLock", tblInfo.getTitle());
+            	}
+            }
             if (noLocks && discipline.getGeologicTimePeriodTreeDef() != null)
             {
-                noLocks = discipline.getGeologicTimePeriodTreeDef().checkNodeRenumberingLock();
+            	if (!discipline.getGeologicTimePeriodTreeDef().checkNodeRenumberingLock())
+            	{
+            		noLocks = false;
+            		DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(discipline.getGeologicTimePeriodTreeDef().getTableId());
+            		UIRegistry.showLocalizedError("Specify.TreeUpdateLock", tblInfo.getTitle());
+            	}
             }
             if (noLocks && discipline.getLithoStratTreeDef() != null)
             {
-                noLocks = discipline.getLithoStratTreeDef().checkNodeRenumberingLock();
+            	if (!discipline.getLithoStratTreeDef().checkNodeRenumberingLock())
+            	{
+            		noLocks = false;
+            		DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(discipline.getLithoStratTreeDef().getTableId());
+            		UIRegistry.showLocalizedError("Specify.TreeUpdateLock", tblInfo.getTitle());
+            	}
             }
+            
             //XXX and what about Storage Trees???
             
             boolean goodTrees = true;
@@ -1260,6 +1286,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     goodTrees = discipline.getLithoStratTreeDef().checkNodeNumbersUpToDate();
                 }
                 //XXX and what about Storage Trees???
+                
             }
             
             if (!noLocks || !goodTrees)

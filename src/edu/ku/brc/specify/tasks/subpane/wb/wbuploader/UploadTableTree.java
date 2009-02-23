@@ -906,5 +906,13 @@ public class UploadTableTree extends UploadTable
         return result;
     }
 
+	/**
+	 * @return the parent
+	 */
+	public UploadTableTree getParent()
+	{
+		return parent;
+	}
+
     
 }

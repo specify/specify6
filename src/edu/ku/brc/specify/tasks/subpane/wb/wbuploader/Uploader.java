@@ -57,11 +57,13 @@ import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.RecordSet;
+import edu.ku.brc.specify.datamodel.SpTaskSemaphore;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
+import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgrCallerIFace;
 import edu.ku.brc.specify.tasks.DataEntryTask;
 import edu.ku.brc.specify.tasks.RecordSetTask;
 import edu.ku.brc.specify.tasks.ReportsBaseTask;
@@ -221,7 +223,8 @@ public class Uploader implements ActionListener, KeyListener
      * the index of the currently processing row in the dataset.
      */
     protected int rowUploading;
-    
+
+    protected boolean 	                            additionalLocksSet = false;
     protected static final Logger                   log                      = Logger.getLogger(Uploader.class);
    
       
@@ -2499,10 +2502,11 @@ public class Uploader implements ActionListener, KeyListener
             JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), getResourceString("WB_UPLOAD_BUSY_CANNOT_CLOSE"));
             return false;
         }
+        boolean result = true;
         if ((currentOp.equals(Uploader.SUCCESS)  || currentOp.equals(Uploader.SUCCESS_PARTIAL)) && getUploadedObjects() > 0)
         {
-            boolean result = false;
-            String msg = String.format(getResourceString("WB_UPLOAD_CONFIRM_SAVE"), wbSS.getWorkbench().getName());
+            result = false;
+        	String msg = String.format(getResourceString("WB_UPLOAD_CONFIRM_SAVE"), wbSS.getWorkbench().getName());
             JFrame topFrame = (JFrame)UIRegistry.getTopWindow();
             int rv = JOptionPane.showConfirmDialog(topFrame,
                                                    msg,
@@ -2537,9 +2541,12 @@ public class Uploader implements ActionListener, KeyListener
                     }
                 }
             }
-            return result;
         }
-        return true;
+        if (result && additionalLocksSet)
+        {
+        	freeAdditionalLocks();
+        }
+        return result;
     }
     
     protected void showSettings()
@@ -3912,7 +3919,7 @@ public class Uploader implements ActionListener, KeyListener
     	return TaskSemaphoreMgr.lock(getLockTitle(), 
                 "WORKBENCHUPLOAD", null,
                 TaskSemaphoreMgr.SCOPE.Discipline, false, 
-                new UploadLocker(canOverrideLock(), canRemoveLock(), caller)) == TaskSemaphoreMgr.USER_ACTION.OK;
+                new UploadLocker(false/*canOverrideLock()*/, false/*canRemoveLock()*/, caller)) == TaskSemaphoreMgr.USER_ACTION.OK;
     }
     
     /**
@@ -3985,4 +3992,109 @@ public class Uploader implements ActionListener, KeyListener
         return wbSS;
     }
 
+    
+    /**
+     * @return list of tree classes involved in the upload.
+     */
+    protected List<Pair<UploadTableTree, Boolean>> getTreesToLock(final boolean defaultStatus)
+    {
+    	List<Pair<UploadTableTree, Boolean>> trees = new LinkedList<Pair<UploadTableTree, Boolean>>();
+    	for (UploadTable t : uploadTables)
+    	{
+    		//does t represents the root of a tree?
+    		if (Treeable.class.isAssignableFrom(t.getTblClass()) && ((UploadTableTree )t).getParent() == null)
+    		{
+    			trees.add(new Pair<UploadTableTree, Boolean>((UploadTableTree )t, defaultStatus));
+    		}
+    	}
+    	return trees;
+    }
+    
+    /**
+     * @return true if all necessary locks were set.
+     * 
+     * Sets locks on Trees involved in the upload.
+     */
+    /**
+     * @return
+     */
+    public boolean setAdditionalLocks()
+    {
+    	List<Pair<UploadTableTree, Boolean>> trees = getTreesToLock(false);
+    	
+    	if (trees.size() == 0)
+    	{
+    		//nothing to lock
+    		return true;
+    	}
+    	
+    	TaskSemaphoreMgrCallerIFace lockCallback = new TaskSemaphoreMgrCallerIFace(){
+    		public String title;
+    		
+    	    @Override
+    		public TaskSemaphoreMgr.USER_ACTION resolveConflict(SpTaskSemaphore semaphore, 
+                    boolean previouslyLocked,
+                    String prevLockBy)
+    	    {
+    	    	UIRegistry.showLocalizedMsg("Uploader.AdditionalLockFailTitle", "Uploader.AdditionalLockFail", 
+    	    			title, prevLockBy, title);
+    	    	return TaskSemaphoreMgr.USER_ACTION.Error;
+    	    }
+    		
+    	};
+    	
+    	boolean result = true;
+    	for (Pair<UploadTableTree, Boolean> ttp : trees)
+    	{
+    		UploadTableTree utt = ttp.getFirst();
+    		TaskSemaphoreMgr.USER_ACTION action = TaskSemaphoreMgr.lock(utt.getTable().getTableInfo().getTitle(), 
+    				utt.getTblClass().getSimpleName(), null, TaskSemaphoreMgr.SCOPE.Discipline, false, lockCallback);
+    		if (action == TaskSemaphoreMgr.USER_ACTION.OK)
+    		{
+    			ttp.setSecond(true);
+    		}
+    		else
+    		{
+    			result = false;
+    			break;
+    		}
+    	}
+    	
+    	if (!result)
+    	{
+    		unlockTrees(trees);
+    	}
+    	
+    	additionalLocksSet = true;
+    	return result;
+    }
+    
+    /**
+     * @param trees the trees to unlock.
+     */
+    protected void unlockTrees(final List<Pair<UploadTableTree, Boolean>> trees)
+    {
+    	for (Pair<UploadTableTree, Boolean> ttp : trees)
+    	{
+    		if (ttp.getSecond())
+    		{
+    			UploadTableTree utt = ttp.getFirst();
+    			//XXX do something if unlock fails.
+    			TaskSemaphoreMgr.unlock(utt.getTable().getTableInfo().getTitle(), utt.getTblClass().getSimpleName(), 
+    				TaskSemaphoreMgr.SCOPE.Discipline);
+    		}
+    	}
+    }
+    
+    /**
+     * Frees additional locks set on trees involved in the upload.
+     */
+    public void freeAdditionalLocks()
+    {
+    	if (additionalLocksSet)
+    	{
+    		List<Pair<UploadTableTree, Boolean>> trees = getTreesToLock(true);
+    		unlockTrees(trees);
+    	}
+    }
  }

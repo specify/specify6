@@ -3324,30 +3324,38 @@ public class WorkbenchPaneSS extends BaseSubPane
                 UIHelper.centerAndShow(dlg);
                 dlg.dispose();
                 uploadDone();
+                return;
             }
-            else
+            if (!datasetUploader.setAdditionalLocks())
             {
-                uploadPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, spreadSheet.getScrollPane(), datasetUploader.getMainPanel());
-                mainPanel.remove(spreadSheet.getScrollPane());
-                uploadPane.setOneTouchExpandable(true);
-                uploadPane.setDividerLocation(spreadSheet.getScrollPane().getHeight() * 2 / 3);
-                spreadSheet.getScrollPane().setVisible(true);
+            	uploadDone();
+            	return;
+            }
+            uploadPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, spreadSheet
+					.getScrollPane(), datasetUploader.getMainPanel());
+			mainPanel.remove(spreadSheet.getScrollPane());
+			uploadPane.setOneTouchExpandable(true);
+			uploadPane.setDividerLocation(spreadSheet.getScrollPane()
+					.getHeight() * 2 / 3);
+			spreadSheet.getScrollPane().setVisible(true);
 
-                //Provide minimum sizes for the two components in the split pane
-                Dimension minimumSize = new Dimension(200, 200);
-                datasetUploader.getMainPanel().setMinimumSize(minimumSize);
-                spreadSheet.getScrollPane().setMinimumSize(minimumSize);
-                mainPanel.add(uploadPane, PanelType.Spreadsheet.toString());
-                showPanel(PanelType.Spreadsheet);
-                mainPanel.validate();
-                mainPanel.doLayout();
-                ssFormSwitcher.setEnabled(false);
-                //next line causes some weird behavior: when an entire row is selected (highlighted), cells in the row will go into edit mode - sort of ?????
-                spreadSheet.setEnabled(false);
-                setToolBarBtnsEnabled(false);
-                datasetUploader.startUI();
-             }
-        }
+			// Provide minimum sizes for the two components in the split pane
+			Dimension minimumSize = new Dimension(200, 200);
+			datasetUploader.getMainPanel().setMinimumSize(minimumSize);
+			spreadSheet.getScrollPane().setMinimumSize(minimumSize);
+			mainPanel.add(uploadPane, PanelType.Spreadsheet.toString());
+			showPanel(PanelType.Spreadsheet);
+			mainPanel.validate();
+			mainPanel.doLayout();
+			ssFormSwitcher.setEnabled(false);
+			// next line causes some weird behavior: when an entire row is
+			// selected
+			// (highlighted), cells in the row will go into edit mode - sort of
+			// ?????
+			spreadSheet.setEnabled(false);
+			setToolBarBtnsEnabled(false);
+			datasetUploader.startUI();
+		}
         catch (Exception ex)
         {
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
