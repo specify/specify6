@@ -20,129 +20,28 @@
   </tr>
 </table>
 <H2>Welcome to the Specify 6 WorkBench</H2>
-<p>The Specify 6 team spoke with many Collection Managers during the design phase of Specify 6. While conducting interviews and reading evaluations, it became clear that the community needed a separate tool for working with data <em>before</em> it was cataloged into Specify 6. Some collections require such a tool for entering legacy data, others want a small, standalone tool to take in  the field and still others need to manipulate their  data before cataloging it in Specify 6. </p>
+<p>The WorkBench was released to the community as a stand along tool in the Spring of 2007. It was the result of many interviews and evalutaions that requested a tool for entering and cleaning data <em>before</em> it was cataloged into Specify. Some collections required such a tool for entering legacy data, others wanted a small, standalone tool to take in  the field and still others needed to manipulate their  data before cataloging it in Specify 6. </p>
 <p>The WorkBench was created to meet these specific needs within the community. As a pre-catalog data manipulation component of Specify 6, it offers the following features: </p>
 <ul>
   <li>Import from CSV or MS Excel files 
-  <li>Link an image to a record 
-  <li>Create labels and reports 
+  <li>Link an image to a record
   <li>View and edit in either a grid or form view 
   <li>Visualize georeferenced object information on a map or 
   in Google Earth 
   <li>Convert and standardize Latitude and Longitude formats 
   <li>Georeference</li>
 </ul>
-<p>&nbsp;</p>
+<p>The entire WorkBench is now part of Specify as well as a tool to upload the data within the WorkBench into Specify. The Upload function is not available from the stand alone WorkBench. Data Sets created using the stand alone version will need to be exported and reimported into the Specify 6 WorkBench  for uploading. The current version of the stand alone WorkBench is not able to remember Data Set mapping, but a future release of the WorkBench will have this capability. This will make the import into the Specify WorkBench an easier task. </p>
+<h3><br>Using the WorkBench </h3>
+<p>The WorkBench works inside Specify 6 and takes advantage of the same components; side bar, dragging and dropping, tabs, etc. </p>
+<br>
 <h3>Introducing Data Sets</h3>
 <p>Data is entered, edited, organized and stored in a  Data Set. Data within a Data Set is organized within column headings. The WorkBench offers many features for manipulating the data within Data Sets before it is cataloged into Specify 6. </p>
 <p>One of the most important of these features is the organization of the data into Specify fields. This is not only necessary for other features in the WorkBench to function correctly, but also ensures that the data will upload correctly into Specify 6. The column headings for new Data Sets are chosen from a list of Specify fields corresponding to the Specify data model. The column headings can  be renamed, but will still maintain a link to the original Specify field. These links are referred to as 'maps'. These maps can also be edited. </p>
 <p>When data is imported from a CSV or MS Excel file, the WorkBench will read the existing column headings into a Data Set and map them to Specify fields with a built-in 'automapper'. Any column headings that the WorkBench does not recognize and 'automap' can be manually mapped and edited. </p>
 <p>Data Sets can be edited as either a grid or a form. </p>
 <p>The WorkBench  also enables  each record to link to an image within a Data Set. The linked images display in an image window. This is particularly useful for entering data from  scanned catalog cards or specimen labels. </p>
-<p><br>
-</p>
-<h3>Using the WorkBench </h3>
-<p>Before using The WorkBench, it is important to understand its components and how they interact with each other. The two major components of the WorkBench are the Sidebar and  Workspace (the following diagrams are from Mac OS X, but the application is set up identically on Windows and Linux). </p>
-<p align="center"><IMG alt="open screen" src="../images/openscreen1.png" ></p>
-<p align="center" class="imgcaption">WorkBench</p>
-<br>
-<h3><u>Sidebar</u></h3>
-<p> The Sidebar contains Data and Action items:</p>
-<p align="center"><IMG alt="Sidebar sub components" src="../images/openscreen3.png" ></p>
-<p align="center" class="imgcaption">Sidebar Items </p>
-<p>&nbsp;</p>
-<p>The Data section lists all the Data Sets. </p>
-<p>Actions are used to manipulate the Data Sets. There are three ways to initiate an action from the Sidebar:</p>
-<ol>
-  <li>Click an Action, then choose a Data Set from the 
-  resulting dialog.
-  <li>Drag an Action and drop it onto a Data Set.
-  <li>Drag a Data Set and drop it onto an Action.</li>
-</ol>
-<br>
-<h4><a name="DragAndDrop"></a>Drag and Drop </h4>
-<p> Every Sidebar item, except Import Data and Import Images, takes advantage of the 'drag and drop' functionality. For instance, dragging a Data Set  onto <em>Export Data Set</em> will export that Data Set. Dragging <em>Export Data Set</em> onto a Data Set will produce the same result.</p>
-<p>When a Data Set is dragged, all Actions associated with Data Sets will highlight in green. Non-drag and drop items are identified by a blue outline. Also, grabbing a Data Set and dragging it downward will produce a green outline around all the Action items that the Data Set can be dropped onto. </p>
-<p><br>
-</p>
-<h4>SideBar Items </h4>
-<p>Sidebar items are further categorized by function; i.e. Actions, Reports,  and Data Sets.</p>
-<table width=700 border="1">
-  
-  <tr>
-    <td><div align="left"><b><u>Heading</u></b></div></td>
-    <td><b><u>Item</u></b></td>
-    <td><b><u>Result</u></b></td>
-  </tr>
-  <tr>
-    <td width="13%"><div align="left"><b>Actions</b></div></td>
-    <td width="22%"><span class="style1">Import Data </span></td>
-    <td width="65%">Imports data from an MS Excel or CSV file.</td>
-  </tr>
-  <tr>
-    <td><div align="left"></div></td>
-    <td><span class="style1">Import  Images </span></td>
-    <td>Imports images for data entry.</td>
-  </tr>
-  
-  <tr>
-    <td><div align="left"></div></td>
-    <td><span class="style1">New Data Set </span></td>
-    <td>Creates a new Data Set.</td>
-  </tr>
-  <tr>
-    <td><div align="left"></div></td>
-    <td><span class="style1">Export Data Set </span></td>
-    <td>Creates an MS-Excel document from a Data Set.</td>
-  </tr>
-  <tr>
-    <td><div align="left"></div></td>
-    <td><em>Export Excel Template </em></td>
-    <td>Creates an  MS-Excel document with the column headings  from a Data Set.</td>
-  </tr>
-  <tr>
-    <td valign="top"><div align="left"><b>Reports</b></div></td>
-    <td><span class="style1">Data Set Summary</span></td>
-    <td>Displays a summary of occurrence counts for a single column within the Data Set. This is particularly useful when editing data to validate the input. </td>
-  </tr>
-  <tr>
-    <td><div align="left"></div></td>
-    <td><em>Basic Label </em></td>
-    <td>Creates a label from predefined column headings.</td>
-  </tr>
-  <tr>
-    <td><div align="left"></div></td>
-    <td><span class="style1">Chart</span></td>
-    <td>Displays a Bar Chart summary of occurrence counts for a single column within the Data Set.</td>
-  </tr>
-  <tr>
-    <td><div align="left"></div></td>
-    <td><span class="style1">Top 10 </span></td>
-    <td>Displays a Pie Chart of the top 10 occurrence counts for a single column within the Data Set.</td>
-  </tr>
-  
-  <tr>
-    <td valign="top"><div align="left"><b>Data Sets </b></div></td>
-    <td valign="top"><span class="style1">(Data Set names) </span></td>
-    <td><p>Shows a list of  Data Sets. Click the name to open the Data Set in the Workspace. </p>
-        <p><em><strong>Note:</strong></em> When a Data Set is inactive in the Workspace it becomes disabled on the Sidebar. </p></td>
-  </tr>
-</table>
-<p>&nbsp;</p>
-<h4>Trash Can </h4>
-<p>Delete any non-active Data Set by dragging it to the trash can. </p>
-<p>&nbsp;</p>
-<h3><u>WorkSpace </u></h3>
-<p>Data Sets and Reports open  in the Workspace. The components of the Workspace are listed below: </p>
-<p align="center"><IMG alt=screen2 src="../images/openscreen2.png"></p>
-<p align="center" class="imgcaption">Workspace Items </p>
-<br>
-<h4>Tabs </h4>
-<p>The WorkBench allows many Data Sets to be open at the same time, but only one can be active in the Workspace. The WorkBench creates a tab for each open Data Set.</p>
-<br>
-<h4>Close Workspace</h4>
-<p>Select the 'x' to close an open Data Set or Report. </p>
-<br>
+<h4>&nbsp;</h4>
 <h4>Getting Started </h4>
 <p>Data Sets are created using different Actions depending on the Work Flow. The following table lists a variety of Work Flows and the relevant WorkBench solution: </p>
 <table width="75%" border="1" cellpadding="8">

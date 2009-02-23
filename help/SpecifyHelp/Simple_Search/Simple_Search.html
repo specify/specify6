@@ -13,7 +13,7 @@
 </table>
 <h2><strong>Simple Search</strong></h2>
 <p><em>Simple Searches </em>have been pre-configured in Specify 6 from pre-indexed fields. The purpose of the Simple Search is to eliminate the need to create a complex Query for commonly executed searches. </p>
-<p>Simple Search is not the Express Search tool found in Specify 5. The tables in Simple Search do not need to be rebuilt in order to function, and Simple Search offers a broader range of fields and table configurations. Simple Search does not offer the same grid view available in Express Search.</p>
+<p>Simple Search is not the Express Search tool found in Specify 5. The tables in Simple Search do not need to be rebuilt in order to function, and Simple Search offers a broader range of fields and table configurations. Simple Search also does not offer the same grid view as was available in Express Search.</p>
 <p>Simple Search can be configured to use the minimum number of fields needed for a search, which will produce faster results.</p>
 <p>Simple Search can also be configured to show results from indexed fields in other  tables, or <em>Related Searches</em>. For example; a search for an Agent name can display the name in the Agent table, as well as all Determinations owned by that agent in the Determinations table. At this time the Related Searches are already built into Specify and can only be activated or deactivated. </p>
 <p>To configure a more complicated search and choose from <em>all</em> the fields in Specify 6 use the Query tool. Please refer to <a href="../express_search/QueryBuilder.html">Query</a>.</p>
@@ -24,14 +24,15 @@
 <p>&nbsp;</p>
 <p><strong>Execute a Simple Search:</strong></p>
 <ol>
-  <li>Either <em>leave as All</em> or choose a specific table from the drop down menu. <em>All</em> will search all the tables that have been configured in <em>Simple Search Configuration</em>. Choosing one table from the list will search that table first and then all related tables.</li><br />
+  <li>Either leave as<em> All</em> or choose a specific table from the drop down menu. <em>All</em> will search all the tables that have been configured in <em>Simple Search Configuration</em>. Choosing one table from the list will search that table first and then all related tables.</li>
+  <br />
   <li>Type in either one or two words as search criteria.</li><br />
   <li>Press the Return key.</li>
 </ol>
 <p>&nbsp;</p>
 <p><strong><a name="ss_cards" id="ss_cards"></a>Wild Cards</strong></p>
-<p>More than one term can be used in a search specification, but the results will vary depending on the use of wild cards.  For example, if the search string is Clinton Lake, Simple Search results will include records which have either Clinton OR Lake in any search field.  Records which contain the phrase Clinton Lake in one field will also be found.</p>
-<p>Two types of wild cards can be used in Simple Search criteria. An asterisk, (*), allows the criteria to be found as part of a string, and single or double quotes, (' or &quot;), allow two or more words to be searched as a string rather than separate criteria.</p>
+<p>More than one term can be used in a search specification, but the results will vary depending on the use of wild cards and delimeters.  For example, if the search string is Clinton Lake, Simple Search results will include records which have either Clinton OR Lake in any search field.  Records which contain the phrase Clinton Lake in one field will also be found.</p>
+<p>A wild cards and deilimeter can be used in Simple Search criteria. An asterisk, (*), used as a wild card allows the criteria to be found as part of a string. Single or double quote, (' or &quot;), delimeters allow two or more words to be searched as a string rather than separate criteria. The wild card and delimeter can also be used together to further limit the search.</p>
 <table width="100%" border="1" cellspacing="2" cellpadding="6">
   <tr>
     <td width="26%">*Clinton</td>
@@ -51,7 +52,7 @@
   </tr>
   <tr>
     <td>&quot;Clinton Lake&quot; or 'Clinton Lake'</td>
-    <td>Returns any string where Clinton Lake is the full string.</td>
+    <td>Returns any string where Clinton Lake is the entire string.</td>
   </tr>
   <tr>
     <td>*&quot;Clinton Lake&quot;* or *'Clinton Lake'*</td>
@@ -63,7 +64,7 @@
 <p>Numbers are searched in both the number and string fields in the configured tables.</p>
 <p>When the criteria is a 4-digit number  between 1000 and 3000 and date fields are included in the search configuration, Simple Search will search  the year portion of all the date fields.</p>
 <p>When searching for a loan that uses a number scheme that includes a date plus a number, e.g. (2003-001), enter 2003* for the search criteria to find all 2003 results. </p>
-<p>&nbsp;</p>
+<p>Results are completely affected by the Simple Search Configuration. If results are not as expected check the configuration and make sure the desired fields are included in the Simple Search Configuration.</p>
 <p><strong><a name="ss_results" id="ss_results"></a>Simple Search Results</strong></p>
 <p>Results from the chosen primary table are designated with a blue (<img src="../../images/express_search_bar.png" width="20" height="20" />) header bar </p>
 <p>Results from related tables are designated with an aqua (<img src="../../images/express_search_related_bar.png" width="20" height="20" />) header bar </p>
@@ -102,8 +103,7 @@
   </tr>
 </table>
 <p>&nbsp;</p>
-<p>Search</p>
-<p> results can also be used to add records to an existing Record Set.</p>
+<p>Search results can also be used to add records to an existing Record Set.</p>
 <p>Click the <img src="../../images/record_sets_dark_20.png" alt="record set" width="20" height="20" /> (Record Set) button at the bottom of the results window. The <em>Choose a Record Set</em> dialog will appear:</p>
 <ul>
   <li>Select a Record Set name in the list and click the <em>OK</em> button to add the selected records to the existing Record Set.</li>

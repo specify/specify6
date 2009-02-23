@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <link href="../../main.css" rel="stylesheet" type="text/css" media="screen"></link>
-<title>Institution Hierarchy</title>
+<title>Institution Levels</title>
 </head>
 
 <body bgcolor="#ffffff">
@@ -11,21 +11,27 @@
     <td>&nbsp;</td>
   </tr>
 </table>
-<h2>Institution Levels</h2>
-<p>Specify mirrors the common levels of heirarchy within institutions.</p>
+<h2>Adding Collections, Disciplines and Divisions</h2>
+<p>The   Divisions, Disciplines and Collections for each institution are added in the system configuration module of Specify; <em>System &gt; Collection Setup &gt; Configuration</em>. All tabs need to be closed before opening the Configuration. Specify mirrors the common levels of heirarchy within institutions.</p>
 <ul>
   <li>Institution</li>
-  <li>Division</li>
-  <li>Discipline</li>
-  <li>Collection</li>
-  <li>Group</li>
-  <li>Person</li>
-</ul>
-<p>After running the Setup Wizard the  Divisions, Disciplines and Collections for each institution will need to be configured. </p>
-<p> Tools for adding Divisions, Disciplines and Collections are found by clicking <em>System &gt; Collection Setup &gt; Configuration</em>. All tabs need to be closed before opening the Configuration.</p>
-<p>Start adding to the Institution Hierarchy at the Division level and work your way down to Collection. Each  is added at the level above it. For instance, Divisions are added to the Institution form. </p>
-<p>Editing an existing  Discipline must be executed on the Discipline form, as well as Division. A Collection can be edited either on the Discipline form or Collection form.</p>
-<h4><strong><a name="add_division" id="add_division"></a>Add Divisions</strong></h4>
+  <ul>
+    <li>Division</li>
+    <ul>
+      <li>Discipline</li>
+      <ul>
+        <li>Collection</li>
+        <ul>
+          <li>Users</li>
+        </ul>
+      </ul>
+    </ul>
+  </ul>
+  </ul>
+<p>Collections information in Specify 6 databases is also organized at these institution levels to meet requirements for data integrity and data sharing among collections. Some data elements are commonly shared among all collections within an institution, while others are shared only among collections in the same taxonomic discipline, i.e. &quot;at the Discipline level&quot; in Specify. Before creating the institution levels it is imperative that an administrator also understand the data that is held at each level to create the correct setup. A white paper for this is found at ...</p>
+<p>When starting with an empty database the Division levels should be added first, then Discipline and then Collection. Each  is added at the level above it. For instance, Divisions are added within the Institution form. </p>
+<p>Editing  a Division and Discipline is accomplised on the Discipline form. A Collection can be edited either on the Discipline form or Collection form.</p>
+<h4><strong><a name="add_division" id="add_division"></a>Adding Divisions</strong></h4>
 <p>Click the <img src="../../images/institution_16.png" width="16" height="16" /> <em>Institution</em> button on the Side Bar to add Divisions.</p>
 <p>At least one Division should appear in the Division sub form. </p>
 <p>Click the <img src="../../images/add.png" width="16" height="16" /> (add) button to add a Division.</p>
@@ -34,7 +40,7 @@
 <p>URI stands for Uniform Resource Identifier and refers to a  resource on the internet (a Division web site).</p>
 <p>Is Accession Bound tells Specify that this Division does not share Accessions within the institution  will have their own accession table and numbers.</p>
 <p>&nbsp;</p>
-<h4><strong><a name="add_discipline" id="add_discipline"></a>Add Disciplines</strong></h4>
+<h4><strong><a name="add_discipline" id="add_discipline"></a>Adding Disciplines</strong></h4>
 <p>Click the <img src="../../images/division_16.png" width="16" height="16" /> <em>Division</em> button on the Side Bar to add Disciplines.</p>
 <p>The Division form includes the information entered when the Discipline was added. The new Discipline will be added in the Division that is currently displayed in the Workspace. Use the navigation control at the bottom of the window to step to the  Division that will include the new Discipline. </p>
 <p><img src="../../images/next_bar.png" width="174" height="25" /></p>
@@ -44,7 +50,7 @@
 <p>Name allows the Discipline to be named by the Institution rather than by the provided Specify list. This name will display in any Discipline lists within Specify as well as on the Institution Hierarchy.</p>
 <p>The Collections form displays under Disciplines on this form. It is to view Collection data only, Collections can not be added or edited from the Division form.</p>
 <p>&nbsp;</p>
-<p><strong><a name="add_collection" id="add_collection"></a>Add Collections</strong></p>
+<p><strong><a name="add_collection" id="add_collection"></a>Adding Collections</strong></p>
 <p>Collections are added in the Discipline form. Click the <img src="../../images/discipline_16.png" width="16" height="16" /> <em>Discipline</em> button on the Side Bar.</p>
 <p>The Discipline information will appear at the top of the form with a Collections sub form underneath. The new Collection will be added in the Discipline that is currently displayed in the Workspace. Use the navigation control at the bottom of the window to step to the  Discipline that will include the new Collection.</p>
 <p><img src="../../images/next_bar.png" width="174" height="25" /></p>

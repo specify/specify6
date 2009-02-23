@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <link href="../../main.css" rel="stylesheet" type="text/css" media="screen"></link>
-<title>User Permissions</title>
+<title>Security Tools</title>
 <style type="text/css">
 <!--
 .style1 {color: #990000}
@@ -16,8 +16,8 @@
     <td>&nbsp;</td>
   </tr>
 </table>
-<h2>Security Tool</h2>
-<p>Specify includes a highly flexible Security tool that allows a system administrator to add users, then limit their operations within and access to the various modules nad components in Specify. These are essentially the User Permissions.</p>
+<h2>Adding Users and Setting Permissions</h2>
+<p>Specify includes a highly flexible Security module that allows a system administrator to add users, then limit their operations within and access to the various modules and components in Specify. These are essentially the User Permissions.</p>
 <p>To access the Security tool click <em>System &gt; Collection Setup &gt; Security Tools</em>.</p>
 <p>&nbsp;</p>
 <p>Users are added to Specify based on their Institution Level and User Group.</p>
@@ -25,48 +25,56 @@
 <p>Specify mirrors the common levels of heirarchy within institutions. This hierarchy is viewed in an Institution Tree on the left side of the Security window.</p>
 <ul>
   <li>Institution</li>
-  <li>Division</li>
-  <li>Discipline</li>
-  <li>Collection</li>
-  <li>Group</li>
-  <li>Person</li>
+  <ul>
+    <li>Division</li>
+    <ul>
+      <li>Discipline</li>
+      <ul>
+        <li>Collection</li>
+        <ul>
+          <li>Users</li>
+        </ul>
+      </ul>
+    </ul>
   </ul>
-<p>At this time users are added at the Collection and Discipline levels. The lowest level, Collection, only has access to data within a specific Collection (Wet Collection, Teaching Collection). Specify opens at a Collection level; therefore users added to a specific Collection can never access other collections. Collections themselves are added within a Discipline (Ichthyology). Users added at the Discipline level can access all Collections within a Discipline. </p>
- <p>Users can belong to more than one Instituion Level.</p>
- <p>Note: Collection Object data is limited to the Collection level, but many related tables are available at Discipline and Division levels. This assurs that data is not unnecessarily repeated allows the data to be used as an authority file within an institution (for example, the Agent and Treatment Event table are available at the Division level, making the data available to all Collections and Disciplines within the Division.)</p>
- <p>&nbsp;</p>
+</ul>
+<p>At this time users are added at the Collection and Discipline levels. The lowest level, Collection, can access  data within a specific Collection (Wet Collection, Teaching Collection). Specify opens in a collection, or at a Collection level; therefore users added to only one Collection would not have the ability to access other collections. Collections themselves are held within a Discipline (Ichthyology). Users added at the Discipline level can access all Collections within a Discipline. </p>
+<p>Users can belong to more than one Instituion Level.</p>
+<p>&nbsp;</p>
  <p><strong>Adding Institution Levels</strong></p>
  <p>Institution levels are not added in the Security Tool, they are add at <em>System &gt; Collection Setup &gt; Configuration</em>.</p>
+<h4>&nbsp;</h4>
 <h4>Editing Institution Levels</h4>
-<p>To edit a name in the Institution Tree simply click on it. A form will open in the Workspace for editing data.</p>
+<p>To edit a specific user, collection, discipline or division simply click on it. A form will open in the Workspace for editing data.</p>
  <p>&nbsp;</p>
  <h4><strong>User Groups</strong></h4>
- <p>Specify groups users according to their job requirements:</p>
- <ul>
-   <li><strong>Guest</strong> users need to  View the data within a Collection or Discipline, but do not require editingn priviledges.</li>
-   <li><strong>Data Entry</strong> users require access the tools for inputing and editing data, but do not need to configure any of the tools.</li>
-   <li><strong>Discipline Managers</strong> need full access to all data and tools. Discipline Managers may or may not have access to System Tools within Specify.</li>
+ <p>Specify adds users to an existing user group. The groups themselves were established according to their access to data and tools within Specify and have a default set of priviledges. Users entered into the group acquire the default priviledges. In a later version of Specify the default priviledges will have the ability to be edited per the individual user as well as per user group.</p>
+<ul>
+   <li><strong>Guest</strong> users can  view the data within a Collection or Discipline only.</li>
+   <li><strong>Limited Access</strong> can view and edit most tables but can not access all the Specify modules such as trees.</li>
+   <li><strong>Full Access </strong>users require access the tools for inputing and editing data as well as most modules within Specify, but may access the security module for adding users and setting permissions.</li>
+  <li><strong>Manager</strong> can add users and give permissions as well as access and edit all data and modules.</li>
 </ul>
- <p>Users can be added to more than one group within different Disciplines, but should not be added to both a Discipline and Collection within the same Discipline.</p>
+<p>Users can be added to more than one group within different Disciplines, but should not be added to both a Discipline and Collection within the same Discipline.</p>
  <p>&nbsp;</p>
- <h4><a name="add_user" id="add_user"></a>Add a User</h4>
+ <h4><a name="add_user" id="add_user"></a>Adding a User</h4>
 <p>Right-click on the  appropriate Group type within the applicable Institution level to add a user to a group. A dialog will appear to either add a new user or existing user. </p>
  <p><u>Existing User</u></p>
- <p>This is the beauty of the implementing the Institution Heirarchy at the Security level; users can be given unique permissions to different collections without needed more than one password. Simply </p>
- <p><u>New User</u></p>
+ <p>This is the beauty of the implementing the Institution Heirarchy at the Security level; users can be given unique permissions to different collections without needing more than one password. </p>
+<p><u>New User</u></p>
  <p>Users are added in the Specify User dialog. </p>
  <ul>
    <li><strong>Name</strong> refers to the username the user will use to login to Specify. Once the username is saved it may not be edited.</li>
    <li><strong>Password</strong> is the password the user will use to login to Specify. Passwords can be edited at a later date either in Security Tools or by choosing <em>Help &gt; Change Password</em>.</li>
    <li><strong>Email </strong></li>
    <li><strong>Agent</strong> refers to the data in the Agent table. All users must be Agents. If the user already exists within the table  type the first few letters in the name and either type the down-arrow key.</li>
-   <li><strong>Key</strong> refers to the encrypted Master Username and Password. Simply fill in all the information within the dialog and click the <em>Generate New Key</em> button. The key can not be created with the Name and Password information. For more information regarding this key please refer to <a href="../Security/security.html">Security</a>.</li>
+   <li><strong>Key</strong> refers to the encrypted Master Username and Password. Simply fill in all the information within the dialog and click the <em>Generate New Key</em> button. The key can not be created without the Name and Password information. The key is stored locally and will therefore need to be given to the user and entered by the user at the time of their first login to Specify. For more information regarding this key please refer to <a href="../Security/security.html">Security</a>.</li>
  </ul>
  <p>&nbsp;</p>
  <p><strong><a name="set_permissions" id="set_permissions"></a>Permissions</strong></p>
-<p>Specify 6.0 grants default permissions to each User Group within Specify. In future releases user permissions will be set individually.</p>
+<p>Specify 6.0 grants default permissions to each User Group within Specify. In future releases group permissions will be set individually.</p>
  <p>&nbsp;</p>
- <p>Permissions are divided into categories, with each category listing its <span class="style1">components (need a different word)</span>:</p>
+ <p>Permissions are divided into categories, with each category listing its various components in a separate pane:</p>
  <ul>
    <li><strong>Data Objects</strong> refer to the Form system inside Specify that allows data to be viewed, added, edited and deleted.</li>
    <li><strong>Tasks</strong> refer to all other tools within Specify. These tools do not affect actual data, but allow users to manipulate the data in meaninful ways (Trees, Queries). </li>
