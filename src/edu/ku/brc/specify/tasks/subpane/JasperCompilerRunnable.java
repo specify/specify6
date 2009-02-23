@@ -73,8 +73,8 @@ public class JasperCompilerRunnable implements Runnable
     	}
     	catch (InterruptedException ex)
     	{
-        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(JasperCompilerRunnable.class, ex);
+    		edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+    		edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(JasperCompilerRunnable.class, ex);
     		throw new RuntimeException(ex);
     	}
     }
@@ -196,8 +196,6 @@ public class JasperCompilerRunnable implements Runnable
         	}
         } catch (Exception ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(JasperCompilerRunnable.class, ex);
             log.error(ex);
             ex.printStackTrace();
             if (listener != null)
