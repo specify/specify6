@@ -109,6 +109,7 @@ import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
 import edu.ku.brc.specify.prefs.FormattingPrefsPanel;
 import edu.ku.brc.specify.tasks.BaseTreeTask;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
+import edu.ku.brc.specify.ui.SpecifyUIFieldFormatterMgr;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -1333,51 +1334,35 @@ public class SpecifyAppContextMgr extends AppContextMgr
             //---------------------------------------------------------
             // Common Views 
             //---------------------------------------------------------
-            if (true)
+            title     = getResourceString("SpecifyAppContextMgr."+COMMONDIR);
+            appResDir = getAppResDir(session, user, null, null, null, false, title, true);
+            dir = XMLHelper.getConfigDir("common"); //$NON-NLS-1$
+            if (dir.exists())
             {
-                title     = getResourceString("SpecifyAppContextMgr."+COMMONDIR);
-                appResDir = getAppResDir(session, user, null, null, null, false, title, true);
-                dir = XMLHelper.getConfigDir("common"); //$NON-NLS-1$
-                if (dir.exists())
-                {
-                    mergeAppResourceDirFromDiskDir(COMMONDIR, appResDir, COMMONDIR, dir);
-                    appResDir.setUserType(COMMONDIR);
-                }
-                spAppResourceList.add(appResDir);
-                spAppResourceHash.put(COMMONDIR, appResDir);
+                mergeAppResourceDirFromDiskDir(COMMONDIR, appResDir, COMMONDIR, dir);
+                appResDir.setUserType(COMMONDIR);
             }
+            spAppResourceList.add(appResDir);
+            spAppResourceHash.put(COMMONDIR, appResDir);
 
             //---------------------------------------------------------
             // BackStop
             //---------------------------------------------------------
             String backStopStr = "backstop";
-            if (true)
+            dir = XMLHelper.getConfigDir(backStopStr); //$NON-NLS-1$
+            if (dir.exists())
             {
-                dir = XMLHelper.getConfigDir(backStopStr); //$NON-NLS-1$
-                if (dir.exists())
-                {
-                    appResDir = createAppResourceDefFromDir(BACKSTOPDIR, dir); //$NON-NLS-1$
-                    appResDir.setUserType(BACKSTOPDIR); //$NON-NLS-1$
-                    appResDir.setTitle(getResourceString("SpecifyAppContextMgr."+BACKSTOPDIR)); //$NON-NLS-1$
-                    
-                    spAppResourceList.add(appResDir);
-                    spAppResourceHash.put(BACKSTOPDIR, appResDir);
-                }
-            } else
-            {   // this is the old way
-                // I don't think we want to merge 
-                title = getResourceString("SpecifyAppContextMgr."+BACKSTOPDIR);
-                appResDir = getAppResDir(session, user, discipline, null, BACKSTOPDIR, false, title, true); //$NON-NLS-1$
-                dir = XMLHelper.getConfigDir(backStopStr); //$NON-NLS-1$
-                if (dir.exists())
-                {
-                    mergeAppResourceDirFromDiskDir(BACKSTOPDIR, appResDir, backStopStr, dir); //$NON-NLS-1$
-                }
+                appResDir = createAppResourceDefFromDir(BACKSTOPDIR, dir); //$NON-NLS-1$
+                appResDir.setUserType(BACKSTOPDIR); //$NON-NLS-1$
+                appResDir.setTitle(getResourceString("SpecifyAppContextMgr."+BACKSTOPDIR)); //$NON-NLS-1$
+                
                 spAppResourceList.add(appResDir);
                 spAppResourceHash.put(BACKSTOPDIR, appResDir);
             }
             
             SpecifyAppPrefs.initialPrefs();
+            
+            //checkForInitialFormats();
             
             if (prevDisciplineId != -1)
             {
@@ -1435,6 +1420,52 @@ public class SpecifyAppContextMgr extends AppContextMgr
         showLocalizedError("SpecifyAppContextMgr.CRITICAL_LOGIN_ERR"); //$NON-NLS-1$
         System.exit(0);
         return null;
+    }
+    
+    /**
+     * 
+     */
+    protected void checkForInitialFormats()
+    {
+        String path = UIRegistry.getAppDataDir() + File.separator + "uif.xml";
+        File uifFile = new File(path);
+        if (uifFile.exists())
+        {
+            try
+            {
+                UIFieldFormatterMgr.setDoingLocal(true);
+                SpecifyUIFieldFormatterMgr mgr = new SpecifyUIFieldFormatterMgr();
+                mgr.setLocalFilePath(path);
+                mgr.load();
+                UIFieldFormatterMgr.setDoingLocal(false);
+                
+                Hashtable<String, Boolean> nameHash = new Hashtable<String, Boolean>();
+                for (UIFieldFormatterIFace fmt : UIFieldFormatterMgr.getInstance().getFormatters())
+                {
+                    nameHash.put(fmt.getName(), true);
+                }
+                
+                boolean changed = false;
+                for (UIFieldFormatterIFace fmt : mgr.getFormatters())
+                {
+                    if (nameHash.get(fmt.getName()) == null)
+                    {
+                        UIFieldFormatterMgr.getInstance().addFormatter(fmt);
+                        changed = true;
+                    }
+                }
+                
+                if (changed)
+                {
+                    UIFieldFormatterMgr.getInstance().save();
+                }
+                
+            } catch (Exception ex)
+            {
+                UIFieldFormatterMgr.setDoingLocal(false);
+                ex.printStackTrace();
+            }
+        }
     }
 
     /**

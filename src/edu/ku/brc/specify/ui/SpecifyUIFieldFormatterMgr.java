@@ -55,6 +55,12 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr implements C
 {
     private static final Logger  log      = Logger.getLogger(SpecifyUIFieldFormatterMgr.class);
     
+    protected static String         COLLECTION   = "Collection";
+    protected static String         UIFORMATTERS = "UIFormatters";
+    
+    private String                  localFilePath = null;
+    private boolean                 pathWasSet    = false;
+    
     protected UIFieldFormatterIFace catalogNumberNumeric;
     protected UIFieldFormatterIFace catalogNumberString;
     
@@ -65,7 +71,19 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr implements C
     {
         super();
         
-        CommandDispatcher.register("Collection", this); //$NON-NLS-1$
+        CommandDispatcher.register(COLLECTION, this); //$NON-NLS-1$
+    }
+    
+    /**
+     * @return the path to the xml file.
+     */
+    private String getLocalPath()
+    {
+        if (localFilePath == null)
+        {
+            localFilePath = "backstop/uiformatters.xml";
+        }
+        return localFilePath;
     }
 
     /* (non-Javadoc)
@@ -104,16 +122,16 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr implements C
     {
         if (doingLocal)
         {
-            return XMLHelper.readDOMFromConfigDir("backstop/uiformatters.xml"); //$NON-NLS-1$
+            return pathWasSet ? XMLHelper.readFileToDOM4J(new File(getLocalPath())) : XMLHelper.readDOMFromConfigDir(getLocalPath());
         }
 
-        AppResourceIFace appRes = AppContextMgr.getInstance().getResourceFromDir("Collection", "UIFormatters"); //$NON-NLS-1$ //$NON-NLS-2$
+        AppResourceIFace appRes = AppContextMgr.getInstance().getResourceFromDir(COLLECTION, UIFORMATTERS); //$NON-NLS-1$ //$NON-NLS-2$
         if (appRes != null)
         {
             return AppContextMgr.getInstance().getResourceAsDOM(appRes);
         } 
         
-        return XMLHelper.readDOMFromConfigDir("backstop/uiformatters.xml"); //$NON-NLS-1$
+        return XMLHelper.readDOMFromConfigDir(getLocalPath()); //$NON-NLS-1$
     }
     
     /**
@@ -127,7 +145,7 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr implements C
             return XMLHelper.readDOMFromConfigDir("backstop/uistrformatters.xml"); //$NON-NLS-1$
         }
 
-        AppResourceIFace appRes = AppContextMgr.getInstance().getResourceFromDir("Collection", "UIStrFormatters"); //$NON-NLS-1$ //$NON-NLS-2$
+        AppResourceIFace appRes = AppContextMgr.getInstance().getResourceFromDir(COLLECTION, "UIStrFormatters"); //$NON-NLS-1$ //$NON-NLS-2$
         if (appRes != null)
         {
             return AppContextMgr.getInstance().getResourceAsDOM(appRes);
@@ -136,6 +154,16 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr implements C
         return XMLHelper.readDOMFromConfigDir("backstop/uistrformatters.xml"); //$NON-NLS-1$
     }
     
+    /**
+     * Sets the path that is when doing local.
+     * @param localFilePath the localFilePath to set
+     */
+    public void setLocalFilePath(final String localFilePath)
+    {
+        this.localFilePath = localFilePath;
+        this.pathWasSet    = true;
+    }
+
     /**
      * 
      */
@@ -186,9 +214,9 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr implements C
             
         } catch (Exception ex)
         {
+            ex.printStackTrace();
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyUIFieldFormatterMgr.class, ex);
-            ex.printStackTrace();
             log.error(ex);
         }
     }
@@ -202,7 +230,7 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr implements C
 
         if (doingLocal)
         {
-            File outputFile = XMLHelper.getConfigDir("backstop/uiformatters.xml"); //$NON-NLS-1$
+            File outputFile = pathWasSet ? new File(getLocalPath()) : XMLHelper.getConfigDir(getLocalPath());
             try
             {
                 FileUtils.writeStringToFile(outputFile, xml);
@@ -214,7 +242,7 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr implements C
             }
         } else
         {
-            AppResourceIFace appRes = AppContextMgr.getInstance().getResourceFromDir("Collection", "UIFormatters"); //$NON-NLS-1$ //$NON-NLS-2$
+            AppResourceIFace appRes = AppContextMgr.getInstance().getResourceFromDir(COLLECTION, UIFORMATTERS); //$NON-NLS-1$ //$NON-NLS-2$
             if (appRes != null)
             {
                 appRes.setDataAsString(xml);
@@ -222,7 +250,7 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr implements C
                
             } else
             {
-                AppContextMgr.getInstance().putResourceAsXML("UIFormatters", xml); //$NON-NLS-1$
+                AppContextMgr.getInstance().putResourceAsXML(UIFORMATTERS, xml); //$NON-NLS-1$
             }
         }
     }
@@ -354,7 +382,7 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr implements C
      */
     public void doCommand(final CommandAction cmdAction)
     {
-        if (cmdAction.isType("Collection") && cmdAction.isAction("Changed")) //$NON-NLS-1$ //$NON-NLS-2$
+        if (cmdAction.isType(COLLECTION) && cmdAction.isAction("Changed")) //$NON-NLS-1$ //$NON-NLS-2$
         {
             load();
         }

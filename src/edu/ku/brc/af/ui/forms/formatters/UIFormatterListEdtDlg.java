@@ -50,6 +50,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.core.db.AutoNumberGeneric;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.ui.CustomDialog;
 
@@ -321,6 +322,11 @@ public class UIFormatterListEdtDlg extends CustomDialog
                 UIFieldFormatterIFace selectedUIF = dlg.getSelectedFormat();
                 selectedUIF.setDefault(isDefault);
                 
+                if (selectedUIF.isIncrementer() && selectedUIF.getAutoNumber() == null)
+                {
+                    selectedUIF.setAutoNumber(new AutoNumberGeneric());
+                }
+                
                 DefaultListModel model = (DefaultListModel) formatList.getModel();
                 if (isNew)
                 {
@@ -340,6 +346,7 @@ public class UIFormatterListEdtDlg extends CustomDialog
                     uiFieldFormatterMgrCache.addFormatter(selectedUIF);
                 }
                 setHasChanged(true);
+                
             }
             
         } catch (Exception ex)

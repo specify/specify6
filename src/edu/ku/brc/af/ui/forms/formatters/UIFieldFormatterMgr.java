@@ -140,6 +140,14 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
     {
         UIFieldFormatterMgr.doingLocal = doingLocal;
     }
+    
+    /**
+     * @return whether the Mgr has changed
+     */
+    public boolean hasChanged()
+    {
+        return hasChanged;
+    }
 
     /**
      * @return the formatters list
@@ -385,12 +393,13 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
         
         list.add(formatter);
         hash.put(formatter.getName(), formatter);
+        hasChanged = true;
     }
 
     /**
      * Deletes a formatter from the
      */
-    public void removeFormatter(UIFieldFormatterIFace formatter)
+    public void removeFormatter(final UIFieldFormatterIFace formatter)
     {
         hash.remove(formatter.getName());
         
@@ -400,6 +409,7 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
             list.remove(formatter);
             classToListHash.put(formatter.getDataClass(), list);
         }
+        hasChanged = true;
     }
 
     /**
@@ -652,7 +662,7 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
         sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<formats>\n");
 
         // sort formatters by name, then save them to db
-        Vector<UIFieldFormatterIFace> formatVector = new Vector<UIFieldFormatterIFace>(instance.hash.values());
+        Vector<UIFieldFormatterIFace> formatVector = new Vector<UIFieldFormatterIFace>(hash.values());
         Collections.sort(formatVector, new Comparator<UIFieldFormatterIFace>()
         {
             public int compare(UIFieldFormatterIFace o1, UIFieldFormatterIFace o2)

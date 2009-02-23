@@ -37,6 +37,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
+import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -58,6 +59,7 @@ import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.af.ui.weblink.WebLinkMgr;
 import edu.ku.brc.dbsupport.CustomQueryFactory;
@@ -69,6 +71,7 @@ import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.SpecifyUserTypes;
 import edu.ku.brc.specify.ui.HelpMgr;
+import edu.ku.brc.specify.ui.SpecifyUIFieldFormatterMgr;
 import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
@@ -201,6 +204,10 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
         }
 
         props.put("userType", SpecifyUserTypes.UserType.Manager.toString());
+        
+        panels.add(new FormatterPickerPanel(nextBtn, true));
+        panels.add(new FormatterPickerPanel(nextBtn, false));
+
         
         userPanel = new DatabasePanel(nextBtn, true);
         panels.add(userPanel);
@@ -421,6 +428,21 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
                 {
                     try
                     {
+                        if (SpecifyUIFieldFormatterMgr.getInstance().hasChanged())
+                        {
+                            SpecifyUIFieldFormatterMgr.setDoingLocal(true);
+                            String path = UIRegistry.getAppDataDir() + File.separator + "uif.xml";
+                            SpecifyUIFieldFormatterMgr mgr = (SpecifyUIFieldFormatterMgr)SpecifyUIFieldFormatterMgr.getInstance();
+                            mgr.setLocalFilePath(path);
+                            for (UIFieldFormatterIFace fmt : new Vector<UIFieldFormatterIFace>(mgr.getFormatters()))
+                            {
+                                if (fmt.isSystem())
+                                {
+                                    mgr.removeFormatter(fmt);
+                                }
+                            }
+                            mgr.save();
+                        }
                         DatabaseDriverInfo driverInfo = userPanel.getDriver();
                         props.put("driver", driverInfo);
                         
@@ -454,6 +476,25 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
                         if (proceed)
                         {
                             isOK = builder.buildEmptyDatabase(props);
+                            
+                            if (isOK)
+                            {
+                                if (SpecifyUIFieldFormatterMgr.getInstance().hasChanged())
+                                {
+                                    SpecifyUIFieldFormatterMgr.setDoingLocal(true);
+                                    String path = UIRegistry.getAppDataDir() + File.separator + "uif.xml";
+                                    SpecifyUIFieldFormatterMgr mgr = (SpecifyUIFieldFormatterMgr)SpecifyUIFieldFormatterMgr.getInstance();
+                                    mgr.setLocalFilePath(path);
+                                    for (UIFieldFormatterIFace fmt : new Vector<UIFieldFormatterIFace>(mgr.getFormatters()))
+                                    {
+                                        if (fmt.isSystem())
+                                        {
+                                            mgr.removeFormatter(fmt);
+                                        }
+                                    }
+                                    mgr.save();
+                                }
+                            }
 
                             JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
                                     getLocalizedMessage("BLD_DONE", getResourceString(isOK ? "BLD_OK" :"BLD_NOTOK")),

@@ -909,7 +909,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
             xmlAttr(sb, "type", type.toString());
         }
         
-        if (partialDateType != PartialDateEnum.None)
+        if (partialDateType != null && partialDateType != PartialDateEnum.None)
         {
             xmlAttr(sb, "partialdate", partialDateType.toString());
         }
@@ -920,7 +920,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
             autoNumber.toXML(sb);
         }
         
-        if (type != FormatterType.numeric && type != FormatterType.date)
+        if (type != FormatterType.date)
         {
             for (UIFieldFormatterField field : fields)
             {
