@@ -38,6 +38,7 @@ import net.sourceforge.jtds.jdbc.ClobImpl;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import com.mysql.jdbc.CommunicationsException;
 import com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException;
 
 import edu.ku.brc.dbsupport.DBConnection;
@@ -482,41 +483,83 @@ public class BasicSQLUtils
     {
         Vector<Object[]> list = new Vector<Object[]>();
         Statement stmt = null;
-        try
+        
+        Connection connection    = null;
+        boolean    doCloseConn   = false;
+        boolean    doSkipConnSet = false;
+        boolean    isStale       = true;
+        int        tries         = 0;
+        
+        while (isStale && tries < 3)
         {
-            Connection connection = conn != null ? conn : (dbConn != null ? dbConn : DBConnection.getInstance().getConnection());
-
-            stmt = connection.createStatement();
-            ResultSet         rs       = stmt.executeQuery(sql);
-            ResultSetMetaData metaData = rs.getMetaData();
-            int               numCols  = metaData.getColumnCount();
-            while (rs.next())
+            try
             {
-                Object[] colData = new Object[numCols];
-                list.add(colData);
-                for (int i=0;i<numCols;i++)
+                if (!doSkipConnSet)
                 {
-                    colData[i] = rs.getObject(i+1);
+                    if (conn != null)
+                    {
+                        connection = conn;
+                        
+                    } else if (dbConn != null)
+                    {
+                        connection = dbConn;
+                    } else
+                    {
+                        connection = DBConnection.getInstance().createConnection();
+                        doCloseConn = true;
+                    }
+                }
+    
+                tries++;
+                stmt = connection.createStatement();
+                ResultSet         rs       = stmt.executeQuery(sql);
+                ResultSetMetaData metaData = rs.getMetaData();
+                int               numCols  = metaData.getColumnCount();
+                while (rs.next())
+                {
+                    Object[] colData = new Object[numCols];
+                    list.add(colData);
+                    for (int i=0;i<numCols;i++)
+                    {
+                        colData[i] = rs.getObject(i+1);
+                    }
+                }
+                rs.close();
+                
+                isStale = false;
+    
+            } catch (CommunicationsException ex)
+            {
+                connection = DBConnection.getInstance().createConnection();
+                doCloseConn   = true;
+                doSkipConnSet = true;
+                
+            } catch (SQLException ex)
+            {
+                ex.printStackTrace();
+                
+                if (!skipTrackExceptions)
+                {
+                    edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BasicSQLUtils.class, ex);
+                }
+                
+            } finally
+            {
+                if (stmt != null)
+                {
+                    try
+                    {
+                        stmt.close();
+                    } catch (Exception ex) {}
                 }
             }
-            rs.close();
-
-        } catch (SQLException ex)
-        {
-            ex.printStackTrace();
-            if (!skipTrackExceptions)
-            {
-                edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BasicSQLUtils.class, ex);
-            }
             
-        } finally
-        {
-            if (stmt != null)
+            if (!isStale && connection != null && doCloseConn)
             {
                 try
                 {
-                    stmt.close();
+                    connection.close();
                 } catch (Exception ex) {}
             }
         }
