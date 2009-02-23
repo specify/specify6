@@ -249,10 +249,11 @@
 	<mapID target="Web_New_Field"      url="SpecifyHelp/SchemaConfig/WebLinks.html#web_new_field"/>
 	<mapID target="Web_URL"      url="SpecifyHelp/SchemaConfig/WebLinks.html#web_url"/>
 	
-	<mapID target="PL_ITEM_EDITOR"          url="SpecifyHelp/PickList/system_picklist"/>
-    <mapID target="PL_HELP_CONTEXT"         url="SpecifyHelp/PickList/system_picklist"/>
-    <mapID target="Pick_List"               url="SpecifyHelp/PickList/system_picklist"/>
-	<mapID target="User_Pick_List"          url="SpecifyHelp/PickList/Pick_List"/>
+	<mapID target="PL_ITEM_EDITOR"          url="SpecifyHelp/PickList/system_picklist.html"/>
+    <mapID target="PL_HELP_CONTEXT"         url="SpecifyHelp/PickList/system_picklist.html"/>
+    <mapID target="Pick_List"               url="SpecifyHelp/PickList/system_picklist.html"/>
+	<mapID target="User_Pick_List"          url="SpecifyHelp/PickList/Pick_List.html"/>
+	<mapID target="Import_Intro"          url="SpecifyHelp/Import/import_overview.html"/>
 	
 	<mapID target="DOF_LIST_EDITOR"         url="SpecifyHelp/SchemaConfig/schema_config.html#schema_format"/>
 	<mapID target="DOF_EDITOR"              url="SpecifyHelp/SchemaConfig/schema_config.html#schema_format"/>

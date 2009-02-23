@@ -15,7 +15,7 @@
 <td valign="bottom"><h2>Query Builder</h2></td></tr></table>
 <p>The purpose of entering data into the Specify database is to be able to retrieve that data when needed. Specify's Query builder offers a flexible interface for defining and running searches. Queries are a precise request for information retrieval and can restrict the type of returned records based on the contents of almost any of Specify's  data fields. </p>
 <p>These queries can then be used to create <a href="../RecordSet/record_set.html">Record Sets</a> or <a href="../ReportsLabels/reports.html">Reports</a>. </p>
-<p>Open the Query Builder by clicking the <img src="../../images/query20x20.png" width="20" height="20" /> (Query button) on the Taskbar.</p>
+<p>Open the query builder by clicking the <img src="../../images/query20x20.png" width="20" height="20" /> (Query button) on the Taskbar.</p>
 <p>The Sidebar displays a list of frequently used tables to begin the query configuration. Less common tables are found by clicking <img src="../../images/more_tables.png" width="20" height="20" /> (More Tables)  in the sidebar and choosing a table from the pop-up dialog. </p>
 <p>A <strong><a name="query_creators"></a>Query Creators  Configuration</strong> tool gives access to less frequently used tables and also allows the Sidebar and More Tables lists to be interchanged and rearranged:</p>
 <p>Choose <em>Tabs &gt; Configure Sidebar</em> from the Menu bar or right-button-click an open section of the sidebar to activate the Context Menu and choose <em>Configure</em><em> Query Creators</em> to open the Configure New Queries dialog.</p>
@@ -38,7 +38,7 @@
 <p><em><strong>Note:</strong></em> Because of the way Specify combines related information, almost every field can be found from within most tables. This will determine the data elements to be returned i.e. searching from Collection Objects (CO) will return CO records. </p>
 <p>&nbsp;</p>
 <h4><a name="q_tables" id="q_tables"></a>Choose Fields</h4>
-<p>A list of fields available in the chosen table, as well as other related  tables, appears in a list box at the top of the Query Workspace. </p>
+<p>A list of fields available in the chosen table, as well as other related  tables, appears in a list box at the top of the query work space. </p>
 <p>To display fields in other tables, simply click  a table in the list box. Fields and other related tables  display in a new list box.</p>
 <p>Choose fields and/or tables for the query from within the appropriate list boxes by either selecting the field/table and clicking the <img src="../../images/add.png" alt="add" width="16" height="16" />(add) button or double clicking on the table/field.</p>
 <p>By seleceting fields to include in the search users can restrict the type of returned records based on the contents of almost any of Specify's 2500 data fields.</p>
@@ -162,7 +162,7 @@
     <td valign="top"><strong>Sort</strong></td>
     <td>&nbsp;</td>
     <td valign="top"><p>Allows the results to be sorted.</p>
-    <p>It is often useful to sort duplicate data so that results are easier to read and the information may be grouped on a report. For example, if a report is desired that lists Collection Objects according to their Taxon Name then the Query must be created with the Taxon Name sorted and then grouped in the Report. </p></td>
+    <p>It is often useful to sort duplicate data so that results are easier to read and the information may be grouped on a report. For example, if a report is desired that lists Collection Objects according to their Taxon Name then the query must be created with the Taxon Name sorted and then grouped in the Report. </p></td>
     <td>All</td>
   </tr>
   <tr>
@@ -192,20 +192,20 @@
   <tr>
     <td><strong>Prompt</strong></td>
     <td>&nbsp;</td>
-    <td valign="top">This will provide a 'prompt' dialog which allows the Query Expression to be customized each time a Report is run on the Query. </td>
+    <td valign="top">This will provide a 'prompt' dialog which allows the query expression to be customized each time a Report is run on the query. </td>
     <td>All</td>
   </tr>
   <tr>
     <td valign="top"><strong>Always</strong></td>
     <td>&nbsp;</td>
-    <td valign="top"><p>Includes the Query Condition when running a Report by dropping a Record Set onto it (in the Report Sidebar). If 'Always' is not checked then the resulting Report will include all record ID's rather than only those matching the Query Condition. This is particularly useful when searching Prep Types and Current Determinations. </p>    </td>
+    <td valign="top"><p>Includes the query Condition when running a Report by dropping a Record Set onto it (in the Report Sidebar). If 'Always' is not checked then the resulting Report will include all record ID's rather than only those matching the query Condition. This is particularly useful when searching Prep Types and Current Determinations. </p>    </td>
     <td valign="top">All</td>
   </tr>
   <tr>
     <td>&nbsp;</td>
     <td><img src="../../images/closeHover.gif" width="12" height="12" /></td>
-    <td valign="top"><p>Delete the expression from the Query. </p>
-    <p>When editing a Saved Query any expressions used in a report may not be deleted.</p></td>
+    <td valign="top"><p>Delete the expression from the query. </p>
+    <p>When editing a Saved query any expressions used in a report may not be deleted.</p></td>
     <td>All</td>
   </tr>
 </table>
@@ -229,7 +229,7 @@
 <p>When it is necessary to use an asterisk (*) as part of the literal search criteria precede it with a &quot;\&quot;. For example; when it is desired to find Cli*nton enter the search criteria as *Cli\*nton*.</p>
 <h4>&nbsp;</h4>
 <h4><strong><a name="q_contols" id="q_controls"></a>Other</strong> Controls</h4>
-<p>The order of the condition row determines the order in which fields will be sorted as well as the arrangement of the fields in the results panel. If a Query includes both Taxon Name and the Last Name of the Collector and both are sorted but Taxon Name is ordered first, Specify will sort Taxon Name first, then Last Name of the Collector. </p>
+<p>The order of the condition row determines the order in which fields will be sorted as well as the arrangement of the fields in the results panel. If a query includes both Taxon Name and the Last Name of the Collector and both are sorted but Taxon Name is ordered first, Specify will sort Taxon Name first, then Last Name of the Collector. </p>
 <table width="75%" border="1" cellspacing="2" cellpadding="6">
   <tr>
     <td><u><strong>Side Buttons</strong></u></td>
@@ -282,7 +282,7 @@
 <p>&nbsp;</p>
 <p><strong><a name="q_results" id="q_results"></a>Using Query Results</strong></p>
 <p>Query results are limited to 5000 records. A return count can include more records, but Specify can not display more than 5000 result records. Use the <em>Count</em> checkbox if only a count of results is desired, or break a query into sections if it is too large.</p>
-<p>Query results display as a grid in a Query Results window. They are designated by a green (<img src="../../images/query_colors.png" width="20" height="20" />) results bar.</p>
+<p>Query results display as a grid in a query Results window. They are designated by a green (<img src="../../images/query_colors.png" width="20" height="20" />) results bar.</p>
 <p>Results can be manipulated and utilized in various ways using the buttons on the results bar.</p>
 <span class="MichaelsChanges">
 <table width="600" border="1" cellspacing="2" cellpadding="6">
@@ -308,7 +308,7 @@
     <td>Export the grid to MS Excel.</td>
   </tr>
 </table></span>
-<p><em><strong>Note:</strong></em> Individual records opened from the Query results will open in View  mode. To edit the records click the <img src="../../images/view_form_20x20.png" width="20" height="20" /> (Edit) button.</p>
+<p><em><strong>Note:</strong></em> Individual records opened from the query results will open in View  mode. To edit the records click the <img src="../../images/view_form_20x20.png" width="20" height="20" /> (Edit) button.</p>
 <p>Query results can also be used to add records to an existing Record Set.</p>
 <p>Click the <img src="../../images/record_sets_dark_20.png" alt="record set" width="20" height="20" /> (Record Set) button at the bottom of the results window. The <em>Choose a Record Set</em> dialog will appear:</p>
 <ul>
@@ -336,11 +336,11 @@
   </tr>
   <tr>
     <td><p align="left"><strong>Import Queries</strong></p>    </td>
-    <td>Opens a file directory to find the Query in the local file system.</td>
+    <td>Opens a file directory to find the query in the local file system.</td>
   </tr>
   <tr>
     <td><div align="left"><strong>Export Queries</strong></div></td>
-    <td>Opens a save dialog to save the Query in a location on the local file system.</td>
+    <td>Opens a save dialog to save the query in a location on the local file system.</td>
   </tr>
 </table>
 <p>The configure tools can also be accessed by choosing <em>Tabs &gt; Configure Sidebar</em> from the Menu bar.</p>
@@ -357,7 +357,7 @@
 <p><em><strong>Note:</strong></em> When importing queries that have the same name as existing queries, Specify will simply add a number (2) to the import query name.</p>
 <p>&nbsp;</p>
 <p><u>Export</u></p>
-<p>To export a Query: </p>
+<p>To export a query: </p>
 <ol>
   <li>Right-button-Click in the Sidebar, then choose <em>Export Queries</em> in the context menu.</li>
   <li>Choose the queries to export from the resulting dialog list and click the <em>Save</em> button.</li>

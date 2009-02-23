@@ -17,69 +17,33 @@
   </tr>
 </table>
 <h2><strong>Import/Export</strong> </h2>
-<p>At this time Specify 6 does not include a Form Editor, as was found in Specify 5 Customize Forms. The forms have been created programmatically to be extremely flexible and can be exported as xml and either edited by on-site staff or emailed to the Specify staff for assistance with form editing and customization. Forms are imported and exported using the Resource Import/Export dialog.</p>
-<p><strong>Other Resources</strong> can also be imported and exported through the use of this tool. </p>
-<p>Choosing <em>System &gt; Resource Import/Export</em> to open the Import/Export dialog. This includes reports and some system files such as Pick Lists and Web Links files.</p>
-<p>Specify implements a hierarchical system which limits the accessibility of the forms/resources. This allows forms/resources to be changed and then implemented for  those users who wish to use them. When accessing forms/resources, Specify starts at the Personal level, takes the forms/resources, then moves to the next level. When duplicate forms/resources are encountered those from the first level are kept and the higher level forms/resources are ignored.</p>
-<table width="100%" border="1" cellspacing="2" cellpadding="6">
-  <tr>
-    <td width="20%"><u><strong>Level</strong></u></td>
-    <td width="57%"><u><strong>Access</strong></u></td>
-    <td width="12%"><u><strong>Import</strong></u></td>
-    <td width="11%"><u><strong>Export</strong></u></td>
-  </tr>
-  <tr>
-    <td>User</td>
-    <td>Accessed by the user only.</td>
-    <td>Yes</td>
-    <td>Yes</td>
-  </tr>
-  <tr>
-    <td>User Group</td>
-    <td>Accessed by the user and Group.</td>
-    <td>Yes</td>
-    <td>Yes</td>
-  </tr>
-  <tr>
-    <td>Collection</td>
-    <td>Accessed by the user, Group and anyone in the collection.</td>
-    <td>Yes</td>
-    <td>Yes</td>
-  </tr>
-  <tr>
-    <td>Discipline</td>
-    <td>Accessed by the user, Group, and anyone in the discipline.</td>
-    <td>Yes</td>
-    <td>Yes</td>
-  </tr>
-  <tr>
-    <td>Institution</td>
-    <td>Accessed by all users.</td>
-    <td>Yes</td>
-    <td>Yes</td>
-  </tr>
-  <tr>
-    <td>System</td>
-    <td>This includes system files for the form system and is available to everyone. </td>
-    <td>No</td>
-    <td>No</td>
-  </tr>
-</table>
-<p>Forms and resources can be exported, changed and then imported as a new version of the same form/resource, or saved as a new form/resource and added to the system. </p>
-<p>&nbsp;</p>
-<p>Forms do not export or import individually, but as a form set. The xml file contains all the forms for a particular level. Resources export as individual files.</p>
+<p>At this time Specify 6 does not include a Form Editor, as was found in Specify 5 Customize Forms. The forms have been created programmatically to be extremely flexible and can be exported as xml and either edited by on-site staff or emailed to the Specify staff for assistance with form editing and customization. Forms are imported and exported using the Resource Import/Export dialog. Forms are exported as a set of forms and need to be reimported as a set as well. </p>
+<p>Reports can also be imported and exported through the use of this tool. Reports are created from a query and export as a file that contains both the report and query. Reports are typically exported so they may be imported back into Specify by either a new user or at a different level, allowing them to be shared within the community.</p>
+<p>Choosing <em>System &gt; Resource Import/Export</em> to open the Import/Export dialog. A tab at the top of the tool allows the choice of importing/exporting either a Form Set or Report.</p>
+<p>Importing and exporting is based on the same levels that are found within the institution, as well as two additional levels:</p>
+<ul>
+  <li>User</li>
+  <li>User Type</li>
+  <li>Collection</li>
+  <li>Discipline</li>
+  <li>Division</li>
+  <li>Institution</li>
+  <li>System/Backup</li>
+</ul>
+<p>For each level the imported resource (form or report) is made available to other users at the same level as well as all levels above it. This is based on the permissions for the person importing. Resources imported at the top (User) levelr will be made available to the user only. At the User Type level the form/report is accessible to all users within the collection at the same User Type as the person importing.  For example, if a user imports a report from a tissue collection within the Lichen discipline of Botany  into the Division level the report will be available to any user within any collection  in the Lichen discipline.</p>
+<p>Resources can not be imported or exported from the System level. It holds the resources that Specify ships with and can be used to restore these default resources if needed.</p>
 <p>&nbsp;</p>
 <p><strong>Export</strong></p>
 <ol>
-  <li>Choose the level at which the forms are located.</li>
-  <li>Choose  a form set  to export.</li>
+  <li>Choose the level at which the resource is located.</li>
+  <li>Choose  the resource to export.</li>
   <li>Click the <em>Export</em> button.</li>
   <li>Choose a name and path in the resulting file system dialog.</li>
 </ol>
 <p>&nbsp;</p>
 <p><strong>Import</strong></p>
 <ul>
-  <li>Choose the level to import the forms into.</li>
+  <li>Choose the level to import the resource into.</li>
   <li>Click the Import button.</li>
   <li>Choose the file in the resulting file system dialog. </li>
 </ul>

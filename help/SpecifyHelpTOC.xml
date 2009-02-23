@@ -198,7 +198,7 @@
 			<tocitem text="GEOLocate" target="BioGeo"/>
 		  </tocitem>  
 			  
-		  <tocitem text="Importing and Exporting Resources" target="Import">
+		  <tocitem text="Importing and Exporting Resources" target="Import_Intro">
 			<tocitem text="Import and Export Forms" target="Import"/>
 			<tocitem text="User Defined Pick Lists" target="User_Pick_List"/>
 			<tocitem text="Web Links" target="WEBLNK_EDITOR">
