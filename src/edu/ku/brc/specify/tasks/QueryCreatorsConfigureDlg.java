@@ -98,7 +98,7 @@ public class QueryCreatorsConfigureDlg extends CustomDialog
                                final Vector<String> extraQueries,
                                final Vector<String> stdQueries)
     {
-        super((Frame)getTopWindow(), getResourceString("QY_CONFIGURE_CREATORS_QUERIES"), true, OKCANCELHELP, null);
+        super((Frame)getTopWindow(), getResourceString("QY_CONFIGURE_CREATORS"), true, OKCANCELHELP, null);
         
         this.task = task;
         
