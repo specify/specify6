@@ -103,6 +103,7 @@ import edu.ku.brc.af.ui.forms.validation.ValPasswordField;
 import edu.ku.brc.af.ui.forms.validation.ValPlainTextDocument;
 import edu.ku.brc.af.ui.forms.validation.ValSpinner;
 import edu.ku.brc.af.ui.forms.validation.ValTextArea;
+import edu.ku.brc.af.ui.forms.validation.ValTextAreaBrief;
 import edu.ku.brc.af.ui.forms.validation.ValTextField;
 import edu.ku.brc.af.ui.forms.validation.ValTristateCheckBox;
 import edu.ku.brc.af.ui.forms.validation.ValidatedJPanel;
@@ -487,6 +488,50 @@ public class ViewFactory
         return textArea;
     }
 
+    /**
+     * Creates a ValTextAreaBrief.
+     * @param validator a validator to hook the control up to (may be null)
+     * @param cellField the definition of the cell for this control
+     * @return ValTextArea
+     */
+    public static ValTextAreaBrief createTextAreaBrief(final FormValidator validator,
+                                                       final FormCellField cellField,
+                                                       final DBFieldInfo   fieldInfo)
+    {
+        ValTextAreaBrief textArea = new ValTextAreaBrief(cellField.getTxtRows(), cellField.getTxtCols());
+        textArea.initialize(validator != null);
+        textArea.setRows(cellField.getTxtRows());
+        
+        if (validator != null)
+        {
+            if (fieldInfo != null && fieldInfo.getLength() > 0)
+            {
+                textArea.setDocument(new ValPlainTextDocument(fieldInfo.getLength()));
+            }
+            
+            UIValidator.Type type = parseValidationType(cellField.getValidationType());
+            DataChangeNotifier dcn = validator.hookupComponent(textArea, cellField.getIdent(), type, null, true);
+            if (type == UIValidator.Type.Changed)
+            {
+                textArea.getDocument().addDocumentListener(dcn);
+
+            } else if (type == UIValidator.Type.Focus)
+            {
+                textArea.addFocusListener(dcn);
+
+            } else
+            {
+               // Do nothing for UIValidator.Type.OK
+            }
+        }
+        textArea.setLineWrap(true);
+        textArea.setWrapStyleWord(true);
+
+        textArea.setEditable(!cellField.isReadOnly());
+
+        return textArea;
+    }
+
 
     /**
      * Creates a ValListBox.
@@ -694,10 +739,8 @@ public class ViewFactory
      * @param cellField FormCellField info
      * @return the control
      */
-    public static JScrollPane createDisplayTextArea(final FormCellFieldIFace cellField)
+    public static JScrollPane changeTextAreaForDisplay(final JTextArea ta)
     {
-        JTextArea ta = new JTextArea(cellField.getTxtRows(), cellField.getTxtCols());
-        // ta.setBorder(BorderFactory.createEmptyBorder(3,3,3,3));
         Insets insets = ta.getBorder().getBorderInsets(ta);
         ta.setBorder(BorderFactory.createEmptyBorder(insets.top, insets.left, insets.bottom, insets.bottom));
         ta.setForeground(Color.BLACK);
@@ -713,6 +756,17 @@ public class ViewFactory
         scrollPane.setBorder(BorderFactory.createEmptyBorder(insets.top, insets.left, insets.bottom, insets.bottom));
         
         return scrollPane;
+    }
+    
+    /**
+     * Creates a JTextArea for display purposes only.
+     * @param cellField FormCellField info
+     * @return the control
+     */
+    public static JScrollPane createDisplayTextArea(final FormCellFieldIFace cellField)
+    {
+        JTextArea ta = new JTextArea(cellField.getTxtRows(), cellField.getTxtCols());
+        return changeTextAreaForDisplay(ta);
     }
     
     /**
@@ -1395,6 +1449,28 @@ public class ViewFactory
                     bi.doAddToValidator = validator == null; // might already added to validator
                     bi.compToReg = ta;
                     bi.compToAdd = scrollPane;
+                    break;
+                }
+                
+                case textareabrief:
+                {
+                    String title = "";
+                    DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(formViewDef.getClassName());
+                    if (ti != null)
+                    {
+                        DBFieldInfo fi = ti.getFieldByName(cellField.getName());
+                        if (fi != null)
+                        {
+                            title = fi.getTitle();
+                        }
+                    }
+
+                    ValTextAreaBrief txBrief = createTextAreaBrief(validator, cellField, fieldInfo);
+                    txBrief.setTitle(title);
+                    
+                    bi.doAddToValidator = validator == null; // might already added to validator
+                    bi.compToReg = txBrief;
+                    bi.compToAdd = txBrief.getUIComponent();
                     break;
                 }
                 

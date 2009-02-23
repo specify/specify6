@@ -413,7 +413,8 @@ public final class FormCellField extends FormCell implements FormCellFieldIFace
 
         this.isTextField = uiType == FieldType.text ||
                            uiType == FieldType.formattedtext ||
-                           uiType == FieldType.textarea;
+                           uiType == FieldType.textarea ||
+                           uiType == FieldType.textareabrief;
     }
 
     /* (non-Javadoc)
@@ -534,6 +535,7 @@ public final class FormCellField extends FormCell implements FormCellFieldIFace
                 if (isPassword) xmlAttr(sb, "ispassword", isPassword);
                 break;
                 
+            case textareabrief :
             case textarea :
                 if (rows != ViewLoader.DEFAULT_ROWS) xmlAttr(sb, "rows", rows);
                 if (cols != ViewLoader.DEFAULT_COLS) xmlAttr(sb, "cols", cols);

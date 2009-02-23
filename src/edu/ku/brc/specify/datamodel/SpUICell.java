@@ -1733,7 +1733,8 @@ public class SpUICell extends DataModelObjBase implements FormCellCommandIFace,
     {
         this.isTextFieldDB = uiType == FieldType.text ||
                              uiType == FieldType.formattedtext ||
-                             uiType == FieldType.textarea;
+                             uiType == FieldType.textarea ||
+                             uiType == FieldType.textareabrief;
         
         this.uiTypeStr = uiType.toString();
     }

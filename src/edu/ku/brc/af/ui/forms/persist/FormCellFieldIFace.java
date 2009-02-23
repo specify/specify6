@@ -32,7 +32,7 @@ public interface FormCellFieldIFace extends FormCellIFace
     // NOTE: textpl and editoncreate are not intended to be defined in the form, it is for internal use only
     // *****************************************************************************************************************
     public enum FieldType {text, formattedtext, label, dsptextfield, textfieldinfo, image, url, combobox, checkbox, tristate, spinner,
-                           password, dsptextarea, textarea, browse, querycbx, list, colorchooser, button, progress, plugin,
+                           password, dsptextarea, textarea, textareabrief, browse, querycbx, list, colorchooser, button, progress, plugin,
                            textpl, editoncreate}
 
     /**

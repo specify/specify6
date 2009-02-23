@@ -781,6 +781,10 @@ public class ViewLoader
                                     dspUITypeStr = getAttr(cellElement, "dspuitype", "dsptextarea");
                                     break;
                                 
+                                case textareabrief:
+                                    dspUITypeStr = getAttr(cellElement, "dspuitype", "textareabrief");
+                                    break;
+                                
                                 case  querycbx:
                                 {
                                     dspUITypeStr = getAttr(cellElement, "dspuitype", "textfieldinfo");
