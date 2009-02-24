@@ -1225,7 +1225,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             RegisterSpecify.register(false);
             
             //--------------------------------------------------------------------------------
-            // Check for locks set uploader, tree update, ...
+            // Check for locks set on uploader, tree update, ...
             //--------------------------------------------------------------------------------
             
             boolean noLocks = Uploader.checkUploadLock(null);
@@ -1244,6 +1244,15 @@ public class SpecifyAppContextMgr extends AppContextMgr
             	{
             		noLocks = false;
             		DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(discipline.getGeographyTreeDef().getTableId());
+            		UIRegistry.showLocalizedError("Specify.TreeUpdateLock", tblInfo.getTitle());
+            	}
+            }
+            if (noLocks)
+            {
+            	if (!division.getInstitution().getStorageTreeDef().checkNodeRenumberingLock())
+            	{
+            		noLocks = false;
+            		DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(division.getInstitution().getStorageTreeDef().getTableId());
             		UIRegistry.showLocalizedError("Specify.TreeUpdateLock", tblInfo.getTitle());
             	}
             }
@@ -1266,14 +1275,13 @@ public class SpecifyAppContextMgr extends AppContextMgr
             	}
             }
             
-            //XXX and what about Storage Trees???
-            
             boolean goodTrees = true;
             if (noLocks)
             {
                 //Now force node number updates for trees that are out-of-date
                 goodTrees = discipline.getTaxonTreeDef().checkNodeNumbersUpToDate();
                 goodTrees &= discipline.getGeographyTreeDef().checkNodeNumbersUpToDate();
+                goodTrees  &= division.getInstitution().getStorageTreeDef().checkNodeNumbersUpToDate();
                 if (goodTrees && discipline.getGeologicTimePeriodTreeDef() != null)
                 {
                     goodTrees = discipline.getGeologicTimePeriodTreeDef().checkNodeNumbersUpToDate();
@@ -1282,8 +1290,6 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 {
                     goodTrees = discipline.getLithoStratTreeDef().checkNodeNumbersUpToDate();
                 }
-                //XXX and what about Storage Trees???
-                
             }
             
             if (!noLocks || !goodTrees)
