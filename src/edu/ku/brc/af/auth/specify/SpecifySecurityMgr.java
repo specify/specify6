@@ -40,7 +40,7 @@ import edu.ku.brc.specify.datamodel.SpPrincipal;
 
 /**
  * 
- * @code_status Alpha
+ * @code_status Beta
  * 
  * @author megkumin
  * @author ricardo
@@ -51,9 +51,11 @@ public class SpecifySecurityMgr extends SecurityMgr
 {
     private static final Logger log = Logger.getLogger(SpecifySecurityMgr.class);
     
+    protected static boolean doingLocal     = false;
+    protected static boolean debug          = false;
+    
     protected boolean        domFound       = false;
     protected String         localFileName  = null;
-    protected static boolean doingLocal     = false;
     
     /**
      * 
@@ -144,10 +146,8 @@ public class SpecifySecurityMgr extends SecurityMgr
         }
         catch (SQLException ex)
         {
-            //edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
-            //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifySecurityMgr.class, ex);
-            log.error("authenticateDB - SQLException: " + ex.toString()); //$NON-NLS-1$
-            log.error("authenticateDB - " + ex.getMessage()); //$NON-NLS-1$
+            if (debug) log.error("authenticateDB - SQLException: " + ex.toString()); //$NON-NLS-1$
+            if (debug) log.error("authenticateDB - " + ex.getMessage()); //$NON-NLS-1$
             throw new LoginException("authenticateDB - SQLException: " + ex.getMessage()); //$NON-NLS-1$
         }
         finally
@@ -198,13 +198,14 @@ public class SpecifySecurityMgr extends SecurityMgr
             String principalClassName = principal.getClass().getCanonicalName();
             if (principalClassName.equals(SpPrincipal.class.getCanonicalName()))
             {
-                SpPrincipal spp = (SpPrincipal)principal;
-                String principalType = spp.getGroupSubClass();
-                String principalName = spp.getName();
+                SpPrincipal spp           = (SpPrincipal)principal;
+                String      principalType = spp.getGroupSubClass();
+                String      principalName = spp.getName();
                 SpPrincipal mySpPrincipal = PermissionService.getSpPrincipalByName(principalName);
                 if (principalToMatchTo == null)
                 {
                     PermissionService.giveSpPrincipalPermission(mySpPrincipal, perm);
+                    
                 } else if (principalType.equals(principalToMatchTo.getClass().getCanonicalName()))
                 {
                     PermissionService.giveSpPrincipalPermission(mySpPrincipal, perm);
@@ -218,8 +219,7 @@ public class SpecifySecurityMgr extends SecurityMgr
      */
     public boolean checkPermission(String name, String actions)
     {
-        final Class<?> permissionClass = BasicSpPermission.class;
-        return checkPermission(permissionClass, name, actions);
+        return checkPermission(BasicSpPermission.class, name, actions);
     }
 
     /* (non-Javadoc)
@@ -227,8 +227,7 @@ public class SpecifySecurityMgr extends SecurityMgr
      */
     public int getPermissionOptions(final String name)
     {
-        final Class<?> permissionClass = BasicSpPermission.class;
-        return getPermissionOptions(permissionClass, name);
+        return getPermissionOptions(BasicSpPermission.class, name);
     }
     
     /**
@@ -295,10 +294,13 @@ public class SpecifySecurityMgr extends SecurityMgr
         {
             constructor = permissionClass.getConstructor(String.class, String.class);
             
-            log.debug("******************* Can View: "+name+" - "+ checkPermission((BasicSpPermission)constructor.newInstance(name, VIEW_PERM)));
-            log.debug("******************* Can Mod : "+name+" - "+ checkPermission((BasicSpPermission)constructor.newInstance(name, MODIFY_PERM)));
-            log.debug("******************* Can Del : "+name+" - "+ checkPermission((BasicSpPermission)constructor.newInstance(name, DELETE_PERM)));
-            log.debug("******************* Can Add : "+name+" - "+ checkPermission((BasicSpPermission)constructor.newInstance(name, ADD_PERM)));
+            if (debug)
+            {
+                log.debug("******************* Can View: "+name+" - "+ checkPermission((BasicSpPermission)constructor.newInstance(name, VIEW_PERM)));
+                log.debug("******************* Can Mod : "+name+" - "+ checkPermission((BasicSpPermission)constructor.newInstance(name, MODIFY_PERM)));
+                log.debug("******************* Can Del : "+name+" - "+ checkPermission((BasicSpPermission)constructor.newInstance(name, DELETE_PERM)));
+                log.debug("******************* Can Add : "+name+" - "+ checkPermission((BasicSpPermission)constructor.newInstance(name, ADD_PERM)));
+            }
             
             options |= checkPermission((BasicSpPermission)constructor.newInstance(name, MODIFY_PERM)) ? PermissionSettings.CAN_MODIFY : 0;
             options |= checkPermission((BasicSpPermission)constructor.newInstance(name, VIEW_PERM)) ?   PermissionSettings.CAN_VIEW : 0;
