@@ -155,11 +155,14 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
      */
     protected String       columnAlias;
     
+    /**
+     * The name of the formatter to use for formatted or aggregated fields. 
+     * (if null then default formatter is used)
+     */
+    protected String       formatName;
+    
     protected SpQuery      query;
     
-    // Transient
-    protected int[]        tableIds = null;
-
     /**
      * 
      */
@@ -199,7 +202,16 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
     {
     	this.stringId = stringId;
     }
+    
     /**
+	 * @param formatName the formatName to set
+	 */
+	public void setFormatName(String formatName)
+	{
+		this.formatName = formatName;
+	}
+
+	/**
      * @param isNot the isNot to set
      */
     public void setIsNot(Boolean isNot)
@@ -292,7 +304,6 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
      */
     public void setTableList(String tableList)
     {
-        this.tableIds  = null;
         this.tableList = tableList;
     }
 
@@ -328,13 +339,23 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
     /**
      * @return the stringId
      */
-    @Column(name = "StringId", unique = false, nullable = false, insertable = true, updatable = true, length = 200)
+    @Column(name = "StringId", unique = false, nullable = false, insertable = true, updatable = true, length = 500)
     public String getStringId()
     {
         return stringId;
     }
 
+    
     /**
+	 * @return the formatName
+	 */
+    @Column(name = "FormatName", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+	public String getFormatName()
+	{
+		return formatName;
+	}
+
+	/**
      * @return the isNot
      */
     @Column(name = "IsNot", unique = false, nullable = false, insertable = true, updatable = true)
@@ -437,7 +458,7 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
     /**
      * @return the tableList
      */
-    @Column(name = "TableList", unique = false, nullable = false, insertable = true, updatable = true, length = 255)
+    @Column(name = "TableList", unique = false, nullable = false, insertable = true, updatable = true, length = 500)
     public String getTableList()
     {
         return tableList;
@@ -466,6 +487,8 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
         sortType       = null;
         query          = null;
         tableList      = null;
+        stringId       = null;
+        formatName     = null;
         columnAlias    = null;
         contextTableIdent = null;
     }
@@ -502,25 +525,7 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
     {
         this.sortType = sortType.getOrdinal();
     }
-        
-    /**
-     * @param tablesIds
-     */
-    public void setTableIds(final int[] tablesIds)
-    {
-        this.tableIds = tablesIds;
-        if (tablesIds != null && tablesIds.length > 0)
-        {
-            StringBuilder sb = new StringBuilder();
-            for (int id : tablesIds)
-            {
-                if (sb.length() > 0) sb.append(",");
-                sb.append(id);
-            }
-            tableList = sb.toString();
-        }
-    }
-    
+            
     //-------------------------------------------------------------------------
     //-- DataModelObjBase
     //-------------------------------------------------------------------------

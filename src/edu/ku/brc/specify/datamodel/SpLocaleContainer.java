@@ -76,6 +76,7 @@ public class SpLocaleContainer extends SpLocaleBase implements LocalizableContai
     protected Discipline                 discipline;
 
     protected String  					 aggregator;
+    protected String					 defaultUI;
     
     // Transient
     protected Vector<LocalizableItemIFace> containerItems = null;
@@ -105,6 +106,9 @@ public class SpLocaleContainer extends SpLocaleBase implements LocalizableContai
         
         discipline          = AppContextMgr.getInstance().hasContext() ? AppContextMgr.getInstance().getClassObject(Discipline.class) : null;
         containerItems      = null;
+        
+        aggregator          = null;
+        defaultUI           = null;
     }
     
     /**
@@ -233,7 +237,26 @@ public class SpLocaleContainer extends SpLocaleBase implements LocalizableContai
         this.aggregator = aggregator;
     }
 
-    /* (non-Javadoc)
+    
+    
+    /**
+	 * @return the defaultUI
+	 */
+    @Column(name = "DefaultUI", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+	public String getDefaultUI()
+	{
+		return defaultUI;
+	}
+
+	/**
+	 * @param defaultUI the defaultUI to set
+	 */
+	public void setDefaultUI(String defaultUI)
+	{
+		this.defaultUI = defaultUI;
+	}
+
+	/* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getDataClass()
      */
     @Override
