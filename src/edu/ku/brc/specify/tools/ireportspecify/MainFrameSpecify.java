@@ -764,7 +764,7 @@ public class MainFrameSpecify extends MainFrame
             {
             	metaDataStr += "reporttype=Report;";
             }
-            if (propPanel.getSubReportsTxt().getText() != null)
+            if (propPanel.getSubReportsTxt() != null && propPanel.getSubReportsTxt().getText() != null)
             {
             	metaDataStr += "subreports=" + propPanel.getSubReportsTxt().getText() + ";";
             }

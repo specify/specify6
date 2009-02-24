@@ -21,11 +21,9 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
-import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.SpAppResource;
 import edu.ku.brc.specify.tasks.DataEntryTask;
 import edu.ku.brc.specify.tasks.DataEntryView;
@@ -202,25 +200,31 @@ public class RepResourcePropsPanel extends JPanel
         
         builder.add(resDirCombo, cc.xy(3, 4));
 
-        builder.add(UIHelper.createLabel(UIRegistry.getResourceString("REP_SUBREPS_LBL")), cc.xy(1,5));
-        subReportsTxt = UIHelper.createTextField(null);
-        builder.add(subReportsTxt, cc.xy(3, 5));
+        int row = 5;
+        if (rep == null)
+        {
+        	builder.add(UIHelper.createLabel(UIRegistry.getResourceString("REP_SUBREPS_LBL")), cc.xy(1,row));
+        	subReportsTxt = UIHelper.createTextField(null);
+        	builder.add(subReportsTxt, cc.xy(3, row));
+        	row++;
+        }
         
         if (showTableIds)
         {
-            builder.add(UIHelper.createLabel(UIRegistry.getResourceString("REP_TBL_LBL")), cc.xy(1,6));
+            builder.add(UIHelper.createLabel(UIRegistry.getResourceString("REP_TBL_LBL")), cc.xy(1,row));
             tblCombo = UIHelper.createComboBox();
             fillTblCombo();
             tblCombo.setSelectedIndex(0);
-            builder.add(tblCombo, cc.xy(3, 6));
+            builder.add(tblCombo, cc.xy(3, row));
+            row++;
         }
         
         if (rep != null)
         {
-            builder.add(UIHelper.createLabel(UIRegistry.getResourceString("REP_REPEAT_LBL")), cc.xy(1, showTableIds ? 7 : 6));
+            builder.add(UIHelper.createLabel(UIRegistry.getResourceString("REP_REPEAT_LBL")), cc.xy(1, row));
             repeatPanel = new ReportRepeatPanel(rep.getConnection(), canceller);
             repeatPanel.createUI(rep.getSpReport() == null ? null : rep.getSpReport().getRepeats());
-            builder.add(repeatPanel, cc.xy(3, showTableIds ? 7 : 6));
+            builder.add(repeatPanel, cc.xy(3, row));
         }
         else
         {
