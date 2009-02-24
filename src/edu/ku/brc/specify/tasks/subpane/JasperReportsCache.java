@@ -84,7 +84,7 @@ public class JasperReportsCache implements DataCacheIFace
         // XXXX RELEASE - This Reference to demo_files will need to be removed
         if (!imageDir.exists())
         {
-            imageDir = new File("demo_files");
+            imageDir = new File(UIRegistry.getDefaultWorkingPath() + File.separator + "demo_files");
         }
         
         return imageDir;
