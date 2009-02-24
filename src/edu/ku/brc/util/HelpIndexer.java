@@ -192,13 +192,6 @@ public class HelpIndexer
     protected void processFile(final File file, final Vector<String> lines)
     {
         // System.out.println("processing file: " + file.getName());
-        String title = getFileTitle(file);
-        boolean removeTitleEntry = false;
-        if (title != null)
-        {
-            lines.add("<indexitem text=\"" + title + "\">");
-            removeTitleEntry = true;
-        }
 
         LineIterator it;
         try
@@ -213,6 +206,19 @@ public class HelpIndexer
             return;
         }
         String target = getTarget(file);
+        String title = getFileTitle(file);
+        boolean removeTitleEntry = false;
+        if (title != null)
+        {
+            String tline = "<indexitem text=\"" + title;
+            if (target != null)
+            {
+            	tline += "\"  target=\"" + target;
+            }
+            tline +=  "\">";
+        	lines.add(tline);
+            removeTitleEntry = true;
+        }
         if (target != null)
         {
             try
@@ -223,7 +229,7 @@ public class HelpIndexer
                     //System.out.println(line);
                     if (isIndexLine(line))
                     {
-                        // System.out.println("hey an index line!");
+                        System.out.println("indexing " + file.getName() + ": " + line);
                         String indexEntry = processIndexLine(line, target);
                         if (indexEntry != null)
                         {
