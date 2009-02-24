@@ -847,6 +847,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
                                     }
                                     break;
                                     
+                                case constant:
                                 case separator:
                                     if (!val.equals(field.getValue()))
                                     {

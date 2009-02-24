@@ -109,7 +109,7 @@ public class UIFieldFormatterSampler implements SQLExecutionListener
 			results.clear();
 			while (rs.next())
 			{
-				results.add(rs.getObject(0));
+				results.add(rs.getObject(1));
 			}
 			rs.close();
 			ready = true;

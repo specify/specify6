@@ -177,6 +177,7 @@ public class UIFormatterEditorDlg extends CustomDialog
                 fields.insertElementAt(item, inx-1);
                 fieldsTbl.getSelectionModel().setSelectionInterval(inx-1, inx-1);
                 updateEnabledState();
+                updateUIEnabled();
             }
         });
         orderDwnBtn = createIconBtn("ReorderDown", "TCGD_MOVE_DOWN", new ActionListener()
@@ -190,6 +191,7 @@ public class UIFormatterEditorDlg extends CustomDialog
                 fields.insertElementAt(item, inx+1);
                 fieldsTbl.getSelectionModel().setSelectionInterval(inx+1, inx+1);
                 updateEnabledState();
+                updateUIEnabled();
             }
         });
         
@@ -597,7 +599,7 @@ public class UIFormatterEditorDlg extends CustomDialog
                 fieldsTbl.clearSelection();
                 fieldsModel.fireChange();
                 enabledEditorUI(false);
-
+                updateUIEnabled();
             }
         };
     }
@@ -626,6 +628,7 @@ public class UIFormatterEditorDlg extends CustomDialog
                 setDataIntoUI();
                 enabledEditorUI(true);
                 fieldHasChanged = false;
+                updateUIEnabled();
             }
         };
     }
@@ -707,7 +710,6 @@ public class UIFormatterEditorDlg extends CustomDialog
     {
         isInError = false;
         sampleLabel.setForeground(Color.black);
-    	updateUIEnabled();
     	fmtErrMsg = null;
     }
 
@@ -720,7 +722,6 @@ public class UIFormatterEditorDlg extends CustomDialog
         isInError      = true;
         sampleLabel.setForeground(Color.red);
         sampleLabel.setText(message);
-    	updateUIEnabled();
     }
 
     /**
@@ -790,6 +791,22 @@ public class UIFormatterEditorDlg extends CustomDialog
      */
     protected void updateUIEnabled()
     {
+        // If we have a field formatter sampler, then we can check if current format 
+        // invalidates an existing value in database.
+        if (fieldFormatterSampler != null && selectedFormat != null) 
+        {
+            try 
+            {
+                fieldFormatterSampler.isValid(selectedFormat);
+                resetError();
+            }
+            catch (UIFieldFormatterInvalidatesExistingValueException e)
+            {
+                setError("This format, which accepts values like '" + selectedFormat.getSample() + "', invalidates value '" 
+                        + e.getInvalidatedValue().toString() + "' from database.", false);
+            }
+        }
+        
     	// enable ok button only if currently selected format is valid 
         // by year checkbox is enabled if there's one YEAR and one auto-number (###) in the format
         boolean byYearEnabled = (selectedFormat != null) && (selectedFormat.byYearApplies());
@@ -801,12 +818,17 @@ public class UIFormatterEditorDlg extends CustomDialog
                          titleTF.getText().length() > 0 &&
                          fields.size() > 0);
         
-        StringBuilder pattern = new StringBuilder();
-        for (UIFieldFormatterField ff : fields)
+        // create a sample and display it, if there's no error
+        // otherwise, leave the sample panel area with the error message, set in setError() method.  
+        if (!isInError)
         {
-            pattern.append(ff.getSample());
+            StringBuilder pattern = new StringBuilder();
+            for (UIFieldFormatterField ff : fields)
+            {
+                pattern.append(ff.getSample());
+            }
+            sampleLabel.setText(pattern.toString());
         }
-        sampleLabel.setText(pattern.toString());
     }
 
 
