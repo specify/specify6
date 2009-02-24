@@ -6,8 +6,7 @@
  */
 package edu.ku.brc.specify.config.init;
 
-import static edu.ku.brc.ui.UIHelper.centerAndShow;
-import static edu.ku.brc.ui.UIHelper.createButton;
+import static edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr.createAutoNumber;
 import static edu.ku.brc.ui.UIHelper.createCheckBox;
 import static edu.ku.brc.ui.UIHelper.createComboBox;
 import static edu.ku.brc.ui.UIHelper.createI18NFormLabel;
@@ -28,11 +27,13 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.core.db.AutoNumberIFace;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
@@ -40,7 +41,6 @@ import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatter;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.af.ui.forms.formatters.UIFormatterEditorDlg;
-import edu.ku.brc.af.ui.forms.formatters.UIFormatterListEdtDlg;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 
@@ -56,7 +56,6 @@ public class FormatterPickerPanel extends BaseSetupPanel
 {
     protected JCheckBox isNumericChk    = createCheckBox(getResourceString("IS_NUM_CHK"));
     protected JComboBox formatterCBX    = createComboBox(new DefaultComboBoxModel());
-    //protected JButton   addFmtBtn       = createButton("...");
     protected JLabel    isNumericLbl    = createLabel("");
     
     protected boolean                     doingCatNums;
@@ -108,7 +107,6 @@ public class FormatterPickerPanel extends BaseSetupPanel
         lbl.setFont(bold);
         pb.add(lbl, cc.xy(1, y));
         pb.add(formatterCBX, cc.xy(3, y));
-        //pb.add(addFmtBtn,    cc.xy(5, y));
         y +=2;
 
         if (doingCatNums)
@@ -117,25 +115,6 @@ public class FormatterPickerPanel extends BaseSetupPanel
             pb.add(isNumericLbl, cc.xy(3, y));
             y +=2;
         }
-        
-        /*addFmtBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                addFieldFormatter();
-            }
-        });*/
-        
-        formatterCBX.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                if (formatterCBX.getSelectedIndex() == newFmtInx)
-                {
-                    addFieldFormatter();
-                }
-            }
-        });
     }
     
     /**
@@ -159,15 +138,37 @@ public class FormatterPickerPanel extends BaseSetupPanel
         dlg.setVisible(true);
         if (!dlg.isCancelled())
         {
-            //loadFormatCbx(newFormatter);
+            AutoNumberIFace autoNum = doingCatNums ? createAutoNumber("edu.ku.brc.specify.dbsupport.CollectionAutoNumber", "edu.ku.brc.specify.datamodel.CollectionObject", "catalogNumber") :
+                                                     createAutoNumber("edu.ku.brc.af.core.db.AutoNumberGeneric", "edu.ku.brc.specify.datamodel.Accession", "accessionNumber");
+            newFormatter.setAutoNumber(autoNum);
         } else
         {
             newFormatter = null;
-            
-            //formatterCBX.setSelectedIndex(-1);
         }
         loadFormatCbx(newFormatter);
-        
+    }
+    
+    /**
+     * @return
+     */
+    protected ActionListener createFrmCBXAL()
+    {
+        return new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                if (formatterCBX.getSelectedIndex() == newFmtInx)
+                {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run()
+                        {
+                            addFieldFormatter();
+                        }
+                    });
+                }
+            }
+        };
     }
     
     /**
@@ -176,6 +177,11 @@ public class FormatterPickerPanel extends BaseSetupPanel
     protected void loadFormatCbx(final UIFieldFormatterIFace selectedFmt)
     {
         ((DefaultComboBoxModel)formatterCBX.getModel()).removeAllElements();
+        
+        for (ActionListener al : formatterCBX.getActionListeners())
+        {
+            formatterCBX.removeActionListener(al);
+        }
         
         fmtList = new Vector<UIFieldFormatterIFace>(UIFieldFormatterMgr.getInstance().getFormatterList(doingCatNums ? CollectionObject.class : Accession.class));
         if (newFormatter != null)
@@ -212,6 +218,8 @@ public class FormatterPickerPanel extends BaseSetupPanel
             formatterCBX.setSelectedIndex(-1);
             nextBtn.setEnabled(false);
         }
+        
+        formatterCBX.addActionListener(createFrmCBXAL());
     }
 
     /* (non-Javadoc)
@@ -220,12 +228,16 @@ public class FormatterPickerPanel extends BaseSetupPanel
     @Override
     public void getValues(final Properties props)
     {
-        if (doingCatNums || formatterCBX.getSelectedIndex() > 0)
+        if (doingCatNums)
         {
-            props.put(doingCatNums ? "catnumfmt" : "accnumfmt", formatterCBX.getSelectedItem());
+            props.put("catnumfmt", newFormatter != null ? newFormatter : formatterCBX.getSelectedItem());
+            
+        } else if (formatterCBX.getSelectedIndex() > 0)
+        {
+            props.put("accnumfmt", newFormatter != null ? newFormatter : formatterCBX.getSelectedItem());
         } else
         {
-            props.remove(doingCatNums ? "catnumfmt" : "accnumfmt");
+            props.remove("accnumfmt");
         }
     }
 

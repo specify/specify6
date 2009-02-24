@@ -378,7 +378,23 @@ public class SpAppResourceDir extends DataModelObjBase implements java.io.Serial
         strBuf.append(" "+(userType != null ? userType : ""));
         strBuf.append(" "+isPersonal);
         return strBuf.toString(); 
-        
+    }
+    
+    /**
+     * @param arName
+     * @return
+     */
+    @Transient
+    public SpAppResource getResourceByName(final String arName)
+    {
+        for (SpAppResource ar :  getSpAppResources())
+        {
+            if (ar.getName() != null && ar.getName().equals(arName))
+            {
+                return ar;
+            }
+        }
+        return null;
     }
 
     /**

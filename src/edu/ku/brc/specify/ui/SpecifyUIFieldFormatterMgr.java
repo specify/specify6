@@ -32,9 +32,14 @@ import edu.ku.brc.af.ui.forms.formatters.GenericStringUIFieldFormatter;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.config.SpecifyAppContextMgr;
+import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.AutoNumberingScheme;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.specify.datamodel.SpAppResource;
+import edu.ku.brc.specify.datamodel.SpAppResourceDir;
+import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.dbsupport.AccessionAutoNumberAlphaNum;
 import edu.ku.brc.specify.dbsupport.CollectionAutoNumber;
 import edu.ku.brc.specify.dbsupport.CollectionAutoNumberAlphaNum;
@@ -56,6 +61,7 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr implements C
     private static final Logger  log      = Logger.getLogger(SpecifyUIFieldFormatterMgr.class);
     
     protected static String         COLLECTION   = "Collection";
+    protected static String         BACKSTOPDIR  = "BackStop";
     protected static String         UIFORMATTERS = "UIFormatters";
     
     private String                  localFilePath = null;
@@ -112,7 +118,7 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr implements C
             catalogNumberString = new CatalogNumberStringUIFieldFormatter();
         }
         
-        loadStringFormatters();
+        //loadStringFormatters();
     }
     
     /* (non-Javadoc)
@@ -207,7 +213,6 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr implements C
                                                                 UIRegistry.getResourceString(titleKey), 
                                                                 uiDisplayLen);
                         hash.put(name, fmt);
-                    
                     }
                 }
             }
@@ -221,13 +226,11 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr implements C
         }
     }
 
-    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr#saveXML(java.lang.String)
      */
     public void saveXML(final String xml) 
     {
-
         if (doingLocal)
         {
             File outputFile = pathWasSet ? new File(getLocalPath()) : XMLHelper.getConfigDir(getLocalPath());
@@ -242,7 +245,7 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr implements C
             }
         } else
         {
-            AppResourceIFace appRes = AppContextMgr.getInstance().getResourceFromDir(COLLECTION, UIFORMATTERS); //$NON-NLS-1$ //$NON-NLS-2$
+            AppResourceIFace appRes = AppContextMgr.getInstance().getResourceFromDir(COLLECTION, UIFORMATTERS);
             if (appRes != null)
             {
                 appRes.setDataAsString(xml);
@@ -250,7 +253,39 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr implements C
                
             } else
             {
-                AppContextMgr.getInstance().putResourceAsXML(UIFORMATTERS, xml); //$NON-NLS-1$
+                // Save the UIFieldFormatters into a new Resource in Collections.
+                SpecifyAppContextMgr context = (SpecifyAppContextMgr)AppContextMgr.getInstance();
+                SpAppResourceDir     collDir = context.getSpAppResourceDirByName(COLLECTION);
+                
+               if (collDir != null)
+                {
+                    SpAppResource uifAppRes = context.getSpAppResourceDirByName(BACKSTOPDIR).getResourceByName(UIFORMATTERS);
+                    SpAppResource appResUF  = new SpAppResource();
+                    appResUF.initialize();
+                    if (uifAppRes != null)
+                    {
+                        appResUF.setMetaData(uifAppRes.getMetaData());
+                        appResUF.setDescription(uifAppRes.getDescription());
+                        appResUF.setFileName(uifAppRes.getFileName());
+                        appResUF.setMimeType(uifAppRes.getMimeType());
+                        appResUF.setName(uifAppRes.getName());
+
+                        SpecifyUser user  = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
+                        Agent       agent = AppContextMgr.getInstance().getClassObject(Agent.class);
+                        appResUF.setCreatedByAgent(agent);
+                        appResUF.setSpecifyUser(user);
+
+                        appResUF.setLevel(uifAppRes.getLevel());
+                    }
+                    appResUF.setSpAppResourceDir(collDir);
+                    collDir.getSpAppResources().add(appResUF);
+                    appResUF.setDataAsString(xml);
+                    ((SpecifyAppContextMgr) AppContextMgr.getInstance()).saveResource(appResUF);
+                    
+                } else
+                {
+                    AppContextMgr.getInstance().putResourceAsXML(UIFORMATTERS, xml); //$NON-NLS-1$
+                }
             }
         }
     }
@@ -258,9 +293,9 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr implements C
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr#createAutoNumber(java.lang.String, java.lang.String, java.lang.String)
      */
-    protected static AutoNumberIFace createAutoNumber(final String autoNumberClassName, 
-                                                      final String dataClassName, 
-                                                      final String fieldName)
+    public static AutoNumberIFace createAutoNumber(final String autoNumberClassName, 
+                                                   final String dataClassName, 
+                                                   final String fieldName)
     {
         if (dataClassName.equals("edu.ku.brc.specify.datamodel.CollectionObject") &&  //$NON-NLS-1$
             fieldName.equals("catalogNumber")) //$NON-NLS-1$

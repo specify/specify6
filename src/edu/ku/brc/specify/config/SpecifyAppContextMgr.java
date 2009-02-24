@@ -109,7 +109,6 @@ import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
 import edu.ku.brc.specify.prefs.FormattingPrefsPanel;
 import edu.ku.brc.specify.tasks.BaseTreeTask;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
-import edu.ku.brc.specify.ui.SpecifyUIFieldFormatterMgr;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -958,7 +957,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
     }
     
     /**
-     * Creates an AppResourceDefault object from a directory (note the Id will be null).
+     * Creates an SpAppResourceDir object from a directory (note the Id will be null).
      * @param virtualDirName
      * @param spAppResourceDir
      * @param viewSetMgrName
@@ -1020,7 +1019,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         return spAppResourceDir;
     }
     /**
-     * Creates an AppResourceDefault object from a directory (note the Id will be null).
+     * Creates an SpAppResourceDir object from a directory (note the Id will be null).
      * @param dir the directory in question)
      * @return a new AppResourceDefault object
      */
@@ -1174,8 +1173,6 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 return CONTEXT_STATUS.Error;
                 //throw new RuntimeException("The user ["+userName+"] could  not be located as a Specify user.");
             }
-            
-            
 
             // First we start by getting all the Collection that the User want to
             // work with for this "Context" then we need to go get all the Default View and
@@ -1389,8 +1386,6 @@ public class SpecifyAppContextMgr extends AppContextMgr
             
             SpecifyAppPrefs.initialPrefs();
             
-            //checkForInitialFormats();
-            
             if (prevDisciplineId != -1)
             {
                 CommandDispatcher.dispatch(new CommandAction("Discipline", "Changed")); //$NON-NLS-1$ //$NON-NLS-2$
@@ -1400,6 +1395,14 @@ public class SpecifyAppContextMgr extends AppContextMgr
             {
                 CommandDispatcher.dispatch(new CommandAction("Collection", "Changed")); //$NON-NLS-1$ //$NON-NLS-2$
             }
+            
+            closeSession();
+            session = null;
+            
+            // We must check here before we load the schema
+            checkForInitialFormats();
+            
+            session = openSession();
             
             int disciplineeId = AppContextMgr.getInstance().getClassObject(Discipline.class).getDisciplineId();
             if (disciplineeId != prevDisciplineId)
@@ -1412,6 +1415,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             // and we don't want to reuse it and get a double session
             closeSession();
             session = null;
+            
             
             // Here is where you turn on View/Viewdef re-use.
             if (true)
@@ -1452,47 +1456,39 @@ public class SpecifyAppContextMgr extends AppContextMgr
     /**
      * 
      */
-    protected void checkForInitialFormats()
+    protected boolean addFormatFromFile(final String fmtFileName)
     {
-        String path = UIRegistry.getAppDataDir() + File.separator + "uif.xml";
-        File uifFile = new File(path);
+        String path    = UIRegistry.getAppDataDir() + File.separator + fmtFileName;
+        File   uifFile = new File(path);
         if (uifFile.exists())
         {
             try
             {
-                UIFieldFormatterMgr.setDoingLocal(true);
-                SpecifyUIFieldFormatterMgr mgr = new SpecifyUIFieldFormatterMgr();
-                mgr.setLocalFilePath(path);
-                mgr.load();
-                UIFieldFormatterMgr.setDoingLocal(false);
-                
-                Hashtable<String, Boolean> nameHash = new Hashtable<String, Boolean>();
-                for (UIFieldFormatterIFace fmt : UIFieldFormatterMgr.getInstance().getFormatters())
+                boolean loadedOK =  UIFieldFormatterMgr.getInstance().addFormatter(uifFile);
+                if (loadedOK)
                 {
-                    nameHash.put(fmt.getName(), true);
-                }
-                
-                boolean changed = false;
-                for (UIFieldFormatterIFace fmt : mgr.getFormatters())
-                {
-                    if (nameHash.get(fmt.getName()) == null)
+                    try
                     {
-                        UIFieldFormatterMgr.getInstance().addFormatter(fmt);
-                        changed = true;
-                    }
-                }
-                
-                if (changed)
-                {
-                    UIFieldFormatterMgr.getInstance().save();
+                        uifFile.delete();
+                    } catch (SecurityException ex) {}
                 }
                 
             } catch (Exception ex)
             {
-                UIFieldFormatterMgr.setDoingLocal(false);
                 ex.printStackTrace();
             }
         }
+        return false;
+    }
+    
+    /**
+     * Check for additional Formatters to be added from the Wizard.
+     */
+    protected void checkForInitialFormats()
+    {
+        addFormatFromFile("catnumfmt.xml");
+        addFormatFromFile("accsnumfmt.xml");
+        UIFieldFormatterMgr.getInstance().save();
     }
 
     /**
@@ -1875,17 +1871,9 @@ public class SpecifyAppContextMgr extends AppContextMgr
         SpAppResourceDir appResDir = spAppResourceHash.get(appResDirName);
         if (appResDir != null)
         {
-            for (SpAppResource ar : appResDir.getSpAppResources())
-            {
-            	if (ar.getName().equals(appResName))
-                {
-                    return ar;
-                }
-            }
-        } else
-        {
-            log.error("Couldn't find AppResDir with name["+appResDirName+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+            return appResDir.getResourceByName(appResName);
         }
+        log.error("Couldn't find AppResDir with name["+appResDirName+"]"); //$NON-NLS-1$ //$NON-NLS-2$
         return null;
     }
 

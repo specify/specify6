@@ -24,7 +24,7 @@ import edu.ku.brc.util.Pair;
  * May 23, 2008
  *
  */
-public class GenericStringUIFieldFormatter extends BaseUIFieldFormatter implements UIFieldFormatterIFace
+public class GenericStringUIFieldFormatter extends BaseUIFieldFormatter
 {
     private Class<?> dataClass;
     

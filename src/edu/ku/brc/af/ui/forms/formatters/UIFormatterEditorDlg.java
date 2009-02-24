@@ -22,6 +22,7 @@ import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIHelper.createScrollPane;
 import static edu.ku.brc.ui.UIHelper.createTextField;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.loadAndPushResourceBundle;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
@@ -689,6 +690,24 @@ public class UIFormatterEditorDlg extends CustomDialog
     @Override
     protected void okButtonPressed()
     {
+        if (fieldsPanel.getEditBtn().isEnabled())
+        {
+            int userChoice = JOptionPane.NO_OPTION;
+            Object[] options = { getResourceString("Continue"),  //$NON-NLS-1$
+                                 getResourceString("CANCEL")  //$NON-NLS-1$
+                  };
+            loadAndPushResourceBundle("masterusrpwd");
+
+            userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
+                                                         getResourceString("UIFEDlg.ITEM_CHG"),  //$NON-NLS-1$
+                                                         getResourceString("UIFEDlg.CHG_TITLE"),  //$NON-NLS-1$
+                                                         JOptionPane.YES_NO_OPTION,
+                                                         JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+            if (userChoice == JOptionPane.NO_OPTION)
+            {
+                return;
+            }
+        }
         super.okButtonPressed();
         getDataFromUI();
     }

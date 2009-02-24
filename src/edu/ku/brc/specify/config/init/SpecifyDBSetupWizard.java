@@ -16,7 +16,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.Properties;
@@ -37,6 +37,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -70,7 +71,6 @@ import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.SpecifyUserTypes;
 import edu.ku.brc.specify.ui.HelpMgr;
-import edu.ku.brc.specify.ui.SpecifyUIFieldFormatterMgr;
 import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
@@ -320,9 +320,9 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
         builder.setDefaultDialogBorder();
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         
-        JPanel mainPanel = new JPanel(new BorderLayout());
-        PanelBuilder    iconBldr    = new PanelBuilder(new FormLayout("20px, f:p:g,p,f:p:g,8px", "20px,t:p,f:p:g, 8px"));
-        JLabel iconLbl = new JLabel(IconManager.getIcon("WizardIcon"));
+        JPanel       mainPanel = new JPanel(new BorderLayout());
+        PanelBuilder iconBldr  = new PanelBuilder(new FormLayout("20px, f:p:g,p,f:p:g,8px", "20px,t:p,f:p:g, 8px"));
+        JLabel        iconLbl  = new JLabel(IconManager.getIcon("WizardIcon"));
         iconLbl.setVerticalAlignment(SwingConstants.TOP);
         iconBldr.add(iconLbl, cc.xy(2, 3));
         mainPanel.add(iconBldr.getPanel(), BorderLayout.WEST);
@@ -373,6 +373,34 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
         }
         return appPath;
     }
+    
+    /**
+     * @param fmt
+     * @param fileName
+     */
+    protected boolean saveFormatters(final UIFieldFormatterIFace fmt, final String fileName)
+    {
+        if (fmt != null)
+        {
+            StringBuilder sb = new StringBuilder();
+            fmt.toXML(sb);
+            
+            String path = UIRegistry.getAppDataDir() + File.separator + fileName;
+            try
+            {
+                FileUtils.writeStringToFile(new File(path), sb.toString());
+                return true;
+                
+            } catch (IOException ex)
+            {
+                
+            }
+        } else
+        {
+            return true; // null fmtr doesn't mean an error
+        }
+        return false;
+    }
 
     /**
      * 
@@ -385,7 +413,7 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
             {
                 panel.getValues(props);
             }
-            props.storeToXML(new FileOutputStream(new File(setupXMLPath)), "SetUp Props");
+            //props.storeToXML(new FileOutputStream(new File(setupXMLPath)), "SetUp Props");
             
         } catch (Exception ex)
         {
@@ -427,21 +455,10 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
                 {
                     try
                     {
-                        if (SpecifyUIFieldFormatterMgr.getInstance().hasChanged())
-                        {
-                            SpecifyUIFieldFormatterMgr.setDoingLocal(true);
-                            String path = UIRegistry.getAppDataDir() + File.separator + "uif.xml";
-                            SpecifyUIFieldFormatterMgr mgr = (SpecifyUIFieldFormatterMgr)SpecifyUIFieldFormatterMgr.getInstance();
-                            mgr.setLocalFilePath(path);
-                            for (UIFieldFormatterIFace fmt : new Vector<UIFieldFormatterIFace>(mgr.getFormatters()))
-                            {
-                                if (fmt.isSystem())
-                                {
-                                    mgr.removeFormatter(fmt);
-                                }
-                            }
-                            mgr.save();
-                        }
+                        // Temp
+                        saveFormatters((UIFieldFormatterIFace)props.get("catnumfmt"), "catnumfmt.xml");
+                        saveFormatters((UIFieldFormatterIFace)props.get("accnumfmt"), "accnumfmt.xml");
+                        
                         DatabaseDriverInfo driverInfo = userPanel.getDriver();
                         props.put("driver", driverInfo);
                         
@@ -478,21 +495,8 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
                             
                             if (isOK)
                             {
-                                if (SpecifyUIFieldFormatterMgr.getInstance().hasChanged())
-                                {
-                                    SpecifyUIFieldFormatterMgr.setDoingLocal(true);
-                                    String path = UIRegistry.getAppDataDir() + File.separator + "uif.xml";
-                                    SpecifyUIFieldFormatterMgr mgr = (SpecifyUIFieldFormatterMgr)SpecifyUIFieldFormatterMgr.getInstance();
-                                    mgr.setLocalFilePath(path);
-                                    for (UIFieldFormatterIFace fmt : new Vector<UIFieldFormatterIFace>(mgr.getFormatters()))
-                                    {
-                                        if (fmt.isSystem())
-                                        {
-                                            mgr.removeFormatter(fmt);
-                                        }
-                                    }
-                                    mgr.save();
-                                }
+                                saveFormatters((UIFieldFormatterIFace)props.get("catnumfmt"), "catnumfmt.xml");
+                                saveFormatters((UIFieldFormatterIFace)props.get("accnumfmt"), "accnumfmt.xml");
                             }
 
                             JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 

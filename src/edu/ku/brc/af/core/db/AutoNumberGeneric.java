@@ -55,6 +55,23 @@ public class AutoNumberGeneric implements AutoNumberIFace
         setProperties(properties);
     }
     
+    /**
+     * @param properties
+     */
+    public AutoNumberGeneric(final String className, final String fieldName, final boolean isGeneric)
+    {
+        DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByClassName(className);
+        if (tblInfo != null)
+        {
+            this.classObj  = tblInfo.getClassObj();
+            this.fieldName = fieldName;
+            this.isGeneric = isGeneric;
+        } else
+        {
+            throw new RuntimeException("Class property ["+className+"] was not found."); //$NON-NLS-1$ //$NON-NLS-2$
+        }
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.AutoNumberIFace#setProperties(java.util.Properties)
      */

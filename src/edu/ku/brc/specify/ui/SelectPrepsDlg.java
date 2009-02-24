@@ -145,8 +145,7 @@ public class SelectPrepsDlg extends CustomDialog
         Vector<ColObjInfo> coFilteredList = new Vector<ColObjInfo>();
         for (ColObjInfo colObjInfo : coList)
         {
-            if (StringUtils.isNotEmpty(colObjInfo.getCatNo()) && 
-                StringUtils.isNotEmpty(colObjInfo.getTaxonName()) &&
+            if (StringUtils.isNotEmpty(colObjInfo.getCatNo()) &&
                 colObjInfo.getPreps() != null &&
                 colObjInfo.getPreps().size() > 0)
             {
@@ -177,7 +176,6 @@ public class SelectPrepsDlg extends CustomDialog
         
         DBTableInfo colObjTI = DBTableIdMgr.getInstance().getInfoById(CollectionObject.getClassTableId());
         DBFieldInfo colObjFI = colObjTI.getFieldByColumnName("CatalogNumber");
-        
         
         int i = 0;
         int y = 1;
@@ -312,7 +310,12 @@ public class SelectPrepsDlg extends CustomDialog
             PanelBuilder    pbuilder = new PanelBuilder(new FormLayout("f:p:g", "p,5px,p"), this); //$NON-NLS-1$ //$NON-NLS-2$
             CellConstraints cc      = new CellConstraints();
      
-            String descr = String.format(getResourceString("LoanSelectPrepsDlg.TITLE_PAIR"), colObjInfo.getCatNo(), colObjInfo.getTaxonName()); //$NON-NLS-1$
+            String taxonName = colObjInfo.getTaxonName();
+            if (StringUtils.isEmpty(taxonName))
+            {
+                taxonName = getResourceString("LoanSelectPrepsDlg.UNDET");
+            }
+            String descr     = String.format(getResourceString("LoanSelectPrepsDlg.TITLE_PAIR"), colObjInfo.getCatNo(), taxonName); //$NON-NLS-1$
             descr = StringUtils.stripToEmpty(descr);
             
             pbuilder.add(checkBox = createCheckBox(descr), cc.xy(1,1));

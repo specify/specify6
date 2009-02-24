@@ -14,6 +14,7 @@
  */
 package edu.ku.brc.af.ui.forms.formatters;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.security.AccessController;
 import java.text.SimpleDateFormat;
@@ -378,11 +379,22 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
     }
 
     /**
-     * Adds a new formatter
+     * Adds a new formatter to the manager.
+     * @param formatter the new formatter
      */
     public void addFormatter(final UIFieldFormatterIFace formatter)
     {
         getFormatterUniqueName(formatter);
+        
+        addFormatterToMgr(formatter);
+    }
+    
+    /**
+     * Adds the formatter to the hash and class list of formatters.
+     * @param formatter the formatter.
+     */
+    protected void addFormatterToMgr(final UIFieldFormatterIFace formatter)
+    {
         
         Vector<UIFieldFormatterIFace> list = classToListHash.get(formatter.getDataClass());
         if (list == null)
@@ -393,11 +405,11 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
         
         list.add(formatter);
         hash.put(formatter.getName(), formatter);
-        hasChanged = true;
+        hasChanged = true; 
     }
 
     /**
-     * Deletes a formatter from the
+     * Deletes a formatter from the manager.
      */
     public void removeFormatter(final UIFieldFormatterIFace formatter)
     {
@@ -415,11 +427,212 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
     /**
      * Returns the DOM it is suppose to load the formatters from.
      * 
-     * @return Returns the DOM it is suppose to load the formatters from.
+     * @return the DOM it is suppose to load the formatters from.
      */
     protected Element getDOM() throws Exception
     {
         throw new RuntimeException("Not implemented.");
+    }
+    
+    /**
+     * Reads a serialized UIFieldFormatterIFace from XML and adds to the Mgr.
+     * @param xmlFile the file containing the XML
+     * @return true if successful.
+     */
+    public boolean addFormatter(final File xmlFile)
+    {
+        try
+        {
+            UIFieldFormatterIFace formatter = createFormatterFromXML(XMLHelper.readFileToDOM4J(xmlFile));
+            if (formatter != null)
+            {
+                addFormatterToMgr(formatter);
+            
+                return true;
+            }
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return false;
+    }
+    
+    /**
+     * Creates a single UIFieldFormatter from a DOM Element.
+     * @param formatElement the element
+     * @return the formatter object
+     */
+    public UIFieldFormatterIFace createFormatterFromXML(final Element formatElement)
+    {
+        UIFieldFormatterIFace formatter = null;
+
+        String  name      = formatElement.attributeValue("name");
+        String  fType     = formatElement.attributeValue("type");
+        String  fieldName = XMLHelper.getAttr(formatElement, "fieldname", "*");
+        String  dataClassName = formatElement .attributeValue("class");
+        int     precision = XMLHelper.getAttr(formatElement, "precision", 12);
+        int     scale     = XMLHelper.getAttr(formatElement, "scale", 2);
+        boolean isDefault = XMLHelper.getAttr(formatElement, "default", false);
+        boolean isSystem  = XMLHelper.getAttr(formatElement, "system", false);
+
+        AutoNumberIFace autoNumberObj = null;
+        Element autoNumberElement = (Element) formatElement.selectSingleNode("autonumber");
+        if (autoNumberElement != null)
+        {
+            String autoNumberClassName = autoNumberElement.getTextTrim();
+            if (StringUtils.isNotEmpty(autoNumberClassName) &&
+                StringUtils.isNotEmpty(dataClassName) &&
+                StringUtils.isNotEmpty(fieldName))
+            {
+                autoNumberObj = createAutoNumber(autoNumberClassName, dataClassName,fieldName);
+
+            } else
+            {
+                throw new RuntimeException(
+                        "The class cannot be empty for an external formatter! ["
+                                + name
+                                + "] or missing field name ["
+                                + fieldName
+                                + "] or missing data Class name ["
+                                + dataClassName + "]");
+            }
+        }
+        
+        Element external = (Element) formatElement.selectSingleNode("external");
+        if (external != null)
+        {
+            String externalClassName = external.getTextTrim();
+            if (StringUtils.isNotEmpty(externalClassName))
+            {
+                try
+                {
+                    formatter = Class.forName(externalClassName).asSubclass(UIFieldFormatterIFace.class).newInstance();
+                    formatter.setName(name);
+                    formatter.setAutoNumber(autoNumberObj);
+                    formatter.setDefault(isDefault);
+                    
+                    hash.put(name, formatter);
+
+                } catch (Exception ex)
+                {
+                    log.error(ex);
+                    ex.printStackTrace();
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UIFieldFormatterMgr.class, ex);
+                }
+            } else
+            {
+                throw new RuntimeException("The value cannot be empty for an external formatter! ["+ name + "]");
+            }
+        }
+        
+        List<?>                       fieldsList = formatElement.selectNodes("field");
+        Vector<UIFieldFormatterField> fields     = new Vector<UIFieldFormatterField>();
+        boolean                       isInc      = false;
+        String                        partialDateTypeStr = formatElement.attributeValue("partialdate");
+        for (Object fldObj : fieldsList)
+        {
+            Element fldElement = (Element) fldObj;
+
+            int     size    = XMLHelper.getAttr(fldElement, "size", 1);
+            String  value   = fldElement.attributeValue("value");
+            String  typeStr = fldElement.attributeValue("type");
+            boolean increm  = XMLHelper.getAttr(fldElement, "inc", false);
+            boolean byYear  = false;
+
+            UIFieldFormatterField.FieldType type = null;
+            try
+            {
+                type = UIFieldFormatterField.FieldType.valueOf(typeStr);
+
+            } catch (Exception ex)
+            {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UIFieldFormatterMgr.class, ex);
+                log.error("[" + typeStr + "]" + ex.toString());
+            }
+
+            if (type == UIFieldFormatterField.FieldType.year)
+            {
+                size = 4;
+                byYear = XMLHelper.getAttr(fldElement, "byyear", false);
+            }
+
+            fields.add(new UIFieldFormatterField(type, size, value, increm, byYear));
+            if (increm)
+            {
+                isInc = true;
+            }
+        }
+
+        // set field type
+        UIFieldFormatter.FormatterType   type            = UIFieldFormatter.FormatterType.generic;
+        UIFieldFormatter.PartialDateEnum partialDateType = UIFieldFormatter.PartialDateEnum.None;
+        if (StringUtils.isNotEmpty(fType) && fType.equals("numeric"))
+        {
+            type = UIFieldFormatter.FormatterType.numeric;
+            
+        } else if (StringUtils.isNotEmpty(fType) && fType.equals("date"))
+        {
+            type = UIFieldFormatter.FormatterType.date;
+            if (StringUtils.isNotEmpty(partialDateTypeStr))
+            {
+                partialDateType = UIFieldFormatter.PartialDateEnum.valueOf(partialDateTypeStr);
+            } else
+            {
+                partialDateType = UIFieldFormatter.PartialDateEnum.Full;
+            }
+        }
+        
+        Class<?> dataClass = null;
+        if (StringUtils.isNotEmpty(dataClassName))
+        {
+            try
+            {
+                dataClass = Class.forName(dataClassName);
+            } catch (Exception ex)
+            {
+                log.error("Couldn't load class [" + dataClassName + "] for [" + name + "]");
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UIFieldFormatterMgr.class, ex);
+            }
+
+        } else if (StringUtils.isNotEmpty(fType) && fType.equals("date"))
+        {
+            dataClass = Date.class;
+        }
+
+        if (formatter == null)
+        {
+            formatter = new UIFieldFormatter(name, isSystem, fieldName, type, partialDateType,
+                                             dataClass, isDefault, isInc, fields);
+            hash.put(name, formatter);
+        } else
+        {
+            formatter.setPartialDateType(partialDateType);
+        }
+        
+        if (formatter instanceof UIFieldFormatter)
+        {
+            UIFieldFormatter fmt = (UIFieldFormatter)formatter;
+            fmt.setType(type);
+            
+            if (type == UIFieldFormatter.FormatterType.date && fields.size() == 0)
+            {
+                addFieldsForDate(fmt);
+
+            } else if (type == UIFieldFormatter.FormatterType.numeric)
+            {
+                fmt.setPrecision(precision);
+                fmt.setScale(scale);
+                addFieldsForNumeric(fmt);
+            }
+        }
+
+        formatter.setAutoNumber(autoNumberObj);
+
+        return formatter;
     }
 
     /**
@@ -442,185 +655,19 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
                 {
                     Element formatElement = (Element) fObj;
 
-                    String  name      = formatElement.attributeValue("name");
-                    String  fType     = formatElement.attributeValue("type");
-                    String  fieldName = XMLHelper.getAttr(formatElement, "fieldname", "*");
-                    String  dataClassName = formatElement .attributeValue("class");
-                    int     precision = XMLHelper.getAttr(formatElement, "precision", 12);
-                    int     scale     = XMLHelper.getAttr(formatElement, "scale", 2);
-                    boolean isDefault = XMLHelper.getAttr(formatElement, "default", false);
-                    boolean isSystem  = XMLHelper.getAttr(formatElement, "system", false);
-
+                    UIFieldFormatterIFace formatter = createFormatterFromXML(formatElement);
+                    
                     // Make sure we only have one default.
-                    if (isDefault)
+                    if (formatter.isDefault())
                     {
                         if (!hasDefault)
                         {
                             hasDefault = true;
                         } else
                         {
-                            isDefault = false;
+                            formatter.setDefault(false);
                         }
                     }
-                    
-                    AutoNumberIFace autoNumberObj = null;
-                    Element autoNumberElement = (Element) formatElement.selectSingleNode("autonumber");
-                    if (autoNumberElement != null)
-                    {
-                        String autoNumberClassName = autoNumberElement.getTextTrim();
-                        if (StringUtils.isNotEmpty(autoNumberClassName) &&
-                            StringUtils.isNotEmpty(dataClassName) &&
-                            StringUtils.isNotEmpty(fieldName))
-                        {
-                            autoNumberObj = createAutoNumber(autoNumberClassName, dataClassName,fieldName);
-
-                        } else
-                        {
-                            throw new RuntimeException(
-                                    "The class cannot be empty for an external formatter! ["
-                                            + name
-                                            + "] or missing field name ["
-                                            + fieldName
-                                            + "] or missing data Class name ["
-                                            + dataClassName + "]");
-                        }
-                    }
-                    
-                    
-                    UIFieldFormatterIFace formatter = null;
-                    
-                    Element external = (Element) formatElement.selectSingleNode("external");
-                    if (external != null)
-                    {
-                        String externalClassName = external.getTextTrim();
-                        if (StringUtils.isNotEmpty(externalClassName))
-                        {
-                            try
-                            {
-                                formatter = Class.forName(externalClassName).asSubclass(UIFieldFormatterIFace.class).newInstance();
-                                formatter.setName(name);
-                                formatter.setAutoNumber(autoNumberObj);
-                                formatter.setDefault(isDefault);
-                                
-                                hash.put(name, formatter);
-
-                            } catch (Exception ex)
-                            {
-                                log.error(ex);
-                                ex.printStackTrace();
-                                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UIFieldFormatterMgr.class, ex);
-                            }
-                        } else
-                        {
-                            throw new RuntimeException("The value cannot be empty for an external formatter! ["+ name + "]");
-                        }
-                    }
-                    
-                    List<?>                       fieldsList = formatElement.selectNodes("field");
-                    Vector<UIFieldFormatterField> fields     = new Vector<UIFieldFormatterField>();
-                    boolean                       isInc      = false;
-                    String                        partialDateTypeStr = formatElement.attributeValue("partialdate");
-                    for (Object fldObj : fieldsList)
-                    {
-                        Element fldElement = (Element) fldObj;
-
-                        int     size    = XMLHelper.getAttr(fldElement, "size", 1);
-                        String  value   = fldElement.attributeValue("value");
-                        String  typeStr = fldElement.attributeValue("type");
-                        boolean increm  = XMLHelper.getAttr(fldElement, "inc", false);
-                        boolean byYear  = false;
-
-                        UIFieldFormatterField.FieldType type = null;
-                        try
-                        {
-                            type = UIFieldFormatterField.FieldType.valueOf(typeStr);
-
-                        } catch (Exception ex)
-                        {
-                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UIFieldFormatterMgr.class, ex);
-                            log.error("[" + typeStr + "]" + ex.toString());
-                        }
-
-                        if (type == UIFieldFormatterField.FieldType.year)
-                        {
-                            size = 4;
-                            byYear = XMLHelper.getAttr(fldElement, "byyear", false);
-                        }
-
-                        fields.add(new UIFieldFormatterField(type, size, value, increm, byYear));
-                        if (increm)
-                        {
-                            isInc = true;
-                        }
-                    }
-
-                    // set field type
-                    UIFieldFormatter.FormatterType   type            = UIFieldFormatter.FormatterType.generic;
-                    UIFieldFormatter.PartialDateEnum partialDateType = UIFieldFormatter.PartialDateEnum.None;
-                    if (StringUtils.isNotEmpty(fType) && fType.equals("numeric"))
-                    {
-                        type = UIFieldFormatter.FormatterType.numeric;
-                        
-                    } else if (StringUtils.isNotEmpty(fType) && fType.equals("date"))
-                    {
-                        type = UIFieldFormatter.FormatterType.date;
-                        if (StringUtils.isNotEmpty(partialDateTypeStr))
-                        {
-                            partialDateType = UIFieldFormatter.PartialDateEnum.valueOf(partialDateTypeStr);
-                        } else
-                        {
-                            partialDateType = UIFieldFormatter.PartialDateEnum.Full;
-                        }
-                    }
-                    
-                    Class<?> dataClass = null;
-                    if (StringUtils.isNotEmpty(dataClassName))
-                    {
-                        try
-                        {
-                            dataClass = Class.forName(dataClassName);
-                        } catch (Exception ex)
-                        {
-                            log.error("Couldn't load class [" + dataClassName + "] for [" + name + "]");
-                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UIFieldFormatterMgr.class, ex);
-                        }
-
-                    } else if (StringUtils.isNotEmpty(fType) && fType.equals("date"))
-                    {
-                        dataClass = Date.class;
-                    }
-
-                    if (formatter == null)
-                    {
-                        formatter = new UIFieldFormatter(name, isSystem, fieldName, type, partialDateType,
-                                                         dataClass, isDefault, isInc, fields);
-                        hash.put(name, formatter);
-                    } else
-                    {
-                        formatter.setPartialDateType(partialDateType);
-                    }
-                    
-                    if (formatter instanceof UIFieldFormatter)
-                    {
-                        UIFieldFormatter fmt = (UIFieldFormatter)formatter;
-                        fmt.setType(type);
-                        
-                        if (type == UIFieldFormatter.FormatterType.date && fields.size() == 0)
-                        {
-                            addFieldsForDate(fmt);
-
-                        } else if (type == UIFieldFormatter.FormatterType.numeric)
-                        {
-                            fmt.setPrecision(precision);
-                            fmt.setScale(scale);
-                            addFieldsForNumeric(fmt);
-                        }
-                    }
-
-                    formatter.setAutoNumber(autoNumberObj);
                 }
             } else
             {
@@ -662,7 +709,7 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
         sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<formats>\n");
 
         // sort formatters by name, then save them to db
-        Vector<UIFieldFormatterIFace> formatVector = new Vector<UIFieldFormatterIFace>(hash.values());
+        Vector<UIFieldFormatterIFace> formatVector = getFormatterToSave();
         Collections.sort(formatVector, new Comparator<UIFieldFormatterIFace>()
         {
             public int compare(UIFieldFormatterIFace o1, UIFieldFormatterIFace o2)
@@ -678,6 +725,15 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
         sb.append("\n</formats>\n");
 
         saveXML(sb.toString());
+    }
+    
+    /**
+     * This method enables overrides to change what is being saved.
+     * @return the list of formatters to be save.
+     */
+    protected Vector<UIFieldFormatterIFace> getFormatterToSave()
+    {
+        return new Vector<UIFieldFormatterIFace>(hash.values());
     }
 
     /**
@@ -727,9 +783,9 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
      * @param fieldName  the field that will be incremented in the dataClassName object
      * @return the auto number object or null
      */
-    protected static AutoNumberIFace createAutoNumber(final String autoNumberClassName, 
-                                                      final String dataClassName,
-                                                      final String fieldName)
+    public static AutoNumberIFace createAutoNumber(final String autoNumberClassName, 
+                                                   final String dataClassName,
+                                                   final String fieldName)
     {
         AutoNumberIFace autoNumberObj = null;
         try
@@ -907,7 +963,8 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
 
             } else
             {
-                throw new RuntimeException("Missing case for numeric class ["+ cls.getName() + "]");
+                len = formatter.getLength();
+                //throw new RuntimeException("Missing case for numeric class ["+ cls.getName() + "]");
             }
             len = Math.min(len, 10);
         }

@@ -861,7 +861,7 @@ public class ResourceImportExportDlg extends CustomDialog
     		ZipEntry entry = zin.getNextEntry();
     		if (entry == null)
     		{
-    			throw new Exception(UIRegistry.getResourceString("RIE_ReportImportFileError"));
+    			throw new Exception(getResourceString("RIE_ReportImportFileError"));
     		}
     		String app = readZipEntryToString(zin, entry);
     		zin.closeEntry();
@@ -869,7 +869,7 @@ public class ResourceImportExportDlg extends CustomDialog
     		entry = zin.getNextEntry();
     		if (entry == null)
     		{
-    			throw new Exception(UIRegistry.getResourceString("RIE_ReportImportFileError"));
+    			throw new Exception(getResourceString("RIE_ReportImportFileError"));
     		}
     		String data = readZipEntryToString(zin, entry);
     		zin.closeEntry();
@@ -997,8 +997,7 @@ public class ResourceImportExportDlg extends CustomDialog
 			} catch (Exception ex)
 			{
 				edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-				edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(
-						ResourceImportExportDlg.class, ex);
+				edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ResourceImportExportDlg.class, ex);
 				ex.printStackTrace();
 				return;
 			}
@@ -1016,8 +1015,7 @@ public class ResourceImportExportDlg extends CustomDialog
 					DataProviderSessionIFace session = null;
 					try
 					{
-						session = DataProviderFactory.getInstance()
-								.createSession();
+						session = DataProviderFactory.getInstance().createSession();
 						session.beginTransaction();
 
 						vso = (SpViewSetObj) viewSetsList.getSelectedValue();
@@ -1045,8 +1043,7 @@ public class ResourceImportExportDlg extends CustomDialog
 					} catch (Exception ex)
 					{
 						edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-						edu.ku.brc.exceptions.ExceptionTracker.getInstance()
-								.capture(ResourceImportExportDlg.class, ex);
+						edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ResourceImportExportDlg.class, ex);
 						session.rollback();
 
 						ex.printStackTrace();
@@ -1059,11 +1056,8 @@ public class ResourceImportExportDlg extends CustomDialog
 
 						} catch (Exception ex)
 						{
-							edu.ku.brc.af.core.UsageTracker
-									.incrHandledUsageCount();
-							edu.ku.brc.exceptions.ExceptionTracker
-									.getInstance().capture(
-											ResourceImportExportDlg.class, ex);
+	                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+	                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ResourceImportExportDlg.class, ex);
 							ex.printStackTrace();
 						}
 					}
@@ -1089,27 +1083,16 @@ public class ResourceImportExportDlg extends CustomDialog
 							SpAppResource appRes = new SpAppResource();
 							appRes.initialize();
 
-							SpAppResource fndAppRes = checkForOverrideAppRes(isSpRepRes ? repResourceName
-									: fileName);
+							SpAppResource fndAppRes = checkForOverrideAppRes(isSpRepRes ? repResourceName : fileName);
 							if (fndAppRes != null)
 							{
 								// Show Dialog here and tell them it found a
 								// resource to override by the same name
 								// and ask whether they want to override it
 								// or not
-								String title = UIRegistry
-										.getResourceString("RIE_ConfirmResourceOverwriteTitle");
-								String msg = String
-										.format(
-												UIRegistry
-														.getResourceString("RIE_ConfirmResourceOverwriteMsg"),
-												fndAppRes.getName(),
-												getHierarchicalTitle(fndAppRes
-														.getSpAppResourceDir()));
-								if (!UIRegistry.displayConfirm(title, msg,
-										UIRegistry.getResourceString("Yes"),
-										UIRegistry.getResourceString("Cancel"),
-										JOptionPane.WARNING_MESSAGE))
+								String title = getResourceString("RIE_ConfirmResourceOverwriteTitle");
+								String msg   = String.format(getResourceString("RIE_ConfirmResourceOverwriteMsg"), fndAppRes.getName(), getHierarchicalTitle(fndAppRes.getSpAppResourceDir()));
+								if (!UIRegistry.displayConfirm(title, msg, getResourceString("Yes"), getResourceString("Cancel"), JOptionPane.WARNING_MESSAGE))
 								{
 									return;
 								}
@@ -1127,8 +1110,7 @@ public class ResourceImportExportDlg extends CustomDialog
 									else
 									{
 										//XXX ???????????
-										((SpecifyAppContextMgr) AppContextMgr.getInstance()).removeAppResourceSp(fndAppRes
-						                    .getSpAppResourceDir(), fndAppRes);
+										((SpecifyAppContextMgr) AppContextMgr.getInstance()).removeAppResourceSp(fndAppRes.getSpAppResourceDir(), fndAppRes);
 									}
 								}
 								if (isSpRepRes)
@@ -1155,17 +1137,13 @@ public class ResourceImportExportDlg extends CustomDialog
 								if (fndAppRes != null) // overriding
 								{
 									appRes.setMetaData(fndAppRes.getMetaData());
-									appRes.setDescription(fndAppRes
-											.getDescription());
+									appRes.setDescription(fndAppRes.getDescription());
 									appRes.setFileName(fileName);
 									appRes.setMimeType(appRes.getMimeType());
 									appRes.setName(fileName);
 
-									SpecifyUser user = AppContextMgr
-											.getInstance().getClassObject(
-													SpecifyUser.class);
-									Agent agent = AppContextMgr.getInstance()
-											.getClassObject(Agent.class);
+									SpecifyUser user = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
+									Agent agent = AppContextMgr.getInstance().getClassObject(Agent.class);
 									appRes.setCreatedByAgent(agent);
 									appRes.setSpecifyUser(user);
 
@@ -1180,17 +1158,13 @@ public class ResourceImportExportDlg extends CustomDialog
 								dir.getSpAppResources().add(appRes);
 
 								appRes.setDataAsString(data);
-								SpecifyAppContextMgr mgr = (SpecifyAppContextMgr) AppContextMgr
-										.getInstance();
+								SpecifyAppContextMgr mgr = (SpecifyAppContextMgr) AppContextMgr.getInstance();
 								mgr.saveResource(appRes);
 							}
 						} catch (Exception e)
 						{
-							edu.ku.brc.af.core.UsageTracker
-									.incrHandledUsageCount();
-							edu.ku.brc.exceptions.ExceptionTracker
-									.getInstance().capture(
-											ResourceImportExportDlg.class, e);
+							edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+							edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ResourceImportExportDlg.class, e);
 							e.printStackTrace();
 						}
 					} else
@@ -1203,8 +1177,7 @@ public class ResourceImportExportDlg extends CustomDialog
 						if (dbBaseName.equals(fName))
 						{
 							appRes.setDataAsString(data);
-							((SpecifyAppContextMgr) AppContextMgr.getInstance())
-									.saveResource(appRes);
+							((SpecifyAppContextMgr) AppContextMgr.getInstance()).saveResource(appRes);
 						}
 
 					}

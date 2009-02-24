@@ -1248,7 +1248,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             }
         } else
         {
-            String errMsg = UIRegistry.getLocalizedMessage("TFWQ_INPUT_IN_ERROR", newEntryStr);
+            String errMsg = UIRegistry.getLocalizedMessage(StringUtils.isNotEmpty(newEntryStr) ? "TFWQ_INPUT_IN_ERROR" : "TFWQ_INPUT_EMPTY", newEntryStr);
             Toolkit.getDefaultToolkit().beep();
             
             if (UIRegistry.getStatusBar() != null)

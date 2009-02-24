@@ -303,7 +303,7 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
     {
         CellConstraints cc = new CellConstraints();
         
-        if (isViewOnly || !formatter.isUserInputNeeded())
+        if (isViewOnly || (!formatter.isUserInputNeeded() && fields.size() == 1))
         {
             viewtextField = new JTextField();
             setControlSize(viewtextField);
@@ -346,7 +346,7 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
             for (UIFieldFormatterField f : fields)
             {
                 sb.append(",");
-                if (f.getType() == FieldType.separator)
+                if (f.getType() == FieldType.separator || f.getType() == FieldType.constant)
                 {
                     sb.append('p');
                 } else
@@ -356,7 +356,7 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
                 i++;
             }
             sb.append(",1px");
-            PanelBuilder    builder = new PanelBuilder(new FormLayout(sb.toString(), "1px,P,1px"), this);
+            PanelBuilder    builder = new PanelBuilder(new FormLayout(sb.toString(), "1px,P:G,1px"), this);
             
             comps = new JComponent[fields.size()];
             int inx = 0;
@@ -365,9 +365,14 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
                 JComponent comp    = null;
                 JComponent tfToAdd = null;
                 
-                if (f.getType() == FieldType.separator)
+                if (f.getType() == FieldType.separator || f.getType() == FieldType.constant)
                 {
                     comp = createLabel(f.getValue());
+                    if (f.getType() == FieldType.constant)
+                    {
+                        comp.setBackground(Color.WHITE);
+                        comp.setOpaque(true);
+                    }
                     tfToAdd = comp;
                     
                 } else

@@ -41,7 +41,6 @@ import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.IconManager.IconSize;
 
 /**
  * (NOT IN USE)

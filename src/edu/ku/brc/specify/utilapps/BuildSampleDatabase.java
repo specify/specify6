@@ -495,15 +495,15 @@ public class BuildSampleDatabase
         frame.setProcess(++createStep);
         frame.setDesc("Loading Schema...");
         
-        String catNumFmt = props.getProperty("catnumfmt"); 
-        String accNumFmt = props.getProperty("accnumfmt"); 
+        UIFieldFormatterIFace catNumFmt = (UIFieldFormatterIFace)props.get("catnumfmt");
+        UIFieldFormatterIFace accNumFmt = (UIFieldFormatterIFace)props.get("accnumfmt");
         
         startTx();
         loadSchemaLocalization(discipline, 
                                 SpLocaleContainer.CORE_SCHEMA, 
                                 DBTableIdMgr.getInstance(),
-                                catNumFmt,
-                                accNumFmt);
+                                catNumFmt.getName(),
+                                accNumFmt != null ? accNumFmt.getName() : "");
         persist(discipline);
         commitTx();
         
@@ -537,17 +537,16 @@ public class BuildSampleDatabase
         persist(discipline);
         persist(userAgent);
         
-        UIFieldFormatterIFace fmt = UIFieldFormatterMgr.getInstance().getFormatter(catNumFmt);
+       
         AutoNumberingScheme catANS = createAutoNumberingScheme("Catalog Numbering Scheme", "", 
-                                         catNumFmt, fmt.isNumeric(), CollectionObject.getClassTableId());
+                                         catNumFmt.getName(), catNumFmt.isNumeric(), CollectionObject.getClassTableId());
         persist(catANS);
         
         AutoNumberingScheme accANS = null;
         if (accNumFmt != null)
         {
-            fmt    = UIFieldFormatterMgr.getInstance().getFormatter(catNumFmt);
             accANS = createAutoNumberingScheme("Accession Numbering Scheme", "",  
-                                                 accNumFmt, fmt.isNumeric(),Accession.getClassTableId());
+                                                 accNumFmt.getName(), accNumFmt.isNumeric(),Accession.getClassTableId());
             persist(accANS);
         }
         
@@ -565,7 +564,7 @@ public class BuildSampleDatabase
         
         Collection collection = createCollection(props.getProperty("collPrefix"), 
                                                  props.getProperty("collName"), 
-                                                 catNumFmt,
+                                                 catNumFmt.getName(),
                                                  catANS,
                                                  discipline, 
                                                  disciplineType.isEmbeddedCollecingEvent());
