@@ -2618,7 +2618,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	                              final TreeNode draggedNode,
 	                              final int      rankLevel)
 	{
-	    if (droppedOnNode.getAcceptedParentId() == null)
+		if (draggedNode.getAcceptedParentId() == null && 
+				droppedOnNode.getAcceptedParentId() == null)
         {
 	        if (draggedNode.isHasChildren())
 	        {
