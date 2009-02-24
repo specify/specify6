@@ -237,7 +237,7 @@ public class UIFieldFormatterField implements Cloneable
 		
 		if (type == FieldType.constant)
 		{
-			return value.substring(1, value.length() - 1);
+			return value.substring(0, value.length());
 		}
 		
 		if (sample.length() == 0)
