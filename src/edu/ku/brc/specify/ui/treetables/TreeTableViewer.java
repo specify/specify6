@@ -2377,8 +2377,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             tab.setEditable(false);
             tab.setLineWrap(true);
             tab.setWrapStyleWord(true);
-            int big = treeDef.getNodeClass().equals(Taxon.class) ? 10 : 1;
-            int small = treeDef.getNodeClass().equals(Taxon.class) ? 6 : 1;
+            int big = treeDef.getNodeClass().equals(Taxon.class) ? 10 : 2;
+            int small = treeDef.getNodeClass().equals(Taxon.class) ? 6 : 2;
             tab.setRows(numOptions == 3 ? (isSynonymizeOK ? small : big) : small);
             tab.setText(descStr);
         	pb.add(tab, cc.xy(3, 1));
@@ -2428,6 +2428,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             	ps.setSize(ps.getWidth()*1.5, ps.getHeight());
             	dlg.setSize(ps);
             }
+            dlg.pack(); //this shouldn't be necessary unless resized for Taxon??
             UIHelper.centerAndShow(dlg);
             
             int btn = dlg.getBtnPressed();
