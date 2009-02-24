@@ -2379,7 +2379,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             tab.setWrapStyleWord(true);
             int big = treeDef.getNodeClass().equals(Taxon.class) ? 10 : 2;
             int small = treeDef.getNodeClass().equals(Taxon.class) ? 6 : 2;
-            tab.setRows(numOptions == 3 ? (isSynonymizeOK ? small : big) : small);
+            tab.setRows(numOptions == 3 ? big : small);
             tab.setText(descStr);
         	pb.add(tab, cc.xy(3, 1));
             if (numOptions == 4)
