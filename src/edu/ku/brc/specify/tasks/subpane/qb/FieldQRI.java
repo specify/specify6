@@ -147,6 +147,6 @@ public class FieldQRI extends BaseQRI
      */
     public String getStringId()
     {
-        return getTableTree().getPathFromRoot() + "." + getTableTree().getField() + "." + getTableInfo().getName() + "." + getFieldName();
+        return getTableTree().getPathFromRootAsString() + "." + getTableInfo().getName() + "." + getFieldName();
     }
 }

@@ -502,29 +502,7 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
     {
         this.sortType = sortType.getOrdinal();
     }
-    
-    /**
-     * @return
-     */
-    @Transient
-    public int[] getTableIds()
-    {
-        if (tableIds == null)
-        {
-            if (StringUtils.isNotEmpty(tableList))
-            {
-                String[] toks = StringUtils.split(tableList, ',');
-                tableIds = new int[toks.length];
-                int i = 0;
-                for (String tok : StringUtils.split(tableList, ','))
-                {
-                    tableIds[i++] = Integer.parseInt(tok);
-                }
-            }
-        }
-        return tableIds;
-    }
-    
+        
     /**
      * @param tablesIds
      */

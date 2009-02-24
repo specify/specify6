@@ -421,7 +421,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                 parent = parent.getTableTree().getParent().getTableQRI();
             }
             
-            String tablesIds = fieldQRI.getTableTree().getPathFromRoot();
+            String tablesIds = fieldQRI.getTableTree().getPathFromRootAsString();
             log.debug(tablesIds);
             qField.setTableList(tablesIds);
             qField.setStringId(getStringId());

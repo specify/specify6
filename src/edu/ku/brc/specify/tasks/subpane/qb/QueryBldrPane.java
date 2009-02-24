@@ -2112,7 +2112,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      */
     protected void checkFldUsage(final TableTree tblTree, final Vector<BaseQRI> flds)
     {
-        String treeStr = tblTree.getPathFromRoot() + tblTree.getField();
+        String treeStr = tblTree.getPathFromRootAsString() + tblTree.getField();
         
         for (QueryFieldPanel qfp : this.queryFieldItems)
         {
@@ -2121,7 +2121,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             {
                 //if (qri.getTable().getTableTree().getParent() == tblTree)
                 TableTree qriTT = qri.getTable().getTableTree().getParent();
-                String qriTTStr = qriTT.getPathFromRoot() + qriTT.getField(); 
+                String qriTTStr = qriTT.getPathFromRootAsString() + qriTT.getField(); 
                 if (qriTTStr.equals(treeStr))
                 {
                     for (BaseQRI fld : flds)
@@ -2136,7 +2136,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     }
                 }
             }
-            else if ((qri.getTableTree().getPathFromRoot() + qri.getTableTree().getField()).equals(treeStr))
+            else if ((qri.getTableTree().getPathFromRootAsString() + qri.getTableTree().getField()).equals(treeStr))
             {
                 for (BaseQRI fld : flds)
                 {
@@ -2547,11 +2547,11 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      */
     protected static FieldQRI getFieldQRI(final TableTree tbl,
                                    final SpQueryField field,
-                                   final int[] tableIds,
+                                   final Vector<TableTreePathPoint> tableIds,
                                    final int level,
                                    final Hashtable<String, TableTree> ttHash)
     {
-        int id = tableIds[level];
+        TableTreePathPoint id = tableIds.get(level);
         for (int k=0; k<tbl.getKids(); k++)
         {
             TableTree kid = tbl.getKid(k);
@@ -2562,9 +2562,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             }
             if (checkKid)
             {
-                if (kid.getTableInfo().getTableId() == id)
+//                if (kid.getTableInfo().getTableId() == id)
+            	if (id.equals(new TableTreePathPoint(kid)))
                 {
-                    if (level == (tableIds.length - 1))
+                    if (level == (tableIds.size() - 1))
                     {
                         if (field.getIsRelFld() == null || !field.getIsRelFld())
                         {
@@ -2592,6 +2593,17 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         return null;
     }
 
+    protected static Vector<TableTreePathPoint> getTableIds(final String tableIdsList)
+    {
+    	String[] points = StringUtils.split(tableIdsList, ",");
+    	Vector<TableTreePathPoint> result = new Vector<TableTreePathPoint>();
+    	for (String point : points)
+    	{
+    		result.add(new TableTreePathPoint(point));
+    	}
+    	return result;
+    }
+    
     /**
      * @param container
      * @param fields
@@ -2613,7 +2625,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         result.add(bldQueryFieldPanel(container, null, null, container.getColumnDefStr(), saveBtn));
         for (SpQueryField fld : orderedFlds)
         {
-        	FieldQRI fieldQRI = getFieldQRI(tblTree, fld, fld.getTableIds(), 0, ttHash);
+        	FieldQRI fieldQRI = getFieldQRI(tblTree, fld, getTableIds(fld.getTableList()), 0, ttHash);
             if (fieldQRI != null)
             {
                 result.add(bldQueryFieldPanel(container, fieldQRI, fld, container.getColumnDefStr(), saveBtn));

@@ -9,8 +9,10 @@
  */
 package edu.ku.brc.specify.tasks.subpane.qb;
 
+import java.util.LinkedList;
 import java.util.Vector;
 
+import antlr.collections.List;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableInfo;
 
@@ -264,19 +266,42 @@ public class TableTree implements Cloneable, Comparable<TableTree>
     }
     
     /**
-     * @return a comma-separated list of the TableIds in path from the root to this. 
-     * 
+     * @return path from root to this TableTree. 
      */
-    public String getPathFromRoot()
+    public java.util.List<TableTreePathPoint> getPathFromRoot()
     {
-        String treeStr = String.valueOf(getTableInfo().getTableId());
+        LinkedList<TableTreePathPoint> result = new LinkedList<TableTreePathPoint>();
+    	result.add(new TableTreePathPoint(this));
         TableTree p = getParent();
         while (p != null && p.getTableInfo() != null)
         {
-            treeStr = String.valueOf(p.getTableInfo().getTableId()) + "," + treeStr;
+        	result.addFirst(new TableTreePathPoint(p));
             p = p.getParent();
         }
-        return treeStr;
+        return result;
     }
 
+    /**
+     * @return a comma-separated list of the TableIds (and relationshipNames) in path from the root to this. 
+     * 
+     */
+    public String getPathFromRootAsString()
+    {
+    	java.util.List<TableTreePathPoint> path = getPathFromRoot();
+    	StringBuilder result = new StringBuilder();
+    	boolean comma = false;
+    	for (TableTreePathPoint ttpp : path)
+    	{
+    		if (comma)
+    		{
+    			result.append(",");
+    		}
+    		else
+    		{
+    			comma = true;
+    		}
+    		result.append(ttpp.toString());    		
+    	}
+    	return result.toString();
+    }
 }
