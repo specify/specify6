@@ -111,8 +111,8 @@ public class SelectPrepsDlg extends CustomDialog
      * @param prepProvider
      */
     public SelectPrepsDlg(final Hashtable<Integer, ColObjInfo> coToPrepHash,
-                             final Hashtable<Integer, String>     prepTypeHash,
-                             final String         title)
+                          final Hashtable<Integer, String>     prepTypeHash,
+                          final String                         title)
     {
         super((Frame)UIRegistry.getTopWindow(), getLocalizedMessage("LoanSelectPrepsDlg.CREATE_FR_PREP", title),//$NON-NLS-1$
                 true, OKCANCELAPPLYHELP, null);
@@ -132,8 +132,30 @@ public class SelectPrepsDlg extends CustomDialog
         
         super.createUI();
         
+        Vector<ColObjInfo> coList = new Vector<ColObjInfo>(coToPrepHash.values());
+        Collections.sort(coList, new Comparator<ColObjInfo>() {
+            @Override
+            public int compare(ColObjInfo o1, ColObjInfo o2)
+            {
+                return o1.getCatNo().compareTo(o2.getCatNo());
+            }
+        });
         
-        String rowDef = UIHelper.createDuplicateJGoodiesDef("p", "1px,p,4px", (coToPrepHash.size()*2)-1) + ",10px,p"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        int cnt = 0;
+        Vector<ColObjInfo> coFilteredList = new Vector<ColObjInfo>();
+        for (ColObjInfo colObjInfo : coList)
+        {
+            if (StringUtils.isNotEmpty(colObjInfo.getCatNo()) && 
+                StringUtils.isNotEmpty(colObjInfo.getTaxonName()) &&
+                colObjInfo.getPreps() != null &&
+                colObjInfo.getPreps().size() > 0)
+            {
+                coFilteredList.add(colObjInfo);
+                cnt += colObjInfo.getPreps().size();
+            }
+        }
+        
+        String rowDef = UIHelper.createDuplicateJGoodiesDef("p", "1px,p,4px", (cnt*2)-1) + ",10px,p"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         PanelBuilder    pbuilder = new PanelBuilder(new FormLayout("f:p:g", rowDef)); //$NON-NLS-1$
         CellConstraints cc       = new CellConstraints();
         
@@ -156,18 +178,10 @@ public class SelectPrepsDlg extends CustomDialog
         DBTableInfo colObjTI = DBTableIdMgr.getInstance().getInfoById(CollectionObject.getClassTableId());
         DBFieldInfo colObjFI = colObjTI.getFieldByColumnName("CatalogNumber");
         
-        Vector<ColObjInfo> coList = new Vector<ColObjInfo>(coToPrepHash.values());
-        Collections.sort(coList, new Comparator<ColObjInfo>() {
-            @Override
-            public int compare(ColObjInfo o1, ColObjInfo o2)
-            {
-                return o1.getCatNo().compareTo(o2.getCatNo());
-            }
-        });
         
         int i = 0;
         int y = 1;
-        for (ColObjInfo colObjInfo : coList)
+        for (ColObjInfo colObjInfo : coFilteredList)
         {
             if (i > 0)
             {
@@ -281,7 +295,8 @@ public class SelectPrepsDlg extends CustomDialog
         protected JDialog           dlgParent;
         
         /**
-         * @param colObj
+         * @param dlgParent
+         * @param colObjInfo
          */
         public ColObjPanel(final JDialog    dlgParent, 
                            final ColObjInfo colObjInfo)
