@@ -38,6 +38,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.ListSelectionModel;
@@ -103,10 +104,18 @@ public class ResourceImportExportDlg extends CustomDialog
     
     protected JList                  viewsList;
     protected DefaultListModel       viewsModel = new DefaultListModel();
-
+    protected JPanel				 viewsPanel = null;
+    
     protected JList                  resList;
     protected DefaultListModel       resModel = new DefaultListModel();
+    protected JPanel				 resPanel = null;
+
+    protected JList					 repList;
+    protected DefaultListModel       repModel = new DefaultListModel();
+    protected JPanel				 repPanel = null;
+
     protected JTabbedPane            tabbedPane;
+    
     
     protected JButton                exportBtn;
     protected JButton                importBtn;
@@ -205,16 +214,29 @@ public class ResourceImportExportDlg extends CustomDialog
         sp = new JScrollPane(viewsList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         viewPanel.add(sp, cc.xy(3,3));
         
-        PanelBuilder resPanel = new PanelBuilder(new FormLayout("f:p:g", "p,2px,p"));
-        resPanel.add(createLabel(getResourceString("RIE_OTHER_RES"), SwingConstants.CENTER), cc.xy(1,1));
+        PanelBuilder resPane = new PanelBuilder(new FormLayout("f:p:g", "p,2px,p"));
+        resPane.add(createLabel(getResourceString("RIE_OTHER_RES"), SwingConstants.CENTER), cc.xy(1,1));
         resList   = new JList(resModel);
         resList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         resList.setCellRenderer(new ARListRenderer());
         sp = new JScrollPane(resList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        resPanel.add(sp, cc.xy(1,3));
+        resPane.add(sp, cc.xy(1,3));
 
-        tabbedPane.addTab(getResourceString("RIE_VIEWSETS"), viewPanel.getPanel());
-        tabbedPane.addTab(getResourceString("RIE_OTHER_RES"), resPanel.getPanel());
+        PanelBuilder repPane = new PanelBuilder(new FormLayout("f:p:g", "p,2px,p"));
+        resPane.add(createLabel(getResourceString("RIE_REPORT_RES"), SwingConstants.CENTER), cc.xy(1,1));
+        repList   = new JList(repModel);
+        repList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        repList.setCellRenderer(new ARListRenderer());
+        sp = new JScrollPane(repList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        repPane.add(sp, cc.xy(1,3));
+
+        
+        viewsPanel = viewPanel.getPanel();
+        tabbedPane.addTab(getResourceString("RIE_VIEWSETS"), viewsPanel);
+        //resPanel = resPanel.getPanel();
+        //tabbedPane.addTab(getResourceString("RIE_OTHER_RES"), resPanel);
+        repPanel = repPane.getPanel();
+        tabbedPane.addTab(getResourceString("RIE_REPORT_RES"), repPanel);
         
         PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g", "p,4px,p,2px,p"));
         pb.add(centerPB.getPanel(), cc.xy(1,1));
@@ -239,12 +261,20 @@ public class ResourceImportExportDlg extends CustomDialog
             @Override
             public void stateChanged(ChangeEvent e)
             {
-                if (tabbedPane.getModel().getSelectedIndex() == 0)
+                Component selectedComp = tabbedPane.getSelectedComponent();
+                if (selectedComp != null)
                 {
-                    viewSetsList.setSelectedIndex(-1);
-                } else
-                {
-                    resList.setSelectedIndex(-1);
+                	if (selectedComp == viewsPanel)
+                	{
+                		viewSetsList.setSelectedIndex(-1);
+                	} else if (selectedComp == resPanel)
+                	{
+                		resList.setSelectedIndex(-1);
+                	}
+                	else
+                	{
+                		repList.setSelectedIndex(-1);
+                	}
                 }
                 enableUI();
             }
@@ -296,6 +326,7 @@ public class ResourceImportExportDlg extends CustomDialog
                     if (viewSetsList.getSelectedIndex() > -1)
                     {
                         resList.clearSelection(); 
+                        repList.clearSelection();
                     }
                     fillViewsList();
                     enableUI();
@@ -311,12 +342,28 @@ public class ResourceImportExportDlg extends CustomDialog
                     if (resList.getSelectedIndex() > -1)
                     {
                         viewSetsList.clearSelection(); 
+                        repList.clearSelection();
                     }
                     enableUI();
                 }
             }
         });
-    }
+
+        repList.addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent e)
+            {
+                if (!e.getValueIsAdjusting())
+                {
+                    if (resList.getSelectedIndex() > -1)
+                    {
+                        viewSetsList.clearSelection(); 
+                        resList.clearSelection();
+                    }
+                    enableUI();
+                }
+            }
+        });
+}
     
     /**
      * Fill the list with the view names.
@@ -360,9 +407,11 @@ public class ResourceImportExportDlg extends CustomDialog
             
             revertBtn.setEnabled(vso != null && vso.getId() != null);
             
-        } else // Resources
+        } else if (currentTabIndex != -1)
         {
-            if (resList.getSelectedValue() instanceof String)
+            
+        	JList activeList = tabbedPane.getSelectedComponent() == resPanel ? resList : repList;
+        	if (activeList.getSelectedValue() instanceof String)
             {
                 importBtn.setEnabled(true);
                 exportBtn.setEnabled(false);
@@ -370,12 +419,12 @@ public class ResourceImportExportDlg extends CustomDialog
                 
             } else
             {
-                boolean enable = !resList.isSelectionEmpty();
+                boolean enable = !activeList.isSelectionEmpty();
                 
                 importBtn.setEnabled(enable && levelCBX.getSelectedIndex() < 2);
-                exportBtn.setEnabled(enable && resModel.size() > 1);
+                exportBtn.setEnabled(enable && ((DefaultListModel )activeList.getModel()).size() > 1);
                 
-                SpAppResource appRes = (SpAppResource)resList.getSelectedValue();
+                SpAppResource appRes = (SpAppResource)activeList.getSelectedValue();
                 enable = false;
                 if (appRes != null && appRes.getId() != null)
                 {
@@ -517,9 +566,7 @@ public class ResourceImportExportDlg extends CustomDialog
                     File expFile  = new File(dirStr + File.separator + fileName);
                     try
                     {
-                        if (appRes != null && appRes.getMimeType() != null && 
-                        		((appRes.getMimeType().equals(ReportsBaseTask.REPORTS_MIME) 
-                        		|| appRes.getMimeType().equals(ReportsBaseTask.LABELS_MIME)) && isSpReportResource((SpAppResource )appRes)))
+                        if (isReportResource((SpAppResource )appRes) && isSpReportResource((SpAppResource )appRes))
                         {
                         	writeSpReportResToZipFile(expFile, data, appRes);
                         }
@@ -1236,6 +1283,17 @@ public class ResourceImportExportDlg extends CustomDialog
     }
     
     /**
+     * @param appRes
+     * @return true if appRes is a report resource
+     */
+    protected boolean isReportResource(final SpAppResource appRes)
+    {
+    	return appRes != null && appRes.getMimeType() != null && 
+			((appRes.getMimeType().equals(ReportsBaseTask.REPORTS_MIME) 
+					|| appRes.getMimeType().equals(ReportsBaseTask.LABELS_MIME)));    
+	}
+    
+    /**
 	 * A Virtual Directory Level has been choosen.
 	 */
     protected void levelSelected()
@@ -1247,13 +1305,22 @@ public class ResourceImportExportDlg extends CustomDialog
             viewSetsModel.clear();
             viewsModel.clear();
             resModel.clear();
+            repModel.clear();
             
             resources.clear();
             resources.addAll(dir.getSpAppResources());
-            resModel.addElement("Add New Resource");
+            resModel.addElement(UIRegistry.getResourceString("RIE_ADD_NEW_RESOURCE"));
+            repModel.addElement(UIRegistry.getResourceString("RIE_ADD_NEW_RESOURCE"));
             for (SpAppResource appRes : resources)
             {
-                resModel.addElement(appRes);
+                if (isReportResource(appRes))
+                {
+                	repModel.addElement(appRes);
+                }
+                else
+                {
+                	resModel.addElement(appRes);
+                }
             }
              
             for (SpViewSetObj vso : dir.getSpViewSets())
