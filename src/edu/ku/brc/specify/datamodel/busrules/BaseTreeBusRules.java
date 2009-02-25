@@ -30,6 +30,7 @@ import java.util.Set;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
@@ -1220,25 +1221,23 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
             String parentName;
             if (parentDataObj == null) 
             {
-            	parentName = ((Treeable<T,D,I> )dataObj).getParent().getName(); 
+            	parentName = ((Treeable<T,D,I> )dataObj).getParent().getFullName(); 
             }
             else
             {
-            	parentName = ((Treeable<T,D,I> )parentDataObj).getName();
+            	parentName = ((Treeable<T,D,I> )parentDataObj).getFullName();
             }
-            pb.add(UIHelper.createLabel(String.format(UIRegistry.getResourceString("BaseTreeBusRules.IDENTICALLY_NAMED_SIBLING_MSG"), 
-            		parentName, ((Treeable<T,D,I> )dataObj).getName())), new CellConstraints().xy(2, 2));
-			CustomDialog dlg = new CustomDialog(
-					(Frame) UIRegistry.getTopWindow(),
-					UIRegistry
-							.getResourceString("BaseTreeBusRules.IDENTICALLY_NAMED_SIBLING_TITLE"),
-					true,
-					CustomDialog.OKCANCELHELP,
-					pb.getPanel());
-			UIHelper.centerAndShow(dlg);
-			dlg.dispose();
-			if (dlg.getBtnPressed() != CustomDialog.OK_BTN) 
+			boolean saveIt = UIRegistry.displayConfirm(
+							UIRegistry.getResourceString("BaseTreeBusRules.IDENTICALLY_NAMED_SIBLING_TITLE"), 
+							String.format(UIRegistry.getResourceString("BaseTreeBusRules.IDENTICALLY_NAMED_SIBLING_MSG"), 
+				            		parentName, ((Treeable<T,D,I> )dataObj).getName()),							
+				            		UIRegistry.getResourceString("SAVE"), 
+				            		UIRegistry.getResourceString("CANCEL"), 
+				            		JOptionPane.QUESTION_MESSAGE);
+			if (!saveIt) 
 			{
+				//Adding to reasonList prevents blank "Issue of Concern" popup -
+				//but causes annoying second "duplicate child" nag.
 				reasonList
 						.add(UIRegistry
 								.getResourceString("BaseTreeBusRules.IDENTICALLY_NAMED_SIBLING")); // XXX
@@ -1253,6 +1252,7 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
 	@Override
 	public STATUS processBusinessRules(Object parentDataObj, Object dataObj,
 			boolean isExistingObject) {
+		reasonList.clear();
 		if (!processedRules && dataObj instanceof Treeable)
 		{	
 			STATUS result = checkForSiblingWithSameName(parentDataObj, dataObj, isExistingObject);
