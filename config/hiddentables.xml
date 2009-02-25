@@ -8,7 +8,7 @@
 		<table name="agentvariant"/>
 	</discipline>
 	
-	<discipline name="amphibian">
+	<discipline name="herpetology">
 		<table name="paleocontext"/>
 		<table name="lithostrat"/>
 		<table name="geologictimeperiod"/>

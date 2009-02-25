@@ -6252,7 +6252,7 @@ public class BuildSampleDatabase
                 String method = null;
                 switch (disp)
                 {
-                    case amphibian : method = "trap";
+                    case herpetology : method = "trap";
                     break;
                     case reptile : method = "trap";
                     break; 

@@ -225,7 +225,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         boolean[] isEmbdded = {false, true, true, true, true, true, true, true, true, true, true, true, true, true, };
         
         /*
-         fish, amphibian, reptile, paleobotany, invertpaleo, vertpaleo, bird, 
+         fish, herpetology, reptile, paleobotany, invertpaleo, vertpaleo, bird, 
                                  mammal, insect, botany, invertebrate, minerals, fungi, 
                                  anthropology
          */
@@ -1694,7 +1694,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         // uvgherps database, we decided to make note of the issue and address later. For the time
         // being
         // I added "Herps" to this listing so that the converter would pass without failing.
-        if (checkName(new String[] { "FishHerps", "Herps", "Herp" }, name)) { return "amphibian"; }
+        if (checkName(new String[] { "FishHerps", "Herps", "Herp" }, name)) { return "herpetology"; }
 
         if (checkName(new String[] { "Mineral", "Rock" }, name)) { return "mineral"; }
 

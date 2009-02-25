@@ -83,6 +83,7 @@ public class TreeHelper
                 for( int j = parts.size()-1; j > -1; --j )
                 {
                     T part = parts.get(j);
+                    System.out.println(part.getName()+"  "+part.getDefinitionItem());
                     String before = part.getDefinitionItem().getTextBefore();
                     String after = part.getDefinitionItem().getTextAfter();
                     String separator = part.getDefinitionItem().getFullNameSeparator();

@@ -22,7 +22,7 @@ NOTE: The "name" must be entered into the localization resource file.
     <icon name="Invertebrate" file="starfish.png" sizes="all"/>    
  
     <!--
-    fish, amphibian, reptile, paleobotany, invertpaleo, vertpaleo, bird, 
+    fish, herpetology, reptile, paleobotany, invertpaleo, vertpaleo, bird, 
     mammal, insect, botany, invertebrate, 
     
     These do not have icons
@@ -30,7 +30,7 @@ NOTE: The "name" must be entered into the localization resource file.
     anthropology
     -->
     
-    <icon name="amphibian"   alias="Frogs"/>
+    <icon name="herpetology"   alias="Frogs"/>
     <icon name="bird"        alias="Bird"/>
     <icon name="insect"      alias="Bug"/>
     <icon name="fish"        alias="Fish"/>
