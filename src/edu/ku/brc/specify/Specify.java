@@ -1908,6 +1908,8 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                         
                         SpecifyUser user = session.getData(SpecifyUser.class, "id", currentUser.getId(), DataProviderSessionIFace.CompareType.Equals);
                         user.setIsLoggedIn(false);
+                        user.setLoginDisciplineName(null);
+                        user.setLoginCollectionName(null);
                         user.setLoginOutTime(new Timestamp(System.currentTimeMillis()));
                         
                         try

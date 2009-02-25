@@ -87,7 +87,6 @@ public class Discipline extends UserGroupScope implements java.io.Serializable, 
     protected Set<SpExportSchema>       spExportSchemas;  // Zero or One
     protected Set<AutoNumberingScheme>  numberingSchemes;
 
-
     // Constructors
 
     /** default constructor */
@@ -140,8 +139,8 @@ public class Discipline extends UserGroupScope implements java.io.Serializable, 
         spLocaleContainers    = new HashSet<SpLocaleContainer>();
         agents                = new HashSet<Agent>();
         spExportSchemas       = new HashSet<SpExportSchema>();
-        numberingSchemes       = new HashSet<AutoNumberingScheme>();
-    }
+        numberingSchemes      = new HashSet<AutoNumberingScheme>();
+     }
     // End Initializer
 
     // Property accessors
@@ -466,8 +465,7 @@ public class Discipline extends UserGroupScope implements java.io.Serializable, 
         this.division = division;
     }
     
-    
-    /**
+	/**
      * Asks the Object to force load and child object. This must be done within a Session. 
      */
     @Override

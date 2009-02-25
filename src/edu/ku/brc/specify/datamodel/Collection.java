@@ -89,8 +89,7 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
     protected Set<CollectionRelType>     rightSideRelTypes;
 
     protected Set<AutoNumberingScheme>   numberingSchemes;
-
-
+    
     // Constructors
 
     /** default constructor */
@@ -317,7 +316,7 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
         this.numberingSchemes = numberingSchemes;
     }
     
-    /**
+    	/**
      * @param schemeType
      * @return
      */

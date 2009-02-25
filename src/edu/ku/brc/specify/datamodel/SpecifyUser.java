@@ -40,6 +40,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -72,6 +73,8 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
     protected String                    password;
     protected String                    userType;
     protected Boolean                   isLoggedIn;
+    protected String				    loginCollectionName;
+    protected String				    loginDisciplineName;
     protected Boolean                   isLoggedInReport;
     protected Timestamp                 loginOutTime;
     protected Long                      accumMinLoggedIn;
@@ -109,12 +112,14 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
     {
         super.init();
         
-        specifyUserId      = null;
-        name               = null;
-        email              = null;
-        isLoggedIn         = false;
-        isLoggedInReport   = false;
-        loginOutTime       = null;
+        specifyUserId = null;
+		name = null;
+		email = null;
+		isLoggedIn = false;
+		loginCollectionName = null;
+		loginDisciplineName = null;
+		isLoggedInReport = false;
+		loginOutTime = null;
         
         //privLevel          = null;
         recordSets         = new HashSet<RecordSet>();
@@ -317,7 +322,43 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
         this.isLoggedIn = isLoggedIn;
     }
     
+    
+    
     /**
+	 * @return the loginCollectionName
+	 */
+    @Column(name="LoginCollectionName", nullable = true, length=64)
+	public String getLoginCollectionName()
+	{
+		return loginCollectionName;
+	}
+
+	/**
+	 * @param loginCollectionName the loginCollectionName to set
+	 */
+	public void setLoginCollectionName(String loginCollectionName)
+	{
+		this.loginCollectionName = loginCollectionName;
+	}
+
+	/**
+	 * @return the loginDisciplineName
+	 */
+    @Column(name="LoginDisciplineName", nullable = true, length=64)
+	public String getLoginDisciplineName()
+	{
+		return loginDisciplineName;
+	}
+
+	/**
+	 * @param loginDisciplineName the loginDisciplineName to set
+	 */
+	public void setLoginDisciplineName(String loginDisciplineName)
+	{
+		this.loginDisciplineName = loginDisciplineName;
+	}
+
+	/**
      * @return the isLoggedInReport
      */
     @Column(name = "IsLoggedInReport", unique = false, nullable = false, insertable = true, updatable = true)
