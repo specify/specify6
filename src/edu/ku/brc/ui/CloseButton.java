@@ -17,7 +17,11 @@ package edu.ku.brc.ui;
 import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 /**
  *  A simple vector button that draw a close on its face.
@@ -30,18 +34,32 @@ import java.awt.Rectangle;
 @SuppressWarnings("serial")
 public class CloseButton extends GradiantButton
 {
-    /**
-     * 
-     */
-    protected Color   closeColor = Color.WHITE;
+    protected Color   closeColor      = Color.WHITE;
+    protected Color   closeHoverColor = new Color(200, 102, 102);
+    protected boolean isHovering      = false; 
 
     /**
      * Default Constructor
-     *
      */
     public CloseButton() 
     {
         super("");
+        
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e)
+            {
+                isHovering = true;
+                repaint();
+            }
+            @Override
+            public void mouseExited(MouseEvent e)
+            {
+                isHovering = false;
+                repaint();
+            }
+            
+        });
     }  
     
     /* (non-Javadoc)
@@ -53,22 +71,22 @@ public class CloseButton extends GradiantButton
         super.paint(g);
         
         FontMetrics fm = this.getFontMetrics(getFont());
-        int w = (int)(fm.getAscent() * 0.8);
-        Rectangle r = new Rectangle((getWidth() - w) / 2, (getHeight() - w) / 2, w, w);
+        int         w  = (int)(fm.getAscent() * 0.8);
+        Rectangle   r  = new Rectangle((getWidth() - w) / 2, (getHeight() - w) / 2, w, w);
         
         if (pressed) 
         {
             g.translate(1, 1);
         }
-        //Graphics2D g2d = (Graphics2D)g;
-        //g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON); 
-        g.setColor(closeColor);
+        Graphics2D g2d = (Graphics2D)g;
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON); 
+        g.setColor(isHovering ? closeHoverColor : closeColor);
         g.fillOval(r.x, r.y, r.width, r.height);
 
-        g.setColor(getForeground());
+        g.setColor(isHovering ? new Color(64,64,64) : getForeground());
         r.grow(-3, -3);
-        g.drawLine(r.x, r.y, r.x+r.width, r.y+r.height);
-        g.drawLine(r.x, r.y+r.height, r.x+r.width, r.y);
+        g.drawLine(r.x, r.y,          r.x+r.width-1,   r.y+r.height);
+        g.drawLine(r.x, r.y+r.height, r.x+r.width-1, r.y);
     }
 
     /**
