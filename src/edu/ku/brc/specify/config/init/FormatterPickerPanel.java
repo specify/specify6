@@ -67,10 +67,11 @@ public class FormatterPickerPanel extends BaseSetupPanel
      * @param nextBtn
      * @param doingCatNums
      */
-    public FormatterPickerPanel(final JButton nextBtn, 
+    public FormatterPickerPanel(final String panelName, 
+                                final JButton nextBtn, 
                                 final boolean doingCatNums)
     {
-        super("autonumber", nextBtn);
+        super(panelName, nextBtn);
         
         this.doingCatNums = doingCatNums;
         
@@ -202,7 +203,7 @@ public class FormatterPickerPanel extends BaseSetupPanel
             ((DefaultComboBoxModel)formatterCBX.getModel()).addElement(getResourceString("NONE"));
             newFmtInx++;
         }
-        ((DefaultComboBoxModel)formatterCBX.getModel()).addElement(getResourceString("Create"));
+        ((DefaultComboBoxModel)formatterCBX.getModel()).addElement(getResourceString("CREATE"));
 
         for (UIFieldFormatterIFace fmt : fmtList)
         {

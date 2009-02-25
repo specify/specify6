@@ -213,32 +213,32 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
                
         UIFieldFormatterMgr.setDoingLocal(true);
         
-        panels.add(new GenericFormPanel("sa", 
+        panels.add(new GenericFormPanel("SA", 
                 "ENTER_SA_INFO", 
                 new String[] { "SA_USERNAME", "SA_PASSWORD"}, 
                 new String[] { "saUserName", "saPassword"}, 
                 nextBtn));
 
-        panels.add(new UserInfoPanel("agent", 
+        panels.add(new UserInfoPanel("AGENT", 
                 "ENTER_COLMGR_INFO", 
                 new String[] { "FIRSTNAME", "LASTNAME", "MIDNAME",       "EMAIL", "USERLOGININFO", "USERNAME", "PASSWORD"}, 
                 new String[] { "firstName", "lastName", "middleInitial", "email", "-", "usrUsername", "usrPassword"}, 
                 nextBtn));
          
-        panels.add(new GenericFormPanel("inst", 
+        panels.add(new GenericFormPanel("INST", 
                 "ENTER_INST_INFO",
                 new String[] { "NAME",     "ABBREV"}, 
                 new String[] { "instName", "instAbbrev"}, 
                 nextBtn));
         
-        panels.add(new GenericFormPanel("addr", 
+        panels.add(new GenericFormPanel("ADDR", 
                 "ENTER_ADDR_INFO",
                 new String[] { "ADDR1", "ADDR2", "CITY",  "STATE", "COUNTRY", "ZIP", "PHONE"}, 
                 new String[] { "addr1", "addr2", "city", "state", "country", "zip", "phone"}, 
                 new boolean[] {true, false, true, true, true, true, true},
                 nextBtn));
         
-        panels.add(new GenericFormPanel("div", 
+        panels.add(new GenericFormPanel("DIV", 
                 "ENTER_DIV_INFO",
                 new String[] { "NAME",    "ABBREV"}, 
                 new String[] { "divName", "divAbbrev"}, 
@@ -247,14 +247,14 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
         taxonTDPanel = new TaxonTreeDefPanel(nextBtn, userPanel);
         panels.add(taxonTDPanel);
          
-        panels.add(new GenericFormPanel("collection", 
+        panels.add(new GenericFormPanel("COLLECTION", 
                 "ENTER_COL_INFO",
                 new String[] { "NAME", "PREFIX", }, 
                 new String[] { "collName", "collPrefix", }, 
                 nextBtn));
         
-        panels.add(new FormatterPickerPanel(nextBtn, true));
-        panels.add(new FormatterPickerPanel(nextBtn, false));
+        panels.add(new FormatterPickerPanel("CATNOFMT", nextBtn, true));
+        panels.add(new FormatterPickerPanel("ACCNOFMT", nextBtn, false));
          
          
         lastStep = panels.size();
@@ -355,7 +355,7 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
             nextBtn.setEnabled(panels.get(step).isUIValid());
             nextBtn.setText(getResourceString("NEXT"));
         }
-        
+        setTitle(getResourceString(panels.get(step).getPanelName()+".TITLE"));        
         backBtn.setEnabled(step > 0); 
     }
     

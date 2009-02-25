@@ -579,7 +579,7 @@ public class DatabaseLoginPanel extends JTiledPanel
             icon.setBorder(BorderFactory.createEmptyBorder(10, 10, 2, 2));
         }
 
-        formBuilder.getPanel().setBorder(BorderFactory.createEmptyBorder(2, 5, 0, 5));
+        formBuilder.getPanel().setBorder(BorderFactory.createEmptyBorder(10, 5, 0, 5));
 
         if (icon != null)
         {

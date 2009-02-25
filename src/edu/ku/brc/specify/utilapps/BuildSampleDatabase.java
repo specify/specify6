@@ -259,7 +259,7 @@ public class BuildSampleDatabase
     
     protected boolean            doAddQueries        = false;
     protected boolean            copyToUserDir       = true;
-    protected boolean            doShallowTaxonTree  = true;
+    protected boolean            doShallowTaxonTree  = false;
     protected List<CollectionChoice> selectedChoices = null;
     
     protected Hashtable<Class<?>, Vector<AutoNumberingScheme>> numberingSchemesHash = new Hashtable<Class<?>, Vector<AutoNumberingScheme>>();

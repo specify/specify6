@@ -66,7 +66,7 @@ public class DatabasePanel extends BaseSetupPanel
     public DatabasePanel(final JButton nextBtn, 
                          final boolean doSetDefaultValues)
     {
-        super("Database", nextBtn);
+        super("DATABASE", nextBtn);
         
         this.doSetDefaultValues = doSetDefaultValues;
         
