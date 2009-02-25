@@ -64,7 +64,7 @@
       <splashScreen show="true" autoOff="true" alwaysOnTop="false" width="0" height="0" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" java6SplashScreen="false">
         <text>
           <statusLine x="330" y="300" text="" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
-          <versionLine x="330" y="260" text="version ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
+          <versionLine x="330" y="260" text="Version ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
       <java mainClass="edu.ku.brc.specify.utilapps.BuildSampleDatabase" vmParameters="-Xmx512m" arguments="-Dappdir=.." allowVMPassthroughParameters="true" preferredVM="">
@@ -90,7 +90,7 @@
       <splashScreen show="true" autoOff="true" alwaysOnTop="false" width="0" height="0" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" java6SplashScreen="false">
         <text>
           <statusLine x="330" y="300" text="" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
-          <versionLine x="330" y="260" text="version ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
+          <versionLine x="330" y="260" text="Version ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
       <java mainClass="edu.ku.brc.specify.tools.schemalocale.SchemaLocalizerFrame" vmParameters="-Xmx512m" arguments="-Dappdir=.." allowVMPassthroughParameters="true" preferredVM="">
@@ -116,7 +116,7 @@
       <splashScreen show="true" autoOff="true" alwaysOnTop="false" width="0" height="0" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" java6SplashScreen="false">
         <text>
           <statusLine x="330" y="300" text="" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
-          <versionLine x="330" y="260" text="version ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
+          <versionLine x="330" y="260" text="Version ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
       <java mainClass="edu.ku.brc.specify.tools.ireportspecify.MainFrameSpecify" vmParameters="-Xmx512m" arguments="-Dappdir=.." allowVMPassthroughParameters="true" preferredVM="">
@@ -142,7 +142,7 @@
       <splashScreen show="true" autoOff="true" alwaysOnTop="false" width="0" height="0" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" java6SplashScreen="false">
         <text>
           <statusLine x="330" y="300" text="" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
-          <versionLine x="330" y="260" text="version ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
+          <versionLine x="330" y="260" text="Version ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
       <java mainClass="edu.ku.brc.specify.config.init.SpecifyDBSetupWizard" vmParameters="-Xmx512m" arguments="-Dappdir=.." allowVMPassthroughParameters="true" preferredVM="">
