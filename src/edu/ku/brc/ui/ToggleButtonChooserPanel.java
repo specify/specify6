@@ -428,7 +428,10 @@ public class ToggleButtonChooserPanel<T> extends JPanel implements ActionListene
         
         for (JToggleButton tb : buttons)
         {
-            tb.setSelected(doSelect);
+            if (tb.isEnabled())
+            {
+                tb.setSelected(doSelect);
+            }
         }
     }
 
