@@ -121,7 +121,7 @@ public class UIFormatterEditorDlg extends CustomDialog
     protected JComboBox                 sepCbx;
     protected JCheckBox                 isIncChk;
     
-    protected ListSelectionListener     formatListSelectionListener = null;
+    protected ListSelectionListener     fieldsTblSL                 = null;
     protected DocumentListener          formatChangedDL             = null;
     protected boolean                   hasChanged                  = false;
     protected boolean                   isInError                   = false;
@@ -143,7 +143,7 @@ public class UIFormatterEditorDlg extends CustomDialog
                                 final boolean               doProcessSamples,
                                 final UIFieldFormatterMgr	uiFieldFormatterMgrCache) throws HeadlessException
     {
-        super(parentDlg, getResourceString("FFE_DLG_TITLE"), true, OKCANCELHELP, null);
+        super(parentDlg, getResourceString("FFE_DLG_TITLE"), true, OKCANCELHELP, null); //$NON-NLS-1$
         
         this.fieldInfo                   = fieldInfo;
         this.selectedFormat              = selectedFormat;
@@ -238,7 +238,7 @@ public class UIFormatterEditorDlg extends CustomDialog
         // sample panel
         sampleLabel = createLabel("", SwingConstants.LEFT); 
         JPanel samplePanel = new JPanel();
-        samplePanel.setBorder(BorderFactory.createTitledBorder(getResourceString("FFE_SAMPLE"))); 
+        samplePanel.setBorder(BorderFactory.createTitledBorder(getResourceString("FFE_SAMPLE"))); //$NON-NLS-1$ 
         samplePanel.add(sampleLabel);
 
         // name text field
@@ -247,7 +247,7 @@ public class UIFormatterEditorDlg extends CustomDialog
         // title text field
         titleTF = createTextField(20);
         
-        byYearCB = createCheckBox(getResourceString("FFE_BY_YEAR_CHECKBOX")); 
+        byYearCB = createCheckBox(getResourceString("FFE_BY_YEAR_CHECKBOX")); //$NON-NLS-1$ 
         hookByYearCheckBoxListener();
         
         fieldsPanel  = new EditDeleteAddPanel(getSaveAL(), getDelAL(), getAddAL());
@@ -304,7 +304,7 @@ public class UIFormatterEditorDlg extends CustomDialog
         // formatting key panel
         JPanel keyPanel = new JPanel();
         keyPanel.setLayout(new BoxLayout(keyPanel, BoxLayout.Y_AXIS));
-        keyPanel.setBorder(BorderFactory.createTitledBorder(getResourceString("FFE_HELP")));
+        keyPanel.setBorder(BorderFactory.createTitledBorder(getResourceString("FFE_HELP"))); //$NON-NLS-1$
         // left help body text in a single string resource until we build infrastructure to 
         // localize long texts (in files maybe)
         keyPanel.add(createLabel(formatFactory.getHelpHtml()));
@@ -359,46 +359,8 @@ public class UIFormatterEditorDlg extends CustomDialog
         pack();
         
         enabledEditorUI(false);
-        
-        fieldsTbl.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e)
-            {
-                if (!e.getValueIsAdjusting())
-                {
-                    if (fieldHasChanged)
-                    {
-                        Object[] options = { getResourceString("SAVE"), //$NON-NLS-1$ 
-                                             getResourceString("DISCARD") }; //$NON-NLS-1$
-                        int retVal = JOptionPane.showOptionDialog(null, getResourceString("FFE_SAVE_CHG"), getResourceString("SaveChangesTitle"), JOptionPane.YES_NO_CANCEL_OPTION, //$NON-NLS-1$ //$NON-NLS-2$
-                                                                  JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-                        if (retVal == JOptionPane.YES_OPTION)
-                        {
-                            fieldsPanel.getEditBtn().doClick();
-                        }
-                    }
-                    
-                    int inx = fieldsTbl.getSelectedRow();
-                    if (inx > -1)
-                    {
-                        currentField = fields.get(inx);
-                        
-                        fieldTypeCbx.setSelectedIndex(currentField.getType().ordinal());
-                        isIncChk.setSelected(currentField.isByYear());
-                        fieldTxt.setText(currentField.getValue());
-                        sizeSpinner.setValue(Math.max(1, currentField.getSize()));
-                        enabledEditorUI(true);
-                        
-                    } else
-                    {
-                        fieldTypeCbx.setSelectedIndex(-1);
-                        enabledEditorUI(false);
-                    }
-                    fieldHasChanged = false;
-                    updateEnabledState();
-                }
-            }
-        });
+
+        hookFieldsTblSelectionListener();
         
         fieldTypeCbx.addItemListener(new ItemListener() {
             @Override
@@ -474,6 +436,61 @@ public class UIFormatterEditorDlg extends CustomDialog
         updateEnabledState();
     }
     
+    private void unhookFieldsTblSelectionListener() 
+    {
+        fieldsTbl.getSelectionModel().removeListSelectionListener(fieldsTblSL);
+    }
+
+    private void hookFieldsTblSelectionListener() 
+    {
+        if (fieldsTblSL == null) 
+        {
+            fieldsTblSL = new ListSelectionListener() 
+            {
+                @Override
+                public void valueChanged(ListSelectionEvent e)
+                {
+                    if (!e.getValueIsAdjusting())
+                    {
+                        if (fieldHasChanged)
+                        {
+                            Object[] options = { getResourceString("SAVE"), //$NON-NLS-1$ 
+                                                 getResourceString("DISCARD") }; //$NON-NLS-1$
+                            int retVal = JOptionPane.showOptionDialog(null, getResourceString("FFE_SAVE_CHG"), getResourceString("SaveChangesTitle"), JOptionPane.YES_NO_CANCEL_OPTION, //$NON-NLS-1$ //$NON-NLS-2$
+                                                                      JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+                            if (retVal == JOptionPane.YES_OPTION)
+                            {
+                                fieldsPanel.getEditBtn().doClick();
+                            }
+                        }
+                        
+                        int inx = fieldsTbl.getSelectedRow();
+                        if (inx > -1)
+                        {
+                            currentField = fields.get(inx);
+                            
+                            fieldTypeCbx.setSelectedIndex(currentField.getType().ordinal());
+                            isIncChk.setSelected(currentField.isByYear());
+                            fieldTxt.setText(currentField.getValue());
+                            sizeSpinner.setValue(Math.max(1, currentField.getSize()));
+                            enabledEditorUI(true);
+                            
+                        } else
+                        {
+                            fieldTypeCbx.setSelectedIndex(-1);
+                            enabledEditorUI(false);
+                        }
+                        fieldHasChanged = false;
+                        updateEnabledState();
+                    }
+                }
+            };
+        }
+        
+        fieldsTbl.getSelectionModel().addListSelectionListener(fieldsTblSL);
+    }
+
+
     /**
      * @param enable
      */
@@ -593,14 +610,17 @@ public class UIFormatterEditorDlg extends CustomDialog
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                fieldHasChanged = false;
                 fieldTypeCbx.setSelectedIndex(-1);
-                fieldTxt.setText("");
+                fieldTxt.setText(""); // DL attached to this field will set fieldHasChanged to true 
                 fields.remove(fieldsTbl.getSelectedRow());
+                // we must unhook the fields table SL to avoid popping up a dialog asking to save or discard data  
+                unhookFieldsTblSelectionListener();
+                fieldHasChanged = false;
                 fieldsTbl.clearSelection();
                 fieldsModel.fireChange();
                 enabledEditorUI(false);
                 updateUIEnabled();
+                hookFieldsTblSelectionListener();
             }
         };
     }
@@ -784,6 +804,10 @@ public class UIFormatterEditorDlg extends CustomDialog
                 {
                     setError(fmtErrMsg, true); 
                     
+                } else if (isInError)
+                {
+                    updateUIEnabled(); 
+                    
                 } else
                 {
                     updateSample();
@@ -821,8 +845,8 @@ public class UIFormatterEditorDlg extends CustomDialog
             }
             catch (UIFieldFormatterInvalidatesExistingValueException e)
             {
-                setError("This format, which accepts values like '" + selectedFormat.getSample() + "', invalidates value '" 
-                        + e.getInvalidatedValue().toString() + "' from database.", false);
+                setError(String.format(getResourceString("FFE_FORMAT_INVALIDATES_FIELD_VALUE"), //$NON-NLS-1$ 
+                        selectedFormat.getSample(), e.getInvalidatedValue().toString()), false);
             }
         }
         
