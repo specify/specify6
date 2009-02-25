@@ -35,7 +35,7 @@
         >
         <switch single="true">
             <fields>
-                <field>permit.permitNumber</field>
+                <field>accession.accessionNumber</field>
             </fields>
         </switch>
     </format>

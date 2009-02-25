@@ -84,6 +84,8 @@ public abstract class FeedBackSender
      */
     protected void send(final FeedBackSenderItem item) throws Exception
     {
+        if (1==1) return; //XXX for testing only, remove before committing to SVN
+		
         if (item != null)
         {
             // check the website for the info about the latest version
