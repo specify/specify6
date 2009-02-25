@@ -20,10 +20,6 @@ import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.validation.ValFormattedTextField;
-import edu.ku.brc.specify.datamodel.Borrow;
-import edu.ku.brc.specify.datamodel.ExchangeOut;
-import edu.ku.brc.specify.datamodel.Gift;
-import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.Shipment;
 
 /**
@@ -53,11 +49,11 @@ public class LoanGiftShipmentBusRules extends BaseBusRules
                 if (multiView != null)
                 {
                     FormViewObj fvo         = multiView.getCurrentViewAsFormViewObj();
-                    Shipment    shipment    = (Shipment)formViewObj.getDataObj();
-                    Loan        loan        = shipment.getLoan();
-                    Gift        gift        = shipment.getGift();
-                    ExchangeOut exchangeOut = shipment.getExchangeOut();
-                    Borrow      borrow      = shipment.getBorrow();
+                    //Shipment    shipment    = (Shipment)formViewObj.getDataObj();
+                    //Loan        loan        = shipment.getLoan();
+                    //Gift        gift        = shipment.getGift();
+                    //ExchangeOut exchangeOut = shipment.getExchangeOut();
+                    //Borrow      borrow      = shipment.getBorrow();
                     
                     String controlName = null;
                     /*if (loan != null)

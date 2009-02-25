@@ -318,7 +318,7 @@ public class LoanReturnDlg extends JDialog
             retCnt += colObjPanel.getReturnedCount();
             resCnt += colObjPanel.getResolvedCount();
         }
-        okBtn.setEnabled((retCnt > 0 && resCnt > 0) && agentCBX.getValue() != null);
+        okBtn.setEnabled((retCnt > 0 || resCnt > 0) && agentCBX.getValue() != null && dateClosed.getValue() != null);
 
         summaryLabel.setText(String.format(getResourceString("LOANRET_NUM_ITEMS_2B_RET_FMT"), retCnt, resCnt));
     }
@@ -720,7 +720,11 @@ public class LoanReturnDlg extends JDialog
         {
             if (returnedSpinner != null)
             {
-                returnedSpinner.setValue(maxValue);
+                returnedSpinner.setValue(quantityLoaned);
+            }
+            if (resolvedSpinner != null)
+            {
+                resolvedSpinner.setValue(quantityLoaned);
             }
         }
 
@@ -769,6 +773,10 @@ public class LoanReturnDlg extends JDialog
             if (returnedSpinner != null)
             {
                 returnedSpinner.addChangeListener(cl);
+            }
+            if (resolvedSpinner != null)
+            {
+                resolvedSpinner.addChangeListener(cl);
             }
         }
         

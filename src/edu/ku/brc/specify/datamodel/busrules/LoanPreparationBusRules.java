@@ -18,6 +18,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import edu.ku.brc.af.ui.forms.BaseBusRules;
+import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.SubViewBtn;
 import edu.ku.brc.af.ui.forms.TableViewObj;
@@ -85,7 +86,18 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
                     @Override
                     public void actionPerformed(ActionEvent e)
                     {
-                        MultiView loanMV = formViewObj.getMVParent().getMultiViewParent();
+                        MultiView loanMV = null;
+                        if (viewable instanceof FormViewObj)
+                        {
+                            loanMV = formViewObj.getMVParent().getMultiViewParent();
+                            formViewObj.getDataFromUI();
+                            
+                        } else if (viewable instanceof TableViewObj)
+                        {
+                            TableViewObj tblViewObj = (TableViewObj)viewable; 
+                            loanMV = tblViewObj.getMVParent().getMultiViewParent();
+                        }
+                        
                         if (loanMV != null)
                         {
                             formViewObj.getDataFromUI();

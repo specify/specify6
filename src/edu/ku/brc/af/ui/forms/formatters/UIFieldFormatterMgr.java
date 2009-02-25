@@ -622,7 +622,7 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
             {
                 addFieldsForDate(fmt);
 
-            } else if (type == UIFieldFormatter.FormatterType.numeric)
+            } else if (type == UIFieldFormatter.FormatterType.numeric  && fields.size() == 0)
             {
                 fmt.setPrecision(precision);
                 fmt.setScale(scale);
@@ -929,8 +929,7 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
     /**
      * Constructs a the fields for a numeric formatter.
      * 
-     * @param formatter
-     *            the formatter to be augmented
+     * @param formatter the formatter to be augmented
      */
     protected void addFieldsForNumeric(final UIFieldFormatter formatter)
     {
@@ -940,7 +939,6 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
         {
             len = formatter.getPrecision() + formatter.getScale() + 1;
         } else
-
         {
             if (cls == Long.class)
             {

@@ -186,21 +186,33 @@ public class UIFieldFormatterField implements Cloneable
     }
     
     
+    /**
+     * @return
+     */
     public int getSize()
     {
         return size;
     }
 
+    /**
+     * @return
+     */
     public FieldType getType()
     {
         return type;
     }
 
+    /**
+     * @return
+     */
     public String getValue()
     {
-        return value;
+        return value == null ? "" : value;
     }
 
+    /**
+     * @return
+     */
     public String getSample()
     {
     	String sample = "";

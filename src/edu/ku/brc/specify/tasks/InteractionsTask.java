@@ -1681,15 +1681,20 @@ public class InteractionsTask extends BaseTask
                                 final Agent                agent, 
                                 final List<LoanReturnInfo> returns)
     {
+        final JStatusBar statusBar = UIRegistry.getStatusBar();
+        statusBar.setIndeterminate(INTERACTIONS, true);
+        
+        String msg = getResourceString("ReturningLoanItems");
+        statusBar.setText(msg);
+        UIRegistry.writeSimpleGlassPaneMsg(msg, 24);
+        
         final SwingWorker worker = new SwingWorker()
         {
+            protected int numLPR = 0;
+            
             @Override
             public Object construct()
             {
-                JStatusBar statusBar = UIRegistry.getStatusBar();
-                statusBar.setIndeterminate(INTERACTIONS, true);
-                statusBar.setText(getResourceString("ReturningLoanItems"));
-                
                 DataProviderSessionIFace session = null;
                 try
                 {
@@ -1722,6 +1727,8 @@ public class InteractionsTask extends BaseTask
                     
                     session.commit();
                     
+                    numLPR = returns.size();
+                    
                 } catch (Exception ex)
                 {
                     edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
@@ -1743,10 +1750,12 @@ public class InteractionsTask extends BaseTask
             @Override
             public void finished()
             {
-                JStatusBar statusBar = UIRegistry.getStatusBar();
                 statusBar.setProgressDone(INTERACTIONS);
                 statusBar.setText("");
                 multiView.setData(loan);
+                UIRegistry.clearSimpleGlassPaneMsg();
+                
+                UIRegistry.showLocalizedMsg(JOptionPane.INFORMATION_MESSAGE, "InteractionsTask.LN_RET_TITLE", "InteractionsTask.RET_LN_SV", numLPR);
             }
         };
         worker.start();

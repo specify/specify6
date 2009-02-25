@@ -13,6 +13,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 
 import edu.ku.brc.af.ui.forms.BaseBusRules;
+import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.TableViewObj;
 import edu.ku.brc.af.ui.forms.Viewable;
@@ -65,11 +66,22 @@ public class GiftPreparationBusRules extends BaseBusRules implements CommandList
                 @Override
                 public void actionPerformed(ActionEvent e)
                 {
-                    MultiView loanMV = formViewObj.getMVParent().getMultiViewParent();
-                    if (loanMV != null)
+                    MultiView giftMV = null;
+                    if (viewable instanceof FormViewObj)
+                    {
+                        giftMV = formViewObj.getMVParent().getMultiViewParent();
+                        formViewObj.getDataFromUI();
+                        
+                    } else if (viewable instanceof TableViewObj)
+                    {
+                        TableViewObj tblViewObj = (TableViewObj)viewable; 
+                        giftMV = tblViewObj.getMVParent().getMultiViewParent();
+                    }
+                    
+                    if (giftMV != null)
                     {
                         formViewObj.getDataFromUI();
-                        CommandDispatcher.dispatch(new CommandAction(CMDTYPE, "AddToGift", loanMV.getCurrentViewAsFormViewObj().getCurrentDataObj()));
+                        CommandDispatcher.dispatch(new CommandAction(CMDTYPE, "AddToGift", giftMV.getCurrentViewAsFormViewObj().getCurrentDataObj()));
                     }
                 }
             });

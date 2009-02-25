@@ -839,7 +839,7 @@ public class UIRegistry
     }
     
     /**
-     * Displays a dialog dialog with a non-localized error message.
+     * Displays a dialog dialog with a parameterized localized message.
      * @param iconType the type of icon to use (Question, Error, etc)
      * @param titleKey the title localize key
      * @param msgKey the message localize key

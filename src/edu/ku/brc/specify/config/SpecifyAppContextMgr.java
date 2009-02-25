@@ -1492,9 +1492,10 @@ public class SpecifyAppContextMgr extends AppContextMgr
      */
     protected void checkForInitialFormats()
     {
-        addFormatFromFile("catnumfmt.xml");
-        addFormatFromFile("accsnumfmt.xml");
-        UIFieldFormatterMgr.getInstance().save();
+        if (addFormatFromFile("catnumfmt.xml") || addFormatFromFile("accsnumfmt.xml"))
+        {
+            UIFieldFormatterMgr.getInstance().save();
+        }
     }
 
     /**
@@ -1944,6 +1945,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         try
         {
             String xmlStr = getResourceAsXML(appRes);
+            log.debug(xmlStr);
             if (StringUtils.isNotEmpty(xmlStr))
             {
                 return XMLHelper.readStrToDOM4J(xmlStr);

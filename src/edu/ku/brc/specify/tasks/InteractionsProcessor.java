@@ -417,7 +417,8 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
                 sql = "SELECT CollectionObjectID, CatalogNumber FROM collectionobject WHERE CollectionMemberID = COLMEMID " + 
                       "AND CollectionObjectID " + DBTableIdMgr.getInstance().getInClause(recordSet);
                 Vector<Object[]> partialItems = BasicSQLUtils.query(QueryAdjusterForDomain.getInstance().adjustSQL(sql));
-                fullItems.addAll(partialItems);
+                partialItems.addAll(fullItems);
+                return partialItems;
             }
             return fullItems;
         }
@@ -571,9 +572,9 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
                        sb.append(coId);
                        sb.append(',');
                        
-                       if (row[1] != null && row[2] != null)
+                       if (row[1] != null)
                        {
-                           coToPrepHash.put(coId, new ColObjInfo(coId, row[1].toString(), row[2].toString()));
+                           coToPrepHash.put(coId, new ColObjInfo(coId, row[1].toString(), row.length == 3 ? row[2].toString() : null));
                        }
                    }
                    sb.setLength(sb.length()-1); // chomp last comma
