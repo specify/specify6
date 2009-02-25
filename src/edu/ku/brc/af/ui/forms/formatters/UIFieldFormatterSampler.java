@@ -32,6 +32,7 @@ import edu.ku.brc.af.core.db.DBRelationshipInfo.RelationshipType;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.dbsupport.SQLExecutionListener;
 import edu.ku.brc.dbsupport.SQLExecutionProcessor;
+import edu.ku.brc.specify.datamodel.UserGroupScope;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -48,6 +49,8 @@ public class UIFieldFormatterSampler implements SQLExecutionListener
     protected DBFieldInfo fieldInfo;
 	protected List<Object> results;
 	protected boolean ready;
+	
+	static DBTableInfo userGroupScopeFakeTableInfo = new DBTableInfo(-1, UserGroupScope.class.getCanonicalName(), "UserGroupScope", "", "");
 	
 	/**
 	 * Constructor
@@ -151,7 +154,8 @@ public class UIFieldFormatterSampler implements SQLExecutionListener
 	
 	protected String getJoins()
 	{
-		String joins = "";
+		StringBuilder joins = new StringBuilder();
+		
 		List<Pair<DBTableInfo, DBRelationshipInfo>> path = getShortestPath();
 		for (Pair<DBTableInfo, DBRelationshipInfo> node : path)
 		{
@@ -159,6 +163,17 @@ public class UIFieldFormatterSampler implements SQLExecutionListener
 			DBTableInfo firstTable = node.first;
 			DBTableInfo secondTable = DBTableIdMgr.getInstance().getByClassName(rel.getClassName());
 			
+//			System.out.println("");
+//			System.out.println("FirstTable:   " + firstTable.getName());
+//			System.out.println("SecondTable:  " + secondTable.getName());
+//			System.out.println("Relationship: " + rel.getName());
+//			System.out.println("Class name:   " + rel.getClassName());
+//			System.out.println("Join table:   " + rel.getJoinTable());
+//			System.out.println("Col Name:     " + rel.getColName());
+//			System.out.println("Other side:   " + rel.getOtherSide());
+//			System.out.println("Rel Type:     " + rel.getType().toString());
+//			System.out.println("");
+
 			String sql = "";
 			if (rel.getType() == RelationshipType.OneToMany)
 			{
@@ -169,28 +184,21 @@ public class UIFieldFormatterSampler implements SQLExecutionListener
 				" ON " + secondTable.getName() + "." + rel.getColName() + " = " + 
 				firstTable.getName() + "." + firstTable.getIdColumnName();
 			}
-			else if (rel.getType() == RelationshipType.ManyToOne)
+			else if (rel.getType() == RelationshipType.ManyToOne || rel.getType() == RelationshipType.OneToOne)
 			{
 				sql = " INNER JOIN " + secondTable.getName() + 
 				" ON " + firstTable.getName() + "." + rel.getColName() + " = " + 
 				secondTable.getName() + "." + secondTable.getIdColumnName();
 			}
+			else
+			{
+			    // don't know what to do, really
+			    System.out.println("Relationship Type: " + rel.getType());
+			}
 			
-			joins += sql + "";
-			
-/*			System.out.println("");
-			System.out.println("FirstTable:   " + firstTable.getName());
-			System.out.println("SecondTable:  " + secondTable.getName());
-			System.out.println("Relationship: " + rel.getName());
-			System.out.println("Class name:   " + rel.getClassName());
-			System.out.println("Join table:   " + rel.getJoinTable());
-			System.out.println("Col Name:     " + rel.getColName());
-			System.out.println("Other side:   " + rel.getOtherSide());
-			System.out.println("Rel Type:     " + rel.getType().toString());
-			System.out.println("");
-*/
+			joins.append(sql);
 		}
-		return joins;
+		return joins.toString();
 	}
 	
 	/**
@@ -220,7 +228,7 @@ public class UIFieldFormatterSampler implements SQLExecutionListener
 		stack.push(fieldInfo.getTableInfo());
 		distance.put(fieldInfo.getTableInfo(), 0);
 
-		// continue until we reach the destination vertix
+		// continue until we reach the destination vertex
 		boolean destinationReached = false;
 		DBTableInfo currentVertex = null;
 		while (stack.size() > 0 && !destinationReached)
@@ -238,7 +246,7 @@ public class UIFieldFormatterSampler implements SQLExecutionListener
 			List<DBRelationshipInfo> relationships = currentVertex.getRelationships();
 			for (DBRelationshipInfo relationship : relationships)
 			{
-				DBTableInfo neighborTable = DBTableIdMgr.getInstance().getByClassName(relationship.getClassName()); 
+				DBTableInfo neighborTable = getTableInfo(relationship.getClassName()); 
 
 				if (visited.contains(neighborTable) ||
 					neighborTable.getName().equals(currentVertex.getName()))
@@ -286,4 +294,25 @@ public class UIFieldFormatterSampler implements SQLExecutionListener
 		
 		return path;
 	}
+
+	/**
+	 * Returns the DBTableInfo corresponding to the class name provided.
+	 * Returns a fake DBTableInfo to represent the UserGroupScope table.
+	 * 
+	 * @param className
+	 * @return
+	 */
+	private DBTableInfo getTableInfo(final String className) {
+        
+        // treat UserGroupScope as a special table
+        if (UserGroupScope.class.getCanonicalName().equals(className))
+        {
+            // UserGroupScope doesn't have a table of its own, but it is composed of the
+            // tables associated with its sub-classes: institution, discipline, division, collection. 
+            // We will return a fake DBTableInfo instance that represents a dead-end in the graph,
+            // just to fool the shortest path algorithm.
+            return userGroupScopeFakeTableInfo; 
+        }
+        return DBTableIdMgr.getInstance().getByClassName(className); 
+    }
 }
