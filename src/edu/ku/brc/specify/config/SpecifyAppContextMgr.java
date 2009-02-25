@@ -1190,7 +1190,6 @@ public class SpecifyAppContextMgr extends AppContextMgr
             }
             
             collection = session.merge(collection);
-            
             String userType = user.getUserType();
             
             if (debug) log.debug("User["+user.getName()+"] Type["+userType+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -1296,7 +1295,6 @@ public class SpecifyAppContextMgr extends AppContextMgr
             {
                 user.setIsLoggedIn(false);
                 user.setLoginOutTime(new Timestamp(System.currentTimeMillis()));
-                
                 try
                 {
                     session.beginTransaction();
@@ -1311,7 +1309,24 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 }
                 System.exit(0);
             }
-
+            else
+            {
+                user.setLoginCollectionName(collection.getCollectionName());
+                user.setLoginDisciplineName(discipline.getName());
+                try
+                {
+                    session.beginTransaction();
+                    session.saveOrUpdate(user);
+                    session.commit();
+                    
+                } catch (Exception ex)
+                {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
+                    log.error(ex);
+                }
+            }
+            
             
             //---------------------------------------------------------
             // This is the Full Path User / Discipline / Collection / UserType / isPersonal
