@@ -13,7 +13,7 @@
 </table>
 <table border="0"><tr><td width="39"><img src="../../images/query2_32x32.png"/></td>
 <td valign="bottom"><h2>Query Builder</h2></td></tr></table>
-<p>The purpose of entering data into the Specify database is to be able to retrieve that data when needed. Specify's Query builder offers a flexible interface for defining and running searches. Queries are a precise request for information retrieval and can restrict the type of returned records based on the contents of almost any of Specify's  data fields. </p>
+<p><a name="query_overview" id="query_overview"></a>One of the benefits and goals of  entering data into the Specify database is to be able to retrieve the data in an organized manner. Specify's Query builder offers a flexible interface for defining and running searches. Queries are a precise request for information retrieval and can restrict the type of returned records based on the contents of almost any of Specify's  data fields. </p>
 <p>These queries can then be used to create <a href="../RecordSet/record_set.html">Record Sets</a> or <a href="../ReportsLabels/reports.html">Reports</a>. </p>
 <p>Open the query builder by clicking the <img src="../../images/query20x20.png" width="20" height="20" /> (Query button) on the Taskbar.</p>
 <p>The Sidebar displays a list of frequently used tables to begin the query configuration. Less common tables are found by clicking <img src="../../images/more_tables.png" width="20" height="20" /> (More Tables)  in the sidebar and choosing a table from the pop-up dialog. </p>
@@ -46,7 +46,7 @@
 <p>Specify 6 does not include default fields in a query as was found in Specify 5. For a column to appear in the results it must first be represented by a field in the query. Users that wish to always see a particular set of columns in their query results are encouraged to create a query with those fields and save the query. When creating a future query simply click on the saved query first, then add to it to create the new query.</p>
 <p>Specify 6 offers a grid view of results only. </p>
 <p>&nbsp;</p>
-<h4><strong>Choose Tables </strong></h4>
+<h4><strong><a name="query_add_tables" id="query_add_tables"></a>Choose Tables </strong></h4>
 <p>Select a related table to be part of the search criteria by double clicking it in the list box.  Tables are either formatted or aggregated, depending on their relationship to the primary Table, and do not offer any other search criteria. Most tables in Specify have a default format and aggregate setting. Formats and aggregates can be edited, created or deleted  in <em>System &gt; Schema Configuration</em>.</p>
 <p><strong><img src="../../images/SingleKid.png" alt="many-to-one" width="16" height="16" /> Many-to-One</strong> (Formatted Data)</p>
 <p>A relationship involving a primary and related table in which many primary records are linked to a single related record in the related table. For example, many Collection Object records might be linked to the same Locality record because they were all found at the same location.</p>
@@ -285,10 +285,10 @@
 <p>Query results display as a grid in a query Results window. They are designated by a green (<img src="../../images/query_colors.png" width="20" height="20" />) results bar.</p>
 <p>Results can be manipulated and utilized in various ways using the buttons on the results bar.</p>
 <span class="MichaelsChanges">
-<table width="600" border="1" cellspacing="2" cellpadding="6">
+<table width="1166" border="1" cellspacing="2" cellpadding="6">
   <tr>
-    <td width=40 align="center"><img src="../../images/record_set.png" alt="Record Set" width="25" height="25" /></td>
-    <td width="524">Create a Record Set from the selected records.</td>
+    <td width=78 align="center"><img src="../../images/record_set.png" alt="Record Set" width="25" height="25" /></td>
+    <td width="1052">Create a Record Set from the selected records.</td>
   </tr>
   <tr>
     <td><div align="center"><img src="../../images/data_entry.png" width="25" height="25" /></div></td>
@@ -307,17 +307,23 @@
     <td><div align="center"><img src="../../images/ExportExcelTemplate16x16.png" width="25" height="25" /></div></td>
     <td>Export the grid to MS Excel.</td>
   </tr>
-</table></span>
+  <tr>
+    <td><div align="center"><img src="../../images/Reports20x20.png" width="20" height="20" /></div></td>
+    <td>Create a report from the returned records. This button will only display if reports are availabe for the type of query. Clicking the button will result in a dialog listing all available reports for the query type. Choose a report from the list for the report to display in Specify.</td>
+  </tr>
+</table>
+</span>
 <p><em><strong>Note:</strong></em> Individual records opened from the query results will open in View  mode. To edit the records click the <img src="../../images/view_form_20x20.png" width="20" height="20" /> (Edit) button.</p>
 <p>Query results can also be used to add records to an existing Record Set.</p>
 <p>Click the <img src="../../images/record_sets_dark_20.png" alt="record set" width="20" height="20" /> (Record Set) button at the bottom of the results window. The <em>Choose a Record Set</em> dialog will appear:</p>
 <ul>
-  <li>Select a Record Set name in the list and click the <em>OK</em> button to add the selected records to the existing Record Set.</li>
+  <li>Select a record set name in the list and click the <em>OK</em> button to add the selected records to the existing record set.</li>
   <br />
-  <li>Click the <em>New</em> button to create a new Record Set</li>
+  <li>Click the <em>New</em> button to create a new record set</li>
   <br />
   <li>Click <em>Cancel</em> to close the dialog. </li>
 </ul>
+<p>Or, select the records for the <img src="../../images/record_sets_dark_20.png" alt="record set" width="20" height="20" /> (Record Set) button to enable, then drag the button to an existing record set on the side bar to add the records to the existing record set. The existing record set and the new records must be from the same table to be compatible. As the button is dragged toward the side bar any existing record sets that can accept the new records will display a colored band.</p>
 <p>&nbsp;</p>
 <p><strong><a name="q_saved" id="q_saved"></a>Saved Query Menu</strong><strong></strong></p>
 <p>Right-button-Click on the Sidebar to open the Query Context Menu:</p>
@@ -368,7 +374,7 @@
 <p>Queries can be deleted by dragging and dropping them onto the Trash Can in the Sidebar. A prompt will ask the user if they are sure they want to delete the Query.</p>
 <p>Queries that are used in Reports may not be deleted.</p>
 <p>&nbsp;</p>
-<h4>Edit Query</h4>
+<h4><a name="edit_query" id="edit_query"></a>Edit Query</h4>
 <p>To edit a query simply click in in the side bar to open it in the work space. The expressions can be edited, the either click <em>Save</em> to save the changes to the same query or <em>Save As</em> to save the query as a new query.</p>
 <p>&nbsp;</p>
 <p>&nbsp;</p>

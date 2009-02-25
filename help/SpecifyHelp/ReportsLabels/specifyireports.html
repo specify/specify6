@@ -17,10 +17,10 @@
   </tr>
 </table><br />
 <table border="0">
-<tr><td><img src="../../images/spireport.png" width="47" height="32" /></td>
+<tr><td valign="bottom"><img src="../../images/spireport.png" width="47" height="32" /></td>
 <td valign="bottom"><h2>SpecifyiReport</h2></td></tr>
 </table>
-<p>A report is used to  present the results of a Query  in an attractive and reader-friendly arrangement, either on paper or on screen as a report preview. </p>
+<a name="ireport_overview" id="ireport_overview"></a>A report is used to  present the results of a Query  in an attractive and reader-friendly arrangement, either on paper or on screen as a report preview. 
 <p>Specify harnesses the power of iReport 3.0, an open source report writing software package, by modifying the original version to specifically interact with Queries created in Specify 6 and data supplied from the Specify 6 database. &nbsp;Once within SpecifyiReport, the interface is identical to that of iReport.</p>
 <p>In-depth documentation for using iReport can be accessed from their <a href="http://jasperforge.org/website/ireportwebsite/IR%20Website/iReport_documentation.html?group_id=243&header=project&leftnav=yes&target=ireport">web page</a>. The following documentation is meant to explain how to bring a Specify Query into the Specify 6 version of iReport and then create a simple report. &nbsp;</p>
 <p>The Specify staff also provide limited report-writing services for all registered Specify users. To benefit from their expertise please contact them at <a href="mailto:specify@ku.edu">specify@ku.edu</a>.
@@ -95,30 +95,6 @@
   </tr>
 </table>
 <p>&nbsp;</p>
-<h4><strong><a name="ir_groups" id="ir_groups"></a>Groups</strong></h4>
-<p>Groups can be created in a report if the results of a query have been sorted correctly. SpecifyiReport reads the data and 'groups' similar data together as they are ordered. The report can then be structured based on the content of the report. </p>
-<ol>
-  <li>Click View &gt; Report Groups to open the Group editor.</li><br />
-  <li>Click New, and give the group a Name in the box provided by the Add/Edit dialog.</li><br />
-  <li>In the Group Expression window there is an <em>Edit</em> button. Click that button to open the expression editor.</li>
-  <br />
-  <li>Click <em>Field</em> in the bottom left panel and double click the desire field in the list (displayed in the middle panel). The field name should appear in the expression window. Click the <em>Apply</em> button.</li>
-  <br />
-  <li>The field should now show in the Group Expression window of the Add/Edit dialog. </li><br />
-  <li>Designating a field as a Group allows choices for each data grouping:</li>
-  <br />
-  <ul>
-    <li><strong>Start A New Column</strong> will place each data group in its own column.</li>
-    <br />
-  <li><strong>Start A New Page</strong> will put a page break at the end of each data group.</li>
-  <br />
-  <li><strong>Reset Page Number</strong> starts each data group at page 1.</li>
-  <br />
-  <li><strong>Print Header on Each Page</strong> prints the group header on each page.</li>
-  </ul>
-</ol>
-<p>Creating a Group will add a Group band and Group  Footer band to the report.</p>
-<p>&nbsp;</p>
 <h4><strong><a name="ir_panes" id="ir_panes"></a>Panes</strong></h4>
 <p>Menus on the sides of the Workspace in iReport are called Panes. Three main panes that are helpful to have open are <em>Document Structure</em>, <em>Properties</em> and <em>Library</em>. These can be opened/closed in <em>View &gt; Docking Panes</em>. Any item within these panes can be dragged and dropped into a band. When the item is dropped into a band the expression that represents it is displayed in a Text Field. </p>
 <p>Right-button-click on an object within the panes to display a context menu with choices for Edit, Add, Move, Cut, Copy, Paste, Delete, Add a Group and Refresh.</p>
@@ -159,10 +135,55 @@
 </ol>
 <p><em><strong>Note:</strong></em> Typing (+ &quot; &quot; +) between two field expression in this dialog will include whatever text is between quotation marks to appear on the report.</p>
 <p>&nbsp;</p>
-<p><strong>Add a Text Field</strong> by clicking the T button in the text field, then clicking in the Title band and drawing the outline of the field. Type in the field and edit the appearance of the text in the Properties pane.</p>
+<p><strong><a name="report_text" id="report_text"></a>Add a Text Field</strong> </p>
+<ul>
+  <li>Click the  <img src="../../images/static_text_button.png" width="19" height="17" /> (static text field) button in the task bar, then click in the appropriate band and drag to outline the size of the static text field.</li>
+</ul>
+<p>The text properties can be edited in the Properties pane. </p>
 <p>&nbsp;</p>
-<h3><u><a name="ir_barcodes" id="ir_barcodes"></a>Printing Barcodes</u></h3>
-<p><strong>iReport</strong> can print the following barcodes:</p>
+<h4><strong><a name="ir_groups" id="ir_groups"></a>Groups</strong></h4>
+<p>Groups can be created in a report if the results of a query have been sorted correctly. SpecifyiReport reads the data and 'groups' similar data together as they are ordered. The report can then be structured based on the content of the report. </p>
+<ol>
+  <li>Click View &gt; Report Groups to open the Group editor.</li>
+  <br />
+  <li>Click New, and give the group a Name in the box provided by the Add/Edit dialog.</li>
+  <br />
+  <li>In the Group Expression window there is an <em>Edit</em> button. Click that button to open the expression editor.</li>
+  <br />
+  <li>Click <em>Field</em> in the bottom left panel and double click the desire field in the list (displayed in the middle panel). The field name should appear in the expression window. Click the <em>Apply</em> button.</li>
+  <br />
+  <li>The field should now show in the Group Expression window of the Add/Edit dialog. </li>
+  <br />
+  <li>Designating a field as a Group allows choices for each data grouping:</li>
+  <br />
+  <ul>
+    <li><strong>Start A New Column</strong> will place each data group in its own column.</li>
+    <br />
+    <li><strong>Start A New Page</strong> will put a page break at the end of each data group.</li>
+    <br />
+    <li><strong>Reset Page Number</strong> starts each data group at page 1.</li>
+    <br />
+    <li><strong>Print Header on Each Page</strong> prints the group header on each page.</li>
+  </ul>
+</ol>
+<p>Creating a Group will add a Group band and Group  Footer band to the report.</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<h3><u><a name="ir_barcodes" id="ir_barcodes"></a>Including Barcodes</u></h3>
+<p>When creating or editing a report in SpecifyiReport it is often necessary to include a barcode. A string field that includes a barcode and can be part of a report by following these steps:</p>
+<ol>
+  <li>Click the <img src="../../images/barcode.png" alt="barcode button" width="14" height="12" /> (barcode) button on the tool bar. </li>
+  <li>Click and drag an outline for the barcode field in the detail band of the report. </li>
+  <li>In the Properties pane, click the <em><strong>...</strong></em> button for the Barcode exp. (at the bottom of the pane under Barcode).</li>
+  <li>The Barcode Expression Editor dialog will appear. </li>
+  <li>Delete anything that appears in the top box. </li>
+  <li>Click Fields in the bottom left pane.</li>
+  <li>Double click on the appropriate field in the middle box. It should appear in the top box.</li>
+  <li>Click the Apply button.</li>
+</ol>
+<p><img src="../../images/barcode_editor.png" alt="barcode editor" width="609" height="372" /></p>
+<p>&nbsp;</p>
+<p>SpecifyiReport supports the following barcodes:</p>
 <table width="100%" border="1" cellspacing="2" cellpadding="6">
   <tr>
     <td>2of7</td>
@@ -200,8 +221,6 @@
     <td>&nbsp;</td>
   </tr>
 </table>
-<p><br />
-</p>
 <p>&nbsp;</p>
 <p><strong><a name="ir_save" id="ir_save"></a>Saving a Report</strong></p>
 <p>Once a report is created to satisfaction, it can be saved by choosing <em>File &gt; Save</em>. A Report Properties dialog will appear:</p>

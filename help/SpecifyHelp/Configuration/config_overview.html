@@ -13,7 +13,7 @@
 </table>
 <h2>Specify Setup</h2>
 <p>Specify's flexible design can accomodate a single user with a single collection or multiple collections representing multiple disciplines within an institution - all sharing the same database. This is accomplished by creating relationships among collection data as well as modeling how collections are organized within institutions themselves and then configuring components within Specify specifically for each institution level. </p>
-<p>What this means for you, the  user, is that Specify 6 can be configured to work congruently with existing collection managment procedures, but it requires a thoughtful setup process. Before starting the setup process, it is important to understand the modules within Specify and the institution level at which they function.</p>
+<p>What this means for you, the  user, is that Specify 6 can be configured to work congruently with existing collection management procedures, but it requires a thoughtful setup process. Before starting the setup process, it is important to understand the modules within Specify and the institution level at which they function.</p>
 <h4>Specify Institution Levels</h4>
 <p>Specify mirrors the common levels of heirarchy within institutions. Access to information and Specify tools are then set at the various levels.</p>
 <ul>
@@ -46,19 +46,19 @@
   </ul>
 </ul>
 <p>Access to information and tools within Specify  are  scoped at these  levels. Data that resides at a collection level will only be seen by the users within that single collection. Data that resides at a division level is available to all users within the collections that are held within the disciplines of that division level.</p>
-<p>Users are  futher broken down into  Users Groups.</p>
+<p>Users are  futher broken down into Groups.</p>
 <ul>
   <li>Manager</li>
   <li>FullAccess</li>
   <li>LimitedAccess</li>
   <li>Guest</li>
 </ul>
-<p>Users should be placed into a user group based on the tasks they will perform and the functionality of the modules they will require, and an institution level that reflects  the  data they need to access. The user that will make changes in the tree, change the captions in the forms and enter data for three collections within a division is performing manager functions and will need that level of access to Specify modules. The  user is accessing data in all three collections and should be placed in the division as a manager rather than a manager within all three collections.</p>
-<p>The current release of Specify allows users to be placed the collection, discipline and division level, but not at the institution level. The ability to have a unique user at the insitution level, with access to all collections will be available in a future release. </p>
+<p>Users should be placed into a user group based on the tasks they will perform and the functionality of the modules they will require, and an institution level that reflects  the  data they need to access. The user who will make changes in the tree, change the captions in the forms and enter data for three collections within a division is performing manager functions and will need that level of access to Specify modules. The  user is accessing data in all three collections and should be placed in the division as a manager rather than a manager within all three collections.</p>
+<p>The current release of Specify allows users to be placed at the collection, discipline and division level, but not at the institution level. The ability to have a unique user at the insitution level, with access to all collections will be available in a future release. </p>
 <p>Each session of Specify is bound to a collection and the data contained within that collection. In other words, a manager at a discipline level can access all the collections within the discipline, but can not access the data within all the collections during the same session. To view data in another collection the user simply needs to change to that collection. </p>
 <h4>Forms</h4>
-<p>The form system is a window to the data within Specify. Data is entered, viewed and edited via the form system. The various forms within Specify are scoped at the discipline level. In other words, when a collection is created and placed within a discipline Specify will then make the forms for that Discipline available to the collection, and all collections share the same forms. A form editor is not shipped with Specify 6, but forms can be exported as a set, edited in xml and reimported. When the form set is imported back into Specify it can be saved at a different institution level, making the new forms available at a different institution level. In other words, a collection manager could export their discipline forms, edit them and reimport them at the collection level. The edited forms would then be available to any user in the collection, but not to other collections within the discipline.</p>
-<p>Data for collection objects is available at the collection level, although it resides in one institutional database. Much of the background, or related data may be the same throughout the discipline or division levels. It makes sense then that much of the related data  is available at levels other than the collection. For instance,  agents are often the same within a given division and it would not make sense for every collection to enter the same agent data; therefore the agents table is available at the division level. For more information about the level of the various data types within specify please refer to ...</p>
+<p>The form system is a window to the data within Specify. Data is entered, viewed and edited via the form system. The various forms within Specify are scoped at the discipline level. In other words, when a collection is created and placed within a discipline Specify will then make the forms for that Discipline available to the collection, and all collections share the same forms. A form editor is not shipped with Specify 6, but forms can be exported as a set, edited in XML and reimported. When the form set is imported back into Specify it can be saved at a different institution level, making the new forms available at a different institution level. In other words, a collection manager could export their discipline forms, edit them and reimport them at the collection level. The edited forms would then be available to any user in the collection, but not to other collections within the discipline.</p>
+<p>Data for collection objects is available at the collection level, although it resides in one institutional database. Much of the background, or related data may be the same throughout the discipline or division levels. It makes sense then that much of the related data  is available at levels other than the collection. For instance,  agents are often the same within a given division and it would not make sense for every collection to enter the same agent data; therefore the agents table is available at the division level. For more information about the level of the various data types within Specify please refer to ...</p>
 <h4>Trees</h4>
 <p>Specify 6 stores various table data in heirarchical Tree format. These include Taxon, Geography, Storage, Chronostratigraphy and Lithostratigraphy. Tree data for Taxon, Geography, Chronostratigraphy and Lithostratigraphy is available at the discipline level, which means that all collections within a discipline share the same tree. There is only one Storage tree, scoped to the institution.</p>
 <p>When the tree is being edited both the form and tree will be locked to all other users within the discipline for editing purposes but available to view. </p>
@@ -68,16 +68,16 @@
 <p>Users have the choice of making a report available at either the user or discipline level at the time the report is saved. Reports can also be exported, much like forms, and imported back into Specify at any institution level. Reports are exported as a file that contains both the report and the query that created it. Reports can also be created in XML code and imported  into Specify.</p>
 <p>At this time in Specify both queries and reports access data at the division level </p>
 <h4><strong>Searches</strong></h4>
-<p>The purpose of entering data into the Specify database is to be able to retrieve that data when needed. Specify's Query builder offers a flexible interface for defining and running searches. Queries are a precise request for information retrieval and can restrict the type of returned records based on the contents of almost any of Specify's  data fields. </p>
-<p>Queries created in Specify are bound to the user, making them accessible at any collection the user may login to. Queries can also be exported and imported, making the same query available to any Specify user. The collection object data that is queried is limited to the data within the collection.</p>
-<p>Simple Searches have been pre-configured in Specify 6 from pre-indexed fields within the database. The purpose of the simple search is to eliminate the need to create a complex Query for commonly executed searches. While the pre-indexed fields are predetermined, the simple searches can be configured to include or exclude these fields as well as many related fields.</p>
+<p>One of the benefits and goals of  entering data into the Specify database is to be able to retrieve the data in an organized manner. Specify's Query builder offers a flexible interface for defining and running searches. Queries are a precise request for information retrieval and can restrict the type of returned records based on the contents of almost any of Specify's  data fields. </p>
+<p>Queries created in Specify are bound to the user, making them accessible within any collection the user may login to. Queries can also be exported and imported, making the same query available to any Specify user. The collection object data that is queried is limited to the data within the collection.</p>
+<p>Simple Searches have been pre-configured in Specify 6 from pre-indexed fields in the database. The purpose of the simple search is to eliminate the need to create a complex Query for commonly executed searches. While the pre-indexed fields are predetermined, the simple searches can be configured to include or exclude these fields as well as many related fields.</p>
 <h4><strong>Preferences</strong></h4>
-<p>Preferences are kept on the local machine are available to each user. Most of the preferences apply only to the individual user, but some refer to system links and will require information from the system administrator. For example, an attachment repository is necessary when including attachments and will need to be created by the system administrator. Users will then need to enter the link to the attachment repository in the necessary preference field. </p>
+<p>Preferences are kept on the local machine are are available for each user. Most of the preferences apply only to the individual user, but some refer to system links and will require information from the system administrator. For example, an attachment repository is necessary when including attachments and will need to be created by the system administrator. Users will then need to enter the link to the attachment repository in the necessary preference field. </p>
 <p><strong>System Configuration</strong></p>
 <p>The collections, disciplines and divisions for the institution are created and edited in the system configuration module. Changes within this module affect the entire institution and will be reflected in the security module and used when adding users and user permissions. </p>
 <p>When determining the structure for an institution it is important to understand the levels at which various data types are stored. An alternate way to think about this is to identify the organizational level at which the contents of data records are unique. For example, Collection Object records are 'scoped' to the collections level, because all Collection Object records within a collection must be unique. No two records can have the exact same values. In contrast Locality records are scoped to discipline, which means they can be shared among collection databases within the same discipline, and they must be unique records within the scope of a discipline. For more information about the level of the various data types within specify please refer to ...</p>
 <h4>Schema Configuration</h4>
-<p>Schema refers to the many tables and fields that systematize the many dimensions and relationships of the data within biological collections. The schema configuration module is a highly functional, though somewhat complex, set of tools created to configure the Specify schema for individual discipline needs. Changes made in the schema configuration tool functions at the discipline level and will affect all collections within a given discipline.</p>
+<p>&quot;Schema&quot; refers to the many tables and fields that systematize the many dimensions and relationships of the data within biological collections. The schema configuration module is a highly functional, though somewhat complex, set of tools created to configure the Specify schema for individual discipline needs. Changes made in the schema configuration tool function at the discipline level and will affect all collections within a given discipline.</p>
 <p>Specific tasks within the schema configuration include:</p>
 <ul>
   <li>Hiding tables and fields that are not used within a discipline.</li>
@@ -89,31 +89,48 @@
   <li>Changing a  string field into a number format, pick list, or web link. </li>
 </ul>
 <p><u>Number Scheme</u></p>
-<p>Specify 6 provides a very powerful formatting and auto-numbering facility. Number schemes are particularly useful for institutions that use specific formats  for Catalog, Loan, Accession and/or Gift Numbers. Specify allows any string field to be formatted for a numbering scheme. A numbering scheme uses a numbering format with the possibility of participating in a number series. Number schemes are scoped to the discipline level, except for Catalog Numbers, which are bound to a number scheme at the time they are created. This was implemented so that each collection could have a unique format and/or number series. Accession Numbers that have been bound to an institution during the Wizard Setup can not be edited in the Schema Configuration.</p>
-<p>A number format refers to the order of numbers or characters that make up the format. For instance, an institution may have a catalog number that starts with the institution code, then adds the current year and ends with an auto-incrementing number, separated by dashes. The format for that number would be KU-2009-0001. This is only one sample format. Formats can consist of alphanumeric, numeric, alphabet, year and auto-incrementing numbers.  Auto-incrementing fields are joined to the auto numbering tool inside Specify. When auto numbering is turned on the number will be generated by Specify, and when auto numbering is turned off the number can be manually entered. Auto-incrementing numbers must then be hooked up to a number series.</p>
-<p>The number series refers to the number that is auto-incremented, or auto-generated by Specify. The importance of the number series not only lies in the concept of auto numbering as mentioned above, it is also critical to understand which collections within the institution will need to participate in the same number series. </p>
+<p>Specify 6 provides a very powerful formatting and auto-numbering facility. Specify's number schemes are particularly useful for institutions that use specific formats  for Catalog, Loan, Accession and/or Gift Numbers. Specify allows any string field to be formatted for a numbering scheme. A numbering scheme uses a numbering format with the possibility of participating in a number series. Number schemes are scoped to the discipline level, except for Catalog Numbers, which are bound to a number scheme at the time they are created. This was implemented so that each collection could have a unique format and/or number series. Accession Numbers that have been bound to an institution during the Wizard Setup can not be edited in the Schema Configuration.</p>
+<p>A number format refers to the order of numbers or characters that make up the format. For instance, an institution may have a catalog number that starts with the institution code, then adds the current year and ends with an auto-incrementing number, separated by dashes. The format for that number would be KU-2009-0001. This is only one sample format. Formats can consist of alphanumeric, numeric, alphabet, year and auto-incrementing numbers.  Auto-incrementing fields are joined to the auto numbering tool inside Specify. When auto numbering is turned on the number will be generated by Specify, and when auto numbering is turned off the number can be manually entered. Auto-incrementing numbers must then be joined to a number series.</p>
+<p>The number series refers to the number that is auto-incremented, or auto-generated by Specify. The importance of the number series not only lies in the concept of auto numbering as mentioned above; it is also critical to understand which collections within the institution will need to participate in the same number series. </p>
 <p><u>Pick Lists and Web Links</u></p>
-<p>Specify ships with system pick lists and web links, which can be edited. New pick lists and web links can also be created, but will not automatically appear within existing forms. To add the new pick lists and web links to forms the form set must be  exported, edited to reflect the change and then imported back into Specify.</p>
+<p>Specify ships with system pick lists and web links, which can be edited. New pick lists and web links can also be created, but will not automatically appear within existing forms. To add the new pick lists and web links to forms, the form set must be  exported, edited to reflect the change and then imported back into Specify.</p>
 <h4><strong>Security </strong></h4>
-<p>Specify has a comprehensive system for adding users, then granting permission to program tools and to data. When Specify starts up it checks the user permissions and loads various components accordingly. &nbsp;Users that are not given permission to use modules in Specify will not see the corresponding buttons that connect users to that module. For instance, users that are not given permission to edit Trees will not have a Tree button on the Taskbar or have the ability to add the Tree button in the user Preferences tool.</p>
+<p>Specify has a comprehensive system for adding users, then granting permission to the program's tools and to data. When Specify starts up it checks the user permissions and loads various components accordingly. &nbsp;Users who are not given permission to use modules in Specify will not see the corresponding buttons that connect users to that module. For instance, users who are not given permission to edit Trees will not have a Tree button on the Taskbar or have the ability to add the Tree button in the user Preferences tool.</p>
 <p>Currently, it is not possible to search for collection objects across collections in Specify 6  but that is a capability we are committed to in a future release. This is specifically tailored for Registrars, Directors and Conservators.</p>
 <h4>Import/Export</h4>
-<p>Both forms and reports can be exported and imported into Specify using this module. Forms can be exported, changed in XML and then reimported back into Specify. Reports can be exported then imported back into Specify at a different level, in this way reports can be shared within an institution. This ability would also allow both forms and reports to be consistent within an entire community of collectors. </p>
+<p>Both forms and reports can be exported and imported into Specify using this module. Forms can be exported, changed in XML and then reimported back into Specify. Reports can be exported then imported back into Specify at a different level; in this way reports can be shared within an institution. This ability would also allow both forms and reports to be consistent within an entire community of collectors. </p>
 <p>Importing and exporting is based on the same levels that are found within the institution, as well as two additional levels:</p>
 <ul>
-  <li>User</li>
-  <li>User Type</li>
-  <li>Collection</li>
-  <li>Discipline</li>
-  <li>Division</li>
+  <li>System</li><ul>
   <li>Institution</li>
-  <li>System/Backup</li>
+  <ul>
+    <li>Division</li>
+    <ul>
+      <li>Discipline</li>
+      <ul>
+        <li>Collection</li><ul>
+        <li>Group</li>
+        <ul>
+          <li>Users</li>
+          </ul>
+        </ul>
+    </ul>
+  </ul>
+  </ul>
+  </ul>
+  </ul>
+<p>Group refers to the same groups of users as above:</p>
+<ul>
+  <li>Manager</li>
+  <li>FullAccess</li>
+  <li>LimitedAccess</li>
+  <li>Guest</li>
 </ul>
-<p>For each level the imported resource (form or report) is made available to other users at the same level as well as all levels above it. This is based on the permissions for the person importing. Resources imported at the top (User) levelr will be made available to the user only. At the User Type level the form/report is accessible to all users within the collection at the same User Type as the person importing.  For example, if a user imports a report from a tissue collection within the Lichen discipline of Botany  into the Division level the report will be available to any user within any collection  in the Lichen discipline.</p>
+<p>For each level the imported resource (form or report) is made available to other users at the same level as well as all levels below it. This is based on the permissions for the person importing. Resources imported at the bottom (User) level will be made available to the user only. At the Group level the form/report is accessible to all users within the collection that are part of the same Group.  For example, if a Limited Access user imports a report from a tissue collection within the Lichen discipline of Botany  into the Division level the report will be available to any user within any collection  in the Lichen discipline.</p>
 <p>Resources can not be imported or exported from the System level. It holds the resources that Specify ships with and can be used to restore these default resources if needed.</p>
 <h4>WorkBench/Uploader</h4>
-<p>The WorkBench was released in 2007 as a stand-alone application. The goal was to offer collection managers a tool to use in the field as well as clean their data before uploading the data into the Specify database. </p>
-<p>The WorkBench is included in the suite of tools for Specify 6. Currently, the Upload function is not available from the stand-alone version of the WorkBench. Data sets created in the stand-alone version will need to be exported as Excel files and imported into the Specify WorkBench. </p>
+<p>The WorkBench was released in 2007 as a stand-alone application. The goal was to offer collection managers a tool to use in the field as well as tools to clean their data before uploading the data into the Specify database. </p>
+<p>The WorkBench is included in the suite of tools for Specify 6. Currently, the Upload function is not available from the stand-alone version of the WorkBench. Data sets created in the stand-alone version will need to be exported as Excel files and imported into the Specify 6 WorkBench. </p>
 <h4>Backup/Restore</h4>
 <p>Specify ships with a separate Backup and Restore tool. Backup paths must be set for the institution based on the MySQL setup. The Backup and Restore functions are NOT limited to single collections, but  backup and restore the entire database. </p>
 <p>&nbsp;</p>
