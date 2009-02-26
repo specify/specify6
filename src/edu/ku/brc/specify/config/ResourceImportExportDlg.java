@@ -201,7 +201,7 @@ public class ResourceImportExportDlg extends CustomDialog
 
         tabbedPane = new JTabbedPane();
         
-        PanelBuilder viewPanel = new PanelBuilder(new FormLayout("f:p:g,10px,f:p:g", "p,2px,p"));
+        PanelBuilder viewPanel = new PanelBuilder(new FormLayout("f:p:g,10px,f:p:g", "p,2px,f:p:g"));
         viewPanel.add(createLabel(getResourceString("RIE_VIEWSETS"), SwingConstants.CENTER),   cc.xy(1,1));
         viewSetsList = new JList(viewSetsModel);
         viewSetsList.setCellRenderer(new ARListRenderer());
@@ -222,7 +222,7 @@ public class ResourceImportExportDlg extends CustomDialog
         sp = new JScrollPane(resList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         resPane.add(sp, cc.xy(1,3));
 
-        PanelBuilder repPane = new PanelBuilder(new FormLayout("f:p:g", "p,2px,p"));
+        PanelBuilder repPane = new PanelBuilder(new FormLayout("f:p:g", "p,2px,f:p:g"));
         resPane.add(createLabel(getResourceString("RIE_REPORT_RES"), SwingConstants.CENTER), cc.xy(1,1));
         repList   = new JList(repModel);
         repList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -238,7 +238,7 @@ public class ResourceImportExportDlg extends CustomDialog
         repPanel = repPane.getPanel();
         tabbedPane.addTab(getResourceString("RIE_REPORT_RES"), repPanel);
         
-        PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g", "p,4px,p,2px,p"));
+        PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g", "p,4px,f:p:g,2px,p"));
         pb.add(centerPB.getPanel(), cc.xy(1,1));
         pb.add(tabbedPane,          cc.xy(1,3));
         
