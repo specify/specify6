@@ -160,7 +160,7 @@ public class ResourceImportExportDlg extends CustomDialog
                 hierTitle = dir.getTitle();
             } else
             {
-                hierTitle = getResourceString("RIE_"+dir.getUserType()) + " ("+ dir.getTitle() + ")";
+                hierTitle = getResourceString("RIE_GROUP");
             }
             
         } else if (dir.getCollection() != null)

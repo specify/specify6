@@ -239,8 +239,10 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
                 GradiantButton btn = new GradiantButton(serviceInfo.getIcon(IconManager.IconSize.Std16)); // XXX PREF
                 btn.setToolTipText(serviceInfo.getTooltip());
                 btn.setForeground(bannerColor);
-                builder.add(btn, cc.xy(col,1));
-                btn.addActionListener(new ESTableAction(serviceInfo.getCommandAction(), table, serviceInfo.getTooltip()));
+                builder.add(btn, cc.xy(col, 1));
+                ESTableAction esta = new ESTableAction(serviceInfo.getCommandAction(), table, serviceInfo.getTooltip());
+                esta.setProperty("gridtitle", results.getTitle());
+                btn.addActionListener(esta);
                 serviceBtns.put(serviceInfo, btn);
                 col += 2;
             }
@@ -904,15 +906,15 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
      */
     class ESTableAction implements ActionListener
     {
-        protected CommandAction           cmd;
-        protected RecordSetIFace          recordSet;
-        protected JTable                  estTable;
-        protected Properties              props = new Properties();
-        protected String                  msg;
+        protected CommandAction   cmd;
+        protected RecordSetIFace  recordSet;
+        protected JTable          estTable;
+        protected Properties      props = new Properties();
+        protected String          msg;
         
         public ESTableAction(final CommandAction cmd,
-                             final JTable estTable,
-                             final String msg)
+                             final JTable        estTable,
+                             final String        msg)
         {
             this.cmd          = cmd;
             this.estTable     = estTable;
@@ -920,6 +922,14 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
             this.props.put("jtable", estTable);
         }
 
+        public void setProperty(final String key, final Object value)
+        {
+            props.put(key, value);
+        }
+        
+        /* (non-Javadoc)
+         * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+         */
         public void actionPerformed(ActionEvent e)
         {
             UIRegistry.getStatusBar().setText(msg);

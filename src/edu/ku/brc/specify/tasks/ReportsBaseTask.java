@@ -14,8 +14,10 @@
  */
 package edu.ku.brc.specify.tasks;
 
+import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.awt.Color;
 import java.awt.FileDialog;
 import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
@@ -28,14 +30,32 @@ import java.util.Vector;
 
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
+import javax.swing.SwingWorker;
+import javax.swing.table.TableModel;
 
 import net.sf.jasperreports.engine.JRDataSource;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.data.JRTableModelDataSource;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import ar.com.fdvs.dj.core.DynamicJasperHelper;
+import ar.com.fdvs.dj.core.layout.ClassicLayoutManager;
+import ar.com.fdvs.dj.domain.AutoText;
+import ar.com.fdvs.dj.domain.DynamicReport;
+import ar.com.fdvs.dj.domain.Style;
+import ar.com.fdvs.dj.domain.builders.ColumnBuilder;
+import ar.com.fdvs.dj.domain.builders.FastReportBuilder;
+import ar.com.fdvs.dj.domain.constants.Border;
+import ar.com.fdvs.dj.domain.constants.Font;
+import ar.com.fdvs.dj.domain.constants.HorizontalAlign;
+import ar.com.fdvs.dj.domain.constants.Transparency;
+import ar.com.fdvs.dj.domain.constants.VerticalAlign;
+import ar.com.fdvs.dj.domain.entities.columns.AbstractColumn;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.af.core.ContextMgr;
@@ -45,6 +65,7 @@ import edu.ku.brc.af.core.NavBoxIFace;
 import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.af.core.NavBoxMgr;
 import edu.ku.brc.af.core.SubPaneIFace;
+import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.TaskCommandDef;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.ToolBarItemDesc;
@@ -52,7 +73,6 @@ import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPreferences;
-
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
@@ -69,6 +89,7 @@ import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.DataFlavorTableExt;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.UIHelper;
@@ -107,6 +128,7 @@ public class ReportsBaseTask extends BaseTask
     public static final String           REFRESH             = "RPT.Refresh";
     public static final String           IMPORT              = "RPT.Import";
     public static final String           REPORT_DELETED      = "RPT.ReportDeleted";
+    public static final String           PRINT_GRID         = "RPT.PrintTable";
 
     // Data Members
     protected DataFlavor                 defaultFlavor       = null;
@@ -150,6 +172,9 @@ public class ReportsBaseTask extends BaseTask
         CommandDispatcher.register(REPORTS, this);
         CommandDispatcher.register(RecordSetTask.RECORD_SET, this);
         
+        CommandAction cmdAction = new CommandAction(REPORTS, PRINT_GRID);
+        ContextMgr.registerService(20, PRINT_GRID, -1, cmdAction, this, "Print", getResourceString("PRINT_GRID_TT"));
+
         //RecordSetTask.addDroppableDataFlavor(defaultFlavor);
         
         // Create and add the Actions NavBox first so it is at the top at the top
@@ -243,6 +268,9 @@ public class ReportsBaseTask extends BaseTask
     }
     
 
+    /**
+     * 
+     */
     protected void addROCs()
     {
         for (Pair<String, String> navMime : navMimeDefs)
@@ -300,6 +328,11 @@ public class ReportsBaseTask extends BaseTask
         }        
     }
     
+    /**
+     * @param tcd
+     * @param navBox
+     * @return
+     */
     protected RolloverCommand makeROCForCommand(final TaskCommandDef tcd, final NavBox navBox)
     {
         CommandAction cmdAction = new CommandAction(REPORTS, PRINT_REPORT, tcd.getParams().getProperty("tableid"));
@@ -422,8 +455,7 @@ public class ReportsBaseTask extends BaseTask
                          final ImageIcon           paneIcon)
     {
         LabelsPane labelsPane;
-        labelsPane = new LabelsPane(labelTitle, originatingTask != null ? originatingTask : this,
-                params);
+        labelsPane = new LabelsPane(labelTitle, originatingTask != null ? originatingTask : this, params);
         labelsPane.setIcon(paneIcon);
         addSubPaneToMgr(labelsPane);
 
@@ -859,9 +891,15 @@ public class ReportsBaseTask extends BaseTask
         else if (cmdAction.isAction(REFRESH))
         {
             refreshCommands();
+            
         } else if (cmdAction.isAction(IMPORT))
         {
             importReport();
+            
+        } else if (cmdAction.isAction(PRINT_GRID))
+        {
+            printGrid(cmdAction);
+            
         } else if (cmdAction.isAction(DELETE_CMD_ACT))
         {
             RecordSetIFace recordSet = null;
@@ -931,6 +969,175 @@ public class ReportsBaseTask extends BaseTask
     }
     
     /**
+     * Prints a JTable's model as a Grid Report.
+     * 
+     * @param cmdAction the command holding the actual JTable object
+     */
+    protected void printGrid(final CommandAction cmdAction)
+    {
+        SwingWorker<Integer, Integer> backupWorker = new SwingWorker<Integer, Integer>()
+        {
+            protected Exception excpt = null;
+            
+            /* (non-Javadoc)
+             * @see javax.swing.SwingWorker#doInBackground()
+             */
+            @Override
+            protected Integer doInBackground() throws Exception
+            {
+                JTable table = (JTable)cmdAction.getProperty("jtable");
+                if (table != null)
+                {
+                    try
+                    {
+                        LabelsPane labelsPane = new LabelsPane(name, ReportsBaseTask.this, null);
+                        DynamicReport dr = buildReport(table.getModel(), cmdAction.getProperty("gridtitle").toString());
+
+                        JRDataSource ds = new JRTableModelDataSource(table.getModel());
+                        JasperPrint  jp = DynamicJasperHelper.generateJasperPrint(dr, new ClassicLayoutManager(), ds);
+                        
+                        labelsPane.reportFinished(jp);
+                        SubPaneMgr.getInstance().addPane(labelsPane);
+                        
+                    } catch (Exception ex)
+                    {
+                        excpt = ex;
+                        ex.printStackTrace();
+                    }
+                }
+                return null;
+            }
+
+            @Override
+            protected void done()
+            {
+                super.done();
+                
+                UIRegistry.getStatusBar().setProgressDone(PRINT_GRID);
+                
+                UIRegistry.clearSimpleGlassPaneMsg();
+                
+                if (excpt != null)
+                {
+                    UIRegistry.getStatusBar().setErrorMessage("REP_ERR_GRDRPT", excpt);
+                }
+            }
+        };
+        
+        final JStatusBar statusBar = UIRegistry.getStatusBar();
+        statusBar.setIndeterminate(PRINT_GRID, true);
+        
+        UIRegistry.writeSimpleGlassPaneMsg(getLocalizedMessage("REP_GRID_RPT", cmdAction.getProperty("gridtitle").toString()), 24);
+        
+        backupWorker.execute();
+        
+    }
+    
+    /**
+     * @param model
+     * @return
+     * @throws Exception
+     */
+    public DynamicReport buildReport(final TableModel model, final String rptTitle) throws Exception
+    {
+        /**
+         * Creates the DynamicReportBuilder and sets the basic options for the report
+         */
+        FastReportBuilder drb = new FastReportBuilder();
+        
+        Style columDetail = new Style();
+        columDetail.setBorder(Border.THIN);
+        
+        Style columDetailWhite = new Style();
+        columDetailWhite.setBorder(Border.THIN);
+        columDetailWhite.setBackgroundColor(Color.WHITE);
+        columDetailWhite.setFont(Font.ARIAL_SMALL);
+        columDetailWhite.setHorizontalAlign(HorizontalAlign.CENTER);
+        columDetailWhite.setBlankWhenNull(true);
+        
+        Style columDetailWhiteBold = new Style();
+        columDetailWhiteBold.setBorder(Border.THIN);
+        columDetailWhiteBold.setBackgroundColor(Color.WHITE);
+        
+        Style titleStyle = new Style();
+        titleStyle.setFont(new Font(14, Font._FONT_VERDANA, true));
+        
+        /*Style numberStyle = new Style();
+        numberStyle.setHorizontalAlign(HorizontalAlign.RIGHT);
+        
+        Style amountStyle = new Style();
+        amountStyle.setHorizontalAlign(HorizontalAlign.RIGHT);
+        amountStyle.setBackgroundColor(Color.cyan);
+        amountStyle.setTransparency(Transparency.OPAQUE);*/
+        
+        //Font dataRowFont = new Font(10, Font._FONT_VERDANA, true);
+
+        // Odd Row Style
+        Style oddRowStyle = new Style();
+        oddRowStyle.setBorder(Border.NO_BORDER);
+        //oddRowStyle.setFont(dataRowFont);
+        oddRowStyle.setHorizontalAlign(HorizontalAlign.CENTER);
+        
+        Color veryLightGrey = new Color(240, 240, 240);
+        oddRowStyle.setBackgroundColor(veryLightGrey);
+        oddRowStyle.setTransparency(Transparency.OPAQUE);
+
+        // Event Row Style
+        //Style evenRowStyle = new Style();
+        //evenRowStyle.setBorder(Border.NO_BORDER);
+        //evenRowStyle.setFont(dataRowFont);
+        
+        // Create Column Headers for the Report
+        for (int i=0;i<model.getColumnCount();i++)
+        {
+            String colName = model.getColumnName(i);
+            
+            ColumnBuilder colBldr = ColumnBuilder.getInstance().setColumnProperty(colName,String.class.getName());
+            colBldr.setTitle(colName);
+            //colBldr.setWidth(new Integer(100));
+            
+            colBldr.setStyle(columDetailWhite);
+            //colBldr.setHeaderStyle(columDetailWhite);
+            
+            AbstractColumn column = colBldr.build();
+            drb.addColumn(column);
+            
+            Style headerStyle = new Style();
+            headerStyle.setFont(new Font(12, Font._FONT_ARIAL, true));
+            headerStyle.setBorder(Border.THIN);
+            headerStyle.setHorizontalAlign(HorizontalAlign.CENTER);
+            headerStyle.setVerticalAlign(VerticalAlign.MIDDLE);
+            headerStyle.setBackgroundColor(new Color(80, 80, 80));
+            headerStyle.setTransparency(Transparency.OPAQUE);
+            headerStyle.setTextColor(new Color(255, 255, 255));
+            column.setHeaderStyle(headerStyle);
+        }
+        
+        drb.setTitle(rptTitle);
+        drb.setTitleStyle(titleStyle);
+        //drb.setTitleHeight(new Integer(30));
+        //drb.setSubtitleHeight(new Integer(20));
+        //drb.setDetailHeight(new Integer(15));
+        //drb.setDefaultStyles(null, null, null, evenRowStyle);
+        
+        // drb.setLeftMargin(margin)
+        // drb.setRightMargin(margin)
+        // drb.setTopMargin(margin)
+        // drb.setBottomMargin(margin)
+        
+        drb.setPrintBackgroundOnOddRows(true);
+        drb.setOddRowBackgroundStyle(oddRowStyle);
+        drb.setColumnsPerPage(new Integer(1));
+        drb.setUseFullPageWidth(true);
+        drb.setColumnSpace(new Integer(5));
+        drb.addAutoText(AutoText.AUTOTEXT_PAGE_X_OF_Y, AutoText.POSITION_FOOTER, AutoText.ALIGMENT_CENTER);
+
+        DynamicReport dr = drb.build();
+        
+        return dr;
+    }
+    
+    /**
      * @param recordSet
      */
     public static void deleteReportAndResource(final Integer reportId, final AppResourceIFace appRes)
@@ -941,8 +1148,7 @@ public class ReportsBaseTask extends BaseTask
         {
             resource = (SpAppResource) appRes;
         }
-        DataProviderSessionIFace session = DataProviderFactory.getInstance()
-				.createSession();
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
 		boolean transOpen = false;
 		try 
 		{
@@ -961,8 +1167,7 @@ public class ReportsBaseTask extends BaseTask
 		} catch (Exception e) 
 		{
 			UsageTracker.incrHandledUsageCount();
-			edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(
-					ReportsBaseTask.class, e);
+			edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ReportsBaseTask.class, e);
 			if (transOpen) 
 			{
 				session.rollback();

@@ -12,8 +12,6 @@
 		<plugin class="edu.ku.brc.specify.tasks.GtpTreeTask" addui="true"/>
 		<plugin class="edu.ku.brc.specify.tasks.LithoStratTreeTask" addui="true"/>
 				 
-		<plugin class="edu.ku.brc.specify.tasks.LabelsTask" addui="false"/>
-		
 		<plugin class="edu.ku.brc.specify.tasks.ReportsTask" addui="true"/>
 		<plugin class="edu.ku.brc.specify.tasks.InteractionsTask" addui="true"/>
 		<plugin class="edu.ku.brc.af.tasks.StatsTask" addui="true"/>

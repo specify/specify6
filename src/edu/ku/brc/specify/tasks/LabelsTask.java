@@ -16,28 +16,13 @@ package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
-import java.awt.Component;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.print.PrinterException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
-import javax.swing.JLabel;
-import javax.swing.JTable;
-import javax.swing.table.TableCellRenderer;
-
-import edu.ku.brc.af.core.ContextMgr;
-import edu.ku.brc.af.core.NavBox;
-import edu.ku.brc.af.core.NavBoxAction;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.ToolBarItemDesc;
-
 import edu.ku.brc.specify.tasks.subpane.LabelsPane;
 import edu.ku.brc.ui.CommandAction;
-import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.ToolBarDropDownBtn;
-import edu.ku.brc.util.Pair;
 
 /**
  * A task to manage Labels and response to Label Commands.
@@ -51,7 +36,6 @@ import edu.ku.brc.util.Pair;
 public class LabelsTask extends ReportsBaseTask
 {
     protected static final String LABELS = "Labels";
-    protected static final String PRINT_TABLE = "PrintTable";
     
     /**
      * Constructor.
@@ -60,10 +44,6 @@ public class LabelsTask extends ReportsBaseTask
     {
         super(LABELS, getResourceString(LABELS));
         iconName      = name;
-        defaultFlavor = new DataFlavor(ReportsBaseTask.class, name);
-        navMimeDefs   = new ArrayList<Pair<String,String>>(2);
-        navMimeDefs.add(new Pair<String,String>("Labels", LABELS_MIME));
-        reportHintKey = "LABEL_TT";
     }
 
 
@@ -75,9 +55,6 @@ public class LabelsTask extends ReportsBaseTask
     {
         super.preInitialize();
         
-        actionNavBox.add(NavBox.createBtnWithTT(getResourceString("Create_New_Label"), name, getResourceString("CREATE_LABEL_TT"), IconManager.STD_ICON_SIZE, null));
-        actionNavBox.add(NavBox.createBtnWithTT(getResourceString("LabelEditor"),  "EditIcon", getResourceString("EDIT_LABEL_TT"), IconManager.STD_ICON_SIZE, new NavBoxAction(name, OPEN_EDITOR))); // I18N
-
     }
 
     /* (non-Javadoc)
@@ -90,38 +67,9 @@ public class LabelsTask extends ReportsBaseTask
         if (!isInitialized)
         {
             super.initialize();
-            
-            CommandAction cmdAction = new CommandAction(REPORTS, PRINT_TABLE);
-            ContextMgr.registerService(20, PRINT_TABLE, -1, cmdAction, this, "Print", getResourceString("PRINT_GRID_TT"));
         }
     }
 
-    /**
-     * Adds a WorkbenchTemplate to the Left Pane NavBox
-     * @param workbench the workbench to be added
-     */
-    /*protected void addLabelToNavBox(final Workbench workbench)
-    {
-        CommandAction cmd = new CommandAction(LABELS, PRINT_LABEL, Workbench.getClassTableId());
-        RecordSet     rs  = new RecordSet(workbench.getName(), Workbench.getClassTableId());
-        rs.addItem(workbench.getWorkbenchId());
-        cmd.setProperty("workbench", rs);
-        final RolloverCommand roc = (RolloverCommand)makeDnDNavBtn(actionNavBox, workbench.getName(), "DataSet16", cmd, 
-                                                                   new CommandAction(LABELS, DELETE_CMD_ACT, rs), 
-                                                                   true, true);// true means make it draggable
-        roc.setToolTip(getResourceString("WB_PRINTLABEL_TT")); 
-        
-        // Drag Flavors
-        roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
-        roc.addDragDataFlavor(REPORT_FLAVOR);
-        roc.addDropDataFlavor(RecordSetTask.RECORDSET_FLAVOR);
-
-        // Drop Flavors
-        //roc.addDropDataFlavor(new DataFlavor(Workbench.class, EXPORT_DATA_FILE));
-        //roc.addDropDataFlavor(new DataFlavor(CollectionObject.class, "Report"));
-        roc.addDropDataFlavor(RecordSetTask.RECORDSET_FLAVOR);
-       
-    }*/
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.core.BaseTask#getStarterPane()
@@ -145,13 +93,7 @@ public class LabelsTask extends ReportsBaseTask
      */
     public List<ToolBarItemDesc> getToolBarItems()
     {
-        toolbarItems = new Vector<ToolBarItemDesc>();
-        String             label     = getResourceString(name);
-        String             hint      = getResourceString("labels_hint");
-        ToolBarDropDownBtn btn       = createToolbarButton(label, iconName, hint);
-
-        toolbarItems.add(new ToolBarItemDesc(btn));
-        return toolbarItems;
+        return new Vector<ToolBarItemDesc>();
     }
 
     /* (non-Javadoc)
@@ -171,112 +113,6 @@ public class LabelsTask extends ReportsBaseTask
      */
     public void doCommand(final CommandAction cmdAction)
     {
-        // String taskName = cmdAction.getPropertyAsString("task name");
-        //if (StringUtils.isNotEmpty(taskName) && taskName.equals(getName()))
-        if (cmdAction.isType(REPORTS))
-        {
-            if (cmdAction.isAction(PRINT_TABLE))
-            {
-                
-                JTable table = (JTable)cmdAction.getProperty("jtable");
-                if (table != null)
-                {
-                    try
-                    {
-                        
-                        table.print();
-                        /*
-                        JFrame      frame    = new JFrame();
-                        JTable      prtTable = new JTable(table.getModel());
-                        
-                        MyTableCellRenderer cellRenderer = new MyTableCellRenderer();
-                        TableColumnModel    colModel     = prtTable.getColumnModel();
-                        for (int i=0;i<colModel.getColumnCount();i++)
-                        {
-                            colModel.getColumn(i).setCellRenderer(cellRenderer);
-                            colModel.getColumn(i).setHeaderRenderer(cellRenderer);
-                        }
-                        JScrollPane sp = new JScrollPane(prtTable);
-                        frame.setContentPane(sp);
-                        frame.pack();
-                        frame.setSize(1500, 768);
-                        prtTable.setShowGrid(true);
-                        prtTable.print();
-                        /*boolean horzLines = table.getShowHorizontalLines();
-                        boolean vertLines = table.getShowVerticalLines();
-                        table.setShowHorizontalLines(true);
-                        table.setShowVerticalLines(true);
-                        table.validate();*/
-                        //table.print();
-                        
-                        /*table.setShowHorizontalLines(horzLines);
-                        table.setShowVerticalLines(vertLines);
-                        table.validate();
-                        */
-
-                    } catch (PrinterException ex)
-                    {
-                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(LabelsTask.class, ex);
-                        //System.err.println(ex);
-                        ex.printStackTrace(); 
-                    }
-                }
-            } else
-            {
-//                No need to call super.doCommand() since Labels/Reports merger. I think...
-//                String mimeTypeStr = (String)cmdAction.getProperty("mimetype");
-//                if (StringUtils.isNotEmpty(mimeTypeStr) && mimeTypeStr.equals(navMimeDefs.get(0).getSecond()))
-//                {
-//                    super.doCommand(cmdAction);
-//                }
-                
-                /*if (cmdAction.isType(APP_CMD_TYPE) && cmdAction.isAction(APP_RESTART_ACT))
-                {
-                    ContextMgr.removeServicesByTask(this);
-                    ContextMgr.registerService(PRINT_TABLE, -1, cmdAction, this, "Print", "");
-                }*/
-            }
-        }
     }
     
-    public class MyTableCellRenderer extends JLabel implements TableCellRenderer 
-    {
-        public MyTableCellRenderer()
-        {
-            super();
-            setFont(getFont().deriveFont(8.0f));
-        }
-        
-        // This method is called each time a cell in a column
-        // using this renderer needs to be rendered.
-        public Component getTableCellRendererComponent(JTable table, Object value,
-                boolean isSelected, boolean hasFocus, int rowIndex, int vColIndex) {
-            // 'value' is value contained in the cell located at
-            // (rowIndex, vColIndex)
-    
-            if (isSelected) {
-                // cell (and perhaps other cells) are selected
-            }
-    
-            if (hasFocus) {
-                // this cell is the anchor and the table has the focus
-            }
-    
-            // Configure the component with the specified value
-            setText(value.toString());
-    
-            // Set tool tip if desired
-            setToolTipText((String)value);
-    
-            // Since the renderer is a component, return itself
-            return this;
-        }
-    
-        // The following methods override the defaults for performance reasons
-        public void validate() {}
-        public void revalidate() {}
-        protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {}
-        public void firePropertyChange(String propertyName, boolean oldValue, boolean newValue) {}
-    }
 }

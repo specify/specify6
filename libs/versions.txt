@@ -54,6 +54,7 @@ jfreechart								1.0.12
 
 mail (JavaMail from Sun)				1.4
 jasper reports							3.0.0
+DynamicJasper                           3.0.4
 TimingFramework							0.55
 junit									4.1
 mysql-connector-java					5.1.6
