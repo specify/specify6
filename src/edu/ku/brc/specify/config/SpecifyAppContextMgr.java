@@ -2825,21 +2825,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
     {
         StringBuilder sb = new StringBuilder();
         
-        sb.append("SELECT specifyuser.SpecifyUserID ");
-        sb.append("FROM specifyuser INNER JOIN specifyuser_spprincipal ON specifyuser.SpecifyUserID = specifyuser_spprincipal.SpecifyUserID ");
-        sb.append("INNER JOIN spprincipal ON specifyuser_spprincipal.SpPrincipalID = spprincipal.SpPrincipalID ");
-        if (discipline != null)
-        {
-            sb.append("WHERE (spprincipal.userGroupScopeID = ");
-            sb.append(discipline.getId());
-            sb.append(" or spprincipal.userGroupScopeID in(select userGroupscopeID from collection col where col.disciplineid = ");
-            sb.append(discipline.getId());
-            sb.append(")) AND specifyuser.IsLoggedIn <> 0");
-        }
-        else
-        {
-            sb.append(" WHERE specifyuser.IsLoggedIn <> 0");
-        }
+        sb.append("SELECT specifyuser.SpecifyUserID from specifyuser ");
+        sb.append(" WHERE specifyuser.IsLoggedIn <> 0 and loginDisciplineName = '" + discipline.getName() + "'");
         
         SpecifyUser spUser = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
         sb.append(" AND specifyuser.SpecifyUserID <> " + spUser.getId());
