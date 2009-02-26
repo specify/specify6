@@ -46,22 +46,36 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.ServiceInfo;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.SpecifyUserTypes;
+import edu.ku.brc.specify.datamodel.Accession;
+import edu.ku.brc.specify.datamodel.AccessionAttachment;
+import edu.ku.brc.specify.datamodel.Attachment;
+import edu.ku.brc.specify.datamodel.AttachmentOwnerIFace;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
+import edu.ku.brc.specify.datamodel.CollectingEventAttachment;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.specify.datamodel.CollectionObjectAttachment;
+import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Locality;
+import edu.ku.brc.specify.datamodel.LocalityAttachment;
+import edu.ku.brc.specify.datamodel.ObjectAttachmentIFace;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpTaskSemaphore;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.specify.datamodel.Taxon;
+import edu.ku.brc.specify.datamodel.TaxonAttachment;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
+import edu.ku.brc.specify.datamodel.WorkbenchRowImage;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgrCallerIFace;
 import edu.ku.brc.specify.tasks.DataEntryTask;
@@ -1599,6 +1613,90 @@ public class Uploader implements ActionListener, KeyListener
     }
     
     /**
+     * @return true if images are attached to any row
+     */
+    protected boolean attachmentsPresent()
+    {
+    	for (int r = 0; r < this.uploadData.getRows(); r++)
+    	{
+    		Set<WorkbenchRowImage> images = uploadData.getWbRow(r).getWorkbenchRowImages();
+    		if (images != null && images.size() > 0)
+    		{
+    			return true;
+    		}
+    	}
+    	return false;
+    }
+    
+    /**
+     * @return list of attachable table classes in order of precedence.
+     */
+    protected Vector<Class<?>> getAttachableTables()
+    {
+    	Vector<Class<?>> result = new Vector<Class<?>>(5);
+    	result.add(Taxon.class);
+    	result.add(Accession.class);
+    	result.add(Locality.class);
+    	result.add(CollectingEvent.class);
+    	result.add(CollectionObject.class);
+    	return result;
+    }
+    
+    /**
+     * @return list of attachable table names.
+     */
+    protected String getAttachableStr()
+    {
+    	String result = "";
+    	for (Class<?> cls : getAttachableTables())
+    	{
+    		DBTableInfo info = DBTableIdMgr.getInstance().getByClassName(cls.getName());
+    		if (info != null)
+    		{
+    			if (!StringUtils.isBlank(result))
+    			{
+    				result += ", ";
+    			}
+    			result += info.getTitle();
+    		}
+    	}
+    	return result;
+    }
+    
+    /**
+     * @return the table to attach images to.
+     */
+    protected UploadTable getAttachToTable()
+    {
+    	int priority = -1;
+    	Vector<Class<?>> attachable = getAttachableTables();
+    	UploadTable result = null;
+    	for (UploadTable ut : uploadTables)
+    	{
+    		int newPriority = attachable.indexOf(ut.getTblClass());
+    		if (newPriority > priority)
+    		{
+    			priority = newPriority;
+    			result = ut;
+    		}
+    	}
+    	return result;
+    }
+    
+    /**
+     * @return true if attachments are OK.
+     */
+    protected boolean verifyAttachments()
+    {
+    	if (!attachmentsPresent())
+    	{
+    		return true;
+    	}
+    	
+    	return getAttachToTable() != null;
+    }
+    
+    /**
      * @return true if the dataset can be uploaded.
      * 
      * Checks that the import mapping and graph are OK. Checks that all required data (TreeDefs,
@@ -1687,7 +1785,11 @@ public class Uploader implements ActionListener, KeyListener
         
         errors.addAll(validateConsistency());
 
-        
+        if (!verifyAttachments())
+        {
+        	String msg = String.format(UIRegistry.getResourceString("WB_UPLOAD_NO_ATTACHABLES"), getAttachableStr());
+        	errors.add(new BaseUploadMessage(msg));
+        }
         // now find out what data is not available in the dataset and not available in the database
         // Considering such issues 'structural' for now.
         missingRequiredClasses.clear();
@@ -3689,8 +3791,120 @@ public class Uploader implements ActionListener, KeyListener
     protected void writeRow(final UploadTable t, int row) throws UploaderException
     {
         t.writeRow(row);
+        Set<WorkbenchRowImage> images = uploadData.getWbRow(row).getWorkbenchRowImages();
+        if (t == getAttachToTable() && images != null && images.size() > 0)
+        {
+        	attachImages(t, images);
+        }
     }
 
+    /**
+     * @param cls
+     * @return an initialized instance of the appropriate OjbectAttachmentIFace implementation.
+     */
+    protected ObjectAttachmentIFace<? extends DataModelObjBase> getAttachmentObject(final Class<?> cls)
+    {
+    	ObjectAttachmentIFace<? extends DataModelObjBase> result = null;
+    	if (cls.equals(Accession.class))
+    	{
+    		result = new AccessionAttachment();
+    	}
+    	if (cls.equals(Taxon.class))
+    	{
+    		result =  new TaxonAttachment();
+    	}
+    	if (cls.equals(Locality.class))
+    	{
+    		result =  new LocalityAttachment();
+    	}
+    	if (cls.equals(CollectingEvent.class))
+    	{
+    		result =  new CollectingEventAttachment();
+    	}
+    	if (cls.equals(CollectionObject.class))
+    	{
+    		result =  new CollectionObjectAttachment();
+    	}
+    	if (result != null)
+    	{
+    		((DataModelObjBase )result).initialize();
+    	}
+    	return result;
+    }
+    
+    /**
+     * @param t
+     * @param images
+     * @throws UploaderException
+     * 
+     * Attaches images to the current record in t.
+     */
+    @SuppressWarnings("unchecked")
+    protected void attachImages(final UploadTable t, final Set<WorkbenchRowImage> images) throws UploaderException
+    {
+        AttachmentOwnerIFace<?> rec = (AttachmentOwnerIFace<?> )t.getCurrentRecord(0);
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+		boolean tblTransactionOpen = false;
+		try
+    	{
+    		//XXX To avoid hibernate errors, it may be necessary to perform a merge below but that REALLY slows down uploads.
+			//(refresh is bad enough)
+			if (!t.needToRefreshAfterWrite())
+			{
+				session.refresh(rec);
+			}
+			//XXX if can do without merge then don't need mergedRec.
+			AttachmentOwnerIFace<?> mergedRec = rec;//session.merge(rec);
+            Set<ObjectAttachmentIFace<?>> attachees = (Set<ObjectAttachmentIFace<?>> )mergedRec.getAttachmentReferences();
+			for (WorkbenchRowImage image : images)
+    		{
+    			Attachment attachment = new Attachment();
+    			attachment.initialize();
+    			attachment.setOrigFilename(image.getCardImageFullPath());
+        		ObjectAttachmentIFace<DataModelObjBase> oaif = (ObjectAttachmentIFace<DataModelObjBase> )getAttachmentObject(rec.getClass());
+        		oaif.setAttachment(attachment);
+        		oaif.setObject((DataModelObjBase )mergedRec);
+        		attachees.add(oaif);
+            }
+            BusinessRulesIFace busRule = DBTableIdMgr.getInstance().getBusinessRule(mergedRec.getClass());
+            if (busRule != null)
+            {
+                busRule.beforeSave(mergedRec, session);
+            }
+            session.beginTransaction();
+            tblTransactionOpen = true;
+            session.save(mergedRec);
+            if (busRule != null)
+            {
+                if (!busRule.beforeSaveCommit(mergedRec, session))
+                {
+                    session.rollback();
+                    throw new Exception("Business rules processing failed");
+                }
+            }
+            session.commit();
+            tblTransactionOpen = false;
+            if (busRule != null)
+            {
+                busRule.afterSaveCommit(mergedRec, session);
+            }
+            //XXX if can't do without merge then un-comment next line.
+    		//t.setCurrentRecord((DataModelObjBase )mergedRec, 0);
+    	}
+        catch (Exception ex)
+        {
+            if (tblTransactionOpen)
+            {
+                session.rollback();
+            }
+            throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
+        }
+    	finally
+    	{
+    		session.close();
+    	}
+    }
+    
     /**
      * Creates a recordset for each UploadTable containing the keys of all objects
      * uploaded.

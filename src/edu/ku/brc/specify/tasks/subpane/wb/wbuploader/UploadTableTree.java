@@ -674,7 +674,7 @@ public class UploadTableTree extends UploadTable
      * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#needToRefreshAfterWrite()
      */
     @Override
-    protected boolean needToRefreshAfterWrite()
+    public boolean needToRefreshAfterWrite()
     {
         return incrementalNodeNumberUpdates;
     }

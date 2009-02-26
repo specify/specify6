@@ -2406,7 +2406,7 @@ public class UploadTable implements Comparable<UploadTable>
     /**
      * @return true if current record needs to be refreshed after writes.
      */
-    protected boolean needToRefreshAfterWrite()
+    public boolean needToRefreshAfterWrite()
     {
         //The refresh call slows performance hugely so only calling it when necessary.
         //This may be risky. At this time the refresh is required only because
