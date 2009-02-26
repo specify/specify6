@@ -457,28 +457,7 @@ public class ResourceImportExportDlg extends CustomDialog
             String exportedName   = null;
             String virtualDirName = SpecifyAppContextMgr.getVirtualDirName(index);
             
-            index = resList.getSelectedIndex(); 
-            if (index > -1)
-            {
-                AppResourceIFace appRes = resources.get(index - 1); 
-                
-                AppResourceIFace revertedNewAR = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).revertResource(virtualDirName, appRes);
-                
-                hasChanged = true;
-                
-                if (revertedNewAR != null)
-                {
-                    resModel.insertElementAt(revertedNewAR, index);
-                    resList.setSelectedIndex(index);
-                } else
-                {
-                    resModel.removeElementAt(index);
-                    resList.clearSelection();
-                }
-                
-                levelSelected();
-                
-            } else
+            if (tabbedPane.getSelectedComponent() == viewsPanel)
             {
                 SpViewSetObj vso = (SpViewSetObj)viewSetsList.getSelectedValue();
                 if (vso != null)
@@ -498,6 +477,32 @@ public class ResourceImportExportDlg extends CustomDialog
                         }
                     }
                 }
+            }
+            else
+            {
+            	JList theList = tabbedPane.getSelectedComponent() == repPanel ? repList : resList;
+            	DefaultListModel theModel = theList == repList ? repModel : resModel;
+            	index = theList.getSelectedIndex(); 
+            	if (index > 0)
+            	{
+            		AppResourceIFace appRes = resources.get(index - 1); 
+                
+            		AppResourceIFace revertedNewAR = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).revertResource(virtualDirName, appRes);
+                
+            		hasChanged = true;
+                
+            		if (revertedNewAR != null)
+            		{
+            			theModel.insertElementAt(revertedNewAR, index);
+            			theList.setSelectedIndex(index);
+            		} else
+            		{
+            			theModel.removeElementAt(index);
+            			theList.clearSelection();
+            		}
+                
+            		levelSelected();
+            	}
             }
             
             if (exportedName != null)
