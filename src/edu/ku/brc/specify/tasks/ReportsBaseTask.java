@@ -1092,7 +1092,17 @@ public class ReportsBaseTask extends BaseTask
         {
             String colName = model.getColumnName(i);
             
-            ColumnBuilder colBldr = ColumnBuilder.getInstance().setColumnProperty(colName,String.class.getName());
+            Class<?> dataClass = model.getColumnClass(i);
+            if (dataClass == Object.class)
+            {
+                if (model.getRowCount() > 0)
+                {
+                    Object data = model.getValueAt(0, i);
+                    dataClass = data.getClass();
+                }
+            }
+            
+            ColumnBuilder colBldr = ColumnBuilder.getInstance().setColumnProperty(colName, dataClass.getName());
             colBldr.setTitle(colName);
             //colBldr.setWidth(new Integer(100));
             
