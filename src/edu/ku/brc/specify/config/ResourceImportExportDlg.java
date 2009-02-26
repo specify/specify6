@@ -526,24 +526,14 @@ public class ResourceImportExportDlg extends CustomDialog
         int index = levelCBX.getSelectedIndex();
         if (index > -1)
         {
-            String exportedName = null;
+        	String exportedName = null;
             
             String data     = null;
             String fileName = null;
             AppResourceIFace appRes = null;
-            index = resList.getSelectedIndex();
-            if (index >  0)
+            if (tabbedPane.getSelectedComponent() == viewsPanel)
             {
-                
-                appRes = resources.get(index -1);
-                exportedName = appRes.getName();
-                fileName     = FilenameUtils.getName(exportedName);
-                data         = appRes.getDataAsString();
-                
-            } else
-            {
-                index = viewSetsList.getSelectedIndex();
-                if (index > -1)
+                if (viewSetsList.getSelectedIndex() > -1)
                 {
                     SpViewSetObj vso = (SpViewSetObj)viewSetsList.getSelectedValue();
                     exportedName = vso.getName();
@@ -551,7 +541,19 @@ public class ResourceImportExportDlg extends CustomDialog
                     data         = vso.getDataAsString();
                 }
             }
-
+            else 
+            {
+            	JList theList = tabbedPane.getSelectedComponent() == repPanel ? repList : resList;
+                if (theList.getSelectedIndex() >  0)
+                {
+                    appRes = (AppResourceIFace )theList.getSelectedValue();
+                    exportedName = appRes.getName();
+                    fileName     = FilenameUtils.getName(exportedName);
+                    data         = appRes.getDataAsString();
+                    
+                }   
+            }
+            
             if (StringUtils.isNotEmpty(data))
             {
                 FileDialog fileDlg = new FileDialog(this, "RIE_ExportResource", FileDialog.SAVE); 
