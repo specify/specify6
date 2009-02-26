@@ -116,6 +116,9 @@ public class FormatterPickerPanel extends BaseSetupPanel
             pb.add(isNumericLbl, cc.xy(3, y));
             y +=2;
         }
+        
+        nextBtn.setEnabled(false);
+
     }
     
     /**
@@ -165,9 +168,11 @@ public class FormatterPickerPanel extends BaseSetupPanel
                         public void run()
                         {
                             addFieldFormatter();
+                            updateBtnUI();
                         }
                     });
                 }
+                updateBtnUI();
             }
         };
     }
@@ -256,7 +261,7 @@ public class FormatterPickerPanel extends BaseSetupPanel
     @Override
     public boolean isUIValid()
     {
-        return true;
+        return !doingCatNums || formatterCBX.getSelectedIndex() > 0;
     }
 
     /* (non-Javadoc)
@@ -265,5 +270,28 @@ public class FormatterPickerPanel extends BaseSetupPanel
     @Override
     public void updateBtnUI()
     {
+        if (doingCatNums)
+        {
+            nextBtn.setEnabled(formatterCBX.getSelectedIndex() > 0);
+        }
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.config.init.BaseSetupPanel#doingNext()
+     */
+    @Override
+    public void doingNext()
+    {
+        updateBtnUI();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.config.init.BaseSetupPanel#doingPrev()
+     */
+    @Override
+    public void doingPrev()
+    {
+        updateBtnUI();
+    }
+    
 }

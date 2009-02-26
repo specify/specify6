@@ -267,6 +267,7 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
                     if (step > 0)
                     {
                         step--;
+                        panels.get(step).doingPrev();
                         cardLayout.show(cardPanel, Integer.toString(step));
                     }
                     updateBtnBar();
@@ -282,6 +283,7 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
                 if (step < lastStep-1)
                 {
                     step++;
+                    panels.get(step).doingNext();
                     cardLayout.show(cardPanel, Integer.toString(step));
                     updateBtnBar();
                       
