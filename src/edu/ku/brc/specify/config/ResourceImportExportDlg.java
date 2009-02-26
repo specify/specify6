@@ -1017,8 +1017,6 @@ public class ResourceImportExportDlg extends CustomDialog
      */
     protected void importResource()
 {
-	int currentTabIndex = tabbedPane.getModel().getSelectedIndex();
-
 	int levelIndex = levelCBX.getSelectedIndex();
 	if (levelIndex > -1)
 	{
@@ -1053,7 +1051,7 @@ public class ResourceImportExportDlg extends CustomDialog
 			
 			boolean isRepRes = isJRRepRes || isSpRepRes;
 			
-			if (currentTabIndex == 0)
+			if (tabbedPane.getSelectedComponent() == viewsPanel)
 			{
 				int viewIndex = viewSetsList.getSelectedIndex();
 				if (viewIndex > -1)
@@ -1121,7 +1119,8 @@ public class ResourceImportExportDlg extends CustomDialog
 
 			} else
 			{
-				int resIndex = resList.getSelectedIndex();
+				JList theList = tabbedPane.getSelectedComponent() == repPanel ? repList : resList;
+				int resIndex = theList.getSelectedIndex();
 				if (resIndex > -1)
 				{
 					if (resIndex == 0)
