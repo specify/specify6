@@ -3354,6 +3354,10 @@ public class WorkbenchPaneSS extends BaseSubPane
 			// ?????
 			spreadSheet.setEnabled(false);
 			setToolBarBtnsEnabled(false);
+			if (imageFrame != null && imageFrame.isVisible())
+			{
+				imageFrame.setVisible(false);
+			}
 			datasetUploader.startUI();
 		}
         catch (Exception ex)
