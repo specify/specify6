@@ -53,6 +53,7 @@ import ar.com.fdvs.dj.domain.builders.FastReportBuilder;
 import ar.com.fdvs.dj.domain.constants.Border;
 import ar.com.fdvs.dj.domain.constants.Font;
 import ar.com.fdvs.dj.domain.constants.HorizontalAlign;
+import ar.com.fdvs.dj.domain.constants.Page;
 import ar.com.fdvs.dj.domain.constants.Transparency;
 import ar.com.fdvs.dj.domain.constants.VerticalAlign;
 import ar.com.fdvs.dj.domain.entities.columns.AbstractColumn;
@@ -975,6 +976,18 @@ public class ReportsBaseTask extends BaseTask
      */
     protected void printGrid(final CommandAction cmdAction)
     {
+        String pageTitle = cmdAction.getProperty("gridtitle").toString();
+        
+        final PageSetupDlg pageSetup = new PageSetupDlg();
+        pageSetup.createUI();
+        pageSetup.setPageTitle(pageTitle);
+        
+        pageSetup.setVisible(true);
+        if (pageSetup.isCancelled())
+        {
+            return;
+        }
+        
         SwingWorker<Integer, Integer> backupWorker = new SwingWorker<Integer, Integer>()
         {
             protected Exception excpt = null;
@@ -991,7 +1004,7 @@ public class ReportsBaseTask extends BaseTask
                     try
                     {
                         LabelsPane labelsPane = new LabelsPane(name, ReportsBaseTask.this, null);
-                        DynamicReport dr = buildReport(table.getModel(), cmdAction.getProperty("gridtitle").toString());
+                        DynamicReport dr = buildReport(table.getModel(), pageSetup);
 
                         JRDataSource ds = new JRTableModelDataSource(table.getModel());
                         JasperPrint  jp = DynamicJasperHelper.generateJasperPrint(dr, new ClassicLayoutManager(), ds);
@@ -1038,7 +1051,7 @@ public class ReportsBaseTask extends BaseTask
      * @return
      * @throws Exception
      */
-    public DynamicReport buildReport(final TableModel model, final String rptTitle) throws Exception
+    public DynamicReport buildReport(final TableModel model, final PageSetupDlg pageSetupDlg) throws Exception
     {
         /**
          * Creates the DynamicReportBuilder and sets the basic options for the report
@@ -1123,7 +1136,7 @@ public class ReportsBaseTask extends BaseTask
             column.setHeaderStyle(headerStyle);
         }
         
-        drb.setTitle(rptTitle);
+        drb.setTitle(pageSetupDlg.getPageTitle());
         drb.setTitleStyle(titleStyle);
         //drb.setTitleHeight(new Integer(30));
         //drb.setSubtitleHeight(new Integer(20));
@@ -1141,7 +1154,12 @@ public class ReportsBaseTask extends BaseTask
         drb.setUseFullPageWidth(true);
         drb.setColumnSpace(new Integer(5));
         drb.addAutoText(AutoText.AUTOTEXT_PAGE_X_OF_Y, AutoText.POSITION_FOOTER, AutoText.ALIGMENT_CENTER);
-
+        
+        Page[] pageSizes = new Page[] {Page.Page_Letter_Portrait(), Page.Page_Legal_Portrait(), Page.Page_A4_Portrait(),
+                                       Page.Page_Letter_Landscape(), Page.Page_Legal_Landscape(), Page.Page_A4_Landscape()};
+        int pageSizeInx = pageSetupDlg.getPageSize() + (pageSetupDlg.isPortrait() ? 0 : 3);
+        drb.setPageSizeAndOrientation(pageSizes[pageSizeInx]);
+        
         DynamicReport dr = drb.build();
         
         return dr;
