@@ -41,6 +41,7 @@ import net.sf.jasperreports.engine.JRField;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.hibernate.HibernateException;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.ServiceInfo;
@@ -1666,7 +1667,7 @@ public class Uploader implements ActionListener, KeyListener
     /**
      * @return the table to attach images to.
      */
-    protected UploadTable getAttachToTable()
+    public UploadTable getAttachToTable()
     {
     	int priority = -1;
     	Vector<Class<?>> attachable = getAttachableTables();
@@ -1678,6 +1679,13 @@ public class Uploader implements ActionListener, KeyListener
     		{
     			priority = newPriority;
     			result = ut;
+    		}
+    	}
+    	if (result instanceof UploadTableTree)
+    	{
+    		while (((UploadTableTree )result).getChild() != null)
+    		{
+    			result = ((UploadTableTree )result).getChild();
     		}
     	}
     	return result;
@@ -3840,70 +3848,112 @@ public class Uploader implements ActionListener, KeyListener
      * Attaches images to the current record in t.
      */
     @SuppressWarnings("unchecked")
-    protected void attachImages(final UploadTable t, final Set<WorkbenchRowImage> images) throws UploaderException
-    {
-        AttachmentOwnerIFace<?> rec = (AttachmentOwnerIFace<?> )t.getCurrentRecord(0);
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-		boolean tblTransactionOpen = false;
-		try
-    	{
-    		//XXX To avoid hibernate errors, it may be necessary to perform a merge below but that REALLY slows down uploads.
-			//(refresh is bad enough)
-			if (!t.needToRefreshAfterWrite())
+    protected void attachImages(final UploadTable t,
+			final Set<WorkbenchRowImage> images) throws UploaderException
+	{
+		AttachmentOwnerIFace<?> rec = (AttachmentOwnerIFace<?>) t
+				.getCurrentRecord(0);
+		
+		if (rec == null && t instanceof UploadTableTree)
+		{
+			rec = (AttachmentOwnerIFace<?>)t.getParentRecord(0, t);
+		}
+		
+		if (rec /*still*/ == null)
+		{
+			return; //maybe the row was not uploaded for some reason
+		}
+		
+		//it doesn't seem necessary to include the re-try code, but leaving it here in case it becomes necessary in future.
+		
+		
+//		boolean newRec = false;
+//		int tries = 0;
+//		while (tries < 2)
+//		{
+			DataProviderSessionIFace session = DataProviderFactory
+					.getInstance().createSession();
+//			if (tries == 1)
+//			{
+//				rec = (AttachmentOwnerIFace<?>)session.get(t.getTblClass(), t.getCurrentRecord(0).getId());
+//				newRec = true;
+//			}
+			boolean tblTransactionOpen = false;
+			try
 			{
-				session.refresh(rec);
+				session.beginTransaction();
+				tblTransactionOpen = true;
+				Set<ObjectAttachmentIFace<?>> attachees = (Set<ObjectAttachmentIFace<?>>) rec
+						.getAttachmentReferences();
+				int ordinal = 0;
+				for (WorkbenchRowImage image : images)
+				{
+					Attachment attachment = new Attachment();
+					attachment.initialize();
+					attachment.setOrigFilename(image.getCardImageFullPath());
+					ObjectAttachmentIFace<DataModelObjBase> oaif = (ObjectAttachmentIFace<DataModelObjBase>) getAttachmentObject(rec
+							.getClass());
+					oaif.setAttachment(attachment);
+					oaif.setObject((DataModelObjBase) rec);
+					oaif.setOrdinal(ordinal);
+					attachees.add(oaif);
+				}
+				BusinessRulesIFace busRule = DBTableIdMgr.getInstance()
+						.getBusinessRule(rec.getClass());
+				if (busRule != null)
+				{
+					busRule.beforeSave(rec, session);
+				}
+				session.saveOrUpdate(rec);
+				if (busRule != null)
+				{
+					if (!busRule.beforeSaveCommit(rec, session))
+					{
+						session.rollback();
+						throw new Exception("Business rules processing failed");
+					}
+				}
+				session.commit();
+//				tries = 2;
+				tblTransactionOpen = false;
+				if (busRule != null)
+				{
+					busRule.afterSaveCommit(rec, session);
+				}
+			} catch (HibernateException he)
+			{
+				if (tblTransactionOpen)
+				{
+					session.rollback();
+				}
+				// XXX To avoid hibernate errors, it may be necessary to perform
+				// a merge below but that REALLY slows down uploads.
+				// (refresh is bad enough)
+//				if (tries == 0)
+//				{
+//					tries++;
+//				} else
+				{
+					throw new UploaderException(he,
+							UploaderException.ABORT_IMPORT);
+				}
+			} catch (Exception ex)
+			{
+				if (tblTransactionOpen)
+				{
+					session.rollback();
+				}
+				throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
+			} finally
+			{
+				session.close();
 			}
-			//XXX if can do without merge then don't need mergedRec.
-			AttachmentOwnerIFace<?> mergedRec = rec;//session.merge(rec);
-            Set<ObjectAttachmentIFace<?>> attachees = (Set<ObjectAttachmentIFace<?>> )mergedRec.getAttachmentReferences();
-			for (WorkbenchRowImage image : images)
-    		{
-    			Attachment attachment = new Attachment();
-    			attachment.initialize();
-    			attachment.setOrigFilename(image.getCardImageFullPath());
-        		ObjectAttachmentIFace<DataModelObjBase> oaif = (ObjectAttachmentIFace<DataModelObjBase> )getAttachmentObject(rec.getClass());
-        		oaif.setAttachment(attachment);
-        		oaif.setObject((DataModelObjBase )mergedRec);
-        		attachees.add(oaif);
-            }
-            BusinessRulesIFace busRule = DBTableIdMgr.getInstance().getBusinessRule(mergedRec.getClass());
-            if (busRule != null)
-            {
-                busRule.beforeSave(mergedRec, session);
-            }
-            session.beginTransaction();
-            tblTransactionOpen = true;
-            session.save(mergedRec);
-            if (busRule != null)
-            {
-                if (!busRule.beforeSaveCommit(mergedRec, session))
-                {
-                    session.rollback();
-                    throw new Exception("Business rules processing failed");
-                }
-            }
-            session.commit();
-            tblTransactionOpen = false;
-            if (busRule != null)
-            {
-                busRule.afterSaveCommit(mergedRec, session);
-            }
-            //XXX if can't do without merge then un-comment next line.
-    		//t.setCurrentRecord((DataModelObjBase )mergedRec, 0);
-    	}
-        catch (Exception ex)
-        {
-            if (tblTransactionOpen)
-            {
-                session.rollback();
-            }
-            throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
-        }
-    	finally
-    	{
-    		session.close();
-    	}
-    }
+//		}
+//		if (newRec)
+//		{
+//			t.setCurrentRecord((DataModelObjBase )rec, 0);
+//		}
+	}
     
     /**
      * Creates a recordset for each UploadTable containing the keys of all objects

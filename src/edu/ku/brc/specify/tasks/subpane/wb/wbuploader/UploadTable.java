@@ -14,6 +14,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -2505,15 +2506,40 @@ public class UploadTable implements Comparable<UploadTable>
      * @param session
      * @return sql delete statements necessary to delete uploaded records.
      */
-    protected Vector<QueryIFace> getQueriesForRawDeletes(final DataProviderSessionIFace session)
+    protected Vector<DeleteQuery> getQueriesForRawDeletes(final DataProviderSessionIFace session)
     {
-        Vector<QueryIFace> result = new Vector<QueryIFace>();
+        Vector<DeleteQuery> result = new Vector<DeleteQuery>();
         if (tblClass.equals(Agent.class))
         {
-            result.add(session.createQuery("delete from agent_discipline where AgentID =:theKey", true));
+            result.add(new DeleteQuery(
+            		session.createQuery("delete from agent_discipline where AgentID =:theKey", true), 
+            		false, -1));
         }
-        result.add(session.createQuery("delete from " + getWriteTable().getName().toLowerCase() + " where " 
-                + getWriteTable().getTableInfo().getIdColumnName() + "=:theKey", true));
+        if (uploader.getAttachToTable() == this)
+        {
+        	//weird relationships/annotations require extra work. Can't delete attachments
+        	//until XXXAttachment records are deleted, but can't know what attachments to delete
+        	//after XXXAttachment records are delete. 
+        	
+        	//gets the ids of the attachments to delete.
+        	result.add(new DeleteQuery(session.createQuery("select attachmentid from " + 
+        			getWriteTable().getName().toLowerCase() + "attachment where " +
+        			getWriteTable().getName().toLowerCase() + "id =:theKey", true), false, -1));
+        	
+        	//deletes XXXAttachment records
+        	result.add(new DeleteQuery(
+        			session.createQuery("delete from " + getWriteTable().getName().toLowerCase() + "attachment where " +
+        					getWriteTable().getName().toLowerCase() + "id =:theKey", true), true, -1));
+        	
+        	//deletes attachments using results from first query above
+        	result.add(new DeleteQuery(
+        			session.createQuery("delete from attachment where attachmentid =:theKey", true), true, 0));
+        }
+   
+        result.add(new DeleteQuery(
+        		session.createQuery("delete from " + getWriteTable().getName().toLowerCase() + " where " 
+                + getWriteTable().getTableInfo().getIdColumnName() + "=:theKey", true), true, -1));
+        
         return result;
     }
     
@@ -2526,16 +2552,16 @@ public class UploadTable implements Comparable<UploadTable>
     {
         
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        Vector<QueryIFace> q;
+        Vector<DeleteQuery> q;
         if (doRawDeletes)
         {
             q = getQueriesForRawDeletes(session);
         }
         else
         {
-            q = new Vector<QueryIFace>(1);
+            q = new Vector<DeleteQuery>(1);
             String hql = "from " + getWriteTable().getName() + " where id =:theKey";
-            q.add(session.createQuery(hql, false));
+            q.add(new DeleteQuery(session.createQuery(hql, false), true, -1));
         }
         Runnable progShower = null;        
         if (showProgress)
@@ -2559,24 +2585,51 @@ public class UploadTable implements Comparable<UploadTable>
                     boolean opened = false;
                     try
                     {
-                        for (QueryIFace qFace : q)
+                        for (DeleteQuery qFace : q)
                         {
-                            qFace.setParameter("theKey", key);
+                            if (qFace.getKeyGeneratorIdx() == -1)
+                            {
+                            	qFace.getQuery().setParameter("theKey", key);
+                            }
                         }
                         if (doRawDeletes)
                         {
-                            for (QueryIFace qFace : q)
+                            HashMap<Integer, List<?>> subKeysMap = new HashMap<Integer, List<?>>();
+                        	int qIdx = 0;
+                            for (DeleteQuery qFace : q)
                             {
                                 session.beginTransaction();
                                 opened = true;
-                                qFace.executeUpdate();
+                                if (qFace.isDeletes())
+                                {
+                                	if (qFace.getKeyGeneratorIdx() == -1)
+                                	{
+                                		qFace.getQuery().executeUpdate();
+                                	}
+                                	else
+                                	{
+                                		List<?> subKeys = subKeysMap.get(qFace.getKeyGeneratorIdx());
+                                		{
+                                			for (Object subKeyObj : subKeys)
+                                			{
+                                				qFace.getQuery().setParameter("theKey", subKeyObj);
+                                				qFace.getQuery().executeUpdate();
+                                			}
+                                		}
+                                	}
+                                }
+                                else
+                                {
+                                	subKeysMap.put(qIdx, qFace.getQuery().list());
+                                }
                                 session.commit();
                                 committed = true;
+                                qIdx++;
                             }
                         }
                         else
                         {
-                            DataModelObjBase obj = (DataModelObjBase) q.get(0).uniqueResult();
+                            DataModelObjBase obj = (DataModelObjBase) q.get(0).getQuery().uniqueResult();
                             if (obj != null)
                             {
                                 session.beginTransaction();
@@ -2904,6 +2957,56 @@ public class UploadTable implements Comparable<UploadTable>
             return result.toString();
         }
 
+    }
+    
+    /**
+     * @author timo
+     *
+     *Class to store queries needed to undo uploads.
+     *
+     */
+    protected class DeleteQuery
+    {
+    	protected final QueryIFace query;
+    	protected final boolean deletes; //if true then the query is executed, else results are stored
+    	protected final int keyGeneratorIdx; //if not -1 then the index of the query that generates
+    	                                     //keys to be deleted
+		/**
+		 * @param query
+		 * @param deletes
+		 * @param keyGeneratorIdx
+		 */
+		public DeleteQuery(QueryIFace query, boolean deletes,
+				int keyGeneratorIdx)
+		{
+			super();
+			this.query = query;
+			this.deletes = deletes;
+			this.keyGeneratorIdx = keyGeneratorIdx;
+		}
+		/**
+		 * @return the query
+		 */
+		public QueryIFace getQuery()
+		{
+			return query;
+		}
+		/**
+		 * @return the deletes
+		 */
+		public boolean isDeletes()
+		{
+			return deletes;
+		}
+		/**
+		 * @return the keyGeneratorIdx
+		 */
+		public int getKeyGeneratorIdx()
+		{
+			return keyGeneratorIdx;
+		}
+    	
+    	
     }
     
     /**

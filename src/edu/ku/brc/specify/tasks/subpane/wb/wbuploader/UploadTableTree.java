@@ -120,7 +120,6 @@ public class UploadTableTree extends UploadTable
      * @return The TreeDef for the tblClass.
      * @throws UploaderException
      */
-    @SuppressWarnings("unchecked")
     protected TreeDefIface getTreeDef() throws UploaderException 
     {
         if (treeDef == null)
@@ -138,7 +137,6 @@ public class UploadTableTree extends UploadTable
      * @return TreeDefItem corresponding to tblClass and rank.
      * @throws UploaderException
      */
-    @SuppressWarnings("unchecked")
     protected TreeDefItemIface getTreeDefItem() throws UploaderException
     {
         return getTreeDef().getDefItemByRank(rank);
@@ -171,7 +169,6 @@ public class UploadTableTree extends UploadTable
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#finalizeWrite(edu.ku.brc.specify.datamodel.DataModelObjBase, int)
      */
-    @SuppressWarnings("unchecked")
     @Override
     protected void finalizeWrite(DataModelObjBase rec, int recNum) throws UploaderException
     {
@@ -235,7 +232,6 @@ public class UploadTableTree extends UploadTable
      * 
      * @throws UploaderException
      */
-    @SuppressWarnings("unchecked")
     protected Treeable getDefaultParent2(TreeDefItemIface defItem) throws UploaderException
     {
         TreeDefItemIface parentDefItem = defItem.getParent();
@@ -912,6 +908,14 @@ public class UploadTableTree extends UploadTable
 	public UploadTableTree getParent()
 	{
 		return parent;
+	}
+
+	/**
+	 * @return the child
+	 */
+	public UploadTableTree getChild()
+	{
+		return child;
 	}
 
     
