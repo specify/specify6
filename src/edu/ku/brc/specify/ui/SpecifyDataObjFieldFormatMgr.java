@@ -18,6 +18,11 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.config.SpecifyAppContextMgr;
+import edu.ku.brc.specify.datamodel.Agent;
+import edu.ku.brc.specify.datamodel.SpAppResource;
+import edu.ku.brc.specify.datamodel.SpAppResourceDir;
+import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
@@ -32,10 +37,16 @@ import edu.ku.brc.ui.CommandListener;
  */
 public class SpecifyDataObjFieldFormatMgr extends DataObjFieldFormatMgr implements CommandListener
 {
-
+    protected static String         COLLECTION        = "Collection";
+    protected static String         BACKSTOPDIR       = "BackStop";
+    protected static String         DATAOBJFORMATTERS = "DataObjFormatters";
+    
+    /**
+     * 
+     */
     public SpecifyDataObjFieldFormatMgr()
     {
-        CommandDispatcher.register("Collection", this);  
+        CommandDispatcher.register(COLLECTION, this);  
     }
     
     /* (non-Javadoc)
@@ -48,7 +59,7 @@ public class SpecifyDataObjFieldFormatMgr extends DataObjFieldFormatMgr implemen
             return XMLHelper.readDOMFromConfigDir(localFileName);
         }
 
-        AppResourceIFace appRes = AppContextMgr.getInstance().getResourceFromDir("Collection", "DataObjFormatters");
+        AppResourceIFace appRes = AppContextMgr.getInstance().getResourceFromDir(COLLECTION, DATAOBJFORMATTERS);
         if (appRes != null)
         {
             return AppContextMgr.getInstance().getResourceAsDOM(appRes);
@@ -65,16 +76,49 @@ public class SpecifyDataObjFieldFormatMgr extends DataObjFieldFormatMgr implemen
         // save resource back to database
         if (AppContextMgr.getInstance() != null && !doingLocal)
         {
-            AppResourceIFace escAppRes = AppContextMgr.getInstance().getResourceFromDir("Collection", "DataObjFormatters");
-            if (escAppRes != null)
+            AppResourceIFace appRes = AppContextMgr.getInstance().getResourceFromDir(COLLECTION, DATAOBJFORMATTERS);
+            if (appRes != null)
             {
-                escAppRes.setDataAsString(xml);
-                AppContextMgr.getInstance().saveResource(escAppRes);
+                appRes.setDataAsString(xml);
+                AppContextMgr.getInstance().saveResource(appRes);
                
             } else
             {
-                AppContextMgr.getInstance().putResourceAsXML("DataObjFormatters", xml);    
+                // Save the UIFieldFormatters into a new Resource in Collections.
+                SpecifyAppContextMgr context = (SpecifyAppContextMgr)AppContextMgr.getInstance();
+                SpAppResourceDir     collDir = context.getSpAppResourceDirByName(COLLECTION);
+                
+               if (collDir != null)
+                {
+                    SpAppResource uifAppRes = context.getSpAppResourceDirByName(BACKSTOPDIR).getResourceByName(DATAOBJFORMATTERS);
+                    SpAppResource appResUF  = new SpAppResource();
+                    appResUF.initialize();
+                    if (uifAppRes != null)
+                    {
+                        appResUF.setMetaData(uifAppRes.getMetaData());
+                        appResUF.setDescription(uifAppRes.getDescription());
+                        appResUF.setFileName(uifAppRes.getFileName());
+                        appResUF.setMimeType(uifAppRes.getMimeType());
+                        appResUF.setName(uifAppRes.getName());
+
+                        SpecifyUser user  = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
+                        Agent       agent = AppContextMgr.getInstance().getClassObject(Agent.class);
+                        appResUF.setCreatedByAgent(agent);
+                        appResUF.setSpecifyUser(user);
+
+                        appResUF.setLevel(uifAppRes.getLevel());
+                    }
+                    appResUF.setSpAppResourceDir(collDir);
+                    collDir.getSpAppResources().add(appResUF);
+                    appResUF.setDataAsString(xml);
+                    ((SpecifyAppContextMgr) AppContextMgr.getInstance()).saveResource(appResUF);
+                    
+                } else
+                {
+                    AppContextMgr.getInstance().putResourceAsXML(DATAOBJFORMATTERS, xml); //$NON-NLS-1$
+                }
             }
+            
         } else
         {
             File outFile = XMLHelper.getConfigDir(localFileName);
@@ -101,7 +145,7 @@ public class SpecifyDataObjFieldFormatMgr extends DataObjFieldFormatMgr implemen
      */
     public void doCommand(final CommandAction cmdAction)
     {
-        if (cmdAction.isType("Collection") && cmdAction.isAction("Changed"))
+        if (cmdAction.isType(COLLECTION) && cmdAction.isAction("Changed"))
         {
             load();
         }
