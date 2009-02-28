@@ -41,7 +41,7 @@ import edu.ku.brc.helpers.XMLHelper;
  */
 public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
 {
-    public enum ConnectionType {Create, Open, Close}
+    public enum ConnectionType {Create, Open, Close, Opensys}
     
     private static final Logger log  = Logger.getLogger(DatabaseDriverInfo.class);
     
@@ -94,7 +94,10 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
         String connStr = connectionFormats.get(type);
         if (connStr != null)
         {
-            connStr = connStr.replaceFirst("DATABASE", database); //$NON-NLS-1$
+            if (StringUtils.isNotEmpty(database))
+            {
+                connStr = connStr.replaceFirst("DATABASE", database); //$NON-NLS-1$
+            }
             return StringUtils.isNotEmpty(server) ? connStr.replaceFirst("SERVER", server) : connStr; //$NON-NLS-1$
         }
         return null;
