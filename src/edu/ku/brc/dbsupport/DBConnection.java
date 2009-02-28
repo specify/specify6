@@ -47,6 +47,7 @@ public class DBConnection
     protected String dbName;
     
     protected boolean argHaveBeenChecked = false;
+    protected boolean skipDBNameCheck    = false;
     
     protected Connection connection = null;
      
@@ -74,6 +75,14 @@ public class DBConnection
     }
     
     /**
+     * @param skipDBNameCheck the skipDBNameCheck to set
+     */
+    public void setSkipDBNameCheck(boolean skipDBNameCheck)
+    {
+        this.skipDBNameCheck = skipDBNameCheck;
+    }
+
+    /**
      * Returns a new connection to the database from an instance of DBConnection.
      * It uses the database name, driver, username and password to connect.
      * @return the JDBC connection to the database
@@ -85,7 +94,7 @@ public class DBConnection
         {
             if (!argHaveBeenChecked)
             {
-                if (StringUtils.isEmpty(dbName))
+                if (!skipDBNameCheck && StringUtils.isEmpty(dbName))
                 {
                     errMsg = getResourceString("DBConnection.NO_DB_NAME"); //$NON-NLS-1$
                     return null;

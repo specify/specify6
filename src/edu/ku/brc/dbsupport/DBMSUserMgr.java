@@ -1,5 +1,16 @@
-/**
- * 
+/* This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 package edu.ku.brc.dbsupport;
 
@@ -7,17 +18,49 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 
 /**
- * 
+ * @author rod
+ *
+ * @code_status Alpha
+ *
+ * Feb 27, 2009
  *
  */
-public class DBMSUserMgr
+public abstract class DBMSUserMgr
 {
-    public static final String factoryName = "edu.ku.brc.dbsupport.DBMSUserMgr"; //$NON-NLS-1$
+    public static String factoryName = "edu.ku.brc.dbsupport.DBMSUserMgr"; //$NON-NLS-1$
+    
+    public static final int PERM_NONE   = 0;
+    public static final int PERM_SELECT = 1;
+    public static final int PERM_UPDATE = 2;
+    public static final int PERM_DELETE = 4;
+    public static final int PERM_INSERT = 8;
+    public static final int PERM_ALL    = 15;
     
     private static DataProviderIFace instance = null;
    
     protected String hostName = null;
     protected String errMsg   = null;
+    
+    /**
+     * Creates a database with a given name.
+     * @param dbName the name of the new database
+     * @return true on success
+     */
+    public abstract boolean createDatabase(String dbName);
+    
+    /**
+     * Drops a database with a given name.
+     * @param dbName the name of the database
+     * @return true on success
+     */
+    public abstract boolean dropDatabase(String dbName);
+    
+    /**
+     * Checks to see if the DB exists
+     * @param dbName the database name
+     * @return true if exists
+     */
+    public abstract boolean dbExists(String dbName);
     
 	/**
 	 * Changes the password for a user
@@ -26,21 +69,13 @@ public class DBMSUserMgr
 	 * @param newPwd the new password
 	 * @return true on success
 	 */
-	public boolean changePassword(final String username, final String oldPwd, final String newPwd) 
-    {
-		
-		return false;
-	}
+	public abstract boolean changePassword(String username, String oldPwd, String newPwd);
 
 	/**
 	 * Closes the connection to the DBMS.
 	 * @return true if closed
 	 */
-	public boolean close() 
-	{
-		
-		return false;
-	}
+	public abstract boolean close();
 
 	/**
 	 * Connects to the DBMS.
@@ -48,11 +83,7 @@ public class DBMSUserMgr
 	 * @param password the IT password
 	 * @return true if the IT user got logged in
 	 */
-	public boolean connect(final String username, final String password) 
-	{
-		
-		return false;
-	}
+	public abstract boolean connect(String username, String password);
 
 
 	/**
@@ -63,38 +94,47 @@ public class DBMSUserMgr
 	 * @param permissions the mask for the permissions to be set.
 	 * @return true if created
 	 */
-	public boolean createUser(final String username, final String password, final String dbName, final int permissions) 
-	{
-		return false;
-	}
+	public abstract boolean createUser(String username, String password, String dbName, int permissions);
 
 	/**
 	 * @return a localized test message describing the error when a method fails
 	 */
 	public String getErrorMsg() 
-	{
-		return errMsg;
-	}
-
+    {
+        return errMsg;
+    }
 
 	/**
 	 * Removes a user.
 	 * @return true if removed
 	 */
-	public boolean removeUser(String username, final String password) 
-	{
-		
-		return false;
-	}
-
+	public abstract boolean removeUser(String username, String password);
+	
+	/**
+	 * Gets the permissions for a user for a database.
+	 * @param username the user
+	 * @param dbName the database
+	 * @return the mask of bits indicating the permissions setting
+	 */
+	public abstract int getPermissions(String username, String dbName);
 
 	/**
-	 * @param hostName the hosy name to connect to
+	 * Sets permissions for a user on a database 
+	 * @param username the user
+	 * @param dbName the database
+	 * @param permissions the permissions mask
+	 * @return true on success
 	 */
-	public void setHostName(String hostName) 
-	{
-		this.hostName = hostName;
-	}
+	public abstract boolean setPermissions(String username, String dbName, int permissions);
+	
+    /**
+     * @param hostName the host name to connect to
+     */
+    public void setHostName(String hostName) 
+    {
+        this.hostName = hostName;
+    }
+
 
 	/**
      * Returns the instance of the DataProviderIFace.
