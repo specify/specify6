@@ -184,32 +184,26 @@ public class DataObjFieldFormatDlg extends CustomDialog implements ChangeListene
             public void insertUpdate(DocumentEvent e)  { changed(e); }
             public void changedUpdate(DocumentEvent e) { changed(e); }
 
-            protected void changed(@SuppressWarnings("unused") DocumentEvent ev)
+            protected void changed(DocumentEvent ev)
             {
-                String name = nameText.getText();
+                String name  = nameText.getText();
+                String title = titleText.getText();
                 
-                if (StringUtils.isEmpty(name) || dataObjFieldFormatMgrCache.getDataFormatter(name) != null)
-                {
-                    isInError = true;
-                } else
-                {
-                    isInError = false;
-                }
+                isInError = (StringUtils.isEmpty(name) || dataObjFieldFormatMgrCache.getDataFormatter(name) != null);
                 
                 dataObjFormatter.setName(name);
+                dataObjFormatter.setTitle(title);
                 
                 setHasChanged(true);
             }
         };
 
-        //titleText.getDocument().addDocumentListener(nameChangedDL);
+        titleText.getDocument().addDocumentListener(nameChangedDL);
         nameText.getDocument().addDocumentListener(nameChangedDL);
 
         updateUIEnabled();
 
         packWithLargestPanel();
-        
-        okBtn.setEnabled(false);
     }
 
     /**
@@ -446,7 +440,7 @@ public class DataObjFieldFormatDlg extends CustomDialog implements ChangeListene
             subPanelInError = fmtMultipleEditingPanel.isInError();
             fmtMultipleEditingPanel.enableUIControls();
         }
-        okBtn.setEnabled(hasChanged && !isInError && !subPanelInError);
+        okBtn.setEnabled(!isInError && !subPanelInError);
     }
 
     /*

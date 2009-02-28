@@ -533,6 +533,7 @@ public class DataObjFieldFormatMgr
      */
     public void addFormatter(DataObjSwitchFormatter formatter)
     {
+        formatHash.put(formatter.getName(), formatter);
         formatClassHash.put(formatter.getDataClass(), formatter);
         hasChanged = true;
     }

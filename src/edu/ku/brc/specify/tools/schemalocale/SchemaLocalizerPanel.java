@@ -380,9 +380,6 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
      */
     private void fillDataObjFormatterCombo()
     {
-        
-        DataObjSwitchFormatter curSelDOF =  (DataObjSwitchFormatter)dataObjFmtCbo.getSelectedItem();
-        
         List<DataObjSwitchFormatter> fList;
     	if (tableInfo != null)
     	{
@@ -403,20 +400,17 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
     		return;
     	}
     	
-    	
-    	String fmtName = curSelDOF != null ? curSelDOF.getName() : currContainer.getFormat();
-        if (fList.size() == 1 && StringUtils.isEmpty(fmtName))
-        {
-            fmtName = fList.get(0).getName();
-        }
+        int selectedInx = -1;
         
-    	int selectedInx = -1;
+        // add formatters to the combo box
         for (DataObjSwitchFormatter format : fList)
         {
         	model.addElement(format);
-
-        	if (fmtName != null && fmtName.equals(format.getName()))
+        	if (format.isDefault())
         	{
+        	    // the format that's just been added is the default one
+        	    // set this item as the selected one. Its index happens to be the last index 
+        	    // of the combo box model, because we are adding the formatters one by one.
         		selectedInx = model.getSize() - 1;
         	}
         }
