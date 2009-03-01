@@ -71,7 +71,6 @@ public class DataObjFieldFormatDlg extends CustomDialog implements ChangeListene
     protected DataObjSwitchFormatter                    dataObjFormatter;
 
     // UI controls
-    protected AvailableFieldsComponent                  availableFieldComp;
     protected DataObjFieldFormatSinglePanel             fmtSingleEditingPanel;
     protected DataObjFieldFormatMultiplePanel           fmtMultipleEditingPanel;
     protected JComboBox                                 valueFieldCbo;
@@ -143,13 +142,10 @@ public class DataObjFieldFormatDlg extends CustomDialog implements ChangeListene
         multipleDisplayPB.add(multipleDisplayBtn, cc.xy(1, 1));
         multipleDisplayPB.add(valueFieldCbo, cc.xy(2, 1));
 
-        // create field tree that will be re-used in all instances of single switch formatter editing panel
-        availableFieldComp = new AvailableFieldsComponent(tableInfo, dataObjFieldFormatMgrCache, uiFieldFormatterMgrCache);
-        
         // format editing panels (dependent on the type for format: single/multiple)
         DataObjSwitchFormatterContainerIface formatterContainer = new DataObjSwitchFormatterSingleContainer(dataObjFormatter);
-        fmtSingleEditingPanel   = new DataObjFieldFormatSinglePanel(tableInfo,   availableFieldComp, formatterContainer, uiFieldFormatterMgrCache, this);
-        fmtMultipleEditingPanel = new DataObjFieldFormatMultiplePanel(tableInfo, availableFieldComp, formatterContainer, uiFieldFormatterMgrCache, this);
+        fmtSingleEditingPanel   = new DataObjFieldFormatSinglePanel(tableInfo, formatterContainer, dataObjFieldFormatMgrCache, uiFieldFormatterMgrCache, this);
+        fmtMultipleEditingPanel = new DataObjFieldFormatMultiplePanel(tableInfo, formatterContainer, dataObjFieldFormatMgrCache, uiFieldFormatterMgrCache, this);
 
         // Panel for radio buttons and display formatting editing panel
         PanelBuilder pb = new PanelBuilder(new FormLayout("r:p,4px,f:p:g", "p,2px,p,10px,p,p,10px,f:p:g"));
@@ -274,20 +270,24 @@ public class DataObjFieldFormatDlg extends CustomDialog implements ChangeListene
                 if (e.getSource() instanceof JRadioButton)
                 {
                     JRadioButton btn = (JRadioButton) e.getSource();
-                    
+
+//                    boolean hasChanged = (dataObjFormatter.isSingle() && btn != singleDisplayBtn) ||
+//                                         (!dataObjFormatter.isSingle() && btn == singleDisplayBtn);
+
                     dataObjFormatter.setSingle(btn == singleDisplayBtn);
-                    dataObjFormatter.clearFields();
-                    
-                    fmtSingleEditingPanel.fillWithObjFormatter(dataObjFormatter);
-                    fmtMultipleEditingPanel.fillWithObjFormatter(dataObjFormatter);
-                    
+
+                    if (btn == singleDisplayBtn) 
+                    {
+                        // single editing panel selected
+                        fmtSingleEditingPanel.setHasChanged(true);
+                    }
+                    else
+                    {
+                        // multiple editing panel selected
+                        fmtMultipleEditingPanel.setHasChanged(true);
+                    }
+
                     setVisibleFormatPanel(btn);
-                    fillWithObjFormatter(dataObjFormatter, false);
-                    
-                    fmtSingleEditingPanel.setHasChanged(true);
-                    fmtMultipleEditingPanel.setHasChanged(true);
-                    
-                    updateUIEnabled();
                 }
             }
         };

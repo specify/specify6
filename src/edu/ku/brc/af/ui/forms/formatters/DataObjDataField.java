@@ -132,16 +132,16 @@ public class DataObjDataField implements Cloneable
 	 */
 	public String toString() 
 	{
-		if (objFormatter != null)
-		{
-			return objFormatter.toString();
-		}
-		
-		if (tableInfo == null || fieldInfo == null)
-		{
-			return "null";
-		}
-		
+//		if (objFormatter != null)
+//		{
+//			return objFormatter.toString();
+//		}
+//		
+//		if (tableInfo == null || fieldInfo == null)
+//		{
+//			return "null";
+//		}
+//		
 		String prefix = "";
 		if (StringUtils.isNotEmpty(sep))
 		{

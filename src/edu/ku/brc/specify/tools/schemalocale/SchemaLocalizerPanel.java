@@ -400,9 +400,8 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
     		return;
     	}
     	
-        int selectedInx = -1;
-        
         // add formatters to the combo box
+        int selectedInx = -1;
         for (DataObjSwitchFormatter format : fList)
         {
         	model.addElement(format);
@@ -441,20 +440,16 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
 
         if (currContainer == null) return;
         
-        String aggName = currContainer.getAggregator();
-        
-        if (fList.size() == 1 && StringUtils.isEmpty(aggName))
-        {
-            aggName = fList.get(0).getName();
-        }
-
+        // add formatters to the combo box
         int selectedInx = -1;
         for (DataObjAggregator aggregator : fList)
         {
             model.addElement(aggregator);
-            
-            if (aggName != null && aggName.equals(aggregator.getName()))
+            if (aggregator.isDefault())
             {
+                // the format that's just been added is the default one
+                // set this item as the selected one. Its index happens to be the last index 
+                // of the combo box model, because we are adding the formatters one by one.
                 selectedInx = model.getSize() - 1;
             }
         }

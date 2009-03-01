@@ -32,12 +32,12 @@ import edu.ku.brc.af.core.db.DBTableInfo;
 public abstract class DataObjFieldFormatPanel extends JPanel
 {
 
-    protected AvailableFieldsComponent             availableFieldsComp;
     protected DataObjSwitchFormatterContainerIface formatContainer;
     protected PanelBuilder                         mainPanelBuilder;
     protected DBTableInfo                          tableInfo;
     protected boolean                              newFormat;
 
+    protected DataObjFieldFormatMgr                dataObjFieldFormatMgrCache;
     protected UIFieldFormatterMgr                  uiFieldFormatterMgrCache;
     
     protected boolean                              isInError   = false;
@@ -59,10 +59,10 @@ public abstract class DataObjFieldFormatPanel extends JPanel
      * @param uiFieldFormatterMgrCache
      */
     public DataObjFieldFormatPanel(final DBTableInfo                          tableInfo,
-                                          final AvailableFieldsComponent             availableFieldsComp,
-                                          final DataObjSwitchFormatterContainerIface formatContainer,
-                                          final UIFieldFormatterMgr                  uiFieldFormatterMgrCache,
-                                          final ChangeListener                       listener) 
+                                   final DataObjSwitchFormatterContainerIface formatContainer,
+                                   final DataObjFieldFormatMgr                dataObjFieldFormatMgrCache,
+                                   final UIFieldFormatterMgr                  uiFieldFormatterMgrCache,
+                                   final ChangeListener                       listener) 
     {
         super();
 
@@ -76,12 +76,12 @@ public abstract class DataObjFieldFormatPanel extends JPanel
             throw new RuntimeException("listener cannot be null!");
         }
         
-        this.uiFieldFormatterMgrCache = uiFieldFormatterMgrCache;
-        this.tableInfo                = tableInfo;
-        this.availableFieldsComp      = availableFieldsComp;
-        this.formatContainer          = formatContainer;
-        this.listener                 = listener;
-        this.newFormat                = false;
+        this.dataObjFieldFormatMgrCache = dataObjFieldFormatMgrCache;
+        this.uiFieldFormatterMgrCache   = uiFieldFormatterMgrCache;
+        this.tableInfo                  = tableInfo;
+        this.formatContainer            = formatContainer;
+        this.listener                   = listener;
+        this.newFormat                  = false;
         
         init();
         buildUI();

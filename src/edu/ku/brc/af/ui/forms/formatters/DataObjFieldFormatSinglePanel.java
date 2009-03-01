@@ -78,6 +78,8 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class DataObjFieldFormatSinglePanel extends DataObjFieldFormatPanel 
 {
+    protected AvailableFieldsComponent availableFieldsComp;
+
     // ui controls
     protected JTextPane          formatEditor;
     protected JButton            addFieldBtn;
@@ -100,13 +102,12 @@ public class DataObjFieldFormatSinglePanel extends DataObjFieldFormatPanel
      * @param uiFieldFormatterMgrCache
      */
     public DataObjFieldFormatSinglePanel(final DBTableInfo                          tableInfo,
-                                         final AvailableFieldsComponent             availableFieldsComp,
                                          final DataObjSwitchFormatterContainerIface formatContainer,
+                                         final DataObjFieldFormatMgr                dataObjFieldFormatMgrCache,
                                          final UIFieldFormatterMgr                  uiFieldFormatterMgrCache,    
                                          final ChangeListener                       listener)
     {
-        super(tableInfo, availableFieldsComp, formatContainer, uiFieldFormatterMgrCache, listener);
-        
+        super(tableInfo, formatContainer, dataObjFieldFormatMgrCache, uiFieldFormatterMgrCache, listener);
     }
     
     /* (non-Javadoc)
@@ -164,6 +165,9 @@ public class DataObjFieldFormatSinglePanel extends DataObjFieldFormatPanel
         JLabel availableFieldsLbl = createI18NFormLabel("DOF_AVAILABLE_FIELDS", SwingConstants.LEFT);
         pb.add(availableFieldsLbl, cc.xy(1,y)); y += 1;
         
+        // create field tree that will be re-used in all instances of single switch formatter editing panel
+        availableFieldsComp = new AvailableFieldsComponent(tableInfo, dataObjFieldFormatMgrCache, uiFieldFormatterMgrCache);
+
         pb.add(UIHelper.createScrollPane(availableFieldsComp.getTree()), cc.xy(1, y)); y += 2;
         
         availableFieldsComp.getTree().addTreeSelectionListener(new TreeSelectionListener()

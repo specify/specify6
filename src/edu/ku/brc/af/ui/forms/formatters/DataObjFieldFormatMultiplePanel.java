@@ -93,12 +93,12 @@ public class DataObjFieldFormatMultiplePanel extends DataObjFieldFormatPanel imp
      * @param uiFieldFormatterMgrCache
      */
     public DataObjFieldFormatMultiplePanel(final DBTableInfo                          tableInfo,
-                                           final AvailableFieldsComponent             availableFieldsComp,
                                            final DataObjSwitchFormatterContainerIface formatContainer,
+                                           final DataObjFieldFormatMgr                dataObjFieldFormatMgrCache,
                                            final UIFieldFormatterMgr                  uiFieldFormatterMgrCache,    
                                            final ChangeListener                       listener)
     {
-        super(tableInfo, availableFieldsComp, formatContainer, uiFieldFormatterMgrCache, listener);
+        super(tableInfo, formatContainer, dataObjFieldFormatMgrCache, uiFieldFormatterMgrCache, listener);
     }
 
     /* (non-Javadoc)
@@ -425,8 +425,8 @@ public class DataObjFieldFormatMultiplePanel extends DataObjFieldFormatPanel imp
                     // open dialog to edit format
                     DataObjFieldFormatSingleDlg dlg = new DataObjFieldFormatSingleDlg((Frame) UIRegistry.getTopWindow(), 
                                                                                        tableInfo, 
-                                                                                       availableFieldsComp, 
-                                                                                       formatter, 
+                                                                                       formatter,
+                                                                                       dataObjFieldFormatMgrCache,
                                                                                        uiFieldFormatterMgrCache);
                     dlg.setVisible(true);
 

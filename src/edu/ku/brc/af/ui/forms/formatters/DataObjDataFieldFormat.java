@@ -233,6 +233,9 @@ public class DataObjDataFieldFormat implements DataObjDataFieldFormatIFace, Clon
 	 */
 	public void setDataObjSwitchFormatter(DataObjSwitchFormatter objFormatter)
 	{
+	    if (fields == null)
+	        return;
+	    
 	    for (DataObjDataField fld : fields)
         {
             fld.setObjFormatter(objFormatter);

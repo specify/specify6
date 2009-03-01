@@ -43,10 +43,10 @@ import edu.ku.brc.ui.CustomDialog;
 public class DataObjFieldFormatSingleDlg extends CustomDialog implements ChangeListener
 {
     protected DBTableInfo                          tableInfo;
-    protected AvailableFieldsComponent             availableFieldsComp;
     protected DataObjSwitchFormatter               formatter;
     protected DataObjFieldFormatSinglePanel        fmtSingleEditingPanel;
     
+    protected DataObjFieldFormatMgr                dataObjFieldFormatMgrCache;
     protected UIFieldFormatterMgr                  uiFieldFormatterMgrCache;
     
     /**
@@ -54,18 +54,18 @@ public class DataObjFieldFormatSingleDlg extends CustomDialog implements ChangeL
      */
     public DataObjFieldFormatSingleDlg(final Frame                       frame, 
                                        final DBTableInfo                 tableInfo,
-                                       final AvailableFieldsComponent    availableFieldsComp,
                                        final DataObjDataFieldFormatIFace singleFormatter,
+                                       final DataObjFieldFormatMgr       dataObjFieldFormatMgrCache,
                                        final UIFieldFormatterMgr         uiFieldFormatterMgrCache)
         throws HeadlessException
     {
         super(frame, getResourceString("DOF_DLG_TITLE"), true, OKCANCELHELP, null);
         
-        this.tableInfo                = tableInfo;
-        this.availableFieldsComp      = availableFieldsComp;
-        this.formatter                = new DataObjSwitchFormatter("", "", true, false, tableInfo.getClassObj(), "");
-        this.uiFieldFormatterMgrCache = uiFieldFormatterMgrCache;
-        this.helpContext              = "DOF_SINGLE_FF";
+        this.tableInfo                  = tableInfo;
+        this.formatter                  = new DataObjSwitchFormatter("", "", true, false, tableInfo.getClassObj(), "");
+        this.uiFieldFormatterMgrCache   = uiFieldFormatterMgrCache;
+        this.dataObjFieldFormatMgrCache = dataObjFieldFormatMgrCache;
+        this.helpContext                = "DOF_SINGLE_FF";
         this.formatter.setSingle(singleFormatter);
     }
 
@@ -82,7 +82,7 @@ public class DataObjFieldFormatSingleDlg extends CustomDialog implements ChangeL
         
         // format editing panel (single format only)
         DataObjSwitchFormatterContainerIface fmtContainer = new DataObjSwitchFormatterSingleContainer(formatter);
-        fmtSingleEditingPanel = new DataObjFieldFormatSinglePanel(tableInfo, availableFieldsComp, fmtContainer, uiFieldFormatterMgrCache, this);
+        fmtSingleEditingPanel = new DataObjFieldFormatSinglePanel(tableInfo, fmtContainer, dataObjFieldFormatMgrCache, uiFieldFormatterMgrCache, this);
         pb.add(fmtSingleEditingPanel);
         contentPanel = pb.getPanel();
         mainPanel.add(contentPanel, BorderLayout.CENTER);
