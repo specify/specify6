@@ -309,6 +309,36 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
             {
                 setHasChanged(true);
                 setTableInfoChanged(true);
+                
+                // also mark the selected formatter or aggregator the Specify default (see bug 6163)
+                setDefaultFormatterOrAggregator(e);
+            }
+
+            // sets the default formatter or aggregator according to the item selected in the combo box
+            private void setDefaultFormatterOrAggregator(ActionEvent e) {
+                Object src = e.getSource();
+                if (src instanceof JComboBox)
+                {
+                    JComboBox combo = (JComboBox) src;
+                    int n = combo.getModel().getSize();
+                    for (int i = 0; i < n; i++) 
+                    {
+                        Object value = combo.getModel().getElementAt(i);
+                        if (value instanceof DataObjAggregator)
+                        {
+                            DataObjAggregator agg = (DataObjAggregator) value;
+                            // selected aggregator is also the default
+                            agg.setDefault(agg == combo.getModel().getSelectedItem());
+                        }
+                        else if (value instanceof DataObjSwitchFormatter)
+                        {
+                            DataObjSwitchFormatter fmt = (DataObjSwitchFormatter) value;
+                            // selected aggregator is also the default
+                            fmt.setDefault(fmt == combo.getModel().getSelectedItem());
+                        }
+
+                    }
+                }
             }
         };
         
