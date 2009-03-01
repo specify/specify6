@@ -64,7 +64,7 @@ public class DataObjAggListEdtDlg extends FmtListEditorDlgBase
             {
                 JLabel label = (JLabel)super.getListCellRendererComponent(listArg, value, index, isSelected, cellHasFocus);
                 DataObjAggregator agg = (DataObjAggregator)value;
-                label.setText(agg.getTitle() + (agg.isDefault() ? " " + UIRegistry.getResourceString("DOA_DEFAULT") : ""));
+                label.setText(agg.toString() + (agg.isDefault() ? " " + UIRegistry.getResourceString("DOA_DEFAULT") : ""));
                 return label;
             }
             

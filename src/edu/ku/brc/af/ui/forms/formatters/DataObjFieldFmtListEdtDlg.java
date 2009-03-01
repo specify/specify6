@@ -85,7 +85,7 @@ public class DataObjFieldFmtListEdtDlg extends FmtListEditorDlgBase
             {
                 JLabel label = (JLabel)super.getListCellRendererComponent(listArg, value, index, isSelected, cellHasFocus);
                 DataObjSwitchFormatter doa = (DataObjSwitchFormatter)value;
-                label.setText(doa.getTitle() + (doa.isDefault() ? " " + UIRegistry.getResourceString("DOF_DEFAULT") : ""));
+                label.setText(doa.toString() + (doa.isDefault() ? " " + UIRegistry.getResourceString("DOF_DEFAULT") : ""));
                 return label;
             }
             
