@@ -861,14 +861,16 @@ public class DataObjFieldFormatMgr
             {
                 if (obj != null)
                 {
+                    // only add a separator after the first element
                     if (count > 0)
                     {
                         aggStr.append(agg.getSeparator());
                     }
-
+                    
                     if (agg.useIdentity() && obj instanceof FormDataObjIFace)
                     {
                         aggStr.append(((FormDataObjIFace)obj).getIdentityTitle());
+                        
                     } else
                     {
                         aggStr.append(formatInternal(getInstance().getDataFormatter(obj, agg.getFormatName()), obj));
@@ -876,9 +878,11 @@ public class DataObjFieldFormatMgr
                     
                     //System.out.println(aggStr.toString());
                     
-                    String endingStr = agg.getEnding();
-                    if (agg.getCount() != null && count < agg.getCount())
+                    int aggCount = (agg.getCount() != null)? agg.getCount() : 0;
+                    if (aggCount > 0 && count >= aggCount - 1)
                     {
+                        // add the ending string at the end of the aggregated string and quit loop
+                        String endingStr = agg.getEnding();
                         if (StringUtils.isNotEmpty(endingStr))
                         {
                             aggStr.append(endingStr);
