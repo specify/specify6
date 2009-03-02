@@ -181,7 +181,7 @@ public class ERTICaptionInfo
                         
                     } else
                     {
-                        log.error("Aggregate Sub Class is not a Data Table["+tableInfo.getTitle()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+                        log.error("Aggregate Sub Class is not a Data Table["+(tableInfo != null ? tableInfo.getTitle() : "N/A")+"]"); //$NON-NLS-1$ //$NON-NLS-2$
                     }
                     
                 } else

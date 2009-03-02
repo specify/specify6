@@ -1116,6 +1116,11 @@ public class ReportsBaseTask extends BaseTask
             }
             
             ColumnBuilder colBldr = ColumnBuilder.getInstance().setColumnProperty(colName, dataClass.getName());
+            int bracketInx = colName.indexOf('[');
+            if (bracketInx > -1)
+            {
+                colName = colName.substring(0, bracketInx-1);
+            }
             colBldr.setTitle(colName);
             //colBldr.setWidth(new Integer(100));
             
