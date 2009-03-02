@@ -71,40 +71,50 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
     {
         super.initialize(viewableArg);
         
-        if (formViewObj != null && formViewObj.getRsController() != null)
+        if (formViewObj != null)
         {
-            JButton newBtn = formViewObj.getRsController().getNewRecBtn();
-            if (newBtn != null)
+            if (formViewObj.getRsController() != null)
             {
-                // Remove all ActionListeners, there should only be one
-                for (ActionListener al : newBtn.getActionListeners())
+                JButton newBtn = formViewObj.getRsController().getNewRecBtn();
+                if (newBtn != null)
                 {
-                    newBtn.removeActionListener(al);
+                    // Remove all ActionListeners, there should only be one
+                    for (ActionListener al : newBtn.getActionListeners())
+                    {
+                        newBtn.removeActionListener(al);
+                    }
+                    
+                    newBtn.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e)
+                        {
+                            MultiView loanMV = null;
+                            if (viewable instanceof FormViewObj)
+                            {
+                                loanMV = formViewObj.getMVParent().getMultiViewParent();
+                                formViewObj.getDataFromUI();
+                                
+                            } else if (viewable instanceof TableViewObj)
+                            {
+                                TableViewObj tblViewObj = (TableViewObj)viewable; 
+                                loanMV = tblViewObj.getMVParent().getMultiViewParent();
+                            }
+                        }
+                    });
                 }
                 
-                newBtn.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e)
-                    {
-                        MultiView loanMV = null;
-                        if (viewable instanceof FormViewObj)
-                        {
-                            loanMV = formViewObj.getMVParent().getMultiViewParent();
-                            formViewObj.getDataFromUI();
-                            
-                        } else if (viewable instanceof TableViewObj)
-                        {
-                            TableViewObj tblViewObj = (TableViewObj)viewable; 
-                            loanMV = tblViewObj.getMVParent().getMultiViewParent();
-                        }
-                        
-                        if (loanMV != null)
-                        {
-                            formViewObj.getDataFromUI();
-                            CommandDispatcher.dispatch(new CommandAction(CMDTYPE, ADD_TO_LOAN, loanMV.getCurrentViewAsFormViewObj().getCurrentDataObj()));
-                        }
-                    }
-                });
+                MultiView loanMV = null;
+                if (viewable instanceof FormViewObj)
+                {
+                    loanMV = formViewObj.getMVParent().getMultiViewParent();
+                    formViewObj.getDataFromUI();
+                }
+                
+                if (loanMV != null)
+                {
+                    formViewObj.getDataFromUI();
+                    CommandDispatcher.dispatch(new CommandAction(CMDTYPE, ADD_TO_LOAN, loanMV.getCurrentViewAsFormViewObj().getCurrentDataObj()));
+                }
             }
             
             Component comp = formViewObj.getControlByName("quantityResolved");

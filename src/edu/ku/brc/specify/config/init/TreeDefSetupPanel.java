@@ -238,7 +238,7 @@ public class TreeDefSetupPanel extends BaseSetupPanel implements SetupPanelIFace
     {
         XStream xstream = new XStream();
         TreeDefRow.configXStream(xstream);
-        props.put(classType.toString()+".treedefs", xstream.toXML(treeDefList));
+        props.put(classType.getSimpleName()+".treedefs", xstream.toXML(treeDefList));
     }
 
     /* (non-Javadoc)

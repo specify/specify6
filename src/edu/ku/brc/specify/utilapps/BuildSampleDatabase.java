@@ -143,6 +143,7 @@ import edu.ku.brc.specify.config.init.BldrPickList;
 import edu.ku.brc.specify.config.init.BldrPickListItem;
 import edu.ku.brc.specify.config.init.DataBuilder;
 import edu.ku.brc.specify.config.init.HiddenTableMgr;
+import edu.ku.brc.specify.config.init.TreeDefRow;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.AccessionAgent;
 import edu.ku.brc.specify.datamodel.Address;
@@ -391,6 +392,7 @@ public class BuildSampleDatabase
      * @param disciplineName the disciplineType name
      * @return the entire list of DB object to be persisted
      */
+    @SuppressWarnings("unchecked")
     public List<Object> createEmptyDiscipline(final Properties props, 
                                               final CollectionChoice choice)
     {
@@ -675,32 +677,31 @@ public class BuildSampleDatabase
         taxonTreeDef.setDiscipline(discipline);
         taxa.add(taxonTreeDef);
 
-        String dataStr = props.getProperty("taxontreedefs");
+        String dataStr = props.getProperty("TaxonTreeDef.treedefs");
         if (StringUtils.isNotEmpty(dataStr))
         {
-            TaxonTreeDefItem parent = null;
-            String[] tokens = StringUtils.split(dataStr, ',');
-            for (int i=0;i<tokens.length;i++)
+            XStream xstream = new XStream();
+            TreeDefRow.configXStream(xstream);
+            
+            Vector<TreeDefRow> treeDefList = (Vector<TreeDefRow>)xstream.fromXML(dataStr);
+            TaxonTreeDefItem   parent      = null;
+            int                cnt         = 0;
+            for (TreeDefRow row : treeDefList)
             {
-                String name = tokens[i];
-                i++;
-                int    rank = Integer.parseInt(tokens[i]);
-                boolean isStd = TaxonTreeDef.isStdRequiredLevel(rank) || rank == 0;
-                
                 TaxonTreeDefItem ttdi = new TaxonTreeDefItem();
                 ttdi.initialize();
                 ttdi.setTreeDef(taxonTreeDef);
                 taxonTreeDef.getTreeDefItems().add(ttdi);
-                ttdi.setName(name);
-                ttdi.setRankId(rank);
+                ttdi.setName(row.getDefName());
+                ttdi.setRankId(row.getRank());
                 ttdi.setParent(parent);
-                ttdi.setFullNameSeparator(" ");
-                ttdi.setIsEnforced(isStd);
-                ttdi.setIsInFullName(rank == 180 || rank == 220);
+                ttdi.setFullNameSeparator(row.getSeparator());
+                ttdi.setIsEnforced(row.isEnforced());
+                ttdi.setIsInFullName(row.isInFullName());
                 
                 taxa.add(ttdi);
                 
-                if (i == 1)
+                if (cnt == 0)
                 {
                     Taxon tx = new Taxon();
                     tx.initialize();
@@ -715,6 +716,7 @@ public class BuildSampleDatabase
                     parent.getChildren().add(ttdi);
                 }
                 parent = ttdi;
+                cnt++;
             }
         }
         
@@ -734,9 +736,47 @@ public class BuildSampleDatabase
             persist(earth);
         }
         
-        List<Object> geos        = createSimpleGeography(geoTreeDef, false);
+        List<Object> geos        = new Vector<Object>();//createSimpleGeography(geoTreeDef, false);
         List<Object> gtps        = createSimpleGeologicTimePeriod(gtpTreeDef, false);
         List<Object> lithoStrats = isPaleo ? null : createSimpleLithoStrat(lithoStratTreeDef, false);
+        
+        // Create Tree Definition
+        taxonTreeDef.setDiscipline(discipline);
+        taxa.add(taxonTreeDef);
+
+        dataStr = props.getProperty("GeographyTreeDef.treedefs");
+        if (StringUtils.isNotEmpty(dataStr))
+        {
+            XStream xstream = new XStream();
+            TreeDefRow.configXStream(xstream);
+            
+            Vector<TreeDefRow> treeDefList = (Vector<TreeDefRow>)xstream.fromXML(dataStr);
+            GeographyTreeDefItem   parent      = null;
+            int                cnt         = 0;
+            for (TreeDefRow row : treeDefList)
+            {
+                GeographyTreeDefItem gtdi = new GeographyTreeDefItem();
+                gtdi.initialize();
+                gtdi.setTreeDef(geoTreeDef);
+                geoTreeDef.getTreeDefItems().add(gtdi);
+                gtdi.setName(row.getDefName());
+                gtdi.setRankId(row.getRank());
+                gtdi.setParent(parent);
+                gtdi.setFullNameSeparator(row.getSeparator());
+                gtdi.setIsEnforced(row.isEnforced());
+                gtdi.setIsInFullName(row.isInFullName());
+                
+                geos.add(gtdi);
+                
+                if (parent != null)
+                {
+                    parent.getChildren().add(gtdi);
+                }
+                parent = gtdi;
+                cnt++;
+            }
+        }
+
         
         persist(taxa);
         persist(geos);
