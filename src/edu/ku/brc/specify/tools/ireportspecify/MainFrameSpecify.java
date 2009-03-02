@@ -876,8 +876,8 @@ public class MainFrameSpecify extends MainFrame
                                 String rptType = params.getProperty("reporttype"); //$NON-NLS-1$
 
                                 if (StringUtils.isNotEmpty(tableid)
-                                        && (StringUtils.isNotEmpty(rptType) && rptType
-                                                .equals("Report")))
+                                        && (StringUtils.isNotEmpty(rptType) 
+                                        && (rptType.equals("Report") || rptType.equals("Invoice"))))
                                 {
                                     list.add(ap);
                                 }
