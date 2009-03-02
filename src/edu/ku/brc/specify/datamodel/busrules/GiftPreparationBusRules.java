@@ -80,7 +80,10 @@ public class GiftPreparationBusRules extends BaseBusRules implements CommandList
                     
                     if (giftMV != null)
                     {
-                        formViewObj.getDataFromUI();
+                        if (formViewObj != null)
+                        {
+                            formViewObj.getDataFromUI();
+                        }
                         CommandDispatcher.dispatch(new CommandAction(CMDTYPE, "AddToGift", giftMV.getCurrentViewAsFormViewObj().getCurrentDataObj()));
                     }
                 }
