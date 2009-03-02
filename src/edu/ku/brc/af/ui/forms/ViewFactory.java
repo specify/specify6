@@ -1698,9 +1698,9 @@ public class ViewFactory
                             }
                         } catch (Exception ex)
                         {
+                            log.error("Couldn't find field ["+cellSubView.getName()+"] in class ["+parentView.getClassName()+"]");
                             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ViewFactory.class, ex);
-                            log.error("Couldn't find field ["+cellSubView.getName()+"] in class ["+parentView.getClassName()+"]");
                         }
                         
                         boolean useNoScrollbars = UIHelper.getProperty(props, "noscrollbars", false);

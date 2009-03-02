@@ -548,14 +548,12 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
                     sb.setLength(sb.length() - prevStr.length());
                 }
                 break;
-                
-            } else
+            }
+            
+            sb.append(val);
+            if (!(c instanceof JLabel))
             {
-                sb.append(val);
-                if (!(c instanceof JLabel))
-                {
-                    prevStr = null;
-                }
+                prevStr = null;
             }
             inx++;
         }

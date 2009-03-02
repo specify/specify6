@@ -1,11 +1,8 @@
 /*
-     * Copyright (C) 2008  The University of Kansas
-     *
-     * [INSERT KU-APPROVED LICENSE TEXT HERE]
-     *
-     */
-/**
- * 
+ * Copyright (C) 2008  The University of Kansas
+ *
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
+ *
  */
 package edu.ku.brc.specify.config.init;
 
@@ -26,16 +23,17 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
+
+import edu.ku.brc.ui.DocumentAdaptor;
 
 /**
  * This is the configuration window for create a new user and new database.
  * @author rod
  *
- * @code_status Alpha
+ * @code_status Beta
  *
  * Jan 17, 2008
  *
@@ -47,7 +45,8 @@ public abstract class BaseSetupPanel extends JPanel implements SetupPanelIFace
     protected String             panelName;
     protected KeyAdapter         keyAdapter;
     protected JButton            nextBtn;
-    protected Font               bold      = (new JLabel()).getFont().deriveFont(Font.BOLD);
+    protected boolean            makeStretchy = false;
+    protected Font               bold         = (new JLabel()).getFont().deriveFont(Font.BOLD);
 
     /**
      * @param panelName
@@ -56,10 +55,22 @@ public abstract class BaseSetupPanel extends JPanel implements SetupPanelIFace
     public BaseSetupPanel(final String panelName,
                           final JButton nextBtn)
     {
-        this.panelName = panelName;
-        this.nextBtn   = nextBtn;
+        this(panelName, nextBtn, false);
+    }
+    
+    /**
+     * @param panelName
+     * @param nextBtn
+     */
+    public BaseSetupPanel(final String panelName,
+                          final JButton nextBtn,
+                          final boolean makeStretchy)
+    {
+        this.panelName    = panelName;
+        this.nextBtn      = nextBtn;
+        this.makeStretchy = makeStretchy;
         
-        keyAdapter = new KeyAdapter() {
+        this.keyAdapter = new KeyAdapter() {
           public void keyPressed(KeyEvent e)
           {
               nextBtn.setEnabled(isUIValid());
@@ -148,18 +159,17 @@ public abstract class BaseSetupPanel extends JPanel implements SetupPanelIFace
             lbl.setFont(bold);
         }
         builder.add(lbl, cc.xy(1, row));
-        builder.add(txt, cc.xy(3, row));
+        builder.add(txt, cc.xyw(3, row, makeStretchy ? 2 : 1));
         if (isRequired)
         {
-            txt.setBackground(new Color(215, 230, 253));
+            txt.setBackground(new Color(215, 230, 253)); // required Color
         }
         //txt.addFocusListener(this);
         //txt.addKeyListener(keyAdapter);
         
-        txt.getDocument().addDocumentListener(new DocumentListener() {
-            public void insertUpdate(DocumentEvent e) {updateBtnUI();}
-            public void removeUpdate(DocumentEvent e) {updateBtnUI();}
-            public void changedUpdate(DocumentEvent e) {updateBtnUI();}
+        txt.getDocument().addDocumentListener(new DocumentAdaptor() {
+            @Override
+            protected void changed(DocumentEvent e) { updateBtnUI(); }
         });
         return txt;
     }
@@ -172,7 +182,5 @@ public abstract class BaseSetupPanel extends JPanel implements SetupPanelIFace
     {
         return this;
     }
-    
-    
 }
 

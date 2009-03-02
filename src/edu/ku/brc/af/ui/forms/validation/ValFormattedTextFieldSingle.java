@@ -401,6 +401,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
 
         String text = getText();
 
+        //System.err.println("isViewOnly "+isViewOnly+"  isEnabled() "+isEnabled()+ "  "+text+"  "+(text.length() < bgStr.length()));
         if (!isViewOnly && needsUpdating && isEnabled() && text != null && text.length() < bgStr.length() )
         {
             FontMetrics fm   = g.getFontMetrics();
@@ -426,8 +427,10 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
             g.setClip(r.x, r.y, r.width, r.height); // reset clip
         }
 
-        //System.out.println(hashCode() + " " +isNew+" "+valState+"  "+isEnabled());
-        if (!isNew && valState == UIValidatable.ErrorType.Error && isEnabled())
+        //System.out.println(hashCode() + " isNew: " +isNew+"  valState: "+valState+"    isEnabled: "+isEnabled());
+        // 3/2/09 - rods - removing !isNew from the condition
+        //if (!isNew && valState == UIValidatable.ErrorType.Error && isEnabled())
+        if (valState == UIValidatable.ErrorType.Error && isEnabled())
         {
             UIHelper.drawRoundedRect((Graphics2D)g, valTextColor.getColor(), getSize(), 1);
         }

@@ -242,17 +242,15 @@ public class CarryForwardInfo
                 }
             }
             return;
-            
-        } else 
+        }
+        
+        Object fieldDataValue = getter.getFieldValue(carryFwdData, fieldName);
+        if (isFieldClonable(businessRules, fieldName, fieldDataValue))
         {
-            Object fieldDataValue = getter.getFieldValue(carryFwdData, fieldName);
-            if (isFieldClonable(businessRules, fieldName, fieldDataValue))
-            {
-                cloneCFField(fieldName, fieldDataValue, newData);
-            } else
-            {
-                setter.setFieldValue(newData, fieldName, fieldDataValue);
-            }
+            cloneCFField(fieldName, fieldDataValue, newData);
+        } else
+        {
+            setter.setFieldValue(newData, fieldName, fieldDataValue);
         }
     }
     

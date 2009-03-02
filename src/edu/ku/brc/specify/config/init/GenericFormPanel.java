@@ -56,14 +56,22 @@ public class GenericFormPanel extends BaseSetupPanel
      * @param panelName
      * @param nextBtn
      */
-    /**
-     * @param panelName
-     * @param nextBtn
-     */
     public GenericFormPanel(final String panelName,
                             final JButton nextBtn)
     {
-        super(panelName, nextBtn);
+        this(panelName, nextBtn, false);
+    }
+
+    /**
+     * @param panelName
+     * @param nextBtn
+     * @param makeStretchy
+     */
+    public GenericFormPanel(final String panelName,
+                            final JButton nextBtn,
+                            final boolean makeStretchy)
+    {
+        super(panelName, nextBtn, makeStretchy);
     }
 
     /**
@@ -77,9 +85,10 @@ public class GenericFormPanel extends BaseSetupPanel
                             final String   title,
                             final String[] labels,
                             final String[] fields, 
-                            final JButton  nextBtn)
+                            final JButton  nextBtn,
+                            final boolean makeStretchy)
     {
-        this(null, name, title, labels, fields, null, nextBtn);
+        this(null, name, title, labels, fields, null, nextBtn, makeStretchy);
     }
     
     /**
@@ -95,9 +104,10 @@ public class GenericFormPanel extends BaseSetupPanel
                             final String[] labels,
                             final String[] fields, 
                             final boolean[] required, 
-                            final JButton  nextBtn)
+                            final JButton  nextBtn,
+                            final boolean makeStretchy)
     {
-        this(null, name, title, labels, fields, required, nextBtn);
+        this(null, name, title, labels, fields, required, nextBtn, makeStretchy);
         
     }
     
@@ -116,12 +126,14 @@ public class GenericFormPanel extends BaseSetupPanel
                             final String[] labels,
                             final String[] fields, 
                             final boolean[] required, 
-                            final JButton  nextBtn)
+                            final JButton  nextBtn,
+                            final boolean makeStretchy)
     {
         super(name, nextBtn);
         
-        this.dataObj     = dataObj;
-        this.fieldsNames = fields;
+        this.dataObj      = dataObj;
+        this.fieldsNames  = fields;
+        this.makeStretchy = makeStretchy;
         
         init(title, labels, fields, required);
     }
@@ -139,12 +151,12 @@ public class GenericFormPanel extends BaseSetupPanel
     {
         CellConstraints cc = new CellConstraints();
         
-        Pair<String, String> rowCol  = getRowColDefs();
+        Pair<String, String> rowCol = getRowColDefs();
         
         builder = new PanelBuilder(new FormLayout(rowCol.first, rowCol.second), this);
         row = 1;
         
-        builder.add(createI18NLabel(title, SwingConstants.CENTER), cc.xywh(1,row,3,1));row += 2;
+        builder.add(createI18NLabel(title, SwingConstants.CENTER), cc.xywh(1, row, 4, 1));row += 2;
 
         if (required != null)
         {

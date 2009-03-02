@@ -28,6 +28,7 @@ import java.util.Vector;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
@@ -88,10 +89,21 @@ public class TreeDefSetupPanel extends BaseSetupPanel implements SetupPanelIFace
         this.classType  = classType;
         this.classTitle = classTitle;
         
-        if (classType == TaxonTreeDef.class)
+        if (classType == TaxonTreeDef.class || classType == GeographyTreeDef.class)
         {
-            DisciplineType  dType  = DisciplineType.getDiscipline(disciplineType);
-            File            file   = getConfigDir(dType.getName()+ File.separator + "taxon_init.xml");
+            DisciplineType dType  = DisciplineType.getDiscipline(disciplineType);
+            
+            String fileName = null;
+            if (classType == TaxonTreeDef.class)
+            {
+                fileName = dType.getName()+ File.separator + "taxon_init.xml";
+                
+            } else if (classType == GeographyTreeDef.class)
+            {
+                fileName = "common" + File.separator + "geography_init.xml";
+            }
+            
+            File file = getConfigDir(fileName);
             if (file.exists())
             {
                 try
@@ -121,9 +133,6 @@ public class TreeDefSetupPanel extends BaseSetupPanel implements SetupPanelIFace
                 {
                     ex.printStackTrace();
                 }
-            } else
-            {
-                
             }
             
             model = new TreeDefTableModel();
@@ -144,15 +153,18 @@ public class TreeDefSetupPanel extends BaseSetupPanel implements SetupPanelIFace
             CellConstraints cc = new CellConstraints();
             PanelBuilder    pb = new PanelBuilder(new FormLayout("p,2px,p,f:p:g", "p,4px,min(p;250px),4px,p,4px,p"), this);
             
+            JScrollPane sp = createScrollPane(table);
+            sp.getViewport().setBackground(Color.WHITE);
+            
             String lbl = getLocalizedMessage(descKey, classTitle);
             pb.add(createLabel(lbl, SwingConstants.CENTER), cc.xyw(1, 1, 4));
-            pb.add(createScrollPane(table), cc.xyw(1, 3, 4));
+            pb.add(sp, cc.xyw(1, 3, 4));
             
             pb.add(createI18NFormLabel("DIRECTION"), cc.xy(1, 5));
             pb.add(directionCBX, cc.xy(3, 5));
             
             pb.add(createI18NFormLabel("EXAMPLE"), cc.xy(1, 7));
-            pb.add(fullnameDisplayTxt, cc.xy(3, 7));
+            pb.add(fullnameDisplayTxt, cc.xyw(3, 7, 2));
             
             makeTableHeadersCentered(table, true);
             

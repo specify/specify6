@@ -73,6 +73,7 @@ import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.SpecifyUserTypes;
+import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
@@ -107,6 +108,7 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
     
     protected DatabasePanel          userPanel;
     protected TreeDefSetupPanel      taxonTDPanel;
+    protected TreeDefSetupPanel      geoTDPanel;
     protected DBLocationPanel        locationPanel;
     
     protected int                    step     = 0;
@@ -219,7 +221,7 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
                 "ENTER_SA_INFO", 
                 new String[] { "SA_USERNAME", "SA_PASSWORD"}, 
                 new String[] { "saUserName", "saPassword"}, 
-                nextBtn));
+                nextBtn, true));
 
         panels.add(new UserInfoPanel("AGENT", 
                 "ENTER_COLMGR_INFO", 
@@ -231,21 +233,20 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
                 "ENTER_INST_INFO",
                 new String[] { "NAME",     "ABBREV"}, 
                 new String[] { "instName", "instAbbrev"}, 
-                nextBtn));
+                nextBtn, true));
         
         panels.add(new GenericFormPanel("ADDR", 
                 "ENTER_ADDR_INFO",
                 new String[] { "ADDR1", "ADDR2", "CITY",  "STATE", "COUNTRY", "ZIP", "PHONE"}, 
                 new String[] { "addr1", "addr2", "city", "state", "country", "zip", "phone"}, 
                 new boolean[] {true, false, true, true, true, true, true},
-                nextBtn));
+                nextBtn, true));
         
         panels.add(new GenericFormPanel("DIV", 
                 "ENTER_DIV_INFO",
                 new String[] { "NAME",    "ABBREV"}, 
                 new String[] { "divName", "divAbbrev"}, 
-                nextBtn));
-        
+                nextBtn, true));
         
         taxonTDPanel = new TreeDefSetupPanel(TaxonTreeDef.class, 
                                              getResourceString("Taxon"), 
@@ -255,11 +256,20 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
                                              userPanel.getDisciplineType().getDisciplineType());
         panels.add(taxonTDPanel);
          
+        geoTDPanel = new TreeDefSetupPanel(GeographyTreeDef.class, 
+                                           getResourceString("Geography"), 
+                                           "Geography", 
+                                           "CONFIG_TREEDEF", 
+                                           nextBtn, 
+                                           userPanel.getDisciplineType().getDisciplineType());
+        panels.add(geoTDPanel);
+
+
         panels.add(new GenericFormPanel("COLLECTION", 
                 "ENTER_COL_INFO",
                 new String[] { "NAME", "PREFIX", }, 
                 new String[] { "collName", "collPrefix", }, 
-                nextBtn));
+                nextBtn, true));
         
         panels.add(new FormatterPickerPanel("CATNOFMT", nextBtn, true));
         panels.add(new FormatterPickerPanel("ACCNOFMT", nextBtn, false));
@@ -331,9 +341,9 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
         builder.setDefaultDialogBorder();
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         
-        JPanel       mainPanel = new JPanel(new BorderLayout());
-        PanelBuilder iconBldr  = new PanelBuilder(new FormLayout("20px, f:p:g,p,f:p:g,8px", "20px,t:p,f:p:g, 8px"));
-        JLabel        iconLbl  = new JLabel(IconManager.getIcon("WizardIcon"));
+        JPanel        mainPanel = new JPanel(new BorderLayout());
+        PanelBuilder  iconBldr  = new PanelBuilder(new FormLayout("20px, f:p:g,p,f:p:g,8px", "20px,t:p,f:p:g, 8px"));
+        JLabel        iconLbl   = new JLabel(IconManager.getIcon("WizardIcon"));
         iconLbl.setVerticalAlignment(SwingConstants.TOP);
         iconBldr.add(iconLbl, cc.xy(2, 3));
         mainPanel.add(iconBldr.getPanel(), BorderLayout.WEST);

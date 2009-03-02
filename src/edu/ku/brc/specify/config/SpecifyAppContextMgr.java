@@ -171,7 +171,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
     protected Agent          currentUserAgent      = null;
 
     protected boolean        forceReloadViews      = false;
-    protected boolean        debug                 = false;
+    protected boolean        debug                 = true;
     protected long           lastLoadTime          = 0;
     protected long           lastLoadTimeBS        = 0;
     protected UnhandledExceptionDialog uheDlg      = null;
@@ -1330,7 +1330,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             
             //---------------------------------------------------------
             // This is the Full Path User / Discipline / Collection / UserType / isPersonal
-            // For example: rods/fish/fish/collectionmanager / true (meaning the usr's personal space)
+            // For example: rods/fish/fish/manager / true (meaning the usr's personal space)
             //---------------------------------------------------------
             String           title     = getResourceString("SpecifyAppContextMgr."+PERSONALDIR);
             SpAppResourceDir appResDir = getAppResDir(session, user, discipline, collection, userType, true, title, true);
@@ -1340,7 +1340,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             
             //---------------------------------------------------------
             // This is the Full Path User / Discipline / Collection / UserType
-            // For example: rods/fish/fish/collectionmanager
+            // For example: rods/fish/fish/manager
             //---------------------------------------------------------
             title     = getResourceString("SpecifyAppContextMgr."+USERTYPEDIR);
             appResDir = getAppResDir(session, user, discipline, collection, userType, false, title, true);

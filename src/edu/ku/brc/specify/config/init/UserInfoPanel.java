@@ -40,10 +40,13 @@ public class UserInfoPanel extends GenericFormPanel
      * @param fields
      * @param nextBtn
      */
-    public UserInfoPanel(String name, String title, String[] labels, String[] fields,
-            JButton nextBtn)
+    public UserInfoPanel(final String   name, 
+                         final String   title, 
+                         final String[] labels, 
+                         final String[] fields, 
+                         final JButton  nextBtn)
     {
-        super(name, title, labels, fields, nextBtn);
+        super(name, title, labels, fields, nextBtn, true);
     }
 
     /* (non-Javadoc)

@@ -175,7 +175,7 @@ public class TableViewObj implements Viewable,
     protected Object                        dataObj         = null;
     protected Set<Object>                   origDataSet     = null;
     protected Vector<Object>                dataObjList     = null;
-    protected Vector<Object>                newObjsList     = new Vector<Object>();;
+    protected Vector<Object>                newObjsList     = new Vector<Object>();
     protected Object[]                      singleItemArray = new Object[1];
     protected DateWrapper                   scrDateFormat;
     protected boolean                       isLoaded        = false;
