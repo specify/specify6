@@ -48,7 +48,7 @@
                 <altview name="Collection Object Edit" viewdef="Collection Object" mode="edit" default="true"/>
             </altviews>
         </view>
-    </views>
+ 
     
     <view name="Locality"
         class="edu.ku.brc.specify.datamodel.Locality"
@@ -61,7 +61,8 @@
             <altview name="Locality Edit" viewdef="Locality" mode="edit" default="true"/>
         </altviews>
     </view>
-    
+        
+    </views>  
     <viewdefs>
         <viewdef
             type="form"
@@ -188,8 +189,8 @@
                     <cell type="field" id="6" name="remarks" uitype="textareabrief" colspan="10" rows="2"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="5"/>
-                    <cell type="subview" viewname="Collectors" id="5" name="collectors" colspan="10"/>
+                 
+                    <cell type="subview" viewname="Collectors" id="5" name="collectors" colspan="12"/>
                 </row>
                 <row>
                     <cell type="separator" label="Attachments" colspan="12"/>
