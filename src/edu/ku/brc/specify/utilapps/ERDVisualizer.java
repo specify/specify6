@@ -746,8 +746,8 @@ public class ERDVisualizer extends JFrame
                 JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(out);
                 JPEGEncodeParam  param   = encoder.getDefaultJPEGEncodeParam(bufferedImage);
                 param.setQuality(0.75f, false);
-                encoder.setJPEGEncodeParam(param);
-                encoder.encode(bufferedImage);
+                //encoder.setJPEGEncodeParam(param);
+                encoder.encode(bufferedImage, param);
             }
             System.out.println(System.currentTimeMillis() - start);
 
