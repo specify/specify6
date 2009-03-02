@@ -37,7 +37,7 @@ public class WorkbenchRowImage implements java.io.Serializable, Comparable<Workb
     protected Integer      imageOrder;
     protected byte[]       cardImageData;
     protected String       cardImageFullPath;
-    //protected String       attachToTableName; //which table to attach the image when uploaded
+    protected String       attachToTableName; //which table to attach the image when uploaded
     protected WorkbenchRow workbenchRow;
     protected SoftReference<ImageIcon> fullSizeImageSR = null;
     protected ImageIcon thumbnail = null;
@@ -56,7 +56,7 @@ public class WorkbenchRowImage implements java.io.Serializable, Comparable<Workb
         imageOrder          = null;
         cardImageData       = null;
         cardImageFullPath   = null;
-        //attachToTableName   = null;
+        attachToTableName   = null;
         workbenchRow        = null;
     }
 
@@ -107,22 +107,22 @@ public class WorkbenchRowImage implements java.io.Serializable, Comparable<Workb
     }
 
     
-//    /**
-//	 * @return the attachToTableName
-//	 */
-//    @Column(name="AttachToTableName", length=64)
-//	public String getAttachToTableName()
-//	{
-//		return attachToTableName;
-//	}
-//
-//	/**
-//	 * @param attachToTableName the attachToTableName to set
-//	 */
-//	public void setAttachToTableName(String attachToTableName)
-//	{
-//		this.attachToTableName = attachToTableName;
-//	}
+    /**
+	 * @return the attachToTableName
+	 */
+    @Column(name="AttachToTableName", length=64)
+	public String getAttachToTableName()
+	{
+		return attachToTableName;
+	}
+
+	/**
+	 * @param attachToTableName the attachToTableName to set
+	 */
+	public void setAttachToTableName(String attachToTableName)
+	{
+		this.attachToTableName = attachToTableName;
+	}
 
 	@Column(name = "ImageOrder")
     public Integer getImageOrder()
