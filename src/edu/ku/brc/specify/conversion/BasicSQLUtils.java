@@ -594,9 +594,10 @@ public class BasicSQLUtils
 
         } catch (SQLException ex)
         {
-            ex.printStackTrace();
+            
             if (!skipTrackExceptions)
             {
+                ex.printStackTrace();
                 edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BasicSQLUtils.class, ex);
             }

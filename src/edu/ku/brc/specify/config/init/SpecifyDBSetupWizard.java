@@ -12,6 +12,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -63,6 +64,8 @@ import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.af.ui.weblink.WebLinkMgr;
 import edu.ku.brc.dbsupport.CustomQueryFactory;
+import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.dbsupport.DBMSUserMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.HibernateUtil;
@@ -70,9 +73,11 @@ import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.SpecifyUserTypes;
+import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.IconManager.IconSize;
@@ -101,7 +106,7 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
     protected JButton                cancelBtn;
     
     protected DatabasePanel          userPanel;
-    protected TaxonTreeDefPanel      taxonTDPanel;
+    protected TreeDefSetupPanel      taxonTDPanel;
     protected DBLocationPanel        locationPanel;
     
     protected int                    step     = 0;
@@ -204,13 +209,10 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
 
         props.put("userType", SpecifyUserTypes.UserType.Manager.toString());
         
-        //panels.add(new FormatterPickerPanel(nextBtn, true));
-        //panels.add(new FormatterPickerPanel(nextBtn, false));
-
         
         userPanel = new DatabasePanel(nextBtn, true);
         panels.add(userPanel);
-               
+          
         UIFieldFormatterMgr.setDoingLocal(true);
         
         panels.add(new GenericFormPanel("SA", 
@@ -244,7 +246,13 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
                 new String[] { "divName", "divAbbrev"}, 
                 nextBtn));
         
-        taxonTDPanel = new TaxonTreeDefPanel(nextBtn, userPanel);
+        
+        taxonTDPanel = new TreeDefSetupPanel(TaxonTreeDef.class, 
+                                             getResourceString("Taxon"), 
+                                             "Taxon", 
+                                             "CONFIG_TREEDEF", 
+                                             nextBtn, 
+                                             userPanel.getDisciplineType().getDisciplineType());
         panels.add(taxonTDPanel);
          
         panels.add(new GenericFormPanel("COLLECTION", 
@@ -290,7 +298,8 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
                 } else
                 {
                     setVisible(false);
-                    configureDatabase();
+                    configSetup();
+                    createDBAndMaster();
                     dispose();
                 }
             }
@@ -403,11 +412,11 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
         }
         return false;
     }
-
+    
     /**
      * 
      */
-    public void configureDatabase()
+    protected void configSetup()
     {
         try
         {
@@ -445,7 +454,102 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
         UIRegistry.setDefaultWorkingPath(baseAppDir);
         
         log.debug("********** Working path for App ["+baseAppDir+"]");
+    }
+
+    /**
+     * 
+     */
+    public void createDBAndMaster()
+    {
+        final ProgressFrame frame = new ProgressFrame("Creating master user ...", "SpecifyLargeIcon");
+        frame.getCloseBtn().setVisible(false);
+        frame.pack();
+        Dimension size = frame.getSize();
+        size.width = Math.max(size.width, 500);
+        frame.setSize(size);
+        UIHelper.centerAndShow(frame);
         
+        final SwingWorker worker = new SwingWorker()
+        {
+            protected boolean isOK = false;
+            
+            public Object construct()
+            {
+                System.setProperty(DBMSUserMgr.factoryName, "edu.ku.brc.dbsupport.MySQLDMBSUserMgr");
+                DBMSUserMgr mgr = DBMSUserMgr.getInstance();
+                
+                DatabaseDriverInfo driverInfo = userPanel.getDriver();
+                String             dbName     = props.getProperty("dbName");
+                String             hostName   = props.getProperty("hostName");
+                
+                String connStr    = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Opensys, hostName, dbName);
+        
+                String saUsername = props.getProperty("saUserName");
+                String saPassword = props.getProperty("saPassword");
+                
+                String itUsername = props.getProperty("dbUserName");
+                String itPassword = props.getProperty("dbPassword");
+                
+                DBConnection dbConn = DBConnection.getInstance();
+        
+                dbConn.setDriver(driverInfo.getDriverClassName());
+                dbConn.setDialect(driverInfo.getDialectClassName());
+                dbConn.setConnectionStr(connStr);
+                dbConn.setUsernamePassword(itUsername, itPassword);
+                dbConn.setSkipDBNameCheck(true);
+                
+                mgr.setHostName(hostName);
+                
+                if (mgr.connect(itUsername, itPassword))
+                {
+                    if (!mgr.doesUserExists(saUsername))
+                    {
+                        isOK = mgr.createUser(saUsername, saPassword, dbName, DBMSUserMgr.PERM_ALL);
+                    } else
+                    {
+                        isOK = true;
+                    }
+                } else
+                {
+                    // No Connect Error
+                    isOK = false;
+                }
+                mgr.close();
+                dbConn.setSkipDBNameCheck(false);
+                dbConn.close();
+                
+                return null;
+            }
+
+            //Runs on the event-dispatching thread.
+            public void finished()
+            {
+                if (isOK)
+                {
+                    configureDatabase();
+                }
+                frame.setVisible(false);
+                frame.dispose();
+            }
+        };
+        SwingUtilities.invokeLater(new Runnable() {
+
+            /* (non-Javadoc)
+             * @see java.lang.Runnable#run()
+             */
+            @Override
+            public void run()
+            {
+                worker.start();
+            }
+        });
+    }
+
+    /**
+     * 
+     */
+    public void configureDatabase()
+    {
        //System.err.println(UIRegistry.getDefaultWorkingPath() + File.separator + "DerbyDatabases");
         try
         {
@@ -457,10 +561,6 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
                 {
                     try
                     {
-                        // Temp
-                        saveFormatters((UIFieldFormatterIFace)props.get("catnumfmt"), "catnumfmt.xml");
-                        saveFormatters((UIFieldFormatterIFace)props.get("accnumfmt"), "accnumfmt.xml");
-                        
                         DatabaseDriverInfo driverInfo = userPanel.getDriver();
                         props.put("driver", driverInfo);
                         
@@ -497,8 +597,20 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
                             
                             if (isOK)
                             {
-                                saveFormatters((UIFieldFormatterIFace)props.get("catnumfmt"), "catnumfmt.xml");
-                                saveFormatters((UIFieldFormatterIFace)props.get("accnumfmt"), "accnumfmt.xml");
+                                Object catNumFmtObj = props.get("catnumfmt");
+                                Object accNumFmtObj = props.get("accnumfmt");
+                                
+                                UIFieldFormatterIFace catNumFmt = catNumFmtObj instanceof UIFieldFormatterIFace ? (UIFieldFormatterIFace)catNumFmtObj : null;
+                                UIFieldFormatterIFace accNumFmt = accNumFmtObj instanceof UIFieldFormatterIFace ? (UIFieldFormatterIFace)accNumFmtObj : null;
+                                
+                                if (catNumFmt != null)
+                                {
+                                    saveFormatters(catNumFmt, "catnumfmt.xml");
+                                }
+                                if (accNumFmt != null)
+                                {
+                                    saveFormatters(accNumFmt, "accnumfmt.xml");
+                                }
                             }
 
                             JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
@@ -531,9 +643,9 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
             
             } catch (Exception ex)
             {
+                ex.printStackTrace();
                 edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyDBSetupWizard.class, ex);
-                ex.printStackTrace();
             }
     }
     

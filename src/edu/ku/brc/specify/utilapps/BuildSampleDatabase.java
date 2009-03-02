@@ -495,15 +495,55 @@ public class BuildSampleDatabase
         frame.setProcess(++createStep);
         frame.setDesc("Loading Schema...");
         
-        UIFieldFormatterIFace catNumFmt = (UIFieldFormatterIFace)props.get("catnumfmt");
-        UIFieldFormatterIFace accNumFmt = (UIFieldFormatterIFace)props.get("accnumfmt");
+        Object catNumFmtObj = props.get("catnumfmt");
+        Object accNumFmtObj = props.get("accnumfmt");
+        
+        
+        UIFieldFormatterIFace catNumFmt = catNumFmtObj instanceof UIFieldFormatterIFace ? (UIFieldFormatterIFace)catNumFmtObj : null;
+        UIFieldFormatterIFace accNumFmt = accNumFmtObj instanceof UIFieldFormatterIFace ? (UIFieldFormatterIFace)accNumFmtObj : null;
+        String catNumFmtName = catNumFmt != null ? catNumFmt.getName() : catNumFmtObj.toString();
+        
+        String accNumFmtName = "";
+        if (accNumFmtObj != null)
+        {
+            accNumFmtName = accNumFmt != null ? accNumFmt.getName() : accNumFmtObj.toString();
+        }
+        
+        boolean isCatNumFmtNumeric = false;
+        boolean isAccNumFmtNumeric = false;
+        
+        if (catNumFmt != null)
+        {
+            isCatNumFmtNumeric = catNumFmt.isNumeric();
+            
+        } else if (StringUtils.isNotEmpty(catNumFmtName))
+        {
+            catNumFmt = UIFieldFormatterMgr.getInstance().getFormatter(catNumFmtName);
+            if (catNumFmt != null)
+            {
+                isCatNumFmtNumeric = catNumFmt.isNumeric(); 
+            }
+        }
+
+        if (accNumFmt != null)
+        {
+            isAccNumFmtNumeric = accNumFmt.isNumeric();
+            
+        } else if (StringUtils.isNotEmpty(accNumFmtName))
+        {
+            accNumFmt = UIFieldFormatterMgr.getInstance().getFormatter(accNumFmtName);
+            if (accNumFmt != null)
+            {
+                isAccNumFmtNumeric = accNumFmt.isNumeric(); 
+            }
+        }
         
         startTx();
         loadSchemaLocalization(discipline, 
                                 SpLocaleContainer.CORE_SCHEMA, 
                                 DBTableIdMgr.getInstance(),
-                                catNumFmt.getName(),
-                                accNumFmt != null ? accNumFmt.getName() : "");
+                                catNumFmtName,
+                                accNumFmtName);
         persist(discipline);
         commitTx();
         
@@ -539,14 +579,14 @@ public class BuildSampleDatabase
         
        
         AutoNumberingScheme catANS = createAutoNumberingScheme("Catalog Numbering Scheme", "", 
-                                         catNumFmt.getName(), catNumFmt.isNumeric(), CollectionObject.getClassTableId());
+                                         catNumFmtName, isCatNumFmtNumeric, CollectionObject.getClassTableId());
         persist(catANS);
         
         AutoNumberingScheme accANS = null;
         if (accNumFmt != null)
         {
             accANS = createAutoNumberingScheme("Accession Numbering Scheme", "",  
-                                                 accNumFmt.getName(), accNumFmt.isNumeric(),Accession.getClassTableId());
+                                                 accNumFmtName, isAccNumFmtNumeric,Accession.getClassTableId());
             persist(accANS);
         }
         
@@ -7398,14 +7438,17 @@ public class BuildSampleDatabase
         {
             if (hideFrame) System.out.println("Creating schema");
             
+            String itUsername = props.getProperty("dbUserName");
+            String itPassword = props.getProperty("dbPassword");
+            
             boolean doBuild = true;
             if (doBuild)
             {
                 SpecifySchemaGenerator.generateSchema(driverInfo, 
                                                       props.getProperty("hostName"),
                                                       dbName, 
-                                                      props.getProperty("dbUserName"), 
-                                                      props.getProperty("dbPassword"));
+                                                      itUsername, 
+                                                      itPassword);
             }
             
             SwingUtilities.invokeLater(new Runnable()
@@ -7427,22 +7470,19 @@ public class BuildSampleDatabase
                 connStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, props.getProperty("hostName"),  dbName);
             }
             
-            String embeddedSpecifyAppRootUser = props.getProperty("dbUserName");
-            String embeddedSpecifyAppRootPwd  = props.getProperty("dbPassword");
-            
             if (!UIHelper.tryLogin(driverInfo.getDriverClassName(), 
                                     driverInfo.getDialectClassName(), 
                                     dbName, 
                                     connStr, 
-                                    embeddedSpecifyAppRootUser, 
-                                    embeddedSpecifyAppRootPwd))
+                                    itUsername, 
+                                    itPassword))
             {
                 if (hideFrame) System.out.println("Login Failed!");
                 return false;
             }
             
-            String saUserName = props.getProperty("saUserName");
-            String saPassword = props.getProperty("saPassword");
+            String saUserName = props.getProperty("saUserName"); // Master Username
+            String saPassword = props.getProperty("saPassword"); // Master Password
             
             createSpecifySAUser(driverInfo, saUserName, saPassword, dbName);
 
@@ -7488,7 +7528,6 @@ public class BuildSampleDatabase
             if (hideFrame) System.out.println("Creating Empty Database");
             
             createEmptyDiscipline(props, null);
-            
 
             SwingUtilities.invokeLater(new Runnable()
             {

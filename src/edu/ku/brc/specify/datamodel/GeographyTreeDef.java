@@ -274,6 +274,18 @@ public class GeographyTreeDef extends BaseTreeDef<Geography, GeographyTreeDef, G
         return 1; 
     }
     
+    /**
+     * @param levelRank
+     * @return
+     */
+    public static boolean isStdRequiredLevel(int levelRank)
+    {
+        return levelRank == 100 // Continent
+            || levelRank == 200 // Country
+            || levelRank == 300 // State
+            || levelRank == 400;// County
+    }
+    
 //	/**
 //	 * Returns the <code>TreeDefinitionItemIface</code> object associated with the called
 //	 * <code>TreeDefinitionIface</code> object and having the given name.

@@ -29,8 +29,8 @@ public class MySQLDBMSMgrTest extends TestCase
 {
     protected MySQLDMBSUserMgr mgr        = null;
     protected DBConnection     dbConn     = null;
-    protected String           itUsername = "root";
-    protected String           itPassword = "Nessie1601";
+    protected String           itUsername = "Specify";
+    protected String           itPassword = "Specify";
     protected String           dbName     = "mytestdb";
     protected String           hostName   = "localhost";
 
@@ -77,7 +77,7 @@ public class MySQLDBMSMgrTest extends TestCase
     {
         if (mgr.connect(itUsername, itPassword))
         {
-            if (mgr.dbExists(dbName))
+            if (mgr.doesDBExists(dbName))
             {
                 assertTrue(mgr.dropDatabase(dbName));
             }
@@ -85,7 +85,7 @@ public class MySQLDBMSMgrTest extends TestCase
             
             System.out.println("Created database"+dbName);
             
-            assertTrue(mgr.dbExists(dbName));
+            assertTrue(mgr.doesDBExists(dbName));
             
             System.out.println("Database "+dbName+" exists");
             
@@ -103,7 +103,7 @@ public class MySQLDBMSMgrTest extends TestCase
         
         if (mgr.connect(itUsername, itPassword))
         {
-            if (mgr.dbExists(dbName))
+            if (mgr.doesDBExists(dbName))
             {
                 assertTrue(mgr.dropDatabase(dbName));
             }

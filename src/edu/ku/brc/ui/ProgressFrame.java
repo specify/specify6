@@ -270,6 +270,9 @@ public class ProgressFrame extends JFrame
         this.isProcessPercent = isProcessPercent;
     }
     
+    /**
+     * @return
+     */
     public JProgressBar getProcessProgress()
     {
         return processProgress;

@@ -36,7 +36,7 @@ public abstract class DBMSUserMgr
     public static final int PERM_INSERT = 8;
     public static final int PERM_ALL    = 15;
     
-    private static DataProviderIFace instance = null;
+    private static DBMSUserMgr instance = null;
    
     protected String hostName = null;
     protected String errMsg   = null;
@@ -60,7 +60,14 @@ public abstract class DBMSUserMgr
      * @param dbName the database name
      * @return true if exists
      */
-    public abstract boolean dbExists(String dbName);
+    public abstract boolean doesDBExists(String dbName);
+    
+    /**
+     * Checks to see if a User exists
+     * @param dbName the User name
+     * @return true if exists
+     */
+    public abstract boolean doesUserExists(String userName);
     
 	/**
 	 * Changes the password for a user
@@ -140,7 +147,7 @@ public abstract class DBMSUserMgr
      * Returns the instance of the DataProviderIFace.
      * @return the instance of the DataProviderIFace.
      */
-    public static DataProviderIFace getInstance()
+    public static DBMSUserMgr getInstance()
     {
         if (instance != null)
         {
@@ -157,20 +164,20 @@ public abstract class DBMSUserMgr
         {
             try 
             {
-                instance = Class.forName(factoryNameStr).asSubclass(DataProviderIFace.class).newInstance();
+                instance = Class.forName(factoryNameStr).asSubclass(DBMSUserMgr.class).newInstance();
                 return instance;
                  
             } catch (Exception e) 
             {
                 edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataProviderFactory.class, e);
-                InternalError error = new InternalError("Can't instantiate DataProviderFactory factory " + factoryNameStr); //$NON-NLS-1$
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DBMSUserMgr.class, e);
+                InternalError error = new InternalError("Can't instantiate DBMSUserMgr factory " + factoryNameStr); //$NON-NLS-1$
                 error.initCause(e);
                 throw error;
             }
         }
         
-        throw new InternalError("Can't instantiate DataProviderFactory factory becase " + factoryName + " has not been set."); //$NON-NLS-1$ //$NON-NLS-2$
+        throw new InternalError("Can't instantiate DBMSUserMgr factory becase " + factoryName + " has not been set."); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
 }

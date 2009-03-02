@@ -104,7 +104,7 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
      * @see edu.ku.brc.dbsupport.DBMSUserMgr#exists(java.lang.String)
      */
     @Override
-    public boolean dbExists(String dbName)
+    public boolean doesDBExists(String dbName)
     {
         try
         {
@@ -123,6 +123,16 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
     }
 
     /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.DBMSUserMgr#doesUserExists(java.lang.String)
+     */
+    @Override
+    public boolean doesUserExists(String userName)
+    {
+        return BasicSQLUtils.getCount(String.format("SELECT count(*) FROM mysql.user WHERE User = '%s' AND Host = '%s'", userName, hostName)) == 1;
+    }
+
+    
+    /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.DBMSUserMgrIFace#changePassword(java.lang.String, java.lang.String, java.lang.String)
      */
     @Override
@@ -138,7 +148,8 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
                 Vector<Object[]> list = BasicSQLUtils.query(connection, sql);
                 if (list != null && list.size() == 1)
                 {
-                    if (BasicSQLUtils.update(connection, "set password = password('"+newPwd+"')") == 1)
+                    sql = String.format("UPDATE mysql.user SET Password=PASSWORD('%s') WHERE User='%s' AND Host='%s'", newPwd, username, hostName);
+                    if (BasicSQLUtils.update(connection, sql) == 1)
                     {
                         return true;
                     }

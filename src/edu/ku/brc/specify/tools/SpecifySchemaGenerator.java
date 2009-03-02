@@ -49,10 +49,10 @@ public class SpecifySchemaGenerator
      * @throws SQLException
      */
     public static void generateSchema(final DatabaseDriverInfo dbdriverInfo, 
-                                      final String hostname,
-                                      final String databaseName,
-                                      final String userName,
-                                      final String password) throws SQLException
+                                      final String             hostname,
+                                      final String             databaseName,
+                                      final String             userName,
+                                      final String             password) throws SQLException
     {
         log.debug("generateSchema hostname:" + hostname);
         log.debug("generateSchema databaseName:" + databaseName);
