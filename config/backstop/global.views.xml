@@ -494,15 +494,14 @@
             <desc><![CDATA[The AgentVariant form.]]></desc>
             <enableRules/>
             
-            <columnDef>100px,3dlu,p,p:g</columnDef>
+            <columnDef>100px,2px,100px,15px,p,2px,348px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
   		        <row>
                     <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="varType" uitype="combobox" picklist="AgentVariant" isrequired="true"/>
-                </row>
-                <row>
+                
                     <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="name" uitype="text"/>
                 </row>
@@ -528,14 +527,17 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
 
             <desc><![CDATA[Agent subform for Acessions.]]></desc>
-            <columnDef>p,3dlu,p,3dlu,p,p:g</columnDef>
+            <columnDef>100px,2px,130px,10px,p,2px,92px,10px,p,2px,93px,2px,35px,15px,p:g</columnDef>
+           <!-- <columnDef>100px,2px,p,2px,p,2px,198px,15px,p:g</columnDef> -->
             <!--  <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,10px,p:g,5dlu,p:g</rowDef> -->
-            <rowDef auto="true" cell="p" sep="2dlu"/>
+            <rowDef auto="true" cell="p" sep="2px"/>
 
             <rows>
                 <row>
                     <cell type="label" labelfor="0"/>
                     <cell type="field" id="0" name="agentType" uitype="combobox" ignore="true"/>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="title" uitype="combobox" picklist="AgentTitles"/>
                 </row>
                 <!-- "GUID:" <row>
                 	<cell type="label" labelfor="11" />
@@ -546,20 +548,12 @@
                 	<cell type="field" id="14" name="jobTitle" uitype="text" cols="20" />
                 </row>-->
                 <row>
-                    <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="title" uitype="combobox" picklist="AgentTitles"/>
-                </row>
-                <row>
                     <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="lastName" uitype="text" cols="20"  isrequired="true"/>
-                </row>
-                <row>
                     <cell type="label" labelfor="4"/>
                     <cell type="field" id="4" name="middleInitial" uitype="text" cols="3"/>
-                </row>
-                <row>
                     <cell type="label" labelfor="5"/>
-                    <cell type="field" id="5" name="firstName" uitype="text" cols="20" isrequired="true"/>
+                    <cell type="field" id="5" name="firstName" uitype="text" cols="20" colspan="3" isrequired="true"/>
                 </row>
                 <!-- "Initials:" <row>
                 	<cell type="label" labelfor="12" />
@@ -568,10 +562,8 @@
                 <row>
                     <cell type="label" labelfor="8"/>
                     <cell type="field" id="8" name="abbreviation" uitype="text" cols="20"/>
-                </row>
-                <row>
                     <cell type="label" labelfor="7"/>
-                    <cell type="field" id="7" name="email" uitype="text" cols="32"/>
+                    <cell type="field" id="7" name="email" uitype="text" colspan="5" cols="32"/>
                     <cell type="field" id="mailto" name="this" uitype="plugin" initialize="name=WebLinkButton;weblink=MailTo;icon=EMail;watch=7"/>
                 </row>
                 <!-- "URL:" <row>
@@ -600,27 +592,27 @@
                 </row>-->
                 <!-- "Interests:" <row>
                 	<cell type="label" labelfor="13" />
-                	<cell type="field" id="13" name="interests" uitype="textarea" cols="20" />
+                	<cell type="field" id="13" name="interests" uitype="textareabrief" rows="2" cols="20" />
                 </row>-->
                 <!-- "Remarks:" <row>
                 	<cell type="label" labelfor="16" />
-                	<cell type="field" id="16" name="remarks" uitype="textarea" cols="20" />
+                	<cell type="field" id="16" name="remarks" uitype="textareabrief" rows="2" cols="20" />
                 </row>-->
 
 			    <row>
-                    <cell type="subview" viewname="Address" id="9" name="addresses" colspan="6"/>
+                    <cell type="subview" viewname="Address" id="9" name="addresses" colspan="14"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="GroupPersons" id="31" name="groups" defaulttype="table" colspan="6"/>
+                    <cell type="subview" viewname="GroupPersons" id="31" name="groups" defaulttype="table" colspan="14"/>
                 </row>
 			    <row>
-                    <cell type="subview" viewname="AgentVariant" id="10" name="variants" colspan="6"/>
+                    <cell type="subview" viewname="AgentVariant" id="10" name="variants" colspan="14"/>
 			    </row>
                 <row>
-                    <cell type="separator" label="Attachments" colspan="6"/>
+                    <cell type="separator" label="Attachments" colspan="14"/>
                 </row>
                 <row>
-                    <cell type="subview" id="agentAttachments" viewname="ObjectAttachment" name="agentAttachments" colspan="6" initialize="btn=true;icon=AgentAttachment"/>
+                    <cell type="subview" id="agentAttachments" viewname="ObjectAttachment" name="agentAttachments" colspan="14" initialize="btn=true;icon=AgentAttachment"/>
                 </row>
                 
                 <!-- Unadded relationships from specify_datamodel.xml
@@ -692,7 +684,7 @@
                 </row>              
                 <row>
                     <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="remarks" uitype="textarea" colspan="2"/>
+                    <cell type="field" id="3" name="remarks" uitype="textareabrief" rows="2" colspan="2"/>
                 </row>
             </rows>
         </viewdef>
@@ -716,7 +708,7 @@
                 </row>              
                 <row>
                     <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="remarks" uitype="textarea" colspan="2"/>
+                    <cell type="field" id="3" name="remarks" uitype="textareabrief" rows="2" colspan="2"/>
                 </row>
             </rows>
         </viewdef>
@@ -740,7 +732,7 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Address subform for Acessions.]]></desc>
-            <columnDef>p,3dlu,p,3dlu,p,3dlu,p</columnDef>
+            <columnDef>100px,2px,192px,25px,p,2px,191px,p,p</columnDef>
             <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
             
             <rows>
@@ -837,7 +829,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="remarks" uitype="textarea" colspan="5" cols="40"/>
+                    <cell type="field" id="2" name="remarks" uitype="textareabrief" rows="2" colspan="5" cols="40"/>
                 </row>
             </rows>
         </viewdef>-->
@@ -897,7 +889,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="remarks" uitype="textarea" colspan="10"/>
+                    <cell type="field" id="2" name="remarks" uitype="textareabrief" rows="2" colspan="10"/>
                 </row>
             </rows>
         </viewdef>
@@ -909,17 +901,17 @@
             gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The Journal form]]></desc>
-            <columnDef>140px,2px,p:g,5px,p,2px,p:g</columnDef>
+            <columnDef>100px,2px,294px,10px,p,2px,89px,15px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             <rows>
                 <row>
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="journalName" uitype="text"/>
                     <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="journalAbbreviation" uitype="text" cols="3"/>
+                    <cell type="field" id="2" name="journalAbbreviation" uitype="text"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="ReferenceWorkSub" id="3" name="referenceWorks" colspan="7" initialize="addsearch=true"/>
+                    <cell type="subview" viewname="ReferenceWorkSub" id="3" name="referenceWorks" colspan="8" initialize="addsearch=true"/>
                 </row>
             </rows>
         </viewdef> 
@@ -1002,41 +994,35 @@
             gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The ReferenceWork form]]></desc>
-            <columnDef>140px,2px,p,5px,p,2px,p,5px,p,2px,p,p:g</columnDef>
+            <columnDef>100px,2px,105px,5px,75px,2px,100px,10px,p,2px,100px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             <rows>
                 <row>
                     <cell type="label" labelfor="8"/>
-                    <cell type="field" id="8" name="referenceWorkType" uitype="combobox" picklist="ReferenceWorkType" colspan="10"/>
+                    <cell type="field" id="8" name="referenceWorkType" uitype="combobox" picklist="ReferenceWorkType"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="title" uitype="text" cols="50" colspan="10"/>
+                    <cell type="field" id="1" name="title" uitype="text" cols="50" colspan="9"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="publisher" uitype="text" cols="50" colspan="10"/>
-                </row>
-                <row>
+                    <cell type="field" id="2" name="publisher" uitype="text" cols="50" colspan="5"/>
                     <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="placeOfPublication" uitype="text" cols="50" colspan="10"/>
+                    <cell type="field" id="3" name="placeOfPublication" uitype="text" cols="50"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="4"/>
                     <cell type="field" id="4" name="workDate" uitype="text" cols="10"/>
-                </row>
-                <row>
                     <cell type="label" labelfor="5"/>
                     <cell type="field" id="5" name="volume" uitype="text" cols="10"/>
-                </row>
-                <row>
                     <cell type="label" labelfor="6"/>
                     <cell type="field" id="6" name="pages" uitype="text"/>
                 </row>
-                <row>
+          <!--      <row>
                     <cell type="label" labelfor="7"/>
                     <cell type="field" id="7" name="libraryNumber" uitype="text"/>
-                </row>
+                </row> -->
             </rows>
         </viewdef> 
         
@@ -1056,7 +1042,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="remarks" uitype="textarea" cols="40"/>
+                    <cell type="field" id="2" name="remarks" uitype="textareabrief" rows="2" cols="40"/>
                 </row>
             </rows>
         </viewdef>
@@ -1081,7 +1067,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="4"/>
-                    <cell type="field" id="4" name="remarks" uitype="textarea" cols="40"/>
+                    <cell type="field" id="4" name="remarks" uitype="textareabrief" rows="2" cols="40"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="3"/>
@@ -1148,7 +1134,7 @@
             gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The ReferenceWork form]]></desc>
-            <columnDef>140px,2px,p,5px,p,2px,p,5px,p,2px,p,p:g</columnDef>
+            <columnDef>100px,2px,495px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             <rows>
                 <row>
@@ -1157,7 +1143,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="remarks"/>
-                    <cell type="field" id="remarks" name="remarks" uitype="textarea" colspan="10"/>
+                    <cell type="field" id="remarks" name="remarks" uitype="textareabrief" rows="2" />
                 </row>
             </rows>
         </viewdef>
@@ -1177,7 +1163,7 @@
                 <rule id="hybridParent2"><![CDATA[isHybrid.isSelected()]]></rule>
                 <rule id="definitionItem"><![CDATA[parent.getValue() != null]]></rule>
             </enableRules>
-            <columnDef>150px,3dlu,p:g,3dlu,p</columnDef>
+            <columnDef>100px,2px,497px,p,15px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
@@ -1192,43 +1178,43 @@
                 <!-- 
                 <row>
                     <cell type="label" labelfor="remarks"/>
-                    <cell type="field" id="remarks" uitype="textarea" name="remarks" colspan="3"/>
+                    <cell type="field" id="remarks" uitype="textareabrief" rows="2" name="remarks"/>
                 </row>
                 -->
                 <row>
                     <cell type="label" labelfor="parent" label="PARENT"/>
-                	<cell type="field" id="parent" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=false;editoncreate=true" name="parent" colspan="3"/>
+                	<cell type="field" id="parent" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=false;editoncreate=true" name="parent" />
                 </row>
                 <row>
                     <cell type="label" labelfor="definitionItem"/>
-                	<cell type="field" id="definitionItem" isrequired="true" uitype="combobox" name="definitionItem" colspan="3"/>
+                	<cell type="field" id="definitionItem" isrequired="true" uitype="combobox" name="definitionItem"/>
                 </row>
                 <!--
                 <row>
                     <cell type="label" labelfor="taxonomicSerialNumber"/>
-                    <cell type="field" id="taxonomicSerialNumber" uitype="text" name="taxonomicSerialNumber" colspan="3"/>
+                    <cell type="field" id="taxonomicSerialNumber" uitype="text" name="taxonomicSerialNumber"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="guid"/>
-                    <cell type="field" id="guid" uitype="text" name="guid" colspan="3"/>
+                    <cell type="field" id="guid" uitype="text" name="guid"/>
                 </row>
                 -->
                 <row>
                     <cell type="label" labelfor="commonName"/>
-                    <cell type="field" id="commonName" uitype="text" name="commonName" colspan="3"/>
+                    <cell type="field" id="commonName" uitype="text" name="commonName"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="source"/>
-                    <cell type="field" id="source" uitype="text" name="source" colspan="3"/>
+                    <cell type="field" id="source" uitype="text" name="source"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="author"/>
-                    <cell type="field" id="author" uitype="text" name="author" colspan="3"/>
+                    <cell type="field" id="author" uitype="text" name="author"/>
                 </row>      
                 <!-- 
                 <row>
                     <cell type="label" labelfor="author"/>
-                    <cell type="field" id="author" uitype="text" name="author" colspan="3"/>
+                    <cell type="field" id="author" uitype="text" name="author"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="source"/>
@@ -1236,28 +1222,28 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="environmentalProtectionStatus"/>
-                    <cell type="field" id="environmentalProtectionStatus" uitype="text" name="environmentalProtectionStatus" colspan="3"/>
+                    <cell type="field" id="environmentalProtectionStatus" uitype="text" name="environmentalProtectionStatus"/>
                 </row>
                  -->
                 <row>
                 	<cell type="label" label=" "/>
-                	<cell type="field" id="isAccepted" uitype="checkbox" name="isAccepted" default="true" isrequired="true" colspan="3"/>
+                	<cell type="field" id="isAccepted" uitype="checkbox" name="isAccepted" default="true" isrequired="true"/>
                 </row>
                 <row>
                 	<cell type="label" labelfor="acceptedParent" label="ACCEPTEDPARENT"/>
-                	<cell type="field" id="acceptedParent" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=false" name="acceptedParent" colspan="3"/>
+                	<cell type="field" id="acceptedParent" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=false" name="acceptedParent"/>
                 </row>
                 <row>
                 	<cell type="label" label=" "/>
-                	<cell type="field" id="isHybrid" uitype="checkbox" name="isHybrid" default="false" isrequired="true" colspan="3"/>
+                	<cell type="field" id="isHybrid" uitype="checkbox" name="isHybrid" default="false" isrequired="true"/>
                 </row>
                 <row>
                 	<cell type="label" labelfor="hybridParent1" label="HYBRIDPARENT1"/>
-                	<cell type="field" id="hybridParent1" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=false" name="hybridParent1" colspan="3"/>
+                	<cell type="field" id="hybridParent1" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=false" name="hybridParent1"/>
                 </row>
                 <row>
                 	<cell type="label" labelfor="hybridParent2" label="HYBRIDPARENT2"/>
-                	<cell type="field" id="hybridParent2" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=false" name="hybridParent2" colspan="3"/>
+                	<cell type="field" id="hybridParent2" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=false" name="hybridParent2"/>
                 </row>
                 <row>
                     <cell type="subview" viewname="TaxonSubform" id="children" name="children" colspan="5"/>
@@ -1297,23 +1283,23 @@
                 <rule id="acceptedParent"><![CDATA[!isAccepted.isSelected()]]></rule>
                 <rule id="definitionItem"><![CDATA[parent.getValue() != null]]></rule>
             </enableRules>
-            <columnDef>159px,3dlu,p:g</columnDef>
+            <columnDef>100px,2px,497px,p,15px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
 
             <rows>
                 <row>
                     <cell type="label" labelfor="name"/>
-                    <cell type="field" id="name" uitype="text" cols="16" name="name" isrequired="true"/> 
-                </row>
-                <row>
-                    <cell type="label" labelfor="remarks"/>
-                    <cell type="field" id="remarks" uitype="textarea" name="remarks"/>
+                    <cell type="field" id="name" uitype="text" cols="6" name="name" isrequired="true"/> 
                 </row>
                 <row>
                     <cell type="label" labelfor="parent" label="PARENT"/>
                 	<cell type="field" id="parent" isrequired="true" uitype="querycbx" initialize="name=Geography;title=Geography;editbtn=false;newbtn=false;editoncreate=true" name="parent"/>
                 </row>
-                <row>
+                                <row>
+                    <cell type="label" labelfor="remarks"/>
+                    <cell type="field" id="remarks" uitype="textareabrief" rows="2" name="remarks"/>
+                </row>
+<row>
                     <cell type="label" labelfor="definitionItem"/>
                 	<cell type="field" id="definitionItem" isrequired="true" uitype="combobox" name="definitionItem"/>
                 </row>
@@ -1326,7 +1312,7 @@
                 	<cell type="field" id="acceptedParent" isrequired="true" uitype="querycbx" initialize="name=Geography;title=Geography;editbtn=false;newbtn=false" name="acceptedParent"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="GeographySubform" id="children" name="children" colspan="3"/>
+                    <cell type="subview" viewname="GeographySubform" id="children" name="children" colspan="5"/>
                 </row>
             </rows>
         </viewdef>
@@ -1344,17 +1330,17 @@
                 <rule id="definitionItem"><![CDATA[parent.getValue() != null]]></rule>
                 <rule id="acceptedParent"><![CDATA[!isAccepted.isSelected()]]></rule>
             </enableRules>
-            <columnDef>p,3dlu,p:g</columnDef>
+            <columnDef>100px,2px,497px,15px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
 
             <rows>
                 <row>
                     <cell type="label" labelfor="name"/>
-                    <cell type="field" id="name" uitype="text" cols="16" name="name" isrequired="true"/> 
+                    <cell type="field" id="name" uitype="text" cols="10" name="name" isrequired="true"/> 
                 </row>
                 <row>
                     <cell type="label" labelfor="remarks"/>
-                    <cell type="field" id="remarks" uitype="textarea" name="remarks"/>
+                    <cell type="field" id="remarks" uitype="textareabrief" rows="2" name="remarks"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="parent" label="PARENT"/>
@@ -1365,7 +1351,7 @@
                 	<cell type="field" id="definitionItem" isrequired="true" uitype="combobox" name="definitionItem"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="StorageSubform" id="children" name="children" colspan="3"/>
+                    <cell type="subview" viewname="StorageSubform" id="children" name="children" colspan="4"/>
                 </row>
             </rows>
         </viewdef>
@@ -1383,25 +1369,25 @@
                 <rule id="definitionItem"><![CDATA[parent.getValue() != null]]></rule>
                 <rule id="acceptedGeologicTimePeriod"><![CDATA[!isAccepted.isSelected()]]></rule>
             </enableRules>
-            <columnDef>p,3dlu,p:g,3dlu,p,3dlu,p:g</columnDef>
+            <columnDef>100px,2px,200px,11px,p,2px,200px,15px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
 
             <rows>
                 <row>
                     <cell type="label" labelfor="name"/>
-                    <cell type="field" id="name" uitype="text" cols="16" name="name" colspan="5" isrequired="true"/> 
-                </row>
-                <row>
-                    <cell type="label" labelfor="remarks"/>
-                    <cell type="field" id="remarks" uitype="textarea" name="remarks" colspan="5"/>
+                    <cell type="field" id="name" uitype="text" cols="16" name="name"  colspan="5" isrequired="true"/> 
                 </row>
                 <row>
                     <cell type="label" labelfor="parent" label="PARENT"/>
-                	<cell type="field" id="parent" isrequired="true" uitype="querycbx" initialize="name=GeologicTimePeriod;title=GeologicTimePeriod;editbtn=false;newbtn=false;editoncreate=true" name="parent" colspan="5"/>
+                	<cell type="field" id="parent" isrequired="true" uitype="querycbx" initialize="name=GeologicTimePeriod;title=GeologicTimePeriod;editbtn=false;newbtn=false;editoncreate=true" name="parent" colspan="5" />
+                </row>
+                <row>
+                    <cell type="label" labelfor="remarks"/>
+                    <cell type="field" id="remarks" uitype="textareabrief" rows="2" name="remarks" colspan="5" />
                 </row>
                 <row>
                     <cell type="label" labelfor="definitionItem"/>
-                	<cell type="field" id="definitionItem" isrequired="true" uitype="combobox" name="definitionItem" colspan="5"/>
+                	<cell type="field" id="definitionItem" isrequired="true" uitype="combobox" name="definitionItem" colspan="5" />
                 </row>
                 <row>
                     <cell type="label" labelfor="startPeriod"/>
@@ -1420,7 +1406,7 @@
                     <cell type="field" id="isBioStrat" uitype="checkbox" label="##" name="isBioStrat"/>
                 </row>                
                 <row>
-                    <cell type="subview" viewname="GeologicTimePeriodSubform" id="children" name="children" colspan="7"/>
+                    <cell type="subview" viewname="GeologicTimePeriodSubform" id="children" name="children" colspan="9"/>
                 </row>
             </rows>
         </viewdef>
@@ -1448,7 +1434,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="remarks"/>
-                    <cell type="field" id="remarks" uitype="textarea" name="remarks" colspan="5"/>
+                    <cell type="field" id="remarks" uitype="textareabrief" rows="2" name="remarks" colspan="5"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="parent" label="PARENT"/>
@@ -1493,28 +1479,28 @@
                 <rule id="definitionItem"><![CDATA[parent.getValue() != null]]></rule>
                 <rule id="acceptedLithoStrat"><![CDATA[!isAccepted.isSelected()]]></rule>
             </enableRules>
-            <columnDef>p,3dlu,p:g,3dlu,200px,3dlu,p:g</columnDef>
+            <columnDef>100px,2px,497px,15px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
 
             <rows>
                 <row>
                     <cell type="label" labelfor="name"/>
-                    <cell type="field" id="name" uitype="text" cols="16" name="name" colspan="5" isrequired="true"/> 
+                    <cell type="field" id="name" uitype="text" cols="16" name="name" isrequired="true"/> 
                 </row>
                 <row>
                     <cell type="label" labelfor="remarks"/>
-                    <cell type="field" id="remarks" uitype="textarea" name="remarks" colspan="5"/>
+                    <cell type="field" id="remarks" uitype="textareabrief" rows="2" name="remarks"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="parent" label="PARENT"/>
-                	<cell type="field" id="parent" isrequired="true" uitype="querycbx" initialize="name=LithoStrat;title=LithoStrat;editbtn=false;newbtn=false;editoncreate=true" name="parent" colspan="5"/>
+                	<cell type="field" id="parent" isrequired="true" uitype="querycbx" initialize="name=LithoStrat;title=LithoStrat;editbtn=false;newbtn=false;editoncreate=true" name="parent"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="definitionItem"/>
-                	<cell type="field" id="definitionItem" isrequired="true" uitype="combobox" name="definitionItem" colspan="5"/>
+                	<cell type="field" id="definitionItem" isrequired="true" uitype="combobox" name="definitionItem"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="LithoStratSubform" id="children" name="children" colspan="7"/>
+                    <cell type="subview" viewname="LithoStratSubform" id="children" name="children" colspan="4"/>
                 </row>
             </rows>
         </viewdef>
@@ -1529,7 +1515,7 @@
             <desc><![CDATA[New Taxon Node Form]]></desc>
             <enableRules>
             </enableRules>
-            <columnDef>200px,3dlu,p:g</columnDef>
+            <columnDef>100px,2px,496px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
@@ -1554,7 +1540,7 @@
             <desc><![CDATA[New Geography Node Form]]></desc>
             <enableRules>
             </enableRules>
-            <columnDef>100px,3dlu,p:g</columnDef>
+            <columnDef>100px,2px,495px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
@@ -1575,7 +1561,7 @@
             <desc><![CDATA[New Storage Node Form]]></desc>
             <enableRules>
             </enableRules>
-            <columnDef>100px,3dlu,p:g</columnDef>
+            <columnDef>100px,2px,425px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
@@ -1596,7 +1582,7 @@
             <desc><![CDATA[New Taxon Node Form]]></desc>
             <enableRules>
             </enableRules>
-            <columnDef>200px,3dlu,p:g</columnDef>
+            <columnDef>100px,2px,496px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
@@ -1617,7 +1603,7 @@
             <desc><![CDATA[New LithoStrat Node Form]]></desc>
             <enableRules>
             </enableRules>
-            <columnDef>100px,3dlu,p:g</columnDef>
+            <columnDef>100px,2px,497px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
@@ -1646,7 +1632,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="remarks" uitype="textarea"/>
+                    <cell type="field" id="2" name="remarks" uitype="textareabrief" rows="2"/>
                 </row>
                 <row>
                     <cell type="label" label=" "/>
@@ -1691,7 +1677,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="remarks" uitype="textarea"/>
+                    <cell type="field" id="2" name="remarks" uitype="textareabrief" rows="2"/>
                 </row>
                 <row>
                     <cell type="label" label=" "/>
@@ -1718,7 +1704,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="remarks" uitype="textarea"/>
+                    <cell type="field" id="2" name="remarks" uitype="textareabrief" rows="2"/>
                 </row>
                 <row>
                     <cell type="label" label=" "/>
@@ -1763,7 +1749,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="remarks" uitype="textarea"/>
+                    <cell type="field" id="2" name="remarks" uitype="textareabrief" rows="2"/>
                 </row>
                 <row>
                     <cell type="label" label=" "/>
@@ -1790,7 +1776,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="remarks" uitype="textarea"/>
+                    <cell type="field" id="2" name="remarks" uitype="textareabrief" rows="2"/>
                 </row>
                 <row>
                     <cell type="label" label=" "/>
@@ -1835,7 +1821,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="remarks" uitype="textarea"/>
+                    <cell type="field" id="2" name="remarks" uitype="textareabrief" rows="2"/>
                 </row>
                 <row>
                     <cell type="label" label=" "/>
@@ -1862,7 +1848,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="remarks" uitype="textarea"/>
+                    <cell type="field" id="2" name="remarks" uitype="textareabrief" rows="2"/>
                 </row>
                 <row>
                     <cell type="label" label=" "/>
@@ -1907,7 +1893,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="remarks" uitype="textarea"/>
+                    <cell type="field" id="2" name="remarks" uitype="textareabrief" rows="2"/>
                 </row>
                 <row>
                     <cell type="label"  label=" "/>
@@ -1934,7 +1920,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="remarks" uitype="textarea"/>
+                    <cell type="field" id="2" name="remarks" uitype="textareabrief" rows="2"/>
                 </row>
                 <row>
                     <cell type="label" label=" "/>
@@ -1979,7 +1965,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="remarks" uitype="textarea"/>
+                    <cell type="field" id="2" name="remarks" uitype="textareabrief" rows="2"/>
                 </row>
                 <row>
                     <cell type="label" label=" "/>
@@ -2012,7 +1998,7 @@
                  -->
                 <row>
                     <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="remarks" uitype="textarea"/>
+                    <cell type="field" id="3" name="remarks" uitype="textareabrief" rows="2"/>
                 </row>
             </rows>
         </viewdef>
@@ -2096,7 +2082,7 @@
     		        </row>
     		        <row>
     		        <cell type="label" labelfor="remarks" label="Remarks"/>
-    		        <cell type="field" id="remarks" name="attachment.remarks" uitype="textarea"/>
+    		        <cell type="field" id="remarks" name="attachment.remarks" uitype="textareabrief" rows="2"/>
     		        </row>
     		    --> 
     		</rows>
@@ -2163,8 +2149,8 @@
                 </row>
             </rows>
         </viewdef>
-        
-        
+      
 
     </viewdefs>
 </viewset>
+
