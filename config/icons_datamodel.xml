@@ -30,6 +30,7 @@
     <icon name="collectionobject"     file="collection_object.png" sizes="all"/>
     <icon name="collectionobjectcitation" file="citation.png" sizes="all"/>
     <icon name="commonnametx"         file="common_name.png" sizes="all"/>
+    <icon name="commonnametxcitation" file="common_name_taxon_citation.png" sizes="all" />
     <icon name="container"            file="container.png" sizes="all"/>
     <icon name="conservator"          file="conservator.png" sizes="all"/>
     <icon name="conservdescription"   file="conserv_description.png" sizes="all"/>
@@ -217,6 +218,7 @@
     <icon name="CollectionName"         alias="collectionname"/>
     <icon name="CollectionObject"       alias="collectionobject"/>
     <icon name="CommonNameTx"           alias="commonnametx"/>
+    <icon name="CommonNameTxCitation"   alias="commonnametxcitation"/>
     <icon name="Conservator"            alias="conservator"/>
     <icon name="ConservDescription"     alias="conservdescription"/>
     <icon name="ConservEvent"           alias="conservevent"/>
