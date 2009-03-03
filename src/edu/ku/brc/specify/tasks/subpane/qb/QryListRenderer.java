@@ -12,6 +12,7 @@ package edu.ku.brc.specify.tasks.subpane.qb;
 import static edu.ku.brc.ui.UIHelper.createLabel;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 
 import javax.swing.BorderFactory;
@@ -120,14 +121,14 @@ public class QryListRenderer implements ListCellRenderer
         {
             // setOpaque(true);
             panel.setBackground(list.getSelectionBackground());
-            panel.setForeground(list.getSelectionForeground());
+            label.setForeground(list.getSelectionForeground());
             list.setSelectedIndex(index);
         }
         else
         {
             // this.setOpaque(false);
             panel.setBackground(list.getBackground());
-            panel.setForeground(list.getForeground());
+            label.setForeground(list.getForeground());
         }
         label.setText(" " + (qri != null ? qri.getTitle() : "?"));
         panel.doLayout();
