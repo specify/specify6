@@ -261,9 +261,9 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
         for (LoanPreparation lpo : getLoanPreparations())
         {
             int quantityLoaned   = lpo.getQuantity() != null ? lpo.getQuantity() : 0;
-            int quantityReturned = lpo.getQuantityReturned() != null ? lpo.getQuantityReturned() : 0;
+            int quantityResolved = lpo.getQuantityResolved() != null ? lpo.getQuantityResolved() : 0;
             
-            stillOut += (quantityLoaned - quantityReturned);
+            stillOut += (quantityLoaned - quantityResolved);
         }
         return stillOut;
     }

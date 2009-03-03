@@ -1910,16 +1910,18 @@ public class DataBuilder
     }
 
     public static LoanReturnPreparation createLoanReturnPreparation(final Calendar returnedDate,
-                                                                          final Integer quantity,
-                                                                          final LoanPreparation loanPreparation,
-                                                                          final DeaccessionPreparation deaccessionPreparation,
-                                                                          final Agent agent)
+                                                                    final Integer qtyRet,
+                                                                    final Integer qtyRes,
+                                                                    final LoanPreparation loanPreparation,
+                                                                    final DeaccessionPreparation deaccessionPreparation,
+                                                                    final Agent agent)
     {
         LoanReturnPreparation loanreturnpreparation = new LoanReturnPreparation();
         loanreturnpreparation.initialize();
         loanreturnpreparation.setReceivedBy(agent);
         loanreturnpreparation.setReturnedDate(returnedDate);
-        loanreturnpreparation.setQuantity(quantity);
+        loanreturnpreparation.setQuantityReturned(qtyRet);
+        loanreturnpreparation.setQuantityResolved(qtyRes);
         loanreturnpreparation.setLoanPreparation(loanPreparation);
         loanreturnpreparation.setDeaccessionPreparation(deaccessionPreparation);
         persist(loanreturnpreparation);

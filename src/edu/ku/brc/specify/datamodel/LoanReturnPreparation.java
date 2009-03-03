@@ -62,7 +62,8 @@ public class LoanReturnPreparation extends CollectionMember implements java.io.S
 
     protected Integer                loanReturnPreparationId;
     protected Calendar               returnedDate;
-    protected Integer                quantity;
+    protected Integer                quantityResolved;
+    protected Integer                quantityReturned;
     protected String                 remarks;
     protected LoanPreparation        loanPreparation;
     protected DeaccessionPreparation deaccessionPreparation;
@@ -89,7 +90,8 @@ public class LoanReturnPreparation extends CollectionMember implements java.io.S
         super.init();
         loanReturnPreparationId = null;
         returnedDate            = null;
-        quantity                = null;
+        quantityResolved        = null;
+        quantityReturned        = null;
         remarks                 = null;
         loanPreparation         = null;
         deaccessionPreparation  = null;
@@ -148,15 +150,31 @@ public class LoanReturnPreparation extends CollectionMember implements java.io.S
     }
 
     /**
-     *      * Quantity of items returned (necessary for lots)
+     * Number of specimens returned, deaccessioned or otherwise accounted for. (necessary for Lots)
      */
-    @Column(name = "Quantity", unique = false, nullable = true, insertable = true, updatable = true)
-    public Integer getQuantity() {
-        return this.quantity;
+    @Column(name = "QuantityResolved", unique = false, nullable = true, insertable = true, updatable = true)
+    public Integer getQuantityResolved() 
+    {
+        return this.quantityResolved == null ? 0 : this.quantityResolved;
     }
     
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
+    public void setQuantityResolved(Integer quantityResolved) 
+    {
+        this.quantityResolved = quantityResolved;
+    }
+
+    /**
+     *      * Number of specimens returned. (necessary for Lots)
+     */
+    @Column(name = "QuantityReturned", unique = false, nullable = true, insertable = true, updatable = true)
+    public Integer getQuantityReturned() 
+    {
+        return this.quantityReturned == null ? 0 : this.quantityReturned;
+    }
+    
+    public void setQuantityReturned(Integer quantityReturned) 
+    {
+        this.quantityReturned = quantityReturned;
     }
 
     /**

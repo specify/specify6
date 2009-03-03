@@ -154,7 +154,7 @@ public class LoanReturnPreparationBusRules extends BaseBusRules
                 if (loanRetPrep != null)
                 {
                     final ValSpinner quantity = (ValSpinner)comp;
-                    quantity.setRange(0, qQnt, getInt(loanRetPrep.getQuantity()));
+                    quantity.setRange(0, qQnt, getInt(loanRetPrep.getQuantityResolved()));
                 }
             }
         }
@@ -172,7 +172,7 @@ public class LoanReturnPreparationBusRules extends BaseBusRules
             loanPrepFVO = formViewObj.getMVParent().getMultiViewParent().getCurrentViewAsFormViewObj();
             loanFVO     = loanPrepFVO.getMVParent().getMultiViewParent().getCurrentViewAsFormViewObj();
 
-            Component comp = formViewObj.getControlByName("quantity");
+            Component comp = formViewObj.getControlByName("quantityResolved");
             if (comp instanceof ValSpinner)
             {
                 LoanReturnPreparation loanRetPrep = (LoanReturnPreparation)formViewObj.getDataObj();
@@ -181,37 +181,47 @@ public class LoanReturnPreparationBusRules extends BaseBusRules
                 
                 if (loanRetPrep != null)
                 {
-                    ValSpinner lrpVS  = (ValSpinner)comp;
-                    int        lrpQty = (Integer)lrpVS.getValue();
-                    loanRetPrep.setQuantity(lrpQty);
+                    ValSpinner lrpRSVS  = (ValSpinner)comp;
+                    int        lrpRSQty = (Integer)lrpRSVS.getValue();
+                    loanRetPrep.setQuantityResolved(lrpRSQty);
+                    
+                    ValSpinner lrpRTVS  = (ValSpinner)formViewObj.getControlByName("quantityReturned");
+                    int        lrpRTQty = (Integer)lrpRTVS.getValue();
+                    loanRetPrep.setQuantityReturned(lrpRTQty);
                 }
                 
                 int qtyRes = 0;
                 int qtyRet = 0;
                 
                 int i = 0;
-                for (LoanReturnPreparation lrp : loanRetPrep.getLoanPreparation().getLoanReturnPreparations())
+                if (loanRetPrep != null)
                 {
-                    qtyRes += getInt(lrp.getQuantity()); 
-                    qtyRet += getInt(lrp.getQuantity());
-                    i++;
+                    LoanPreparation lrpLoanPrep = loanRetPrep.getLoanPreparation();
+                    if (lrpLoanPrep != null && lrpLoanPrep.getLoanReturnPreparations().size() > 0)
+                    {
+                            for (LoanReturnPreparation lrp : loanRetPrep.getLoanPreparation().getLoanReturnPreparations())
+                            {
+                                qtyRes += getInt(lrp.getQuantityResolved()); 
+                                qtyRet += getInt(lrp.getQuantityReturned());
+                                i++;
+                            }
+                    }
                 }
                 
                 ValCheckBox isResolved = (ValCheckBox)loanPrepFVO.getControlByName("isResolved");
                 isResolved.setSelected(qtyRes == loanPrep.getQuantity());
         
                 comp = loanPrepFVO.getControlByName("quantityResolved");
-                if (comp instanceof ValSpinner)
+                if (comp instanceof JTextField)
                 {
                     final JTextField qtyReturnedVS = (JTextField)loanPrepFVO.getControlByName("quantityReturned");
-                    //final ValSpinner qtyResolvedVS = (ValSpinner)comp;
+                    final JTextField qtyResolvedVS = (JTextField)comp;
                     
                     qtyReturnedVS.setText(Integer.toString(qtyRet));
-                    //qtyResolvedVS.setValue(qtyRes);
+                    qtyResolvedVS.setText(Integer.toString(qtyRes));
+                                       
                     loanPrep.setQuantityReturned(qtyRet);
-                    
-                    // Do not set the Quantity Resolved
-                    //loanPrep.setQuantityResolved(qtyRes);
+                    loanPrep.setQuantityResolved(qtyRes);
                 }
                 
                 int qQnt    = 0;

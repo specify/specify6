@@ -9,6 +9,7 @@ package edu.ku.brc.specify.datamodel.busrules;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.JButton;
@@ -36,6 +37,7 @@ import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.Pair;
 
 /**
  * @author rod
@@ -48,6 +50,7 @@ import edu.ku.brc.ui.UIRegistry;
 public class LoanPreparationBusRules extends BaseBusRules implements CommandListener
 {
     private final String CMDTYPE     = "Interactions";
+    private final String DECMDS      = "Data_Entry";
     private final String ADD_TO_LOAN = "AddToLoan";
     
     private boolean    isFillingForm    = false;
@@ -61,6 +64,7 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
         super(LoanPreparation.class);
         
         CommandDispatcher.register(CMDTYPE, this);
+        CommandDispatcher.register(DECMDS, this);
     }
 
     /* (non-Javadoc)
@@ -99,21 +103,14 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
                                 TableViewObj tblViewObj = (TableViewObj)viewable; 
                                 loanMV = tblViewObj.getMVParent().getMultiViewParent();
                             }
+                            
+                            if (loanMV != null)
+                            {
+                                formViewObj.getDataFromUI();
+                                CommandDispatcher.dispatch(new CommandAction(CMDTYPE, ADD_TO_LOAN, loanMV.getCurrentViewAsFormViewObj().getCurrentDataObj()));
+                            }
                         }
                     });
-                }
-                
-                MultiView loanMV = null;
-                if (viewable instanceof FormViewObj)
-                {
-                    loanMV = formViewObj.getMVParent().getMultiViewParent();
-                    formViewObj.getDataFromUI();
-                }
-                
-                if (loanMV != null)
-                {
-                    formViewObj.getDataFromUI();
-                    CommandDispatcher.dispatch(new CommandAction(CMDTYPE, ADD_TO_LOAN, loanMV.getCurrentViewAsFormViewObj().getCurrentDataObj()));
                 }
             }
             
@@ -226,12 +223,13 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
                 loanRetBtn.setEnabled(loanPrep.getId() != null);
             }
             
-            Component comp = formViewObj.getControlByName("quantityResolved");
-            if (comp instanceof ValSpinner && prep != null &&  prep.getPreparationId() != null)
+            Component comp    = formViewObj.getControlByName("quantityResolved");
+            Component qtyComp = formViewObj.getControlByName("quantity");
+            if (comp instanceof JTextField && qtyComp instanceof ValSpinner && prep != null &&  prep.getPreparationId() != null)
             {
-                final boolean    isNewObj         = loanPrep.getId() == null;
-                final ValSpinner quantity         = (ValSpinner)formViewObj.getControlByName("quantity");
-                final ValSpinner qtyResolved      = (ValSpinner)comp;
+                final ValSpinner quantity         = (ValSpinner)qtyComp;
+                final JTextField qtyResolved      = (JTextField)comp;
+                final JTextField qtyReturned      = (JTextField)formViewObj.getControlByName("quantityReturned");
                 
                 // Calculate how many have been Gift'ed
                 String sql = "SELECT gf.Quantity FROM  giftpreparation AS gf " +
@@ -250,6 +248,7 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
                 
                 int qQnt     = 0;
                 int qQntRes  = 0;
+                int qQntRet  = 0;
                 int qPrepCnt = 0;
                 
                 Integer pCnt = BasicSQLUtils.getCount("SELECT Count FROM preparation WHERE PreparationID = " + prep.getPreparationId());
@@ -259,7 +258,7 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
                 {
                     // Get all the LoanReturn Quantities so we can figure out
                     // how many are still available
-                    sql = "SELECT lp.Quantity, lp.QuantityResolved, lrp.Quantity, p.PreparationID " +
+                    sql = "SELECT lp.Quantity, lp.QuantityResolved, lrp.QuantityReturned " +
                                  "FROM  loanpreparation AS lp " +
                                  "LEFT JOIN loanreturnpreparation AS lrp ON lrp.LoanPreparationID = lp.LoanPreparationID " +
                                  "INNER JOIN preparation AS p ON lp.PreparationID = p.PreparationID " +
@@ -272,17 +271,29 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
                     {
                         qQnt     += getInt(cols[0]); // Qty loaned out
                         qQntRes  += getInt(cols[1]); // Qty Resolved (came back)
-                        qPrepCnt = getInt(cols[3]); // Prep Qty available (don't sum)
+                        qQntRet  += getInt(cols[2]); // Qty Resolved (came back)
                     }
                 }
                 
                 // Calculate the total available
+                System.out.println("qPrepCnt "+qPrepCnt+"  qQnt "+qQnt+"  qQntRes "+qQntRes+"  qGiftQnt "+qGiftQnt+" avail: "+(qPrepCnt - (qQnt - qQntRes) - qGiftQnt));
                 int availableQnt = Math.max(0, qPrepCnt - (qQnt - qQntRes) - qGiftQnt); // shouldn't be negative
                 
-                quantity.setRange(0, availableQnt, loanPrep.getQuantity());
+                System.out.println("availableQnt "+availableQnt+" loanPrep.getQuantity() "+loanPrep.getQuantity());
+                // Adding insurance against expceptions in case the quantity is eve greater
+                // may want to add a popup error msg
+                if (availableQnt == 0)
+                {
+                    quantity.setRange(0, loanPrep.getQuantity(), loanPrep.getQuantity());
+                    quantity.setEnabled(false);
+                } else
+                {
+                    quantity.setRange(0, loanPrep.getQuantity()+availableQnt, loanPrep.getQuantity());
+                    quantity.setEnabled(true);
+                }
                 
-                qtyResolved.setEnabled(!isNewObj);
-                qtyResolved.setRange(0, availableQnt, loanPrep.getQuantityResolved());
+                qtyResolved.setText(Integer.toString(loanPrep.getQuantityResolved()));
+                qtyReturned.setText(Integer.toString(loanPrep.getQuantityReturned()));
             }
         }
         
@@ -391,6 +402,7 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.CommandListener#doCommand(edu.ku.brc.ui.CommandAction)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public void doCommand(CommandAction cmdAction)
     {
@@ -421,6 +433,30 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
                 
                 // Refresh list in the grid
                 tvo.refreshDataList();
+            }
+        } else if (cmdAction.isType(DECMDS) && cmdAction.isAction("CLOSE_SUBVIEW"))
+        {
+            Pair<Object, Object> dataPair   = (Pair<Object, Object>)cmdAction.getData();
+            LoanPreparation      loanPrep   = (LoanPreparation)dataPair.first;
+            Set<LoanReturnPreparation> lrps = (Set<LoanReturnPreparation>)dataPair.second;
+            
+            int quantityResolved = 0;
+            int quantityReturned = 0;
+            for (LoanReturnPreparation lrp : lrps)
+            {
+                quantityResolved += lrp.getQuantityResolved();
+                quantityReturned += lrp.getQuantityReturned();
+            }
+            loanPrep.setQuantityResolved(quantityResolved);
+            loanPrep.setQuantityReturned(quantityReturned);
+            
+            if (formViewObj != null)
+            {
+                Component comp = formViewObj.getControlByName("quantityResolved");
+                if (comp instanceof JTextField && loanPrep != null)
+                {
+                    ((JTextField)comp).setText(Integer.toString(quantityResolved));
+                }
             }
         }
     }

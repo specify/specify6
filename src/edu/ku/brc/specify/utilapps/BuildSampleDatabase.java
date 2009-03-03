@@ -1041,6 +1041,198 @@ public class BuildSampleDatabase
     }
     
     /**
+     * @param preps
+     * @param agents
+     * @param dataObjects
+     */
+    protected void createLoanExamples(List<Preparation> preps,
+                                      List<Agent>       agents,
+                                      Vector<Object>    dataObjects)
+    {
+        if (true) return;
+        
+        ////////////////////////////////
+        // loans (loan agents, shipments)
+        ////////////////////////////////
+        log.info("Creating loans, loan agents, and shipments");
+        Calendar loanDate1 = Calendar.getInstance();
+        loanDate1.set(2005, 03, 19);
+        
+        Calendar currentDueDate1 = Calendar.getInstance();
+        currentDueDate1.set(2005, 9, 19);
+        
+        Calendar originalDueDate1 = currentDueDate1;
+        Calendar dateClosed1 = Calendar.getInstance();
+        dateClosed1.set(2005, 7, 4);
+      
+        List<LoanPreparation>         loanPreps = new Vector<LoanPreparation>();
+        Vector<LoanReturnPreparation> returns      = new Vector<LoanReturnPreparation>();
+        
+        Loan closedLoan = createLoan("2007-001", loanDate1, currentDueDate1, originalDueDate1, 
+                                     dateClosed1, Loan.CLOSED, null);
+        int loanPrepCnt = 0;
+        for (int i = 0; i < 7; ++i)
+        {
+            Preparation prep = preps.get(rand.nextInt(preps.size()));
+            int available = prep.getLoanAvailable();
+            if (available < 1 || !prep.getPrepType().getIsLoanable())
+            {
+                // retry
+                i--;
+                continue;
+            }
+            
+            int quantity = Math.min(Math.max(1, rand.nextInt(available)), available);
+            LoanPreparation lpo = DataBuilder.createLoanPreparation(quantity, null, null, null, 0, 0, prep, closedLoan);
+            
+            lpo.setIsResolved(true);
+            loanPreps.add(lpo);
+            
+            Calendar returnedDate     = Calendar.getInstance();       
+            returnedDate.setTime(lpo.getLoan().getLoanDate().getTime());
+            returnedDate.add(Calendar.DAY_OF_YEAR, 72); // make the returned date be a little while after the original loan
+            
+            LoanReturnPreparation lrpo = createLoanReturnPreparation(returnedDate, quantity, quantity, lpo, null, agents.get(0));
+            lpo.addReference(lrpo, "loanReturnPreparations");
+            returns.add(lrpo);
+
+            prep.getLoanPreparations().add(lpo);
+            
+            loanPrepCnt++;
+            if (loanPrepCnt > 3)
+            {
+                break;
+            }
+        }
+        
+        Calendar loanDate2 = Calendar.getInstance();
+        loanDate2.set(2005, 11, 24);
+        
+        Calendar currentDueDate2 = Calendar.getInstance();
+        currentDueDate2.set(2006, 5, 24);
+        
+        Calendar originalDueDate2 = currentDueDate2;
+        Loan overdueLoan = createLoan("2006-002", loanDate2, currentDueDate2, originalDueDate2,  
+                                      null, Loan.OPEN, null);
+        loanPrepCnt = 0;
+        for (int i = 0; i < 5; ++i)
+        {
+            Preparation p = getObjectByClass(preps, Preparation.class, rand.nextInt(preps.size()));
+            int available = p.getLoanAvailable();
+            if (available < 1 || !p.getPrepType().getIsLoanable())
+            {
+                // retry
+                i--;
+                continue;
+            }
+            int quantity = Math.max(1, rand.nextInt(available));
+            LoanPreparation lpo = createLoanPreparation(quantity, null, null, null, 0, 0, p, overdueLoan);
+            loanPreps.add(lpo);
+            p.getLoanPreparations().add(lpo);
+            
+            loanPrepCnt++;
+            if (loanPrepCnt > 3)
+            {
+                break;
+            }
+        }
+
+        Calendar loanDate3 = Calendar.getInstance();
+        loanDate3.set(2006, 3, 21);
+        
+        Calendar currentDueDate3 = Calendar.getInstance();
+        currentDueDate3.set(2007, 3, 21);
+        
+        Calendar originalDueDate3 = Calendar.getInstance();
+        originalDueDate3.set(2006, 9, 21);
+        
+        Loan loan3 = createLoan("2006-003", loanDate3, currentDueDate3, originalDueDate3,  
+                                      null, Loan.OPEN, null);
+        Vector<LoanPreparation> newLoanLPOs = new Vector<LoanPreparation>();
+        int lpoCountInNewLoan = 0;
+        // put some LPOs in this loan that are from CollObjs that have other preps loaned out already
+        // this algorithm (because of the randomness) can result in this loan having 0 LPOs.
+        for( LoanPreparation lpo: loanPreps)
+        {
+            int available = lpo.getPreparation().getLoanAvailable();
+            if (available > 0)
+            {
+                int quantity = Math.max(1, rand.nextInt(available));
+                LoanPreparation newLPO = createLoanPreparation(quantity, null, null, null, 0, 0, lpo.getPreparation(), loan3);
+                newLoanLPOs.add(newLPO);
+                lpo.getPreparation().getLoanPreparations().add(newLPO);
+                
+                // stop after we put 6 LPOs in the new loan
+                lpoCountInNewLoan++;
+                if (lpoCountInNewLoan == 6)
+                {
+                    break;
+                }
+            }
+        }
+        
+        // create some LoanReturnPreparations
+        int startIndex = returns.size();
+        for (int i=startIndex;i<loanPreps.size();i++)
+        {
+            LoanPreparation lpo = loanPreps.get(i);
+        
+            int    quantityLoaned   = lpo.getQuantity();
+            int    quantityReturned = (i == (loanPreps.size() - 1)) ? quantityLoaned : (short)rand.nextInt(quantityLoaned);
+            
+            Calendar returnedDate     = Calendar.getInstance();
+            
+            returnedDate.setTime(lpo.getLoan().getLoanDate().getTime());
+            // make the returned date be a little while after the original loan
+            returnedDate.add(Calendar.DAY_OF_YEAR, 72);
+            LoanReturnPreparation lrpo = createLoanReturnPreparation(returnedDate, quantityReturned, quantityReturned, lpo, null, agents.get(0));
+            lpo.addReference(lrpo, "loanReturnPreparations");
+            
+            lpo.setQuantityReturned(quantityReturned);
+            lpo.setQuantityResolved(quantityReturned);
+            lpo.setIsResolved(quantityLoaned == quantityReturned);
+            returns.add(lrpo);
+            i++;
+        }
+        
+        LoanAgent loanAgent1 = createLoanAgent("loaner",   closedLoan,    getRandomAgent(agents));
+        LoanAgent loanAgent2 = createLoanAgent("loaner",   overdueLoan,   getRandomAgent(agents));
+        LoanAgent loanAgent3 = createLoanAgent("Borrower", closedLoan,  getRandomAgent(agents));
+        LoanAgent loanAgent4 = createLoanAgent("Borrower", overdueLoan, getRandomAgent(agents));
+        
+        dataObjects.add(closedLoan);
+        dataObjects.add(overdueLoan);
+        dataObjects.add(loan3);
+        dataObjects.addAll(loanPreps);
+        dataObjects.addAll(newLoanLPOs);
+        dataObjects.addAll(returns);
+        
+        dataObjects.add(loanAgent1);
+        dataObjects.add(loanAgent2);
+        dataObjects.add(loanAgent3);
+        dataObjects.add(loanAgent4);
+        
+        Calendar ship1Date = Calendar.getInstance();
+        ship1Date.set(2004, 03, 19);
+        Shipment loan1Ship = createShipment(ship1Date, "2006-001", "usps", (short) 1, "1.25 kg", null, agents.get(0), agents.get(4), agents.get(0));
+        
+        Calendar ship2Date = Calendar.getInstance();
+        ship2Date.set(2005, 11, 24);
+        Shipment loan2Ship = createShipment(ship2Date, "2006-002", "fedex", (short) 2, "6.0 kg", null, agents.get(3), agents.get(4), agents.get(3));
+        
+        loan1Ship.setLoan(closedLoan);
+        loan2Ship.setLoan(overdueLoan);
+
+        //closedLoan.setShipment(loan1Ship);
+        //overdueLoan.setShipment(loan2Ship);
+        closedLoan.getShipments().add(loan1Ship);
+        overdueLoan.getShipments().add(loan2Ship);
+        dataObjects.add(loan1Ship);
+        dataObjects.add(loan2Ship);   
+
+    }
+    
+    /**
      * Creates a single disciplineType collection.
      * @param disciplineName the name of the Discipline to use
      * @param disciplineName the disciplineType name
@@ -1664,171 +1856,9 @@ public class BuildSampleDatabase
         startTx();
         frame.setProcess(++createStep);
 
-        ////////////////////////////////
-        // loans (loan agents, shipments)
-        ////////////////////////////////
-        log.info("Creating loans, loan agents, and shipments");
-        Calendar loanDate1 = Calendar.getInstance();
-        loanDate1.set(2005, 03, 19);
-        
-        Calendar currentDueDate1 = Calendar.getInstance();
-        currentDueDate1.set(2005, 9, 19);
-        
-        Calendar originalDueDate1 = currentDueDate1;
-        Calendar dateClosed1 = Calendar.getInstance();
-        dateClosed1.set(2005, 7, 4);
-      
-        List<LoanPreparation>         loanPhysObjs = new Vector<LoanPreparation>();
-        Vector<LoanReturnPreparation> returns      = new Vector<LoanReturnPreparation>();
-        
-        Loan closedLoan = createLoan("2007-001", loanDate1, currentDueDate1, originalDueDate1, 
-                                     dateClosed1, Loan.CLOSED, null);
-        for (int i = 0; i < 7; ++i)
-        {
-            Preparation p = getObjectByClass(preps, Preparation.class, rand.nextInt(preps.size()));
-            int available = p.getLoanAvailable();
-            if (available < 1 || !p.getPrepType().getIsLoanable())
-            {
-                // retry
-                i--;
-                continue;
-            }
-            int quantity = Math.max(1,rand.nextInt(available));
-            LoanPreparation lpo = DataBuilder.createLoanPreparation(quantity, null, null, null, 0, 0, p, closedLoan);
-            
-            lpo.setIsResolved(true);
-            loanPhysObjs.add(lpo);
-            
-            Calendar returnedDate     = Calendar.getInstance();       
-            returnedDate.setTime(lpo.getLoan().getLoanDate().getTime());
-            returnedDate.add(Calendar.DAY_OF_YEAR, 72); // make the returned date be a little while after the original loan
-            
-            LoanReturnPreparation lrpo = createLoanReturnPreparation(returnedDate, quantity, lpo, null, agents.get(0));
-            lpo.addReference(lrpo, "loanReturnPreparations");
-            returns.add(lrpo);
-
-            p.getLoanPreparations().add(lpo);
-        }
-        
-        Calendar loanDate2 = Calendar.getInstance();
-        loanDate2.set(2005, 11, 24);
-        
-        Calendar currentDueDate2 = Calendar.getInstance();
-        currentDueDate2.set(2006, 5, 24);
-        
-        Calendar originalDueDate2 = currentDueDate2;
-        Loan overdueLoan = createLoan("2006-002", loanDate2, currentDueDate2, originalDueDate2,  
-                                      null, Loan.OPEN, null);
-        for (int i = 0; i < 5; ++i)
-        {
-            Preparation p = getObjectByClass(preps, Preparation.class, rand.nextInt(preps.size()));
-            int available = p.getLoanAvailable();
-            if (available < 1 || !p.getPrepType().getIsLoanable())
-            {
-                // retry
-                i--;
-                continue;
-            }
-            int quantity = Math.max(1, rand.nextInt(available));
-            LoanPreparation lpo = createLoanPreparation(quantity, null, null, null, 0, 0, p, overdueLoan);
-            loanPhysObjs.add(lpo);
-            p.getLoanPreparations().add(lpo);
-        }
-
-        Calendar loanDate3 = Calendar.getInstance();
-        loanDate3.set(2006, 3, 21);
-        
-        Calendar currentDueDate3 = Calendar.getInstance();
-        currentDueDate3.set(2007, 3, 21);
-        
-        Calendar originalDueDate3 = Calendar.getInstance();
-        originalDueDate3.set(2006, 9, 21);
-        
-        Loan loan3 = createLoan("2006-003", loanDate3, currentDueDate3, originalDueDate3,  
-                                      null, Loan.OPEN, null);
-        Vector<LoanPreparation> newLoanLPOs = new Vector<LoanPreparation>();
-        int lpoCountInNewLoan = 0;
-        // put some LPOs in this loan that are from CollObjs that have other preps loaned out already
-        // this algorithm (because of the randomness) can result in this loan having 0 LPOs.
-        for( LoanPreparation lpo: loanPhysObjs)
-        {
-            int available = lpo.getPreparation().getLoanAvailable();
-            if (available > 0)
-            {
-                int quantity = Math.max(1, rand.nextInt(available));
-                LoanPreparation newLPO = createLoanPreparation(quantity, null, null, null, 0, 0, lpo.getPreparation(), loan3);
-                newLoanLPOs.add(newLPO);
-                lpo.getPreparation().getLoanPreparations().add(newLPO);
-                
-                // stop after we put 6 LPOs in the new loan
-                lpoCountInNewLoan++;
-                if (lpoCountInNewLoan == 6)
-                {
-                    break;
-                }
-            }
-        }
-        
-        // create some LoanReturnPreparations
-        int startIndex = returns.size();
-        for (int i=startIndex;i<loanPhysObjs.size();i++)
-        {
-            LoanPreparation lpo = loanPhysObjs.get(i);
-        
-            int    quantityLoaned   = lpo.getQuantity();
-            int    quantityReturned = (i == (loanPhysObjs.size() - 1)) ? quantityLoaned : (short)rand.nextInt(quantityLoaned);
-            Calendar returnedDate     = Calendar.getInstance();
-            
-            returnedDate.setTime(lpo.getLoan().getLoanDate().getTime());
-            // make the returned date be a little while after the original loan
-            returnedDate.add(Calendar.DAY_OF_YEAR, 72);
-            LoanReturnPreparation lrpo = createLoanReturnPreparation(returnedDate, quantityReturned, lpo, null, agents.get(0));
-            lpo.addReference(lrpo, "loanReturnPreparations");
-            
-            lpo.setQuantityReturned(quantityReturned);
-            lpo.setQuantityResolved(quantityReturned);
-            lpo.setIsResolved(quantityLoaned == quantityReturned);
-            returns.add(lrpo);
-            i++;
-        }
-        
-        LoanAgent loanAgent1 = createLoanAgent("loaner",   closedLoan,    getRandomAgent(agents));
-        LoanAgent loanAgent2 = createLoanAgent("loaner",   overdueLoan,   getRandomAgent(agents));
-        LoanAgent loanAgent3 = createLoanAgent("Borrower", closedLoan,  getRandomAgent(agents));
-        LoanAgent loanAgent4 = createLoanAgent("Borrower", overdueLoan, getRandomAgent(agents));
-        
-        dataObjects.add(closedLoan);
-        dataObjects.add(overdueLoan);
-        dataObjects.add(loan3);
-        dataObjects.addAll(loanPhysObjs);
-        dataObjects.addAll(newLoanLPOs);
-        dataObjects.addAll(returns);
-        
-        dataObjects.add(loanAgent1);
-        dataObjects.add(loanAgent2);
-        dataObjects.add(loanAgent3);
-        dataObjects.add(loanAgent4);
-        
+        createLoanExamples(preps, agents, dataObjects);
         frame.setProcess(++createStep);
-        
-        Calendar ship1Date = Calendar.getInstance();
-        ship1Date.set(2004, 03, 19);
-        Shipment loan1Ship = createShipment(ship1Date, "2006-001", "usps", (short) 1, "1.25 kg", null, agents.get(0), agents.get(4), agents.get(0));
-        
-        Calendar ship2Date = Calendar.getInstance();
-        ship2Date.set(2005, 11, 24);
-        Shipment loan2Ship = createShipment(ship2Date, "2006-002", "fedex", (short) 2, "6.0 kg", null, agents.get(3), agents.get(4), agents.get(3));
-        
-        loan1Ship.setLoan(closedLoan);
-        loan2Ship.setLoan(overdueLoan);
 
-        //closedLoan.setShipment(loan1Ship);
-        //overdueLoan.setShipment(loan2Ship);
-        closedLoan.getShipments().add(loan1Ship);
-        overdueLoan.getShipments().add(loan2Ship);
-        dataObjects.add(loan1Ship);
-        dataObjects.add(loan2Ship);   
-        
         persist(dataObjects);
         dataObjects.clear();
 
@@ -2929,171 +2959,9 @@ public class BuildSampleDatabase
         startTx();
         frame.setProcess(++createStep);
 
-        ////////////////////////////////
-        // loans (loan agents, shipments)
-        ////////////////////////////////
-        log.info("Creating loans, loan agents, and shipments");
-        Calendar loanDate1 = Calendar.getInstance();
-        loanDate1.set(2005, 03, 19);
-        
-        Calendar currentDueDate1 = Calendar.getInstance();
-        currentDueDate1.set(2005, 9, 19);
-        
-        Calendar originalDueDate1 = currentDueDate1;
-        Calendar dateClosed1 = Calendar.getInstance();
-        dateClosed1.set(2005, 7, 4);
-      
-        List<LoanPreparation>         loanPhysObjs = new Vector<LoanPreparation>();
-        Vector<LoanReturnPreparation> returns      = new Vector<LoanReturnPreparation>();
-        
-        Loan closedLoan = createLoan("2007-001", loanDate1, currentDueDate1, originalDueDate1, 
-                                     dateClosed1, Loan.CLOSED, null);
-        for (int i = 0; i < 7; ++i)
-        {
-            Preparation p = getObjectByClass(preps, Preparation.class, rand.nextInt(preps.size()));
-            int available = p.getLoanAvailable();
-            if (available < 1 || !p.getPrepType().getIsLoanable())
-            {
-                // retry
-                i--;
-                continue;
-            }
-            int quantity = Math.max(1,rand.nextInt(available));
-            LoanPreparation lpo = DataBuilder.createLoanPreparation(quantity, null, null, null, 0, 0, p, closedLoan);
-            
-            lpo.setIsResolved(true);
-            loanPhysObjs.add(lpo);
-            
-            Calendar returnedDate     = Calendar.getInstance();       
-            returnedDate.setTime(lpo.getLoan().getLoanDate().getTime());
-            returnedDate.add(Calendar.DAY_OF_YEAR, 72); // make the returned date be a little while after the original loan
-            
-            LoanReturnPreparation lrpo = createLoanReturnPreparation(returnedDate, quantity, lpo, null, agents.get(0));
-            lpo.addReference(lrpo, "loanReturnPreparations");
-            returns.add(lrpo);
-
-            p.getLoanPreparations().add(lpo);
-        }
-        
-        Calendar loanDate2 = Calendar.getInstance();
-        loanDate2.set(2005, 11, 24);
-        
-        Calendar currentDueDate2 = Calendar.getInstance();
-        currentDueDate2.set(2006, 5, 24);
-        
-        Calendar originalDueDate2 = currentDueDate2;
-        Loan overdueLoan = createLoan("2005-002", loanDate2, currentDueDate2, originalDueDate2,  
-                                      null, Loan.OPEN, null);
-        for (int i = 0; i < 5; ++i)
-        {
-            Preparation p = getObjectByClass(preps, Preparation.class, rand.nextInt(preps.size()));
-            int available = p.getLoanAvailable();
-            if (available < 1 || !p.getPrepType().getIsLoanable())
-            {
-                // retry
-                i--;
-                continue;
-            }
-            int quantity = Math.max(1, rand.nextInt(available));
-            LoanPreparation lpo = createLoanPreparation(quantity, null, null, null, 0, 0, p, overdueLoan);
-            loanPhysObjs.add(lpo);
-            p.getLoanPreparations().add(lpo);
-        }
-
-        Calendar loanDate3 = Calendar.getInstance();
-        loanDate3.set(2006, 3, 21);
-        
-        Calendar currentDueDate3 = Calendar.getInstance();
-        currentDueDate3.set(2007, 3, 21);
-        
-        Calendar originalDueDate3 = Calendar.getInstance();
-        originalDueDate3.set(2006, 9, 21);
-        
-        Loan loan3 = createLoan("2005-003", loanDate3, currentDueDate3, originalDueDate3,  
-                                      null, Loan.OPEN, null);
-        Vector<LoanPreparation> newLoanLPOs = new Vector<LoanPreparation>();
-        int lpoCountInNewLoan = 0;
-        // put some LPOs in this loan that are from CollObjs that have other preps loaned out already
-        // this algorithm (because of the randomness) can result in this loan having 0 LPOs.
-        for( LoanPreparation lpo: loanPhysObjs)
-        {
-            int available = lpo.getPreparation().getLoanAvailable();
-            if (available > 0)
-            {
-                int quantity = Math.max(1, rand.nextInt(available));
-                LoanPreparation newLPO = createLoanPreparation(quantity, null, null, null, 0, 0, lpo.getPreparation(), loan3);
-                newLoanLPOs.add(newLPO);
-                lpo.getPreparation().getLoanPreparations().add(newLPO);
-                
-                // stop after we put 6 LPOs in the new loan
-                lpoCountInNewLoan++;
-                if (lpoCountInNewLoan == 6)
-                {
-                    break;
-                }
-            }
-        }
-        
-        // create some LoanReturnPreparations
-        int startIndex = returns.size();
-        for (int i=startIndex;i<loanPhysObjs.size();i++)
-        {
-            LoanPreparation lpo = loanPhysObjs.get(i);
-        
-            int    quantityLoaned   = lpo.getQuantity();
-            int    quantityReturned = (i == (loanPhysObjs.size() - 1)) ? quantityLoaned : (short)rand.nextInt(quantityLoaned);
-            Calendar returnedDate     = Calendar.getInstance();
-            
-            returnedDate.setTime(lpo.getLoan().getLoanDate().getTime());
-            // make the returned date be a little while after the original loan
-            returnedDate.add(Calendar.DAY_OF_YEAR, 72);
-            LoanReturnPreparation lrpo = createLoanReturnPreparation(returnedDate, quantityReturned, lpo, null, agents.get(0));
-            lpo.addReference(lrpo, "loanReturnPreparations");
-            
-            lpo.setQuantityReturned(quantityReturned);
-            lpo.setQuantityResolved(quantityReturned);
-            lpo.setIsResolved(quantityLoaned == quantityReturned);
-            returns.add(lrpo);
-            i++;
-        }
-        
-        LoanAgent loanAgent1 = createLoanAgent("loaner",   closedLoan,    getRandomAgent(agents));
-        LoanAgent loanAgent2 = createLoanAgent("loaner",   overdueLoan,   getRandomAgent(agents));
-        LoanAgent loanAgent3 = createLoanAgent("Borrower", closedLoan,  getRandomAgent(agents));
-        LoanAgent loanAgent4 = createLoanAgent("Borrower", overdueLoan, getRandomAgent(agents));
-        
-        dataObjects.add(closedLoan);
-        dataObjects.add(overdueLoan);
-        dataObjects.add(loan3);
-        dataObjects.addAll(loanPhysObjs);
-        dataObjects.addAll(newLoanLPOs);
-        dataObjects.addAll(returns);
-        
-        dataObjects.add(loanAgent1);
-        dataObjects.add(loanAgent2);
-        dataObjects.add(loanAgent3);
-        dataObjects.add(loanAgent4);
-        
+        createLoanExamples(preps, agents, dataObjects);
         frame.setProcess(++createStep);
-        
-        Calendar ship1Date = Calendar.getInstance();
-        ship1Date.set(2004, 03, 19);
-        Shipment loan1Ship = createShipment(ship1Date, "2005-001", "usps", (short) 1, "10.25 kg", null, agents.get(0), agents.get(4), agents.get(0));
-        
-        Calendar ship2Date = Calendar.getInstance();
-        ship2Date.set(2005, 11, 24);
-        Shipment loan2Ship = createShipment(ship2Date, "2005-002", "fedex", (short) 2, "60.0 kg", null, agents.get(3), agents.get(4), agents.get(3));
-        
-        loan1Ship.setLoan(closedLoan);
-        loan2Ship.setLoan(overdueLoan);
-        
-        //closedLoan.setShipment(loan1Ship);
-        //overdueLoan.setShipment(loan2Ship);
-        closedLoan.getShipments().add(loan1Ship);
-        overdueLoan.getShipments().add(loan2Ship);
-        dataObjects.add(loan1Ship);
-        dataObjects.add(loan2Ship);   
-        
+
         persist(dataObjects);
         dataObjects.clear();
 
@@ -4229,173 +4097,9 @@ public class BuildSampleDatabase
         startTx();
         frame.setProcess(++createStep);
 
-        ////////////////////////////////
-        // loans (loan agents, shipments)
-        ////////////////////////////////
-        log.info("Creating loans, loan agents, and shipments");
-        frame.setDesc("Creating loans...");
-
-        Calendar loanDate1 = Calendar.getInstance();
-        loanDate1.set(2005, 03, 19);
-        
-        Calendar currentDueDate1 = Calendar.getInstance();
-        currentDueDate1.set(2005, 9, 19);
-        
-        Calendar originalDueDate1 = currentDueDate1;
-        Calendar dateClosed1 = Calendar.getInstance();
-        dateClosed1.set(2005, 7, 4);
-      
-        List<LoanPreparation>         loanPhysObjs = new Vector<LoanPreparation>();
-        Vector<LoanReturnPreparation> returns      = new Vector<LoanReturnPreparation>();
-        
-        Loan closedLoan = createLoan("2007-001", loanDate1, currentDueDate1, originalDueDate1, 
-                                     dateClosed1, Loan.CLOSED, null);
-        for (int i = 0; i < 7; ++i)
-        {
-            Preparation p = getObjectByClass(preps, Preparation.class, rand.nextInt(preps.size()));
-            int available = p.getLoanAvailable();
-            if (available < 1 || !p.getPrepType().getIsLoanable())
-            {
-                // retry
-                i--;
-                continue;
-            }
-            int quantity = Math.max(1,rand.nextInt(available));
-            LoanPreparation lpo = DataBuilder.createLoanPreparation(quantity, null, null, null, 0, 0, p, closedLoan);
-            
-            lpo.setIsResolved(true);
-            loanPhysObjs.add(lpo);
-            
-            Calendar returnedDate     = Calendar.getInstance();       
-            returnedDate.setTime(lpo.getLoan().getLoanDate().getTime());
-            returnedDate.add(Calendar.DAY_OF_YEAR, 72); // make the returned date be a little while after the original loan
-            
-            LoanReturnPreparation lrpo = createLoanReturnPreparation(returnedDate, quantity, lpo, null, agents.get(0));
-            lpo.addReference(lrpo, "loanReturnPreparations");
-            returns.add(lrpo);
-
-            p.getLoanPreparations().add(lpo);
-        }
-        
-        Calendar loanDate2 = Calendar.getInstance();
-        loanDate2.set(2005, 11, 24);
-        
-        Calendar currentDueDate2 = Calendar.getInstance();
-        currentDueDate2.set(2006, 5, 24);
-        
-        Calendar originalDueDate2 = currentDueDate2;
-        Loan overdueLoan = createLoan("2005-002", loanDate2, currentDueDate2, originalDueDate2,  
-                                      null, Loan.OPEN, null);
-        for (int i = 0; i < 5; ++i)
-        {
-            Preparation p = getObjectByClass(preps, Preparation.class, rand.nextInt(preps.size()));
-            int available = p.getLoanAvailable();
-            if (available < 1 || !p.getPrepType().getIsLoanable())
-            {
-                // retry
-                i--;
-                continue;
-            }
-            int quantity = Math.max(1, rand.nextInt(available));
-            LoanPreparation lpo = createLoanPreparation(quantity, null, null, null, 0, 0, p, overdueLoan);
-            loanPhysObjs.add(lpo);
-            p.getLoanPreparations().add(lpo);
-        }
-
-        Calendar loanDate3 = Calendar.getInstance();
-        loanDate3.set(2006, 3, 21);
-        
-        Calendar currentDueDate3 = Calendar.getInstance();
-        currentDueDate3.set(2007, 3, 21);
-        
-        Calendar originalDueDate3 = Calendar.getInstance();
-        originalDueDate3.set(2006, 9, 21);
-        
-        Loan loan3 = createLoan("2005-003", loanDate3, currentDueDate3, originalDueDate3,  
-                                      null, Loan.OPEN, null);
-        Vector<LoanPreparation> newLoanLPOs = new Vector<LoanPreparation>();
-        int lpoCountInNewLoan = 0;
-        // put some LPOs in this loan that are from CollObjs that have other preps loaned out already
-        // this algorithm (because of the randomness) can result in this loan having 0 LPOs.
-        for( LoanPreparation lpo: loanPhysObjs)
-        {
-            int available = lpo.getPreparation().getLoanAvailable();
-            if (available > 0)
-            {
-                int quantity = Math.max(1, rand.nextInt(available));
-                LoanPreparation newLPO = createLoanPreparation(quantity, null, null, null, 0, 0, lpo.getPreparation(), loan3);
-                newLoanLPOs.add(newLPO);
-                lpo.getPreparation().getLoanPreparations().add(newLPO);
-                
-                // stop after we put 6 LPOs in the new loan
-                lpoCountInNewLoan++;
-                if (lpoCountInNewLoan == 6)
-                {
-                    break;
-                }
-            }
-        }
-        
-        // create some LoanReturnPreparations
-        int startIndex = returns.size();
-        for (int i=startIndex;i<loanPhysObjs.size();i++)
-        {
-            LoanPreparation lpo = loanPhysObjs.get(i);
-        
-            int    quantityLoaned   = lpo.getQuantity();
-            int    quantityReturned = (i == (loanPhysObjs.size() - 1)) ? quantityLoaned : (short)rand.nextInt(quantityLoaned);
-            Calendar returnedDate     = Calendar.getInstance();
-            
-            returnedDate.setTime(lpo.getLoan().getLoanDate().getTime());
-            // make the returned date be a little while after the original loan
-            returnedDate.add(Calendar.DAY_OF_YEAR, 72);
-            LoanReturnPreparation lrpo = createLoanReturnPreparation(returnedDate, quantityReturned, lpo, null, agents.get(0));
-            lpo.addReference(lrpo, "loanReturnPreparations");
-            
-            lpo.setQuantityReturned(quantityReturned);
-            lpo.setQuantityResolved(quantityReturned);
-            lpo.setIsResolved(quantityLoaned == quantityReturned);
-            returns.add(lrpo);
-            i++;
-        }
-        
-        LoanAgent loanAgent1 = createLoanAgent("loaner",   closedLoan,    getRandomAgent(agents));
-        LoanAgent loanAgent2 = createLoanAgent("loaner",   overdueLoan,   getRandomAgent(agents));
-        LoanAgent loanAgent3 = createLoanAgent("Borrower", closedLoan,  getRandomAgent(agents));
-        LoanAgent loanAgent4 = createLoanAgent("Borrower", overdueLoan, getRandomAgent(agents));
-        
-        dataObjects.add(closedLoan);
-        dataObjects.add(overdueLoan);
-        dataObjects.add(loan3);
-        dataObjects.addAll(loanPhysObjs);
-        dataObjects.addAll(newLoanLPOs);
-        dataObjects.addAll(returns);
-        
-        dataObjects.add(loanAgent1);
-        dataObjects.add(loanAgent2);
-        dataObjects.add(loanAgent3);
-        dataObjects.add(loanAgent4);
-        
+        createLoanExamples(preps, agents, dataObjects);
         frame.setProcess(++createStep);
-        
-        Calendar ship1Date = Calendar.getInstance();
-        ship1Date.set(2004, 03, 19);
-        Shipment loan1Ship = createShipment(ship1Date, "2005-001", "usps", (short) 1, "10.25 kg", null, agents.get(0), agents.get(4), agents.get(0));
-        
-        Calendar ship2Date = Calendar.getInstance();
-        ship2Date.set(2005, 11, 24);
-        Shipment loan2Ship = createShipment(ship2Date, "2005-002", "fedex", (short) 2, "60.0 kg", null, agents.get(3), agents.get(4), agents.get(3));
-        
-        loan1Ship.setLoan(closedLoan);
-        loan2Ship.setLoan(overdueLoan);
-        
-        //closedLoan.setShipment(loan1Ship);
-        //overdueLoan.setShipment(loan2Ship);
-        closedLoan.getShipments().add(loan1Ship);
-        overdueLoan.getShipments().add(loan2Ship);
-        dataObjects.add(loan1Ship);
-        dataObjects.add(loan2Ship);   
-        
+
         persist(dataObjects);
         dataObjects.clear();
 
@@ -4414,6 +4118,7 @@ public class BuildSampleDatabase
         log.info("Done creating "+disciplineType.getTitle()+" disciplineType database: " + disciplineType.getTitle());
         return dataObjects;
     }
+    
     /**
      * @param treeDef
      * @param disciplineType
@@ -5706,200 +5411,9 @@ public class BuildSampleDatabase
         
         frame.setProcess(++createStep);
         
-
-        ////////////////////////////////
-        // loans (loan agents, shipments)
-        ////////////////////////////////
-        log.info("Creating loans, loan agents, and shipments");
-        Calendar loanDate1 = Calendar.getInstance();
-        loanDate1.set(2004, 03, 19);
-        
-        Calendar currentDueDate1 = Calendar.getInstance();
-        currentDueDate1.set(2004, 9, 19);
-        
-        Calendar originalDueDate1 = currentDueDate1;
-        Calendar dateClosed1 = Calendar.getInstance();
-        dateClosed1.set(2004, 7, 4);
-      
-        List<LoanPreparation>         loanPhysObjs = new Vector<LoanPreparation>();
-        Vector<LoanReturnPreparation> returns      = new Vector<LoanReturnPreparation>();
-        
-        //yr = 2000 + (int)(rand.nextDouble() * 7);
-        Loan closedLoan = createLoan(yr + "-001", loanDate1, currentDueDate1, originalDueDate1, 
-                                     dateClosed1, Loan.CLOSED, null);
-        
-        Hashtable<Preparation, Boolean> usedPrepHash = new Hashtable<Preparation, Boolean>();
-        int cnt = 0;
-        while (cnt < 3)
-        {
-            Preparation p = getObjectByClass(preps, Preparation.class, rand.nextInt(preps.size()));
-            int available = p.getLoanAvailable();
-            if (available < 1 || !p.getPrepType().getIsLoanable() && usedPrepHash.get(p) != null)
-            {
-                // retry
-                continue;
-            }
-            usedPrepHash.put(p, true);
-            
-            int quantity = Math.max(1,rand.nextInt(available));
-            LoanPreparation lpo = DataBuilder.createLoanPreparation(quantity, null, null, null, quantity, quantity, p, closedLoan);
-            
-            lpo.setIsResolved(true);
-            loanPhysObjs.add(lpo);
-            
-            Calendar returnedDate     = Calendar.getInstance();       
-            returnedDate.setTime(lpo.getLoan().getLoanDate().getTime());
-            returnedDate.add(Calendar.DAY_OF_YEAR, 72); // make the returned date be a little while after the original loan
-            
-            LoanReturnPreparation lrpo = createLoanReturnPreparation(returnedDate, quantity, lpo, null, agents.get(0));
-            
-            lpo.addReference(lrpo, "loanReturnPreparations");
-            returns.add(lrpo);
-
-            p.getLoanPreparations().add(lpo);
-            cnt++;
-        }
-        
-        Calendar loanDate2 = Calendar.getInstance();
-        loanDate2.set(2005, 11, 24);
-        
-        Calendar currentDueDate2 = Calendar.getInstance();
-        currentDueDate2.set(2006, 5, 24);
-        
-        Calendar originalDueDate2 = currentDueDate2;
-        Loan overdueLoan = createLoan(yr + "-001", loanDate2, currentDueDate2, originalDueDate2,  
-                                      null, Loan.OPEN, null);
-        cnt = 0;
-        while (cnt < 3)
-        {
-            Preparation p = getObjectByClass(preps, Preparation.class, rand.nextInt(preps.size()));
-            int available = p.getLoanAvailable();
-            if (available < 1 || !p.getPrepType().getIsLoanable())
-            {
-                // retry
-                continue;
-            }
-            int quantity = Math.max(1, rand.nextInt(available));
-            LoanPreparation lpo = createLoanPreparation(quantity, null, null, null, 0, 0, p, overdueLoan);
-            loanPhysObjs.add(lpo);
-            p.getLoanPreparations().add(lpo);
-            cnt++;
-        }
-
-        Calendar loanDate3 = Calendar.getInstance();
-        loanDate3.set(2006, 3, 21);
-        
-        Calendar currentDueDate3 = Calendar.getInstance();
-        currentDueDate3.set(2007, 3, 21);
-        
-        Calendar originalDueDate3 = Calendar.getInstance();
-        originalDueDate3.set(2006, 9, 21);
-        
-        Loan loan3 = createLoan(yr + "-003", loanDate3, currentDueDate3, originalDueDate3, null, Loan.OPEN, null);
-        Vector<LoanPreparation> newLoanLPOs = new Vector<LoanPreparation>();
-        int lpoCountInNewLoan = 0;
-        // put some LPOs in this loan that are from CollObjs that have other preps loaned out already
-        // this algorithm (because of the randomness) can result in this loan having 0 LPOs.
-        for( LoanPreparation lpo: loanPhysObjs)
-        {
-            int available = lpo.getPreparation().getLoanAvailable();
-            if (available > 0)
-            {
-                int quantity = Math.max(1, rand.nextInt(available));
-                LoanPreparation newLPO = createLoanPreparation(quantity, null, null, null, 0, 0, lpo.getPreparation(), loan3);
-                newLoanLPOs.add(newLPO);
-                lpo.getPreparation().getLoanPreparations().add(newLPO);
-                
-                // stop after we put 6 LPOs in the new loan
-                lpoCountInNewLoan++;
-                if (lpoCountInNewLoan == 6)
-                {
-                    break;
-                }
-            }
-        }
-        
-        // create some LoanReturnPreparations
-        int startIndex = returns.size();
-        for (int i=startIndex;i<newLoanLPOs.size();i++)
-        {
-            LoanPreparation lpo = newLoanLPOs.get(i);
-        
-            int    quantityLoaned   = lpo.getQuantity();
-            int    quantityReturned = (i == (loanPhysObjs.size() - 1)) ? quantityLoaned : (short)rand.nextInt(quantityLoaned);
-            int    quantityResolved = quantityReturned;
-            
-            lpo.setQuantityReturned(quantityReturned);
-            lpo.setQuantityResolved(quantityResolved);
-            lpo.setIsResolved(quantityLoaned == quantityResolved);
-            
-            Calendar returnedDate   = Calendar.getInstance();
-            
-            returnedDate.setTime(lpo.getLoan().getLoanDate().getTime());
-            // make the returned date be a little while after the original loan
-            returnedDate.add(Calendar.DAY_OF_YEAR, 72);
-            LoanReturnPreparation lrpo = createLoanReturnPreparation(returnedDate, quantityReturned, lpo, null, agents.get(0));
-            lpo.addReference(lrpo, "loanReturnPreparations");
-            
-            lpo.setQuantityReturned(quantityReturned);
-            lpo.setQuantityResolved(quantityReturned);
-            lpo.setIsResolved(quantityLoaned == quantityReturned);
-            returns.add(lrpo);
-            
-            boolean isRes = true;
-            for (LoanPreparation lp : lpo.getLoan().getLoanPreparations())
-            {
-                if (!lp.getIsResolved())
-                {
-                    isRes = false;
-                }
-            }
-            if (isRes)
-            {
-                lpo.getLoan().setIsClosed(true);
-            }
-            
-            i++;
-        }
-        
-        LoanAgent loanAgent1 = createLoanAgent("loaner", closedLoan, agents.get(1));
-        LoanAgent loanAgent2 = createLoanAgent("loaner", overdueLoan, agents.get(3));
-        LoanAgent loanAgent3 = createLoanAgent("Borrower", closedLoan, agents.get(4));
-        LoanAgent loanAgent4 = createLoanAgent("Borrower", overdueLoan, agents.get(4));
-        
-        dataObjects.add(closedLoan);
-        dataObjects.add(overdueLoan);
-        dataObjects.add(loan3);
-        dataObjects.addAll(loanPhysObjs);
-        dataObjects.addAll(newLoanLPOs);
-        dataObjects.addAll(returns);
-        
-        dataObjects.add(loanAgent1);
-        dataObjects.add(loanAgent2);
-        dataObjects.add(loanAgent3);
-        dataObjects.add(loanAgent4);
-        
+        createLoanExamples(preps, agents, dataObjects);
         frame.setProcess(++createStep);
-        
-        
-        Calendar ship1Date = Calendar.getInstance();
-        ship1Date.set(2004, 03, 19);
-        Shipment loan1Ship = createShipment(ship1Date, yr + "-001", "usps", (short) 1, "1.25 kg", null, agents.get(0), agents.get(4), agents.get(0));
-        
-        Calendar ship2Date = Calendar.getInstance();
-        ship2Date.set(2005, 11, 24);
-        Shipment loan2Ship = createShipment(ship2Date, yr + "-002", "fedex", (short) 2, "6.0 kg", null, agents.get(3), agents.get(4), agents.get(3));
-        
-        loan1Ship.setLoan(closedLoan);
-        loan2Ship.setLoan(overdueLoan);
 
-        //closedLoan.setShipment(loan1Ship);
-        //overdueLoan.setShipment(loan2Ship);
-        closedLoan.getShipments().add(loan1Ship);
-        overdueLoan.getShipments().add(loan2Ship);
-        dataObjects.add(loan1Ship);
-        dataObjects.add(loan2Ship);   
-        
         //startTx();
         persist(dataObjects);
         //commitTx();
