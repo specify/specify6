@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tree>
 	<treedef>
-		<level name="Earth"     enforced="false" infullname="false" rank="0"/>
+		<level name="Earth"     enforced="true" infullname="false" rank="0"/>
 		<level name="Continent" enforced="true"  infullname="false" rank="100"/>
 		<level name="Country"   enforced="true"  infullname="true"  rank="200"/>
 		<level name="State"     enforced="true"  infullname="true"  rank="300" /> 
