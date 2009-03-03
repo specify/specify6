@@ -85,13 +85,14 @@
         
         <view name="Authors"
             class="edu.ku.brc.specify.datamodel.Author"
+            usedefbusrule="false"
             resourcelabels="false">
             <desc><![CDATA[The Author subform for Reference Work form.]]></desc>
             <altviews>
-            <!--    <altview name="Author View" viewdef="Author" mode="view" default="true"/>
-                <altview name="Author Edit" viewdef="Author" mode="edit"/> -->
-                <altview name="Authors Table View" viewdef="Authors Table" mode="view"/>
-                <altview name="Authors Table Edit" viewdef="Authors Table" mode="edit" default="true"/>
+                <altview name="Author View" viewdef="Author" mode="view"/>
+                <altview name="Author Edit" viewdef="Author" mode="edit" default="true"/>
+               <altview name="Authors Table View" viewdef="Authors Table" mode="view"/>
+                <altview name="Authors Table Edit" viewdef="Authors Table" mode="edit"/>
             </altviews>
         </view>
         
@@ -480,9 +481,23 @@
 
     </views>
 
-    <!-- #############################################################################################
-         View Defs
-         ############################################################################################# -->
+<!--
+######################################################################################################
+######################################################################################################
+######################################################################################################
+######################################################################################################
+######################################################################################################
+######################################################################################################
+
+                Beginning of ViewDefs
+
+######################################################################################################
+######################################################################################################
+######################################################################################################
+######################################################################################################
+######################################################################################################
+######################################################################################################
+-->
          
     <viewdefs>
         <viewdef
@@ -853,21 +868,17 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[Author subform for Reference Work]]></desc>
             
-            <columnDef>100px,2px,p,2px,125px,2px,125px,2px,125px,2px,125px,p:g</columnDef>
+            <columnDef>100px,2px,102px,10px,p,2px,102px,10px,p,2px,150px,3px,p,p:g</columnDef>
             <rowDef auto="true" sep="2px" cell="p"/>
             <rows>
                 <row>
                     <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="agent.lastName" uitype="text" cols="20"  isrequired="true" colspan="3"/>
-                </row>
-                <row>
+                    <cell type="field" id="3" name="agent.lastName" uitype="text" cols="20"  isrequired="true"/>
                     <cell type="label" labelfor="5"/>
-                    <cell type="field" id="5" name="agent.firstName" uitype="text" cols="20" isrequired="true" colspan="3"/>
-                </row>
-                <row>
+                    <cell type="field" id="5" name="agent.firstName" uitype="text" cols="20" isrequired="true"/>
                     <cell type="label" labelfor="7"/>
                     <cell type="field" id="7" name="agent.email" uitype="text" cols="32"/>
-                    <cell type="field" id="mailto" name="agent" uitype="plugin" initialize="name=WebLinkButton;url=mailto:$email$;label=Send Mail"/>
+                    <cell type="field" id="mailto" name="agent" uitype="plugin" initialize="name=WebLinkButton;weblink=MailTo;icon=EMail;watch=7"/>
                 </row>
             </rows>
         </viewdef>
@@ -901,7 +912,7 @@
             gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The Journal form]]></desc>
-            <columnDef>100px,2px,294px,10px,p,2px,89px,15px,p:g</columnDef>
+            <columnDef>100px,2px,288px,8px,p,2px,97px,15px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             <rows>
                 <row>
@@ -942,47 +953,41 @@
             gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The ReferenceWork form]]></desc>
-            <columnDef>p,2px,p,5px,p,2px,p,5px,p,2px,p,p:g</columnDef>
+            <columnDef>100px,2px,121px,10px,p,2px,118px,10px,p,2px,118px,15px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             <rows>
                 <row>
                     <cell type="label" labelfor="8"/>
-                    <cell type="field" id="8" name="referenceWorkType" uitype="combobox" picklist="ReferenceWorkType" colspan="1"/>
+                    <cell type="field" id="8" name="referenceWorkType" uitype="combobox" picklist="ReferenceWorkType"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="title" uitype="text" cols="50" colspan="10"/>
+                    <cell type="field" id="1" name="title" uitype="text" cols="50" colspan="9"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="publisher" uitype="text" cols="50" colspan="10"/>
+                    <cell type="field" id="2" name="publisher" uitype="text" cols="50" colspan="9"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="placeOfPublication" uitype="text" cols="50" colspan="10"/>
+                    <cell type="field" id="3" name="placeOfPublication" uitype="text" cols="50" colspan="9"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="4"/>
                     <cell type="field" id="4" name="workDate" uitype="text" cols="10"/>
-                </row>
-                <row>
                     <cell type="label" labelfor="5"/>
                     <cell type="field" id="5" name="volume" uitype="text" cols="10"/>
-                </row>
-                <row>
                     <cell type="label" labelfor="6"/>
                     <cell type="field" id="6" name="pages" uitype="text"/>
                 </row>
                 <row>
+                    <cell type="label" labelfor="18"/>
+                    <cell type="field" id="18" name="journal" uitype="querycbx" initialize="name=Journal;title=Journal" colspan="5"/>
                     <cell type="label" labelfor="7"/>
                     <cell type="field" id="7" name="libraryNumber" uitype="text"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="18"/>
-                    <cell type="field" id="18" name="journal" uitype="querycbx" initialize="name=Journal;title=Journal" colspan="10"/>
-                </row> 
-                <row>
-                    <cell type="subview" id="10" name="authors" viewname="Authors" colspan="12"/>
+                    <cell type="subview" viewname="Authors" id="10" name="authors" initialize="name=Agent" colspan="12"/>
                 </row>
             </rows>
         </viewdef> 
@@ -994,7 +999,7 @@
             gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The ReferenceWork form]]></desc>
-            <columnDef>100px,2px,105px,5px,75px,2px,100px,10px,p,2px,100px,p:g</columnDef>
+            <columnDef>100px,2px,105px,5px,73px,2px,100px,10px,p,2px,100px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             <rows>
                 <row>
@@ -1561,7 +1566,7 @@
             <desc><![CDATA[New Storage Node Form]]></desc>
             <enableRules>
             </enableRules>
-            <columnDef>100px,2px,425px,p:g</columnDef>
+            <columnDef>100px,2px,495px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
@@ -2149,8 +2154,8 @@
                 </row>
             </rows>
         </viewdef>
-      
+        
+        
 
     </viewdefs>
 </viewset>
-
