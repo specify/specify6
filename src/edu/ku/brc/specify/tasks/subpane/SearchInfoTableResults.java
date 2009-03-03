@@ -55,7 +55,7 @@ public class SearchInfoTableResults extends ResultSetTableModel
         reasonList = results.getReasonList();
     }
     
-    protected void startDataAquisition(final boolean doSequentially)
+    protected void startDataAquisition(final boolean doSequentiallyArg)
     {
         SwingWorker workerThread = new SwingWorker()
         {

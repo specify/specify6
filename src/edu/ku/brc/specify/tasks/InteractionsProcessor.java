@@ -52,6 +52,7 @@ import edu.ku.brc.ui.UIRegistry;
 public class InteractionsProcessor<T extends PreparationsProviderIFace>
 {
     private static final Logger log = Logger.getLogger(InteractionsProcessor.class);
+    private static final String LOAN_LOADR = "LoanLoader";
     
     protected InteractionsTask task;
     protected boolean          isLoan;
@@ -229,9 +230,12 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
             if (StringUtils.isNotBlank(sqlStr))
             {
                 final JStatusBar statusBar = UIRegistry.getStatusBar();
-                statusBar.setIndeterminate("LoanLoader", true);
+                statusBar.setIndeterminate(LOAN_LOADR, true);
                 
-                UIRegistry.writeSimpleGlassPaneMsg(getResourceString("NEW_INTER_LOADING_PREP"), 24);
+                if (recordSet != null && recordSet.getNumItems() > 2)
+                {
+                    UIRegistry.writeSimpleGlassPaneMsg(getResourceString("NEW_INTER_LOADING_PREP"), 24);
+                }
                 
                 PrepLoaderSQL prepLoaderSQL = new PrepLoaderSQL(currPrepProvider, recordSet, infoRequest, isLoan);
                 prepLoaderSQL.addPropertyChangeListener(
@@ -240,7 +244,7 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
                                 log.debug(evt.getNewValue());
                                 if ("progress".equals(evt.getPropertyName())) 
                                 {
-                                    statusBar.setValue("LoanLoader", (Integer)evt.getNewValue());
+                                    statusBar.setValue(LOAN_LOADR, (Integer)evt.getNewValue());
                                 }
                             }
                         });
@@ -436,7 +440,7 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
                 total = coIdRows.size() * 2;
                 if (coIdRows.size() != 0)
                 {
-                    UIRegistry.getStatusBar().setProgressRange("LoanLoader", 0, Math.min(count, total));
+                    UIRegistry.getStatusBar().setProgressRange(LOAN_LOADR, 0, Math.min(count, total));
     
                     // Get Preps with Gifts
                     StringBuilder sb = new StringBuilder();
@@ -539,7 +543,7 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
     
             }
             firePropertyChange(PROGRESS, 0, total);
-            UIRegistry.getStatusBar().setIndeterminate("LoanLoader", true);
+            UIRegistry.getStatusBar().setIndeterminate(LOAN_LOADR, true);
             return 0;
         }
         
@@ -555,7 +559,7 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
                 Vector<Object[]> coIdRows = getColObjsFromRecordSet();
                 if (coIdRows.size() != 0)
                 {
-                    UIRegistry.getStatusBar().setProgressRange("LoanLoader", 0, total);
+                    UIRegistry.getStatusBar().setProgressRange(LOAN_LOADR, 0, total);
                     
                     // Get Preps with Loans
                     StringBuilder sb = new StringBuilder();
@@ -660,7 +664,7 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
 
             }
             firePropertyChange(PROGRESS, 0, total);
-            UIRegistry.getStatusBar().setIndeterminate("LoanLoader", true);
+            UIRegistry.getStatusBar().setIndeterminate(LOAN_LOADR, true);
             return 0;
         }
 
@@ -684,8 +688,13 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
         protected void done()
         {
             super.done();
-            UIRegistry.getStatusBar().setProgressDone("LoanLoader");
-            UIRegistry.clearSimpleGlassPaneMsg();
+            
+            UIRegistry.getStatusBar().setProgressDone(LOAN_LOADR);
+            
+            if (recordSet != null && recordSet.getNumItems() > 2)
+            {
+                UIRegistry.clearSimpleGlassPaneMsg();
+            }
             
             prepsLoaded(coToPrepHash, prepTypeHash, prepsProvider, infoRequest);
         }

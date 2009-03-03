@@ -432,7 +432,10 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
         //if (!isNew && valState == UIValidatable.ErrorType.Error && isEnabled())
         if (valState == UIValidatable.ErrorType.Error && isEnabled())
         {
-            UIHelper.drawRoundedRect((Graphics2D)g, valTextColor.getColor(), getSize(), 1);
+            UIHelper.drawRoundedRect((Graphics2D)g, isNew ? new Color(249,249,0) : valTextColor.getColor(), getSize(), 1);
+        } else if (valState == UIValidatable.ErrorType.Incomplete && isEnabled())
+        {
+            UIHelper.drawRoundedRect((Graphics2D)g, new Color(249,249,0), getSize(), 1);
         }
     }
 

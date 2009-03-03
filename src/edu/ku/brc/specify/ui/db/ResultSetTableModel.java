@@ -358,6 +358,10 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                 } else if (obj instanceof java.sql.Date || obj instanceof Date )
                 {
                     return scrDateFormat.format((Date)obj);
+                    
+                } else if (obj instanceof Boolean )
+                {
+                    return UIRegistry.getResourceString(obj.toString());
                 }
                 
                 //System.out.println(row+" "+column+" ["+obj+"] "+getColumnClass(column).getSimpleName() + " " + useColOffset);

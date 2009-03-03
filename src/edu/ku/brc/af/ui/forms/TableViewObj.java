@@ -885,6 +885,13 @@ public class TableViewObj implements Viewable,
             }
         }
         
+        // Add it in here so the Business Rules has a parent object to
+        // get state from.
+        if (parentDataObj != null && isEditing)
+        {
+            parentDataObj.addReference((FormDataObjIFace)dObj, dataSetFieldName);
+        }
+        
         final ViewBasedDisplayIFace dialog = FormHelper.createDataObjectDialog(altView, mainComp, dObj, isEditing, isNew);
         if (dialog != null)
         {
@@ -928,9 +935,10 @@ public class TableViewObj implements Viewable,
                 
             } catch (Exception ex)
             {
+                ex.printStackTrace();
                 edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TableViewObj.class, ex);
-                ex.printStackTrace();
+                
             } finally
             {
                 if (localSession != null)
@@ -956,7 +964,6 @@ public class TableViewObj implements Viewable,
                         tellMultiViewOfChange();
                         
                         Object daObj = dialog.getMultiView().getData();
-                        parentDataObj.addReference((FormDataObjIFace)daObj, dataSetFieldName);
                         if (isNew)
                         {
                             if (daObj instanceof Orderable)
@@ -1006,6 +1013,12 @@ public class TableViewObj implements Viewable,
                     }
                 } else if (dialog.getBtnPressed() == ViewBasedDisplayIFace.CANCEL_BTN)
                 {
+                    // since it was added in before the dlg was shown we now need to remove.
+                    if (parentDataObj != null && isEditing)
+                    {
+                        parentDataObj.removeReference((FormDataObjIFace)dObj, dataSetFieldName);
+                    }
+                    
                     if (mvParent.getMultiViewParent() != null && mvParent.getMultiViewParent().getCurrentValidator() != null)
                     {
                         mvParent.getCurrentValidator().setHasChanged(true);
@@ -1014,7 +1027,12 @@ public class TableViewObj implements Viewable,
                 }
             }
             dialog.dispose();
+            
+        } else if (parentDataObj != null)
+        {
+            parentDataObj.removeReference((FormDataObjIFace)dObj, dataSetFieldName);
         }
+
     }
     
     /**
@@ -2454,24 +2472,7 @@ public class TableViewObj implements Viewable,
                 {
                     session.attach(rowObj);
                 }
-                
 
-                /*
-                String[] fName      = new String[1];
-                String[] fieldNames = colInfo.getFieldNames();
-                for (String fldName : fieldNames)
-                {
-                    fName[0] = fldName;
-                    Object[] dataValues = UIHelper.getFieldValues(fName, rowObj, dataGetter);
-                    if (dataValues != null && dataValues[0] instanceof Set)
-                    {
-                       int x = 0;
-                       x++;
-                    }
-                }*/
-                
-                //log.debug(colInfo.getFullCompName());
-                
                 Object[] dataValues = UIHelper.getFieldValues(new String[] {colInfo.getFullCompName()}, rowObj, dataGetter);
                 if (dataValues == null || dataValues[0] == null)
                 {
@@ -2528,6 +2529,7 @@ public class TableViewObj implements Viewable,
                             }
                         }
                         return getPickListValue(adapter, dataVal);
+                        
                     } else if (StringUtils.isNotEmpty(uiFmt))
                     {
                         UIFieldFormatterIFace fmt = UIFieldFormatterMgr.getInstance().getFormatter(uiFmt);
@@ -2537,7 +2539,7 @@ public class TableViewObj implements Viewable,
                         }
                     }
                 }
-                return dataVal;
+                return dataVal instanceof Boolean ? getResourceString(dataVal.toString()) : dataVal;
             }
             return null;
         }

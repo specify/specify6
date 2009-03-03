@@ -1148,10 +1148,10 @@ public class ReportsBaseTask extends BaseTask
         //drb.setDetailHeight(new Integer(15));
         //drb.setDefaultStyles(null, null, null, evenRowStyle);
         
-        // drb.setLeftMargin(margin)
-        // drb.setRightMargin(margin)
-        // drb.setTopMargin(margin)
-        // drb.setBottomMargin(margin)
+        drb.setLeftMargin(20);
+        drb.setRightMargin(20);
+        drb.setTopMargin(10);
+        drb.setBottomMargin(10);
         
         drb.setPrintBackgroundOnOddRows(true);
         drb.setOddRowBackgroundStyle(oddRowStyle);

@@ -39,7 +39,7 @@ public class UploadResultSetTableModel extends ResultSetTableModel
      * @see edu.ku.brc.specify.ui.db.ResultSetTableModel#startDataAquisition(boolean)
      */
     @Override
-    protected void startDataAquisition(boolean doSequentially)
+    protected void startDataAquisition(boolean doSequentiallyArg)
     {
         setPropertyListener(this.parentERTP);
         UploadResults uploadResults = (UploadResults )results;

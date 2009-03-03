@@ -63,7 +63,7 @@ public class SpecifyDataObjFieldFormatMgr extends DataObjFieldFormatMgr implemen
         if (appRes != null)
         {
             return AppContextMgr.getInstance().getResourceAsDOM(appRes);
-        } 
+        }
         
         return XMLHelper.readDOMFromConfigDir(localFileName);
     }
@@ -79,6 +79,7 @@ public class SpecifyDataObjFieldFormatMgr extends DataObjFieldFormatMgr implemen
             AppResourceIFace appRes = AppContextMgr.getInstance().getResourceFromDir(COLLECTION, DATAOBJFORMATTERS);
             if (appRes != null)
             {
+                System.err.println(xml);
                 appRes.setDataAsString(xml);
                 AppContextMgr.getInstance().saveResource(appRes);
                
@@ -110,6 +111,7 @@ public class SpecifyDataObjFieldFormatMgr extends DataObjFieldFormatMgr implemen
                     }
                     appResUF.setSpAppResourceDir(collDir);
                     collDir.getSpAppResources().add(appResUF);
+                    System.err.println(xml);
                     appResUF.setDataAsString(xml);
                     ((SpecifyAppContextMgr) AppContextMgr.getInstance()).saveResource(appResUF);
                     

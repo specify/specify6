@@ -36,8 +36,6 @@ import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
 import edu.ku.brc.af.auth.PermissionSettings;
-import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
@@ -182,26 +180,7 @@ public class DataObjFieldFormatMgr
      */
     protected Element getDOM() throws Exception
     {
-        if (doingLocal)
-        {
-            return XMLHelper.readDOMFromConfigDir("backstop/dataobj_formatters.xml"); //$NON-NLS-1$
-        }
-
-        AppContextMgr appMgrInstance = AppContextMgr.getInstance();
-        
-        if (appMgrInstance != null)
-        {
-            AppResourceIFace appRes = appMgrInstance.getResourceFromDir("Collection", "DataObjFormatters"); //$NON-NLS-1$ //$NON-NLS-2$
-        
-            if (appRes != null)
-            {
-                return appMgrInstance.getResourceAsDOM(appRes);
-            } 
-        }
-        
         return XMLHelper.readDOMFromConfigDir("backstop/dataobj_formatters.xml"); //$NON-NLS-1$
-
-        //throw new RuntimeException("Not Implemented.");
     }
     
     /**
@@ -498,21 +477,8 @@ public class DataObjFieldFormatMgr
      */
     protected void saveXML(final String xml)
     {
-
         // save resource back to database
-        if (AppContextMgr.getInstance() != null || !doingLocal)
-        {
-            AppResourceIFace escAppRes = AppContextMgr.getInstance().getResourceFromDir("Collection", "DataObjFormatters");
-            if (escAppRes != null)
-            {
-                escAppRes.setDataAsString(xml);
-                AppContextMgr.getInstance().saveResource(escAppRes);
-               
-            } else
-            {
-                AppContextMgr.getInstance().putResourceAsXML("DataObjFormatters", xml);    
-            }
-        } else
+        if (doingLocal)
         {
             File outFile = XMLHelper.getConfigDir(instance.getLocalFileName());
             try
