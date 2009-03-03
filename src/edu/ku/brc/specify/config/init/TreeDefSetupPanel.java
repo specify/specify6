@@ -121,12 +121,12 @@ public class TreeDefSetupPanel extends BaseSetupPanel implements SetupPanelIFace
                             boolean required = false;
                             if (classType == TaxonTreeDef.class)
                             {
-                                required = TaxonTreeDef.isStdRequiredLevel(rank);
+                                required = TaxonTreeDef.isStdRequiredLevel(rank) || rank == 0;
                             } else
                             {
-                                required = GeographyTreeDef.isStdRequiredLevel(rank);
+                                required = GeographyTreeDef.isStdRequiredLevel(rank) || rank == 0;
                             }
-                            treeDefList.add(new TreeDefRow(name, rank, enforced, isInFullName, required || rank == 0, ", "));
+                            treeDefList.add(new TreeDefRow(name, rank, required, enforced, isInFullName, required || rank == 0, ", "));
                         }
                     }
                 } catch (Exception ex)
@@ -314,7 +314,7 @@ public class TreeDefSetupPanel extends BaseSetupPanel implements SetupPanelIFace
          */
         public TreeDefTableModel()
         {
-            header = new String[] {"LEVEL", "ISREQ", "ISENFORCED", "ISFULLNAME", "SEPARATOR"};
+            header = new String[] {"LEVEL", "INCLUDED", "ISREQ", "ISENFORCED", "ISFULLNAME", "SEPARATOR"};
             for (int i=0;i<header.length;i++)
             {
                 header[i] = getResourceString(header[i]);
@@ -361,15 +361,18 @@ public class TreeDefSetupPanel extends BaseSetupPanel implements SetupPanelIFace
                     return trd.getDefName();
                     
                 case 1: 
-                    return trd.isRequired() ? getResourceString("YES")  :  "  ";
+                    return trd.isIncluded();
                     
                 case 2: 
-                    return trd.isRequired() ? true : trd.isEnforced();
+                    return trd.isRequired() ? getResourceString("YES")  :  "  ";
                     
                 case 3: 
+                    return trd.isRequired() ? true : trd.isEnforced();
+                    
+                case 4: 
                     return trd.isInFullName();
                     
-                case 4:
+                case 5:
                     return trd.getSeparator();
             }
             return "";
@@ -385,14 +388,15 @@ public class TreeDefSetupPanel extends BaseSetupPanel implements SetupPanelIFace
             switch (column)
             {
                 case 0: 
-                case 1:
+                case 2:
                     return false;
                     
-                case 2: 
+                case 1:
+                case 3: 
                     return !trd.isRequired();
                     
-                case 3: 
-                case 4:
+                case 4: 
+                case 5:
                     return true;
             }
             return false;
@@ -407,19 +411,23 @@ public class TreeDefSetupPanel extends BaseSetupPanel implements SetupPanelIFace
             TreeDefRow trd = treeDefList.get(row);
             switch (column)
             {
-                case 0: 
-                case 1:
+                case 1: 
+                    trd.setIncluded((Boolean)value);
                     break;
                     
-                case 2: 
-                    trd.setEnforced((Boolean)value);
+                case 0: 
+                case 2:
                     break;
                     
                 case 3: 
+                    trd.setEnforced((Boolean)value);
+                    break;
+                    
+                case 4: 
                     trd.setInFullName((Boolean)value);
                     break;
                     
-                case 4:
+                case 5:
                     trd.setSeparator((String)value);
                     break;
             }
@@ -435,12 +443,13 @@ public class TreeDefSetupPanel extends BaseSetupPanel implements SetupPanelIFace
             switch (columnIndex)
             {
                 case 0: 
-                case 1:
-                case 4:
+                case 2:
+                case 5:
                     return String.class;
                     
-                case 2: 
+                case 1: 
                 case 3: 
+                case 4: 
                     return Boolean.class;
             }
             return String.class;

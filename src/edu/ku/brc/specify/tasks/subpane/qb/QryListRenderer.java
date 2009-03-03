@@ -12,7 +12,6 @@ package edu.ku.brc.specify.tasks.subpane.qb;
 import static edu.ku.brc.ui.UIHelper.createLabel;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 
 import javax.swing.BorderFactory;

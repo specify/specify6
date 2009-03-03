@@ -688,35 +688,38 @@ public class BuildSampleDatabase
             int                cnt         = 0;
             for (TreeDefRow row : treeDefList)
             {
-                TaxonTreeDefItem ttdi = new TaxonTreeDefItem();
-                ttdi.initialize();
-                ttdi.setTreeDef(taxonTreeDef);
-                taxonTreeDef.getTreeDefItems().add(ttdi);
-                ttdi.setName(row.getDefName());
-                ttdi.setRankId(row.getRank());
-                ttdi.setParent(parent);
-                ttdi.setFullNameSeparator(row.getSeparator());
-                ttdi.setIsEnforced(row.isEnforced());
-                ttdi.setIsInFullName(row.isInFullName());
-                
-                taxa.add(ttdi);
-                
-                if (cnt == 0)
+                if (row.isIncluded())
                 {
-                    Taxon tx = new Taxon();
-                    tx.initialize();
-                    tx.setDefinition(taxonTreeDef);
-                    tx.setDefinitionItem(ttdi);
-                    ttdi.getTreeEntries().add(tx);
-                    tx.setName("Life");
+                    TaxonTreeDefItem ttdi = new TaxonTreeDefItem();
+                    ttdi.initialize();
+                    ttdi.setTreeDef(taxonTreeDef);
+                    taxonTreeDef.getTreeDefItems().add(ttdi);
+                    ttdi.setName(row.getDefName());
+                    ttdi.setRankId(row.getRank());
+                    ttdi.setParent(parent);
+                    ttdi.setFullNameSeparator(row.getSeparator());
+                    ttdi.setIsEnforced(row.isEnforced());
+                    ttdi.setIsInFullName(row.isInFullName());
+                    
+                    taxa.add(ttdi);
+                    
+                    if (cnt == 0)
+                    {
+                        Taxon tx = new Taxon();
+                        tx.initialize();
+                        tx.setDefinition(taxonTreeDef);
+                        tx.setDefinitionItem(ttdi);
+                        ttdi.getTreeEntries().add(tx);
+                        tx.setName("Life");
+                    }
+                   
+                    if (parent != null)
+                    {
+                        parent.getChildren().add(ttdi);
+                    }
+                    parent = ttdi;
+                    cnt++;
                 }
-               
-                if (parent != null)
-                {
-                    parent.getChildren().add(ttdi);
-                }
-                parent = ttdi;
-                cnt++;
             }
         }
         

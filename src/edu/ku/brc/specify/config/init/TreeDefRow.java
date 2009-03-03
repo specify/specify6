@@ -11,7 +11,7 @@ import com.thoughtworks.xstream.XStream;
 /**
  * @author rod
  *
- * @code_status Alpha
+ * @code_status Beta
  *
  * Mar 1, 2009
  *
@@ -20,6 +20,7 @@ public class TreeDefRow
 {
     protected String  defName;
     protected int     rank;
+    protected boolean isIncluded;
     protected boolean isEnforced;
     protected boolean isInFullName;
     protected boolean isRequired;
@@ -33,6 +34,7 @@ public class TreeDefRow
      */
     public TreeDefRow(String defName, 
                       int rank, 
+                      boolean isIncluded, 
                       boolean isEnforced, 
                       boolean isInFullName, 
                       boolean isRequired, 
@@ -41,6 +43,7 @@ public class TreeDefRow
         super();
         this.defName = defName;
         this.rank = rank;
+        this.isIncluded = isIncluded;
         this.isEnforced = isEnforced;
         this.isInFullName = isInFullName;
         this.isRequired = isRequired;
@@ -111,11 +114,27 @@ public class TreeDefRow
     }
     
     /**
+     * @return the isIncluded
+     */
+    public boolean isIncluded()
+    {
+        return isIncluded;
+    }
+    
+    /**
+     * @param isIncluded the isIncluded to set
+     */
+    public void setIncluded(boolean isIncluded)
+    {
+        this.isIncluded = isIncluded;
+    }
+    /**
      * Configures the XStream for I/O.
      * @param xstream the stream
      */
     public static void configXStream(final XStream xstream)
     {
+        xstream.useAttributeFor(TreeDefRow.class, "isIncluded");
         xstream.useAttributeFor(TreeDefRow.class, "defName");
         xstream.useAttributeFor(TreeDefRow.class, "rank");
         xstream.useAttributeFor(TreeDefRow.class, "isEnforced");

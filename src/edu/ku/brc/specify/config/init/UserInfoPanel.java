@@ -73,7 +73,7 @@ public class UserInfoPanel extends GenericFormPanel
         
         PasswordStrengthUI pwdStrength = new PasswordStrengthUI();
         builder.add(createI18NFormLabel("PWDSTRENGTH"), cc.xy(1, row));
-        builder.add(pwdStrength,                        cc.xy(3, row)); row += 2;
+        builder.add(pwdStrength,                        cc.xyw(3, row, 2)); row += 2;
         
         final JTextField pwdTF = (JTextField)comps.get("usrPassword");
         pwdStrength.setPasswordField(pwdTF, null);
@@ -81,7 +81,7 @@ public class UserInfoPanel extends GenericFormPanel
         final JTextField encryptedTF = new JTextField(20);
         ViewFactory.changeTextFieldUIForDisplay(encryptedTF, false);
         builder.add(createI18NFormLabel("ENCRYPT_KEY"), cc.xy(1, row));
-        builder.add(encryptedTF,                        cc.xy(3, row));
+        builder.add(encryptedTF,                        cc.xyw(3, row, 2));
         
         pwdTF.getDocument().addDocumentListener(new DocumentAdaptor() {
             @Override
