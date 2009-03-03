@@ -12,8 +12,8 @@
                 <altview name="Attributes Edit" viewdef="Attributes" mode="edit"/>
             </altviews>
         </view>
-            
-            
+        
+        
         <view name="CollectingEvent"
             class="edu.ku.brc.specify.datamodel.CollectingEvent"
             busrules="edu.ku.brc.specify.datamodel.busrules.CollectingEventBusRules"
@@ -50,7 +50,7 @@
             </altviews>
         </view>
         
-                
+        
     </views>
     
     
@@ -91,7 +91,7 @@
                     <cell type="label" labelfor="22"/>
                     <cell type="field" id="22" name="remarks" uitype="textarea" colspan="10"/>
                 </row> 
-
+                
             </rows>
         </viewdef>
         
@@ -131,7 +131,7 @@
                     <cell type="subview" viewname="Preparation" id="8" name="preparations" defaulttype="table" colspan="16"/>
                 </row>
                 <row>
-                   <cell type="subview" viewname="Attributes" id="19" name="collectionObjectAttribute" colspan="16"/> 
+                    <cell type="subview" viewname="Attributes" id="19" name="collectionObjectAttribute" colspan="16"/> 
                 </row>
                 <row>
                     <cell type="separator" label="Attachments" colspan="16"/>
@@ -183,8 +183,8 @@
                     <cell type="field" id="6" name="remarks" uitype="textarea" colspan="10" cols="50"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="5"/>
-                    <cell type="subview" viewname="Collectors" id="5" name="collectors" colspan="10"/>
+                    
+                    <cell type="subview" viewname="Collectors" id="5" name="collectors" colspan="12"/>
                 </row>
                 <row>
                     <cell type="separator" label="Attachments" colspan="12"/>
@@ -237,6 +237,6 @@
             </rows>
         </viewdef>
         
-       
+        
     </viewdefs>
 </viewset>
