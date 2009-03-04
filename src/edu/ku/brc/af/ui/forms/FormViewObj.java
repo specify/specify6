@@ -1279,6 +1279,15 @@ public class FormViewObj implements Viewable,
                 adjustActionsAndMenus(false);
             }
         }
+        
+        // Give all the ResultSetController btns one last chance with all the data there to be enabled
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run()
+            {
+                updateControllerUI();
+            }
+        });
 
         // Moving this to the MultiView
         /*if (show)
