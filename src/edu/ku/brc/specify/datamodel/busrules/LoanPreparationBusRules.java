@@ -37,7 +37,7 @@ import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.util.Pair;
+import edu.ku.brc.util.Triple;
 
 /**
  * @author rod
@@ -77,6 +77,8 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
         
         if (formViewObj != null)
         {
+            formViewObj.setSkippingAttach(true);
+
             if (formViewObj.getRsController() != null)
             {
                 JButton newBtn = formViewObj.getRsController().getNewRecBtn();
@@ -213,8 +215,6 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
         
         if (dataObj != null && formViewObj != null)
         {
-            formViewObj.setSkippingAttach(true);
-            
             LoanPreparation loanPrep = (LoanPreparation)dataObj;
             Preparation     prep     = loanPrep.getPreparation();
             
@@ -243,7 +243,7 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
                 Vector<Object[]> rows = BasicSQLUtils.query(sql);
                 for (Object[] cols : rows)
                 {
-                    qGiftQnt  += getInt(cols[1]);
+                    qGiftQnt  += getInt(cols[0]);
                 }
                 
                 int qQnt     = 0;
@@ -304,10 +304,11 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
      * @param quantity
      * @param quantityReturned
      * @param qtyResolved
+     * @param resolvedChkBx
      */
-    private void quantitiesChanged(final ValSpinner quantity, 
-                                   int   quantityReturned,
-                                   final ValSpinner qtyResolved,
+    private void quantitiesChanged(final ValSpinner  quantity, 
+                                   final int         quantityReturned,
+                                   final ValSpinner  qtyResolved,
                                    final ValCheckBox resolvedChkBx)
     {
         int qty    = (Integer)quantity.getValue();
@@ -368,9 +369,8 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
                 }
             }
         });
-
     }
-    
+
     /**
      * @param lp
      * @return
@@ -397,6 +397,7 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
         super.formShutdown();
         
         CommandDispatcher.unregister(CMDTYPE, this);
+        CommandDispatcher.unregister(DECMDS, this);
     }
 
     /* (non-Javadoc)
@@ -436,26 +437,31 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
             }
         } else if (cmdAction.isType(DECMDS) && cmdAction.isAction("CLOSE_SUBVIEW"))
         {
-            Pair<Object, Object> dataPair   = (Pair<Object, Object>)cmdAction.getData();
-            LoanPreparation      loanPrep   = (LoanPreparation)dataPair.first;
-            Set<LoanReturnPreparation> lrps = (Set<LoanReturnPreparation>)dataPair.second;
-            
-            int quantityResolved = 0;
-            int quantityReturned = 0;
-            for (LoanReturnPreparation lrp : lrps)
+            Triple<Object, Object, Object> dataTriple = (Triple<Object, Object, Object>)cmdAction.getData();
+            if (dataTriple.first == formViewObj &&
+                dataTriple.second instanceof LoanPreparation && 
+                viewable.getValidator() != null)
             {
-                quantityResolved += lrp.getQuantityResolved();
-                quantityReturned += lrp.getQuantityReturned();
-            }
-            loanPrep.setQuantityResolved(quantityResolved);
-            loanPrep.setQuantityReturned(quantityReturned);
-            
-            if (formViewObj != null)
-            {
-                Component comp = formViewObj.getControlByName("quantityResolved");
-                if (comp instanceof JTextField && loanPrep != null)
+                LoanPreparation            loanPrep = (LoanPreparation)dataTriple.second;
+                Set<LoanReturnPreparation> lrps     = (Set<LoanReturnPreparation>)dataTriple.third;
+                
+                int quantityResolved = 0;
+                int quantityReturned = 0;
+                for (LoanReturnPreparation lrp : lrps)
                 {
-                    ((JTextField)comp).setText(Integer.toString(quantityResolved));
+                    quantityResolved += lrp.getQuantityResolved();
+                    quantityReturned += lrp.getQuantityReturned();
+                }
+                loanPrep.setQuantityResolved(quantityResolved);
+                loanPrep.setQuantityReturned(quantityReturned);
+                
+                if (formViewObj != null)
+                {
+                    Component comp = formViewObj.getControlByName("quantityResolved");
+                    if (comp instanceof JTextField && loanPrep != null)
+                    {
+                        ((JTextField)comp).setText(Integer.toString(quantityResolved));
+                    }
                 }
             }
         }

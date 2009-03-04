@@ -422,7 +422,7 @@
         <switch single="true">
             <fields>
                 <field formatter="PrepType">loanPreparation.preparation.prepType</field>
-                <field type="int" format="%d" sep=" - ">quantity</field>
+                <field type="int" format="%d" sep=" - ">quantityResolved</field>
             </fields>
         </switch>
     </format>

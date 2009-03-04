@@ -80,6 +80,10 @@ public interface AppResourceIFace
     public abstract String getDataAsString();
     
     public abstract String toString();
+    
+    public abstract String getFileName();
+    
+    public abstract void setFileName(String fileName);
 
     //public abstract Set<AppResourceDefault> getAppContexts();
     //public abstract void setAppContexts(Set<AppResourceDefault> appContexts);

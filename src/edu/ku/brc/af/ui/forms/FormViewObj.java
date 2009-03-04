@@ -2564,6 +2564,15 @@ public class FormViewObj implements Viewable,
         
         //log.info("saveObject "+hashCode() + " Session ["+(session != null ? session.hashCode() : "null")+"]");
 
+        if (businessRules != null)
+        {
+            if (!businessRules.isOkToSave(dataObj, session))
+            {
+                UIRegistry.showLocalizedError(businessRules.getMessagesAsString());
+                return false;
+            }
+        }
+        
         Object beforeSaveDataObj = dataObj;
         
         SAVE_STATE saveState = saveToDB(dataObj);

@@ -63,6 +63,7 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
+import edu.ku.brc.util.Triple;
 
 /**
  * @author rods
@@ -494,11 +495,12 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
             multiView.removeCurrentValidator();
         }
         
+        FormViewObj fvo = null;
         if (multiView != null)
         {
             if (frame.isEditMode())
             {
-                FormViewObj fvo = frame.getMultiView().getCurrentViewAsFormViewObj();
+                fvo = frame.getMultiView().getCurrentViewAsFormViewObj();
                 if (fvo != null)
                 {
                     //boolean removeCurrItem = fvo.getValidator().getState() != UIValidatable.ErrorType.Valid;
@@ -539,7 +541,7 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
             
         }
         
-        CommandDispatcher.dispatch(new CommandAction("Data_Entry", "CLOSE_SUBVIEW", new Pair<Object, Object>(parentObj, dataObj)));
+        CommandDispatcher.dispatch(new CommandAction("Data_Entry", "CLOSE_SUBVIEW", new Triple<Object, Object, Object>(fvo, parentObj, dataObj)));
         
         frame.dispose();
         frame = null;

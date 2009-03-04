@@ -151,6 +151,15 @@ public class BaseBusRules implements BusinessRulesIFace
         return strBuf.toString();
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BusinessRulesIFace#isOkToSave(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public boolean isOkToSave(Object dataObj, DataProviderSessionIFace session)
+    {
+        return true;
+    }
+
     /**
      * Checks to see if it can be deleted.
      * @param tableName the table name to check

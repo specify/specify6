@@ -1707,23 +1707,52 @@ public class InteractionsTask extends BaseTask
                         LoanPreparation loanPrep  = loanRetInfo.getLoanPreparation();
                         session.attach(loanPrep);
                         
+                        // The loanRetInfo contains the total number of Resolved and Returned
+                        // so we need to go get the number already resolved/returned and subtract it
+                        // to get the remaining difference for this last LoanReturnPrep
+                        int qtyRes = 0;
+                        int qtyRet = 0;
+                        for (LoanReturnPreparation lrp : loanPrep.getLoanReturnPreparations())
+                        {
+                            qtyRes += lrp.getQuantityResolved();
+                            qtyRet += lrp.getQuantityReturned();
+                        }
                         LoanReturnPreparation loanRetPrep = new LoanReturnPreparation();
                         loanRetPrep.initialize();
                         loanRetPrep.setReceivedBy(agent);
                         loanRetPrep.setModifiedByAgent(Agent.getUserAgent());
                         loanRetPrep.setReturnedDate(Calendar.getInstance());
+                        loanRetPrep.setQuantityResolved(loanRetInfo.getResolvedQty() - qtyRes);
+                        loanRetPrep.setQuantityReturned(loanRetInfo.getReturnedQty() - qtyRet);
                         
                         loanRetPrep.setRemarks(loanRetInfo.getRemarks());
                         
                         loanPrep.setIsResolved(loanRetInfo.isResolved());
-                        loanPrep.setQuantityReturned(loanPrep.getQuantityReturned());
-                        loanPrep.setQuantityResolved(loanPrep.getQuantityResolved());
+                        loanPrep.setQuantityResolved(loanRetInfo.getResolvedQty());
+                        loanPrep.setQuantityReturned(loanRetInfo.getReturnedQty());
                         loanPrep.addReference(loanRetPrep, "loanReturnPreparations");
                         
                         session.save(loanRetPrep);
                         session.saveOrUpdate(loanPrep);
                         session.saveOrUpdate(loan);
                     }
+                    
+                    boolean isClosed = true;
+                    for (LoanPreparation lp : loan.getLoanPreparations())
+                    {
+                        if (lp.getQuantityResolved().equals(lp.getQuantity()))
+                        {
+                            if (!lp.getIsResolved())
+                            {
+                                lp.setIsResolved(true);
+                            }
+                        } else
+                        {
+                            isClosed = false;
+                        }
+                    }
+                    loan.setIsClosed(isClosed);
+                    session.saveOrUpdate(loan);
                     
                     session.commit();
                     

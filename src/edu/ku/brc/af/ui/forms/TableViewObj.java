@@ -887,7 +887,7 @@ public class TableViewObj implements Viewable,
         
         // Add it in here so the Business Rules has a parent object to
         // get state from.
-        if (parentDataObj != null && isEditing)
+        if (parentDataObj != null && isEditing && isNew)
         {
             parentDataObj.addReference((FormDataObjIFace)dObj, dataSetFieldName);
         }
@@ -928,6 +928,7 @@ public class TableViewObj implements Viewable,
                     dialog.setSession(localSession);
                 }
                 
+                System.err.println(dObj);
                 dialog.setData(dObj);
                 dialog.showDisplay(true);
                 
@@ -1014,7 +1015,7 @@ public class TableViewObj implements Viewable,
                 } else if (dialog.getBtnPressed() == ViewBasedDisplayIFace.CANCEL_BTN)
                 {
                     // since it was added in before the dlg was shown we now need to remove.
-                    if (parentDataObj != null && isEditing)
+                    if (parentDataObj != null && isEditing && isNew)
                     {
                         parentDataObj.removeReference((FormDataObjIFace)dObj, dataSetFieldName);
                     }

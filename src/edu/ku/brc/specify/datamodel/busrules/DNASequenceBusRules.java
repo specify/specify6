@@ -4,13 +4,8 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 
-import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.ui.IllustrativeBarCodeUI;
 import edu.ku.brc.af.ui.forms.Viewable;
-import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.specify.datamodel.CollectingEvent;
-import edu.ku.brc.specify.datamodel.Collection;
-import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.DNASequence;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;

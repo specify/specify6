@@ -45,6 +45,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -548,21 +549,38 @@ public class SpAppResource extends DataModelObjBase implements java.io.Serializa
             }
         }
         
-        String str = null;
-        if (StringUtils.isNotEmpty(fileName))
+        String fileNameToOpen = fileName;
+        boolean doesFileExist = false;
+        if (StringUtils.isNotEmpty(fileNameToOpen))
         {
-            File file = new File(fileName);
-            if (file.exists())
+            File file = new File(fileNameToOpen);
+            if (!file.exists())
             {
-                str = XMLHelper.getContents(file);
-                timestampCreated  = new Timestamp(file.lastModified());
-                //timestampModified = timestampCreated;
+                String fName = FilenameUtils.getName(fileNameToOpen);
+                String path = FilenameUtils.getFullPathNoEndSeparator(fileNameToOpen);
+                path = path.substring(0, FilenameUtils.indexOfLastSeparator(path));
+                
+                fileNameToOpen = path + File.separator + fName;
+                
+                doesFileExist = (new File(fileNameToOpen)).exists();
             } else
             {
-                UIRegistry.showError("The file in the app_resources.xml ["+fileName+"] is missing.");
+                doesFileExist = true; 
             }
         }
-
+            
+        String str  = null;
+        if (doesFileExist)
+        {
+            File file = new File(fileNameToOpen);
+            str = XMLHelper.getContents(file);
+            timestampCreated  = new Timestamp(file.lastModified());
+            //timestampModified = timestampCreated;
+        } else
+        {
+            UIRegistry.showError("The file in the app_resources.xml ["+fileName+"] is missing.");
+        }
+        
         if (str != null && str.length() > 0)
         {
            return StringEscapeUtils.unescapeXml(str);

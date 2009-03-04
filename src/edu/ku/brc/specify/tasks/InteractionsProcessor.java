@@ -565,7 +565,7 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
                     StringBuilder sb = new StringBuilder();
                     sb.append("SELECT p.PreparationID, lp.Quantity, lp.QuantityResolved " +
                              "FROM preparation AS p INNER JOIN collectionobject AS co ON p.CollectionObjectID = co.CollectionObjectID " +
-                             "INNER JOIN loanpreparation AS lp ON p.PreparationID = lp.LoanPreparationID " +
+                             "INNER JOIN loanpreparation AS lp ON p.PreparationID = lp.PreparationID " +
                              "WHERE co.CollectionMemberID = COLMEMID AND co.CollectionObjectID in (");
                    for (Object[] row : coIdRows)
                    {

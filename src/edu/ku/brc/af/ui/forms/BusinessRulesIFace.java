@@ -109,6 +109,18 @@ public interface BusinessRulesIFace
     public abstract boolean okToEnableDelete(Object dataObj);
     
     /**
+     * This is a last second check where the business rules can determine whether it can be saved
+     * or not. This is because some state within the database may have changed. This is called synchronously
+     * so it must be fast. If it returns false then getWarningsAndErrors or getMessagesAsString can be called
+     * to get the reason.
+     * 
+     * @param dataObj the object to be saved
+     * @param session the data provider session
+     * @return true if it can be deleted, false if not
+     */
+    public abstract boolean isOkToSave(Object dataObj, DataProviderSessionIFace session);
+
+    /**
      * For some objects the check for deletion may need to hit the database.
      * This is called by a form after the user has said yes, but before anything else happens.
      * 
@@ -122,7 +134,7 @@ public interface BusinessRulesIFace
     /**
      * Returns a message for the user describing what was deleted (intended to be a single line of text).
      * 
-     * @param dataObj the data object that will be or has been deleted but still continas its values
+     * @param dataObj the data object that will be or has been deleted but still contains its values
      * @return the single line text string
      */
     public abstract String getDeleteMsg(Object dataObj);

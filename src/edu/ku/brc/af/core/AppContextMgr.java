@@ -226,6 +226,7 @@ public abstract class AppContextMgr
         toAppRes.setLevel(fromAppRes.getLevel());
         toAppRes.setMetaData(fromAppRes.getMetaData());
         toAppRes.setMimeType(fromAppRes.getMimeType());
+        toAppRes.setFileName(fromAppRes.getFileName());
     }
     
     /**

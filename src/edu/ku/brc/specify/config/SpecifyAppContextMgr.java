@@ -1871,10 +1871,10 @@ public class SpecifyAppContextMgr extends AppContextMgr
             }
         } catch (Exception ex)
         {
+            ex.printStackTrace();
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
             log.error(ex);
-            ex.printStackTrace();
             
         } finally 
         {

@@ -2169,10 +2169,10 @@
                     <cell type="field" id="5" name="remarks" uitype="textareabrief" rows="2" colspan="5"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="Shipment" id="11" name="shipments" colspan="9"/>
+                    <cell type="subview" viewname="Shipment" id="11" name="shipments" colspan="10"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="GiftItems" id="10" name="giftPreparations" defaulttype="table" colspan="9"/>
+                    <cell type="subview" viewname="GiftItems" id="10" name="giftPreparations" defaulttype="table" colspan="10"/>
                 </row>
             </rows>
         </viewdef>
@@ -2290,7 +2290,7 @@
                      <cell type="field" id="5" name="remarks" uitype="textareabrief" rows="2" colspan="9"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="Shipment" id="11" name="shipments" colspan="12"/>
+                    <cell type="subview" viewname="Shipment" id="11" name="shipments" colspan="14"/>
                 </row>
                 <row>
                      <cell type="subview" viewname="LoanItems" id="10" name="loanPreparations" defaulttype="table" colspan="14"/>
@@ -2386,7 +2386,11 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="quantity" uitype="spinner" initialize="max=5000" isrequired="true"/>
+                    <cell type="field" id="3" name="quantityReturned" uitype="spinner" initialize="max=5000" isrequired="true"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="5"/>
+                    <cell type="field" id="5" name="quantityResolved" uitype="spinner" initialize="max=5000" isrequired="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="4" />

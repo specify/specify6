@@ -26,6 +26,7 @@ import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.db.TextFieldWithInfo;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * This factory knows how to create AutoComplete Comboboxes that get their data from a query.
@@ -168,10 +169,11 @@ public class TypeSearchForQueryFactory
         if (typeSearchInfo != null)
         {
             return typeSearchInfo.getDataObjFormatterName();
-            
         }            
         // else
         log.error("Object Type Search Name ["+name+"] not found.");
+        
+        UIRegistry.showError("Couldn't create ValComboBoxFromQuery because the entry ["+name+"] is not in the typesearch_def.xml");
         return null;
     }
 
@@ -213,8 +215,9 @@ public class TypeSearchForQueryFactory
             log.error("Object Type Search Name ["+name+"] not found.");
         }
 
-
-        throw new RuntimeException("Couldn't create ValComboBoxFromQuery by name["+name+"]");
+        UIRegistry.showError("Couldn't create ValComboBoxFromQuery because the entry ["+name+"] is not in the typesearch_def.xml");
+        return null;
+        //throw new RuntimeException("Couldn't create ValComboBoxFromQuery by name["+name+"]");
     }
 
     /**

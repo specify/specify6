@@ -19,7 +19,6 @@
 package edu.ku.brc.specify.datamodel.busrules;
 
 import java.awt.Component;
-import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -38,10 +37,6 @@ import javax.swing.event.ListSelectionListener;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
@@ -65,9 +60,7 @@ import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.treeutils.TreeDataService;
 import edu.ku.brc.specify.treeutils.TreeDataServiceFactory;
 import edu.ku.brc.specify.treeutils.TreeHelper;
-import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.GetSetValueIFace;
-import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -1217,7 +1210,6 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
 		STATUS result = STATUS.OK;
 		if (parentHasChildWithSameName(parentDataObj, dataObj)) 
 		{
-            PanelBuilder pb = new PanelBuilder(new FormLayout("15dlu, f:p:g, 20dlu", "5dlu, f:p:g, 5dlu"));
             String parentName;
             if (parentDataObj == null) 
             {

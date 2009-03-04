@@ -1,17 +1,3 @@
-/* This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
 /**
 * Copyright (C) 2006  The University of Kansas
 *
@@ -78,6 +64,8 @@ public class LoanBusRules extends AttachmentOwnerBaseBusRules
     {
         super.initialize(viewableArg);
         
+        formViewObj.setSkippingAttach(true);
+
         Component closedComp = formViewObj.getControlByName("isClosed");
         if (closedComp instanceof JCheckBox)
         {
@@ -113,8 +101,6 @@ public class LoanBusRules extends AttachmentOwnerBaseBusRules
         
         if (formViewObj != null && loan != null)
         {
-            formViewObj.setSkippingAttach(true);
-            
             if (formViewObj.getSession() == null && loan.getId() != null)
             {
                 DataProviderSessionIFace session = null;
@@ -213,7 +199,52 @@ public class LoanBusRules extends AttachmentOwnerBaseBusRules
             }
         }
     }
+    
+    /**
+     * Calculated from the database the amount of available Preparations.
+     * @param prep the preparation in question
+     * @return the count available
+     */
+    /*public static int getUsedPrepCount(final Preparation prep)
+    {
+        String sql = "SELECT Count FROM preparation WHERE PreparationID = " + prep.getId();
+        int prepQty = getInt(BasicSQLUtils.getCount(sql));
+        
+        String lpSQL = "SELECT %s FROM loanpreparation AS lp INNER JOIN preparation AS p ON lp.PreparationID = p.PreparationID WHERE p.PreparationID = %d";
+        
+        int prepQtyLoaned   = getInt(BasicSQLUtils.getCount(String.format(lpSQL, "lp.Quantity", prep.getId())));
+        int prepQtyResolved = getInt(BasicSQLUtils.getCount(String.format(lpSQL, "lp.QuantityResolved", prep.getId())));
+        
+        sql = "SELECT gp.Quantity " +
+              "FROM giftpreparation AS gp INNER JOIN preparation AS p ON gp.PreparationID = p.PreparationID " +
+              "WHERE p.PreparationID = " + prep.getId();
+        int prepQtyGifted = getInt(BasicSQLUtils.getCount(sql));
 
+        return prepQty - prepQtyLoaned + prepQtyResolved - prepQtyGifted;
+    }*/
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#isOkToSave(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public boolean isOkToSave(Object dataObj, DataProviderSessionIFace session)
+    {
+        /*reasonList.clear();
+        
+        Loan loan = (Loan)dataObj;
+        
+        for (LoanPreparation loanPrep : loan.getLoanPreparations())
+        {
+            int availCnt = getUsedPrepCount(loanPrep.getPreparation());
+            if (availCnt < 1)
+            {
+                reasonList.add("Not enough Preps to loan "+availCnt); // I18N
+                return false;
+            }
+        }*/
+        return true;
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.busrules.AttachmentOwnerBaseBusRules#beforeSaveCommit(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
      */

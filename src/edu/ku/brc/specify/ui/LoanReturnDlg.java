@@ -52,6 +52,7 @@ import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -604,9 +605,10 @@ public class LoanReturnDlg extends JDialog
                 quantityReturned  = lpo.getQuantityReturned();
                 quantityResolved  = lpo.getQuantityResolved();
                 
-                int quantityOut   = quantityLoaned - quantityResolved;
+                int quantityResOut   = quantityLoaned - quantityResolved;
+                int quantityRetOut   = quantityLoaned - quantityReturned;
                 
-                if (quantityOut > 0 && !lpo.getIsResolved())
+                if ((quantityResOut > 0 || quantityRetOut > 0) && !lpo.getIsResolved())
                 {
                     maxValue = quantityLoaned;
                     
@@ -624,7 +626,7 @@ public class LoanReturnDlg extends JDialog
                     
                     pbuilder.add(new VerticalSeparator(fg, bg, 20), cc.xy(x,1)); x += 1; // 6
                     
-                    SpinnerModel resModel = new SpinnerNumberModel(quantityReturned, //initial value
+                    SpinnerModel resModel = new SpinnerNumberModel(quantityResolved, //initial value
                             quantityResolved, //min
                             quantityLoaned,   //max
                             1);               //step
@@ -635,6 +637,51 @@ public class LoanReturnDlg extends JDialog
                     
                     fmtStr = String.format(getResourceString("LOANRET_OF_FORMAT_RES"), quantityLoaned);
                     pbuilder.add(retLabel = createLabel(fmtStr), cc.xy(x, 1)); x += 1; // 9
+                    
+                    ChangeListener cl = new ChangeListener()
+                    {
+                        @Override
+                        public void stateChanged(ChangeEvent e)
+                        {
+                            int lrpResolvedQty = (Integer)resolvedSpinner.getValue();
+                            int lrpReturnedQty = (Integer)returnedSpinner.getValue();
+                            
+                            if (e != null)
+                            {
+                                if (e.getSource() == resolvedSpinner)
+                                {
+                                    if (lrpResolvedQty < lrpReturnedQty)
+                                    {
+                                        lrpReturnedQty = lrpResolvedQty;
+                                        final int qty = lrpReturnedQty;
+                                        SwingUtilities.invokeLater(new Runnable() {
+                                            @Override
+                                            public void run()
+                                            {
+                                                returnedSpinner.setValue(qty);
+                                            }
+                                        });
+                                    }
+                                } else if (e.getSource() == returnedSpinner)
+                                {
+                                    if (lrpReturnedQty > lrpResolvedQty)
+                                    {
+                                        lrpResolvedQty = lrpReturnedQty;
+                                        final int qty = lrpReturnedQty;
+                                        SwingUtilities.invokeLater(new Runnable() {
+                                            @Override
+                                            public void run()
+                                            {
+                                                resolvedSpinner.setValue(qty);
+                                            }
+                                        });
+                                    }
+                                }
+                            }
+                        }
+                    };
+                    returnedSpinner.addChangeListener(cl);
+                    resolvedSpinner.addChangeListener(cl);
                     
                 } else
                 {

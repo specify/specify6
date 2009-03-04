@@ -1,11 +1,8 @@
 /*
-     * Copyright (C) 2008  The University of Kansas
-     *
-     * [INSERT KU-APPROVED LICENSE TEXT HERE]
-     *
-     */
-/**
- * 
+ * Copyright (C) 2008  The University of Kansas
+ *
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
+ *
  */
 package edu.ku.brc.specify.datamodel.busrules;
 
@@ -40,6 +37,28 @@ public class GiftBusRules extends BaseBusRules
     }
 
     /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#isOkToSave(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public boolean isOkToSave(Object dataObj, DataProviderSessionIFace session)
+    {
+        /*reasonList.clear();
+        
+        Gift gift = (Gift)dataObj;
+        
+        for (GiftPreparation giftPrep : gift.getGiftPreparations())
+        {
+            int availCnt = LoanBusRules.getUsedPrepCount(giftPrep.getPreparation());
+            if (availCnt < 1)
+            {
+                reasonList.add("Not enough Preps to Gift "+availCnt); // I18N
+                return false;
+            }
+        }*/
+        return true;
+    }
+    
+    /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.busrules.AttachmentOwnerBaseBusRules#beforeSaveCommit(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
      */
     @Override
@@ -47,7 +66,7 @@ public class GiftBusRules extends BaseBusRules
     {
          Gift gift = (Gift)dataObj;
         
-        //System.out.println("beforeSaveCommit loanNum: "+gift.getGiftNumber());
+        //System.out.println("beforeSaveCommit giftNum: "+gift.getGiftNumber());
         
         for (Shipment shipment : gift.getShipments())
         {

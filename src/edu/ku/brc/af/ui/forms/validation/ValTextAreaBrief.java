@@ -136,6 +136,23 @@ public class ValTextAreaBrief extends ValTextArea
         });
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.validation.ValTextArea#setEnabled(boolean)
+     */
+    public void setEnabled(final boolean enabled)
+    {
+        super.setEnabled(enabled);
+        
+        if (iconButton != null)
+        {
+            iconButton.setEnabled(enabled);
+        }
+        if (scrollPane != null)
+        {
+            scrollPane.setEnabled(enabled);
+        }
+    }
+    
     /**
      * @param title the title to set
      */

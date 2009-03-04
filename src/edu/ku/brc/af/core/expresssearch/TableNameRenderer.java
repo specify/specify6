@@ -9,7 +9,6 @@
  */
 package edu.ku.brc.af.core.expresssearch;
 
-import java.awt.Color;
 import java.awt.Component;
 
 import javax.swing.DefaultListCellRenderer;
@@ -70,7 +69,7 @@ public class TableNameRenderer extends DefaultListCellRenderer
         
         if (iss) {
             setOpaque(true);
-            setBackground(Color.GREEN);//list.getSelectionBackground());
+            setBackground(list.getSelectionBackground());
             setForeground(list.getSelectionForeground());
             list.setSelectedIndex(index);
 
