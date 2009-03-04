@@ -1706,7 +1706,7 @@
       <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="technicalContacts" othersidename="instTechContact" updatable="false" required="false" save="true"/>
       <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.SpPrincipal" relationshipname="userGroups" othersidename="scope" updatable="false" required="false" save="false"/>
     </table>
-    <table classname="edu.ku.brc.specify.datamodel.Journal" table="journal" tableid="51" searchable="true" abbrv="jn">
+    <table classname="edu.ku.brc.specify.datamodel.Journal" table="journal" tableid="51" searchable="true" businessrule="edu.ku.brc.specify.datamodel.busrules.JournalBusRules" abbrv="jn">
       <display view="JournalForm" searchdlg="JournalSearch" newobjdlg="JournalDisplay"/>
       <field column="GUID" name="guid" type="java.lang.String" length="128" indexName="JournalGUIDIDX" updatable="true" required="false" unique="false" indexed="true" partialDate="false"/>
       <field column="ISSN" name="issn" type="java.lang.String" length="16" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>

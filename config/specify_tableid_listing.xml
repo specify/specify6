@@ -211,6 +211,7 @@
         </table>
         <table name="edu.ku.brc.specify.datamodel.Journal" abbrev="jn" id="51" searchable="true">
             <display view="JournalForm" searchdlg="JournalSearch" newobjdlg="JournalDisplay"/>
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.JournalBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.LithoStrat" abbrev="ls" id="100" workbench="true" searchable="true">
             <display view="LithoStrat" dataobjformatter="" searchdlg="LithoStratSearch" newobjdlg="LithoStratDisplay"/>
