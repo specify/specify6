@@ -89,6 +89,7 @@ import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.af.ui.db.ERTICaptionInfo;
 import edu.ku.brc.af.ui.db.ERTICaptionInfo.ColInfo;
 import edu.ku.brc.af.ui.forms.formatters.DataObjDataFieldFormatIFace;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -1251,6 +1252,19 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         return fldName.trim().replaceAll(" ", "_");
     }
     
+    protected static UIFieldFormatterIFace getColumnFormatter(final FieldQRI fqri)
+    {
+    	if (fqri instanceof RelQRI)
+    	{
+            DataObjDataFieldFormatIFace formatter = ((RelQRI )fqri).getDataObjFormatter();
+            if (formatter != null && formatter.getSingleField() != null)
+            {
+                return fqri.getTableInfo().getFieldByName(formatter.getSingleField()).getFormatter();
+            }
+            return null;
+        }
+    	return fqri.getFormatter();
+    }
     /**
      * @param queryFieldItemsArg
      * @param fixLabels
@@ -1349,7 +1363,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 }
                 else
                 {
-                    erti = new ERTICaptionInfoQB(colName, lbl, true, qfp.getFieldQRI().getFormatter(), 0, qfp.getStringId(), qfp.getPickList());
+                    
+                	erti = new ERTICaptionInfoQB(colName, lbl, true, getColumnFormatter(qfp.getFieldQRI()), 0, qfp.getStringId(), qfp.getPickList());
                 }
                 erti.setColClass(qfp.getFieldQRI().getDataClass());
                 if (qfp.getFieldInfo() != null && qfp.getFieldQRI().getFieldInfo().isPartialDate())
