@@ -549,6 +549,7 @@ public class UserAndMasterPasswordMgr
         String encrytpedStr = Encryption.encrypt(username+","+password, password);
         String fullURL      = urlLoc + "?data=" + encrytpedStr;
         
+        Exception exception = null;
         BufferedReader bufRdr = null;
         try 
         {
@@ -572,21 +573,18 @@ public class UserAndMasterPasswordMgr
         } 
         catch (MalformedURLException mue) 
         {
-            //edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UserAndMasterPasswordMgr.class, mue);
             mue.printStackTrace();
+            exception = mue;
         } 
         catch (IOException ioe) 
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UserAndMasterPasswordMgr.class, ioe);
             ioe.printStackTrace();
+            exception = ioe;
             
         } catch (Exception ex) 
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UserAndMasterPasswordMgr.class, ex);
             ex.printStackTrace(); 
+            exception = ex;
             
         } finally
         {
@@ -596,10 +594,14 @@ public class UserAndMasterPasswordMgr
                 
             } catch (IOException ioe) 
             {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UserAndMasterPasswordMgr.class, ioe);
                 ioe.printStackTrace();
+                exception = ioe;
             }
+        }
+        
+        if (exception != null)
+        {
+            UIRegistry.showLocalizedError("WEBSRV_ERROR", exception.toString());
         }
         return null;
     }
