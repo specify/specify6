@@ -1359,6 +1359,8 @@ public class FormViewObj implements Viewable,
         } else
         {
             JScrollPane scrollPane = new JScrollPane(formComp, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+            scrollPane.getVerticalScrollBar().setUnitIncrement(10);
+            
             scrollPane.setBorder(null);
             this.mainComp.add(scrollPane, BorderLayout.CENTER); 
             this.formComp = scrollPane;
