@@ -1191,7 +1191,7 @@ public class DataObjFieldFormatMgr
      * Sets DataObjFieldFormatMgr instance to null. 
      * Next getInstance() call will force complete rebuild. 
      */
-    public static void clear()
+    public synchronized static void clear()
     {
     	instance = null;
     }
