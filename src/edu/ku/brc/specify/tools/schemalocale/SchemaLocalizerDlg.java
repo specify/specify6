@@ -233,6 +233,8 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
                 
                 WebLinkMgr.getInstance().reload();
                 
+                DataObjFieldFormatMgr.clear();
+                
                 return null;
             }
             
