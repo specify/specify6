@@ -122,6 +122,7 @@ public class LoanReturnDlg extends JDialog
     protected ValFormattedTextFieldSingle dateClosed;
     
     /**
+     * Constructor.
      * @param loan the loan
      */
     public LoanReturnDlg(final Loan loan)
@@ -147,7 +148,7 @@ public class LoanReturnDlg extends JDialog
         {
             session = DataProviderFactory.getInstance().createSession();
             
-            session.attach(loan);
+            loan = session.merge(loan);
         
             setTitle(getResourceString("LOANRET_TITLE"));
             

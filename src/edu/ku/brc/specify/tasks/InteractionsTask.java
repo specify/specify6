@@ -74,7 +74,6 @@ import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.TableViewObj;
 import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.persist.ViewIFace;
-import edu.ku.brc.af.ui.forms.validation.UIValidatable;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
@@ -1677,7 +1676,7 @@ public class InteractionsTask extends BaseTask
      * @param returns the list of items being returned
      */
     protected void doReturnLoan(final MultiView            multiView,
-                                final Loan                 loan,
+                                final Loan                 loanArg,
                                 final Agent                agent, 
                                 final List<LoanReturnInfo> returns)
     {
@@ -1690,7 +1689,8 @@ public class InteractionsTask extends BaseTask
         
         final SwingWorker worker = new SwingWorker()
         {
-            protected int numLPR = 0;
+            protected int  numLPR = 0;
+            protected Loan loan   = null;
             
             @Override
             public Object construct()
@@ -1702,10 +1702,18 @@ public class InteractionsTask extends BaseTask
                     
                     session.beginTransaction();
                     
+                    loan = session.merge(loanArg);
+                    
                     for (LoanReturnInfo loanRetInfo : returns)
                     {   
-                        LoanPreparation loanPrep  = loanRetInfo.getLoanPreparation();
-                        session.attach(loanPrep);
+                        LoanPreparation loanPrep = loanRetInfo.getLoanPreparation();
+                        for (LoanPreparation lp : loan.getLoanPreparations())
+                        {
+                            if (loanPrep.getId().equals(lp.getId()))
+                            {
+                                loanPrep = lp;
+                            }
+                        }
                         
                         // The loanRetInfo contains the total number of Resolved and Returned
                         // so we need to go get the number already resolved/returned and subtract it
@@ -1717,6 +1725,7 @@ public class InteractionsTask extends BaseTask
                             qtyRes += lrp.getQuantityResolved();
                             qtyRet += lrp.getQuantityReturned();
                         }
+                        
                         LoanReturnPreparation loanRetPrep = new LoanReturnPreparation();
                         loanRetPrep.initialize();
                         loanRetPrep.setReceivedBy(agent);
@@ -1760,10 +1769,10 @@ public class InteractionsTask extends BaseTask
                     
                 } catch (Exception ex)
                 {
+                    // Error Dialog
+                    ex.printStackTrace();
                     edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                     edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(InteractionsTask.class, ex);
-                    ex.printStackTrace();
-                    // Error Dialog
                     
                 } finally
                 {
@@ -1781,6 +1790,8 @@ public class InteractionsTask extends BaseTask
             {
                 statusBar.setProgressDone(INTERACTIONS);
                 statusBar.setText("");
+                multiView.setIsNewForm(false, true);
+                multiView.setData(null);
                 multiView.setData(loan);
                 UIRegistry.clearSimpleGlassPaneMsg();
                 
@@ -1824,9 +1835,9 @@ public class InteractionsTask extends BaseTask
                 {
                     FormViewObj fvp = mv.getCurrentViewAsFormViewObj();
                     fvp.setHasNewData(true);
-                    //fvp.getValidator().validateForm();
-                    fvp.getValidator().setHasChanged(true);
-                    fvp.validationWasOK(fvp.getValidator().getState() == UIValidatable.ErrorType.Valid);
+                    // 03/04/09 Commented out the two lines below so the form doesn't get enabled for saving.
+                    //fvp.getValidator().setHasChanged(true);
+                    //fvp.validationWasOK(fvp.getValidator().getState() == UIValidatable.ErrorType.Valid);
                    
                     List<LoanReturnInfo> returns = dlg.getLoanReturnInfo();
                     if (returns.size() > 0)
