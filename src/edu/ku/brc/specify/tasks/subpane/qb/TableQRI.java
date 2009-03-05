@@ -106,7 +106,8 @@ public class TableQRI extends ExpandableQRI
             }
             if (relationship == null)
             {
-            	log.error("Unable to determine relationship for " + this.getTitle());
+            	log.error("Unable to determine relationship for " + this.getTableTree().getField() + " <-> " 
+            			+ getTableTree().getParent().getField());
             }
         }
     }
