@@ -45,7 +45,7 @@ public class QBResultsSubPane extends ESResultsSubPane
 	@Override
 	public String getHelpTarget() 
 	{
-		return "QB";
+		return "QB_Results";
 	}
 
     
