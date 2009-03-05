@@ -39,5 +39,14 @@ public class QBResultsSubPane extends ESResultsSubPane
         return new QBResultsTablePanel(this, results, results.shouldInstallServices(), results.isExpanded());
     }
 
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.af.tasks.subpane.BaseSubPane#getHelpTarget()
+	 */
+	@Override
+	public String getHelpTarget() 
+	{
+		return "QB";
+	}
+
     
 }
