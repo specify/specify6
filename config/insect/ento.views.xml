@@ -64,7 +64,7 @@
     			    <cell type="field" id="2" name="collection.collectionName" uitype="dsptextfield"/>
     			    
     			    <cell type="label" labelfor="3" label="Accession #"/>
-    			    <cell type="field" id="3" name="accession" uitype="querycbx" initialize="name=Accession;title=Accession" isrequired="false"/>
+    			    <cell type="field" id="3" name="accession" uitype="querycbx" initialize="name=AccessionCO;title=AccessionCO" isrequired="false"/>
     			</row>
     		    <row>
     		        
