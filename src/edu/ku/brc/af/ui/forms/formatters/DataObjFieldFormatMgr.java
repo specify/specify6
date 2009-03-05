@@ -1190,6 +1190,11 @@ public class DataObjFieldFormatMgr
     /**
      * Sets DataObjFieldFormatMgr instance to null. 
      * Next getInstance() call will force complete rebuild. 
+     * 
+     * Not sure if synchronization helps if getInstance() is not synchronized.
+     * However, risk of concurrent access is minimal, because this is only called 
+     * after Schema localization changes, which can only be performed when no other tasks are open.
+     * 
      */
     public synchronized static void clear()
     {
