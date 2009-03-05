@@ -239,7 +239,7 @@ public class DataObjSwitchFormatter implements Comparable<DataObjSwitchFormatter
                 dff = getFormatterForValue(value);
                 if (dff == null)
                 {
-                    throw new RuntimeException("Couldn't find a switchable data formatter for ["+getName()+"] field["+getFieldName()+"] value["+value+"]");
+                    log.error("Couldn't find a switchable data formatter for ["+getName()+"] field["+getFieldName()+"] value["+value+"]");
                 }
             } else
             {
