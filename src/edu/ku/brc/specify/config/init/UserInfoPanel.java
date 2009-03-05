@@ -32,7 +32,8 @@ import edu.ku.brc.ui.DocumentAdaptor;
  */
 public class UserInfoPanel extends GenericFormPanel
 {
-
+    private JTextField encryptedTF;
+    
     /**
      * @param name
      * @param title
@@ -78,10 +79,10 @@ public class UserInfoPanel extends GenericFormPanel
         final JTextField pwdTF = (JTextField)comps.get("usrPassword");
         pwdStrength.setPasswordField(pwdTF, null);
         
-        final JTextField encryptedTF = new JTextField(20);
+        encryptedTF = new JTextField(20);
         ViewFactory.changeTextFieldUIForDisplay(encryptedTF, false);
-        builder.add(createI18NFormLabel("ENCRYPT_KEY"), cc.xy(1, row));
-        builder.add(encryptedTF,                        cc.xyw(3, row, 2));
+        //builder.add(createI18NFormLabel("ENCRYPT_KEY"), cc.xy(1, row));
+        //builder.add(encryptedTF,                        cc.xyw(3, row, 2));
         
         pwdTF.getDocument().addDocumentListener(new DocumentAdaptor() {
             @Override
@@ -92,5 +93,12 @@ public class UserInfoPanel extends GenericFormPanel
         });
     }
 
+    /**
+     * @return the encrypted string for loggin in
+     */
+    public String getEncryptedStr()
+    {
+        return encryptedTF.getText();
+    }
     
 }

@@ -23,6 +23,7 @@ import java.util.MissingResourceException;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.Vector;
+import java.util.prefs.BackingStoreException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -50,6 +51,7 @@ import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.DesertBlue;
 
 import edu.ku.brc.af.auth.SecurityMgr;
+import edu.ku.brc.af.auth.UserAndMasterPasswordMgr;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.FrameworkAppIFace;
 import edu.ku.brc.af.core.MacOSAppHandler;
@@ -59,6 +61,7 @@ import edu.ku.brc.af.core.db.BackupServiceFactory;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
@@ -73,6 +76,7 @@ import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.SpecifyUserTypes;
+import edu.ku.brc.specify.config.SpecifyAppPrefs;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.ui.HelpMgr;
@@ -110,6 +114,7 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
     protected TreeDefSetupPanel      taxonTDPanel;
     protected TreeDefSetupPanel      geoTDPanel;
     protected DBLocationPanel        locationPanel;
+    protected UserInfoPanel          userInfoPanel;
     
     protected int                    step     = 0;
     protected int                    lastStep = 3;
@@ -132,8 +137,12 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
         
         // Now initialize
         AppPreferences localPrefs = AppPreferences.getLocalPrefs();
-        localPrefs.setDirPath(UIRegistry.getDefaultWorkingPath());
-
+        localPrefs.setDirPath(UIRegistry.getAppDataDir());
+        
+        AppPrefsCache.setUseLocalOnly(true);
+        SpecifyAppPrefs.setSkipRemotePrefs(true);
+        SpecifyAppPrefs.initialPrefs();
+        
         ImageIcon helpIcon = IconManager.getIcon("WizardIcon",IconSize.Std16); //$NON-NLS-1$
         HelpMgr.initializeHelp("SpecifyHelp", helpIcon.getImage()); //$NON-NLS-1$
         
@@ -148,7 +157,6 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
         {
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyDBSetupWizard.class, ex);
-            
         }
         
         setIconImage(IconManager.getIcon("WizardIcon", IconManager.IconSize.Std16).getImage());
@@ -223,12 +231,13 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
                 new String[] { "saUserName", "saPassword"}, 
                 nextBtn, true));
 
-        panels.add(new UserInfoPanel("AGENT", 
+        userInfoPanel = new UserInfoPanel("AGENT", 
                 "ENTER_COLMGR_INFO", 
                 new String[] { "FIRSTNAME", "LASTNAME", "MIDNAME",       "EMAIL", "USERLOGININFO", "USERNAME", "PASSWORD"}, 
                 new String[] { "firstName", "lastName", "middleInitial", "email", "-", "usrUsername", "usrPassword"}, 
-                nextBtn));
-         
+                nextBtn);
+        panels.add(userInfoPanel);
+        
         panels.add(new GenericFormPanel("INST", 
                 "ENTER_INST_INFO",
                 new String[] { "NAME",     "ABBREV"}, 
@@ -444,7 +453,7 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
         }
         
         // Clear and Reset Everything!
-        AppPreferences.shutdownLocalPrefs();
+        //AppPreferences.shutdownLocalPrefs();
         //UIRegistry.setDefaultWorkingPath(null);
         
         log.debug("********** WORK["+UIRegistry.getDefaultWorkingPath()+"]");
@@ -554,12 +563,40 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
             }
         });
     }
+    
+    /**
+     * Sets up initial preference settings.
+     */
+    protected void setupLoginPrefs()
+    {
+        String encryptedMasterUP = UserAndMasterPasswordMgr.getInstance().encrypt(props.getProperty("saUserName"), 
+                props.getProperty("saPassword"), props.getProperty("usrPassword"));
+
+        DatabaseDriverInfo driverInfo = userPanel.getDriver();
+        AppPreferences ap = AppPreferences.getLocalPrefs();
+        ap.put("testuser_master.islocal",  "true");
+        ap.put("testuser_master.path",     encryptedMasterUP);
+        ap.put("login.dbdriver_selected",  driverInfo.getName());
+        ap.put("login.username",           props.getProperty("usrUsername"));
+        ap.put("login.databases_selected", userPanel.getDbName());
+        ap.put("login.databases",          userPanel.getDbName());
+        ap.put("login.servers",            props.getProperty("hostName"));
+        ap.put("login.servers_selected",   props.getProperty("hostName"));
+        ap.put("login.rememberuser",       "true");
+        
+        try
+        {
+            ap.flush();
+        } catch (BackingStoreException ex) {}
+    }
 
     /**
      * 
      */
     public void configureDatabase()
     {
+        setupLoginPrefs();
+
        //System.err.println(UIRegistry.getDefaultWorkingPath() + File.separator + "DerbyDatabases");
         try
         {

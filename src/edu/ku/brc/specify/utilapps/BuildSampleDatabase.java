@@ -4775,9 +4775,9 @@ public class BuildSampleDatabase
         user.addUserToSpPrincipalGroup(groupMap.get(SpecifyUserTypes.UserType.Manager.toString()));
 
         // Tester
-        //String userPrefix = (isVoucherCol)? "Voucher" : "";
-        //createAndAddTesterToCollection(userPrefix + "FishTester", "fishtester@brc.ku.edu", userPrefix + "FishTester", 
-        //        "", "Fish", "", "Tester", "", discipline, division, groupMap, "Guest");
+        String userPrefix = (isVoucherCol)? "" : "Tis";
+        createAndAddTesterToCollection(userPrefix + "FishTester", "fishtester@brc.ku.edu", userPrefix + "FishTester", 
+                "", "Fish", "", "Tester", "", discipline, division, groupMap, "Guest");
         
         DataBuilder.setSession(dataBuilderSession);
         commitTx();

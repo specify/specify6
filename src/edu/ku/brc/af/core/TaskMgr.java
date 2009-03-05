@@ -558,7 +558,6 @@ public class TaskMgr implements CommandListener
                                 if (!perm.canView())
                                 {
                                     shouldAddToUI = false;
-                                    System.out.println(task);
                                     task.setEnabled(false);
                                 }
                             }
