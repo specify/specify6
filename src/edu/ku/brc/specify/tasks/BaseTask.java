@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.Hashtable;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
 
 import com.thoughtworks.xstream.XStream;
 
@@ -34,6 +35,8 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public abstract class BaseTask extends edu.ku.brc.af.tasks.BaseTask
 {
+    protected static final Logger  log = Logger.getLogger(BaseTask.class);
+    
     protected static SoftReference<Hashtable<String, PermissionOptionPersist>> taskPermsListSR = null;
     
     /**
@@ -61,6 +64,7 @@ public abstract class BaseTask extends edu.ku.brc.af.tasks.BaseTask
         try
         {
             File permFile = new File(XMLHelper.getConfigDirPath("defaultperms" + File.separator + fileName)); //$NON-NLS-1$
+            log.debug(permFile.getAbsoluteFile());
             if (permFile.exists())
             {
                 xmlStr = FileUtils.readFileToString(permFile);
@@ -98,7 +102,7 @@ public abstract class BaseTask extends edu.ku.brc.af.tasks.BaseTask
         
         if (hash == null)
         {
-            Hashtable<String, Hashtable<String, PermissionOptionPersist>> taskHash = readDefaultPermsFromXML("task.xml");
+            Hashtable<String, Hashtable<String, PermissionOptionPersist>> taskHash = readDefaultPermsFromXML("tasks.xml");
             if (taskHash != null)
             {
                 hash = taskHash.get(name);
@@ -156,13 +160,23 @@ public abstract class BaseTask extends edu.ku.brc.af.tasks.BaseTask
      * @see edu.ku.brc.af.tasks.BaseTask#getDefaultPermissions(java.lang.String)
      */
     @Override
-    public PermissionIFace getDefaultPermissions(String userType)
+    public PermissionIFace getDefaultPermissions(final String userType)
     {
         Hashtable<String, PermissionOptionPersist> hash = getAndSetDefPerms();
-        
         //System.err.println(name+"  "+userType+"  "+(defaultPermissionsHash != null ? defaultPermissionsHash.get(userType) : null));
-        
-        return hash != null ? hash.get(userType).getDefaultPerms() : null;
+        if (hash != null)
+        {
+            PermissionOptionPersist permOpt = hash.get(userType);
+            if (permOpt != null)
+            {
+                return permOpt.getDefaultPerms();
+            }
+            log.error("No permissions from hash for user type["+userType+"]");
+        } else
+        {
+            log.error("No hashtable from getAndSetDefPerms!");
+        }
+        return null;
     }
 
     /* (non-Javadoc)

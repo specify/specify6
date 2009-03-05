@@ -357,6 +357,7 @@ public class ViewSetMgr
         
         if (contextDirArg != null)
         { 
+            log.debug(contextDirArg.getAbsoluteFile());
             File vsRegFile = new File(contextDirArg.getAbsoluteFile() + File.separator + REGISTRY_FILENAME);
             if (vsRegFile.exists())
             {
@@ -371,10 +372,10 @@ public class ViewSetMgr
                     
                 } catch (Exception ex)
                 {
+                    log.error(ex);
+                    ex.printStackTrace();
                     edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                     edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ViewSetMgr.class, ex);
-                    ex.printStackTrace();
-                    log.error(ex);
                 }
             } else if (!emptyIsOK)
             {
