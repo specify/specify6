@@ -1490,9 +1490,10 @@ public final class UIHelper
                                              final boolean doAutoClose,
                                              final boolean useDialog,
                                              final DatabaseLoginListener listener,
-                                             final String iconName)
+                                             final String  iconName,
+                                             final String  appIconName)
     {     
-        return doLogin(userName, password, doAutoClose, useDialog, listener, iconName, null, null);
+        return doLogin(userName, password, doAutoClose, useDialog, listener, iconName, null, null, appIconName);
     }
     
     /**
@@ -1513,9 +1514,10 @@ public final class UIHelper
                                              final DatabaseLoginListener listener,
                                              final String  iconName,
                                              final String  title,
-                                             final String  appName)
+                                             final String  appName,
+                                             final String  appIconName)
     {     
-        return doLogin(null, null, usrPwdProvider, doAutoClose, useDialog, listener, iconName, title, appName); 
+        return doLogin(null, null, usrPwdProvider, doAutoClose, useDialog, listener, iconName, title, appName, appIconName); 
     }
     
     /**
@@ -1538,9 +1540,10 @@ public final class UIHelper
                                              final DatabaseLoginListener listener,
                                              final String  iconName,
                                              final String  title,
-                                             final String  appName)
+                                             final String  appName,
+                                             final String  appIconName)
     {     
-        return doLogin(userName, password, null, doAutoClose, useDialog, listener, iconName, title, appName);
+        return doLogin(userName, password, null, doAutoClose, useDialog, listener, iconName, title, appName, appIconName);
     }
     /**
      * Tries to do the login, if doAutoLogin is set to true it will try without displaying a dialog
@@ -1563,8 +1566,20 @@ public final class UIHelper
                                              final DatabaseLoginListener listener,
                                              final String  iconName,
                                              final String  title,
-                                             final String  appName)
-    {     
+                                             final String  appName,
+                                             final String  appIconName) //frame's icon name
+    {  
+    	
+        ImageIcon icon = IconManager.getIcon("AppIcon", IconManager.IconSize.Std16);
+        if (StringUtils.isNotEmpty(appIconName))
+        {
+        	ImageIcon imgIcon = IconManager.getIcon(appIconName);
+        	if (imgIcon != null)
+        	{
+        		icon = imgIcon;
+        	}
+        }
+
         if (useDialog)
         {
             JDialog.setDefaultLookAndFeelDecorated(false); 
@@ -1576,6 +1591,7 @@ public final class UIHelper
             {
                 dlg.setTitle(title);
             }
+            dlg.setIconImage(icon.getImage());
             UIHelper.centerAndShow(dlg);
             return dlg.getDatabaseLoginPanel();
 
@@ -1626,7 +1642,7 @@ public final class UIHelper
         panel.setAutoClose(doAutoClose);
         panel.setWindow(frame);
         frame.setContentPane(panel);
-        frame.setIconImage(IconManager.getIcon("AppIcon", IconManager.IconSize.Std16).getImage());
+        frame.setIconImage(icon.getImage());
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         frame.pack();

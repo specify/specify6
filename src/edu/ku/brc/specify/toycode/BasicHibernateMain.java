@@ -87,6 +87,6 @@ public class BasicHibernateMain implements DatabaseLoginListener
 
         Pair<String, String> usernamePassword = UserAndMasterPasswordMgr.getInstance().getUserNamePasswordForDB();
         BasicHibernateMain tester = new BasicHibernateMain();
-		UIHelper.doLogin(usernamePassword.first, usernamePassword.second, true, false, tester, null);
+		UIHelper.doLogin(usernamePassword.first, usernamePassword.second, true, false, tester, null, "SpecifyWhite32");
 	}
 }

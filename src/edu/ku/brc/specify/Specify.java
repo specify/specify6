@@ -577,7 +577,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             }
         }*/
         
-        dbLoginPanel = UIHelper.doLogin(usrPwdProvider, false, false, this, "SpecifyLargeIcon", getTitle(), null); // true means do auto login if it can, second bool means use dialog instead of frame
+        dbLoginPanel = UIHelper.doLogin(usrPwdProvider, false, false, this, "SpecifyLargeIcon", getTitle(), null, "SpecifyWhite32"); // true means do auto login if it can, second bool means use dialog instead of frame
         localPrefs.load();
     }
     
@@ -750,9 +750,15 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         }
         appImgIcon = IconManager.getImage(appIconName, IconManager.IconSize.Std32); //$NON-NLS-1$
         appIcon.setIcon(appImgIcon);
+        if (!UIHelper.isMacOS())
+        {
+        	appImgIcon = IconManager.getImage("SpecifyWhite32", IconManager.IconSize.Std32); //$NON-NLS-1$
+        }
         CustomDialog.setAppIcon(appImgIcon);
         CustomFrame.setAppIcon(appImgIcon);
         IconManager.register(innerAppIconName, appImgIcon, null, IconManager.IconSize.Std32);
+        
+        this.topFrame.setIconImage(appImgIcon.getImage());
     }
 
     /**
