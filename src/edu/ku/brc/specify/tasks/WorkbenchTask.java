@@ -88,6 +88,7 @@ import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.helpers.ImageFilter;
 import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.helpers.UIFileFilter;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
@@ -1026,26 +1027,46 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             dlg.dispose();
         }
         
-        FileDialog fileDialog = new FileDialog((Frame) UIRegistry.get(UIRegistry.FRAME),
-                                               String.format(getResourceString("CHOOSE_WORKBENCH_EXPORT_FILE"), fileTypeCaption), FileDialog.SAVE);
-        fileDialog.setDirectory(getDefaultDirPath(EXPORT_FILE_PATH));
-        UIHelper.centerAndShow(fileDialog);
-        fileDialog.dispose();
+//        FileDialog fileDialog = new FileDialog((Frame) UIRegistry.get(UIRegistry.FRAME),
+//                                               String.format(getResourceString("CHOOSE_WORKBENCH_EXPORT_FILE"), fileTypeCaption), FileDialog.SAVE);
+//        fileDialog.setDirectory(getDefaultDirPath(EXPORT_FILE_PATH));
+//        UIHelper.centerAndShow(fileDialog);
+//        fileDialog.dispose();
+
+        JFileChooser chooser = new JFileChooser(getDefaultDirPath(EXPORT_FILE_PATH));
+        chooser.setDialogTitle(getResourceString("CHOOSE_WORKBENCH_EXPORT_FILE"));
+        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        chooser.setMultiSelectionEnabled(false);
+        chooser.setFileFilter(new UIFileFilter("xls", getResourceString("WB_EXCELFILES")));
         
-        String path = fileDialog.getDirectory();
-        if (StringUtils.isNotEmpty(path))
+        if (chooser.showSaveDialog(UIRegistry.get(UIRegistry.FRAME)) != JFileChooser.APPROVE_OPTION)
         {
-            AppPreferences localPrefs = AppPreferences.getLocalPrefs();
-            localPrefs.put(IMPORT_FILE_PATH, path);
+            UIRegistry.getStatusBar().setText("");
+            return false;
         }
-        
-        String fileName = fileDialog.getFile();
-        
-        if (StringUtils.isEmpty(fileName))
+
+        File file = chooser.getSelectedFile();
+        if (file == null)
         {
             UIRegistry.getStatusBar().setText(getResourceString("WB_EXPORT_NOFILENAME"));
             return false;
         }
+        
+        //String path = fileDialog.getDirectory();
+        String path = FilenameUtils.getPath(file.getPath());
+        if (StringUtils.isNotEmpty(path))
+        {
+            AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+            localPrefs.put(EXPORT_FILE_PATH, path);
+        }
+        
+//        String fileName = fileDialog.getFile();
+        String fileName = file.getName();	
+//        if (StringUtils.isEmpty(fileName))
+//        {
+//            UIRegistry.getStatusBar().setText(getResourceString("WB_EXPORT_NOFILENAME"));
+//            return false;
+//        }
         
         if (StringUtils.isEmpty(FilenameUtils.getExtension(fileName)))
         {
@@ -1057,8 +1078,10 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             return false;
         }
         
-        File testFile = new File(path + File.separator + fileName);
-        if (testFile.exists())
+        
+        //File testFile = new File(path + File.separator + fileName);
+        //if (testFile.exists())
+        if (file.exists())
         {
             PanelBuilder    builder = new PanelBuilder(new FormLayout("p:g", "c:p:g"));
             CellConstraints cc      = new CellConstraints();
@@ -1077,8 +1100,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 return false;
             }
         }
-        props.setProperty("fileName", path + File.separator + fileName);
-
+        //props.setProperty("fileName", path + File.separator + fileName);
+        props.setProperty("fileName", File.separator + path + fileName);
         return true;
     }
     
@@ -1407,47 +1430,71 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     {
         // For ease of testing
         File file = null;
-        FileDialog fileDialog = new FileDialog((Frame)UIRegistry.get(UIRegistry.FRAME), 
-                                               getResourceString("CHOOSE_WORKBENCH_IMPORT_FILE"), 
-                                               FileDialog.LOAD);
-        fileDialog.setDirectory(getDefaultDirPath(IMPORT_FILE_PATH));
-        fileDialog.setFilenameFilter(new java.io.FilenameFilter()
-        {
-            public boolean accept(File dir, String filename)
-            {
-                for (ExportFileConfigurationFactory.ExportableType exportType : ExportFileConfigurationFactory.getExportList())
-                {
-                    String ext = FilenameUtils.getExtension(filename);
-                    if (StringUtils.isNotEmpty(ext) && exportType.getExtension().toLowerCase().equals(ext))
-                    {
-                        return true;
-                    }
-                }
-                return false;
-            }
+//        FileDialog fileDialog = new FileDialog(/*(Frame)UIRegistry.get(UIRegistry.FRAME),*/
+//        										(Frame )UIRegistry.getTopWindow(),
+//                                               getResourceString("CHOOSE_WORKBENCH_IMPORT_FILE"), 
+//                                               FileDialog.LOAD);
+//        fileDialog.setDirectory(getDefaultDirPath(IMPORT_FILE_PATH));
+//        fileDialog.setFilenameFilter(new java.io.FilenameFilter()
+//        {
+//            public boolean accept(File dir, String filename)
+//            {
+//                for (ExportFileConfigurationFactory.ExportableType exportType : ExportFileConfigurationFactory.getExportList())
+//                {
+//                    String ext = FilenameUtils.getExtension(filename);
+//                    if (StringUtils.isNotEmpty(ext) && exportType.getExtension().toLowerCase().equals(ext))
+//                    {
+//                        return true;
+//                    }
+//                }
+//                return false;
+//            }
+//
+//        });
+//        UIHelper.centerAndShow(fileDialog);
+//        fileDialog.dispose();
 
-        });
-        UIHelper.centerAndShow(fileDialog);
-        fileDialog.dispose();
+        JFileChooser chooser = new JFileChooser(getDefaultDirPath(IMPORT_FILE_PATH));
+        chooser.setDialogTitle(getResourceString("CHOOSE_WORKBENCH_IMPORT_FILE"));
+        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        chooser.setMultiSelectionEnabled(false);
+        String[] exts = {"xls", "csv"};
+        chooser.setFileFilter(new UIFileFilter(exts, getResourceString("WB_EXCELANDCSVFILES")));
         
-        String fileName = fileDialog.getFile();
-        String path     = fileDialog.getDirectory();
-        if (StringUtils.isNotEmpty(path))
+        if (chooser.showOpenDialog(UIRegistry.get(UIRegistry.FRAME)) != JFileChooser.APPROVE_OPTION)
         {
-            AppPreferences localPrefs = AppPreferences.getLocalPrefs();
-            localPrefs.put(IMPORT_FILE_PATH, path);
-        }
-
-        if (StringUtils.isNotEmpty(fileName) && StringUtils.isNotEmpty(path))
-        {
-            file = new File(path + File.separator + fileName);
-        } else
-        {
+            UIRegistry.getStatusBar().setText("");
             return null;
         }
+
+        
+//        String fileName = fileDialog.getFile();
+//        String path     = fileDialog.getDirectory();
+//        if (StringUtils.isNotEmpty(path))
+//        {
+//            AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+//            localPrefs.put(IMPORT_FILE_PATH, path);
+//        }
+//
+//        if (StringUtils.isNotEmpty(fileName) && StringUtils.isNotEmpty(path))
+//        {
+//            file = new File(path + File.separator + fileName);
+//        } else
+//        {
+//            return null;
+//        }
+        
+        file = chooser.getSelectedFile();
         
         if (file.exists())
         {
+        	if (StringUtils.isNotEmpty(file.getPath()))
+        	{
+        		AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+        		localPrefs.put(IMPORT_FILE_PATH, file.getPath());
+        	}
+  
+        	
             ImportDataFileInfo dataFileInfo = new ImportDataFileInfo();
             if (dataFileInfo.load(file))
             {
