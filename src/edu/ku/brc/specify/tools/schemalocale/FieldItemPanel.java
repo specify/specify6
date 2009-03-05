@@ -585,15 +585,21 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
         } else
         {
             DBFieldInfo fi = (DBFieldInfo)item;
-            if (fi != null && fi.getDataClass() == String.class)
+            if (fi != null)
             {
-                String ts      = fi.getType();
-                String typeStr = ts.indexOf('.') > -1 ? StringUtils.substringAfterLast(fi.getType(), ".") : ts;
-                if (StringUtils.isNotEmpty(typeStr) && !typeStr.equals("text"))
+                if (fi.getDataClass() == String.class)
                 {
-                    formatSwitcherCombo.addItem(SL_FORMAT);
-                    formatSwitcherCombo.addItem(SL_WEBLINK);
-                    formatSwitcherCombo.addItem(SL_PICKLIST);
+                    String ts      = fi.getType();
+                    String typeStr = ts.indexOf('.') > -1 ? StringUtils.substringAfterLast(fi.getType(), ".") : ts;
+                    if (StringUtils.isNotEmpty(typeStr) && !typeStr.equals("text"))
+                    {
+                        formatSwitcherCombo.addItem(SL_FORMAT);
+                        formatSwitcherCombo.addItem(SL_WEBLINK);
+                        formatSwitcherCombo.addItem(SL_PICKLIST);
+                    }
+                } else if (fi.getDataClass() == Byte.class)
+                {
+                    formatSwitcherCombo.addItem(SL_PICKLIST);  
                 }
             }
         }
@@ -857,6 +863,14 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
     }
     
     
+    /**
+     * @return the fieldsList
+     */
+    public JList getFieldsList()
+    {
+        return fieldsList;
+    }
+
     /**
      * @param includeHiddenUI tells it to include the checkboxes for hiding tables and fields
      */
