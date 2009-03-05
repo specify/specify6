@@ -667,7 +667,7 @@ public class PermissionService
      * @param perm
      * @return
      */
-    public static boolean runCheckPermssion(Subject s, final Permission perm)
+    public static boolean runCheckPermssion(final Subject s, final Permission perm)
     {
         if(debug)log.debug("runCheckPermssion - calling doAsPrivileged to check if subject has permission"); //$NON-NLS-1$
         try
