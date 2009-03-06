@@ -21,6 +21,9 @@ import static edu.ku.brc.helpers.XMLHelper.xmlAttr;
 
 import java.util.Properties;
 
+import javax.swing.JPanel;
+import javax.swing.event.ChangeListener;
+
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.core.db.DBTableIdMgr;
@@ -241,7 +244,60 @@ public class DataObjDataFieldFormat implements DataObjDataFieldFormatIFace, Clon
             fld.setObjFormatter(objFormatter);
         }
 	}
-	
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.formatters.DataObjDataFieldFormatIFace#getCustomEditor(javax.swing.event.ChangeListener)
+     */
+    @Override
+    public JPanel getCustomEditor(ChangeListener l)
+    {
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.formatters.DataObjDataFieldFormatIFace#isValid()
+     */
+    @Override
+    public boolean isValid()
+    {
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.formatters.DataObjDataFieldFormatIFace#hasEditor()
+     */
+    @Override
+    public boolean hasEditor()
+    {
+        return false;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.formatters.DataObjDataFieldFormatIFace#isCustom()
+     */
+    @Override
+    public boolean isCustom()
+    {
+        return false;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.formatters.DataObjDataFieldFormatIFace#getLabel()
+     */
+    @Override
+    public String getLabel()
+    {
+        return "";
+    }
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.formatters.DataObjDataFieldFormatIFace#doneEditting(boolean)
+     */
+    @Override
+    public void doneEditting(final boolean wasCancelled)
+    {
+        
+    }
+
     /* (non-Javadoc)
      * @see java.lang.Object#clone()
      */

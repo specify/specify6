@@ -156,22 +156,27 @@ public class DataObjFieldFmtListEdtDlg extends FmtListEditorDlgBase
             DataObjSwitchFormatter tempCopy        = isNew ? dataObjFieldFmt : (DataObjSwitchFormatter)dataObjFieldFmt.clone();
             
             DataObjFieldFormatDlg dlg = new DataObjFieldFormatDlg(this, tableInfo, dataObjFieldFormatMgrCache, uiFieldFormatterMgrCache, tempCopy);
-            dlg.setVisible(true);
-            if (!dlg.isCancelled())
+            dlg.createUI();
+            
+            if (dlg.isEditable())
             {
-                if (isNew)
+                dlg.setVisible(true);
+                if (!dlg.isCancelled())
                 {
-                    dataObjFieldFormatMgrCache.addFormatter(dataObjFieldFmt);
-                    listModel.addElement(dataObjFieldFmt);
-                    
-                } else
-                {
-                    listModel.removeElement(dataObjFieldFmt);
-                    dataObjFieldFormatMgrCache.removeFormatter(dataObjFieldFmt);
-                    dataObjFieldFormatMgrCache.addFormatter(tempCopy);
-                    listModel.addElement(tempCopy);
+                    if (isNew)
+                    {
+                        dataObjFieldFormatMgrCache.addFormatter(dataObjFieldFmt);
+                        listModel.addElement(dataObjFieldFmt);
+                        
+                    } else
+                    {
+                        listModel.removeElement(dataObjFieldFmt);
+                        dataObjFieldFormatMgrCache.removeFormatter(dataObjFieldFmt);
+                        dataObjFieldFormatMgrCache.addFormatter(tempCopy);
+                        listModel.addElement(tempCopy);
+                    }
+                    setHasChanged(true);
                 }
-                setHasChanged(true);
             }
             
         } catch (CloneNotSupportedException ex)

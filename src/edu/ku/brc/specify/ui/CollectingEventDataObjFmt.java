@@ -15,10 +15,19 @@ import java.math.BigDecimal;
 import java.util.Hashtable;
 import java.util.Properties;
 
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
+
 import org.apache.commons.lang.StringUtils;
 
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+
 import edu.ku.brc.af.auth.PermissionSettings;
-import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPrefsCache;
@@ -29,6 +38,7 @@ import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.ui.DateWrapper;
+import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.ui.UIHelper;
 
 /**
@@ -42,29 +52,35 @@ import edu.ku.brc.ui.UIHelper;
 public class CollectingEventDataObjFmt implements DataObjDataFieldFormatIFace, Cloneable
 {
     protected static final String securityPrefix = "DO.";
+    protected static final String DEF_FMT_STR    = "FN; DT; LC; LA, LO; CO ST, CT";
+    
 
-    protected final String FIELD_NUM = "#FN#";
-    protected final String LOC_DATE  = "#DT#";
-    protected final String CONTINENT = "#CN#";
-    protected final String COUNTRY   = "#CT#";
-    protected final String STATE     = "#ST#";
-    protected final String COUNTY    = "#CO#";
-    protected final String LOC_STR   = "#LC#";
-    protected final String LATITUDE  = "#LA#";
-    protected final String LONGITUDE = "#LO#";
+    protected final String FIELD_NUM = "FN"; // Station Field Number
+    protected final String LOC_DATE  = "DT";
+    protected final String CONTINENT = "CN";
+    protected final String COUNTRY   = "CT";
+    protected final String STATE     = "ST";
+    protected final String COUNTY    = "CO";
+    protected final String LOC_STR   = "LC";
+    protected final String LATITUDE  = "LA";
+    protected final String LONGITUDE = "LO";
     
     protected String[] tokens = {FIELD_NUM, LOC_DATE, CONTINENT, COUNTRY, STATE, COUNTY, LOC_STR, LATITUDE, LONGITUDE};
-    protected Hashtable<String, String> values = new Hashtable<String, String>();
+    protected Hashtable<String, String> values      = new Hashtable<String, String>();
+    protected Hashtable<String, Boolean> fieldsHash = new Hashtable<String, Boolean>();
     
     protected String name;
     protected String formatStr;
     
+    // Needed for the Custom Editor
+    protected ChangeListener changeListener = null;
+    protected JTextField     textField      = null;
+    
     /**
-     * 
+     * Constructor.
      */
     public CollectingEventDataObjFmt()
     {
-        
     }
     
     /**
@@ -106,6 +122,20 @@ public class CollectingEventDataObjFmt implements DataObjDataFieldFormatIFace, C
         return "";
     }
     
+    private void fillGeoValues(final Geography geo)
+    {
+        String[] keys = {CONTINENT, COUNTRY, STATE, COUNTY};
+        int rank = 100;
+        for (String key : keys)
+        {
+            if (fieldsHash.get(key) != null)
+            {
+                values.put(key, getGeoNameByRank(geo, rank));
+            }
+            rank += 100;
+        }
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.DataObjDataFieldFormatIFace#format(java.lang.Object)
      */
@@ -119,6 +149,11 @@ public class CollectingEventDataObjFmt implements DataObjDataFieldFormatIFace, C
         if (!(dataValue instanceof CollectingEvent))
         {
             throw new RuntimeException("The data value set into CollectingEventDataObjFmt is not a CollectingEvent ["+dataValue.getClass().getSimpleName()+"]");
+        }
+        
+        if (fieldsHash.size() == 0 && StringUtils.isNotEmpty(formatStr))
+        {
+            return "The Collecting Event is empty."; // I18N
         }
         
         boolean isSecurityOn = UIHelper.isSecurityOn();
@@ -156,50 +191,59 @@ public class CollectingEventDataObjFmt implements DataObjDataFieldFormatIFace, C
         
         Locality locality = ce.getLocality();
         
+        PermissionSettings localityPerms = null;
         if (isSecurityOn && locality != null)
         {
             DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(Locality.getClassTableId());
             if (tblInfo != null)
             {
-                PermissionSettings perm = tblInfo.getPermissions();
-                if (perm != null && !perm.canView())
+                localityPerms = tblInfo.getPermissions();
+                if (localityPerms != null && !localityPerms.canView())
                 {
                     locality = null;
                 }
             }
         }
         
+        Geography geo = null;
         if (locality != null)
         {
+            geo = locality.getGeography();
+            
             str = locality.getLocalityName();
             values.put(LOC_STR, StringUtils.isNotEmpty(str) ? str : "");
             
-            if (locality != null)
+            if (fieldsHash.get(LATITUDE) != null)
             {
-                Geography geo = locality.getGeography();
-                if (isSecurityOn && locality != null)
-                {
-                    DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(Locality.getClassTableId());
-                    if (tblInfo != null)
-                    {
-                        PermissionSettings perm = SecurityMgr.getInstance().getPermission(securityPrefix+tblInfo.getName());
-                        if (perm != null)
-                        {
-                            if (perm.canView())
-                            {
-                                values.put(CONTINENT, getGeoNameByRank(geo, 100));
-                                values.put(COUNTRY,   getGeoNameByRank(geo, 200));
-                                values.put(STATE,     getGeoNameByRank(geo, 300));
-                                values.put(COUNTY,    getGeoNameByRank(geo, 400));
-                            }
-                        }
-                    }
-                }
+                values.put(LATITUDE,  getGeoCoordAsStr(locality.getLatitude1()));
             }
-            values.put(LATITUDE, getGeoCoordAsStr(locality.getLatitude1()));
-            values.put(LONGITUDE, getGeoCoordAsStr(locality.getLongitude1()));
+            
+            if (fieldsHash.get(LONGITUDE) != null)
+            {
+                values.put(LONGITUDE, getGeoCoordAsStr(locality.getLongitude1()));
+            }
         }
         
+        if (geo != null)
+        {
+            if (isSecurityOn)
+            {
+                DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(Geography.getClassTableId());
+                if (tblInfo != null)
+                {
+                    PermissionSettings perms = tblInfo.getPermissions();
+                    if (perms.canView())
+                    {
+                        fillGeoValues(geo);
+                    }
+                }
+                
+            } else
+            {
+                fillGeoValues(geo);
+            }
+        }
+
         if (StringUtils.isNotEmpty(formatStr))
         {
             String formattedValue = formatStr;
@@ -207,33 +251,19 @@ public class CollectingEventDataObjFmt implements DataObjDataFieldFormatIFace, C
             {
                 if (StringUtils.contains(formattedValue, token))
                 {
+                    //System.out.println("["+formattedValue+"]["+token+"]["+values.get(token)+"]");
                     formattedValue = StringUtils.replace(formattedValue, token, values.get(token));
                 }
             }
             return formattedValue;
         }
-        
-        StringBuilder formattedValue = new StringBuilder("");
-        for (String token : tokens)
-        {
-            String val = values.get(token);
-            if (StringUtils.isNotEmpty(val))
-            {
-                if (formattedValue.length() > 0) formattedValue.append(", ");
-                formattedValue.append(val);
-            }
-        }
-        
-        if (formattedValue.length() == 0)
-        {
-            formattedValue.append("The Collecting Event is empty.");
-        }
-        return formattedValue.toString();
+        return "";
     }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.DataObjDataFieldFormatIFace#getDataClass()
      */
+    @Override
     public Class<?> getDataClass()
     {
         return CollectingEvent.class;
@@ -242,6 +272,7 @@ public class CollectingEventDataObjFmt implements DataObjDataFieldFormatIFace, C
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.DataObjDataFieldFormatIFace#getFields()
      */
+    @Override
     public DataObjDataField[] getFields()
     {
         return null;
@@ -250,14 +281,16 @@ public class CollectingEventDataObjFmt implements DataObjDataFieldFormatIFace, C
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.DataObjDataFieldFormatIFace#getName()
      */
+    @Override
     public String getName()
     {
-        return "CollectingEventDetailed";
+        return "CollectingEventDetail";
     }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.DataObjDataFieldFormatIFace#getValue()
      */
+    @Override
     public String getValue()
     {
         return null;
@@ -266,6 +299,7 @@ public class CollectingEventDataObjFmt implements DataObjDataFieldFormatIFace, C
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.DataObjDataFieldFormatIFace#setValue()
      */
+    @Override
     public void setValue(String value)
     {
         return;
@@ -274,7 +308,8 @@ public class CollectingEventDataObjFmt implements DataObjDataFieldFormatIFace, C
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.DataObjDataFieldFormatIFace#init(java.lang.String, java.util.Properties)
      */
-    public void init(String nameArg, Properties properties)
+    @Override
+    public void init(final String nameArg, final Properties properties)
     {
         this.name = nameArg;
         
@@ -282,11 +317,25 @@ public class CollectingEventDataObjFmt implements DataObjDataFieldFormatIFace, C
         {
             formatStr = properties.getProperty("format");
         }
+        
+        if (StringUtils.isEmpty(formatStr))
+        {
+            formatStr = DEF_FMT_STR;
+        }
+        
+        for (String token : tokens)
+        {
+            if (StringUtils.contains(formatStr, token))
+            {
+                fieldsHash.put(token, true);
+            }
+        }
     }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.DataObjDataFieldFormatIFace#isDefault()
      */
+    @Override
     public boolean isDefault()
     {
         return false;
@@ -295,6 +344,7 @@ public class CollectingEventDataObjFmt implements DataObjDataFieldFormatIFace, C
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.DataObjDataFieldFormatIFace#isDirectFormatter()
      */
+    @Override
     public boolean isDirectFormatter()
     {
         return true;
@@ -312,6 +362,7 @@ public class CollectingEventDataObjFmt implements DataObjDataFieldFormatIFace, C
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.DataObjDataFieldFormatIFace#setTableAndFieldInfo()
      */
+    @Override
     public void setTableAndFieldInfo()
     {
 
@@ -329,6 +380,7 @@ public class CollectingEventDataObjFmt implements DataObjDataFieldFormatIFace, C
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.DataObjDataFieldFormatIFace#toXML(java.lang.StringBuilder)
      */
+    @Override
     public void toXML(StringBuilder sb)
     {
         sb.append("          <external");
@@ -353,10 +405,81 @@ public class CollectingEventDataObjFmt implements DataObjDataFieldFormatIFace, C
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.DataObjDataFieldFormatIFace#setDataObjSwitchFormatter(edu.ku.brc.ui.forms.formatters.DataObjSwitchFormatter)
      */
+    @Override
     public void setDataObjSwitchFormatter(DataObjSwitchFormatter objFormatter)
     {
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.formatters.DataObjDataFieldFormatIFace#getCustomEditor(javax.swing.JButton)
+     */
+    @Override
+    public JPanel getCustomEditor(final ChangeListener l)
+    {
+        this.changeListener = l;
+        this.textField      = UIHelper.createTextField();
+        
+        CellConstraints cc = new CellConstraints();
+        PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g", "p"));
+        pb.add(textField, cc.xy(1, 1));
+        
+        textField.setText(formatStr);
+        
+        textField.getDocument().addDocumentListener(new DocumentAdaptor() {
+            @Override
+            protected void changed(DocumentEvent e)
+            {
+                changeListener.stateChanged(new ChangeEvent(this));
+            }
+        });
+        return pb.getPanel();
+    }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.formatters.DataObjDataFieldFormatIFace#isCustom()
+     */
+    @Override
+    public boolean isCustom()
+    {
+        return true;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.formatters.DataObjDataFieldFormatIFace#hasEditor()
+     */
+    @Override
+    public boolean hasEditor()
+    {
+        return true;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.formatters.DataObjDataFieldFormatIFace#isValid()
+     */
+    @Override
+    public boolean isValid()
+    {
+        return !textField.getText().isEmpty();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.formatters.DataObjDataFieldFormatIFace#getLabel()
+     */
+    @Override
+    public String getLabel()
+    {
+        return "Format";
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.formatters.DataObjDataFieldFormatIFace#doneEditting()
+     */
+    @Override
+    public void doneEditting(final boolean wasCancelled)
+    {
+        formatStr = textField.getText();
+    }
+
     /* (non-Javadoc)
      * @see java.lang.Object#clone()
      */

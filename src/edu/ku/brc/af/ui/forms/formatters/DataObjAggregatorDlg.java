@@ -159,13 +159,18 @@ public class DataObjAggregatorDlg extends CustomDialog implements DataChangeList
                                                                       dataObjFieldFormatMgrCache, 
                                                                       uiFieldFormatterMgrCache,
                                                                       dosf);
-                dlg.setVisible(true);
-                
-                // set combo selection to formatter selected in dialog
-                if (dlg.getBtnPressed() == OK_BTN)
+                dlg.createUI();
+
+                if (dlg.isEditable())
                 {
-                    selectedAggregator.setFormatName(dosf.getName());
-                    updateDisplayCombo();
+                    dlg.setVisible(true);
+                    
+                    // set combo selection to formatter selected in dialog
+                    if (dlg.getBtnPressed() == OK_BTN)
+                    {
+                        selectedAggregator.setFormatName(dosf.getName());
+                        updateDisplayCombo();
+                    }
                 }
             }
         };

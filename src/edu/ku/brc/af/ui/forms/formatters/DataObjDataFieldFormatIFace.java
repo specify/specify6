@@ -16,6 +16,9 @@ package edu.ku.brc.af.ui.forms.formatters;
 
 import java.util.Properties;
 
+import javax.swing.JPanel;
+import javax.swing.event.ChangeListener;
+
 /**
  * This interface represents a formatter for a data object. There are two types of formatters: Direct and indirect.<br>
  * A "direct" formatter implicitly knows how to format the data object being passed in. This enables us to support formatting
@@ -29,9 +32,9 @@ import java.util.Properties;
  * 
  * @author rod
  *
- * @code_status Beta
+ * @code_status Complete
  *
- * Jun 15, 2007 (this wrong)
+ * Jan 18, 2007
  *
  */
 public interface DataObjDataFieldFormatIFace
@@ -110,19 +113,55 @@ public interface DataObjDataFieldFormatIFace
     /**
      * Tells it to set up the Table and Field Info.
      */
-    public void setTableAndFieldInfo();
+    public abstract void setTableAndFieldInfo();
     
     /**
      * After cloning make sure setDataObjSwitchFormatter is called.
      * @return a deep cloned object
      */
-    public Object clone() throws CloneNotSupportedException;
+    public abstract Object clone() throws CloneNotSupportedException;
     
     /**
      * This needs to be called after clone. For most DataObjDataFieldFormat implementations this is a "no op"
      * and nothing needs to be done. For some, they may need the parent DataObjSwitchFormatter.
      * @param objFormatter the parent DataObjSwitchFormatter
      */
-    public void setDataObjSwitchFormatter(DataObjSwitchFormatter objFormatter);
+    public abstract void setDataObjSwitchFormatter(DataObjSwitchFormatter objFormatter);
+    
+    
+    ///////////////////////////////////////
+    //  This part is for custom editors  //
+    ///////////////////////////////////////
+    
+    /**
+     * @return whether it is a custom formatter.
+     */
+    public abstract boolean isCustom();
+    
+    /**
+     * Asks for the Custom Editor Panel and provide it the OK btn to turn on or off when valid.
+     * @param okBtn the Dialog OK Btn
+     */
+    public abstract JPanel getCustomEditor(ChangeListener l);
+    
+    /**
+     * @return true if editor is valid.
+     */
+    public abstract boolean isValid();
+    
+    /**
+     * @return true if the Custom formatter has an editor
+     */
+    public abstract boolean hasEditor();
+    
+    /**
+     * @return a localized label for the panel.
+     */
+    public abstract String getLabel();
+    
+    /**
+     * Tells the formatter that the editing is done and it should clean up.
+     */
+    public abstract void doneEditting(final boolean wasCancelled);
 
 }

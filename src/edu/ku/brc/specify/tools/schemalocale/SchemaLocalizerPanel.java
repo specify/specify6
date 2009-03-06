@@ -52,7 +52,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.text.JTextComponent;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -286,6 +285,54 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         tblSpellChkBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
+                /*Window win = UIRegistry.getMostRecentWindow();
+                
+                final SchemaConfigSearchDlg dlg = new SchemaConfigSearchDlg(win instanceof Dialog ? (Dialog)win : null, localizableIO);
+                dlg.createUI();
+                dlg.addTableListener(new ListSelectionListener() {
+                    @Override
+                    public void valueChanged(ListSelectionEvent e)
+                    {
+                        if (!e.getValueIsAdjusting())
+                        {
+                            final Pair<String, String> selection = dlg.getSelection();
+                            if (selection != null)
+                            {
+                                int r = 0;
+                                for (LocalizableJListItem item : localizableIO.getContainerDisplayItems())
+                                {
+                                    if (item.getName().equals(selection.first))
+                                    {
+                                        tablesList.setSelectedIndex(r);
+                                        localizableIO.getContainer(item, new LocalizableIOIFaceListener() {
+                                            @Override
+                                            public void containterRetrieved(LocalizableContainerIFace container)
+                                            {
+                                                if (selection.second != null && !selection.second.isEmpty())
+                                                {
+                                                    DefaultListModel model = (DefaultListModel)fieldPanel.getFieldsList().getModel();
+                                                    for (int i=0;i<model.getSize();i++)
+                                                    {
+                                                        LocalizableJListItem fItem = (LocalizableJListItem)model.get(i);
+                                                        if (fItem.getName().equals(selection.second))
+                                                        {
+                                                            fieldPanel.getFieldsList().setSelectedIndex(i);
+                                                            break;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        });
+                                    }
+                                    r++;
+                                }
+                            }
+                        }
+                    }
+                });
+                //dlg.setAlwaysOnTop(true);
+                dlg.setVisible(true);*/
+                
                 if (checker != null)
                 {
                     checker.spellCheck(tblDescText);

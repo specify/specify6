@@ -28,7 +28,7 @@ public class DataObjSwitchFormatterSingleContainer implements DataObjSwitchForma
 	/**
 	 * @param formatter
 	 */
-	public DataObjSwitchFormatterSingleContainer(DataObjSwitchFormatter formatter)
+	public DataObjSwitchFormatterSingleContainer(final DataObjSwitchFormatter formatter)
 	{
 		this.formatter = formatter;
 	}
