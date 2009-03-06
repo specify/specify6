@@ -433,7 +433,14 @@ public class TableViewObj implements Viewable,
                         });
                          PanelBuilder builder = new PanelBuilder(new FormLayout("f:1px:g,p,10px", "p"));
                          builder.add(editButton, cc.xy(2,1));
-                         comps.add(builder.getPanel());
+                         if (mvParent.getSeparator() != null)
+                         {
+                             sepController = builder.getPanel();
+                         } else
+                         {
+                             comps.add(builder.getPanel());
+                         }
+                         builder.getPanel().setBackground(bgColor);
                     }
                     
                     updateUI(false);
