@@ -811,10 +811,10 @@
                   <java class="java.beans.XMLDecoder">
                     <object class="com.install4j.runtime.beans.screens.FormScreen">
                       <void property="subTitle">
-                        <string>${i18n:updater.NewVersionAvailableSubtitle("${compiler:sys.fullName}")}</string>
+                        <string>The Specify Software Project recommends that you update your installation with this update.  The list of enhancements for this update is online at www.specifysoftware.org</string>
                       </void>
                       <void property="title">
-                        <string>${i18n:updater.NewVersionAvailableTitle}</string>
+                        <string>New Version Available</string>
                       </void>
                     </object>
                   </java>
