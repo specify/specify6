@@ -83,7 +83,8 @@ public class DefItemPropPanel extends JPanel
     /**
      * @param isRow
      */
-    protected void createUI(final boolean isRow)
+    protected void createUI(@SuppressWarnings("hiding")
+    final boolean isRow)
     {
         propsPanel = createPropertyPanel(isRow);
         
@@ -97,7 +98,8 @@ public class DefItemPropPanel extends JPanel
      * @param isRow
      * @return
      */
-    protected JPanel createPropertyPanel(final boolean isRow)
+    protected JPanel createPropertyPanel(@SuppressWarnings("hiding")
+    final boolean isRow)
     {
         alignCBX  = createComboBox(isRow ? rowAlign : colAlign);
         minMaxCBX = createComboBox(minMax);

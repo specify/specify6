@@ -84,6 +84,7 @@ public class RowColDefPanel extends JPanel
     }
     
     protected void createUI(final int     numInUse,
+                            @SuppressWarnings("hiding")
                             final boolean isRow)
     {
         CellConstraints cc = new CellConstraints();

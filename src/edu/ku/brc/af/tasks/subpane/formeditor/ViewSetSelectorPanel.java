@@ -150,6 +150,7 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
         
         Vector<String> levelsVec = new Vector<String>();
         SpecifyUser    user      = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
+        @SuppressWarnings("unused")
         Hashtable<Discipline, Boolean> usedColTypes = new Hashtable<Discipline, Boolean>();
         
         levelsVec.add(user.getUserType());
@@ -712,7 +713,8 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
      * @param selectedCell
      */
     protected void addControl(final ControlIFace selectedControl, 
-                              final FormCell     selectedCell)
+                              @SuppressWarnings("hiding")
+                            final FormCell     selectedCell)
     {
         int position = 0;
         if (selectedCell != null)
@@ -726,6 +728,7 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
             return;
         }
 
+        @SuppressWarnings("hiding")
         EditorPropPanel panel = new EditorPropPanel(controlHash, subcontrolHash, getAvailableFieldCells(), false, this);
         //panel.setFormViewDef(formViewDef);
         

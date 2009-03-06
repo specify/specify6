@@ -218,7 +218,8 @@ public class JGoodiesDefItem
      * @param align
      * @return
      */
-    protected String getAlignStr(final ALIGN_TYPE align)
+    protected String getAlignStr(@SuppressWarnings("hiding")
+    final ALIGN_TYPE align)
     {
         if (align != null)
         {
