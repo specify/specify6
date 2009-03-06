@@ -171,6 +171,9 @@ public class ValTextAreaBrief extends ValTextArea
         PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g", "f:p:g"));
         
         final JTextArea ta = UIHelper.createTextArea(10, 60);
+        ta.setLineWrap(true);
+        ta.setWrapStyleWord(true);
+        ta.setEditable(isEditting);
         
         JScrollPane sp;
         final CustomDialog dlg = new CustomDialog((Frame)null, "", true, isEditting ? CustomDialog.OKCANCEL : CustomDialog.OK_BTN, pb.getPanel());
