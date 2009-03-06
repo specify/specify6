@@ -1160,6 +1160,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
             {
                 ((PickListCriteriaCombo) criteria).setCurrentOp((SpQueryField.OperatorType) operatorCBX.getModel().getElementAt(0));
             }
+            criteria.addKeyListener(enterListener);
             operatorCBX.addItemListener(new ItemListener()
             {
 
