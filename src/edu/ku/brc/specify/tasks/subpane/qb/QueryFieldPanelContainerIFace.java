@@ -52,4 +52,9 @@ public interface QueryFieldPanelContainerIFace
      * @return true if container contains prompts
      */
     boolean isPromptMode();
+    
+    /**
+     * run the query.
+     */
+    void doSearch();
 }

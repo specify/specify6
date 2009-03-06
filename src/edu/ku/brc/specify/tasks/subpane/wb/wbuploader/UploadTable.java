@@ -69,6 +69,7 @@ import edu.ku.brc.specify.tasks.subpane.wb.schema.Field;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Relationship;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Table;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader.ParentTableEntry;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.GeoRefConverter;
 import edu.ku.brc.util.LatLonConverter;
@@ -2255,7 +2256,12 @@ public class UploadTable implements Comparable<UploadTable>
                 {
                     if (skipMatch || !findMatch(recNum, false))
                     {
-                        DataModelObjBase rec = getCurrentRecordForSave(recNum);
+                    	if (UIHelper.isSecurityOn() && !getWriteTable().getTableInfo().getPermissions().canAdd())
+                    	{
+                    		throw new UploaderException(String.format(UIRegistry.getResourceString("WB_UPLOAD_NO_ADD_PERMISSION"), getWriteTable().getTableInfo().getTitle()),
+                    				UploaderException.ABORT_ROW);
+                    	}
+                    	DataModelObjBase rec = getCurrentRecordForSave(recNum);
                         rec.initialize();
                         setFields(rec, seq);
                         setRequiredFldDefaults(rec, recNum);
@@ -2366,7 +2372,7 @@ public class UploadTable implements Comparable<UploadTable>
             }
             tblSession.beginTransaction();
             tblTransactionOpen = true;
-            tblSession.save(rec);
+            tblSession.saveOrUpdate(rec);
             if (busRule != null)
             {
                 if (!busRule.beforeSaveCommit(rec, tblSession))

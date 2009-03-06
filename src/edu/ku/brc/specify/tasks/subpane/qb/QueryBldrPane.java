@@ -483,8 +483,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         this.esrp = esrp;
     }
 
-    /**
-     * Executes the search that has been loaded into the pane.
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.qb.QueryFieldPanelContainerIFace#doSearch()
      */
     public void doSearch()
     {

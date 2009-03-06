@@ -130,6 +130,15 @@ public class QueryParameterPanel extends JPanel implements QueryFieldPanelContai
     {
         return hasPrompts;
     }
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.subpane.qb.QueryFieldPanelContainerIFace#doSearch()
+	 */
+	@Override
+	public void doSearch() 
+	{
+		//do nothing
+	}
     
     
 }

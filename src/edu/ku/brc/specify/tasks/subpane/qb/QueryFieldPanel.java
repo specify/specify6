@@ -27,6 +27,8 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.RoundRectangle2D;
@@ -150,19 +152,21 @@ public class QueryFieldPanel extends JPanel implements ActionListener
         /**
          * Constructor
          */
-        public CriteriaPair()
+        public CriteriaPair(final KeyListener listener)
         {
             super();
-            buildUI();
+            buildUI(listener);
         }
         
         /**
          * Creates the UI components.
          */
-        protected void buildUI()
-        {
-            text1 = new JTextField();
-            text2 = new JTextField();
+        protected void buildUI(final KeyListener listener)
+        {        	
+        	text1 = createTextField("1");
+        	text1.addKeyListener(listener);
+            text2 = createTextField("2");
+            text2.addKeyListener(listener);
             connectorText = new JLabel(" " + getResourceString("AND") + " ");
             
             rangePanel = new JPanel();
@@ -174,7 +178,8 @@ public class QueryFieldPanel extends JPanel implements ActionListener
             rangePanel.validate();
             
             setLayout(new CardLayout());
-            text = new JTextField();
+            text = createTextField("3");
+            text.addKeyListener(listener);
             add("text", text);
             add("rangePanel", rangePanel);
             validate();
@@ -971,11 +976,11 @@ public class QueryFieldPanel extends JPanel implements ActionListener
         return fieldQRI;
     }
     
-    protected JTextField createTextField()
+    protected JTextField createTextField(final String id)
     {
         ValTextField textField = new ValTextField();
         textField.setRequired(false);
-        validator.hookupTextField(textField, "1", false, UIValidator.Type.Changed, "", true);
+        validator.hookupTextField(textField, id, false, UIValidator.Type.Changed, "", true);
         return textField;
     }
     
@@ -1027,7 +1032,6 @@ public class QueryFieldPanel extends JPanel implements ActionListener
     protected int[] buildControlLayout(final IconManager.IconSize iconSize,
                                        final boolean returnWidths, final Component saveBtn)
     {
-
         FocusListener focusListener = new FocusListener()
         {
 
@@ -1049,6 +1053,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
 
             }
 
+
             /*
              * (non-Javadoc)
              * 
@@ -1061,6 +1066,30 @@ public class QueryFieldPanel extends JPanel implements ActionListener
             }
 
         };
+
+        KeyListener enterListener = new KeyListener(){
+
+			@Override
+			public void keyPressed(KeyEvent arg0) {
+				//nuthin
+			}
+
+			@Override
+			public void keyReleased(KeyEvent arg0) {
+				//nuthin
+			}
+
+			@Override
+			public void keyTyped(KeyEvent arg0) {
+				if (arg0.getKeyChar() == KeyEvent.VK_ENTER && ownerQuery != null)
+				{
+					ownerQuery.doSearch();
+				}
+				
+			}
+        	
+        };
+        
         comparators = getComparatorList(fieldQRI);
         iconLabel = new JLabel(icon);
         iconLabel.addFocusListener(focusListener);
@@ -1081,10 +1110,13 @@ public class QueryFieldPanel extends JPanel implements ActionListener
         }
         fieldLabel = createLabel(fieldLabelText);
         fieldLabel.addFocusListener(focusListener);
+        fieldLabel.addKeyListener(enterListener);
         isNotCheckbox = createCheckBox("isNotCheckbox");
         isNotCheckbox.addFocusListener(focusListener);
+        isNotCheckbox.addKeyListener(enterListener);
         operatorCBX = createComboBox(comparators);
         operatorCBX.addFocusListener(focusListener);
+        operatorCBX.addKeyListener(enterListener);
         boolean isBool = fieldQRI != null && fieldQRI.getDataClass().equals(Boolean.class);
         if (!isBool)
         {
@@ -1112,12 +1144,13 @@ public class QueryFieldPanel extends JPanel implements ActionListener
             }
             if (hasBetweenOp)
             {
-                criteria = new CriteriaPair();
+                criteria = new CriteriaPair(enterListener);
                 operatorCBX.addActionListener(this);
             }
             else
             {
-                criteria = createTextField();
+                criteria = createTextField("1");
+                criteria.addKeyListener(enterListener);
             }
         }
         else
@@ -1149,7 +1182,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
 
             });
         }
-        criteria.addFocusListener(focusListener);
+        //criteria.addFocusListener(focusListener);
         
         sortCheckbox = new MultiStateIconButon(new ImageIcon[] {
                 IconManager.getImage("GrayDot", IconManager.IconSize.Std16),
@@ -1159,14 +1192,18 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                 UIValidator.Type.Changed, "", true);
         sortCheckbox.addFocusListener(focusListener);
         sortCheckbox.addActionListener(dcn);
+        sortCheckbox.addKeyListener(enterListener);
         if (!this.ownerQuery.isPromptMode())
         {
             isDisplayedCkbx = createCheckBox("isDisplayedCkbx");
             isDisplayedCkbx.addFocusListener(focusListener);
+            isDisplayedCkbx.addKeyListener(enterListener);
             isPromptCkbx = createCheckBox("isPromptCkbx");
             isPromptCkbx.addFocusListener(focusListener);
+            isPromptCkbx.addKeyListener(enterListener);
             isEnforcedCkbx = createCheckBox("isEnforcedCkbx");
             isEnforcedCkbx.addFocusListener(focusListener);
+            isEnforcedCkbx.addKeyListener(enterListener);
             closeBtn = createIconBtn("Close", "QB_REMOVE_FLD", new ActionListener()
             {
                 public void actionPerformed(ActionEvent ae)
