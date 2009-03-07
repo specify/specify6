@@ -138,6 +138,10 @@ public class DataObjDataField implements Cloneable
 			prefix = sep;
 		}
 
+		if (StringUtils.isNotEmpty(name)) {
+		    return prefix + "[" + name + "]";
+		}
+		
 		if (objFormatter != null)
         {
             return prefix + "[" + objFormatter.getTitle() + "." + objFormatter.getFieldName() + "]";
