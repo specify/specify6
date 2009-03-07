@@ -22,11 +22,13 @@ import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.core.db.AutoNumberIFace;
+import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
@@ -46,7 +48,8 @@ import edu.ku.brc.util.Pair;
 public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
 {
     //private static final Logger log = Logger.getLogger(UIFieldFormatter.class);
-
+    protected static DateWrapper scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
+    
     public static int[]            daysInMon = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}; 
     protected static final String  deftitle = UIRegistry.getResourceString("FFE_DEFAULT");     
 
@@ -597,6 +600,14 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
                 fmt = "%d";
             }
             return String.format(fmt, data).trim();
+            
+        } else if (data instanceof Calendar)
+        {
+            return scrDateFormat.format((Calendar)data);
+            
+        } else if (data instanceof Date)
+        {
+            return scrDateFormat.format((Date)data);
         }
         return data;
     }

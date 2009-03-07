@@ -98,7 +98,7 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
         });
         
         AppPreferences remotePrefs = AppPreferences.getRemote();
-        String         tool        = remotePrefs.get("georef_tool", "");
+        String         tool        = remotePrefs.get("georef_tool", "geolocate");
         
         doGeoLocate = tool.equalsIgnoreCase("geolocate");
         

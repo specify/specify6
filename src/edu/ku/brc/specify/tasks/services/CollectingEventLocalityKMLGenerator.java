@@ -22,6 +22,8 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Collector;
@@ -157,32 +159,48 @@ public class CollectingEventLocalityKMLGenerator
 		writer.write(GenericKMLGenerator.generateStyle(placemarkIconURL, balloonStyleBgColor, balloonStyleTextColor, balloonStyleText));
 		
 		boolean isDoingCollectingEvents = false;
-		
-		for( int i = 0; i < dataObjs.size(); ++i )
-		{
-            String           label   = labels.get(i);
-            FormDataObjIFace dataObj = dataObjs.get(i);
-            
-            String kmlStr = null;
-            if (dataObj instanceof CollectingEvent)
-            {
-                kmlStr = generatePlacemark((CollectingEvent)dataObj, label);
-    			isDoingCollectingEvents = true;
-    			
-            } else if (dataObj instanceof Locality)
-            {
-                kmlStr = generatePlacemark((Locality)dataObj, label);
+		DataProviderSessionIFace session = null;
+        try
+        {
+            session = DataProviderFactory.getInstance().createSession();
+    		for( int i = 0; i < dataObjs.size(); ++i )
+    		{
+                String           label   = labels.get(i);
+                FormDataObjIFace dataObj = dataObjs.get(i);
                 
-            } else if (dataObj instanceof CollectionObject)
+                session.attach(dataObj);
+                
+                String kmlStr = null;
+                if (dataObj instanceof CollectingEvent)
+                {
+                    kmlStr = generatePlacemark((CollectingEvent)dataObj, label);
+        			isDoingCollectingEvents = true;
+        			
+                } else if (dataObj instanceof Locality)
+                {
+                    kmlStr = generatePlacemark((Locality)dataObj, label);
+                    
+                } else if (dataObj instanceof CollectionObject)
+                {
+                    kmlStr = generatePlacemark((CollectionObject)dataObj, label);
+                }
+                
+                if (kmlStr != null)
+                {
+                    writer.write(kmlStr);
+                }
+    		}
+		} catch (Exception ex)
+		{
+		    ex.printStackTrace();
+		    
+		} finally
+        {
+            if (session != null)
             {
-                kmlStr = generatePlacemark((CollectionObject)dataObj, label);
+                session.close();
             }
-            
-            if (kmlStr != null)
-            {
-                writer.write(kmlStr);
-            }
-		}
+        }
 		
 		if (isDoingCollectingEvents)
 		{
@@ -269,18 +287,25 @@ public class CollectingEventLocalityKMLGenerator
         sb.append("</name>\n");
 
         // build the fancy HTML popup description
-        /*
+        
         sb.append("<description><![CDATA[");
-        sb.append("<h3>"+UIRegistry.getResourceString("GE_LOCALITY")+":</h3>\n<ul>\n");
-        sb.append("<br/><table>\n");
+        //sb.append("<h3>"+UIRegistry.getResourceString("GE_LOCALITY")+":</h3>\n<ul>\n");
+        sb.append("<table>\n");
         
         sb.append("<tr>\n");
-        sb.append("<td style=\"color:#"+textColor+"\" >"++"</td>\n");
-        sb.append("<td style=\"color:#"+textColor+"\" >"++"</td>\n");
+        sb.append("<td style=\"color:#"+textColor+"; text-align:right\">"+UIRegistry.getResourceString("Latitude")+":</td>\n");
+        sb.append("<td style=\"color:#"+textColor+"\" >"+lat.doubleValue()+"</td></tr>\n");
+        sb.append("<tr><td style=\"color:#"+textColor+"; text-align:right\">"+UIRegistry.getResourceString("Longitude")+":</td>\n");
+        sb.append("<td style=\"color:#"+textColor+"\" >"+lon.doubleValue()+"</td>\n");
+        if (loc.getGeography() != null)
+        {
+            sb.append("<tr><td style=\"color:#"+textColor+"; text-align:right\">"+UIRegistry.getResourceString("Geography")+":</td>\n");
+            sb.append("<td style=\"color:#"+textColor+"\" >"+loc.getGeography().getFullName()+"</td>\n");
+        }
         sb.append("</tr>\n");
         
         sb.append("</table>]]></description>\n");
-        */
+        
         sb.append("<LookAt>\n");
         sb.append("<latitude>");
         sb.append(lat.doubleValue());
@@ -348,7 +373,7 @@ public class CollectingEventLocalityKMLGenerator
 
 		// get names of collectors
 		List<String> agentNames = new Vector<String>();
-		for( Collector c: ce.getCollectors() )
+		for( Collector c : ce.getCollectors() )
 		{
             if (StringUtils.isEmpty(c.getAgent().getFirstName()))
             {
@@ -362,13 +387,13 @@ public class CollectingEventLocalityKMLGenerator
 		// get taxonomy of collection object
 		Hashtable<Pair<String, String>, CollectionObject> coHash = new Hashtable<Pair<String,String>, CollectionObject>();
 		Vector<Pair<String,String>> genusSpecies = new Vector<Pair<String,String>>();
-		for( CollectionObject co: ce.getCollectionObjects() )
+		for( CollectionObject co : ce.getCollectionObjects() )
 		{
 			String genus = null;
 			String species = null;
-			for( Determination d: co.getDeterminations() )
+			for (Determination d: co.getDeterminations())
 			{
-				if( d.isCurrentDet() )
+				if (d.isCurrentDet())
 				{
 					Taxon t = d.getPreferredTaxon();
 					species = t.getName();
@@ -398,7 +423,7 @@ public class CollectingEventLocalityKMLGenerator
         if (StringUtils.isNotEmpty(startString))
         {
             sb.append(startString);
-            if (!startString.equals(endString))
+            if (StringUtils.isNotEmpty(endString) && !startString.equals(endString))
             {
                 sb.append(" - ");
                 sb.append(endString);
@@ -421,87 +446,94 @@ public class CollectingEventLocalityKMLGenerator
 			sb.append("</li>\n");
 		}
 		sb.append("</ul>\n");
-		sb.append("<br/><h3>"+UIRegistry.getResourceString("GE_COLLECTION_OBJECTS")+":</h3>\n<table>\n");
 		
-        String primaryURL        = AppPreferences.getRemote().get(PluginsTask.GE_BALLOON_PRIMARY_URL, null);
-        String primaryURLTitle   = AppPreferences.getRemote().get(PluginsTask.GE_BALLOON_PRIMARY_URL_TITLE, null);
-        String secondaryURL      = AppPreferences.getRemote().get(PluginsTask.GE_BALLOON_SECONDARY_URL, null);
-        String secondaryURLTitle = AppPreferences.getRemote().get(PluginsTask.GE_BALLOON_SECONDARY_URL_TITLE, null);
-        
-        sb.append("<tr>");
-        sb.append("<th><center>");
-        sb.append(UIRegistry.getResourceString("GE_CATALOG_NUMBER"));
-        sb.append("</center></th>\n");
-        sb.append("<th>");
-        sb.append(UIRegistry.getResourceString("GE_TAXONOMY"));
-        sb.append("</b></th>\n");
-        if (StringUtils.isNotEmpty(primaryURL))
-        {
-            sb.append("<th style=\"color:#"+textColor+"\"><center>"+UIRegistry.getResourceString("GE_PRIMARY")+"</center></th>\n");
-        }
-        
-        if (StringUtils.isNotEmpty(secondaryURL))
-        {
-            sb.append("<th style=\"color:#"+textColor+"\"><center>"+UIRegistry.getResourceString("GE_SECONDARY")+"</center></th>\n");
-        }
-        sb.append("</tr>\n");
-        
-		for( Pair<String, String> tax: genusSpecies )
+		if (genusSpecies.size() > 0)
 		{
-			sb.append("<tr>\n");
-            sb.append("<td><center>");
-            if (formatter != null)
-            {
-                sb.append(formatter.formatToUI(coHash.get(tax).getCatalogNumber()));                
-            } else
-            {
-                sb.append(coHash.get(tax).getCatalogNumber());    
-            }
-            sb.append("</center></td>\n");
+    		sb.append("<br/><h3>"+UIRegistry.getResourceString("GE_COLLECTION_OBJECTS")+":</h3>\n<table>\n");
+    		
+    		AppPreferences remotePrefs = AppPreferences.getRemote();
+    		
+            String primaryURL        = remotePrefs.get(PluginsTask.GE_BALLOON_PRIMARY_URL, null);
+            String primaryURLTitle   = remotePrefs.get(PluginsTask.GE_BALLOON_PRIMARY_URL_TITLE, null);
+            String secondaryURL      = remotePrefs.get(PluginsTask.GE_BALLOON_SECONDARY_URL, null);
+            String secondaryURLTitle = remotePrefs.get(PluginsTask.GE_BALLOON_SECONDARY_URL_TITLE, null);
             
-			// simple name text
-			String taxonomicName = tax.first + " " + tax.second;
-			sb.append("<td><i>");
-			sb.append(taxonomicName);
-			sb.append("</i></td>\n");
-
-			String linkTextColor = (textColor.startsWith("F") ? "WHITE" : "BLACK");
-			
+            sb.append("<tr>");
+            sb.append("<th><center>");
+            sb.append(UIRegistry.getResourceString("GE_CATALOG_NUMBER"));
+            sb.append("</center></th>\n");
+            sb.append("<th>");
+            sb.append(UIRegistry.getResourceString("GE_TAXONOMY"));
+            sb.append("</b></th>\n");
             if (StringUtils.isNotEmpty(primaryURL))
             {
-                String primaryURLStr = String.format(primaryURL, tax.first, tax.second);
-                sb.append("<td><a style=\"color:"+linkTextColor+"\" href=\""+primaryURLStr+"\"><center>");
-                sb.append(primaryURLTitle);
-                sb.append("</a></center></td>\n");
+                sb.append("<th style=\"color:#"+textColor+"\"><center>"+UIRegistry.getResourceString("GE_PRIMARY")+"</center></th>\n");
             }
             
             if (StringUtils.isNotEmpty(secondaryURL))
             {
-                String secondaryURLStr = String.format(secondaryURL, tax.first, tax.second);
-                sb.append("<td><a style=\"color:"+linkTextColor+"\" href=\""+secondaryURLStr+"\"><center>");
-                sb.append(secondaryURLTitle);
-                sb.append("</a></center></td>\n");
+                sb.append("<th style=\"color:#"+textColor+"\"><center>"+UIRegistry.getResourceString("GE_SECONDARY")+"</center></th>\n");
             }
+            sb.append("</tr>\n");
             
-			if( speciesToImageMapper != null )
-			{
-				String imgSrc = speciesToImageMapper.get(taxonomicName);
-                //System.out.println("["+taxonomicName+"]["+imgSrc+"]");
-				if( imgSrc != null )
-				{
-					sb.append("<td><img src=\"");
-					sb.append(imgSrc);
-					sb.append("\"/></td>\n");
-				}
-				else
-				{
-					sb.append("<td>&nbsp;</td>\n");
-				}
-			}
-
-			sb.append("</tr>\n");
+    		for( Pair<String, String> tax : genusSpecies )
+    		{
+    			sb.append("<tr>\n");
+                sb.append("<td><center>");
+                if (formatter != null)
+                {
+                    sb.append(formatter.formatToUI(coHash.get(tax).getCatalogNumber()));                
+                } else
+                {
+                    sb.append(coHash.get(tax).getCatalogNumber());    
+                }
+                sb.append("</center></td>\n");
+                
+    			// simple name text
+    			String taxonomicName = tax.first + " " + tax.second;
+    			sb.append("<td><i>");
+    			sb.append(taxonomicName);
+    			sb.append("</i></td>\n");
+    
+    			String linkTextColor = (textColor.startsWith("F") ? "WHITE" : "BLACK");
+    			
+                if (StringUtils.isNotEmpty(primaryURL))
+                {
+                    String primaryURLStr = String.format(primaryURL, tax.first, tax.second);
+                    sb.append("<td><a style=\"color:"+linkTextColor+"\" href=\""+primaryURLStr+"\"><center>");
+                    sb.append(primaryURLTitle);
+                    sb.append("</a></center></td>\n");
+                }
+                
+                if (StringUtils.isNotEmpty(secondaryURL))
+                {
+                    String secondaryURLStr = String.format(secondaryURL, tax.first, tax.second);
+                    sb.append("<td><a style=\"color:"+linkTextColor+"\" href=\""+secondaryURLStr+"\"><center>");
+                    sb.append(secondaryURLTitle);
+                    sb.append("</a></center></td>\n");
+                }
+                
+    			if( speciesToImageMapper != null )
+    			{
+    				String imgSrc = speciesToImageMapper.get(taxonomicName);
+                    //System.out.println("["+taxonomicName+"]["+imgSrc+"]");
+    				if( imgSrc != null )
+    				{
+    					sb.append("<td><img src=\"");
+    					sb.append(imgSrc);
+    					sb.append("\"/></td>\n");
+    				}
+    				else
+    				{
+    					sb.append("<td>&nbsp;</td>\n");
+    				}
+    			}
+    
+    			sb.append("</tr>\n");
+    		}
+    		sb.append("</table>\n");
 		}
-		sb.append("</table>]]></description>\n");
+        sb.append("]]></description>\n");
 		sb.append("<LookAt>\n");
 		sb.append("<latitude>");
 		sb.append(lat.doubleValue());
@@ -616,7 +648,7 @@ public class CollectingEventLocalityKMLGenerator
             }
             if (fmtr != null)
             {
-                Object dateFmtObj = (String)fmtr.formatToUI(ce.getStartDate(), ce.getStartDatePrecision());
+                Object dateFmtObj = fmtr.formatToUI(ce.getStartDate(), ce.getStartDatePrecision());
                 if (dateFmtObj != null)
                 {
                     startDateStr = dateFmtObj.toString();
