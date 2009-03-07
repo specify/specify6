@@ -52,7 +52,7 @@ import edu.ku.brc.ui.UIHelper;
 public class CollectingEventDataObjFmt implements DataObjDataFieldFormatIFace, Cloneable
 {
     protected static final String securityPrefix = "DO.";
-    protected static final String DEF_FMT_STR    = "FN; DT; LC; LA, LO; CO ST, CT";
+    protected static final String DEF_FMT_STR    = "FN; DT; LC; LA, LO; CO, ST, CT";
     
 
     protected final String FIELD_NUM = "FN"; // Station Field Number
@@ -237,7 +237,6 @@ public class CollectingEventDataObjFmt implements DataObjDataFieldFormatIFace, C
                         fillGeoValues(geo);
                     }
                 }
-                
             } else
             {
                 fillGeoValues(geo);
@@ -251,8 +250,18 @@ public class CollectingEventDataObjFmt implements DataObjDataFieldFormatIFace, C
             {
                 if (StringUtils.contains(formattedValue, token))
                 {
-                    //System.out.println("["+formattedValue+"]["+token+"]["+values.get(token)+"]");
-                    formattedValue = StringUtils.replace(formattedValue, token, values.get(token));
+                    String valStr = values.get(token);
+                    
+                    if (StringUtils.isEmpty(valStr))
+                    {
+                        int  inx = formattedValue.indexOf(token);
+                        char sep = formattedValue.charAt(inx+token.length());
+                        if (sep == ',' || sep == ';')
+                        {
+                            token += sep;
+                        }
+                    }
+                    formattedValue = StringUtils.replace(formattedValue, token, valStr);
                 }
             }
             return formattedValue;

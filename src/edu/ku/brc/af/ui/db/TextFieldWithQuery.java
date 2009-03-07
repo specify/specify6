@@ -33,6 +33,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Formatter;
 import java.util.Hashtable;
 import java.util.List;
@@ -67,6 +69,7 @@ import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.ui.ESTermParser;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
@@ -74,6 +77,7 @@ import edu.ku.brc.dbsupport.CustomQueryIFace;
 import edu.ku.brc.dbsupport.CustomQueryListener;
 import edu.ku.brc.dbsupport.JPAQuery;
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
@@ -90,6 +94,8 @@ import edu.ku.brc.ui.UIRegistry;
 public class TextFieldWithQuery extends JPanel implements CustomQueryListener
 {
     protected static final Logger log = Logger.getLogger(TextFieldWithQuery.class);
+    
+    protected static DateWrapper scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
     
     protected int                              popupDlgThreshold = 15;
             
@@ -942,6 +948,21 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                             for (int i=0;i<numColumns;i++)
                             {
                                 Object val = array[i];
+                                if (val instanceof Calendar)
+                                {
+                                    val = scrDateFormat.format((Calendar)val);
+                                } else if (val instanceof Date)
+                                {
+                                    val = scrDateFormat.format((Date)val);
+                                    
+                                } else if (val instanceof String)
+                                {
+                                    String str = val.toString();
+                                    if (str.length() > 25)
+                                    {
+                                        val = str.substring(0, 25) + "...";
+                                    }
+                                }
                                 values[i] = val != null ? val : ""; //$NON-NLS-1$
                             }
                             Formatter formatter = new Formatter();

@@ -137,6 +137,7 @@
         <switch single="true">
             <fields>
                 <field>stationFieldNumber</field>
+                <field sep=", ">startDate</field>
             </fields>
         </switch>
     </format>

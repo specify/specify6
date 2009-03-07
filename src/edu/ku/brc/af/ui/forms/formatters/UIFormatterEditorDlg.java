@@ -326,7 +326,6 @@ public class UIFormatterEditorDlg extends CustomDialog
         rightPB.add(fieldTypeLbl = createI18NFormLabel("FFE_TYPE"), cc.xy(1,y));
         rightPB.add(fieldTypeCbx,                    cc.xy(3, y));         y += 2;
         rightPB.add(cardPanel,                       cc.xyw(1, y, 3));     y += 2;
-
         
         y = 1;
         PanelBuilder pb = new PanelBuilder(new FormLayout("p:g,10px,p,10px,p:g,10px,p",  "f:p:g,10px,p"));
@@ -366,44 +365,7 @@ public class UIFormatterEditorDlg extends CustomDialog
             @Override
             public void itemStateChanged(ItemEvent e)
             {
-                fieldHasChanged = true;
-                updateEnabledState();
-                hasChanged      = true;
-                updateUIEnabled();
-                
-                String cardKey = "none";
-                if (fieldTypeCbx.getSelectedIndex() > -1)
-                {
-                    isIncChk.setVisible(false);
-                    
-                    FieldType fieldType = (FieldType)fieldTypeCbx.getSelectedItem();
-                    switch (fieldType)
-                    {
-                        case alphanumeric : 
-                        case alpha : 
-                        case anychar : 
-                            cardKey = "size";
-                            break;
-                            
-                        case constant :
-                            cardKey = "text";
-                            break;
-                            
-                        case numeric :
-                            cardKey = "size";
-                            isIncChk.setVisible(true);
-                            break;
-                            
-                        case separator : 
-                            cardKey = "sep";
-                            break;
-                            
-                        case year :
-                            cardKey = "none";
-                            break;
-                    }
-                }
-                cardLayout.show(cardPanel, cardKey);
+                typeChanged();
             }
         });
         
@@ -431,16 +393,76 @@ public class UIFormatterEditorDlg extends CustomDialog
             }
         });
         
+        isIncChk.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                updateEntry();
+                fieldsTbl.repaint();
+            }
+        });
+        
         fieldTypeCbx.setSelectedIndex(-1);
         fieldHasChanged = false;
         updateEnabledState();
     }
     
+    /**
+     * 
+     */
+    private void typeChanged()
+    {
+        fieldHasChanged = true;
+        updateEnabledState();
+        hasChanged      = true;
+        updateUIEnabled();
+        
+        String cardKey = "none";
+        if (fieldTypeCbx.getSelectedIndex() > -1)
+        {
+            isIncChk.setVisible(false);
+            
+            FieldType fieldType = (FieldType)fieldTypeCbx.getSelectedItem();
+            switch (fieldType)
+            {
+                case alphanumeric : 
+                case alpha : 
+                case anychar : 
+                    cardKey = "size";
+                    break;
+                    
+                case constant :
+                    cardKey = "text";
+                    break;
+                    
+                case numeric :
+                    cardKey = "size";
+                    isIncChk.setVisible(true);
+                    break;
+                    
+                case separator : 
+                    cardKey = "sep";
+                    break;
+                    
+                case year :
+                    cardKey = "none";
+                    break;
+            }
+        }
+        cardLayout.show(cardPanel, cardKey);
+    }
+    
+    /**
+     * 
+     */
     private void unhookFieldsTblSelectionListener() 
     {
         fieldsTbl.getSelectionModel().removeListSelectionListener(fieldsTblSL);
     }
 
+    /**
+     * 
+     */
     private void hookFieldsTblSelectionListener() 
     {
         if (fieldsTblSL == null) 
@@ -470,7 +492,7 @@ public class UIFormatterEditorDlg extends CustomDialog
                             currentField = fields.get(inx);
                             
                             fieldTypeCbx.setSelectedIndex(currentField.getType().ordinal());
-                            isIncChk.setSelected(currentField.isByYear());
+                            isIncChk.setSelected(currentField.isIncrementer());
                             fieldTxt.setText(currentField.getValue());
                             sizeSpinner.setValue(Math.max(1, currentField.getSize()));
                             enabledEditorUI(true);
@@ -519,7 +541,7 @@ public class UIFormatterEditorDlg extends CustomDialog
     
     /**
      * Save the Field values.
-     * @return
+     * @return action listener
      */
     protected ActionListener getSaveAL()
     {
@@ -527,78 +549,94 @@ public class UIFormatterEditorDlg extends CustomDialog
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                if (!fields.contains(currentField))
-                {
-                    fields.add(currentField);
-                }
-                
-                FieldType fieldType = (FieldType)fieldTypeCbx.getSelectedItem();
-                currentField.setType(fieldType);
-                
-                int     size     = (Integer)sizeSpinner.getValue();
-                boolean isByYear = fieldType == FieldType.year;
-                boolean isIncr   = isIncChk.isSelected();
-                
-                switch (fieldType)
-                {
-                    case alphanumeric :
-                        currentField.setSize(size);
-                        currentField.setValue(getValueStr(size, 'A'));
-                        break;
-                        
-                    case alpha : 
-                        currentField.setSize(size);
-                        currentField.setValue(getValueStr(size, 'a'));
-                        break;
-                        
-                    case anychar : 
-                        currentField.setSize(size);
-                        currentField.setValue(getValueStr(size, '#'));
-                        break;
-                        
-                    case numeric :
-                        currentField.setSize(size);
-                        currentField.setValue(getValueStr(size, isIncr ? '#' : 'N'));
-                        break;
-                        
-                    case constant :
-                        currentField.setSize(fieldTxt.getText().length());
-                        currentField.setValue(fieldTxt.getText());
-                        break;
-
-                        
-                    case separator :
-                        currentField.setSize(1);
-                        String sepStr = (String)sepCbx.getSelectedItem();
-                        if (sepStr.startsWith("`"))
-                        {
-                            sepStr = " ";
-                        }
-                        currentField.setValue(String.valueOf(sepStr.charAt(0)));
-                        break;
-                        
-                    case year :
-                        currentField.setValue("YEAR");
-                        currentField.setSize(4);
-                        break;
-                }
-               
-                currentField.setByYear(isByYear);
-                currentField.setIncrementer(isIncr);
-                
-                fieldTypeCbx.setSelectedIndex(-1);
-                fieldTxt.setText("");
-                sizeSpinner.setValue(1);
-                isIncChk.setSelected(false);
-                
-                fieldHasChanged = false;
-                
-                enabledEditorUI(false);
-                updateEnabledState();
-                fieldsModel.fireChange();
-                updateUIEnabled();
+                saveEntry();
             }
         };
+    }
+    
+    /**
+     * 
+     */
+    protected void updateEntry()
+    {
+        if (!fields.contains(currentField))
+        {
+            fields.add(currentField);
+        }
+        
+        FieldType fieldType = (FieldType)fieldTypeCbx.getSelectedItem();
+        currentField.setType(fieldType);
+        
+        int     size     = (Integer)sizeSpinner.getValue();
+        boolean isByYear = fieldType == FieldType.year;
+        boolean isIncr   = isIncChk.isSelected();
+        
+        switch (fieldType)
+        {
+            case alphanumeric :
+                currentField.setSize(size);
+                currentField.setValue(getValueStr(size, 'A'));
+                break;
+                
+            case alpha : 
+                currentField.setSize(size);
+                currentField.setValue(getValueStr(size, 'a'));
+                break;
+                
+            case anychar : 
+                currentField.setSize(size);
+                currentField.setValue(getValueStr(size, '#'));
+                break;
+                
+            case numeric :
+                currentField.setSize(size);
+                currentField.setValue(getValueStr(size, isIncr ? '#' : 'N'));
+                break;
+                
+            case constant :
+                currentField.setSize(fieldTxt.getText().length());
+                currentField.setValue(fieldTxt.getText());
+                break;
+
+                
+            case separator :
+                currentField.setSize(1);
+                String sepStr = (String)sepCbx.getSelectedItem();
+                if (sepStr.startsWith("`"))
+                {
+                    sepStr = " ";
+                }
+                currentField.setValue(String.valueOf(sepStr.charAt(0)));
+                break;
+                
+            case year :
+                currentField.setValue("YEAR");
+                currentField.setSize(4);
+                break;
+        }
+       
+        currentField.setByYear(isByYear);
+        currentField.setIncrementer(isIncr);
+    }
+    
+    /**
+     * 
+     */
+    protected void saveEntry()
+    {
+        updateEntry();
+        
+        fieldTypeCbx.setSelectedIndex(-1);
+        fieldTxt.setText("");
+        sizeSpinner.setValue(1);
+        isIncChk.setSelected(false);
+        
+        fieldHasChanged = false;
+        
+        enabledEditorUI(false);
+        updateEnabledState();
+        fieldsModel.fireChange();
+        updateUIEnabled();
     }
     
     /**
@@ -621,10 +659,14 @@ public class UIFormatterEditorDlg extends CustomDialog
                 enabledEditorUI(false);
                 updateUIEnabled();
                 hookFieldsTblSelectionListener();
+                fieldsPanel.getEditBtn().setEnabled(false);
             }
         };
     }
     
+    /**
+     * 
+     */
     protected void setDataIntoUI()
     {
         if (currentField != null)
