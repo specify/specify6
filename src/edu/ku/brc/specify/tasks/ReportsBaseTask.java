@@ -133,7 +133,7 @@ public class ReportsBaseTask extends BaseTask
 
     // Data Members
     protected DataFlavor                 defaultFlavor       = null;
-    protected DataFlavor                 spReportFlavor      = new DataFlavor(SpReport.class,
+    protected DataFlavor                 reportFlavor      = new DataFlavor(SpReport.class,
                                                                      "SpReport");
     protected DataFlavor                 runReportFlavor     = new DataFlavor(SpReport.class,
                                                                      RUN_REPORT);
@@ -400,7 +400,7 @@ public class ReportsBaseTask extends BaseTask
         RolloverCommand roc = (RolloverCommand)nbi;
         String tblIdStr = tcd.getParams().getProperty("tableid");
         String dropStr = tcd.getParams().getProperty("hasrsdropparam");
-        String impStr = tcd.getParams().getProperty("isimport");
+        //String impStr = tcd.getParams().getProperty("isimport");
         boolean canBeRsDropSite = dropStr != null ? dropStr.equals("1") : true;
         if (StringUtils.isEmpty(tblIdStr) && canBeRsDropSite)
         {
@@ -412,15 +412,11 @@ public class ReportsBaseTask extends BaseTask
             roc.addDropDataFlavor(dfx);
         }
         
-        //roc.addDragDataFlavor(defaultFlavor);
-        if (impStr != null && impStr.equals("1") && !canBeRsDropSite)
-        {
-            roc.addDragDataFlavor(spReportFlavor);
-        }
+        roc.addDragDataFlavor(reportFlavor);
         
         if (cmdAction.getProperties().get("spreport") != null)
         {
-            roc.addDragDataFlavor(spReportFlavor);
+            roc.addDragDataFlavor(reportFlavor);
             if (tblContext != null)
             {
                 DataFlavorTableExt dfx = new DataFlavorTableExt(RecordSetTask.RECORDSET_FLAVOR.getDefaultRepresentationClass(), 
@@ -725,7 +721,17 @@ public class ReportsBaseTask extends BaseTask
         
         String impStr = params.getProperty("isimport");
         String rsDropStr = params.getProperty("hasrsdropparam");
-        boolean canRunWithoutRS = impStr != null && impStr.equals("1") && rsDropStr != null && rsDropStr.equals("0");
+        RecordSet spRep = (RecordSet )params.get("spreport");
+        if (spRep != null)
+        {
+        	//SpReport was clicked. Just Run it
+        	CommandAction runner = new CommandAction(REPORTS, RUN_REPORT, cmdAction);
+        	CommandDispatcher.dispatch(runner);
+        	return;
+        }
+        
+        boolean canRunWithoutRS = spRep != null || 
+        	(impStr != null && impStr.equals("1") && rsDropStr != null && rsDropStr.equals("0"));
         if (cmdAction.getData() instanceof RecordSetIFace || canRunWithoutRS)
         {
             RecordSetIFace recordSet = cmdAction.getData() instanceof RecordSetIFace ? (RecordSetIFace)cmdAction.getData() : null;
@@ -1429,18 +1435,9 @@ public class ReportsBaseTask extends BaseTask
      * @param helpContext
      * @return a fully-loaded SpReport of the User's choosing.
      */
-    protected SpReport selectReport(final String helpContext)
+    protected NavBoxItemIFace selectReport(final String helpContext)
     {
-        List<NavBoxItemIFace> options = new LinkedList<NavBoxItemIFace>();
-        //select reports that have an SpReport object.
-        for (NavBoxItemIFace face : this.reportsList)
-        {
-            CommandAction cmd = (CommandAction)face.getData();
-            if (cmd.getProperty("spreport") != null)
-            {
-                options.add(face);
-            }
-        }
+    	List<NavBoxItemIFace> options = this.reportsList;
         if (options.size() == 0)
         {
             UIRegistry.getStatusBar().setText(getResourceString("NO_RUNNABLE_REPORTS"));
@@ -1458,8 +1455,7 @@ public class ReportsBaseTask extends BaseTask
         NavBoxItemIFace selection = dlg.getSelectedObject();
         if (!dlg.isCancelled() && selection != null)
         {
-            RecordSet repRS = (RecordSet)((CommandAction)selection.getData()).getProperty("spreport");
-            return loadReport(repRS);
+        	return selection;
         }
         return null;
     }
@@ -1513,7 +1509,8 @@ public class ReportsBaseTask extends BaseTask
      */
     protected void runReport(final CommandAction cmdAction)
     {
-        SpReport toRun = null;
+        NavBoxItemIFace toRun = null;
+        SpReport spRepToRun = null;
         CommandAction runAction = null;
         CommandAction repAction = null;
         RecordSetIFace rs = null;
@@ -1543,15 +1540,26 @@ public class ReportsBaseTask extends BaseTask
         if (runAction != null && repAction == null)
         {
             toRun = selectReport("ReportRunReport"); //XXX add help
+            CommandAction cmd = (CommandAction)toRun.getData();
+            if (cmd.getProperty("spreport") != null)
+            {
+            	RecordSet repRS = (RecordSet)cmd.getProperty("spreport") ;
+            	spRepToRun = loadReport(repRS);
+            }
+            
         }
         else if ((runAction != null || rs != null) && repAction != null)
         {
-            toRun = loadReport((RecordSet)repAction.getProperty("spreport"));
+            spRepToRun = loadReport((RecordSet)repAction.getProperty("spreport"));
         }
         
-        if (toRun != null)
+        if (spRepToRun != null)
         {
-            QueryBldrPane.runReport(toRun, toRun.getName(), rs);
+            QueryBldrPane.runReport(spRepToRun, spRepToRun.getName(), rs);
+        }
+        else if (toRun != null)
+        {
+        	CommandDispatcher.dispatch((CommandAction)toRun.getData());
         }
     }
     
