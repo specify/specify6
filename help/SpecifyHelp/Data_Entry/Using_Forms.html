@@ -1,8 +1,9 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<link href="../../main.css" rel="stylesheet" type="text/css" media="screen"/></link>
-<title>Carry Forward</title></head>
+<link href="../main.css" rel="stylesheet" type="text/css" media="screen"/></link>
+<title>Carry Forward</title>
+</head>
 
 <body bgcolor="#ffffff">
 <table width="100%" border="0" background="../../images/topbar.png">
@@ -11,17 +12,17 @@
   </tr>
 </table>
 <h2><a name="form_overview">Using Forms</a></h2>
-<p>A form is a window in which data can be viewed, entered, or edited. Specify categorizes forms as Data Entry, which are used to enter collection data, and Interacations, which are used to record transactions of either data or collection objects. Each discipline has access to a set of forms for both data entry and interactions, specific to their discipline. The following sections describe basic concepts for using the form system.</p>
-<p><em><strong>Note:</strong></em> At this time, Specify 6 does not include a Form Editor, as was found in Specify 5. It is important to note that the forms have been created programmatically to be extremely flexible and can be exported as xml and either edited by on-site staff or emailed to the Specify staff. Forms should never be edited on the hard drive! Forms are  exported via the <a href="../Import/import_export.html">Importing/Exporting</a></strong> tool, which exports an entire form set. These form sets can then be reimported at a different institution level. For instance, the default form set for a discipline could be exported, edited, and reimported at a collection level, allowing all users in that collection to use the new set of forms.  If you wish to have a member of the Specify team edit the form,  please contact them at <a href="mailto:specify@ku.edu">specify@ku.edu</a>.</p>
-<p>The names of tables and fields used for display within Specify, (labels), can be edited using the <a href="../SchemaConfig/schema_config.html">Schema Configuration tool.</a></p>
+<p>A form is a window in which data can be viewed, entered, or edited. Specify categorizes forms as Data Entry, which are used to enter collection data, and Interactions, which are used to record transactions of either data or collection objects. Each discipline has access to a set of forms for both data entry and interactions, specific to their discipline. The following sections describe basic concepts for using the form system.</p>
+<p><em><strong>Note:</strong></em> At this time, Specify 6 does not include a Form Editor, as was found in Specify 5. It is important to note that the forms have been created programmatically to be extremely flexible and can be exported as xml and either edited by on-site staff or emailed to the Specify staff. The original forms should not be edited from the hard drive, they must be exported and then reimported! Forms are  exported via the <a href="../../Import/import_export.html">Importing/Exporting</a></strong> tool, which exports an entire form set. These form sets can then be reimported at a different institution level. For instance, the default form set for a discipline could be exported, edited, and reimported at a collection level, allowing all users in that collection to use the new set of forms.  If you wish to have a member of the Specify team edit the form,  and have an ISA with Specify, please contact them at <a href="mailto:specify@ku.edu">specify@ku.edu</a>.</p>
+<p>The names of tables and fields used for display within Specify, (labels), can be edited using the <a href="../../SchemaConfig/schema_config.html">Schema Configuration tool.</a></p>
 <p>&nbsp;</p>
 <h3><u><a name="forms_related_information"></a>Related Information</u></h3>
-<p>Forms are categorized for  the data that resides in each table (Collection Object, Taxon, Geography, etc.); however, much of the data within the tables is also linked to each other. This prevents users from needing to retype the same information and assures that information is entered only one way (for example John Smith is not also entered as J. Smith or John Smyth). </p>
+<p>Forms are categorized for  the data that resides in each table (Collection Object, Taxon, Geography, etc.); however, much of the data within the tables is also linked to related tables. This prevents users from needing to retype the same information and assures that information is entered only one way (for example John Smith is not also entered as J. Smith or John Smyth). </p>
 <h4>Many-to-One</h4>
-<p>A relationship involving a primary and related table in which many primary records are linked to a single related record in the related table. For example, many Collection Object records might be linked to the same Locality record because they were all found at the same location.</p>
-<p>Related tables with a many-to-one relationship to the primary table are represented on the form as a formatted field with buttons to edit, add and search  a record within the table. The field format typically is consists of one primary field within the table, but may be represented by more than one field typically separated by a comma.</p>
+<p>A relationship involving a primary and related table in which many primary records are linked to a single related record in the related table. For example, many Collection Object records might be linked to the same Locality record because the specimens were all found at the same location.</p>
+<p>Related tables with a many-to-one relationship to the primary table are represented on the form as a formatted field with buttons to edit, add and search  a record within the table. The field format typically consists of one primary field within the table, but may be represented by more than one field typically separated by a comma.</p>
 <h4>One-to-Many</h4>
-<p>A relationship involving a primary and related table in which many related records are linked to a single primary record in the related table. For example, several Collection Object records would be linked to a single record in the Collection Event table because all those specimens were collected during the same event.</p>
+<p>A relationship involving a primary and related table in which a single primary record links to many related records  in the related table. For example, several Collection Object records would be linked to a single record in the Collection Event table because all those specimens were collected during the same event.</p>
 <p>Related tables with a one-to-many relationship to the primary table are included on the form as a sub form with navigation controls.</p>
 <p>&nbsp;</p>
 <h3><u><a name="forms_controls"></a>Controls</u></h3>
@@ -44,7 +45,7 @@
     <td><img src="../../images/FeedbackRed20x20.png">&nbsp;</td>
     <td>Warning</td>
     <td><p>Opens a dialog listing fields with incorrect data.</p>
-    <p><em><strong>Note:</strong></em> The shield will only displays when fields on a form contain incorrect data.</p></td>
+    <p><em><strong>Note:</strong></em> The shield will only display when fields on a form contain incorrect data.</p></td>
   </tr>
   
   <tr>
@@ -75,7 +76,7 @@
   <tr>
     <td><img src="../../images/Search-16x16.png" alt="a" width="16" height="16"></td>
     <td>Search</td>
-    <td>Opens a search dialog to search for a record. Fields for the table will be available to search, but this search is not inclusive of criteria, it treats all criteria independently. For example; when searching for an agent 'John Smith', entering 'John' into the first name field and 'Smith' into the last name field will return results for all last names of 'Smith' and all first names of 'John' rather than limiting the search to only 'John Smith'. </td>
+    <td>Opens a search dialog to search for a record. Fields for the table will be available to search, but this search is not inclusive of criteria; it treats all criteria independently. For example; when searching for an agent 'John Smith', entering 'John' into the first name field and 'Smith' into the last name field will return results for all last names of 'Smith' and all first names of 'John' rather than limiting the search to only 'John Smith'. </td>
   </tr>
   <tr>
     <td><p><img src="../../images/info_20x20.png" alt="a" width="20" height="20"></p></td>
@@ -115,9 +116,7 @@
 <p>&nbsp;</p>
 <p><u>Navigation Control</u> is found at the bottom of each form. Navigation is also present on sub forms that are part of the main form, but only when viewed as a Form, not as a Grid.</p>
 <p><img src="../../images/add_new_record.png" alt="" width="175" height="27"></p>
-<ul>
-  <li>Step through records by clicking on the appropriate arrow (first, previous, next, last) or choose <em>Data &gt; (first, previous, next, last)</em>, or press the spacebar when the appropriate button is in focus.</li>
-</ul>
+<p>Step through records by clicking on the appropriate arrow (first, previous, next, last) or choose <em>Data &gt; (first, previous, next, last)</em>, or press the spacebar when the appropriate button is in focus.</p>
 <p>&nbsp;</p>
 <p><u>Number Box</u></p>
 <p><img src="../../images/non_required_text_box.png" alt="text box" width="234" height="33"></p>
@@ -130,10 +129,10 @@
 <p>&nbsp;</p>
 <p><u>Query Combo Box</u></p>
 <p><img src="../../images/text_from_field.png" alt="image" width="573" height="32"></p>
-<p>A Query Combo Box allows data to be searched and chosen from a related table, not typed directly into the box. Data chosen from the list links the current record with a record in a related table. This eliminates the need to retype data. Data can be typed directly into the box, but the box will not accept the data, the data must be added to the table by clicking the <img src="../../images/add.png" alt="add" width="16" height="16"> (add) button.</p>
+<p>A Query Combo Box allows data to be searched and chosen from a related table, not typed directly into the box. Data chosen from the list links the current record with a record in a related table. This eliminates the need to retype data. It is possible to type data directly into the box, but the box will not accept the data; the data must first be added to the table by clicking the <img src="../../images/add.png" alt="add" width="16" height="16"> (add) button and creating a new record.</p>
 <p>Choose data from a list:</p>
 <ul>
-  <li>Type a letter, or letters, in the box, then either click on the <img src="../../images/Down16x16.png" alt="down" width="16" height="16"> button or use the down-arrow key on the keyboard. A list of Taxon starting with the typed letter(s) will appear. </li>
+  <li>Type the first letter, or first few letters of the term you wish to use in the box, then either click on the <img src="../../images/Down16x16.png" alt="down" width="16" height="16"> button or use the down-arrow key on the keyboard. A list of taxa starting with the typed letter(s) will appear. </li>
   <li>If Specify can not find a match based on the typed letters then an <img src="../../images/add_form.png" alt="add" width="81" height="27"> button will appear. Click the button or press the enter key to add a new record. </li>
   <li>If the required Taxon is not in the resulting list, either press the enter key when 'Add ...' is in focus, or click the <img src="../../images/add.png" alt="add" width="16" height="16"> (add) button, to add a new record.</li>
   <li>Pressing the esc (escape) key will cancel the list box.</li>
@@ -151,23 +150,40 @@
 </ul>
 <p>Or edit an existing record:</p>
 <ul>
-  <li>Find the record by searching for existing data.</li>
+  <li>Choose the record in the list.</li>
   <li>Click the <img src="../../images/Edit-2-16x16.png" width="16" height="16"> (edit) icon to open the table in an editable  dialog.</li>
 </ul>
 <p>&nbsp;</p>
 <p><u>Combo Box</u></p>
 <p><img src="../../images/combo_box_not.png" alt="combo box" width="300" height="30"></p>
-<p>Combo boxes allow data to be chosen from a predefined set of options, not typed directly into the box. </p>
+<p>Combo boxes are used to display Pick Lists, which allow data to be chosen from a predefined set of options, not typed directly into the box. </p>
 <ul>
   <li>Click the <img src="../../images/up_down_button.png" alt="down" width="21" height="20"> button, or press the down-arrow (<img src="../../images/Down16x16.png" width="16" height="16">) key to open the list.</li>
   <li>Click on data to select it or press the enter key when the desired data is in focus.</li>
 </ul>
-<p><em><strong>Note: </strong></em>To edit/add options to these lists choose <em>System &gt; Collection Setup &gt; Configuration</em>. Preparation Type and Determination Status can be edited by clicking their icon in the Sidebar. Others can be edited within the <a href="../pick_list/pick_list.html">Pick List Editor</a>.</p>
+<p><em><strong>Note: </strong></em>Edit/add options to these lists in the Pick List Editor at <em>System &gt; Collection Setup &gt; Configuration</em>. Preparation Type and Determination Status can be edited by clicking their icon in the Sidebar. Others can be edited within the <a href="../../pick_list/pick_list.html">Pick List Editor</a>.</p>
+<p>&nbsp;</p>
+<p><u>Typeable Combo Box</u></p>
+<p><img src="../../images/on_fly_pick_list.png" width="179" height="32"></p>
+<p>Typeable combo boxes are used to display Pick Lists which are created from entered data. </p>
+<ul>
+  <li>Type a new term into the box and press the return or tab key. </li>
+</ul>
+<p>Or</p>
+<ul>
+  <li>Click the <img src="../../images/combo_box_arrow.png" width="16" height="21"> button, or activate the box and press the down-arrow(<img src="../../images/Down16x16.png" alt="down" width="16" height="16">) key to open the list.</li>
+  <li>Click on data to select it or press the enter key when the desired data is in focus.</li>
+</ul>
+<p><em><strong>Note:</strong></em> A Pick List can be changed from a Combo Box to a Typeable Combo Box or vice versa in the Pick List Editor at <em>System &gt; Collection Setup &gt; Configuration</em>.</p>
 <p>&nbsp;</p>
 <p><u>Date Field</u></p>
 <p><img src="../../images/date_field.png" width="207" height="32"></p>
 <p>Date fields require a formatted date and give a prompt for the accepted format.</p>
 <p>Type the date as shown in the box.</p>
+<p>&nbsp;</p>
+<p><u>Remarks Field</u></p>
+<p><img src="../../images/remarks.png" width="684" height="41"></p>
+<p>The Remarks field is a text field, typically 4096 characters in length. Text can be typed directly into the text box on the form, or for a larger text box of text click the <img src="../../images/Edit-2-16x16.png" width="16" height="16"> edit button, which will open a sub form for entering text.</p>
 <p>&nbsp;</p>
 <h4><a name="forms_unique_boxes"></a>Unique Field Boxes</h4>
 <p><u>Other Date Fields</u></p>
@@ -178,8 +194,8 @@
 <p><img src="../../images/date_type.png" alt="date" width="123" height="79"></p>
 <ul>
   <li>Choose <em>Date</em> for complete dates.</li>
-  <li>Choose <em>Mon / Year</em>* for incomplete dates including the month and year.</li>
-  <li>Choose <em>Year</em>* for incomplete dates the include just the year.</li>
+  <li>Choose <em>Mon / Year</em>* for incomplete dates which include the month and year.</li>
+  <li>Choose <em>Year</em>* for incomplete dates which include just the year.</li>
 </ul>
 <p>* Partial dates need to be stored as valid dates in the database (as day, month and year); therefore, Specify will use 01 for any missing data. For example, a partial date  that displays as <em>07/2007</em> is stored in the database as <em>01/07/2007</em> and a partial date of 2007 is stored in the database as <em>01/01/2007</em>. Therefore; if an exact date of <em>01/01/2007</em> is queried the partial date (<em>2007</em>) will be included in the return data.</p>
 <p>&nbsp;</p>
@@ -190,7 +206,7 @@
 <p> In most Collection Object forms, the Cataloger field is editable in the first new record, then automatically added and not editable  in any additional  forms created by clicking the add (<img src="../../images/add.png" alt="add" width="16" height="16">) button. To enter a new Cataloger simply click the Data Entry icon in the Taskbar to open a new Collection Object form.</p>
 <p>&nbsp;</p>
 <p><u>Formatted Number Fields</u></p>
-<p>Any string can be formatted to a numbering scheme in <em>System &gt; Schema Configuration. </em>Typical fields that are formatted with a numbering scheme are <em>Catalog Number</em>,<em> Accession Number, Loan Number </em>and<em> Gift Number</em>. Once these fields are formatted, they can either be entered manually or auto increment using <a href="auto_numbering.html">Auto Numbering</a>. </p>
+<p>Any string can be formatted to a numbering scheme in <em>System &gt; Schema Configuration. </em>Typical fields that are formatted with a numbering scheme are <em>Catalog Number</em>,<em> Accession Number, Loan Number </em>and<em> Gift Number</em>. Once these fields are formatted, they can either be entered manually or auto increment using <a href="../../Data_Entry/auto_numbering.html">Auto Numbering</a>. </p>
 <p><em><strong>Note: </strong></em>When manually entering a formatted number field, it is paramount that numbers be padded with 0's. For example, if 3 numbers are available in a numbering scheme (###) and the desired number is 1, then 001 must be entered. If only 1 is entered, then Specify will read this as 100. This will produce incorrect results in searches, queries and reports. </p>
 <p>&nbsp;</p>
 <p><u>Timestamp Modified</u></p>
@@ -206,7 +222,7 @@
   are View only (not editable) automatically load pre-determined information. Examples of these fields are the <em>Collection Name</em> field in the Collection Object form and the <em>Children</em> fields in the Geography, Taxon, Storage, Lithostratigraphy and Chronostratigraphy tables which are also displayed/edited as Trees.</p>
 <p>&nbsp;</p>
 <p><u>Required Fields</u></p>
-<p><img src="../../images/required_edit.png" alt="required" width="296" height="33"></p>
+<p><img src="../../required_edit.png" alt="required" width="296" height="33"></p>
 <p>Fields that are required have a bold label and text areas that are shaded blue (shown in the above Query Combo Box). Records can not be saved (the save button for the form will not become enabled) until all required fields contain proper data. A <img src="../../images/shield.png" width="20" height="20"> (incomplete information) button will appear at the bottom of any form with incomplete required fields. Click the button for a list of these fields.</p>
 <p><em><strong>Note:</strong></em> The shaded color can be changed in Specify Preferences. <em></em></p>
 <ul>
@@ -268,7 +284,7 @@
 <p>&nbsp;</p>
 <h3><u><a name="editing_related_records"></a>How Editing Affects Related Records</u></h3>
 <p>Records that are related, or linked, to other records can not be deleted. For example, a Preparation that is linked to specific Collection Objects can not be deleted while the link and/or Collection Object exists. To delete the Preparation, first edit each Collection Object record and remove the Preparation. </p>
-<p>When related records are edited, the record changes everywhere. For example, if the spelling of a name in the Last Name field is changed in the Agent record, the spelling will also change in the Deaccession Agents, Loan Agents, Authors and other records. </p>
+<p>When related records are edited, the data changes in each record that references that data. For example, if the spelling of a name in the Last Name field is changed in the Agent record, the spelling will also change in the Deaccession Agents, Loan Agents, Authors and other records. </p>
 <p><em><strong>Note:</strong></em> Only users with add and edit priviledges will be offered the add and edit button on their form.</p>
 </body>
 </html>

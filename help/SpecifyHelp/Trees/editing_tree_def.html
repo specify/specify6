@@ -16,18 +16,18 @@
   </tr>
 </table><br />
 <table border="0">
-<tr><td><img src="../../images/Tree_big.png" width="32" height="32" /></td>
-<td><h2>Tree Definition</h2></td></tr>
+<tr><td width="32"><img src="../../images/Tree_big.png" width="32" height="32" /></td>
+<td width="334"><h2>Editing a Tree Definition</h2></td></tr>
 </table>
-<p>The  Tree Definition tool defines the ranks available in a  tree as well as with how these ranks are enforced in data entry and used in aggregating the full name. Tree Definition tools are available for each of the trees. Nodes can not be added to a tree unless the rank included in the definition.</p>
+<p>The  Tree Definition tool defines the ranks available in a  tree as well as how these ranks are enforced in data entry and used in aggregating the full name. Tree Definition tools are available for each of the trees. Nodes can not be added to a tree unless the rank included in the definition.</p>
 <p>Specify ships with Taxon ranks included for all disciplines as defined by the Catalog of Life.</p>
 <p> Click the <em><img src="../../images/Tree-32x32.png" alt="tree" width="20" height="20" /> Trees</em> button on the Taskbar, then select a tree from the Sidebar list under <em>Edit Tree Definition</em>.</p>
 <p>The resulting window displays a hierarchical list of included Ranks in a grid view. </p>
-<p>A tree and corresponding form may not write to the database at the same time. Therefore, if a  tree or tree definition are open, a  form  can be viewed but not edited. For example, if user A is editing the Taxon tree definition user B will not be allowed to edit a Taxon form.</p>
+<p>A tree and corresponding form may not be open at the same time. If either a tree or form is open the other will only be available in view mode. For example, if user A is editing the Taxon tree definition user B will not be allowed to edit a Taxon form.</p>
 <p>Also, a tree and tree definition representing the same table can not be open at the same time. If the tree definition is open and the tree is selected the tree will replace the Definition in the same tab, therefore closing the tree definition. The Definition is not available to View and those without editing priviledges may not access it.</p>
-<p>&nbsp;</p>
+<p><em><strong>Setup Note:</strong></em> The full name configuration may not be edited once data is added to a tree.</p>
 <h3><a name="tree_title" id="tree_title"></a>Change Tree Title</h3>
-<p>Click on the <img src="../../images/Edit-2-16x16.png" alt="edit" width="16" height="16" /> (edit) button next to the tree title  to edit the title of the tree. This is also the name given to the first node in the tree.</p>
+<p>Click on the <img src="../../images/Edit-2-16x16.png" alt="edit" width="16" height="16" /> (edit) button next to the tree title  to edit the title of the tree. This is also the name that will be given to the first node in the tree.</p>
 <p>&nbsp;</p>
 <h3><a name="tree_ranks" id="tree_ranks"></a>Edit / Add / Delete Ranks</h3>
 <p>Buttons for editing (<img src="../../images/Edit-2-16x16.png" alt="edit" width="16" height="16" />), and adding (<img src="../../images/add.png" alt="" width="16" height="16" />), deleting (<img src="../../images/delete.png" alt="delete" width="16" height="16" />) ranks are located at the bottom right of the Workspace window.</p>
@@ -35,20 +35,21 @@
 <ul>
   <li><strong>Name</strong> of the rank.</li><br />
   <li><strong>Remarks</strong> about the rank.</li><br />
-  <li>I<strong>n Full Name </strong>will use the rank when displaying the full name for any associated Collection Objects (which appears in the Taxon Full Name field of the taxon table). The Full Name is also displayed in the Preferred Taxon field on the Determinations form and is useful when  running queries and reports and the full name is desired. <br />
-  <br />Once the full name is configured and data is added in the tree the full name configuration is not editable.</li><br />
-  <li><strong>Enforced</strong> ensures that the Rank can not be skipped when attaching children</li>
+  <li><strong>In Full Name </strong>will use the rank when displaying the full name for any associated Collection Objects (which appears in the Taxon Full Name field of the taxon table). The Full Name is also displayed in the Preferred Taxon field on the Determinations form and is useful when  running queries and reports if the full name is desired. <br />
+  <br />Once the full name is configured and data is added in the tree the full name configuration is not editable.</li>
+  <br />
+  <li><strong>Enforced</strong> ensures that the Rank can not be skipped when attaching children.</li>
 </ul>
 <p>&nbsp;</p>
-<p>Click the delete button to delete a rank. Ranks may <strong>NOT</strong> be deleted if nodes are associated with it.</p>
+<p>Click the delete button to delete a rank. Ranks may <strong>NOT</strong> be deleted if nodes are associated with them.</p>
 <p>Once the change is saved the tree will update. If the tree is extremely large this may take several minutes. </p>
-<p><em><strong>Note:</strong></em> If the save (or update) process is interrupted, the tree will need to update when Specify re launches. A prompt will appear notifying the user that the tree is updating.</p>
+<p><em><strong>Note:</strong></em> If the save (or update) process is interrupted, the tree will need to update when Specify re-launches. A prompt will appear notifying the user that the tree is updating.</p>
 <p>&nbsp;</p>
 <h3><a name="trees_pre" id="tree_pre"></a>Predefined Ranks</h3>
-<p>Taxon, Chronostratigraphy, Geography and Lighostratigraphy  include predefined ranks for the tree definitions. The Geography, Chronostratigraphy and Lithostratigraphy predefined ranks are also active within the tree definition. The Taxon tree includes many ranks that are not active and are offered via a Predefined Ranks dialog when adding a Rank.  If the list does not include the desired Rank, one can be added by clicking the <em>Custom</em> button and naming the rank in the ensuing <em>Edit Rank Properties</em> dialog. </p>
-<p>If a predefined ranks are deleted from the tree definition, they will be added back into the Predefined Ranks list in the dialog.</p>
-<p>Whenever possible, it is highly recommended that users choose a predefined rank. </p>
-<p>There is a limit to the number of custom ranks available between each predefined rank. When custom ranks are no longer able to be added between the predefined ranks, the status bar message <em>Unable to assign Rank</em> will appear.</p>
+<p>Taxon, Chronostratigraphy, Geography and Lithostratigraphy  include predefined ranks for the tree definitions. The Geography, Chronostratigraphy and Lithostratigraphy predefined ranks are also active within the tree definition. The Taxon tree includes many ranks that are not active and are offered via a Predefined Ranks dialog when adding a Rank.  If the list does not include the desired Rank, one can be added by clicking the <em>Custom</em> button and naming the rank in the ensuing <em>Edit Rank Properties</em> dialog. </p>
+<p>If predefined ranks are deleted from the tree definition, they will be added back into the Predefined Ranks list in the dialog.</p>
+<p>Whenever possible, it is highly recommended that users choose a predefined rank rather than create a custom rank. </p>
+<p>There is a limit to the number of custom ranks available between each predefined rank. When custom ranks can no longer be added between the predefined ranks, the status bar message <em>Unable to assign Rank</em> will appear.</p>
 <p><em><strong>Note:</strong></em> Ranks must be defined in the tree definition before they can be entered as nodes in either a tree or form. For example, the city of Lawrence can not be added under Douglas County in a Geography tree if the tree definition does not include a rank for City. </p>
 <p>&nbsp;</p>
 </body>

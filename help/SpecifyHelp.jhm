@@ -162,7 +162,7 @@
 	<mapID target="Q_Wild"                url="SpecifyHelp/QueryBuilder/Query_Builder.html#q_wild" />
 	<mapID target="Q_Controls"            url="SpecifyHelp/QueryBuilder/Query_Builder.html#q_controls" />
 	<mapID target="Q_Edit"                url="SpecifyHelp/QueryBuilder/Query_Builder.html#q_edit" />
-	<mapID target="Q_Results"                url="SpecifyHelp/QueryBuilder/Query_Builder.html#q_results" />
+	<mapID target="QB_Results"             url="SpecifyHelp/QueryBuilder/Query_Builder.html#q_results" />
 	<mapID target="Q_Saved"               url="SpecifyHelp/QueryBuilder/Query_Builder.html#q_saved" />
 	<mapID target="Q_Delete"              url="SpecifyHelp/QueryBuilder/Query_Builder.html#q_delete" />
     

@@ -159,7 +159,7 @@
 				<tocitem text="Using Wild Cards" target="Q_Wild"/>
 				<tocitem text="Other Controls" target="Q_Controls"/>
 				<tocitem text="Editing a Query" target="Q_Edit"/>
-				<tocitem text="Query Results" target="Q_Results"/>
+				<tocitem text="Query Results" target="QB_Results"/>
 				<tocitem text="Saved Queries" target="Q_Saved">
 					<tocitem text="Import and Export Saved Queries" target="QBImport"/>
 				</tocitem>

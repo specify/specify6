@@ -20,16 +20,16 @@
 <tr><td><img src="../../images/reports32x32.png" width="32" height="32" /></td>
 <td valign="bottom"><h2>Reports</h2></td></tr>
 </table>
-<p>Specify has utilized the power of iReport 3.0, an open source report writing software package, by changing the original version to interact with Queries created in Specify 6 and  the Specify 6 database. The resulting application is called <a href="../ReportsLabels/specifyireports.html">SpecifyiReport.</a></p>
-<p>The following documentation discusses the Report components inside Specify. To access  these  click the <img src="../../images/Reports20x20.png" alt="" width="20" height="20" /> Reports button on the Taskbar.
+<p>Specify has utilized the power of iReport 3.0, an open source report writing software package, by changing the original iReport version to interact with Queries created in Specify 6 and  the Specify 6 database. The resulting application is called <a href="../ReportsLabels/specifyireports.html">SpecifyiReport.</a></p>
+<p>The following documentation discusses the Report components on the reports side bar and assumes that reports have already been created using SpecifyiReport. To access  these  click the <img src="../../images/Reports20x20.png" alt="" width="20" height="20" /> Reports button on the Taskbar.
 
 <p>&nbsp;</p>
 <h3><u><a name="report_sidebar" id="report_sidebar"></a>Sidebar Items</u></h3>
-<p>It is important to note that the distinction between reports and labels in Specify 6 Reports is purely an organizational function allowing users to list these items separately on the Sidebar. Reports and labels are created exactly the same in iReports and run and print the same from within Specify.</p>
+<p>It is important to note that the distinction between reports and labels in Specify 6 Reports is purely an organizational function allowing users to list these items separately on the Sidebar. Reports and labels are created in exactly the same way in iReports and run and print the same from within Specify.</p>
 <p><strong>Actions</strong></p>
-<p><u>Run Report</u> also refers to labels.</p>
+<p><u>Run Report</u> also refers to labels and invoices.</p>
 <ul>
-  <li>Drag a Report or Label and drop it on this button or click the button to open a dialog and choose a Report/Label.</li><br />
+  <li>Drag a report, label or invoice and drop it on this button or click the button to open a dialog and choose a report/label/invoice from the resulting dialog, or drag a record set onto a report/label/invoice in the side bar.</li><br />
   <li>If the Prompt box was selected in the report query a dialog will open allowing the query expressions to be edited before running the report.</li><br />
   <li>The report will display in the Workspace. A tool bar at the top of the Workspace offers buttons for saving, printing and view.</li>
 </ul>
@@ -38,7 +38,7 @@
 <table width="100%" border="0" cellspacing="2" cellpadding="0">
   <tr>
     <td width="5%">&nbsp;</td>
-    <td width="95%"><p>A. <strong>Save</strong> the report to disk. This will offer a file system dialog to choose the path for saving the report. Report can be saved as:</p>
+    <td width="95%"><p>A. <strong>Save</strong> the report to disk. This will offer a file system dialog to choose the path for saving the report. Reports can be saved as:</p>
       <ul>
         <li>PDF (.pdf)</li>
         <li>RTF (.rtf)</li>
@@ -54,7 +54,7 @@
       <p>B. <strong>Print</strong></p>
       <p>C. <strong>Refresh</strong> is sometimes necessary when resizing the report view. </p>
       <p>D. <strong>Navigation Controls</strong> for jumping to the first page, going back one page, going forward one page and jumping to the last page. </p>
-      <p>E. <strong>Page Number</strong> displays the page number and allows users to type the desired page number into the field and press the <em>return</em> key.</p>
+      <p>E. <strong>Page Number</strong> displays the page number and allows users to type a page number into the field and press the <em>return</em> key to view the desired page.</p>
       <p>F. <strong>Actual size</strong></p>
       <p>G. <strong>Fit Length</strong></p>
       <p>H. <strong>Fit Width</strong></p>
@@ -65,16 +65,27 @@
 </table>
 <p>&nbsp;</p>
 <p><u><a name="reports_refresh" id="reports_refresh"></a>Refresh</u></p>
-<p>Reports created in SpecifyiReport are saved in the database and will not automatically appear on the Reports Sidebar. Click Refresh to add recently saved reports.</p>
+<p>Reports created in SpecifyiReport are saved in the database and will not automatically appear on the Reports side bar. Click the <em>Refresh</em> button to add recently saved reports to the side bar.</p>
 <p>&nbsp;</p>
 <p><strong>Reports</strong></p>
-<p>Saved Reports are listed under this heading. Specify provides a basic Catalog report. </p>
+<p>Saved Reports are listed under this heading. </p>
+<ul>
+  <li>Click on a report, then selecct to either run the report on a Record Set or first run the query then run the report with the results from the resulting dialog. </li>
+  <li>Drag and drop a record set onto a report to run it.</li>
+  <li>Drag and drop a report on a record set to run the report.</li>
+</ul>
 <p>&nbsp;</p>
 <p><strong><a name="reports_labels" id="reports_labels"></a>Labels</strong></p>
 <p>Reports can be saved as Reports, Labels, or Invoices. Labels are listed under this heading. Specify also provides a basic label report.</p>
+<ul>
+  <li>Click on a label, then selecct to either run the report on a record set or first run the query then run the report with the results from the resulting dialog. </li>
+  <li>Drag and drop a record set onto a label to run it.</li>
+  <li>Drag and drop a report on a record set to run the label report.</li>
+</ul>
 <p>&nbsp;</p>
 <p><strong><a name="reports_recordsets" id="reports_recordsets"></a>Record Sets</strong></p>
-<p>Reports can be executed by dragging and dropping a record set onto them in the side bar. Reports that can accept a record set will include a colored outline. An arrow will also appear within the outline when the record set can be dropped onto the Report.</p>
+<p>Reports can be executed by dragging and dropping a record set onto the name of the report  in the side bar. Reports that can accept a record set will include a colored outline. An arrow will also appear within the outline when the record set can be dropped onto the report.</p>
+<p>Reports and labels can also dragged and dropped onto a record set to execute the report/label.</p>
 <p>&nbsp;</p>
 </BODY>
 </html>
