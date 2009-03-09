@@ -476,7 +476,7 @@ public class SearchConfig
         RelatedQuery rq = relatedQueryIdHash.get(id);
         if (rq == null)
         {
-            rq = new RelatedQuery(id, Integer.MAX_VALUE, true);
+            rq = new RelatedQuery(id, Integer.MAX_VALUE, false);
             relatedQueries.add(rq);
             relatedQueryIdHash.put(rq.getId(), rq);
         }
