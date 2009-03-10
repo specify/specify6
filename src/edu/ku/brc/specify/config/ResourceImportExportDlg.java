@@ -369,6 +369,8 @@ public class ResourceImportExportDlg extends CustomDialog
                 }
             }
         });
+        
+        pack();
 }
     
     /**
