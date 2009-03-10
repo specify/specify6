@@ -533,6 +533,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
         {
             return new SpQueryField.OperatorType[] {
                 SpQueryField.OperatorType.EQUALS,
+                SpQueryField.OperatorType.LIKE,
                 SpQueryField.OperatorType.IN,
                 SpQueryField.OperatorType.EMPTY};
         }
