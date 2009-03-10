@@ -229,6 +229,7 @@ import edu.ku.brc.util.AttachmentManagerIface;
 import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.FileStoreAttachmentManager;
 import edu.ku.brc.util.Pair;
+import edu.ku.brc.util.Triple;
 import edu.ku.brc.util.thumbnails.Thumbnailer;
 
 /**
@@ -393,8 +394,7 @@ public class BuildSampleDatabase
      * @return the entire list of DB object to be persisted
      */
     @SuppressWarnings("unchecked")
-    public List<Object> createEmptyDiscipline(final Properties props, 
-                                              final CollectionChoice choice)
+    public List<Object> createEmptyDiscipline(final Properties props)
     {
         AppContextMgr.getInstance().setHasContext(true);
         
@@ -475,9 +475,15 @@ public class BuildSampleDatabase
             institution.setStorageTreeDef(stgTreeDef);
         }
         
+        String dispName = props.getProperty("dispName");
+        if (StringUtils.isEmpty(dispName))
+        {
+            dispName = disciplineType.getTitle();
+        }
+        
         discipline = createDiscipline(division, 
                                       disciplineType.getName(), 
-                                      disciplineType.getTitle(), 
+                                      dispName, 
                                       dataType, 
                                       taxonTreeDef, 
                                       geoTreeDef, 
@@ -497,9 +503,210 @@ public class BuildSampleDatabase
         frame.setProcess(++createStep);
         frame.setDesc("Loading Schema...");
         
+        Triple<String, AutoNumberingScheme, AutoNumberingScheme> triple = localizeDisciplineSchema(discipline, props);
+        
+        frame.setProcess(++createStep);
+        
+        ////////////////////////////////
+        // Create the really high-level stuff
+        ////////////////////////////////
+        String           title            = props.getProperty("title",     "");
+        String           firstName        = props.getProperty("firstName", "Test");
+        String           lastName         = props.getProperty("lastName",  "User");
+        String           midInit          = props.getProperty("middleInitial", "A");
+        String           abbrev           = props.getProperty("abbrev",     "");
+        
+        System.out.println("----- User Agent -----");
+        System.out.println("Title:     "+title);
+        System.out.println("FirstName: "+firstName);
+        System.out.println("LastName:  "+lastName);
+        System.out.println("MidInit:   "+midInit);
+        System.out.println("Abbrev:    "+abbrev);
+        System.out.println("Email:     "+email);
+        System.out.println("UserType:  "+userType);
+        
+        startTx();
+        
+        Agent userAgent = createAgent(title, firstName, midInit, lastName, abbrev, email);
+        
+        discipline.addReference(userAgent, "agents");
+        specifyAdminUser.addReference(userAgent, "agents");
+        
+        persist(discipline);
+        persist(userAgent);
+        
+        commitTx();
+        
+        frame.setProcess(++createStep);
+        
+        startTx();
+
+        ////////////////////////////////
+        // Create Collection
+        ////////////////////////////////
+        log.info("Creating a Collection");
+        frame.setDesc("Creating a Collection");
+        
+        Collection collection = createCollection(props.getProperty("collPrefix"), 
+                                                 props.getProperty("collName"), 
+                                                 triple.first,  // Catalog Format Name
+                                                 triple.second, // Catalog Number Schema
+                                                 discipline, 
+                                                 disciplineType.isEmbeddedCollecingEvent());
+        
+        collection.getTechnicalContacts().add(userAgent);
+        collection.getContentContacts().add(userAgent);
+        
+        persist(collection);
+        
+        ////////////////////////////////
+        // Default user groups and test user
+        ////////////////////////////////
+
+        // create the standard user groups for this collection
+        dataBuilderSession = switchDataBuilderSession();
+        Map<String, SpPrincipal> groupMap = DataBuilder.createStandardGroups(collection);
+
+        // add the administrator as a Collections Manager in this group
+        specifyAdminUser.addUserToSpPrincipalGroup(groupMap.get(SpecifyUserTypes.UserType.Manager.toString()));
+
+        // add tester
+        //String dspAbbrev = disciplineType.getAbbrev();
+        //createAndAddTesterToCollection(dspAbbrev+"Tester", dspAbbrev+"tester@brc.ku.edu", dspAbbrev+"Tester", 
+        //        "", dspAbbrev, "", "Tester", "", discipline, division, groupMap, SpecifyUserTypes.UserType.Manager.toString());
+        
+        DataBuilder.setSession(dataBuilderSession);
+
+        AppContextMgr.getInstance().setClassObject(Collection.class, collection);
+        
+        AutoNumberingScheme accANS = triple.third;
+        if (accANS != null)
+        {
+            division.addReference(accANS, "numberingSchemes");
+            persist(division);
+        }
+
+        commitTx();
+        
+        makeFieldVisible(null, discipline);
+        makeFieldVisible(disciplineType.getName(), discipline);
+
+        frame.setProcess(++createStep);
+        
+        startTx();
+        
+        //createTaxonTreeDefFromXML(taxonTreeDef, disciplineType);
+        //persist(taxonTreeDef);
+        
+        //DBTableIdMgr schema = new DBTableIdMgr(false);
+        //schema.initialize(new File(XMLHelper.getConfigDirPath("specify_datamodel.xml")));
+        //loadSchemaLocalization(discipline, SpLocaleContainer, schema);
+        //buildDarwinCoreSchema(discipline);
+
+        AppContextMgr.getInstance().setClassObject(SpecifyUser.class, specifyAdminUser);
+        specifyAdminUser.addReference(userAgent, "agents");
+        
+        persist(specifyAdminUser);
+
+        //Journal journal = createJournalsAndReferenceWork();
+        
+        ////////////////////////////////
+        // build the tree def items and nodes
+        ////////////////////////////////
+        frame.setDesc("Building Trees...");
+        Vector<Object> taxa = new Vector<Object>();
+        
+        // Create Tree Definition
+        taxonTreeDef.setDiscipline(discipline);
+        taxa.add(taxonTreeDef);
+
+         
+        boolean isPaleo = disciplineType.getDisciplineType() == DisciplineType.STD_DISCIPLINES.paleobotany ||
+                          disciplineType.getDisciplineType() == DisciplineType.STD_DISCIPLINES.vertpaleo ||
+                          disciplineType.getDisciplineType() == DisciplineType.STD_DISCIPLINES.invertpaleo;
+        
+        if (isPaleo)
+        {
+            LithoStratTreeDefItem earth     = createLithoStratTreeDefItem(lithoStratTreeDef, "Earth", 0, false);
+            LithoStratTreeDefItem superGrp  = createLithoStratTreeDefItem(earth,     "Super Group", 100, false);
+            LithoStratTreeDefItem lithoGrp  = createLithoStratTreeDefItem(superGrp,  "Litho Group", 200, false);
+            LithoStratTreeDefItem formation = createLithoStratTreeDefItem(lithoGrp,  "Formation",   300, false);
+            LithoStratTreeDefItem member    = createLithoStratTreeDefItem(formation, "Member",      400, false);
+            @SuppressWarnings("unused")
+            LithoStratTreeDefItem bed       = createLithoStratTreeDefItem(member,    "Bed",         500, true);
+            persist(earth);
+        }
+        
+        List<Object> geos        = new Vector<Object>();
+        List<Object> gtps        = createSimpleGeologicTimePeriod(gtpTreeDef, false);
+        List<Object> lithoStrats = isPaleo ? null : createSimpleLithoStrat(lithoStratTreeDef, false);
+        
+        // Create Tree Definition
+        taxonTreeDef.setDiscipline(discipline);
+        taxa.add(taxonTreeDef);
+        
+        List<Object> storages    = new Vector<Object>();
+        createStorageDefFromXML(storages, stgTreeDef, props.getProperty("StorageTreeDef.treedefs"));
+        
+        createTaxonDefFromXML(taxa, taxonTreeDef, props.getProperty("TaxonTreeDef.treedefs"));
+        
+        createGeographyDefFromXML(geos, geoTreeDef, props.getProperty("GeographyTreeDef.treedefs"));
+        
+        persist(storages);
+        persist(taxa);
+        persist(geos);
+        persist(gtps);
+        
+        if (lithoStrats != null)
+        {
+            persist(lithoStrats);
+            
+        } else if (isPaleo)
+        {
+            lithoStrats = createSimpleLithoStrat(lithoStratTreeDef, false);
+            persist(lithoStrats);
+        }
+        commitTx();
+        
+        convertGeographyFromXLS(geoTreeDef);
+        
+        frame.setProcess(++createStep);
+        
+        startTx();
+        
+        ////////////////////////////////
+        // picklists
+        ////////////////////////////////
+
+        log.info("Creating picklists");
+        frame.setDesc("Creating Common PickLists...");
+        
+        frame.setProcess(++createStep);
+        
+        createPickLists(session, null);
+        
+        frame.setProcess(++createStep);
+        
+        frame.setDesc("Creating PickLists...");
+        createPickLists(session, discipline);
+        
+        frame.setProcess(++createStep);
+        
+        dataObjects.clear();
+                
+        frame.setProcess(++createStep);
+        
+        buildDarwinCoreSchema(discipline);
+
+        return dataObjects;
+    }
+    
+    public Triple<String, AutoNumberingScheme, AutoNumberingScheme> 
+                localizeDisciplineSchema(final Discipline discipline, 
+                                         final Properties props)
+    {
         Object catNumFmtObj = props.get("catnumfmt");
         Object accNumFmtObj = props.get("accnumfmt");
-        
         
         UIFieldFormatterIFace catNumFmt = catNumFmtObj instanceof UIFieldFormatterIFace ? (UIFieldFormatterIFace)catNumFmtObj : null;
         UIFieldFormatterIFace accNumFmt = accNumFmtObj instanceof UIFieldFormatterIFace ? (UIFieldFormatterIFace)accNumFmtObj : null;
@@ -547,39 +754,7 @@ public class BuildSampleDatabase
                                 catNumFmtName,
                                 accNumFmtName);
         persist(discipline);
-        commitTx();
         
-        frame.setProcess(++createStep);
-        
-        ////////////////////////////////
-        // Create the really high-level stuff
-        ////////////////////////////////
-        String           title            = props.getProperty("title",     "");
-        String           firstName        = props.getProperty("firstName", "Test");
-        String           lastName         = props.getProperty("lastName",  "User");
-        String           midInit          = props.getProperty("middleInitial", "A");
-        String           abbrev           = props.getProperty("abbrev",     "");
-        
-        System.out.println("----- User Agent -----");
-        System.out.println("Title:     "+title);
-        System.out.println("FirstName: "+firstName);
-        System.out.println("LastName:  "+lastName);
-        System.out.println("MidInit:   "+midInit);
-        System.out.println("Abbrev:    "+abbrev);
-        System.out.println("Email:     "+email);
-        System.out.println("UserType:  "+userType);
-        
-        startTx();
-        
-        Agent userAgent = createAgent(title, firstName, midInit, lastName, abbrev, email);
-        
-        discipline.addReference(userAgent, "agents");
-        specifyAdminUser.addReference(userAgent, "agents");
-        
-        persist(discipline);
-        persist(userAgent);
-        
-       
         AutoNumberingScheme catANS = createAutoNumberingScheme("Catalog Numbering Scheme", "", 
                                          catNumFmtName, isCatNumFmtNumeric, CollectionObject.getClassTableId());
         persist(catANS);
@@ -588,102 +763,74 @@ public class BuildSampleDatabase
         if (accNumFmt != null)
         {
             accANS = createAutoNumberingScheme("Accession Numbering Scheme", "",  
-                                                 accNumFmtName, isAccNumFmtNumeric,Accession.getClassTableId());
+                                                  accNumFmtName, isAccNumFmtNumeric,Accession.getClassTableId());
             persist(accANS);
         }
-        
-        commitTx();
-        
-        frame.setProcess(++createStep);
-        
-        startTx();
-
-        ////////////////////////////////
-        // Create Collection
-        ////////////////////////////////
-        log.info("Creating a Collection");
-        frame.setDesc("Creating a Collection");
-        
-        Collection collection = createCollection(props.getProperty("collPrefix"), 
-                                                 props.getProperty("collName"), 
-                                                 catNumFmt.getName(),
-                                                 catANS,
-                                                 discipline, 
-                                                 disciplineType.isEmbeddedCollecingEvent());
-        
-        collection.getTechnicalContacts().add(userAgent);
-        collection.getContentContacts().add(userAgent);
-        
-        persist(collection);
-        
-        ////////////////////////////////
-        // Default user groups and test user
-        ////////////////////////////////
-
-        // create the standard user groups for this collection
-        dataBuilderSession = switchDataBuilderSession();
-        Map<String, SpPrincipal> groupMap = DataBuilder.createStandardGroups(collection);
-
-        // add the administrator as a Collections Manager in this group
-        specifyAdminUser.addUserToSpPrincipalGroup(groupMap.get(SpecifyUserTypes.UserType.Manager.toString()));
-
-        // add tester
-        //String dspAbbrev = disciplineType.getAbbrev();
-        //createAndAddTesterToCollection(dspAbbrev+"Tester", dspAbbrev+"tester@brc.ku.edu", dspAbbrev+"Tester", 
-        //        "", dspAbbrev, "", "Tester", "", discipline, division, groupMap, SpecifyUserTypes.UserType.Manager.toString());
-        
-        DataBuilder.setSession(dataBuilderSession);
-
-        AppContextMgr.getInstance().setClassObject(Collection.class, collection);
-        
-        if (accANS != null)
-        {
-            division.addReference(accANS, "numberingSchemes");
-            persist(division);
-        }
 
         commitTx();
         
-        makeFieldVisible(null, discipline);
-        makeFieldVisible(disciplineType.getName(), discipline);
-
-        frame.setProcess(++createStep);
-        
-        startTx();
-        
-        //createTaxonTreeDefFromXML(taxonTreeDef, disciplineType);
-        //persist(taxonTreeDef);
-        
-        //DBTableIdMgr schema = new DBTableIdMgr(false);
-        //schema.initialize(new File(XMLHelper.getConfigDirPath("specify_datamodel.xml")));
-        //loadSchemaLocalization(discipline, SpLocaleContainer, schema);
-        //buildDarwinCoreSchema(discipline);
-
-        AppContextMgr.getInstance().setClassObject(SpecifyUser.class, specifyAdminUser);
-        specifyAdminUser.addReference(userAgent, "agents");
-        
-        persist(specifyAdminUser);
-
-        //Journal journal = createJournalsAndReferenceWork();
-        
-        ////////////////////////////////
-        // build the tree def items and nodes
-        ////////////////////////////////
-        frame.setDesc("Building Trees...");
-        Vector<Object> taxa = new Vector<Object>();
-        //createTaxonTreeFromXML(taxa, taxonTreeDef, disciplineType);
-        
-        // Create Tree Definition
-        taxonTreeDef.setDiscipline(discipline);
-        taxa.add(taxonTreeDef);
-
-        String dataStr = props.getProperty("TaxonTreeDef.treedefs");
-        if (StringUtils.isNotEmpty(dataStr))
+        return new Triple<String, AutoNumberingScheme, AutoNumberingScheme>(catNumFmtName, catANS, accANS);
+    }
+    
+    /**
+     * @param geoList
+     * @param geoTreeDef
+     * @param geoXML
+     */
+    @SuppressWarnings("unchecked")
+    public static void createGeographyDefFromXML(final List<Object>     geoList, 
+                                                 final GeographyTreeDef geoTreeDef, 
+                                                 final String           geoXML)
+    {
+        if (StringUtils.isNotEmpty(geoXML))
         {
             XStream xstream = new XStream();
             TreeDefRow.configXStream(xstream);
             
-            Vector<TreeDefRow> treeDefList = (Vector<TreeDefRow>)xstream.fromXML(dataStr);
+            Vector<TreeDefRow>   treeDefList = (Vector<TreeDefRow>)xstream.fromXML(geoXML);
+            GeographyTreeDefItem parent      = null;
+            int                  cnt         = 0;
+            for (TreeDefRow row : treeDefList)
+            {
+                GeographyTreeDefItem gtdi = new GeographyTreeDefItem();
+                gtdi.initialize();
+                gtdi.setTreeDef(geoTreeDef);
+                geoTreeDef.getTreeDefItems().add(gtdi);
+                gtdi.setName(row.getDefName());
+                gtdi.setRankId(row.getRank());
+                gtdi.setParent(parent);
+                gtdi.setFullNameSeparator(row.getSeparator());
+                gtdi.setIsEnforced(row.isEnforced());
+                gtdi.setIsInFullName(row.isInFullName());
+                
+                geoList.add(gtdi);
+                
+                if (parent != null)
+                {
+                    parent.getChildren().add(gtdi);
+                }
+                parent = gtdi;
+                cnt++;
+            }
+        }
+    }
+    
+    /**
+     * @param taxonList
+     * @param taxonTreeDef
+     * @param taxonXML
+     */
+    @SuppressWarnings("unchecked")
+    public static  void createTaxonDefFromXML(final List<Object> taxonList, 
+                                              final TaxonTreeDef taxonTreeDef, 
+                                              final String       taxonXML)
+    {
+        if (StringUtils.isNotEmpty(taxonXML))
+        {
+            XStream xstream = new XStream();
+            TreeDefRow.configXStream(xstream);
+            
+            Vector<TreeDefRow> treeDefList = (Vector<TreeDefRow>)xstream.fromXML(taxonXML);
             TaxonTreeDefItem   parent      = null;
             int                cnt         = 0;
             for (TreeDefRow row : treeDefList)
@@ -701,7 +848,7 @@ public class BuildSampleDatabase
                     ttdi.setIsEnforced(row.isEnforced());
                     ttdi.setIsInFullName(row.isInFullName());
                     
-                    taxa.add(ttdi);
+                    taxonList.add(ttdi);
                     
                     if (cnt == 0)
                     {
@@ -722,117 +869,64 @@ public class BuildSampleDatabase
                 }
             }
         }
-        
-        boolean isPaleo = disciplineType.getDisciplineType() == DisciplineType.STD_DISCIPLINES.paleobotany ||
-                          disciplineType.getDisciplineType() == DisciplineType.STD_DISCIPLINES.vertpaleo ||
-                          disciplineType.getDisciplineType() == DisciplineType.STD_DISCIPLINES.invertpaleo;
-        
-        if (isPaleo)
-        {
-            LithoStratTreeDefItem earth     = createLithoStratTreeDefItem(lithoStratTreeDef, "Earth", 0, false);
-            LithoStratTreeDefItem superGrp  = createLithoStratTreeDefItem(earth,     "Super Group", 100, false);
-            LithoStratTreeDefItem lithoGrp  = createLithoStratTreeDefItem(superGrp,  "Litho Group", 200, false);
-            LithoStratTreeDefItem formation = createLithoStratTreeDefItem(lithoGrp,  "Formation",   300, false);
-            LithoStratTreeDefItem member    = createLithoStratTreeDefItem(formation, "Member",      400, false);
-            @SuppressWarnings("unused")
-            LithoStratTreeDefItem bed       = createLithoStratTreeDefItem(member,    "Bed",         500, true);
-            persist(earth);
-        }
-        
-        List<Object> geos        = new Vector<Object>();//createSimpleGeography(geoTreeDef, false);
-        List<Object> gtps        = createSimpleGeologicTimePeriod(gtpTreeDef, false);
-        List<Object> lithoStrats = isPaleo ? null : createSimpleLithoStrat(lithoStratTreeDef, false);
-        
-        // Create Tree Definition
-        taxonTreeDef.setDiscipline(discipline);
-        taxa.add(taxonTreeDef);
-
-        dataStr = props.getProperty("GeographyTreeDef.treedefs");
-        if (StringUtils.isNotEmpty(dataStr))
+    }
+    
+    /**
+     * @param storageList
+     * @param storageTreeDef
+     * @param storageXML
+     */
+    @SuppressWarnings("unchecked")
+    public static  void createStorageDefFromXML(final List<Object> storageList, 
+                                              final StorageTreeDef storageTreeDef, 
+                                              final String       storageXML)
+    {
+        if (StringUtils.isNotEmpty(storageXML))
         {
             XStream xstream = new XStream();
             TreeDefRow.configXStream(xstream);
             
-            Vector<TreeDefRow> treeDefList = (Vector<TreeDefRow>)xstream.fromXML(dataStr);
-            GeographyTreeDefItem   parent      = null;
+            Vector<TreeDefRow> treeDefList = (Vector<TreeDefRow>)xstream.fromXML(storageXML);
+            StorageTreeDefItem parent      = null;
             int                cnt         = 0;
             for (TreeDefRow row : treeDefList)
             {
-                GeographyTreeDefItem gtdi = new GeographyTreeDefItem();
-                gtdi.initialize();
-                gtdi.setTreeDef(geoTreeDef);
-                geoTreeDef.getTreeDefItems().add(gtdi);
-                gtdi.setName(row.getDefName());
-                gtdi.setRankId(row.getRank());
-                gtdi.setParent(parent);
-                gtdi.setFullNameSeparator(row.getSeparator());
-                gtdi.setIsEnforced(row.isEnforced());
-                gtdi.setIsInFullName(row.isInFullName());
-                
-                geos.add(gtdi);
-                
-                if (parent != null)
+                if (row.isIncluded())
                 {
-                    parent.getChildren().add(gtdi);
+                    StorageTreeDefItem stdi = new StorageTreeDefItem();
+                    stdi.initialize();
+                    stdi.setTreeDef(storageTreeDef);
+                    storageTreeDef.getTreeDefItems().add(stdi);
+                    stdi.setName(row.getDefName());
+                    stdi.setRankId(row.getRank());
+                    stdi.setParent(parent);
+                    stdi.setFullNameSeparator(row.getSeparator());
+                    stdi.setIsEnforced(row.isEnforced());
+                    stdi.setIsInFullName(row.isInFullName());
+                    
+                    storageList.add(stdi);
+                    
+                    if (cnt == 0)
+                    {
+                        Storage stg = new Storage();
+                        stg.initialize();
+                        stg.setDefinition(storageTreeDef);
+                        stg.setDefinitionItem(stdi);
+                        stdi.getTreeEntries().add(stg);
+                        stg.setName("Site");
+                    }
+                   
+                    if (parent != null)
+                    {
+                        parent.getChildren().add(stdi);
+                    }
+                    parent = stdi;
+                    cnt++;
                 }
-                parent = gtdi;
-                cnt++;
             }
         }
-
-        
-        persist(taxa);
-        persist(geos);
-        persist(gtps);
-        
-        if (lithoStrats != null)
-        {
-            persist(lithoStrats);
-            
-        } else if (isPaleo)
-        {
-            //LithoStrat earthLithoStrat = convertLithoStratFromCSV(lithoStratTreeDef);
-            //if (earthLithoStrat == null)
-            //{
-                lithoStrats = createSimpleLithoStrat(lithoStratTreeDef, false);
-                persist(lithoStrats);
-            //}  
-        }
-        commitTx();
-        
-        convertGeographyFromXLS(geoTreeDef);
-        
-        frame.setProcess(++createStep);
-        
-        startTx();
-        
-        ////////////////////////////////
-        // picklists
-        ////////////////////////////////
-
-        log.info("Creating picklists");
-        frame.setDesc("Creating Common PickLists...");
-        
-        frame.setProcess(++createStep);
-        
-        createPickLists(session, null);
-        
-        frame.setProcess(++createStep);
-        
-        frame.setDesc("Creating PickLists...");
-        createPickLists(session, discipline);
-        
-        frame.setProcess(++createStep);
-        
-        dataObjects.clear();
-                
-        frame.setProcess(++createStep);
-        
-        buildDarwinCoreSchema(discipline);
-
-        return dataObjects;
     }
-    
+
     /**
      * Returns a list of object of a specified class.
      * @param cls the class
@@ -7084,7 +7178,7 @@ public class BuildSampleDatabase
             
             if (hideFrame) System.out.println("Creating Empty Database");
             
-            createEmptyDiscipline(props, null);
+            createEmptyDiscipline(props);
 
             SwingUtilities.invokeLater(new Runnable()
             {

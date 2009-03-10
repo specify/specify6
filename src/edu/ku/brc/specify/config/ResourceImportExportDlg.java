@@ -65,6 +65,7 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.forms.persist.ViewIFace;
 import edu.ku.brc.af.ui.forms.persist.ViewSetIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -229,12 +230,17 @@ public class ResourceImportExportDlg extends CustomDialog
         repList.setCellRenderer(new ARListRenderer());
         sp = new JScrollPane(repList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         repPane.add(sp, cc.xy(1,3));
+        
+        boolean addResourcesPanel = AppPreferences.getLocalPrefs().getBoolean("ADD_IMP_RES", false);
 
         
         viewsPanel = viewPanel.getPanel();
         tabbedPane.addTab(getResourceString("RIE_VIEWSETS"), viewsPanel);
-        //resPanel = resPanel.getPanel();
-        //tabbedPane.addTab(getResourceString("RIE_OTHER_RES"), resPanel);
+        if (addResourcesPanel)
+        {
+            resPanel = resPane.getPanel();
+            tabbedPane.addTab(getResourceString("RIE_OTHER_RES"), resPanel);
+        }
         repPanel = repPane.getPanel();
         tabbedPane.addTab(getResourceString("RIE_REPORT_RES"), repPanel);
         

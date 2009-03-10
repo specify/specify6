@@ -380,6 +380,11 @@ public class DataBuilder
         discipline.setGeographyTreeDef(geographyTreeDef);//meg added to support not-null constraints
         discipline.setGeologicTimePeriodTreeDef(geologicTimePeriodTreeDef);//meg added to support not-null constraints
         discipline.setLithoStratTreeDef(lithoStratTreeDef);
+        
+        geographyTreeDef.getDisciplines().add(discipline);
+        geologicTimePeriodTreeDef.getDisciplines().add(discipline);
+        lithoStratTreeDef.getDisciplines().add(discipline);
+        
         taxonTreeDef.setDiscipline(discipline);
         
         division.addReference(discipline, "disciplines");

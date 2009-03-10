@@ -1148,7 +1148,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesOkDeleteIFace#doDeleteDataObj(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
      */
-    public void doDeleteDataObj(Object dataObj, DataProviderSessionIFace session, final boolean doDelete)
+    public void doDeleteDataObj(final Object dataObj, final DataProviderSessionIFace session, final boolean doDelete)
     {
         UIRegistry.getStatusBar().setProgressDone(SYSTEMSETUPTASK);
         

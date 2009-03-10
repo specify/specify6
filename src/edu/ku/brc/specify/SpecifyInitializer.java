@@ -14,13 +14,6 @@
  */
 package edu.ku.brc.specify;
 
-import java.awt.Dimension;
-
-import edu.ku.brc.af.prefs.AppPreferences;
-import edu.ku.brc.dbsupport.HibernateUtil;
-import edu.ku.brc.specify.config.init.SpecifyDBSetupWizard;
-import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.UIRegistry;
 
 /**
  * This class checks the local disk and the user's home directory to see if Specify has been used. 
@@ -61,12 +54,12 @@ public class SpecifyInitializer
      */
     public boolean setup(final Specify specify)
     {
-        AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+        /*AppPreferences localPrefs = AppPreferences.getLocalPrefs();
         localPrefs.setDirPath(UIRegistry.getAppDataDir());
         
         if (true)//StringUtils.isEmpty(localPrefs.get("login.dbdriver_selected", null)))
         {
-            final SpecifyDBSetupWizard specifyInitFrame = new SpecifyDBSetupWizard();
+            final SpecifyDBSetupWizard specifyInitFrame = new SpecifyDBSetupWizard(SpecifyDBSetupWizard.WizardType.Full);
             specifyInitFrame.setTitle("SpecifyDBInit - "); //$NON-NLS-1$
             // I can't believe I have to do the following....
             UIHelper.centerWindow(specifyInitFrame);
@@ -80,7 +73,7 @@ public class SpecifyInitializer
         {
             HibernateUtil.shutdown();
             specify.startUp();
-        }
+        }*/
 
         return true;
     }

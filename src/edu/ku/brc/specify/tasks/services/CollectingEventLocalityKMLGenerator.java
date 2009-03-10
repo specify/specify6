@@ -1,5 +1,6 @@
 package edu.ku.brc.specify.tasks.services;
 
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static edu.ku.brc.util.LatLonConverter.convertToDDDDDD;
 
 import java.io.BufferedWriter;
@@ -32,7 +33,6 @@ import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.tasks.PluginsTask;
-import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 import edu.ku.brc.util.LatLonConverter.DEGREES_FORMAT;
 import edu.ku.brc.util.LatLonConverter.DIRECTION;
@@ -289,17 +289,17 @@ public class CollectingEventLocalityKMLGenerator
         // build the fancy HTML popup description
         
         sb.append("<description><![CDATA[");
-        //sb.append("<h3>"+UIRegistry.getResourceString("GE_LOCALITY")+":</h3>\n<ul>\n");
+        //sb.append("<h3>"+getResourceString("GE_LOCALITY")+":</h3>\n<ul>\n");
         sb.append("<table>\n");
         
         sb.append("<tr>\n");
-        sb.append("<td style=\"color:#"+textColor+"; text-align:right\">"+UIRegistry.getResourceString("Latitude")+":</td>\n");
+        sb.append("<td style=\"color:#"+textColor+"; text-align:right\">"+getResourceString("Latitude")+":</td>\n");
         sb.append("<td style=\"color:#"+textColor+"\" >"+lat.doubleValue()+"</td></tr>\n");
-        sb.append("<tr><td style=\"color:#"+textColor+"; text-align:right\">"+UIRegistry.getResourceString("Longitude")+":</td>\n");
+        sb.append("<tr><td style=\"color:#"+textColor+"; text-align:right\">"+getResourceString("Longitude")+":</td>\n");
         sb.append("<td style=\"color:#"+textColor+"\" >"+lon.doubleValue()+"</td>\n");
         if (loc.getGeography() != null)
         {
-            sb.append("<tr><td style=\"color:#"+textColor+"; text-align:right\">"+UIRegistry.getResourceString("Geography")+":</td>\n");
+            sb.append("<tr><td style=\"color:#"+textColor+"; text-align:right\">"+getResourceString("Geography")+":</td>\n");
             sb.append("<td style=\"color:#"+textColor+"\" >"+loc.getGeography().getFullName()+"</td>\n");
         }
         sb.append("</tr>\n");
@@ -438,7 +438,7 @@ public class CollectingEventLocalityKMLGenerator
 		//sb.append(" - ");
 		//sb.append(endString);
 		//sb.append("</h3></center><br/>");
-		sb.append("<h3>"+UIRegistry.getResourceString("GE_COLLECTOR")+":</h3>\n<ul>\n");
+		sb.append("<h3>"+getResourceString("GE_COLLECTOR")+":</h3>\n<ul>\n");
 		for( String agent: agentNames )
 		{
 			sb.append("<li>");
@@ -449,7 +449,7 @@ public class CollectingEventLocalityKMLGenerator
 		
 		if (genusSpecies.size() > 0)
 		{
-    		sb.append("<br/><h3>"+UIRegistry.getResourceString("GE_COLLECTION_OBJECTS")+":</h3>\n<table>\n");
+    		sb.append("<br/><h3>"+getResourceString("GE_COLLECTION_OBJECTS")+":</h3>\n<table>\n");
     		
     		AppPreferences remotePrefs = AppPreferences.getRemote();
     		
@@ -460,19 +460,19 @@ public class CollectingEventLocalityKMLGenerator
             
             sb.append("<tr>");
             sb.append("<th><center>");
-            sb.append(UIRegistry.getResourceString("GE_CATALOG_NUMBER"));
+            sb.append(getResourceString("GE_CATALOG_NUMBER"));
             sb.append("</center></th>\n");
             sb.append("<th>");
-            sb.append(UIRegistry.getResourceString("GE_TAXONOMY"));
+            sb.append(getResourceString("GE_TAXONOMY"));
             sb.append("</b></th>\n");
             if (StringUtils.isNotEmpty(primaryURL))
             {
-                sb.append("<th style=\"color:#"+textColor+"\"><center>"+UIRegistry.getResourceString("GE_PRIMARY")+"</center></th>\n");
+                sb.append("<th style=\"color:#"+textColor+"\"><center>"+getResourceString("GE_PRIMARY")+"</center></th>\n");
             }
             
             if (StringUtils.isNotEmpty(secondaryURL))
             {
-                sb.append("<th style=\"color:#"+textColor+"\"><center>"+UIRegistry.getResourceString("GE_SECONDARY")+"</center></th>\n");
+                sb.append("<th style=\"color:#"+textColor+"\"><center>"+getResourceString("GE_SECONDARY")+"</center></th>\n");
             }
             sb.append("</tr>\n");
             
@@ -678,7 +678,7 @@ public class CollectingEventLocalityKMLGenerator
         // build the fancy HTML popup description
         
         sb.append("<description><![CDATA[");
-        //sb.append("<h3>"+UIRegistry.getResourceString("GE_LOCALITY")+":</h3>\n<ul><br/>\n");
+        //sb.append("<h3>"+getResourceString("GE_LOCALITY")+":</h3>\n<ul><br/>\n");
         sb.append("<table>\n");
         
         appendCellTR(sb, CollectingEvent.getClassTableId(), "StartDate",  "Start Date", startDateStr);

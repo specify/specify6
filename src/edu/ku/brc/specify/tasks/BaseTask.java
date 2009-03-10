@@ -35,7 +35,7 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public abstract class BaseTask extends edu.ku.brc.af.tasks.BaseTask
 {
-    protected static final Logger  log = Logger.getLogger(BaseTask.class);
+    protected static final Logger  baseLog = Logger.getLogger(BaseTask.class);
     
     protected static SoftReference<Hashtable<String, PermissionOptionPersist>> taskPermsListSR = null;
     
@@ -64,7 +64,7 @@ public abstract class BaseTask extends edu.ku.brc.af.tasks.BaseTask
         try
         {
             File permFile = new File(XMLHelper.getConfigDirPath("defaultperms" + File.separator + fileName)); //$NON-NLS-1$
-            log.debug(permFile.getAbsoluteFile());
+            baseLog.debug(permFile.getAbsoluteFile());
             if (permFile.exists())
             {
                 xmlStr = FileUtils.readFileToString(permFile);
@@ -171,10 +171,10 @@ public abstract class BaseTask extends edu.ku.brc.af.tasks.BaseTask
             {
                 return permOpt.getDefaultPerms();
             }
-            log.error("No permissions from hash for user type["+userType+"]");
+            baseLog.error("No permissions from hash for user type["+userType+"]");
         } else
         {
-            log.error("No hashtable from getAndSetDefPerms!");
+            baseLog.error("No hashtable from getAndSetDefPerms!");
         }
         return null;
     }

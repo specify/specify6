@@ -330,7 +330,7 @@ public class CustomDialog extends JDialog
         
         getRootPane().setDefaultButton(findDefaultBtn());
         
-        JPanel bb;
+        JPanel bb = null;
         if (whichBtns == OK_BTN)
         {
             bb = ButtonBarFactory.buildOKBar(okBtn);
@@ -363,24 +363,28 @@ public class CustomDialog extends JDialog
         {
             bb = ButtonBarFactory.buildOKHelpBar(cancelBtn, helpBtn);
             
-        } else
+        } else  if (whichBtns == OK_BTN)
         {
             bb = ButtonBarFactory.buildOKBar(okBtn);
         }
-        bb.setOpaque(false);
         
-        Component bbComp = bb;
-        if (UIHelper.getOSType() == UIHelper.OSTYPE.MacOSX) // adjust for intruding resizer on Mac OS X
+        if (bb != null)
         {
-            PanelBuilder    builder    = new PanelBuilder(new FormLayout("p:g,15px", "p"));
-            CellConstraints cc         = new CellConstraints();
-            builder.add(bb, cc.xy(1,1));
-            builder.getPanel().setOpaque(false);
+            bb.setOpaque(false);
             
-            bbComp = builder.getPanel();
+            Component bbComp = bb;
+            if (UIHelper.getOSType() == UIHelper.OSTYPE.MacOSX) // adjust for intruding resizer on Mac OS X
+            {
+                PanelBuilder    builder    = new PanelBuilder(new FormLayout("p:g,15px", "p"));
+                CellConstraints cc         = new CellConstraints();
+                builder.add(bb, cc.xy(1,1));
+                builder.getPanel().setOpaque(false);
+                
+                bbComp = builder.getPanel();
+            }
+    
+            mainPanel.add(bbComp, BorderLayout.SOUTH);
         }
-
-        mainPanel.add(bbComp, BorderLayout.SOUTH);
 
 
         setContentPane(mainPanel);

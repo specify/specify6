@@ -47,6 +47,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -119,7 +120,7 @@ import edu.ku.brc.ui.UIRegistry;
 public class ExpressSearchTask extends BaseTask implements CommandListener, SQLExecutionListener, CustomQueryListener
 {
     // Static Data Members
-    //sprivate static final Logger log = Logger.getLogger(ExpressSearchTask.class);
+    private static final Logger log = Logger.getLogger(ExpressSearchTask.class);
 
     public static final int RESULTS_THRESHOLD   = 5000;
     public static final String EXPRESSSEARCH      = "Express_Search";

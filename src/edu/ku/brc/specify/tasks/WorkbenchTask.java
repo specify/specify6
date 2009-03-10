@@ -19,7 +19,6 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.FileDialog;
 import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
@@ -990,7 +989,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     public boolean getExportInfo(final Properties props)
     {
         String extension = "";
-        String fileTypeCaption = "";
+        //String fileTypeCaption = "";
         if (true)
         {
             for (ExportFileConfigurationFactory.ExportableType type : ExportFileConfigurationFactory.getExportList())
@@ -999,7 +998,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 {
                     props.setProperty("mimetype", type.getMimeType());
                     extension = type.getExtension();
-                    fileTypeCaption = type.getCaption();
+                    //fileTypeCaption = type.getCaption();
                     break;
                 }
             }

@@ -22,8 +22,6 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.swing.event.ListDataEvent;
-import javax.swing.event.ListDataListener;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -32,7 +30,6 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
-import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.ui.UIHelper;
 
 /**
@@ -47,7 +44,6 @@ import edu.ku.brc.ui.UIHelper;
  */
 public class DatabasePanel extends BaseSetupPanel
 {
-    protected boolean            doLoginOnly = false;
     protected boolean            assumeDerby = false;
     
     protected JTextField         usernameTxt;
@@ -55,7 +51,6 @@ public class DatabasePanel extends BaseSetupPanel
     protected JTextField         dbNameTxt;
     protected JTextField         hostNameTxt;
     protected JComboBox          drivers;
-    protected JComboBox          disciplines;
     
     protected Vector<DatabaseDriverInfo> driverList;
     protected boolean                    doSetDefaultValues;
@@ -72,66 +67,31 @@ public class DatabasePanel extends BaseSetupPanel
         
         String header = getResourceString("ENTER_DB_INFO") + ":";
 
-        Vector<DisciplineType> dispList = new Vector<DisciplineType>();
-        for (DisciplineType disciplineType : DisciplineType.getDisciplineList())
-        {
-            if (disciplineType.getType() == 0)
-            {
-                dispList.add(disciplineType);
-            }
-        }
-        
-        driverList  = DatabaseDriverInfo.getDriversList();
-        drivers     = createComboBox(driverList);
-        disciplines = createComboBox(dispList);
-        
-        drivers.getModel().addListDataListener(new ListDataListener() {
-            public void intervalAdded(ListDataEvent e)   { adjustLabel(); }
-            public void intervalRemoved(ListDataEvent e) { adjustLabel(); }
-            public void contentsChanged(ListDataEvent e) { adjustLabel(); }
-        });
-        
         CellConstraints cc = new CellConstraints();
         
-        int numRows = 4 + (doLoginOnly ? 0 : 2);
-        PanelBuilder builder = new PanelBuilder(new FormLayout("p,2px,p:g", "p,2px," + UIHelper.createDuplicateJGoodiesDef("p", "2px", numRows)+",p:g"), this);
+        String rowDef = "p,2px," + UIHelper.createDuplicateJGoodiesDef("p", "2px", 5) + ",p:g";
+        PanelBuilder builder = new PanelBuilder(new FormLayout("p,2px,p:g", rowDef), this);
         int row = 1;
         
         builder.add(createLabel(header, SwingConstants.CENTER), cc.xywh(1,row,3,1));row += 2;
         
-        usernameTxt     = createField(builder, "IT_USERNAME",  true, row);row += 2;
+        usernameTxt     = createField(builder, "IT_USERNAME",  true, row);      row += 2;
         passwordTxt     = createField(builder, "IT_PASSWORD",  true, row, true);row += 2;
-        dbNameTxt       = createField(builder, "DB_NAME",   true, row);row += 2;
-        hostNameTxt     = createField(builder, "HOST_NAME", true, row);row += 2;
+        dbNameTxt       = createField(builder, "DB_NAME",   true, row);         row += 2;
+        hostNameTxt     = createField(builder, "HOST_NAME", true, row);         row += 2;
 
-        if (!doLoginOnly)
-        {
-            JLabel lbl = createI18NFormLabel("DSP_TYPE", SwingConstants.RIGHT);
-            lbl.setFont(bold);
-            builder.add(lbl, cc.xy(1, row));
-            builder.add(disciplines, cc.xy(3, row));
-            row += 2;
-            
-            lbl = createI18NFormLabel("DRIVER", SwingConstants.RIGHT);
-            lbl.setFont(bold);
-            builder.add(lbl, cc.xy(1, row));
-            builder.add(drivers, cc.xy(3, row));
-            row += 2;
-        }
+        driverList  = DatabaseDriverInfo.getDriversList();
+        drivers     = createComboBox(driverList);
         
         // Select Derby or MySQL as the default
         drivers.setSelectedItem(DatabaseDriverInfo.getDriver(assumeDerby ? "Derby" : "MySQL"));
+        
+        JLabel lbl = createI18NFormLabel("DRIVER", SwingConstants.RIGHT);
+        lbl.setFont(bold);
+        builder.add(lbl,     cc.xy(1, row));
+        builder.add(drivers, cc.xy(3, row));
+        row += 2;
 
-        
-        // Select Fish as the default
-        for (DisciplineType disciplineType : dispList)
-        {
-            if (disciplineType.getName().equals("fish"))
-            {
-                disciplines.setSelectedItem(disciplineType);
-            }
-        }
-        
         updateBtnUI();
     }
     
@@ -163,8 +123,6 @@ public class DatabasePanel extends BaseSetupPanel
         {
             drivers.setSelectedIndex(0);
         }
-        
-        //String driverName = values.get(makeName("driver");
     }
 
     /**
@@ -180,14 +138,9 @@ public class DatabasePanel extends BaseSetupPanel
         }
     }
     
-    public void adjustLabel()
-    {
-        if (nextBtn != null)
-        {
-            //nextBtn.setText(isUsingDerby() ? "Next" : "Finished");
-        }
-    }
-    
+    /**
+     * @return
+     */
     public boolean isUsingDerby()
     {
         DatabaseDriverInfo database = (DatabaseDriverInfo)drivers.getSelectedItem();
@@ -231,10 +184,5 @@ public class DatabasePanel extends BaseSetupPanel
     public String getUsername()
     {
         return usernameTxt.getText();
-    }
-
-    public DisciplineType getDisciplineType()
-    {
-        return (DisciplineType)disciplines.getSelectedItem();
     }
 }

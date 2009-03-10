@@ -14,25 +14,27 @@
  */
 package edu.ku.brc.specify.datamodel.busrules;
 
+import static edu.ku.brc.specify.config.init.DataBuilder.buildDarwinCoreSchema;
 import static edu.ku.brc.specify.config.init.DataBuilder.createGeographyTreeDef;
 import static edu.ku.brc.specify.config.init.DataBuilder.createGeologicTimePeriodTreeDef;
 import static edu.ku.brc.specify.config.init.DataBuilder.createLithoStratTreeDef;
+import static edu.ku.brc.specify.config.init.DataBuilder.createLithoStratTreeDefItem;
 import static edu.ku.brc.specify.config.init.DataBuilder.createTaxonTreeDef;
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 
 import java.awt.Component;
-import java.awt.Dialog;
+import java.awt.Dimension;
 import java.awt.Frame;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.List;
+import java.util.Properties;
 import java.util.Vector;
 
-import javax.swing.JComboBox;
-
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
+import javax.swing.JButton;
+import javax.swing.SwingWorker;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.UsageTracker;
@@ -42,12 +44,14 @@ import edu.ku.brc.af.ui.db.TextFieldFromPickListTable;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
-import edu.ku.brc.af.ui.forms.ResultSetController;
+import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.validation.ValComboBox;
 import edu.ku.brc.af.ui.forms.validation.ValTextField;
+import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.config.DisciplineType;
+import edu.ku.brc.specify.config.init.SpecifyDBSetupWizard;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.AutoNumberingScheme;
 import edu.ku.brc.specify.datamodel.Collection;
@@ -57,6 +61,7 @@ import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
 import edu.ku.brc.specify.datamodel.LithoStratTreeDef;
+import edu.ku.brc.specify.datamodel.LithoStratTreeDefItem;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.dbsupport.HibernateDataProviderSession;
 import edu.ku.brc.specify.dbsupport.SpecifyDeleteHelper;
@@ -65,13 +70,28 @@ import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
+/**
+ * @author rod
+ *
+ * @code_status Beta
+ *
+ * Feb 5, 2008
+ *
+ */
 public class DisciplineBusRules extends BaseBusRules implements CommandListener
-{   
+{
     //private final Logger         log      = Logger.getLogger(DisciplineBusRules.class);
     private static final String CMD_TYPE = "DisciplineBusRules"; 
+    private static final String PROGRESS = "progress"; 
+    
+    private boolean       isOKToCont    = false;
+    private ProgressFrame progressFrame = null;
+    private int           totalSteps    = 8;
+    
     /**
      * 
      */
@@ -91,13 +111,33 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
         
         if (formViewObj != null)
         {
-            if (formViewObj.getMVParent().isTopLevel())
+            /*if (formViewObj.getMVParent().isTopLevel())
             {
                 ResultSetController rsc = formViewObj.getRsController();
                 if (rsc != null)
                 {
                     if (rsc.getNewRecBtn() != null) rsc.getNewRecBtn().setVisible(false);
                     if (rsc.getDelRecBtn() != null) rsc.getDelRecBtn().setVisible(false);
+                }
+            }*/
+            if (formViewObj.getRsController() != null)
+            {
+                JButton newBtn = formViewObj.getRsController().getNewRecBtn();
+                if (newBtn != null)
+                {
+                    // Remove all ActionListeners, there should only be one
+                    for (ActionListener al : newBtn.getActionListeners())
+                    {
+                        newBtn.removeActionListener(al);
+                    }
+                    
+                    newBtn.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e)
+                        {
+                            addNewDiscipline();
+                        }
+                    });
                 }
             }
             
@@ -124,8 +164,267 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
                 });
             }
         }
-        
     }
+    
+    /**
+     * 
+     */
+    private void addNewDiscipline()
+    {
+        isOKToCont = true;
+        
+        final SpecifyDBSetupWizard wizardPanel = new SpecifyDBSetupWizard(SpecifyDBSetupWizard.WizardType.Brief, null);
+        
+        final CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getMostRecentWindow(), "", true, CustomDialog.NONE_BTN, wizardPanel);
+        dlg.setCustomTitleBar(UIRegistry.getResourceString("CREATEDISP"));
+        wizardPanel.setListener(new SpecifyDBSetupWizard.WizardListener() {
+            @Override
+            public void cancelled()
+            {
+                isOKToCont = false;
+            }
+            @Override
+            public void finished()
+            {
+                dlg.setVisible(false);
+            }
+            @Override
+            public void hide()
+            {
+                dlg.setVisible(false);
+            }
+            @Override
+            public void panelChanged(String title)
+            {
+                dlg.setTitle(title);
+            }
+        });
+        UIHelper.centerAndShow(dlg);
+        
+        if (!isOKToCont)
+        {
+            return;
+        }
+        
+        progressFrame = new ProgressFrame("Creating Discipline ...", "SpecifyLargeIcon");
+        progressFrame.getCloseBtn().setVisible(false);
+        progressFrame.pack();
+        Dimension size = progressFrame.getSize();
+        size.width = Math.max(size.width, 500);
+        progressFrame.setSize(size);
+        progressFrame.setProcessPercent(true);
+        progressFrame.turnOffOverAll();
+        
+        progressFrame.setProcess(0, totalSteps);
+
+        UIHelper.centerAndShow(progressFrame);
+        
+        SwingWorker<Integer, Integer> bldWorker = new SwingWorker<Integer, Integer>()
+        {
+            private int steps = 0;
+            
+            /* (non-Javadoc)
+             * @see javax.swing.SwingWorker#doInBackground()
+             */
+            @Override
+            protected Integer doInBackground() throws Exception
+            {
+                firePropertyChange(PROGRESS, 0, ++steps);
+                
+                Properties props = wizardPanel.getProps();
+                
+                DisciplineType            disciplineType = wizardPanel.getDisciplineType();
+                
+                TaxonTreeDef              taxonTreeDef      = createTaxonTreeDef("Taxon");
+                GeographyTreeDef          geoTreeDef        = createGeographyTreeDef("Geography");
+                GeologicTimePeriodTreeDef gtpTreeDef        = createGeologicTimePeriodTreeDef("Chronos Stratigraphy");
+                LithoStratTreeDef         lithoStratTreeDef = createLithoStratTreeDef("LithoStrat");
+
+                Discipline discipline = new Discipline();
+                discipline.initialize();
+                
+                discipline.setType(disciplineType.getName());
+                discipline.setName(props.getProperty("dispName"));
+                
+                discipline.setDivision(AppContextMgr.getInstance().getClassObject(Division.class));
+                
+                DataType dataType = AppContextMgr.getInstance().getClassObject(DataType.class);
+                discipline.setDataType(dataType);
+
+                taxonTreeDef.setDiscipline(discipline);
+                discipline.setTaxonTreeDef(taxonTreeDef);
+                
+                geoTreeDef.getDisciplines().add(discipline);
+                discipline.setGeographyTreeDef(geoTreeDef);
+
+                gtpTreeDef.getDisciplines().add(discipline);
+                discipline.setGeologicTimePeriodTreeDef(gtpTreeDef);
+
+                lithoStratTreeDef.getDisciplines().add(discipline);
+                discipline.setLithoStratTreeDef(lithoStratTreeDef);
+                
+                boolean isPaleo = disciplineType.getDisciplineType() == DisciplineType.STD_DISCIPLINES.paleobotany ||
+                disciplineType.getDisciplineType() == DisciplineType.STD_DISCIPLINES.vertpaleo ||
+                disciplineType.getDisciplineType() == DisciplineType.STD_DISCIPLINES.invertpaleo;
+
+                if (isPaleo)
+                {
+                    LithoStratTreeDefItem earth     = createLithoStratTreeDefItem(lithoStratTreeDef, "Earth", 0, false);
+                    LithoStratTreeDefItem superGrp  = createLithoStratTreeDefItem(earth,     "Super Group", 100, false);
+                    LithoStratTreeDefItem lithoGrp  = createLithoStratTreeDefItem(superGrp,  "Litho Group", 200, false);
+                    LithoStratTreeDefItem formation = createLithoStratTreeDefItem(lithoGrp,  "Formation",   300, false);
+                    LithoStratTreeDefItem member    = createLithoStratTreeDefItem(formation, "Member",      400, false);
+                    @SuppressWarnings("unused")
+                    LithoStratTreeDefItem bed       = createLithoStratTreeDefItem(member,    "Bed",         500, true);
+                    //persist(earth);
+                }
+                
+                List<Object> geos        = new Vector<Object>();
+                List<Object> gtps        = BuildSampleDatabase.createSimpleGeologicTimePeriod(gtpTreeDef, false);
+                List<Object> lithoStrats = isPaleo ? null : BuildSampleDatabase.createSimpleLithoStrat(lithoStratTreeDef, false);
+                
+                // Create Tree Definition
+                Vector<Object> taxa = new Vector<Object>();
+                taxonTreeDef.setDiscipline(discipline);
+                taxa.add(taxonTreeDef);
+                
+                BuildSampleDatabase.createTaxonDefFromXML(taxa, taxonTreeDef, props.getProperty("TaxonTreeDef.treedefs"));
+                
+                BuildSampleDatabase.createGeographyDefFromXML(geos, geoTreeDef, props.getProperty("GeographyTreeDef.treedefs"));
+                
+                HibernateDataProviderSession session     = null;
+                try
+                {
+                    session = (HibernateDataProviderSession)DataProviderFactory.getInstance().createSession();
+                    session.beginTransaction();
+                    
+                    session.saveOrUpdate(discipline);
+                    
+                    persist(taxa, session);
+                    persist(geos, session);
+                    persist(gtps, session);
+                    persist(lithoStrats, session);
+                    
+                    firePropertyChange(PROGRESS, 0, ++steps);
+                    
+                    BuildSampleDatabase bsd = new BuildSampleDatabase();
+                    bsd.setSession(session.getSession());
+                    bsd.convertGeographyFromXLS(geoTreeDef);
+                    
+                    firePropertyChange(PROGRESS, 0, ++steps);
+                    
+                    session.commit();
+                    
+                    firePropertyChange(PROGRESS, 0, ++steps);
+                    
+                    bsd.localizeDisciplineSchema(discipline, props);
+                    
+                    firePropertyChange(PROGRESS, 0, ++steps);
+                    
+                    session.close();
+                    
+                    session = (HibernateDataProviderSession)DataProviderFactory.getInstance().createSession();
+                    
+                    session.beginTransaction();
+                    
+                    firePropertyChange(PROGRESS, 0, ++steps);
+                    
+                    List<?> list = session.createQuery("FROM Discipline WHERE id = "+discipline.getId(), false).list();
+                    
+                    discipline = (Discipline)list.get(0);
+                    
+                    firePropertyChange(PROGRESS, 0, ++steps);
+                    
+                    buildDarwinCoreSchema(discipline);
+                    
+                    firePropertyChange(PROGRESS, 0, ++steps);
+                    
+                    session.commit();
+                    
+                } catch (Exception ex)
+                {
+                    session.rollback();
+                    
+                    System.err.println(ex);
+                    ex.printStackTrace();
+                    
+                } finally
+                {
+                    if (session != null)
+                    {
+                        session.close();
+                    }
+                }
+
+                progressFrame.setProcess(totalSteps);
+                
+                return null;
+            }
+
+            @Override
+            protected void done()
+            {
+                super.done();
+                
+                progressFrame.setVisible(false);
+                progressFrame.dispose();
+                progressFrame = null;
+                
+                FormViewObj divFVO = formViewObj.getMVParent().getMultiViewParent().getCurrentViewAsFormViewObj();
+                Division div = (Division)divFVO.getDataObj();
+                
+                DataProviderSessionIFace session = null;
+                try
+                {
+                    session = DataProviderFactory.getInstance().createSession();
+                    
+                    div = (Division)session.getData("FROM Division WHERE id = "+div.getId());
+                    
+                } catch (Exception ex)
+                {
+                    System.err.println(ex);
+                    ex.printStackTrace();
+                    
+                } finally
+                {
+                    if (session != null)
+                    {
+                        session.close();
+                    }
+                }
+                
+                divFVO.setDataObj(div);
+            }
+        };
+        
+        bldWorker.addPropertyChangeListener(
+                new PropertyChangeListener() {
+                    public  void propertyChange(final PropertyChangeEvent evt) {
+                        if (PROGRESS.equals(evt.getPropertyName())) 
+                        {
+                            progressFrame.setProcess((Integer)evt.getNewValue());
+                        }
+                    }
+                });
+        bldWorker.execute();
+    }
+    
+    /**
+     * @param oList
+     * @param session
+     * @throws Exception
+     */
+    private void persist(final List<Object> oList, final DataProviderSessionIFace session) throws Exception
+    {
+        if (oList != null)
+        {
+            for (Object o: oList)
+            {
+                session.saveOrUpdate(o);
+            }
+        }
+    }
+
 
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.BaseBusRules#afterFillForm(java.lang.Object)
@@ -352,46 +651,45 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
     {
         super.addChildrenToNewDataObjects(newDataObj);
         
-        Vector<DisciplineType> dispList = new Vector<DisciplineType>();
-        for (DisciplineType disciplineType : DisciplineType.getDisciplineList())
-        {
-            if (disciplineType.getType() == 0)
-            {
-                dispList.add(disciplineType);
-            }
-        }
+        SpecifyDBSetupWizard wizardPanel = new SpecifyDBSetupWizard(SpecifyDBSetupWizard.WizardType.Brief, null);
         
-        Discipline discipline = (Discipline)newDataObj;
-        
-        CellConstraints cc = new CellConstraints();
-        PanelBuilder    pb = new PanelBuilder(new FormLayout("p", "p,4px,p,4px"));
-        
-        final JComboBox cbx = UIHelper.createComboBox(dispList);
-        pb.add(UIHelper.createI18NLabel("CHOOSEDISP"), cc.xy(1, 1));
-        pb.add(cbx, cc.xy(1, 3));
-        pb.setDefaultDialogBorder();
-        
-        
-        Window parentWin = UIRegistry.getMostRecentWindow();
-        CustomDialog dlg;
-        if (parentWin instanceof Dialog)
-        {
-            dlg = new CustomDialog((Dialog)UIRegistry.getMostRecentWindow(), "", true, CustomDialog.OK_BTN, pb.getPanel());
-        } else
-        {
-            dlg = new CustomDialog((Frame)UIRegistry.getMostRecentWindow(), "", true, CustomDialog.OK_BTN, pb.getPanel());
-        }
+        final CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getMostRecentWindow(), "", true, CustomDialog.NONE_BTN, wizardPanel);
         dlg.setCustomTitleBar(UIRegistry.getResourceString("CREATEDISP"));
-
+        wizardPanel.setListener(new SpecifyDBSetupWizard.WizardListener() {
+            @Override
+            public void cancelled()
+            {
+            }
+            @Override
+            public void finished()
+            {
+                dlg.setVisible(false);
+            }
+            @Override
+            public void hide()
+            {
+                dlg.setVisible(false);
+            }
+            @Override
+            public void panelChanged(String title)
+            {
+                dlg.setTitle(title);
+            }
+        });
         UIHelper.centerAndShow(dlg);
         
-        discipline.setType(((DisciplineType)cbx.getSelectedItem()).getName());
+        //Properties prop = wizardPanel.getProps();
+        
+        DisciplineType            disciplineType = wizardPanel.getDisciplineType();
         
         TaxonTreeDef              taxonTreeDef      = createTaxonTreeDef("Taxon");
         GeographyTreeDef          geoTreeDef        = createGeographyTreeDef("Geography");
         GeologicTimePeriodTreeDef gtpTreeDef        = createGeologicTimePeriodTreeDef("Chronos Stratigraphy");
         LithoStratTreeDef         lithoStratTreeDef = createLithoStratTreeDef("LithoStrat");
 
+        Discipline discipline = (Discipline)newDataObj;
+        
+        discipline.setType(disciplineType.getName());
         
         DataType dataType = AppContextMgr.getInstance().getClassObject(DataType.class);
         discipline.setDataType(dataType);
@@ -407,30 +705,6 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
 
         lithoStratTreeDef.getDisciplines().add(discipline);
         discipline.setLithoStratTreeDef(lithoStratTreeDef);
-        
-        
-        // create the geo tree def items
-        /*GeographyTreeDefItem root    = createGeographyTreeDefItem(null, geoTreeDef, "GeoRoot", 0);
-        root.setIsEnforced(true);
-        GeographyTreeDefItem cont    = createGeographyTreeDefItem(root, geoTreeDef, "Continent", 100);
-        GeographyTreeDefItem country = createGeographyTreeDefItem(cont, geoTreeDef, "Country", 200);
-        GeographyTreeDefItem state   = createGeographyTreeDefItem(country, geoTreeDef, "State", 300);
-        state.setIsInFullName(true);
-        GeographyTreeDefItem county  = createGeographyTreeDefItem(state, geoTreeDef, "County", 400);
-        county.setIsInFullName(true);
-        county.setTextAfter(" Co.");
-        */
-        
-        
-        // Create a GeologicTimePeriod tree definition
-        /*
-        GeologicTimePeriodTreeDefItem defItemLevel0 = createGeologicTimePeriodTreeDefItem(null, taxonTreeDef, "Level 0", 0);
-        GeologicTimePeriodTreeDefItem defItemLevel1 = createGeologicTimePeriodTreeDefItem(defItemLevel0, taxonTreeDef, "Level 1", 100);
-        GeologicTimePeriodTreeDefItem defItemLevel2 = createGeologicTimePeriodTreeDefItem(defItemLevel1, taxonTreeDef, "Level 2", 200);
-        GeologicTimePeriodTreeDefItem defItemLevel3 = createGeologicTimePeriodTreeDefItem(defItemLevel2, taxonTreeDef, "Level 3", 300);
-        */
-        
-        
     }
     
     /* (non-Javadoc)

@@ -48,6 +48,7 @@ import com.thoughtworks.xstream.XStream;
 import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.config.DisciplineType.STD_DISCIPLINES;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
+import edu.ku.brc.specify.datamodel.StorageTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 
 /**
@@ -89,7 +90,9 @@ public class TreeDefSetupPanel extends BaseSetupPanel implements SetupPanelIFace
         this.classType  = classType;
         this.classTitle = classTitle;
         
-        if (classType == TaxonTreeDef.class || classType == GeographyTreeDef.class)
+        if (classType == TaxonTreeDef.class || 
+                classType == GeographyTreeDef.class || 
+                classType == StorageTreeDef.class)
         {
             DisciplineType dType  = DisciplineType.getDiscipline(disciplineType);
             
@@ -101,6 +104,10 @@ public class TreeDefSetupPanel extends BaseSetupPanel implements SetupPanelIFace
             } else if (classType == GeographyTreeDef.class)
             {
                 fileName = "common" + File.separator + "geography_init.xml";
+                
+            } else if (classType == StorageTreeDef.class)
+            {
+                fileName = "common" + File.separator + "storage_init.xml";
             }
             
             File file = getConfigDir(fileName);

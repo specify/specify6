@@ -52,6 +52,7 @@ public class ProgressFrame extends JFrame
     protected JProgressBar overallProgress;
     protected JProgressBar processProgress;
     protected JLabel       desc;
+    protected JLabel       overallLbl;
     protected JButton      closeBtn;
     protected JFrame       instance;
     
@@ -97,7 +98,7 @@ public class ProgressFrame extends JFrame
         builder.add( createLabel("Process:"), cc.xy(1,3)); // I18N
         builder.add( processProgress, cc.xy(3,3));
         
-        builder.add( createLabel("Overall:"), cc.xy(1,5)); // I18N
+        builder.add( overallLbl = createLabel("Overall:"), cc.xy(1,5)); // I18N
         builder.add( overallProgress, cc.xy(3,5));
         
         builder.add( closeBtn, cc.xy(1,7));
@@ -146,13 +147,27 @@ public class ProgressFrame extends JFrame
         pack();
     }
     
-    public synchronized void incOverall()
+    /**
+     * 
+     */
+    public void turnOffOverAll()
     {
-
-        overallProgress.setValue(overallProgress.getValue() + 1);
-
+        overallProgress.setVisible(false);
+        overallLbl.setVisible(false);
     }
     
+    /**
+     * 
+     */
+    public synchronized void incOverall()
+    {
+        overallProgress.setValue(overallProgress.getValue() + 1);
+    }
+    
+    /**
+     * @param min
+     * @param max
+     */
     public synchronized void setOverall(final int min, final int max)
     {
         overallProgress.setIndeterminate(min == 0 && max == 0);
@@ -164,9 +179,7 @@ public class ProgressFrame extends JFrame
     
     public synchronized void setOverall(final int value)
     {
-
         overallProgress.setValue(value);
-
     }
     
     /**
@@ -185,6 +198,10 @@ public class ProgressFrame extends JFrame
         this.origMax = origMax;
     }
 
+    /**
+     * @param min
+     * @param max
+     */
     public synchronized void setProcess(final int min, final int max)
     {
         processProgress.setMinimum(isProcessPercent ? 0 : min);
@@ -194,6 +211,9 @@ public class ProgressFrame extends JFrame
         origMax = max;
     }
     
+    /**
+     * @param value
+     */
     public synchronized void setProcess(final int value)
     {
         if (processProgress.isIndeterminate())
