@@ -1534,7 +1534,7 @@
             <desc><![CDATA[New Taxon Node Form]]></desc>
             <enableRules>
             </enableRules>
-            <columnDef>100px,2px,200px,5px,60px,2px,200px,p:g</columnDef>
+            <columnDef>100px,2px,230px,5px,80px,2px,180px,p:g</columnDef>
             <columnDef os="mac">130px,2px,291px,5px,120px,2px,290px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
