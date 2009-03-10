@@ -1440,7 +1440,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             
             for (DBTableInfo ti : DBTableIdMgr.getInstance().getTables())
             {
-                ti.setPermissions(SpecifySecurityMgr.getInstance().getPermission("DO."+ti.getName()));
+                ti.setPermissions(SpecifySecurityMgr.getInstance().getPermission("DO."+ti.getName().toLowerCase()));
             }
             
             // Here is where you turn on View/Viewdef re-use.

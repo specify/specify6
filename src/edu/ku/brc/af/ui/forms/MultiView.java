@@ -366,7 +366,7 @@ public class MultiView extends JPanel
         {
             shortClass = viewArg.getClassName();
         }
-        return SecurityMgr.getInstance().getPermission("DO."+shortClass);
+        return SecurityMgr.getInstance().getPermission("DO."+shortClass.toLowerCase());
     }
     
     /**

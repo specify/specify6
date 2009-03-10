@@ -3267,7 +3267,7 @@ public class FormViewObj implements Viewable,
                     {
                         shortName = view.getClassName();
                     }
-                    perm = SecurityMgr.getInstance().getPermission("DO."+shortName);
+                    perm = SecurityMgr.getInstance().getPermission("DO."+shortName.toLowerCase());
                     //SecurityMgr.dumpPermissions(mvParentArg.getViewName(), perm.getOptions());
                     canAdd = perm.canAdd();
                     canDel = perm.canDelete();
