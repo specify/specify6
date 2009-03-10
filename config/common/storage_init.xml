@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tree>
+	<treedef>
+		<level name="Site"       enforced="true"  infullname="false" rank="0"/>
+		<level name="Building"   enforced="true"  infullname="true"  rank="100"/>
+        <level name="Collection" enforced="true"  infullname="false" rank="150"/>
+		<level name="Room"       enforced="true"  infullname="true"  rank="200" /> 
+        <level name="Aisle"      enforced="false" infullname="false" rank="250" />         
+        <level name="Cabinet"    enforced="false" infullname="true"  rank="300" />         
+        <level name="Shelf"      enforced="false" infullname="true"  rank="350" />         
+        <level name="Box"        enforced="false" infullname="true"  rank="400" />         
+        <level name="Rack"       enforced="false" infullname="true"  rank="450" />         
+        <level name="Vial"       enforced="false" infullname="true"  rank="500" />         
+    </treedef>
+	<nodes/>
+</tree>
