@@ -9,6 +9,7 @@ package edu.ku.brc.specify.ui;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.Image;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
@@ -85,7 +86,8 @@ public class HelpMgr
         }
         // Create a HelpBroker object:
         hb = hs.createHelpBroker();
-
+        hb.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
+        
         if (frameIcon != null)
         {
             // try to change the icon of the help window
