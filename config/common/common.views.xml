@@ -46,7 +46,29 @@
                 <altview name="AccessionAuthorization Edit" viewdef="AccessionAuthorization" mode="edit"/>
             </altviews>
         </view>
+
+        <view name="AgreementAgent"
+              objtitle="Agreement Agent"
+              class="edu.ku.brc.specify.datamodel.AccessionAgent"
+              resourcelabels="false">
+            <desc><![CDATA[Subform within the Accession form.]]></desc>
+            <altviews>
+                <altview name="AgreementAgent View" viewdef="AgreementAgent" mode="view"/>
+                <altview name="AgreementAgent Edit" viewdef="AgreementAgent" mode="edit" default="true"/>
+            </altviews>
+        </view>
         
+       <view name="AgreementAuthorization"
+            objtitle="Agreement Authorization"
+            class="edu.ku.brc.specify.datamodel.AccessionAuthorization"
+            resourcelabels="false">
+            <desc><![CDATA[Permit subform within the Accession form.]]></desc>
+            <altviews>
+                <altview name="AgreementAuthorization View" viewdef="AgreementAuthorization" mode="view" default="true"/>
+                <altview name="AgreementAuthorization Edit" viewdef="AgreementAuthorization" mode="edit"/>
+            </altviews>
+        </view>
+                
         <view name="AddressOfRecord"
             class="edu.ku.brc.specify.datamodel.AddressOfRecord"
             resourcelabels="false">
@@ -687,7 +709,8 @@
             <desc><![CDATA[The Accession form.]]></desc>
             <enableRules/>
 
-            <columnDef>108px,0px,p,2px,139px,2px,160px,15px,p:g</columnDef>
+            <columnDef>108px,0px,p,2px,139px,2px,160px,0px,15px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,215px,2px,200px,2px,189px,0px,15px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="1px"/>
 
             <rows>
@@ -761,16 +784,16 @@
     			            
                 <row>
                     <cell type="label" labelfor="7"/>
-                    <cell type="field" id="7" name="remarks" uitype="textareabrief" rows="2" cols="30" colspan="5"/>
+                    <cell type="field" id="7" name="remarks" uitype="textareabrief" rows="2" cols="30" colspan="6"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="AccessionAgent" id="8" name="accessionAgents" desc="Agents" colspan="8"/>
+                    <cell type="subview" viewname="AccessionAgent" id="8" name="accessionAgents" desc="Agents" colspan="9"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="AccessionAuthorization" id="9" desc="Authorization" name="accessionAuthorizations" colspan="8"/>
+                    <cell type="subview" viewname="AccessionAuthorization" id="9" desc="Authorization" name="accessionAuthorizations" colspan="9"/>
                 </row>
                 <row> 
-                    <cell type="subview" viewname="AccessionItems" id="25" desc="Collection Object" name="collectionObjects" colspan="8" initialize="addsearch=true" />
+                    <cell type="subview" viewname="AccessionItems" id="25" desc="Collection Object" name="collectionObjects" colspan="9" initialize="addsearch=true" />
                 </row>
              <!--   
                 <row>
@@ -780,13 +803,13 @@
                     <cell type="subview" viewname="TreatmentEventForAccession" id="13" name="treatmentEvents" colspan="12" initialize="btn=true"/>
                 </row> -->
                 <row>
-                    <cell type="separator" label="Attachments" colspan="8"/>
+                    <cell type="separator" label="Attachments" colspan="9"/>
                 </row>
                 <row>
-                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="accessionAttachments" colspan="8" initialize="addsearch=true;btn=true;icon=AccessionAttachment;hc=xxx"/>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="accessionAttachments" colspan="9" initialize="addsearch=true;btn=true;icon=AccessionAttachment;hc=xxx"/>
                 </row>
                 <row>
-                    <cell type="separator" label="" colspan="8"/>
+                    <cell type="separator" label="" colspan="9"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="10"/>
@@ -885,7 +908,8 @@
             <desc><![CDATA[The Accession form.]]></desc>
             <enableRules/>
 
-            <columnDef>100px,2px,175px,2px,140px,2px,160px,p:g</columnDef>
+            <columnDef>100px,2px,175px,2px,140px,2px,160px,0px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,215px,5px,171px,2px,215px,0px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
 
             <rows>
@@ -899,7 +923,7 @@
 
                 <row>
                     <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="remarks" uitype="textareabrief" rows="2" colspan="5"/>
+                    <cell type="field" id="3" name="remarks" uitype="textareabrief" rows="2" colspan="6"/>
                 </row>
             </rows>
         </viewdef>
@@ -914,7 +938,8 @@
             <desc><![CDATA[Permit subform for AccessionAuthorization.]]></desc>
             <enableRules/>
 
-            <columnDef>100px,2px,175px,2px,302px,p:g</columnDef>
+            <columnDef>100px,2px,175px,2px,302px,0px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,215px,2px,391px,0px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             <rows>
                 <row>
@@ -923,7 +948,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="remarks" uitype="textareabrief" rows="2" colspan="3"/>
+                    <cell type="field" id="2" name="remarks" uitype="textareabrief" rows="2" colspan="4"/>
                 </row>
 
             </rows>
@@ -940,6 +965,7 @@
             <enableRules/>
             
             <columnDef>100px,2px,167px,103px,p,2px,p,2px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,250px,5px,101px,2px,250px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             <rows>
                 <row>
@@ -974,7 +1000,8 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[Form For Appraisal]]></desc>
             
-            <columnDef>100px,2px,68px,9px,p,2px,84px,9px,p,2px,p,15px,p:g</columnDef>
+            <columnDef>100px,2px,68px,9px,p,2px,84px,9px,p,2px,p,0px,15px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,100px,5px,152px,2px,120px,5px,102px,2px,220px,0px,15px,p:g</columnDef>
             <rowDef auto="true" sep="2px" cell="p"/>
             <rows>
                 <row>
@@ -995,10 +1022,10 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="5"/>
-                    <cell type="field" id="5" name="notes" uitype="textareabrief" rows="2" colspan="9"/>
+                    <cell type="field" id="5" name="notes" uitype="textareabrief" rows="2" colspan="10"/>
                 </row>
                 <row> 
-                    <cell type="subview" viewname="CollectionObjectSub" id="25" desc="Collection Object" name="collectionObjects" colspan="12" initialize="addsearch=true" />
+                    <cell type="subview" viewname="CollectionObjectSub" id="25" desc="Collection Object" name="collectionObjects" colspan="13" initialize="addsearch=true" />
                 </row>
             </rows>
         </viewdef>
@@ -1011,9 +1038,9 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Borrow viewing form.]]></desc>
-      <!--     for 12 font --><columnDef>100px,2px,98px,5px,p,5px,97px,5px,97px,5px,p,15px,p:g</columnDef> 
+      <!--     for 12 font --><columnDef>100px,2px,98px,5px,p,5px,97px,5px,97px,5px,p,0px,15px,p:g</columnDef> 
       <!--     for 14 font <columnDef>120px,2px,p,5px,p,5px,120px,5px,120px,5px,p,13px,p,p:g</columnDef>-->
-            <columnDef os="mac">100px,2px,98px,5px,p,5px,97px,5px,97px,5px,p,15px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,100px,5px,110px,2px,120px,2px,120px,2px,147px,0px,15px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="1dlu"/>
             
             <rows>
@@ -1036,16 +1063,16 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="5"/>
-                    <cell type="field" id="5" name="remarks" uitype="textareabrief" rows="2" colspan="9"/>
+                    <cell type="field" id="5" name="remarks" uitype="textareabrief" rows="2" colspan="10"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="BorrowAgent" id="6" name="borrowAgents" colspan="12"/>
+                    <cell type="subview" viewname="BorrowAgent" id="6" name="borrowAgents" colspan="13"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="Shipment" id="11" name="shipments" colspan="12"/>
+                    <cell type="subview" viewname="Shipment" id="11" name="shipments" colspan="13"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="BorrowMaterial" id="10" name="borrowMaterials" defaulttype="table" colspan="12"/>
+                    <cell type="subview" viewname="BorrowMaterial" id="10" name="borrowMaterials" defaulttype="table" colspan="13"/>
                 </row>
             </rows>
         </viewdef>
@@ -1059,8 +1086,9 @@
             <desc><![CDATA[The Agent subform for the Borrow form.]]></desc>
             <enableRules/>
             
-          <!--  for 12 font --> <columnDef>100px,2px,p,5px,200px,2px,106px,p:g</columnDef> 
+          <!--  for 12 font --> <columnDef>100px,2px,p,5px,200px,2px,106px,0px,p:g</columnDef> 
           <!--  for 14 font  <columnDef>120px,2px,p,2px,300px,2px,p,p:g</columnDef>-->
+            <columnDef os="mac">130px,2px,220px,5px,161px,2px,215px,0px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             
             <rows>
@@ -1074,7 +1102,7 @@
                 
                 <row>
                     <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="remarks" uitype="textareabrief" rows="2" colspan="5"/>
+                    <cell type="field" id="3" name="remarks" uitype="textareabrief" rows="2" colspan="6"/>
                 </row>
             </rows>
         </viewdef>
@@ -1087,9 +1115,9 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[BorrowMaterial viewing form.]]></desc>
-          <!--  for 12 font --><columnDef>100px,2px,95px,15px,p,2px,55px,74px,p,2px,55px,p:g</columnDef>
+          <!--  for 12 font --><columnDef>100px,2px,95px,15px,p,2px,55px,34px,p,2px,55px,44px,p:g</columnDef>
           <!--  for 14 font  <columnDef>125px,2px,p,5px,p,2px,p,50px,p,2px,p,35px,p,p:g</columnDef> --> 
-            <columnDef os="mac">100px,2px,95px,15px,p,2px,55px,74px,p,2px,55px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,100px,5px,150px,2px,55px,5px,140px,2px,55px,94px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="1dlu"/>
             
             <rows>
@@ -1097,7 +1125,7 @@
                     <cell type="label" labelfor="9" />
                     <cell type="field" id="9" name="materialNumber" uitype="text"/>
                     <cell type="label" labelfor="3" />
-                    <cell type="field" id="3" name="description" uitype="text" colspan="5"/>
+                    <cell type="field" id="3" name="description" uitype="text" colspan="6"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="1"/>
@@ -1337,6 +1365,7 @@
               <enableRules/>
               
               <columnDef>100px,2px,175px,2px,139px,2px,160px,p:g</columnDef>
+              <columnDef os="mac">130px,2px,175px,2px,209px,2px,160px,p:g</columnDef>
               <rowDef auto="true" cell="p" sep="2px"/>
 		  
 <rows>
@@ -1377,6 +1406,7 @@
               <enableRules/>
               
               <columnDef>100px,2px,175px,2px,141px,2px,175px,p:g</columnDef>
+              <columnDef os="mac">130px,2px,249px,5px,200px,2px,249px,p:g</columnDef>
               <rowDef auto="true" cell="p" sep="2px"/>
 		  
 <rows>
@@ -1434,6 +1464,7 @@
             <enableRules/>
             
             <columnDef>100px,2px,125px,25px,p,2px,70px,16px,p,2px,70px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,235px,5px,85px,2px,95px,5px,184px,2px,95px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             <rows>
                 <row> 
@@ -1469,6 +1500,7 @@
             <enableRules/>
             
             <columnDef>100px,2px,130px,5px,70px,2px,62px,5px,45px,2px,62px,5px,45px,2px,62px,15px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,200px,5px,100px,2px,90px,5px,62px,2px,90px,5px,55px,2px,90px,15px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             <rows>
                 <row> 
@@ -1930,8 +1962,8 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[ExchangeIn viewing form.]]></desc>
-            <columnDef>100px,2px,105px,84px,p,4px,p,5px,p,15px,p,p:g</columnDef>
-            <columnDef os="mac">100px,2px,105px,84px,p,4px,p,5px,p,15px,p,p:g</columnDef>
+            <columnDef>100px,2px,105px,84px,p,4px,p,0px,15px,p,p:g</columnDef>
+            <columnDef os="mac">130px,2px,120px,5px,261px,2px,220px,0px,15px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="1dlu"/>
             
             <rows>
@@ -1944,19 +1976,19 @@
                 <row>
                     <cell type="label" labelfor="7"/>
                     <cell type="field" id="7" name="quantityExchanged" uitype="text"/>
-			  <cell type="label" labelfor="2"/>
+                    <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="agentCatalogedBy" uitype="querycbx" initialize="name=Agent" isrequired="true"/>
                     </row>
-<row>
-<cell type="label" labelfor="4"/>
-                    <cell type="field" id="4" name="descriptionOfMaterial" uitype="text" colspan="5"/>
-</row>
                 <row>
-                    <cell type="label" labelfor="5"/>
-                    <cell type="field" id="5" name="remarks" uitype="textareabrief" rows="2" colspan="5"/>
+                    <cell type="label" labelfor="4"/>
+                    <cell type="field" id="4" name="descriptionOfMaterial" uitype="text" colspan="6"/>
                 </row>
                 <row>
-                    <cell type="subview" id="6" name="addressOfRecord" viewname="AddressOfRecord" colspan="10"/>
+                    <cell type="label" labelfor="5"/>
+                    <cell type="field" id="5" name="remarks" uitype="textareabrief" rows="2" colspan="6"/>
+                </row>
+                <row>
+                    <cell type="subview" id="6" name="addressOfRecord" viewname="AddressOfRecord" colspan="9"/>
                 </row>
             </rows>
         </viewdef>
@@ -1969,8 +2001,8 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[ExchangeOut viewing form.]]></desc>
-            <columnDef>100px,2px,105px,95px,p,4px,p,5px,p,15px,p,p:g</columnDef>
-            <columnDef os="mac">100px,2px,105px,95px,p,4px,p,5px,p,15px,p,p:g</columnDef>
+            <columnDef>100px,2px,105px,95px,p,4px,p,0px,15px,p,p:g</columnDef>
+            <columnDef os="mac">130px,2px,120px,5px,261px,2px,220px,0px,15px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="1dlu"/>
             
             <rows>
@@ -1983,16 +2015,16 @@
                 <row>
                     <cell type="label" labelfor="7"/>
                     <cell type="field" id="7" name="quantityExchanged" uitype="text"/>
-<cell type="label" labelfor="3"/>
+                    <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="agentSentTo" uitype="querycbx" initialize="name=Agent" isrequired="true"/>
                 </row>
-<row>
-<cell type="label" labelfor="4"/>
-                    <cell type="field" id="4" name="descriptionOfMaterial" uitype="text" colspan="5"/>
-</row>                
-<row>
+                <row>
+                    <cell type="label" labelfor="4"/>
+                    <cell type="field" id="4" name="descriptionOfMaterial" uitype="text" colspan="6"/>
+                </row>                
+                <row>
                     <cell type="label" labelfor="5"/>
-                    <cell type="field" id="5" name="remarks" uitype="textareabrief" rows="2" colspan="5"/>
+                    <cell type="field" id="5" name="remarks" uitype="textareabrief" rows="2" colspan="6"/>
                 </row>
                 <row>
                     <cell type="subview" id="6" name="addressOfRecord" viewname="AddressOfRecord" colspan="10"/>
@@ -2133,6 +2165,7 @@
             
             <desc><![CDATA[Sub Collecting Event]]></desc>
             <columnDef>100px,2px,178px,121px,p,2px,107px,2px,p,p:g</columnDef>
+            <columnDef os="mac">130px,2px,220px,5px,341px,2px,140px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             
             <rows>
@@ -2153,8 +2186,8 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Gift viewing form.]]></desc>
-            <columnDef>100px,2px,200px,63px,p,2px,167px,15px,p,p:g</columnDef>
-            <columnDef os="mac">100px,2px,200px,63px,p,2px,167px,15px,p,p:g</columnDef>
+            <columnDef>100px,2px,200px,63px,p,2px,167px,0px,15px,p,p:g</columnDef>
+            <columnDef os="mac">130px,2px,220px,5px,200px,2px,181px,0px,15px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="1dlu"/>
             
             <rows>
@@ -2166,7 +2199,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="5"/>
-                    <cell type="field" id="5" name="remarks" uitype="textareabrief" rows="2" colspan="5"/>
+                    <cell type="field" id="5" name="remarks" uitype="textareabrief" rows="2" colspan="6"/>
                 </row>
                 <row>
                     <cell type="subview" viewname="Shipment" id="11" name="shipments" colspan="10"/>
@@ -2197,7 +2230,7 @@
             
             <desc><![CDATA[Gift viewing form.]]></desc>
             <columnDef>100px,2px,p,10px,p,2px,p,183px,p,p:g</columnDef>
-            <columnDef os="mac">100px,2px,p,10px,p,2px,p,183px,p,p:g</columnDef>
+            <columnDef os="mac">130px,2px,100px,5px,150px,2px,175px,176px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
@@ -2262,8 +2295,8 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Loan viewing form.]]></desc>
-            <columnDef>100px,2px,95px,5px,115px,2px,95px,2px,70px,2px,95px,15px,p,p:g</columnDef>
-            <columnDef os="mac">100px,2px,95px,5px,115px,2px,95px,2px,70px,2px,95px,15px,p,p:g</columnDef>
+            <columnDef>100px,2px,95px,5px,115px,2px,95px,2px,70px,2px,95px,0px,15px,p,p:g</columnDef>
+            <columnDef os="mac">130px,2px,115px,5px,149px,2px,115px,5px,100px,2px,115px,0px,15px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="1dlu"/>
             
             <rows>
@@ -2287,16 +2320,16 @@
                 </row>
                 <row>
                      <cell type="label" labelfor="5"/>
-                     <cell type="field" id="5" name="remarks" uitype="textareabrief" rows="2" colspan="9"/>
+                     <cell type="field" id="5" name="remarks" uitype="textareabrief" rows="2" colspan="10"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="Shipment" id="11" name="shipments" colspan="14"/>
+                    <cell type="subview" viewname="Shipment" id="11" name="shipments" colspan="13"/>
                 </row>
                 <row>
-                     <cell type="subview" viewname="LoanItems" id="10" name="loanPreparations" defaulttype="table" colspan="14"/>
+                     <cell type="subview" viewname="LoanItems" id="10" name="loanPreparations" defaulttype="table" colspan="15"/>
                 </row>
                 <row>
-                    <cell type="panel" id="16" name="outerPanel" coldef="max(p;100px),f:50px:g,p,5px,p," rowdef="p,4px,p" colspan="12">
+                    <cell type="panel" id="16" name="outerPanel" coldef="max(p;100px),f:325px,p,5px,p," rowdef="p,4px,p" colspan="15">
                         <rows>
 			                <row>
 			                    <cell type="separator" label="Attachments" colspan="5"/>
@@ -2331,8 +2364,8 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Loan viewing form.]]></desc>
-            <columnDef>100px,2px,95px,10px,105px,2px,95px,10px,p,3px,p,p:g</columnDef>
-            <columnDef os="mac">100px,2px,95px,10px,105px,2px,95px,10px,p,3px,p,p:g</columnDef>
+            <columnDef>100px,2px,105px,5px,120px,2px,115px,10px,65px,2px,55px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,115px,5px,150px,2px,155px,5px,94px,2px,80px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
@@ -2341,14 +2374,10 @@
                     <cell type="field" id="9" name="preparation.collectionObject.catalogNumber" uitype="text" readonly="true"/>
                     <cell type="label" labelfor="2" label="Preparation Type"/>
                     <cell type="field" id="2" name="preparation.prepType.name" uitype="dsptextfield" readonly="true"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="3" />
-                    <cell type="field" id="3" name="descriptionOfMaterial" uitype="text" colspan="9"/>
-                </row>
-                <row>
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="quantity" uitype="spinner" initialize="max=5000" isrequired="true"/>
+                </row>
+                <row>
                     <cell type="label" labelfor="7"/>
                     <cell type="field" id="7" name="quantityReturned" uitype="dsptextfield"/>
                     <cell type="label" labelfor="10"/>
@@ -2357,10 +2386,13 @@
                 <row>
                     <cell type="label" labelfor="5" />
                     <cell type="field" id="5" name="preparation.count" uitype="dsptextfield"/>
-                    
                    <cell type="field" id="8" name="isResolved" uitype="checkbox" colspan="1"/>
                    <cell type="label" label="  "/>
-                   <cell type="subview" id="loanReturnPreparations" viewname="LoanReturnPreparation" name="loanReturnPreparations" initialize="btn=true;icon=LoanReturnPreparation"/>
+                   <cell type="subview" id="loanReturnPreparations" viewname="LoanReturnPreparation" colspan="3" name="loanReturnPreparations" initialize="btn=true;icon=LoanReturnPreparation"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3" />
+                    <cell type="field" id="3" name="descriptionOfMaterial" uitype="text" colspan="9"/>
                 </row>
             </rows>
         </viewdef>
@@ -2408,6 +2440,7 @@
             
             <desc><![CDATA[Locality]]></desc>
             <columnDef>100px,2px,100px,24px,p,2px,100px,9px,p,2px,107px,p,15px,p,p:g</columnDef>
+            <columnDef os="mac">130px,2px,140px,5px,127px,2px,140px,5px,147px,2px,140px,15px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             <enableRules>
                 <rule id="georef"><![CDATA[localityName.isNotEmpty() && geography.isNotEmpty()]]></rule>
@@ -2520,6 +2553,7 @@
             
             <desc><![CDATA[LocalityDetail subform for Locality]]></desc>
             <columnDef>100px,2px,98px,42px,p,2px,100px,59px,p,2px,107px,2px,p,p:g</columnDef>
+            <columnDef os="mac">130px,2px,140px,5px,122px,2px,145px,5px,147px,2px,140px,p:g</columnDef>                                          0px,15px,p,p:g
             <rowDef auto="true" cell="p" sep="2px"/>
             
             <rows>
@@ -2620,7 +2654,8 @@
             <enableRules/>
 
            <!-- even *change remarks col span to 6* <columnDef>100px,2px,p,19px,100px,2px,p,20px,p,13px,p,p:g</columnDef> -->
-            <columnDef>100px,2px,175px,20px,109px,2px,175px,15px,p,p:g</columnDef>
+            <columnDef>100px,2px,175px,5px,124px,2px,175px,0px,15px,p,p:g</columnDef>
+            <columnDef os="mac">130px,2px,215px,5px,171px,2px,215px,0px,15px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
@@ -2657,13 +2692,13 @@
 
                 <row>
                     <cell type="label" labelfor="9"/>
-                    <cell type="field" id="9" name="remarks" uitype="textareabrief" rows="2" colspan="5"/>
+                    <cell type="field" id="9" name="remarks" uitype="textareabrief" rows="2" colspan="6"/>
                 </row>
                 <row>
               <cell type="separator" label="Attachments" colspan="9"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="ObjectAttachment" id="10" name="permitAttachments" colspan="10" initialize="btn=true;icon=PermitAttachment"/>
+                    <cell type="subview" viewname="ObjectAttachment" id="10" name="permitAttachments" colspan="9" initialize="btn=true;icon=PermitAttachment"/>
                 </row>
             </rows>
         </viewdef>
@@ -2729,7 +2764,8 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Form For Project]]></desc>
-            <columnDef>100px,2px,170px,7px,p,2px,97px,7px,p,2px,90px,15px,p:g</columnDef>
+            <columnDef>100px,2px,170px,7px,p,2px,97px,7px,p,2px,90px,0px,15px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,215px,5px,139px,2px,120px,5px,100px,2px,120px,0px,15px,p:g</columnDef>
             <rowDef auto="true" sep="2px" cell="p"/>
             
             <rows>
@@ -2764,10 +2800,10 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="7"/>
-                    <cell type="field" id="7" name="remarks" uitype="textareabrief" rows="2" colspan="9"/>
+                    <cell type="field" id="7" name="remarks" uitype="textareabrief" rows="2" colspan="10"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="CollectionObjectSub" id="11" colspan="12" name="collectionObjects" initialize="addsearch=true"/>
+                    <cell type="subview" viewname="CollectionObjectSub" id="11" colspan="13" name="collectionObjects" initialize="addsearch=true"/>
                 </row>
                 
             </rows>
@@ -2822,7 +2858,8 @@
             <desc><![CDATA[The Info Request form.]]></desc>
             <enableRules/>
             
-            <columnDef>100px,2px,p,127px,p,2px,p,p:g</columnDef>
+            <columnDef>100px,2px,p,127px,p,2px,p,0px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,120px,5px,261px,2px,220px,0px,15px,p,p:g</columnDef>
             <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,200px,2dlu,p</rowDef>>
             
             <rows>
@@ -2842,11 +2879,11 @@
                            </row>
                 <row>
                     <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="remarks" uitype="textareabrief" cols="40" rows="2" colspan="5"/>
+                    <cell type="field" id="3" name="remarks" uitype="textareabrief" cols="40" rows="2" colspan="6"/>
                     
                 </row>
                 <row>
-                    <cell type="subview" id="4" viewname="InfoRequestColObj" name="recordSets" colspan="7"/>
+                    <cell type="subview" id="4" viewname="InfoRequestColObj" name="recordSets" colspan="9"/>
                 </row>
                 <row>
                     <cell type="field" uitype="checkbox" id="5" name="sendEMail" label="Send Email on Save" ignore="true" default="true" colspan="6"/>
@@ -2957,59 +2994,112 @@
             <desc><![CDATA[The Accession form.]]></desc>
             <enableRules/>
             
-            <columnDef>p,2px,p,2px,50px:g,2px,p,2px,p,2px,p,p:g</columnDef>
+            <columnDef>100px,2px,93px,5px,60px,2px,97px,15px,p,2px,165px,0px,15px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,120px,5px,90px,2px,150px,5px,119px,2px,215px,0px,15px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="1px"/>
             
             <rows>
                 <row>
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="repositoryAgreementNumber" uitype="text" isrequired="true"/> 
+                    <cell type="label" labelfor="2"/>
+                    <cell type="field" id="2" name="status"  uitype="combobox" picklist="AccessionStatus" isrequired="true"/>
                     <cell type="label" labelfor="13"/>
                     <cell type="field" id="13" name="originator" uitype="querycbx" initialize="name=Agent" isrequired="true"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="4"/>
-                    <cell type="field" id="4" name="division" uitype="combobox" picklist="Division" isrequired="true"/>
-                    <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="status"  uitype="combobox" picklist="AccessionStatus" isrequired="true"/>
-                </row>
-                <row>
                     <cell type="label" labelfor="5"/>
                     <cell type="field" id="5" name="startDate" uitype="formattedtext" uifieldformatter="Date"/>
-                    
                     <cell type="label" labelfor="6"/>
                     <cell type="field" id="6" name="endDate" uitype="formattedtext" uifieldformatter="Date"/>
+                    <cell type="label" labelfor="4"/>
+                    <cell type="field" id="4" name="division" uitype="combobox" picklist="Division" isrequired="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="7"/>
                     <cell type="field" id="7" name="remarks" uitype="textareabrief" rows="2" cols="30" colspan="10"/>
                 </row>
                 <row>
-                    <cell type="subview" id="8" viewname="AccessionAgent" name="repositoryAgreementAgents" colspan="12"/>
+                    <cell type="subview" id="8" viewname="AgreementAgent" name="repositoryAgreementAgents" colspan="13"/>
                 </row>
                 <row>
-                    <cell type="subview" id="9" viewname="AccessionAuthorization" name="repositoryAgreementAuthorizations" colspan="12"/>
+                    <cell type="subview" id="9" viewname="AgreementAuthorization" name="repositoryAgreementAuthorizations" colspan="13"/>
                 </row>
                 <row>
-                    <cell type="separator" label="Attachments" colspan="12"/>
+                    <cell type="separator" label="Attachments" colspan="13"/>
                 </row>
                 <row>
-                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="repositoryAgreementAttachments" colspan="12" initialize="addsearch=true;btn=true;icon=RepositoryAgreementAttachment;hc=xxx"/>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="repositoryAgreementAttachments" colspan="13" initialize="addsearch=true;btn=true;icon=RepositoryAgreementAttachment;hc=xxx"/>
                 </row>
                 <row>
-                    <cell type="separator" label="" colspan="12"/>
+                    <cell type="separator" label="" colspan="13"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="10"/>
-                    <cell type="field" id="10" name="modifiedByAgent" uitype="label" readonly="true"  uifieldformatter="Agent"/>
+                    <cell type="field" id="10" name="modifiedByAgent" uitype="label" readonly="true"  uifieldformatter="Agent" colspan="3"/>
                     
                     <cell type="label" labelfor="11"/>
-                    <cell type="field" id="11" name="timestampModified" uitype="label" readonly="true" cols="20" colspan="2"/>
+                    <cell type="field" id="11" name="timestampModified" uitype="label" readonly="true" cols="20" colspan="5"/>
                 </row>
                 
             </rows>
         </viewdef>
+                
+        <viewdef
+            type="form"
+            name="AgreementAgent"
+            class="edu.ku.brc.specify.datamodel.AccessionAgent"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The Accession form.]]></desc>
+            <enableRules/>
+
+            <columnDef>100px,2px,175px,2px,156px,2px,160px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,215px,5px,271px,2px,215px,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="agent" uitype="querycbx" initialize="name=Agent;title=Agent"/>
+
+                    <cell type="label" labelfor="2"/>
+                    <cell type="field" id="2" name="role" uitype="combobox" />
+                </row>
+
+                <row>
+                    <cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="remarks" uitype="textareabrief" rows="2" colspan="5"/>
+                </row>
+            </rows>
+        </viewdef>
         
+   <viewdef
+            type="form"
+            name="AgreementAuthorization"
+            class="edu.ku.brc.specify.datamodel.AccessionAuthorization"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+
+            <desc><![CDATA[Permit subform for AccessionAuthorization.]]></desc>
+            <enableRules/>
+
+            <columnDef>100px,2px,175px,320px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,215px,493px,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="permit" uitype="querycbx" initialize="name=Permit"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="2"/>
+                    <cell type="field" id="2" name="remarks" uitype="textareabrief" rows="2" colspan="2"/>
+                </row>
+
+            </rows>
+        </viewdef>
+                
         <viewdef
             type="form"
             name="Shipment"
@@ -3018,9 +3108,9 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Shipment form.]]></desc>
-           <!-- for 12 font --><columnDef>100px,2px,p,25px,p,2px,p,p:g</columnDef> 
+           <!-- for 12 font --><columnDef>100px,2px,p,25px,p,2px,p,0px,p:g</columnDef> 
            <!-- for 14 font  <columnDef>120px,2px,p,30px,p,2px,p,p:g</columnDef> -->
-            <columnDef os="mac">100px,2px,p,25px,p,2px,p,p:g</columnDef>
+            <columnDef os="mac">130px,2px,215px,30px,146px,2px,215px,0px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             <rows>
                 <row>
@@ -3049,7 +3139,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="9"/>
-                    <cell type="field" id="9" name="remarks" uitype="textareabrief" rows="2" colspan="5"/>
+                    <cell type="field" id="9" name="remarks" uitype="textareabrief" rows="2" colspan="6"/>
                 </row>
             </rows>
         </viewdef>
@@ -3111,12 +3201,15 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Form For Treatment Event]]></desc>
-            <columnDef>p,2px,p,2px,p,2px,p,2px,p,2px,p,p:g</columnDef>
+            <columnDef>100px,2px,130px,5px,90px,2px,165px,5px,60px,2px,120px,0px,15px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,180px,5px,90px,2px,215px,5px,69px,2px,140px,0px,15px,p:g</columnDef>
             <rowDef auto="true" sep="2px" cell="p"/>
             <rows>
                 <row>
                     <cell type="label" labelfor="11"/>
                     <cell type="field" id="11" name="treatmentNumber" uitype="text"/>
+                    <cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="division" uitype="combobox" picklist="Division"/>
                     
                     <cell type="label" labelfor="12"/>
                     <cell type="field" id="12" name="type" uitype="combobox" picklist="TreatmentType"/>
@@ -3128,15 +3221,15 @@
                     
                     <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="accession" uitype="querycbx" initialize="name=AccessionCO;title=AccessionCO" isrequired="false"/>
-                    
-                    <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="division" uitype="combobox" picklist="Division"/>
+                    <cell type="label" labelfor="4"/>
+                    <cell type="field" id="4" name="location" uitype="text"/>
+                     
                 </row>
                 <row>
-                    <cell type="label" labelfor="6"/>
-                    <cell type="field" id="6" name="dateTreatmentEnded" uitype="formattedtext" uifieldformatter="Date"/>
                     <cell type="label" labelfor="7"/>
                     <cell type="field" id="7" name="dateTreatmentStarted" uitype="formattedtext" uifieldformatter="Date"/> 
+                    <cell type="label" labelfor="6"/>
+                    <cell type="field" id="6" name="dateTreatmentEnded" uitype="formattedtext" uifieldformatter="Date"/>
                 </row>           
                 <!--    <row>
                     <cell type="label" labelfor="9"/>
