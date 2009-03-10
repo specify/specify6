@@ -220,15 +220,12 @@ public class IndvPanelPermEditor extends JPanel implements PermissionPanelContai
                 }
                 else if (perm.hasSameFlags(perm.canView(), perm.canAdd(), perm.canModify(), perm.canDelete()))
                 {
-                    principal = session.merge(principal);
                     // permission has changed: save it
                     if (perm.getId() == null)
                     {
                         // permission doesn't yet exist in database: attach it to its principal
-                        principal.getPermissions().add(perm);
                         perm.getPrincipals().add(principal);
                     }
-                    session.saveOrUpdate(principal);
                     session.saveOrUpdate(session.merge(perm));
                 }
             }
