@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
 
-  Last Id for ExpressSearch 29
+  Last Id for ExpressSearch 31
   Last Id for Other Search  125
 
  -->
@@ -311,6 +311,47 @@
             </detailView>
         </table>
 
+        <!--<table id="30" tableid="1" indexed="false" name="KitAndKaboodle" priority="1" color="30, 144, 144">
+            <joins>
+                <join tableid="1" primary="true">collectionobject.CollectionObjectID</join>
+                <join tableid="4">taxon.TaxonID</join>
+                <join tableid="10">ce.CollectingEventID</join>
+            </joins>
+            <detailView icon="CollectionObject">
+                <sql>
+                    <![CDATA[
+ SELECT distinct 
+ collectionobject.CollectionObjectID, 
+ CatalogNumber, 
+ CatalogedDate, 
+ CatalogedDatePrecision, 
+ FullName, 
+ StationFieldNumber,
+ %s 
+ From collectionobject 
+ Inner Join determination AS DT ON DT.CollectionObjectID = collectionobject.CollectionObjectID
+ Inner Join taxon ON taxon.TaxonID = DT.TaxonID 
+ Inner Join collectingevent as ce on ce.collectingeventid = collectionobject.collectingeventid
+ WHERE DT.CollectionMemberID = COLMEMID AND 
+ collectionobject.CollectionMemberID = COLMEMID AND 
+ taxon.TaxonTreeDefID = TAXTREEDEFID AND 
+ DT.IsCurrent = true AND
+ %s order by CatalogNumber asc]]>
+                </sql>
+                <captions>
+                    <caption tableid="1" col="collectionobject.CollectionObjectID" visible="false"/>
+                    <caption tableid="1" col="CatalogNumber" formatter="CatalogNumber"/>
+                    <caption tableid="1" formatter="PartialDate">
+                        <col name="CatalogedDate"          field="catalogedDate"/>
+                        <col name="CatalogedDatePrecision" field="catalogedDatePrecision"/>
+                    </caption>
+                    <caption tableid="4" col="FullName" key="TaxonName"/>
+                    <caption tableid="10" col="StationFieldNumber"/>
+                </captions>
+            </detailView>
+        </table>-->
+
+
         <table id="10" tableid="1" indexed="false" name="CurrCollObject" priority="1" color="30, 144, 144">
             <joins>
                 <join tableid="1" primary="true">collectionobject.CollectionObjectID</join>
@@ -470,6 +511,37 @@
                 </captions>
             </detailView>
         </table>
+        
+        <table id="31" tableid="1" indexed="false" name="AccessionToCO" priority="1" color="30, 144, 144">
+            <joins>
+                <join tableid="7" primary="true">accession.AccessionID</join>
+                <join tableid="1">collectionobject.CollectionObjectID</join>
+                <join tableid="4">taxon.taxonID</join>
+            </joins>
+            <detailView icon="CollectionObject">
+                <sql>
+                    <![CDATA[SELECT 
+ collectionobject.CollectionObjectID, 
+ accession.AccessionNumber, 
+ collectionobject.CatalogNumber, 
+ taxon.fullName, 
+  %s 
+ FROM 
+ collectionobject
+ INNER JOIN accession ON accession.accessionid = collectionobject.accessionid
+ INNER JOIN determination ON determination.collectionobjectid = collectionobject.collectionobjectid
+ INNER JOIN taxon ON taxon.taxonid = determination.taxonid
+ WHERE determination.isCurrent AND %s ORDER BY AccessionNumber, CatalogNumber]]>
+                </sql>
+                <captions>
+                    <caption tableid="1" col="CollectionObjectID" visible="false"/>
+                    <caption tableid="7" col="AccessionNumber" formatter="AccessionNumber"/>
+                    <caption tableid="1" col="CatalogNumber" formatter="CatalogNumber"/>
+                    <caption tableid="4" col="FullName"/>
+                </captions>
+            </detailView>
+        </table>
+        
         
         <!-- ============================ -->
         <!--  Attachment Related Searches -->
