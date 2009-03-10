@@ -510,6 +510,7 @@
             <enableRules/>
             
             <columnDef>100px,2px,100px,15px,p,2px,348px,p,p:g</columnDef>
+            <columnDef os="mac">130px,2px,150px,5px,80px,2px,471px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
@@ -543,6 +544,7 @@
 
             <desc><![CDATA[Agent subform for Acessions.]]></desc>
             <columnDef>100px,2px,130px,10px,p,2px,92px,10px,p,2px,93px,2px,35px,15px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,155px,5px,100px,2px,155px,5px,100px,2px,144px,2px,38px,15px,p:g</columnDef>
            <!-- <columnDef>100px,2px,p,2px,p,2px,198px,15px,p:g</columnDef> -->
             <!--  <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,10px,p:g,5dlu,p:g</rowDef> -->
             <rowDef auto="true" cell="p" sep="2px"/>
@@ -748,6 +750,7 @@
             
             <desc><![CDATA[Address subform for Acessions.]]></desc>
             <columnDef>100px,2px,192px,25px,p,2px,191px,p,p</columnDef>
+            <columnDef os="mac">130px,2px,263px,5px,175px,2px,263px,p</columnDef>
             <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
             
             <rows>
@@ -869,6 +872,7 @@
             <desc><![CDATA[Author subform for Reference Work]]></desc>
             
             <columnDef>100px,2px,102px,10px,p,2px,102px,10px,p,2px,150px,3px,p,p:g</columnDef>
+            <columnDef os="mac">130px,2px,102px,10px,p,2px,102px,10px,p,2px,150px,3px,p,p:g</columnDef>
             <rowDef auto="true" sep="2px" cell="p"/>
             <rows>
                 <row>
@@ -891,7 +895,8 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[Author subform for Reference Work]]></desc>
             
-            <columnDef>100px,2px,p,2px,125px,2px,125px,2px,125px,2px,125px,p:g</columnDef>
+            <columnDef>100px,2px,175px,321px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,215px,493px,p:g</columnDef>
             <rowDef auto="true" sep="2px" cell="p"/>
             <rows>
                 <row>
@@ -900,7 +905,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="remarks" uitype="textareabrief" rows="2" colspan="10"/>
+                    <cell type="field" id="2" name="remarks" uitype="textareabrief" rows="2" colspan="2"/>
                 </row>
             </rows>
         </viewdef>
@@ -913,6 +918,7 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The Journal form]]></desc>
             <columnDef>100px,2px,288px,8px,p,2px,97px,15px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,417px,5px,140px,2px,144px,15px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             <rows>
                 <row>
@@ -954,6 +960,7 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The ReferenceWork form]]></desc>
             <columnDef>100px,2px,121px,10px,p,2px,118px,10px,p,2px,118px,15px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,175px,5px,100px,2px,150px,5px,125px,2px,144px,15px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             <rows>
                 <row>
@@ -1000,6 +1007,7 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The ReferenceWork form]]></desc>
             <columnDef>100px,2px,105px,5px,73px,2px,100px,10px,p,2px,100px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,170px,5px,90px,2px,150px,5px,140px,2px,144px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             <rows>
                 <row>
@@ -1140,6 +1148,7 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The ReferenceWork form]]></desc>
             <columnDef>100px,2px,495px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,708px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             <rows>
                 <row>
@@ -1168,7 +1177,8 @@
                 <rule id="hybridParent2"><![CDATA[isHybrid.isSelected()]]></rule>
                 <rule id="definitionItem"><![CDATA[parent.getValue() != null]]></rule>
             </enableRules>
-            <columnDef>100px,2px,497px,p,15px,p,p:g</columnDef>
+            <columnDef>100px,2px,497px,15px,p,p:g</columnDef>
+            <columnDef os="mac">130px,2px,708px,5px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
@@ -1251,26 +1261,26 @@
                 	<cell type="field" id="hybridParent2" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=false" name="hybridParent2"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="TaxonSubform" id="children" name="children" colspan="5"/>
+                    <cell type="subview" viewname="TaxonSubform" id="children" name="children" colspan="4"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="TaxonSubform" id="acceptedChildren" name="acceptedChildren" colspan="5"/>
+                    <cell type="subview" viewname="TaxonSubform" id="acceptedChildren" name="acceptedChildren" colspan="4"/>
                 </row>
                 <!-- This subform is not supported yet -->
          <!--       <row>
-                    <cell type="separator" label="COMMONNAMES" colspan="5"/>
+                    <cell type="separator" label="COMMONNAMES" colspan="4"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="CommonNameTx" id="commonNames" name="commonNames" colspan="5"/>
+                    <cell type="subview" viewname="CommonNameTx" id="commonNames" name="commonNames" colspan="4"/>
                 </row> -->
                 <row>
-                    <cell type="subview" viewname="TaxonCitation" id="taxonCitations" name="taxonCitations" colspan="5"/>
+                    <cell type="subview" viewname="TaxonCitation" id="taxonCitations" name="taxonCitations" colspan="4"/>
                 </row> 
 		        <row>
-			        <cell type="separator" label="ATTACHMENTS" colspan="5"/>
+			        <cell type="separator" label="ATTACHMENTS" colspan="4"/>
                 </row>
                 <row>
-                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="taxonAttachments" colspan="5" initialize="btn=true;icon=TaxonAttachment"/>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="taxonAttachments" colspan="4" initialize="btn=true;icon=TaxonAttachment"/>
                 </row>
             </rows>
         </viewdef>
@@ -1288,7 +1298,8 @@
                 <rule id="acceptedParent"><![CDATA[!isAccepted.isSelected()]]></rule>
                 <rule id="definitionItem"><![CDATA[parent.getValue() != null]]></rule>
             </enableRules>
-            <columnDef>100px,2px,497px,p,15px,p,p:g</columnDef>
+            <columnDef>100px,2px,497px,15px,p,p:g</columnDef>
+            <columnDef os="mac">130px,2px,708px,15px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
 
             <rows>
@@ -1300,11 +1311,7 @@
                     <cell type="label" labelfor="parent" label="PARENT"/>
                 	<cell type="field" id="parent" isrequired="true" uitype="querycbx" initialize="name=Geography;title=Geography;editbtn=false;newbtn=false;editoncreate=true" name="parent"/>
                 </row>
-                                <row>
-                    <cell type="label" labelfor="remarks"/>
-                    <cell type="field" id="remarks" uitype="textareabrief" rows="2" name="remarks"/>
-                </row>
-<row>
+				        <row>
                     <cell type="label" labelfor="definitionItem"/>
                 	<cell type="field" id="definitionItem" isrequired="true" uitype="combobox" name="definitionItem"/>
                 </row>
@@ -1317,7 +1324,11 @@
                 	<cell type="field" id="acceptedParent" isrequired="true" uitype="querycbx" initialize="name=Geography;title=Geography;editbtn=false;newbtn=false" name="acceptedParent"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="GeographySubform" id="children" name="children" colspan="5"/>
+                    <cell type="label" labelfor="remarks"/>
+                    <cell type="field" id="remarks" uitype="textareabrief" rows="2" name="remarks"/>
+                </row>
+                <row>
+                    <cell type="subview" viewname="GeographySubform" id="children" name="children" colspan="4"/>
                 </row>
             </rows>
         </viewdef>
@@ -1336,6 +1347,7 @@
                 <rule id="acceptedParent"><![CDATA[!isAccepted.isSelected()]]></rule>
             </enableRules>
             <columnDef>100px,2px,497px,15px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,708px,15px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
 
             <rows>
@@ -1344,12 +1356,12 @@
                     <cell type="field" id="name" uitype="text" cols="10" name="name" isrequired="true"/> 
                 </row>
                 <row>
-                    <cell type="label" labelfor="remarks"/>
-                    <cell type="field" id="remarks" uitype="textareabrief" rows="2" name="remarks"/>
-                </row>
-                <row>
                     <cell type="label" labelfor="parent" label="PARENT"/>
                 	<cell type="field" id="parent" isrequired="true" uitype="querycbx" initialize="name=Storage;title=Storage;editbtn=false;newbtn=false;editoncreate=true" name="parent"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="remarks"/>
+                    <cell type="field" id="remarks" uitype="textareabrief" rows="2" name="remarks"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="definitionItem"/>
@@ -1375,6 +1387,7 @@
                 <rule id="acceptedGeologicTimePeriod"><![CDATA[!isAccepted.isSelected()]]></rule>
             </enableRules>
             <columnDef>100px,2px,200px,11px,p,2px,200px,15px,p,p:g</columnDef>
+            <columnDef os="mac">130px,2px,286px,5px,130px,2px,285px,15px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
 
             <rows>
@@ -1397,12 +1410,12 @@
                 <row>
                     <cell type="label" labelfor="startPeriod"/>
                 	<cell type="field" id="startPeriod" uitype="text" name="startPeriod"/>
-                    <cell type="label" labelfor="startUncertainty"/>
-                	<cell type="field" id="startUncertainty" uitype="text" name="startUncertainty"/>
-                </row>
-                <row>
                     <cell type="label" labelfor="endPeriod"/>
                 	<cell type="field" id="endPeriod" uitype="text" name="endPeriod"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="startUncertainty"/>
+                	<cell type="field" id="startUncertainty" uitype="text" name="startUncertainty"/>
                     <cell type="label" labelfor="endUncertainty"/>
                 	<cell type="field" id="endUncertainty" uitype="text" name="endUncertainty"/>
                 </row>
@@ -1485,6 +1498,7 @@
                 <rule id="acceptedLithoStrat"><![CDATA[!isAccepted.isSelected()]]></rule>
             </enableRules>
             <columnDef>100px,2px,497px,15px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,708px,15px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
 
             <rows>
@@ -1520,15 +1534,14 @@
             <desc><![CDATA[New Taxon Node Form]]></desc>
             <enableRules>
             </enableRules>
-            <columnDef>100px,2px,496px,p:g</columnDef>
+            <columnDef>100px,2px,200px,5px,60px,2px,200px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,291px,5px,120px,2px,290px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
                 <row>
                     <cell type="label" labelfor="fullName"/>
                     <cell type="field" id="fullName" uitype="text" cols="16" name="fullName"/> 
-                </row>
-                <row>
                     <cell type="label" labelfor="commonName"/>
                     <cell type="field" id="commonName" uitype="text" name="commonName"/>
                 </row>
@@ -1546,6 +1559,7 @@
             <enableRules>
             </enableRules>
             <columnDef>100px,2px,495px,p,p:g</columnDef>
+            <columnDef os="mac">130px,2px,708px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
@@ -1567,6 +1581,7 @@
             <enableRules>
             </enableRules>
             <columnDef>100px,2px,495px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,708px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
@@ -1588,6 +1603,7 @@
             <enableRules>
             </enableRules>
             <columnDef>100px,2px,496px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,708px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
@@ -1609,6 +1625,7 @@
             <enableRules>
             </enableRules>
             <columnDef>100px,2px,497px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,708px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
