@@ -135,7 +135,7 @@ public class ResourceImportExportDlg extends CustomDialog
         super((Frame)UIRegistry.getTopWindow(), 
                 getResourceString("RIE_TITLE"), 
                 true, 
-                OK_BTN,
+                OKHELP,
                 null);
         okLabel = getResourceString("CLOSE");
     }
@@ -185,7 +185,9 @@ public class ResourceImportExportDlg extends CustomDialog
     public void createUI()
     {
         super.createUI();
-        
+
+        this.setHelpContext("Import");
+
         CellConstraints cc = new CellConstraints();
         
         levelCBX = createComboBox();
@@ -255,7 +257,7 @@ public class ResourceImportExportDlg extends CustomDialog
         btnPB.add(exportBtn, cc.xy(2,1));
         btnPB.add(importBtn, cc.xy(4,1));
         btnPB.add(revertBtn,  cc.xy(6,1));
-        
+                
         pb.add(btnPB.getPanel(), cc.xy(1,5));
         
         
