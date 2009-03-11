@@ -233,7 +233,7 @@
 		<copy file="${source.root}/edu/ku/brc/specify/images/specify128.ico" todir="${installer.dir}/images" />
 		<copy file="${source.root}/edu/ku/brc/specify/images/spbackup128.ico" todir="${installer.dir}/images" />
 		<copy file="${source.root}/edu/ku/brc/specify/images/spbuilder128.ico" todir="${installer.dir}/images" />
-		<copy file="${source.root}/edu/ku/brc/specify/images/spireport32.ico" todir="${installer.dir}/images" />
+		<copy file="${source.root}/edu/ku/brc/specify/images/spireport128.ico" todir="${installer.dir}/images" />
 		<copy file="${source.root}/edu/ku/brc/specify/images/spstatistics128.ico" todir="${installer.dir}/images" />
 		<copy file="${source.root}/edu/ku/brc/specify/images/spwizard128.ico" todir="${installer.dir}/images" />
 				
