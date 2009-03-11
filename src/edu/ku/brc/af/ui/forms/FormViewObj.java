@@ -2807,6 +2807,10 @@ public class FormViewObj implements Viewable,
                 }
             };
             worker.start();
+            
+        } else // No Business Rules
+        {
+            doDeleteDataObj(dataObj, session, true); 
         }
     }
 

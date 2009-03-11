@@ -140,6 +140,7 @@
         
         <view name="ReferenceWork"
             class="edu.ku.brc.specify.datamodel.ReferenceWork"
+            busrules="edu.ku.brc.specify.datamodel.busrules.ReferenceWorkBusRules"
             isinternal="false"
             resourcelabels="false">
             <desc><![CDATA[The ReferenceWork Form.]]></desc>
