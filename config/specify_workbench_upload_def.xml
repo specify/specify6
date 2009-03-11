@@ -253,7 +253,7 @@
     <field table="Preparation" name="preparedFirstNameBy1" onetomanysequence="0" relationshipname="preparedByAgent" relatedfieldname="firstName"/>
     <field table="Preparation" name="preparedLastNameBy1" onetomanysequence="0" relationshipname="preparedByAgent" relatedfieldname="lastName"/>
     <field table="Preparation" name="prepType1" onetomanysequence="0" relationshipname="prepType" relatedfieldname="name"/>
-    <field table="Preparation" name="count1" actualname="count" onetomanysequence="0" relationshipname="collectionObject"/>
+    <field table="Preparation" name="count1" actualname="countAmt" onetomanysequence="0" relationshipname="collectionObject"/>
     <field table="Preparation" name="storageLocation1" actualname="storageLocation" onetomanysequence="0" relationshipname="collectionObject"/>
     <field table="Preparation" name="prepRemarks1" actualname="Remarks" onetomanysequence="0" relationshipname="collectionObject"/>
     
@@ -261,7 +261,7 @@
     <field table="Preparation" name="preparedFirstNameBy2" onetomanysequence="1" relationshipname="preparedByAgent" relatedfieldname="firstName"/>
     <field table="Preparation" name="preparedLastNameBy2" onetomanysequence="1" relationshipname="preparedByAgent" relatedfieldname="lastName"/>
     <field table="Preparation" name="prepType2" onetomanysequence="1"  relationshipname="prepType" relatedfieldname="name"/>
-    <field table="Preparation" name="count2" actualname="count" onetomanysequence="1" relationshipname="collectionObject"/>
+    <field table="Preparation" name="count2" actualname="countAmt" onetomanysequence="1" relationshipname="collectionObject"/>
     <field table="Preparation" name="storageLocation2" actualname="storageLocation" onetomanysequence="1" relationshipname="collectionObject"/>
     <field table="Preparation" name="prepRemarks2" actualname="Remarks" onetomanysequence="1" relationshipname="collectionObject"/>
     
@@ -269,7 +269,7 @@
     <field table="Preparation" name="preparedFirstNameBy3" onetomanysequence="2" relationshipname="preparedByAgent" relatedfieldname="firstName"/>
     <field table="Preparation" name="preparedLastNameBy3" onetomanysequence="2" relationshipname="preparedByAgent" relatedfieldname="lastName"/>
     <field table="Preparation" name="prepType3" onetomanysequence="2" relationshipname="prepType" relatedfieldname="name"/>
-    <field table="Preparation" name="count3" actualname="count" onetomanysequence="2" relationshipname="collectionObject"/>
+    <field table="Preparation" name="count3" actualname="countAmt" onetomanysequence="2" relationshipname="collectionObject"/>
     <field table="Preparation" name="storageLocation3" actualname="storageLocation" onetomanysequence="2" relationshipname="collectionObject"/>
     <field table="Preparation" name="prepRemarks3" actualname="Remarks" onetomanysequence="2" relationshipname="collectionObject"/>
     
@@ -277,7 +277,7 @@
     <field table="Preparation" name="preparedFirstNameBy4" onetomanysequence="3" relationshipname="preparedByAgent" relatedfieldname="firstName"/>
     <field table="Preparation" name="preparedLastNameBy4" onetomanysequence="3" relationshipname="preparedByAgent" relatedfieldname="lastName"/>
     <field table="Preparation" name="prepType4" onetomanysequence="3" relationshipname="prepType" relatedfieldname="name"/>
-    <field table="Preparation" name="count4" actualname="count" onetomanysequence="3" relationshipname="collectionObject"/>
+    <field table="Preparation" name="count4" actualname="countAmt" onetomanysequence="3" relationshipname="collectionObject"/>
     <field table="Preparation" name="storageLocation4" actualname="storageLocation" onetomanysequence="3" relationshipname="collectionObject"/>
     <field table="Preparation" name="prepRemarks4" actualname="Remarks" onetomanysequence="3" relationshipname="collectionObject"/>
     
@@ -285,7 +285,7 @@
     <field table="Preparation" name="preparedFirstNameBy5" onetomanysequence="4" relationshipname="preparedByAgent" relatedfieldname="firstName"/>
     <field table="Preparation" name="preparedLastNameBy5" onetomanysequence="4" relationshipname="preparedByAgent" relatedfieldname="lastName"/>
     <field table="Preparation" name="prepType5" onetomanysequence="4" relationshipname="prepType" relatedfieldname="name"/>
-    <field table="Preparation" name="count5" actualname="count" onetomanysequence="4" relationshipname="collectionObject"/>
+    <field table="Preparation" name="count5" actualname="countAmt" onetomanysequence="4" relationshipname="collectionObject"/>
     <field table="Preparation" name="storageLocation5" actualname="storageLocation" onetomanysequence="4" relationshipname="collectionObject"/>
     <field table="Preparation" name="prepRemarks5" actualname="Remarks" onetomanysequence="4" relationshipname="collectionObject"/>
     
@@ -293,7 +293,7 @@
     <field table="Preparation" name="preparedFirstNameBy6" onetomanysequence="5" relationshipname="preparedByAgent" relatedfieldname="firstName"/>
     <field table="Preparation" name="preparedLastNameBy6" onetomanysequence="5" relationshipname="preparedByAgent" relatedfieldname="lastName"/>
     <field table="Preparation" name="prepType6" onetomanysequence="5" relationshipname="prepType" relatedfieldname="name"/>
-    <field table="Preparation" name="count6" actualname="count" onetomanysequence="5" relationshipname="collectionObject"/>
+    <field table="Preparation" name="count6" actualname="countAmt" onetomanysequence="5" relationshipname="collectionObject"/>
     <field table="Preparation" name="storageLocation6" actualname="storageLocation" onetomanysequence="5" relationshipname="collectionObject"/>
     <field table="Preparation" name="prepRemarks6" actualname="Remarks" onetomanysequence="5" relationshipname="collectionObject"/>
     
@@ -301,7 +301,7 @@
     <field table="Preparation" name="preparedFirstNameBy7" onetomanysequence="6" relationshipname="preparedByAgent" relatedfieldname="firstName"/>
     <field table="Preparation" name="preparedLastNameBy7" onetomanysequence="6" relationshipname="preparedByAgent" relatedfieldname="lastName"/>
     <field table="Preparation" name="prepType7" onetomanysequence="6" relationshipname="prepType" relatedfieldname="name"/>
-    <field table="Preparation" name="count7" actualname="count" onetomanysequence="6" relationshipname="collectionObject"/>
+    <field table="Preparation" name="count7" actualname="countAmt" onetomanysequence="6" relationshipname="collectionObject"/>
     <field table="Preparation" name="storageLocation7" actualname="storageLocation" onetomanysequence="6" relationshipname="collectionObject"/>
     <field table="Preparation" name="prepRemarks7" actualname="Remarks" onetomanysequence="6" relationshipname="collectionObject"/>
     
@@ -309,7 +309,7 @@
     <field table="Preparation" name="preparedFirstNameBy8" onetomanysequence="7" relationshipname="preparedByAgent" relatedfieldname="firstName"/>
     <field table="Preparation" name="preparedLastNameBy8" onetomanysequence="7" relationshipname="preparedByAgent" relatedfieldname="lastName"/>
     <field table="Preparation" name="prepType8" onetomanysequence="7" relationshipname="prepType" relatedfieldname="name"/>
-    <field table="Preparation" name="count8" actualname="count" onetomanysequence="7" relationshipname="collectionObject"/>
+    <field table="Preparation" name="count8" actualname="countAmt" onetomanysequence="7" relationshipname="collectionObject"/>
     <field table="Preparation" name="storageLocation8" actualname="storageLocation" onetomanysequence="7" relationshipname="collectionObject"/>
     <field table="Preparation" name="prepRemarks8" actualname="Remarks" onetomanysequence="7" relationshipname="collectionObject"/>
 
