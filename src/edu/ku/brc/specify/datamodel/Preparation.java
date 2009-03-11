@@ -284,7 +284,7 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
                 if (conn != null)
                 {
                     stmt = conn.createStatement();
-                    String sql = "SELECT p.Count, lp.Quantity, lp.QuantityResolved, lp.QuantityReturned, lp.IsResolved FROM preparation p " +
+                    String sql = "SELECT p.CountAmt, lp.Quantity, lp.QuantityResolved, lp.QuantityReturned, lp.IsResolved FROM preparation p " +
                                  "INNER JOIN loanpreparation lp ON p.PreparationID = lp.PreparationID WHERE p.PreparationID = "+getId();
                     ResultSet rs = stmt.executeQuery(sql);
                     

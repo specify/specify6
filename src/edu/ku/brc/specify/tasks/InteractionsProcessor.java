@@ -482,7 +482,7 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
                    
                    // Now get the Preps With Loans
                    sb = new StringBuilder();
-                   sb.append("SELECT p.PreparationID, p.Count, lp.Quantity, lp.QuantityResolved, " +
+                   sb.append("SELECT p.PreparationID, p.CountAmt, lp.Quantity, lp.QuantityResolved, " +
                              "co.CollectionObjectID, pt.PrepTypeID, pt.Name " +
                              "FROM preparation AS p INNER JOIN collectionobject AS co ON p.CollectionObjectID = co.CollectionObjectID " +
                              "INNER JOIN preptype AS pt ON p.PrepTypeID = pt.PrepTypeID " +
@@ -603,7 +603,7 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
                    
                    // Now get the Preps With Gift
                    sb = new StringBuilder();
-                   sb.append("SELECT p.PreparationID, p.Count, gp.Quantity, " +
+                   sb.append("SELECT p.PreparationID, p.CountAmt, gp.Quantity, " +
                              "co.CollectionObjectID, pt.PrepTypeID, pt.Name " +
                              "FROM preparation AS p INNER JOIN collectionobject AS co ON p.CollectionObjectID = co.CollectionObjectID " +
                              "INNER JOIN preptype AS pt ON p.PrepTypeID = pt.PrepTypeID " +
