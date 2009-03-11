@@ -9,6 +9,7 @@
  */
 package edu.ku.brc.specify.tasks.subpane.qb;
 
+import java.text.ParseException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -21,6 +22,7 @@ import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -163,6 +165,18 @@ public class TreeLevelQRI extends FieldQRI
     }
     
     /**
+     * @return the maximum number of 'nodenumber between x and y' conditions to add to a where clause.
+     */
+    protected int getMaxNodeConditions()
+    {
+    	//return 0; //no max
+    	//XXX determine a reasonable value to use here. Don't think there is a definite restriction on where clause complexity 
+    	//in DBMS's but a where clause with a huge number of or conditions (easily hundreds for something like 
+    	//species like '%us') CAN'T be very efficient and might kill the system.
+    	return 523;    	
+    }
+    
+    /**
      * @param criteria
      * @param ta
      * @param operStr
@@ -174,9 +188,15 @@ public class TreeLevelQRI extends FieldQRI
      */
     @SuppressWarnings("unchecked")
     public String getNodeNumberCriteria(final String criteria, final TableAbbreviator ta, 
-                                        final String operStr, final boolean negate)
+                                        final String operStr, final boolean negate) throws ParseException
     {
-        DataProviderSessionIFace session = DataProviderFactory.getInstance()
+        if (criteria.equals("'%'"))
+        {
+        	//same as no condition. Almost - Like '%' won't return nulls, but maybe it should.
+        	return null;
+        }
+        
+    	DataProviderSessionIFace session = DataProviderFactory.getInstance()
         .createSession();
         try
         {
@@ -191,6 +211,12 @@ public class TreeLevelQRI extends FieldQRI
             {
                 return "2+2=2"; //that'll do the trick. 
             }
+            
+            if (getMaxNodeConditions() > 0 && matches.size() > getMaxNodeConditions())
+            {
+            	throw new ParseException(UIRegistry.getResourceString("QB_TOO_MANY_TREE_RANK_MATCHES"), -1);
+            }
+            
             for (Object match : matches)
             {
                 Treeable<?,?,?> node = (Treeable<?,?,?>)match;
