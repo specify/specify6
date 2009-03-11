@@ -1217,7 +1217,7 @@ public class DataBuilder
         prep.initialize();
 
         prep.setCollectionObject(colObj);
-        prep.setCount(count);
+        prep.setCountAmt(count);
         prep.setModifiedByAgent(null);
         prep.setStorage(storage);
         prep.setPreparedByAgent(preparedBy);
@@ -2063,7 +2063,7 @@ public class DataBuilder
         Preparation preparation = new Preparation();
         preparation.initialize();
         preparation.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-        preparation.setCount(count);
+        preparation.setCountAmt(count);
         preparation.setStorageLocation(storageLocation);
         preparation.setPreparedDate(preparedDate);
         preparation.setPrepType(prepType);

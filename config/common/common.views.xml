@@ -2248,7 +2248,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="5" />
-                    <cell type="field" id="5" name="preparation.count" uitype="dsptextfield"/>
+                    <cell type="field" id="5" name="preparation.countAmt" uitype="dsptextfield"/>
                 </row>
             </rows>
         </viewdef>
@@ -2385,7 +2385,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="5" />
-                    <cell type="field" id="5" name="preparation.count" uitype="dsptextfield"/>
+                    <cell type="field" id="5" name="preparation.countAmt" uitype="dsptextfield"/>
                    <cell type="field" id="8" name="isResolved" uitype="checkbox" colspan="1"/>
                    <cell type="label" label="  "/>
                    <cell type="subview" id="loanReturnPreparations" viewname="LoanReturnPreparation" colspan="3" name="loanReturnPreparations" initialize="btn=true;icon=LoanReturnPreparation"/>
@@ -2974,7 +2974,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="count" uitype="text" isrequired="true"/>
+                    <cell type="field" id="3" name="countAmt" uitype="text" isrequired="true"/>
 
                     <cell type="label" labelfor="4"/>
                     <cell type="field" id="4" name="storage" uitype="querycbx" initialize="name=Storage" cols="20"/>

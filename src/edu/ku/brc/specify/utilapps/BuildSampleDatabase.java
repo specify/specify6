@@ -559,9 +559,9 @@ public class BuildSampleDatabase
         
         persist(collection);
         
-        ////////////////////////////////
+        ///////////////////////////////////////
         // Default user groups and test user
-        ////////////////////////////////
+        ///////////////////////////////////////
 
         // create the standard user groups for this collection
         dataBuilderSession = switchDataBuilderSession();

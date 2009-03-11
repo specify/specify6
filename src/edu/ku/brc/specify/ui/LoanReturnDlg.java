@@ -600,7 +600,7 @@ public class LoanReturnDlg extends JDialog
             
             boolean allReturned = false;
             
-            if (prep.getCount() !=  null)
+            if (prep.getCountAmt() !=  null)
             {
                 quantityLoaned    = lpo.getQuantity();
                 quantityReturned  = lpo.getQuantityReturned();

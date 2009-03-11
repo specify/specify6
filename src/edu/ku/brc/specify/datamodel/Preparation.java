@@ -85,7 +85,7 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
     protected Integer                     preparationId;
     protected String                      text1;
     protected String                      text2;
-    protected Integer                     count;
+    protected Integer                     countAmt;
     protected String                      storageLocation;
     protected String                      remarks;
     protected Calendar                    preparedDate;
@@ -141,7 +141,7 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
         preparationId = null;
         text1 = null;
         text2 = null;
-        count = null;
+        countAmt = null;
         storageLocation = null;
         remarks = null;
         preparedDate = null;
@@ -232,21 +232,21 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
     /**
      *      * The number of objects (specimens, slides, pieces) prepared
      */
-    @Column(name = "Count", unique = false, nullable = true, insertable = true, updatable = true)
-    public Integer getCount() 
+    @Column(name = "CountAmt", unique = false, nullable = true, insertable = true, updatable = true)
+    public Integer getCountAmt() 
     {
-        return this.count;
+        return this.countAmt;
     }
     
-    public void setCount(Integer count) 
+    public void setCountAmt(Integer countAmt) 
     {
-        this.count = count;
+        this.countAmt = countAmt;
     }
     
     @Transient
     public int getLoanAvailable()
     {
-        int cnt = this.count != null ? this.count : 0;
+        int cnt = this.countAmt != null ? this.countAmt : 0;
         return cnt - getLoanQuantityOut();
     }
 

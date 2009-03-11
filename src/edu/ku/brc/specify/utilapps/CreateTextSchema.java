@@ -55,7 +55,7 @@ public class CreateTextSchema
         
     }
     
-    protected void processRel(final Element field)
+    protected void processRel(final Element field, final boolean includeIndexCol)
     {
         Element descE    = (Element)field.selectSingleNode("nameDesc");
         String nameDesc  = descE != null ? descE.getStringValue() : "XXX";
@@ -69,7 +69,7 @@ public class CreateTextSchema
         po.write("<td align=\"center\" colspan=\"2\">\n");
         po.write(type);
         po.write("</td>\n");
-        po.write("<td align=\"center\" colspan=\"2\">\n");
+        po.write("<td align=\"center\" colspan=\""+(includeIndexCol ? 2 : 1)+"\">\n");
         po.write(nameDesc);
         po.write("</td>\n");
         po.write("<td align=\"center\" colspan=\"1\">\n");
@@ -78,7 +78,11 @@ public class CreateTextSchema
         po.write("</tr>\n");
     }
     
-    protected void processField(final Element field, final boolean isID)
+    /**
+     * @param field
+     * @param isID
+     */
+    protected void processField(final Element field, final boolean isID, final boolean includeIndexCol)
     {
         String column = getAttr(field, "column", "&nbsp;");
         //String name = getAttr(field, "name", "&nbsp;");
@@ -117,9 +121,12 @@ public class CreateTextSchema
         po.write(length);
         po.write("        </td>\n");
         
-        po.write("        <td align=\"center\">\n");
-        po.write(isID ? nameDesc : indexName);
-        po.write("        </td>\n");
+        if (includeIndexCol)
+        {
+            po.write("        <td align=\"center\">\n");
+            po.write(isID ? nameDesc : indexName);
+            po.write("        </td>\n");
+        }
         po.write("<td align=\"left\">\n");
         po.write(isID ? "Primary Key" : desc);
         po.write("</td>\n");
@@ -127,6 +134,9 @@ public class CreateTextSchema
 
     }
     
+    /**
+     * @param tables
+     */
     protected void makeIndex(final Vector<DOMNode> tables)
     {
         for (DOMNode tn : tables)
@@ -137,6 +147,9 @@ public class CreateTextSchema
         }
     }
     
+    /**
+     * @param tables
+     */
     protected void makeTableDesc(final Vector<DOMNode> tables)
     {
         for (DOMNode tn : tables)
@@ -147,6 +160,9 @@ public class CreateTextSchema
         }
     }
     
+    /**
+     * @param tables
+     */
     @SuppressWarnings("unchecked")
     protected void makeTableIndexes(final Vector<DOMNode> tables)
     {
@@ -219,6 +235,9 @@ public class CreateTextSchema
         }
     }
     
+    /**
+     * @param tables
+     */
     protected void processDescs(final Vector<DOMNode> tables)
     {
         
@@ -250,8 +269,11 @@ public class CreateTextSchema
         
     }
     
+    /**
+     * @param tables
+     */
     @SuppressWarnings({ "unchecked", "unchecked" })
-    protected void processTables(final Vector<DOMNode> tables)
+    protected void processTables(final Vector<DOMNode> tables, final boolean includeIndexCol)
     {
         for (DOMNode tn : tables)
         {
@@ -286,11 +308,15 @@ public class CreateTextSchema
             po.write("        <td class=\"hd\">Field</td>\n");
             po.write("        <td class=\"hd\">Type</td>\n");
             po.write("        <td class=\"hd\">Length</td>\n");
-            po.write("        <td class=\"hd\">Index Name</td>\n");
+            
+            if (includeIndexCol)
+            {
+                po.write("        <td class=\"hd\">Index Name</td>\n");
+            }
             po.write("        <td class=\"hd\">Description</td>\n");
             po.write("    </tr>\n");
     
-            processField((Element)tn.node.selectObject("id"), true);
+            processField((Element)tn.node.selectObject("id"), true, includeIndexCol);
     
             Vector<DOMNode> fields = new Vector<DOMNode>();
             for (Element field : (List<Element>)tn.node.selectNodes("field"))
@@ -303,14 +329,14 @@ public class CreateTextSchema
             Collections.sort(fields);
             for (DOMNode fn : fields)
             {
-                processField(fn.node, false);
+                processField(fn.node, false, includeIndexCol);
             }
             po.write("    <tr>\n");
             po.write("        <td colspan=\"5\" class=\"subhead\">Relationships</td>\n");
             po.write("    </tr>\n");
             po.write("    <tr>\n");
             po.write("        <td class=\"hd\" colspan=\"2\">Type</td>\n");
-            po.write("        <td class=\"hd\" colspan=\"2\">Name</td>\n");
+            po.write("        <td class=\"hd\" colspan=\""+(includeIndexCol ? 2 : 1)+"\">Name</td>\n");
             po.write("        <td class=\"hd\" colspan=\"1\">To Table</td>\n");
             po.write("    </tr>\n");
     
@@ -325,7 +351,7 @@ public class CreateTextSchema
             Collections.sort(rels);
             for (DOMNode rn : rels)
             {
-                processRel(rn.node);
+                processRel(rn.node, includeIndexCol);
             }
     
             po.write("</table>\n");
@@ -361,12 +387,12 @@ public class CreateTextSchema
             }
             Collections.sort(tables);
             
-            List<String> lines = (List<String>)FileUtils.readLines(new File(basePath+"SpecifySchemaTemplate.html"));
+            List<String> lines = FileUtils.readLines(new File(basePath+"SpecifySchemaTemplate.html"));
             for (String line : lines)
             {
                 if (StringUtils.contains(line, "<!-- Table Defs -->"))
                 {
-                    processTables(tables);
+                    processTables(tables, false);
                     
                 } else if (StringUtils.contains(line, "<!-- Table Contents -->"))
                 {

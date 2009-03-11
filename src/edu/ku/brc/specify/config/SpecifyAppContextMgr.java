@@ -50,7 +50,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.af.auth.specify.SpecifySecurityMgr;
+import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.af.core.SchemaI18NService;
@@ -813,10 +813,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     {
                     	break;
                     }
-                    else
-                    {
-                        fndAppRes = null;
-                    }
+                    fndAppRes = null;
                 }
             }
         }
@@ -1440,7 +1437,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             
             for (DBTableInfo ti : DBTableIdMgr.getInstance().getTables())
             {
-                ti.setPermissions(SpecifySecurityMgr.getInstance().getPermission("DO."+ti.getName().toLowerCase()));
+                ti.setPermissions(SecurityMgr.getInstance().getPermission("DO."+ti.getName().toLowerCase()));
             }
             
             // Here is where you turn on View/Viewdef re-use.

@@ -1,7 +1,5 @@
 package edu.ku.brc.specify.conversion;
 
-import static edu.ku.brc.specify.config.init.DataBuilder.createAdminGroup;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -685,10 +683,9 @@ public class SpecifyDBConverter
                 conversion.convertDivision("fish", institutionId);
                 frame.incOverall();
                 
-                ///////////////////////////////
-                //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                /////////////////////////////////////////////////////////////
                 // Really need to create or get a proper Discipline Record
-                ///////////////////////////////
+                /////////////////////////////////////////////////////////////
                 
                 frame.setDesc("Converting CollectionObjectDefs.");
                 log.info("Converting CollectionObjectDefs.");
@@ -709,7 +706,7 @@ public class SpecifyDBConverter
                     
                     if (startfromScratch)
                     {
-                        DataBuilder.getSession().beginTransaction();
+                        Transaction trans = DataBuilder.getSession().beginTransaction();
                         
                         //BasicSQLUtils.deleteAllRecordsFromTable(newConn, "usergroup", BasicSQLUtils.myDestinationServerType);
                         BasicSQLUtils.deleteAllRecordsFromTable(newConn, "specifyuser", BasicSQLUtils.myDestinationServerType);
@@ -729,12 +726,16 @@ public class SpecifyDBConverter
                             userAgent = DataBuilder.createAgent(title, firstName, midInit, lastName, abbrev, email);
                         }
                         
-                        specifyUser = DataBuilder.createSpecifyUser(username, email, password, userType);
+                        //specifyUser = DataBuilder.createSpecifyUser(username, email, password, userType);
+                        Institution institution = (Institution)DataBuilder.getSession().createQuery("FROM Institution").list().get(0);
+                        specifyUser = DataBuilder.createAdminGroupAndUser(institution,  username, email, password, userType);
                         specifyUser.addReference(userAgent, "agents");
                         
                         userAgent.setDivision(AppContextMgr.getInstance().getClassObject(Division.class));
                         DataBuilder.getSession().saveOrUpdate(userAgent);
-                        DataBuilder.getSession().getTransaction().commit();
+                        
+                        trans.commit();
+                        DataBuilder.getSession().flush();
                         
                     } else
                     {
@@ -1061,28 +1062,25 @@ public class SpecifyDBConverter
                     AppContextMgr.getInstance().setClassObject(Division.class, division);
                     AppContextMgr.getInstance().setClassObject(Institution.class, institution);
                     
-                    if (false)
+                    if (true)
                     {
                         try
                         {
-                            // Ricardo
-                            // the SpecifyUser is already created it is called 'specifyUser'
-                            
-                            Map<String, SpPrincipal> groupMap = null;
-                            List<SpPrincipal> groups = new ArrayList<SpPrincipal>(groupMap.values());
-                            groupMap = DataBuilder.createStandardGroups(collection);
-                            groups.addAll(groupMap.values());
-                            
-                            for (SpPrincipal prin : groups)
-                            {
-                                log.debug("Principal Name:["+prin.getName()+"]  Group["+prin.getGroupType()+"]");
-                            }
+                            // create the standard user groups for this collection
+                            Map<String, SpPrincipal> groupMap = DataBuilder.createStandardGroups(collection);
+
+                            // add the administrator as a Collections Manager in this group
+                            specifyUser.addUserToSpPrincipalGroup(groupMap.get(SpecifyUserTypes.UserType.Manager.toString()));
                             
                             Transaction trans = localSession.beginTransaction();
-                            for (Object obj : groups)
+                            
+                            for (SpPrincipal prin : groupMap.values())
                             {
-                                localSession.saveOrUpdate(obj);
+                                localSession.saveOrUpdate(prin);
                             }
+                            
+                            localSession.saveOrUpdate(specifyUser);
+                            
                             trans.commit();
                             
                             localSession.close();
@@ -1102,31 +1100,6 @@ public class SpecifyDBConverter
                             dscp.getAgents();
                             AppContextMgr.getInstance().setClassObject(Discipline.class, dscp);
                             
-                            trans = localSession.beginTransaction();
-                            
-                            SpPrincipal userPrincipal  = DataBuilder.createUserPrincipal(specifyUser);
-                            SpPrincipal adminPrincipal = createAdminGroup("Administrator", institution);
-    
-                            specifyUser.addUserToSpPrincipalGroup(userPrincipal);
-                            specifyUser.addUserToSpPrincipalGroup(adminPrincipal);
-                            
-                            // Tester
-                            //Discipline disciplineCache = AppContextMgr.getInstance().getClassObject(Discipline.class);
-                            DataBuilder.createAndAddTesterToCollection("JoeTester", "joetester@brc.ku.edu", "JoeTester", 
-                                    "", "Joe", "", "Tester", "", dscp, division, groupMap, "Guest");
-                            
-                            for (Object obj : groups)
-                            {
-                                localSession.saveOrUpdate(obj);
-                            }
-                            
-                            localSession.saveOrUpdate(institution);
-                            localSession.saveOrUpdate(dscp);
-                            localSession.saveOrUpdate(collection);
-                            
-                            localSession.saveOrUpdate(specifyUser);
-                            
-                            trans.commit();
                             localSession.flush();
                             
                         } catch (Exception ex)

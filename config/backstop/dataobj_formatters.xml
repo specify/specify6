@@ -506,7 +506,7 @@
         <switch single="true">
             <fields>
                 <field formatter="PrepType">prepType</field>
-                <field type="int" format="%d" sep=" - ">count</field>
+                <field type="int" format="%d" sep=" - ">countAmt</field>
             </fields>
         </switch>
     </format>

@@ -1201,7 +1201,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         // Ths Table Name is the "TO Table" name
         Map<String, Map<String, String>> tableMaps = new Hashtable<String, Map<String, String>>();
         // ----------------------------------------------------------------------------------------------------------------------
-        // NEW TABLE NAME NEW FIELD NAME, OLD FIELD NAME
+        // NEW TABLE NAME, NEW FIELD NAME, OLD FIELD NAME
         // ----------------------------------------------------------------------------------------------------------------------
         tableMaps.put("accession",              createFieldNameMap(new String[] { "AccessionNumber", "Number" }));
         tableMaps.put("accessionagent",         createFieldNameMap(new String[] { "AgentID",  "AgentAddressID", "AccessionAgentID", "AccessionAgentsID" }));
@@ -1226,7 +1226,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         tableMaps.put("loanpreparation",       createFieldNameMap(new String[] { "PreparationID", "PhysicalObjectID" }));
         tableMaps.put("loanreturnpreparation", createFieldNameMap(new String[] {"DeaccessionPreparationID", "DeaccessionPhysicalObjectID", "LoanPreparationID",
                                                                                 "LoanPhysicalObjectID", "LoanReturnPreparationID", "LoanReturnPhysicalObjectID",
-                                                                                "ReturnedDate", oldLoanReturnPhysicalObj_Date_FieldName }));
+                                                                                "ReturnedDate", oldLoanReturnPhysicalObj_Date_FieldName, "Quantity", "QuantityReturned" }));
         
         tableMaps.put("permit",                   createFieldNameMap(new String[] { "IssuedByID", "IssuerID", "IssuedToID", "IssueeID" }));
         tableMaps.put("projectcollectionobjects", createFieldNameMap(new String[] { "ProjectCollectionObjectID", "ProjectCollectionObjectsID" }));
@@ -1838,7 +1838,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             
             // Adding Institution
             strBuf.append("INSERT INTO institution (InstitutionID, IsServerBased, TimestampModified, Name, TimestampCreated, StorageTreeDefID, ");
-            strBuf.append("CreatedByAgentID, ModifiedByAgentID, Version, UserGroupScopeId) VALUES (");
+            strBuf.append("CreatedByAgentID, ModifiedByAgentID, Version, UserGroupScopeId, IsSecurityOn) VALUES (");
             strBuf.append(institutionId + ",FALSE,");
             strBuf.append("'" + dateTimeFormatter.format(now) + "',"); // TimestampModified
             strBuf.append("'" + instName + "',");
@@ -1846,6 +1846,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             strBuf.append(storageTreeDef.getStorageTreeDefId()+","); // StorageTreeDefID
             strBuf.append(getCreatorAgentId(null) + "," + getModifiedByAgentId(null) + ",0, ");
             strBuf.append(institutionId); // UserGroupScopeID
+            strBuf.append(",0"); // IsSecurityOn
             strBuf.append(")");
             log.info(strBuf.toString());
 
@@ -1859,6 +1860,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         } catch (Exception ex)
         {
             ex.printStackTrace();
+            System.exit(0);
         }
 
         return null;
@@ -2193,13 +2195,15 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
                     Statement updateStatement = newDBConn.createStatement();
                     strBuf.setLength(0);
-                    strBuf.append("INSERT INTO collection (CollectionID, DisciplineID, CollectionName, Code, Remarks, ");
-                    strBuf.append("IsEmbeddedCollectingEvent, TimestampCreated, TimestampModified, CreatedByAgentID, ModifiedByAgentID, Version, UserGroupScopeId) VALUES (");
+                    strBuf.append("INSERT INTO collection (CollectionID, DisciplineID, CollectionName, Code, Remarks, CatalogFormatNumName, ");
+                    strBuf.append("IsEmbeddedCollectingEvent, TimestampCreated, TimestampModified, CreatedByAgentID, ModifiedByAgentID, ");
+                    strBuf.append("Version, UserGroupScopeId) VALUES (");
                     strBuf.append(curCollectionID + ",");
                     strBuf.append(newColObjdefID + ",");
                     strBuf.append(getStrValue(newSeriesName) + ",");
                     strBuf.append(getStrValue(prefix) + ",");
                     strBuf.append(getStrValue(remarks) + ",");
+                    strBuf.append("'CatalogNumberNumeric',");
                     strBuf.append((isEmbeddedCE ? 1 : 0)  + ",");
                     strBuf.append("'" + dateTimeFormatter.format(now) + "',"); // TimestampModified
                     strBuf.append("'" + dateTimeFormatter.format(now) + "',"); // TimestampCreated
@@ -3532,7 +3536,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                             prepRS.close();
                         }
 
-                    } else if (newFieldName.equals("Count"))
+                    } else if (newFieldName.equals("CountAmt"))
                     {
                         Integer value = rs.getInt("Count");
                         if (rs.wasNull())
@@ -4870,13 +4874,11 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         {
             e.printStackTrace();
             log.error(e);
-            BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer(newDBConn, "LoanPreparation",
-                    BasicSQLUtils.myDestinationServerType);
+            BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer(newDBConn, "LoanPreparation", BasicSQLUtils.myDestinationServerType);
             throw new RuntimeException(e);
         }
         log.info("Done processing LoanPhysicalObject");
-        BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer(newDBConn, "LoanPreparation",
-                BasicSQLUtils.myDestinationServerType);
+        BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer(newDBConn, "LoanPreparation", BasicSQLUtils.myDestinationServerType);
         return true;
 
     }

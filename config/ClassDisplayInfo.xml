@@ -214,7 +214,7 @@
 		</skip>
 		<order>
 			<field>prepType</field>
-			<field>count</field>
+			<field>countAmt</field>
 			<field>preparedDate</field>
 			<field>preparedByAgent</field>
 		</order>

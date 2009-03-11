@@ -20,6 +20,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -57,6 +58,7 @@ public class SpQuery extends DataModelObjBase implements Cloneable
     protected Boolean           isFavorite; //whether or not this query goes on the 'short list'
     protected boolean           named = true;
     protected Short             ordinal;
+    protected String            remarks;
     
     protected Set<SpQueryField> fields;
     protected Set<SpReport>     reports;
@@ -89,7 +91,8 @@ public class SpQuery extends DataModelObjBase implements Cloneable
         reports          = new HashSet<SpReport>();
         specifyUser      = null;
         isFavorite       = null;
-        ordinal            = null;
+        ordinal          = null;
+        remarks          = null;
     }
     
     
@@ -168,6 +171,19 @@ public class SpQuery extends DataModelObjBase implements Cloneable
     }
 
     /**
+     * 
+     */
+    @Lob
+    @Column(name = "Remarks", length = 4096)
+    public String getRemarks() {
+        return this.remarks;
+    }
+    
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
+    }
+
+   /**
      * @return the spQueryId
      */
     @Id
