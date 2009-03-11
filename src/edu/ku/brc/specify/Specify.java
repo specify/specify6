@@ -821,7 +821,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
      */
     public void doPreferences()
     {
-        AppContextMgr acm        = AppContextMgr.getInstance();
+        //AppContextMgr acm        = AppContextMgr.getInstance();
         if (AppContextMgr.getInstance().hasContext())
         {
             PreferencesDlg dlg = new PreferencesDlg(false);
@@ -2819,7 +2819,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
   /**
    * @return
    */
-  private static String getLastVersion()
+  /*private static String getLastVersion()
   {
       try
       {
@@ -2842,7 +2842,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
       {
           //ex.printStackTrace();
       } 
-  }
+  }*/
   
   /**
    *
@@ -2961,7 +2961,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                   if (localPrefs.getBoolean(VERSION_CHECK, true) && localPrefs.getBoolean(EXTRA_CHECK, true))
                   {
                 	//Both of these trys seem necessary for updates to run correctly--but we do not know why.
-                      try
+                      /*try
                       {
                           
                           String lastVersion = getLastVersion();
@@ -2987,7 +2987,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                       {
                           startApp(doConfig);
                           return;
-                      }
+                      }*/
                       
                       try
                       {
