@@ -216,6 +216,7 @@ public class ResourceImportExportDlg extends CustomDialog
         viewsList.setCellRenderer(new ViewRenderer());
         sp = new JScrollPane(viewsList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         viewPanel.add(sp, cc.xy(3,3));
+        viewsList.setEnabled(false);
         
         PanelBuilder resPane = new PanelBuilder(new FormLayout("f:p:g", "p,2px,p"));
         resPane.add(createLabel(getResourceString("RIE_OTHER_RES"), SwingConstants.CENTER), cc.xy(1,1));
