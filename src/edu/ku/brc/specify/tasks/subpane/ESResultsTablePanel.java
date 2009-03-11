@@ -66,7 +66,6 @@ import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.specify.tasks.RecordSetTask;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
 import edu.ku.brc.specify.ui.db.ResultSetTableModel;
-import edu.ku.brc.ui.CloseButton;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.DataFlavorTableExt;
@@ -248,13 +247,15 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
             }
         }
 
-        CloseButton closeBtn = null;
+        GradiantButton closeBtn = null;
         if (inclCloseBtn)
         {
-            closeBtn = new CloseButton();
+            closeBtn = new GradiantButton(IconManager.getIcon("Close"));
             closeBtn.setToolTipText(getResourceString("ESCloseTable"));
             closeBtn.setForeground(bannerColor);
-            closeBtn.setCloseColor(new Color(255,255,255, 90));
+            closeBtn.setRolloverEnabled(true);
+            closeBtn.setRolloverIcon(IconManager.getIcon("CloseHover"));
+            closeBtn.setPressedIcon(IconManager.getIcon("CloseHover"));
             builder.add(closeBtn, cc.xy(col,1));
             col += 2;
         }

@@ -31,12 +31,19 @@ public class LengthInputVerifier extends InputVerifier
     protected String caption;
     protected int    maxLength;
     
+    /**
+     * @param caption
+     * @param maxLength
+     */
     public LengthInputVerifier(final String caption, final int maxLength)
     {
         this.caption   = caption;
         this.maxLength = maxLength;
     }
     
+    /* (non-Javadoc)
+     * @see javax.swing.InputVerifier#verify(javax.swing.JComponent)
+     */
     @Override
     public boolean verify(JComponent comp)
     {

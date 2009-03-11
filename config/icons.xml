@@ -129,8 +129,8 @@
     <icon name="NextRec"  file="next.gif"  sizes="NonStd"/>
     <icon name="LastRec"  file="last.gif"  sizes="NonStd"/>
     
-    <icon name="Close"         file="close.gif" sizes="NonStd"/>
-    <icon name="CloseHover"    file="closeHover.gif" sizes="NonStd"/>
+    <icon name="Close"         file="close.png" sizes="NonStd"/>
+    <icon name="CloseHover"    file="close_hover.png" sizes="NonStd"/>
     <icon name="Print"         file="printer.png" sizes="all"/>
     <icon name="Backup"        file="backup.png" sizes="all"/>
     <icon name="Reload"        file="reload.png" sizes="NonStd"/>

@@ -28,6 +28,7 @@ import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
@@ -54,6 +55,7 @@ public class GradiantButton extends JButton implements MouseListener
     protected float          iconAlpha        = 0.8f;
     protected ImageIcon      icon             = null;
     protected GradiantButton itself;
+    protected boolean        isHover          = false;
     
     /**
      * Defaults to a gradiant square button
@@ -73,6 +75,7 @@ public class GradiantButton extends JButton implements MouseListener
     {
         super("");
         this.icon = icon;
+        setIcon(icon);
         init();
     }
     
@@ -117,12 +120,16 @@ public class GradiantButton extends JButton implements MouseListener
         return new Dimension(w, h);
     }
     
+    
     /* (non-Javadoc)
      * @see java.awt.Component#paint(java.awt.Graphics)
      */
     @Override
-    public void paint(Graphics g) 
+    public void paintComponent(Graphics g) 
     {        
+        super.paintComponent(g);
+        
+        
         Graphics2D g2 = (Graphics2D)g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         
@@ -142,13 +149,15 @@ public class GradiantButton extends JButton implements MouseListener
             drawText(g2, w,h, getText());
         }
         
-        if (icon != null)
+        Icon roIcon      = getRolloverIcon();
+        Icon paintedIcon = isHover && roIcon != null ? roIcon : icon;
+        if (paintedIcon != null)
         {
             //Graphics2D g2 = (Graphics2D) g.create();
             g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, iconAlpha));
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                                 RenderingHints.VALUE_ANTIALIAS_ON);
-           icon.paintIcon(this, g2, (w - icon.getIconWidth()) / 2, (h - icon.getIconHeight()) / 2);
+            paintedIcon.paintIcon(this, g2, (w - icon.getIconWidth()) / 2, (h - icon.getIconHeight()) / 2);
         }
     }
     
@@ -235,10 +244,14 @@ public class GradiantButton extends JButton implements MouseListener
     protected boolean pressed = false;
     public void mouseExited(MouseEvent evt) 
     { 
+        isHover = false;
+        repaint();
         UIRegistry.displayStatusBarText("");
     }
     public void mouseEntered(MouseEvent evt) 
     { 
+        isHover = true;
+        repaint();
         UIRegistry.displayStatusBarText(itself.getToolTipText());
     }
     public void mouseClicked(MouseEvent evt)

@@ -28,6 +28,7 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.HeadlessException;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -38,7 +39,6 @@ import java.util.List;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -54,7 +54,6 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
@@ -110,8 +109,10 @@ public class UIFormatterEditorDlg extends CustomDialog
     protected EditDeleteAddPanel        fieldsPanel;
     protected JLabel                    fieldTypeLbl;
     protected JComboBox                 fieldTypeCbx;
+    protected JButton                   closeBtn;
     protected boolean                   fieldHasChanged             = false;
     protected UIFieldFormatterField     currentField                = null;
+    protected JLabel                    totLenLbl;
     
     // CardLayout for Type Panels
     protected CardLayout                cardLayout                  = new CardLayout();
@@ -122,11 +123,11 @@ public class UIFormatterEditorDlg extends CustomDialog
     protected JCheckBox                 isIncChk;
     
     protected ListSelectionListener     fieldsTblSL                 = null;
-    protected DocumentListener          formatChangedDL             = null;
     protected boolean                   hasChanged                  = false;
     protected boolean                   isInError                   = false;
     protected boolean                   isNew;
     protected String                    fmtErrMsg                   = null;
+    protected Color                     currentTxtBGColor           = null;
     
     /**
      * @param parentDlg
@@ -280,34 +281,34 @@ public class UIFormatterEditorDlg extends CustomDialog
         sizeSpinner = new JSpinner(retModel);
         isIncChk    = new JCheckBox("Is Incrementer");
         
-        String colDefs = "f:p:g,p,2px,"+width+"px";
-        PanelBuilder numPB = new PanelBuilder(new FormLayout(colDefs, "p,2px,p"));
+        String colDefs = "f:p:g,p,2px,"+width+"px,2px,p";
+        
+        closeBtn = createClose(0);
+        PanelBuilder numPB = new PanelBuilder(new FormLayout(colDefs, "p,2px,p,2px,p"));
         numPB.add(createI18NFormLabel("FFE_LENGTH"), cc.xy(2, 1));
         numPB.add(sizeSpinner, cc.xy(4, 1));
+        //numPB.add(closeBtn,    cc.xy(6, 1));
         numPB.add(isIncChk,    cc.xy(4, 3));
         
         sepCbx = new JComboBox(new String[] {"-", ".", "/", "` `", "_"});
-        PanelBuilder sepPB = new PanelBuilder(new FormLayout(colDefs, "p"));
+        closeBtn = createClose(1);
+        PanelBuilder sepPB = new PanelBuilder(new FormLayout(colDefs, "p,2px,p"));
         sepPB.add(createI18NFormLabel("FFE_SEP"), cc.xy(2, 1));
-        sepPB.add(sepCbx, cc.xy(4, 1));
+        sepPB.add(sepCbx,   cc.xy(4, 1));
+        //sepPB.add(closeBtn, cc.xy(6, 1));
 
-        PanelBuilder txtPB = new PanelBuilder(new FormLayout(colDefs, "p"));
+        closeBtn = createClose(2);
+        PanelBuilder txtPB = new PanelBuilder(new FormLayout(colDefs, "p,2px,p"));
         txtPB.add(createI18NFormLabel("FFE_TEXT"), cc.xy(2, 1));
         txtPB.add(fieldTxt, cc.xy(4, 1));
+        //txtPB.add(closeBtn, cc.xy(6, 1));
+        //txtPB.getPanel().setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
 
         cardPanel = new JPanel(cardLayout);
         cardPanel.add("size", numPB.getPanel());
         cardPanel.add("text", txtPB.getPanel());
         cardPanel.add("sep",  sepPB.getPanel());
         cardPanel.add("none", new JLabel(" "));
-        
-        // formatting key panel
-        JPanel keyPanel = new JPanel();
-        keyPanel.setLayout(new BoxLayout(keyPanel, BoxLayout.Y_AXIS));
-        keyPanel.setBorder(BorderFactory.createTitledBorder(getResourceString("FFE_HELP"))); //$NON-NLS-1$
-        // left help body text in a single string resource until we build infrastructure to 
-        // localize long texts (in files maybe)
-        keyPanel.add(createLabel(formatFactory.getHelpHtml()));
         
         y = 1;
         PanelBuilder leftPB = new PanelBuilder(new FormLayout("f:p:g", "t:p,10px,p,f:p:g"));
@@ -317,14 +318,18 @@ public class UIFormatterEditorDlg extends CustomDialog
         PanelBuilder upDownPanel = new PanelBuilder(new FormLayout("p", "f:p:g, p, 2px, p, f:p:g"));        
         upDownPanel.add(orderUpBtn,       cc.xy(1, 2));
         upDownPanel.add(orderDwnBtn,      cc.xy(1, 4));
+        
+        totLenLbl = createLabel("XXXXX");
 
         y = 1;
         PanelBuilder rightPB = new PanelBuilder(new FormLayout("p:g,2px,p,2px,p",  "200px,2px,p,2px,p,2px,p"));
         rightPB.add(createScrollPane(fieldsTbl),     cc.xywh(1, y, 3, 1)); 
         rightPB.add(upDownPanel.getPanel(),          cc.xywh(5, y, 1, 1)); y += 2;    
-        rightPB.add(fieldsPanel,                     cc.xywh(1, y, 3, 1)); y += 2;
+        rightPB.add(totLenLbl,                       cc.xy(1, y)); 
+        rightPB.add(fieldsPanel,                     cc.xywh(3, y, 1, 1)); y += 2;
         rightPB.add(fieldTypeLbl = createI18NFormLabel("FFE_TYPE"), cc.xy(1,y));
-        rightPB.add(fieldTypeCbx,                    cc.xy(3, y));         y += 2;
+        rightPB.add(fieldTypeCbx,                    cc.xy(3, y));
+        rightPB.add(closeBtn,                        cc.xy(5, y));         y += 2;
         rightPB.add(cardPanel,                       cc.xyw(1, y, 3));     y += 2;
         
         y = 1;
@@ -345,8 +350,8 @@ public class UIFormatterEditorDlg extends CustomDialog
         titleTF.setText(selectedFormat.getName());
         updateSample(); 
         
-        hookTextChangeListener(nameTF,  "FFE_NO_NAME");
-        hookTextChangeListener(titleTF, "FFE_NO_TITLE");
+        hookTextChangeListener(nameTF,  "FFE_NO_NAME", 32);
+        hookTextChangeListener(titleTF, "FFE_NO_TITLE", 32);
         
         pb.setDefaultDialogBorder();
         
@@ -377,7 +382,6 @@ public class UIFormatterEditorDlg extends CustomDialog
                 updateEnabledState();
                 hasChanged      = true;
                 updateUIEnabled();
-
             }
         });
         
@@ -405,6 +409,27 @@ public class UIFormatterEditorDlg extends CustomDialog
         fieldTypeCbx.setSelectedIndex(-1);
         fieldHasChanged = false;
         updateEnabledState();
+    }
+    
+    /**
+     * @param panel
+     * @return
+     */
+    private JButton createClose(final int type)
+    {
+        JButton btn = UIHelper.createIconBtn("Close", "", new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                checkForChanges();
+                cardLayout.show(cardPanel, "none");
+                resetUI();
+            }
+        });
+        btn.setRolloverEnabled(true);
+        btn.setRolloverIcon(IconManager.getIcon("CloseHover"));
+        btn.setEnabled(true);
+        return btn;
     }
     
     /**
@@ -459,6 +484,24 @@ public class UIFormatterEditorDlg extends CustomDialog
     {
         fieldsTbl.getSelectionModel().removeListSelectionListener(fieldsTblSL);
     }
+    
+    /**
+     * 
+     */
+    protected void checkForChanges()
+    {
+        if (fieldHasChanged)
+        {
+            Object[] options = { getResourceString("SAVE"), //$NON-NLS-1$ 
+                                 getResourceString("DISCARD") }; //$NON-NLS-1$
+            int retVal = JOptionPane.showOptionDialog(null, getResourceString("FFE_SAVE_CHG"), getResourceString("SaveChangesTitle"), JOptionPane.YES_NO_CANCEL_OPTION, //$NON-NLS-1$ //$NON-NLS-2$
+                                                      JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+            if (retVal == JOptionPane.YES_OPTION)
+            {
+                fieldsPanel.getEditBtn().doClick();
+            }
+        }
+    }
 
     /**
      * 
@@ -474,17 +517,7 @@ public class UIFormatterEditorDlg extends CustomDialog
                 {
                     if (!e.getValueIsAdjusting())
                     {
-                        if (fieldHasChanged)
-                        {
-                            Object[] options = { getResourceString("SAVE"), //$NON-NLS-1$ 
-                                                 getResourceString("DISCARD") }; //$NON-NLS-1$
-                            int retVal = JOptionPane.showOptionDialog(null, getResourceString("FFE_SAVE_CHG"), getResourceString("SaveChangesTitle"), JOptionPane.YES_NO_CANCEL_OPTION, //$NON-NLS-1$ //$NON-NLS-2$
-                                                                      JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-                            if (retVal == JOptionPane.YES_OPTION)
-                            {
-                                fieldsPanel.getEditBtn().doClick();
-                            }
-                        }
+                        checkForChanges();
                         
                         int inx = fieldsTbl.getSelectedRow();
                         if (inx > -1)
@@ -519,6 +552,7 @@ public class UIFormatterEditorDlg extends CustomDialog
     protected void enabledEditorUI(final boolean enable)
     {
         fieldTypeCbx.setEnabled(enable);
+        closeBtn.setVisible(enable);
         fieldTypeLbl.setEnabled(enable);
         fieldTxt.setEnabled(enable);
         sizeSpinner.setEnabled(enable);
@@ -626,6 +660,14 @@ public class UIFormatterEditorDlg extends CustomDialog
     {
         updateEntry();
         
+        resetUI();
+    }
+    
+    /**
+     * 
+     */
+    protected void resetUI()
+    {
         fieldTypeCbx.setSelectedIndex(-1);
         fieldTxt.setText("");
         sizeSpinner.setValue(1);
@@ -831,7 +873,9 @@ public class UIFormatterEditorDlg extends CustomDialog
     /**
      * @param txtFld
      */
-    private void hookTextChangeListener(final JTextField txtFld, final String errMsgKey)
+    private void hookTextChangeListener(final JTextField txtFld, 
+                                        final String errMsgKey,
+                                        final int maxLen)
     {
         txtFld.getDocument().addDocumentListener(new DocumentAdaptor()
         {
@@ -850,13 +894,43 @@ public class UIFormatterEditorDlg extends CustomDialog
                 {
                     updateUIEnabled(); 
                     
-                } else
+                } else if (checkFieldLen(txtFld.getDocument().getLength(), maxLen))
                 {
+                    updateUIEnabled();
                     updateSample();
                 }
                 hasChanged = true;
             }
         });
+    }
+    
+    /**
+     * @param txtFld
+     * @param maxLen
+     * @return
+     */
+    protected boolean checkFieldLen(final int currLen, final int maxLen)
+    {
+        if (currLen <= maxLen)
+        {
+            return false;
+        }
+        
+        if (currLen > maxLen)
+        {
+            if (currentTxtBGColor != Color.RED)
+            {
+                currentTxtBGColor = fieldTxt.getBackground();
+                fieldTxt.setBackground(Color.RED);
+            }
+            Toolkit.getDefaultToolkit().beep();
+            return false;
+            
+        } else if (currentTxtBGColor != null)
+        {
+            fieldTxt.setBackground(currentTxtBGColor);
+        }
+        return true;
     }
 
 	/**
@@ -897,11 +971,53 @@ public class UIFormatterEditorDlg extends CustomDialog
         boolean byYearEnabled = (selectedFormat != null) && (selectedFormat.byYearApplies());
         byYearCB.setEnabled(byYearEnabled);
         
+        int totalLen = 0;
+        if (fields.size() > 0)
+        {
+            for (UIFieldFormatterField f : fields)
+            {
+                totalLen += f.getSize();
+            }
+            
+            FieldType fieldType = (FieldType)fieldTypeCbx.getSelectedItem();
+            if (fieldType != null)
+            {
+                switch (fieldType)
+                {
+                    case alphanumeric : 
+                    case alpha : 
+                    case anychar : 
+                    case numeric :
+                        totalLen += (Integer)sizeSpinner.getValue();
+                        break;
+                        
+                    case constant :
+                        totalLen += fieldTxt.getDocument().getLength();
+                        break;
+                        
+                    case separator : 
+                        totalLen++;
+                        break;
+                        
+                    case year :
+                        totalLen += 4;
+                        break;
+                }
+            }
+        } else
+        {
+            totalLen   = fieldTxt.getText().length();
+        }
+        
+        totLenLbl.setText(String.format("%d / %d", totalLen, fieldInfo.getLength()));
+        
+        boolean badLen = checkFieldLen(totalLen, fieldInfo.getLength());
+        
         okBtn.setEnabled(hasChanged && 
                          !isInError && 
                          nameTF.getText().length() > 0 && 
                          titleTF.getText().length() > 0 &&
-                         fields.size() > 0);
+                         fields.size() > 0 && !badLen);
         
         // create a sample and display it, if there's no error
         // otherwise, leave the sample panel area with the error message, set in setError() method.  
