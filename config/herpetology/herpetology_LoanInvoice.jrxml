@@ -35,7 +35,7 @@ FROM (SELECT Expr1.*, agent.LastName, agent.FirstName, agent.MiddleInitial
           FROM loan INNER JOIN shipment ON loan.LoanID = shipment.LoanID) Expr0
     INNER JOIN agent ON Expr0.ShippedByID = agent.AgentID) Expr1
   INNER JOIN agent ON Expr1.ShippedToID = agent.AgentID) Expr2 
-INNER JOIN address ON Expr2.ShippedToID = address.AgentID 
+LEFT JOIN address ON Expr2.ShippedToID = address.AgentID 
 WHERE LoanID $P!{itemnum}]]></queryString>
 
 	<field name="LoanID" class="java.lang.Long"/>

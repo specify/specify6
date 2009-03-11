@@ -33,7 +33,7 @@ FROM (SELECT e6.*, collectingevent.StartDate, collectingevent.LocalityID
 FROM (SELECT e5.*, loan.LoanNumber 
 FROM (SELECT e4.*, loanpreparation.LoanID, loanpreparation.Quantity, loanpreparation.QuantityReturned, loanpreparation.QuantityResolved  
 FROM (SELECT e3.*, preptype.Name 
-FROM (SELECT e2.*, preparation.PreparationID, preparation.Count,  preparation.PrepTypeID 
+FROM (SELECT e2.*, preparation.PreparationID, preparation.CountAmt as Count,  preparation.PrepTypeID 
 FROM (SELECT e1.*, taxon.FullName AS TaxonFullName 
 FROM (SELECT collectionobject.CatalogNumber, collectionobject.FieldNumber, collectionobject.CollectionObjectID, collectionobject.CollectingEventID, 
 determination.PreferredTaxonID
