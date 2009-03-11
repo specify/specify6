@@ -129,7 +129,7 @@ public class ReportsBaseTask extends BaseTask
     public static final String           REFRESH             = "RPT.Refresh";
     public static final String           IMPORT              = "RPT.Import";
     public static final String           REPORT_DELETED      = "RPT.ReportDeleted";
-    public static final String           PRINT_GRID         = "RPT.PrintTable";
+    public static final String           PRINT_GRID          = "RPT.PrintTable";
 
     // Data Members
     protected DataFlavor                 defaultFlavor       = null;

@@ -196,9 +196,14 @@ public class ServiceInfo implements Comparable<ServiceInfo>, Cloneable
                 return isPermissionOK = false;
             }
             
-            DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(tableId);
-            
-            isPermissionOK = tableInfo != null ? tableInfo.getPermissions().canView() : false;
+            if (tableId > 0)
+            {
+                DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(tableId);
+                isPermissionOK = tableInfo != null ? tableInfo.getPermissions().canView() : false;
+            } else
+            {
+                isPermissionOK = true;
+            }
         }
         return isPermissionOK;
     }

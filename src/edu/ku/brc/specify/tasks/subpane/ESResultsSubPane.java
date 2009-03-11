@@ -35,6 +35,10 @@ import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+
 import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.NavBoxLayoutManager;
 import edu.ku.brc.af.core.Taskable;
@@ -82,6 +86,9 @@ public class ESResultsSubPane extends BaseSubPane implements ExpressSearchResult
     protected boolean              showing             = false;
     protected boolean              added               = false;
     
+    protected JButton              moreInfoHelpBtn     = null;
+    protected JButton              moreInfoCaptionBtn  = null;
+    
     // Tables are added here waiting for their first results to come back.
     protected Vector<ESResultsTablePanelIFace> expTblResultsCache = new Vector<ESResultsTablePanelIFace>();
     
@@ -126,12 +133,35 @@ public class ESResultsSubPane extends BaseSubPane implements ExpressSearchResult
         {
             explainPanel = new JPanel(new BorderLayout());
             explainPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
-            JButton btn = UIHelper.createButton(UIRegistry.getResourceString("EXPRESSSEARCH_TELL_ME_MORE"), IconManager.getIcon("InfoIcon", IconManager.IconSize.Std16));
-            btn.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
-            btn.setFocusable(false);
-            btn.setForeground(Color.GRAY);
-            explainPanel.add(btn, BorderLayout.WEST);
-            HelpMgr.registerComponent(btn, "ESTellMeMore");
+            
+            if (UIHelper.isMacOS())
+            {
+                moreInfoHelpBtn = new JButton("");
+                moreInfoHelpBtn.putClientProperty( "JButton.buttonType", "help" );
+                moreInfoCaptionBtn = UIHelper.createButton(UIRegistry.getResourceString("EXPRESSSEARCH_TELL_ME_MORE"));
+                moreInfoCaptionBtn.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
+                moreInfoCaptionBtn.setFocusable(false);
+                moreInfoCaptionBtn.setForeground(Color.GRAY);
+                
+                CellConstraints cc = new CellConstraints();
+                PanelBuilder    pb = new PanelBuilder( new FormLayout("p,p,f:p:g", "p"));
+                explainPanel.add(moreInfoCaptionBtn, BorderLayout.CENTER);
+                pb.add(moreInfoHelpBtn, cc.xy(1, 1));
+                pb.add(moreInfoCaptionBtn, cc.xy(2, 1));
+                explainPanel.add(pb.getPanel(), BorderLayout.WEST);
+                HelpMgr.registerComponent(moreInfoCaptionBtn, "ESTellMeMore");
+                
+            } else
+            {
+                moreInfoHelpBtn = UIHelper.createButton(UIRegistry.getResourceString("EXPRESSSEARCH_TELL_ME_MORE"), IconManager.getIcon("InfoIcon", IconManager.IconSize.Std16));
+                moreInfoHelpBtn.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
+                moreInfoHelpBtn.setFocusable(false);
+                moreInfoHelpBtn.setForeground(Color.GRAY);
+                explainPanel.add(moreInfoHelpBtn, BorderLayout.WEST);
+            }
+            
+            
+            HelpMgr.registerComponent(moreInfoHelpBtn, "ESTellMeMore");
         }
         
         CommandDispatcher.register(ExpressSearchTask.EXPRESSSEARCH, this);
