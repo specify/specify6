@@ -34,14 +34,9 @@ public class UIFieldFormatterField implements Cloneable
 {
     public enum FieldType {numeric, alphanumeric, alpha, separator, year, anychar, constant}
                                                   
-    private static final String ALPHA_NUM_SAMPLE = "Abc123abcdefg123456wxyz7890";
-    private static final String ALPHA_SAMPLE     = "Abcdefghijklmnopqrstuvwxyz";
-    private static final String NUMERIC_SAMPLE   = "1234567890";
-    
-    private static String alphaSample        = null;
-    private static String numericSample      = null;
-    private static String alphaNumericSample = null;
-    
+    private static String alphaSample        = "";
+    private static String anyCharSample      = "";
+    private static String alphaNumericSample = "";
     
     protected FieldType type;
     protected int       size;
@@ -50,9 +45,12 @@ public class UIFieldFormatterField implements Cloneable
     protected boolean   byYear;
     
     static {
-        alphaSample        = buildSample(ALPHA_SAMPLE);
-        numericSample      = buildSample(NUMERIC_SAMPLE);
-        alphaNumericSample = buildSample(ALPHA_NUM_SAMPLE);
+        for (int i=0;i<255;i++)
+        {
+            alphaNumericSample += "A";
+            alphaSample        += "a";
+            anyCharSample      += "X";
+        }
     }
     
     /**
@@ -138,7 +136,7 @@ public class UIFieldFormatterField implements Cloneable
     	//Pattern pattern = Pattern.compile("^(A+|a+|N+|\\#+|YEAR|Y{4}|Y{2}|M{2,3})$");
     	// restricting set of valid formats to those that can be applied to String for now
     	// will open up possibilities when supporting dates and numeric fields
-    	Pattern pattern = Pattern.compile("^(A+|a+|N+|\\#+|YEAR|\"[^\"]*\")$");
+    	Pattern pattern = Pattern.compile("^(A+|X+|a+|N+|\\#+|YEAR|\"[^\"]*\")$");
     	Matcher matcher = pattern.matcher(formattingString);
     	
     	if (matcher.find()) 
@@ -150,27 +148,31 @@ public class UIFieldFormatterField implements Cloneable
     		char firstChar = val.charAt(0);
     		switch (firstChar) 
     		{
-    		case 'A': 
-    			field.setType(FieldType.alphanumeric); 
-    			break;
-    		case 'a': 
-    			field.setType(FieldType.alpha); 
-    			break;
-    		case 'N': 
-    			field.setType(FieldType.numeric);
-    			field.setIncrementer(false);
-    			break;
-    		case '#': 
-    			field.setType(FieldType.numeric);
-    			field.setIncrementer(true);
-    			break;
-    		case 'Y': 
-    			field.setType(FieldType.year); 
-    			break;
-    			
-    		case '"':
-    			field.setType(FieldType.constant);
-    			break;
+        		case 'A': 
+        			field.setType(FieldType.alphanumeric); 
+        			break;
+        			
+        		case 'a': 
+        			field.setType(FieldType.alpha); 
+        			break;
+        			
+        		case 'N': 
+        			field.setType(FieldType.numeric);
+        			field.setIncrementer(false);
+        			break;
+        			
+        		case '#': 
+        			field.setType(FieldType.numeric);
+        			field.setIncrementer(true);
+        			break;
+        			
+        		case 'Y': 
+        			field.setType(FieldType.year); 
+        			break;
+        			
+        		case '"':
+        			field.setType(FieldType.constant);
+        			break;
     			
     		// TODO: treat byyear case
     		}
@@ -224,22 +226,17 @@ public class UIFieldFormatterField implements Cloneable
 
 		if (type == FieldType.alphanumeric)
 		{
-			sample = alphaNumericSample;
+			return alphaNumericSample.substring(0, value.length());
 		}
 
 		if (type == FieldType.alpha)
 		{
-			sample = alphaSample;
+			return alphaSample.substring(0, value.length());
 		}
 
 		if (type == FieldType.numeric)
 		{
-			sample = numericSample;
-			int dot = value.indexOf(".");
-			if (dot > 0)
-			{
-				sample = sample.substring(0, dot) + "." + sample.substring(dot, sample.length());
-			}
+		    sample = String.format("%0"+size+"d", 1);
 		}
 
 		if (type == FieldType.year)
@@ -247,11 +244,16 @@ public class UIFieldFormatterField implements Cloneable
 			sample = Integer.toString(Calendar.getInstance().get(Calendar.YEAR));
 		}
 		
-		if (type == FieldType.constant)
-		{
-			return value.substring(0, value.length());
-		}
-		
+        if (type == FieldType.constant)
+        {
+            return value.substring(0, value.length());
+        }
+        
+        if (type == FieldType.anychar)
+        {
+            return value.substring(0, value.length());
+        }
+        
 		if (sample.length() == 0)
 		{
 			return "";

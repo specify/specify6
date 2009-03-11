@@ -1013,7 +1013,7 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
                 break;
 
             default:
-                defChar = 'X';
+                defChar = '?';
                 break;
             }
         } else if (!isAutoNumber)

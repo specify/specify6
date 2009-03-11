@@ -619,7 +619,7 @@ public class UIFormatterEditorDlg extends CustomDialog
                 
             case anychar : 
                 currentField.setSize(size);
-                currentField.setValue(getValueStr(size, '#'));
+                currentField.setValue(getValueStr(size, 'X'));
                 break;
                 
             case numeric :
@@ -832,7 +832,7 @@ public class UIFormatterEditorDlg extends CustomDialog
     private void resetError() 
     {
         isInError = false;
-        sampleLabel.setForeground(Color.black);
+        sampleLabel.setForeground(Color.BLACK);
     	fmtErrMsg = null;
     }
 
