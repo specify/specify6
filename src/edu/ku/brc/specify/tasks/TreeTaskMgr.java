@@ -27,6 +27,7 @@ import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.tasks.BaseTask;
+import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.RolloverCommand;
@@ -182,21 +183,24 @@ public class TreeTaskMgr
         {
             for (BaseTreeTask<?,?,?> treeTask : unlockBtnHash.keySet())
             {
-                //DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(treeTask.getTreeClass().getName());
-                DBTableInfo treeDefTI = DBTableIdMgr.getInstance().getByClassName(treeTask.getCurrentTreeDef().getClass().getName());
-                
-                boolean isLocked = TaskSemaphoreMgr.isLocked("def", treeDefTI.getClassObj().getSimpleName(), TaskSemaphoreMgr.SCOPE.Discipline);
-                
-                
-                Vector<RolloverCommand> rocs = unlockBtnHash.get(treeTask);
-                if (rocs != null)
+                TreeDefIface<?,?,?> tdi = treeTask.getCurrentTreeDef();
+                if (tdi != null)
                 {
-                    String iconName = isLocked ? "Security" : treeTask.getTreeClass().getSimpleName();
-                    ImageIcon icon = IconManager.getIcon(iconName, IconManager.STD_ICON_SIZE);
+                    DBTableInfo treeDefTI = DBTableIdMgr.getInstance().getByClassName(tdi.getClass().getName());
                     
-                    for (RolloverCommand roc : rocs)
+                    boolean isLocked = TaskSemaphoreMgr.isLocked("def", treeDefTI.getClassObj().getSimpleName(), TaskSemaphoreMgr.SCOPE.Discipline);
+                    
+                    
+                    Vector<RolloverCommand> rocs = unlockBtnHash.get(treeTask);
+                    if (rocs != null)
                     {
-                        roc.setIcon(icon);
+                        String iconName = isLocked ? "Security" : treeTask.getTreeClass().getSimpleName();
+                        ImageIcon icon = IconManager.getIcon(iconName, IconManager.STD_ICON_SIZE);
+                        
+                        for (RolloverCommand roc : rocs)
+                        {
+                            roc.setIcon(icon);
+                        }
                     }
                 }
             }            

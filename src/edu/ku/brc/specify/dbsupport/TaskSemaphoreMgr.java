@@ -743,21 +743,24 @@ public class TaskSemaphoreMgr
             //throw new RuntimeException("No lock!");
         }
         
-        semaphore.setIsLocked(doLock);
-        semaphore.setContext(context);
-        String machineName = InetAddress.getLocalHost().toString();
-        machineName =  StringUtils.isNotEmpty(machineName) ? machineName.substring(0, Math.min(64, machineName.length())) : null;
-        semaphore.setMachineName(doLock ? machineName : null);
-        semaphore.setScope(new Byte((byte)scope.ordinal()));
-        semaphore.setLockedTime(now);
-        semaphore.setTimestampModified(now);
-        semaphore.setDiscipline(discipline);
-        semaphore.setCollection(collection);
-        semaphore.setOwner(user);
-        
-        session.beginTransaction();
-        session.saveOrUpdate(semaphore);
-        session.commit();
+        //if (semaphore != null)
+        {
+            semaphore.setIsLocked(doLock);
+            semaphore.setContext(context);
+            String machineName = InetAddress.getLocalHost().toString();
+            machineName =  StringUtils.isNotEmpty(machineName) ? machineName.substring(0, Math.min(64, machineName.length())) : null;
+            semaphore.setMachineName(doLock ? machineName : null);
+            semaphore.setScope(new Byte((byte)scope.ordinal()));
+            semaphore.setLockedTime(now);
+            semaphore.setTimestampModified(now);
+            semaphore.setDiscipline(discipline);
+            semaphore.setCollection(collection);
+            semaphore.setOwner(user);
+            
+            session.beginTransaction();
+            session.saveOrUpdate(semaphore);
+            session.commit();
+        }
             
         return semaphore;
     }

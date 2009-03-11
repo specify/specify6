@@ -65,7 +65,8 @@ public class GeographyTreeTask extends BaseTreeTask<Geography,GeographyTreeDef,G
     @Override
     protected GeographyTreeDef getCurrentTreeDef()
     {
-        return AppContextMgr.getInstance().getClassObject(Discipline.class).getGeographyTreeDef();
+        Discipline disicpline = AppContextMgr.getInstance().getClassObject(Discipline.class);
+        return disicpline != null ? disicpline.getGeographyTreeDef() : null;
     }
     
     /**

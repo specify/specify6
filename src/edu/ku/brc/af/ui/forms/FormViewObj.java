@@ -3969,7 +3969,7 @@ public class FormViewObj implements Viewable,
             {
                 enableNewBtn = formValidator.isFormValid();
                 
-            } else 
+            } else if (mvParent != null)
             {
                 //log.debug("mvParent.getData() "+mvParent.getData() +"  data ["+ (dataObj == null ? "null" : dataObj.getClass().getSimpleName()) + "] parent"+ 
                 //          (!mvParent.isTopLevel() ? mvParent.getMultiViewParent().getData().getClass().getSimpleName() : "null"));
