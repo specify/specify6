@@ -246,7 +246,10 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
                 discipline.setType(disciplineType.getName());
                 discipline.setName(props.getProperty("dispName"));
                 
-                discipline.setDivision(AppContextMgr.getInstance().getClassObject(Division.class));
+                FormViewObj divFVO = formViewObj.getMVParent().getMultiViewParent().getCurrentViewAsFormViewObj();
+                Division    div    = (Division)divFVO.getDataObj();
+
+                discipline.setDivision(div);
                 
                 DataType dataType = AppContextMgr.getInstance().getClassObject(DataType.class);
                 discipline.setDataType(dataType);
@@ -370,6 +373,8 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
                 progressFrame.dispose();
                 progressFrame = null;
                 
+                List<?> dataItems = null;
+                
                 FormViewObj divFVO = formViewObj.getMVParent().getMultiViewParent().getCurrentViewAsFormViewObj();
                 Division div = (Division)divFVO.getDataObj();
                 
@@ -379,6 +384,18 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
                     session = DataProviderFactory.getInstance().createSession();
                     
                     div = (Division)session.getData("FROM Division WHERE id = "+div.getId());
+                    
+                    dataItems = session.getDataList("FROM Division");
+                    if (dataItems.get(0) instanceof Object[])
+                    {
+                        Vector<Object>dataList = new Vector<Object>();
+                        for (Object row : dataItems)
+                        {
+                            Object[] cols = (Object[])row;
+                            dataList.add(cols[0]);
+                        }
+                        dataItems = dataList;
+                    }
                     
                 } catch (Exception ex)
                 {
@@ -393,7 +410,10 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
                     }
                 }
                 
-                divFVO.setDataObj(div);
+                int curInx = divFVO.getRsController().getCurrentIndex();
+                divFVO.setDataObj(dataItems);
+                divFVO.getRsController().setIndex(curInx);
+
             }
         };
         
