@@ -171,12 +171,12 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             createSysNavBtn(sysNavBox, Division.getClassTableId(), false);
             createSysNavBtn(sysNavBox, Discipline.getClassTableId(), false);
             createSysNavBtn(sysNavBox, edu.ku.brc.specify.datamodel.Collection.getClassTableId(), false);
-            sysNavBox.add(NavBox.createBtnWithTT(getResourceString("WEBLINKS_EDITOR"), "WebLink", "", IconManager.STD_ICON_SIZE, new ActionListener() {
+            /*sysNavBox.add(NavBox.createBtnWithTT(getResourceString("WEBLINKS_EDITOR"), "WebLink", "", IconManager.STD_ICON_SIZE, new ActionListener() {
                 public void actionPerformed(ActionEvent e)
                 {
                     editWebLinks();
                 }
-            })); 
+            })); */
             navBoxes.add(sysNavBox);
             
             NavBox collNavBox = new NavBox(getResourceString("COLL_DATA_OBJECTS"));

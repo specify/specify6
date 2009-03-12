@@ -452,9 +452,16 @@ class SetUpBuildDlg extends CustomDialog
             try
             {
                 Vector<CollectionChoice> list = (Vector<CollectionChoice>)xstream.fromXML(FileUtils.readFileToString(file));
-                for (CollectionChoice cc : list)
+                for (CollectionChoice cc : new Vector<CollectionChoice>(list))
                 {
-                    cc.initialize();
+                    try
+                    {
+                        cc.initialize();
+                        
+                    } catch (Exception ex)
+                    {
+                        list.remove(cc);
+                    }
                 }
                 return list;
                 

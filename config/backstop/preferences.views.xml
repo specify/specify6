@@ -275,6 +275,13 @@
                         </rows>
                     </cell>
                 </row>
+                <row>
+                    <cell type="separator" label="SIMP_SRCH_SEP" colspan="7"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="bnrIconSizeCBX" label="BNR_ICON_SIZE_LBL"/>
+                    <cell type="field" uitype="combobox" id="bnrIconSizeCBX" readonly="false" changesonly="true" />
+                </row>
             </rows>
         </viewdef>
 

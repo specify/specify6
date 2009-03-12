@@ -734,24 +734,30 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
      */
     protected void createRecordSet(final RecordSet recordSet)
     {
-        UsageTracker.incrUsageCount("RS.ASKRS");
-        ChooseRecordSetDlg dlg = new ChooseRecordSetDlg(recordSet.getDbTableId(), true);
-        dlg.setVisible(true); // modal (waits for answer here)
-        if (!dlg.isCancelled())
+        if (recordSet != null)
         {
-            if (dlg.getBtnPressed() == ChooseRecordSetDlg.OK_BTN)
+            UsageTracker.incrUsageCount("RS.ASKRS");
+            ChooseRecordSetDlg dlg = new ChooseRecordSetDlg(recordSet.getDbTableId(), true);
+            dlg.setVisible(true); // modal (waits for answer here)
+            if (!dlg.isCancelled())
             {
-                mergeRecordSets(recordSet, dlg.getSelectedRecordSet());
-                
-            } else
-            {
-                String rsName = getUniqueRecordSetName("");
-                if (isNotEmpty(rsName))
+                if (dlg.getBtnPressed() == ChooseRecordSetDlg.OK_BTN)
                 {
-                    recordSet.setName(rsName);
-                    saveNewRecordSet(recordSet);
+                    mergeRecordSets(recordSet, dlg.getSelectedRecordSet());
+                    
+                } else
+                {
+                    String rsName = getUniqueRecordSetName("");
+                    if (isNotEmpty(rsName))
+                    {
+                        recordSet.setName(rsName);
+                        saveNewRecordSet(recordSet);
+                    }
                 }
             }
+        } else
+        {
+            UIRegistry.showError("The Record Set was null and shouldn't have been!");
         }
     }
     

@@ -60,6 +60,7 @@ import edu.ku.brc.af.core.ServiceInfo;
 import edu.ku.brc.af.core.ServiceProviderIFace;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.db.QueryForIdResultsIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
@@ -232,10 +233,12 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         {
             serviceBtns = new Hashtable<ServiceInfo, JButton>();
             
+            //IconManager.IconSize size = IconManager.
+            int iconSize = AppPreferences.getLocalPrefs().getInt("banner.icon.size", 20);
             // Install the buttons on the banner with available services
             for (ServiceInfo serviceInfo : services)
             {
-                GradiantButton btn = new GradiantButton(serviceInfo.getIcon(IconManager.IconSize.Std16)); // XXX PREF
+                GradiantButton btn = new GradiantButton(serviceInfo.getIcon(iconSize)); // XXX PREF
                 btn.setToolTipText(serviceInfo.getTooltip());
                 btn.setForeground(bannerColor);
                 builder.add(btn, cc.xy(col, 1));
@@ -301,7 +304,7 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         
         deselectAllBtn.setEnabled(false);
         selectAllBtn.setEnabled(true);
-        moveToRSCmd.setEnabled(false);
+        moveToRSCmd.setEnabled(true);
         
         deselectAllBtn.setToolTipText(getResourceString("SELALLTOOLTIP"));
         selectAllBtn.setToolTipText(getResourceString("DESELALLTOOLTIP"));
@@ -981,27 +984,33 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
          */
         public Object getData()
         {
-            if (table.getSelectedRowCount() > 0 )
+            if (results.getRecIds() != null && results.getRecIds().size() > 0)
             {
-                if (results.getRecIds() != null && results.getRecIds().size() > 0)
+                DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(results.getTableId());
+                if (tableInfo != null)
                 {
-                    DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(results.getTableId());
-                    if (tableInfo != null)
+                    RecordSetIFace rs = RecordSetFactory.getInstance().createRecordSet();
+                    rs.setDbTableId(results.getTableId());
+                    
+                    if (table.getSelectedRowCount() > 0)
                     {
-                        RecordSetIFace rs = RecordSetFactory.getInstance().createRecordSet();
-                        rs.setDbTableId(results.getTableId());
-                        
                         for (int inx : table.getSelectedRows())
                         {
                             int id = results.getRecIds().get(inx);
                             rs.addItem(id);
                         }
-                        return rs;
+                    } else
+                    {
+                        for (int i=0;i<results.size();i++)
+                        {
+                            rs.addItem(results.getRecIds().get(i));
+                        }
                     }
-                } else
-                {
-                    log.error("results doesn't have any ids.");
+                    return rs;
                 }
+            } else
+            {
+                log.error("results doesn't have any ids.");
             }
             return null;
         }

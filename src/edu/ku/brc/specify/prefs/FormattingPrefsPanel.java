@@ -66,8 +66,10 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
     protected static final String iconPrefName            = "ui.formatting.user_icon_path"; //$NON-NLS-1$
     protected static final String iconImagePrefName       = "ui.formatting.user_icon_image"; //$NON-NLS-1$
     protected static final String iconImageDiscipPrefName = "ui.formatting.disciplineicon"; //$NON-NLS-1$
+    protected static final String BNR_ICON_SIZE           = "banner.icon.size"; //$NON-NLS-1$
     
     protected final String INNER_APPICON_NAME = "InnerAppIcon";
+    protected final int[]  pixelSizes         = {16, 20, 24, 32};
     
     protected final int BASE_FONT_SIZE = 6;
 
@@ -80,6 +82,7 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
     protected String       newAppIconName = null;
     protected ValComboBox  dateFieldCBX;
     protected boolean      clearFontSettings = false;
+    protected ValComboBox  bnrIconSizeCBX;
     
     protected Hashtable<String, UIHelper.CONTROLSIZE> controlSizesHash = new Hashtable<String, UIHelper.CONTROLSIZE>();
     
@@ -430,6 +433,36 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
             }
         });
         
+        //-----------------------------------
+        // Do Banner Icon Size
+        //-----------------------------------
+        
+        String fmtStr = "%d x %d pixels";//getResourceString("BNR_ICON_SIZE");
+        bnrIconSizeCBX = form.getCompById("bnrIconSizeCBX"); //$NON-NLS-1$
+        
+        int size = AppPreferences.getLocalPrefs().getInt(BNR_ICON_SIZE, 20);
+        inx = 0;
+        cnt = 0;
+        for (int pixelSize : pixelSizes)
+        {
+            ((DefaultComboBoxModel)bnrIconSizeCBX.getModel()).addElement(String.format(fmtStr, pixelSize, pixelSize));
+            if (pixelSize == size)
+            {
+                inx = cnt;
+            }
+            cnt++;
+        }
+        
+        bnrIconSizeCBX.getComboBox().addActionListener(new ActionListener() {
+            @SuppressWarnings("unchecked") //$NON-NLS-1$
+            public void actionPerformed(ActionEvent e)
+            {
+                form.getUIComponent().validate();
+            }
+        });
+        
+        bnrIconSizeCBX.getComboBox().setSelectedIndex(inx);
+        
         UIValidator.setIgnoreAllValidation(this, false);
         fontNamesVCB.setChanged(false);
         fontSizesVCB.setChanged(false);
@@ -577,6 +610,13 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
                                         "CollectionObject");  // Dest //$NON-NLS-1$
 
             }
+            
+            int inx = bnrIconSizeCBX.getComboBox().getSelectedIndex();
+            if (inx > -1)
+            {
+                AppPreferences.getLocalPrefs().putInt(BNR_ICON_SIZE, pixelSizes[inx]);    
+            }
+            
             
             if (!(UIHelper.isMacOS_10_5_X()))
             {

@@ -151,7 +151,7 @@ public class GeneralPermissionTableCellValueWrapper
         }
         else
         {
-            customCheckbox.setText("");
+            customCheckbox.setText("          ");
             customCheckbox.setEnabled(true);
         }
     }

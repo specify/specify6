@@ -255,6 +255,7 @@ public class IconManager extends Component
             {
                 case 32 : return IconSize.Std32;
                 case 24 : return IconSize.Std24;
+                case 20 : return IconSize.Std20;
                 case 16 : return IconSize.Std16;
             }
         }
@@ -360,6 +361,7 @@ public class IconManager extends Component
         switch (size)
         {
             case 16: return IconSize.Std16;
+            case 20:return IconSize.Std20;
             case 24:return IconSize.Std24;
             case 32:return IconSize.Std32;
         }

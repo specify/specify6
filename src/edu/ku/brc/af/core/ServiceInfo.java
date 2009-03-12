@@ -103,6 +103,7 @@ public class ServiceInfo implements Comparable<ServiceInfo>, Cloneable
         this.isDefault = isDefault;
         
         addIcon(IconManager.getIcon(iconName, IconManager.IconSize.Std16), IconManager.IconSize.Std16);
+        addIcon(IconManager.getIcon(iconName, IconManager.IconSize.Std20), IconManager.IconSize.Std20);
         addIcon(IconManager.getIcon(iconName, IconManager.IconSize.Std24), IconManager.IconSize.Std24);
         addIcon(IconManager.getIcon(iconName, IconManager.IconSize.Std32), IconManager.IconSize.Std32);
     }
@@ -132,6 +133,11 @@ public class ServiceInfo implements Comparable<ServiceInfo>, Cloneable
     public ImageIcon getIcon(final IconManager.IconSize iconSize)
     {
         return icons.get(iconSize.toString());
+    }
+    
+    public ImageIcon getIcon(final int iconSize)
+    {
+        return icons.get("Std"+Integer.toString(iconSize));
     }
     
     public String getName()
