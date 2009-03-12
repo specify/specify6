@@ -221,11 +221,11 @@ public class ContextMgr implements CommandListener
         if (tableId == -1)
         {
             instance.genericService.add(serviceInfo);
-            instance.services.put(serviceInfo.getHashKey(), serviceInfo);
+            instance.services.put(hashName, serviceInfo);
             
         } else 
         {
-            instance.services.put(serviceInfo.getHashKey(), serviceInfo);
+            instance.services.put(hashName, serviceInfo);
             List<ServiceInfo> serviceList = instance.servicesByTable.get(tableId);
             if (serviceList == null)
             {
@@ -239,14 +239,14 @@ public class ContextMgr implements CommandListener
     }
     
     /**
-     * @param name
+     * @param hashName the hashedName
      */
-    public static void unregisterService(final String name)
+    public static void unregisterService(final String hashName)
     {
-        ServiceInfo srvInfo = instance.services.get(name);
+        ServiceInfo srvInfo = instance.services.get(hashName);
         if (srvInfo != null)
         {
-            instance.services.remove(name);
+            instance.services.remove(hashName);
             if (srvInfo.getTableId() > -1)
             {
                 List<ServiceInfo> serviceList = instance.servicesByTable.get(srvInfo.getTableId());
@@ -260,7 +260,7 @@ public class ContextMgr implements CommandListener
             }
         } else
         {
-            log.error("Couldn't find service ["+name+"]");
+            log.error("Couldn't find service ["+hashName+"]");
         }
     }
     
@@ -296,7 +296,7 @@ public class ContextMgr implements CommandListener
         {
             if (service.getTask() == task)
             {
-                instance.services.remove(service.getHashKey());
+                instance.services.remove(service.getName());
             }
         }
         
@@ -334,7 +334,7 @@ public class ContextMgr implements CommandListener
         {
             if (service.getTask() == task && service.getTableId() == tableId)
             {
-                instance.services.remove(service.getHashKey());
+                instance.services.remove(service.getName());
             }
         }
         
@@ -420,7 +420,7 @@ public class ContextMgr implements CommandListener
             {
                 System.out.println("Name:      "+s.getName());
                 System.out.println("Task Name: "+s.getTask().getName());
-                System.out.println("Key:       "+s.getHashKey());
+                //System.out.println("Key:       "+s.getHashKey());
                 System.out.println("\n");
             }
         }

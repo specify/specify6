@@ -134,15 +134,6 @@ public class ServiceInfo implements Comparable<ServiceInfo>, Cloneable
         return icons.get(iconSize.toString());
     }
     
-    /**
-     * Returns the a string that includes the name and the table ID.
-     * @return the a string that includes the name and the table ID
-     */
-    public String getHashKey()
-    {
-        return getHashKey(this.name, this.task, this.tableId);
-    }
-
     public String getName()
     {
         return name;

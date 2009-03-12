@@ -1271,7 +1271,7 @@ public class ResourceImportExportDlg extends CustomDialog
     }
     
     /**
-	 * @param name
+	 * @param title
 	 * @return
 	 */
     protected SpAppResource checkForOverrideAppRes(final String filename/*

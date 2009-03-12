@@ -606,6 +606,7 @@ public class DataEntryTask extends BaseTask
     
     /**
      * @param devList
+     * @param doRegister
      */
     protected void buildFormNavBoxes(final Vector<DataEntryView> devList,
                                      final boolean doRegister)
@@ -664,8 +665,6 @@ public class DataEntryTask extends BaseTask
                     }
                 }
 
-                //System.err.println(tableInfo.getName()+"  "+tableInfo.isHidden());
-                
                 if (tableInfo != null)
                 {
                     if (!tableInfo.isHidden())
@@ -687,7 +686,7 @@ public class DataEntryTask extends BaseTask
                                 task = this;
                             }
                             cmdAction.setProperty(NavBoxAction.ORGINATING_TASK, task);
-                            ContextMgr.registerService(10, dev.getName(), tblId, cmdAction, this, DATA_ENTRY, tableInfo.getTitle(), true);
+                            ContextMgr.registerService(10, dev.getView(), tblId, cmdAction, this, DATA_ENTRY, tableInfo.getTitle(), true); // the Name gets Hashed
                         }
                         
                         if (dev.isSideBar())
@@ -771,7 +770,7 @@ public class DataEntryTask extends BaseTask
                         task = this;
                     }
                     cmdAction.setProperty(NavBoxAction.ORGINATING_TASK, task);
-                    ContextMgr.registerService(10, dev.getName(), tblId, cmdAction, this, DATA_ENTRY, tableInfo.getTitle(), true);
+                    ContextMgr.registerService(10, dev.getView(), tblId, cmdAction, this, DATA_ENTRY, tableInfo.getTitle(), true); // the Name gets Hashed
                 }
 
             } else
@@ -1138,6 +1137,7 @@ public class DataEntryTask extends BaseTask
             {
                 miscList.add((DataEntryView)de.clone());
             }
+
         } catch (CloneNotSupportedException ex) {/*ignore*/}
         
         UsageTracker.incrUsageCount("DE.CONFIG");
@@ -1171,24 +1171,26 @@ public class DataEntryTask extends BaseTask
             
             // unregister all
             
-            for (DataEntryView dev : stdViews)
+            for (TaskConfigItemIFace tii : stdList)
             {
+                DataEntryView dev = (DataEntryView)tii;
                 if (dev.getTableInfo() != null)
                 {
-                    String srvName = ServiceInfo.getHashKey(dev.getName(), this, dev.getTableInfo().getTableId());
-                    ContextMgr.unregisterService(srvName);
+                    String srvName = ServiceInfo.getHashKey(dev.getView(), this, dev.getTableInfo().getTableId());
+                    ContextMgr.unregisterService(srvName);  // Must passed in the hashed Name
                 }
             }
             
-            for (DataEntryView dev : miscViews)
+            for (TaskConfigItemIFace tii : miscList)
             {
+                DataEntryView dev = (DataEntryView)tii;
                 if (dev.getTableInfo() != null)
                 {
-                    String srvName = ServiceInfo.getHashKey(dev.getName(), this, dev.getTableInfo().getTableId());
-                    ContextMgr.unregisterService(srvName);
+                    String srvName = ServiceInfo.getHashKey(dev.getView(), this, dev.getTableInfo().getTableId());
+                    ContextMgr.unregisterService(srvName); // Must passed in the hashed Name
                 }
             }
-            
+
             // This re-registers the items
             buildNavBoxes(stdViews, miscViews, true);
             

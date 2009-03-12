@@ -95,14 +95,21 @@ public class DataEntryConfigDlg extends TaskConfigureDlg
         Hashtable<String, ViewIFace> newAvailViews = new Hashtable<String, ViewIFace>();
         for (ViewIFace view : views)
         {
+            System.out.println("["+view.getName()+"]["+view.getTitle()+"]");
+            
             if (hash.get(view.getName()) == null)
             {
                 DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
                 if (!ti.isHidden())
                 {
                     hash.put(view.getName(), view);
-                    uniqueList.add(view.getTitle());
-                    newAvailViews.put(view.getTitle(), view);
+                    String      title = ti != null ? ti.getTitle() : view.getName();
+                    if (newAvailViews.get(title) != null)
+                    {
+                        title = view.getName();
+                    }
+                    uniqueList.add(title);
+                    newAvailViews.put(title, view);
                 }
             }
         }
@@ -128,15 +135,16 @@ public class DataEntryConfigDlg extends TaskConfigureDlg
         {
             model = list.getModel();
             
-            for (String name : dlg.getSelectedObjects())
+            for (String title : dlg.getSelectedObjects())
             {
-                ViewIFace     view = newAvailViews.get(name);
+                ViewIFace     view = newAvailViews.get(title);
                 DBTableInfo   ti   = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
-                DataEntryView dev  = new DataEntryView(view.getName(), 
-                                                       view.getName(), 
-                                                       ti != null ? ti.getName() : null, 
-                                                       view.getObjTitle(), 
-                                                       model.getSize(),
+                
+                DataEntryView dev  = new DataEntryView(ti != null ? ti.getTitle() : view.getName(),  // Title 
+                                                       view.getName(),                               // Name
+                                                       ti != null ? ti.getName() : null,             // Icon Name
+                                                       view.getObjTitle(),                           // ToolTip
+                                                       model.getSize(),                              // Order
                                                        true);
                 dev.setTableInfo(ti);
                 ((DefaultListModel)model).addElement(dev);

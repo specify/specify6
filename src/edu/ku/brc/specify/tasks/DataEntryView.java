@@ -31,7 +31,7 @@ import edu.ku.brc.af.core.db.DBTableInfo;
  */
 public class DataEntryView implements TaskConfigItemIFace, Comparable<TaskConfigItemIFace>, Cloneable
 {
-    protected String  name;
+    protected String  title;
     protected String  view;
     protected String  iconName;
     protected String  toolTip;
@@ -49,7 +49,7 @@ public class DataEntryView implements TaskConfigItemIFace, Comparable<TaskConfig
      * @param toolTip
      * @param isSideBar
      */
-    public DataEntryView(String name, 
+    public DataEntryView(String title, 
                          String view, 
                          String iconName, 
                          String toolTip,
@@ -57,7 +57,7 @@ public class DataEntryView implements TaskConfigItemIFace, Comparable<TaskConfig
                          boolean isSideBar)
     {
         super();
-        this.name = name;
+        this.title = title;
         this.view = view;
         this.iconName = iconName;
         this.toolTip = toolTip;
@@ -74,18 +74,11 @@ public class DataEntryView implements TaskConfigItemIFace, Comparable<TaskConfig
     }
     
     /**
-     * @return the name
-     */
-    public String getName()
-    {
-        return name;
-    }
-    /**
      * @param name the name to set
      */
-    public void setName(String name)
+    public void setTitle(String name)
     {
-        this.name = name;
+        this.title = name;
     }
 
 
@@ -187,7 +180,7 @@ public class DataEntryView implements TaskConfigItemIFace, Comparable<TaskConfig
      */
     public String getTitle()
     {
-        return name;
+        return title;
     }
 
     /* (non-Javadoc)
@@ -212,7 +205,7 @@ public class DataEntryView implements TaskConfigItemIFace, Comparable<TaskConfig
     @Override
     public String toString()
     {
-        return tableInfo != null ? tableInfo.getTitle() : name;
+        return tableInfo != null ? tableInfo.getTitle() : title;
     }
     
     /* (non-Javadoc)
@@ -232,7 +225,7 @@ public class DataEntryView implements TaskConfigItemIFace, Comparable<TaskConfig
     protected Object clone() throws CloneNotSupportedException
     {
         DataEntryView dev = (DataEntryView)super.clone();
-        dev.name      = name;
+        dev.title      = title;
         dev.view      = view;
         dev.iconName  = iconName;
         dev.toolTip   = toolTip;
@@ -249,7 +242,7 @@ public class DataEntryView implements TaskConfigItemIFace, Comparable<TaskConfig
     {
         xstream.alias("view",  DataEntryView.class);
         
-        xstream.useAttributeFor(DataEntryView.class, "name");
+        xstream.useAttributeFor(DataEntryView.class, "title");
         xstream.useAttributeFor(DataEntryView.class, "view");
         xstream.useAttributeFor(DataEntryView.class, "iconName");
         xstream.useAttributeFor(DataEntryView.class, "toolTip");

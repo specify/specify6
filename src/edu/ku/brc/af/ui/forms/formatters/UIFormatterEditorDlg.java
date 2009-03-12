@@ -48,6 +48,7 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
@@ -259,6 +260,8 @@ public class UIFormatterEditorDlg extends CustomDialog
         fieldsPanel.getEditBtn().setIcon(IconManager.getIcon("Green Arrow Up", IconManager.IconSize.Std16));
         UIHelper.makeTableHeadersCentered(fieldsTbl, true);
         
+        fieldsTbl.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        
         int width = fieldTypeCbx.getPreferredSize().width;
         
         y = 1;
@@ -401,7 +404,14 @@ public class UIFormatterEditorDlg extends CustomDialog
             @Override
             public void actionPerformed(ActionEvent e)
             {
+                fieldHasChanged = true;
+                if (!isIncChk.isSelected())
+                {
+                    byYearCB.setSelected(false);
+                }
                 updateEntry();
+                updateUIEnabled();
+                updateEnabledState();
                 fieldsTbl.repaint();
             }
         });
@@ -970,6 +980,10 @@ public class UIFormatterEditorDlg extends CustomDialog
         // by year checkbox is enabled if there's one YEAR and one auto-number (###) in the format
         boolean byYearEnabled = (selectedFormat != null) && (selectedFormat.byYearApplies());
         byYearCB.setEnabled(byYearEnabled);
+        if (!byYearEnabled)
+        {
+            byYearCB.setSelected(false);
+        }
         
         int totalLen = 0;
         if (fields.size() > 0)
