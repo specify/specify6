@@ -77,7 +77,9 @@ import edu.ku.brc.ui.UIRegistry;
 @org.hibernate.annotations.Table(appliesTo="agent", indexes =
     {   @Index (name="AgentLastNameIDX", columnNames={"LastName"}),
         @Index (name="AgentFirstNameIDX", columnNames={"FirstName"}),
-        @Index (name="AgentGuidIDX", columnNames={"GUID"})  
+        @Index (name="AgentGuidIDX", columnNames={"GUID"}),
+        @Index (name="AgentTypeIDX", columnNames={"AgentType"}),
+        @Index (name="AbbreviationIDX", columnNames={"Abbreviation"})        
     })
 public class Agent extends DataModelObjBase implements java.io.Serializable, 
                                                        AttachmentOwnerIFace<AgentAttachment>,

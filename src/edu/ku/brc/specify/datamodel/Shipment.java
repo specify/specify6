@@ -52,8 +52,9 @@ import org.hibernate.annotations.Index;
 @org.hibernate.annotations.Table(appliesTo="shipment", indexes =
     {   @Index (name="ShipmentNumberIDX", columnNames={"ShipmentNumber"}),
         @Index (name="ShipmentDateIDX", columnNames={"ShipmentDate"}),
-        @Index (name="ShipmentColMemIDX", columnNames={"CollectionMemberID"})
-    })
+        @Index (name="ShipmentColMemIDX", columnNames={"CollectionMemberID"}),
+        @Index (name="ShipmentMethodIDX", columnNames={"ShipmentMethod"})
+   })
 public class Shipment extends CollectionMember implements java.io.Serializable 
 {
 

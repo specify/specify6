@@ -55,7 +55,8 @@ import org.hibernate.annotations.Index;
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "exchangein")
 @org.hibernate.annotations.Table(appliesTo="exchangein", indexes =
-    {   @Index (name="ExchangeDateIDX", columnNames={"ExchangeDate"})
+    {   @Index (name="ExchangeDateIDX", columnNames={"ExchangeDate"}),
+		@Index (name="DescriptionOfMaterialIDX", columnNames={"DescriptionOfMaterial"})
     })
 public class ExchangeIn extends DisciplineMember implements java.io.Serializable {
 

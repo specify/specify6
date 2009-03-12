@@ -46,7 +46,8 @@ import edu.ku.brc.specify.treeutils.TreeOrderSiblingComparator;
         @Index (name="TaxonomicSerialNumberIDX", columnNames={"TaxonomicSerialNumber"}),
         @Index (name="TaxonCommonNameIDX", columnNames={"CommonName"}),
         @Index (name="TaxonNameIDX", columnNames={"Name"}),
-        @Index (name="TaxonFullNameIDX", columnNames={"FullName"})
+        @Index (name="TaxonFullNameIDX", columnNames={"FullName"}),
+        @Index (name="EnvironmentalProtectionStatusIDX", columnNames={"EnvironmentalProtectionStatus"})
     })
 public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<TaxonAttachment>, 
                                                        Serializable, 

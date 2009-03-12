@@ -42,7 +42,9 @@ import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 @org.hibernate.annotations.Proxy(lazy = false)
 @org.hibernate.annotations.Table(appliesTo="determination", indexes =
     {   @Index (name="DeterminedDateIDX", columnNames={"DeterminedDate"}),
-        @Index (name="DetMemIDX", columnNames={"CollectionMemberID"})
+        @Index (name="DetMemIDX", columnNames={"CollectionMemberID"}),
+        @Index (name="AlterNameIDX", columnNames={"AlternateName"}),
+        @Index (name="TypeStatusNameIDX", columnNames={"TypeStatusName"})
     })
 public class Determination extends CollectionMember implements java.io.Serializable, 
                                                                Comparable<Determination>,

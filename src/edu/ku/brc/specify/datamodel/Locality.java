@@ -69,7 +69,9 @@ import edu.ku.brc.ui.UIRegistry;
 @Table(name = "locality")
 @org.hibernate.annotations.Table(appliesTo="locality", indexes =
     {   @Index (name="localityNameIDX", columnNames={"LocalityName"}),
-        @Index (name="LocalityDisciplineIDX", columnNames={"DisciplineID"})
+        @Index (name="LocalityDisciplineIDX", columnNames={"DisciplineID"}),
+        @Index (name="NamedPlaceIDX", columnNames={"NamedPlace"}),
+        @Index (name="RelationToNamedPlaceIDX", columnNames={"RelationToNamedPlace"})
     })
 public class Locality extends DisciplineMember implements AttachmentOwnerIFace<LocalityAttachment>, 
                                                           java.io.Serializable, 
