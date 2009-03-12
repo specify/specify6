@@ -1174,7 +1174,10 @@ public class ResourceImportExportDlg extends CustomDialog
 									else
 									{
 										//XXX ???????????
-										((SpecifyAppContextMgr) AppContextMgr.getInstance()).removeAppResourceSp(fndAppRes.getSpAppResourceDir(), fndAppRes);
+										if (fndAppRes.getSpAppResourceId() != null)
+										{
+											((SpecifyAppContextMgr) AppContextMgr.getInstance()).removeAppResourceSp(fndAppRes.getSpAppResourceDir(), fndAppRes);
+										}
 									}
 								}
 								if (isSpRepRes)
@@ -1306,8 +1309,9 @@ public class ResourceImportExportDlg extends CustomDialog
     protected boolean isReportResource(final SpAppResource appRes)
     {
     	return appRes != null && appRes.getMimeType() != null && 
-			((appRes.getMimeType().equals(ReportsBaseTask.REPORTS_MIME) 
-					|| appRes.getMimeType().equals(ReportsBaseTask.LABELS_MIME)));    
+			(appRes.getMimeType().equals(ReportsBaseTask.REPORTS_MIME) 
+					|| appRes.getMimeType().equals(ReportsBaseTask.LABELS_MIME)
+					|| appRes.getMimeType().equals(ReportsBaseTask.SUBREPORTS_MIME));    
 	}
     
     /**
