@@ -446,7 +446,9 @@ public class ResourceImportExportDlg extends CustomDialog
                 		if (!isSpReportResource((SpAppResource )appRes))
                 		{
                 			//XXX what if appres is imported report with no config file???
-                			enable = true;
+                			//enable = true;
+                			
+                			//revert not currently working
                 		}
                 		
                 	}
