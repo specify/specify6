@@ -66,6 +66,7 @@
 	<mapID target="System_Picklist"  url="SpecifyHelp/PickList/system_picklist.html" />
 	<mapID target="Prep_Type"  url="SpecifyHelp/Configuration/prep_type.html" />
 	<mapID target="Schema_Config"  url="SpecifyHelp/SchemaConfig/schema_config.html" />
+	<mapID target="SystemSetup"  url="SpecifyHelp/Configuration/system_setup.html" />
 	
 
 
@@ -187,15 +188,15 @@
 	<!-- Simple Search Help -->
     <mapID target="Simple_Search"           url="SpecifyHelp/Simple_Search/Simple_Search.html" />
     <mapID target="SS"                      url="SpecifyHelp/Simple_Search/SS_Overview.html" />
-	<mapID target="SS_Execute"              url="SpecifyHelp/Simple_Search/Simple_Search.htm#ss_execute" />
+	<mapID target="SS_Execute"              url="SpecifyHelp/Simple_Search/Simple_Search.html#ss_execute" />
 	<mapID target="SS_Cards"                url="SpecifyHelp/Simple_Search/Simple_Search.html#ss_cards" />
 	<mapID target="SS_Results"              url="SpecifyHelp/Simple_Search/Simple_Search.html#ss_results" />
     <mapID target="Express_Search"          url="SpecifyHelp/Simple_Search/Simple_Search.html" />
 	<mapID target="ESTellMeMore"            url="SpecifyHelp/Simple_Search/Simple_Search.html#ss_results"/>
-    <mapID target="Simple_Search_Config"    url="SpecifyHelp/Simple_Search/Simple_Search_Config.html#search_fields"/>
+    <mapID target="Simple_Search_Config"    url="SpecifyHelp/Simple_Search/Simple_Search_Config.html"/>
     <mapID target="ESConfigSearchFields"    url="SpecifyHelp/Simple_Search/Simple_Search_Config.html#search_fields"/>
 	<mapID target="ESConfigResultsOrdering" url="SpecifyHelp/Simple_Search/Simple_Search_Config.html#results_ordering"/>
-	<mapID target="ESConfigRelatedTables"   url="SpecifyHelp/Simple_Search/Simple_Search_Config.html#related_tables"/>
+	<mapID target="ESConfigRelatedTables"   url="SpecifyHelp/Simple_Search/Simple_Search_Config.html#related_searches"/>
 	
 	<!-- Search Help -->
     <mapID target="CBXQSearch"              url="SpecifyHelp/Dialogs/CBXQSearch.html"/>

@@ -20,7 +20,7 @@
 <tr><td><img src="../../images/upload_data.gif" width="48" height="48" /></td>
 <td><h2>WorkBench Uploader</h2></td></tr>
 </table>
-<p>The Upload function is not available from the stand alone WorkBench. Data Sets created using the stand alone version will need to be exported and reimported into the Specify 6 WorkBench  for uploading. The current version of the stand alone WorkBench is not able to remember Data Set mapping, but a future release of the WorkBench will have this capability. This will make the import into the Specify WorkBench an easier task. </p>
+<p>The Upload function is not available from the stand alone WorkBench. Data Sets created using the stand alone version will need to be exported and reimported into the Specify 6 WorkBench  for uploading. The current version of the stand alone WorkBench is not able to keep Data Set mapping information, but a future release of the WorkBench will have this capability, which will make the import into the Specify WorkBench an easier task. </p>
 <p>Data Sets in the WorkBench can be uploaded into Specify 6 with the Uploader Tool. This makes the uploader a fast and easy way to transfer data from an MS Excel or CSV file into Specify by first <a href="../Workbench/ImportData.html">importing</a> the data into the WorkBench. Before uploading the Data Set please note the following:</p>
 <ul>
   <li>The Data Set mapping must be correct for data to be accurately uploaded into Specify 6.</li>
@@ -28,7 +28,10 @@
   <li>Fields that are required in Specify 6 must include data in the Data Set. For example; if a Data Set column is mapped to a Taxon field in Specify,  all required Taxon fields, including enforced ranks, must be mapped and include data in the Data Set.</li><br />
   <li>At this time the Uploader does not update or change data, it only adds new records. </li><br />
   <li>Any Specify tabs that allow data to be written to the database must be closed when uploading from the WorkBench. In other words, while uploading no user in a Collection can edit Forms, Trees, Tree Definitions, System Configuration or the Schema Configuration. Specify will automatically close any open tabs after prompting the user.</li><br />
-  <li>In a multi-collection database the WorkBench is unable to verify Data Sets and their appropriate collections. It is up to the user to ensure that the Data Set is being uploaded to the correct Collection.</li>
+  <li>In a multi-collection database the WorkBench is unable to verify Data Sets and their appropriate collections. It is up to the user to ensure that the Data Set is being uploaded to the correct Collection.</li><br />
+ <li> When uploading Data Sets with attachments only the Collection Object, Accession, Taxon, Locality and Collecting Event tables can accept attachments in the uploader. If one of these tables is not present in the mapping file for the data set an error message will display informing the user that the attachments can not be uploaded. <br />
+   <br />
+ Also, the uploaded attachment will be attached to the 'main' table that is present in the data set mapping. The uploader will look for main tables in this order; Collection Object, Accession, Taxon, Collecting Event and then Locality. </li>
 </ul>
 <p>&nbsp;</p>
 <p>Uploading is a complex process, that requires user input at each vital step. Each step in the process is explained in detail below.</p>

@@ -44,25 +44,25 @@
 		  
 		  
 		  <tocitem text="Starting Specify" target="Login">
-		  	 <tocitem text="Login Procedure" target="Login"/>
-		  	 <tocitem text="Updating Procedure" target="Update"/>
+		  	 <tocitem text="Login to Specify" target="Login"/>
+		  	 <tocitem text="Update Specify" target="Update"/>
 		  </tocitem>
 		  
-		  <tocitem text="Setting Up Specify" target="Config_Overview">
-		  	 <tocitem text="Institution Levels Overview" target="Inst_Hier">
-			 	<tocitem text="Adding Divisions" target="Add_Division"/>
-				<tocitem text="Adding Disciplines" target="Add_Discipline"/>
-				<tocitem text="Adding Collections" target="Add_Collection"/>
+		  <tocitem text="Specify Setup" target="Config_Overview">
+		  	 <tocitem text="Adding Institutional Levels" target="Inst_Hier">
+			 	<tocitem text="Add Divisions" target="Add_Division"/>
+				<tocitem text="Add Disciplines" target="Add_Discipline"/>
+				<tocitem text="Add Collections" target="Add_Collection"/>
 			  </tocitem>
 			  <tocitem text="Permissions Overview" target="Permissions">
-			 	<tocitem text="Adding a Users" target="Add_User"/>
+			 	<tocitem text="Adding Users" target="Add_User"/>
 				<tocitem text="Setting User Permissions" target="Set_Permissions"/>
 			  </tocitem>
 			 <tocitem text="Setting Number Formats" target="Number_Formats" />
 			 <tocitem text="Using Backup and Restore" target="Backup_Restore" />
 			 <tocitem text="Editing System Pick Lists" target="System_Picklist" />
 			 <tocitem text="Editing Preparation Type" target="Prep_Type" />
-			 <tocitem text="Localizing the Specify Schema" target="Schema_Config" />
+			 <tocitem text="Editing the Schema Configuration" target="Schema_Config" />
 		  </tocitem>
 	
 	
@@ -89,11 +89,9 @@
 					<tocitem text="Form Controls" target="Forms_Controls"/>
 					<tocitem text="Unique Field Boxes" target="Forms_Unique_Boxes"/>
 					<tocitem text="Field Uses" target="Forms_Field_Uses"/>
-					<tocitem text="Form Tools" target="Forms_Tools">
-						<tocitem text="Keyboard Functions" target="Keyboard_Functions"/>
-						<tocitem text="Carry Forward" target="Carry_Forward"/>
-						<tocitem text="Auto Numbering" target="Auto_Numbering"/>
-					</tocitem>
+					<tocitem text="Keyboard Functions" target="Keyboard_Functions"/>
+					<tocitem text="Carry Forward" target="Carry_Forward"/>
+					<tocitem text="Auto Numbering" target="Auto_Numbering"/>
 					<tocitem text="Using Bar Codes" target="Barcodes"/>
 					<tocitem text="How Editing Affects Related Records" target="Editing_Related_Records"/>
 				</tocitem>
@@ -119,26 +117,23 @@
 			
 			
 			<tocitem text="Trees" target="Trees_About">
-			  <tocitem text="Introduction" target="Trees_About"/>
-			  <tocitem text="Tree Terminology" target="Trees_Terms"/>
-			  <tocitem text="Building Trees" target="Trees_Build"/>
-			  <tocitem text="Using Trees" target="Trees_Using"/>
-			  <tocitem text="Tree Tools" target="Trees_Tools">
+			  <tocitem text="Trees in Specify" target="Trees_About">
+			    <tocitem text="Tree Terminology" target="Trees_Terms"/>
+			    <tocitem text="Building Trees" target="Trees_Build"/>
+			    <tocitem text="Using Trees" target="Trees_Using"/>
 			    <tocitem text="Expand" target="Trees_Expand"/>
-				<tocitem text="Toolbar Buttons" target="Trees_Toolbar"/>
-				<tocitem text="Drag and Drop" target="Trees_Drag">
-					<tocitem text="Reparent Node" target="Trees_Reparent"/>
-					<tocitem text="Synonymize Node" target="SYNONIMIZE_NODE"/>
-				</tocitem>
-				<tocitem text="Collection Object Counts" target="Trees_Counts"/>
-				<tocitem text="More Options" target="Trees_More"/>
-				<tocitem text="Find" target="Trees_Find"/>
-			</tocitem>
-		    <tocitem text="Tree Definitions" target="TreeDef">
-			  <tocitem text="Edit the Tree Title" target="Trees_Title"/>
-			  <tocitem text="Tree Ranks" target="Trees_Ranks"/>
-			  <tocitem text="Predefined Ranks" target="Trees_Pre"/>
-			 </tocitem>
+			    <tocitem text="Toolbar Buttons" target="Trees_Toolbar"/>
+			    <tocitem text="Reparent Node" target="Trees_Reparent"/>
+			    <tocitem text="Synonymize Node" target="SYNONIMIZE_NODE"/>
+			    <tocitem text="Collection Object Counts" target="Trees_Counts"/>
+			    <tocitem text="More Options" target="Trees_More"/>
+			    <tocitem text="Find" target="Trees_Find"/>
+			  </tocitem>
+		      <tocitem text="Tree Definitions" target="TreeDef">
+			    <tocitem text="Edit the Tree Title" target="Trees_Title"/>
+			    <tocitem text="Tree Ranks" target="Trees_Ranks"/>
+			    <tocitem text="Predefined Ranks" target="Trees_Pre"/>
+			  </tocitem>
 			</tocitem>
 			
 			<tocitem text="Searching Data" target="SS">
@@ -160,9 +155,8 @@
 				<tocitem text="Other Controls" target="Q_Controls"/>
 				<tocitem text="Editing a Query" target="Q_Edit"/>
 				<tocitem text="Query Results" target="QB_Results"/>
-				<tocitem text="Saved Queries" target="Q_Saved">
-					<tocitem text="Import and Export Saved Queries" target="QBImport"/>
-				</tocitem>
+				<tocitem text="Saved Queries" target="Q_Saved" />
+				<tocitem text="Import and Export Saved Queries" target="QBImport"/>
 				<tocitem text="Deleting a Query" target="Q_Delete"/>
 			  </tocitem>
 		    </tocitem>
