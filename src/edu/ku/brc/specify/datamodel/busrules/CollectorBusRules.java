@@ -10,6 +10,9 @@
 package edu.ku.brc.specify.datamodel.busrules;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
+
+import java.util.Hashtable;
+
 import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.Collector;
@@ -49,13 +52,28 @@ public class CollectorBusRules extends BaseBusRules
             CollectingEvent ce = (CollectingEvent)parentDataObj;
             Collector       col = (Collector)dataObj;
             
+            Hashtable<Integer, Boolean> hash = new Hashtable<Integer, Boolean>();
             for (Collector collector : ce.getCollectors())
             {
-               if (collector.getAgent().getAgentId().equals(col.getAgent().getAgentId())) 
-               {
-                   reasonList.add(String.format(getResourceString("CE_DUPLICATE_COLLECTORS"), col.getIdentityTitle()));
-                   return STATUS.Error;
-               }
+                Integer id    = collector.getAgent().getAgentId();
+                boolean isBad = false;
+                if (hash.get(id) == null)
+                {
+                    if (collector.getId() != null && id.equals(col.getAgent().getAgentId())) 
+                    {
+                        isBad = true;
+                    }
+                    hash.put(id, true);
+                } else
+                {
+                    isBad = true;
+                }
+                
+                if (isBad)
+                {
+                    reasonList.add(String.format(getResourceString("CE_DUPLICATE_COLLECTORS"), col.getIdentityTitle()));
+                    return STATUS.Error;
+                }
             }
         }
         
