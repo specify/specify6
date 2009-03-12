@@ -293,7 +293,7 @@ public class UIFormatterEditorDlg extends CustomDialog
         //numPB.add(closeBtn,    cc.xy(6, 1));
         numPB.add(isIncChk,    cc.xy(4, 3));
         
-        sepCbx = new JComboBox(new String[] {"-", ".", "/", "` `", "_"});
+        sepCbx = new JComboBox(new String[] {"-", ".", "/", "(space)", "_"});
         closeBtn = createClose(1);
         PanelBuilder sepPB = new PanelBuilder(new FormLayout(colDefs, "p,2px,p"));
         sepPB.add(createI18NFormLabel("FFE_SEP"), cc.xy(2, 1));
@@ -304,8 +304,6 @@ public class UIFormatterEditorDlg extends CustomDialog
         PanelBuilder txtPB = new PanelBuilder(new FormLayout(colDefs, "p,2px,p"));
         txtPB.add(createI18NFormLabel("FFE_TEXT"), cc.xy(2, 1));
         txtPB.add(fieldTxt, cc.xy(4, 1));
-        //txtPB.add(closeBtn, cc.xy(6, 1));
-        //txtPB.getPanel().setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
 
         cardPanel = new JPanel(cardLayout);
         cardPanel.add("size", numPB.getPanel());
@@ -374,6 +372,17 @@ public class UIFormatterEditorDlg extends CustomDialog
             public void itemStateChanged(ItemEvent e)
             {
                 typeChanged();
+            }
+        });
+        
+        sepCbx.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e)
+            {
+                fieldHasChanged = true;
+                updateEnabledState();
+                hasChanged      = true;
+                updateUIEnabled();
             }
         });
         
@@ -646,7 +655,7 @@ public class UIFormatterEditorDlg extends CustomDialog
             case separator :
                 currentField.setSize(1);
                 String sepStr = (String)sepCbx.getSelectedItem();
-                if (sepStr.startsWith("`"))
+                if (sepStr.startsWith("("))
                 {
                     sepStr = " ";
                 }
@@ -739,6 +748,7 @@ public class UIFormatterEditorDlg extends CustomDialog
             @Override
             public void actionPerformed(ActionEvent e)
             {
+                fieldsTbl.clearSelection();
                 currentField = new UIFieldFormatterField();
                 setDataIntoUI();
                 enabledEditorUI(true);
@@ -923,6 +933,12 @@ public class UIFormatterEditorDlg extends CustomDialog
     {
         if (currLen <= maxLen)
         {
+            if (currentTxtBGColor != null)
+            {
+                fieldTxt.setBackground(currentTxtBGColor);
+                fieldTxt.repaint();
+                currentTxtBGColor = null;
+            }
             return false;
         }
         
@@ -993,29 +1009,32 @@ public class UIFormatterEditorDlg extends CustomDialog
                 totalLen += f.getSize();
             }
             
-            FieldType fieldType = (FieldType)fieldTypeCbx.getSelectedItem();
-            if (fieldType != null)
+            if (fieldsTbl.getSelectedRowCount() == 0 || fieldHasChanged)
             {
-                switch (fieldType)
+                FieldType fieldType = (FieldType)fieldTypeCbx.getSelectedItem();
+                if (fieldType != null)
                 {
-                    case alphanumeric : 
-                    case alpha : 
-                    case anychar : 
-                    case numeric :
-                        totalLen += (Integer)sizeSpinner.getValue();
-                        break;
-                        
-                    case constant :
-                        totalLen += fieldTxt.getDocument().getLength();
-                        break;
-                        
-                    case separator : 
-                        totalLen++;
-                        break;
-                        
-                    case year :
-                        totalLen += 4;
-                        break;
+                    switch (fieldType)
+                    {
+                        case alphanumeric : 
+                        case alpha : 
+                        case anychar : 
+                        case numeric :
+                            totalLen += (Integer)sizeSpinner.getValue();
+                            break;
+                            
+                        case constant :
+                            totalLen += fieldTxt.getDocument().getLength();
+                            break;
+                            
+                        case separator : 
+                            totalLen++;
+                            break;
+                            
+                        case year :
+                            totalLen += 4;
+                            break;
+                    }
                 }
             }
         } else
@@ -1120,7 +1139,7 @@ public class UIFormatterEditorDlg extends CustomDialog
             {
                 case 0 : return fld.getType();
                 case 1 : return fld.getValue();
-                case 2 : return fld.getType() == FieldType.separator ? "" : fld.getSize();
+                case 2 : return fld.getType() == FieldType.separator ? 1 : fld.getSize();
                 case 3 : return fld.getType() == FieldType.separator ? "" : UIRegistry.getResourceString(fld.isByYear() ? "YES" : "NO");
                 case 4 : return fld.getType() == FieldType.separator ? "" : UIRegistry.getResourceString(fld.isIncrementer() ? "YES" : "NO");
             }

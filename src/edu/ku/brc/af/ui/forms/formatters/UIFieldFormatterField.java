@@ -37,6 +37,7 @@ public class UIFieldFormatterField implements Cloneable
     private static String alphaSample        = "";
     private static String anyCharSample      = "";
     private static String alphaNumericSample = "";
+    private static String anyNumericSample   = "";
     
     protected FieldType type;
     protected int       size;
@@ -50,7 +51,8 @@ public class UIFieldFormatterField implements Cloneable
             alphaNumericSample += "A";
             alphaSample        += "a";
             anyCharSample      += "X";
-        }
+            anyNumericSample   += "N";
+     }
     }
     
     /**
@@ -106,21 +108,6 @@ public class UIFieldFormatterField implements Cloneable
         this(type, size, value, incrementer, false);
     }
     
-    /**
-     * Builds the maximum sample size string
-     * @param sampText the sample text to build it form
-     * @return the full max string
-     */
-    private static String buildSample(final String sampText)
-    {
-        StringBuilder sb = new StringBuilder(sampText);
-        while (sb.length() < 255)
-        {
-            sb.append(sampText);
-        }
-        return sb.toString();
-    }
-
     /**
      * Factory that creates a new UIFieldFormatterField from a formatting string
      * @param formattingString Formatting string that defines the field 
@@ -236,7 +223,13 @@ public class UIFieldFormatterField implements Cloneable
 
 		if (type == FieldType.numeric)
 		{
-		    sample = String.format("%0"+size+"d", 1);
+		    if (isIncrementer())
+		    {
+		        sample = String.format("%0"+size+"d", 1);
+		    } else
+		    {
+		        return anyNumericSample.substring(0, value.length());
+		    }
 		}
 
 		if (type == FieldType.year)
