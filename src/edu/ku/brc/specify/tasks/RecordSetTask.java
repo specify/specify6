@@ -736,23 +736,20 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
     {
         UsageTracker.incrUsageCount("RS.ASKRS");
         ChooseRecordSetDlg dlg = new ChooseRecordSetDlg(recordSet.getDbTableId(), true);
-        if (dlg.hasRecordSets())
+        dlg.setVisible(true); // modal (waits for answer here)
+        if (!dlg.isCancelled())
         {
-            dlg.setVisible(true); // modal (waits for answer here)
-            if (!dlg.isCancelled())
+            if (dlg.getBtnPressed() == ChooseRecordSetDlg.OK_BTN)
             {
-                if (dlg.getBtnPressed() == ChooseRecordSetDlg.OK_BTN)
+                mergeRecordSets(recordSet, dlg.getSelectedRecordSet());
+                
+            } else
+            {
+                String rsName = getUniqueRecordSetName("");
+                if (isNotEmpty(rsName))
                 {
-                    mergeRecordSets(recordSet, dlg.getSelectedRecordSet());
-                    
-                } else
-                {
-                    String rsName = getUniqueRecordSetName("");
-                    if (isNotEmpty(rsName))
-                    {
-                        recordSet.setName(rsName);
-                        saveNewRecordSet(recordSet);
-                    }
+                    recordSet.setName(rsName);
+                    saveNewRecordSet(recordSet);
                 }
             }
         }
