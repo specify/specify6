@@ -23,8 +23,10 @@ import java.security.ProtectionDomain;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -43,12 +45,17 @@ public class DatabasePolicy extends java.security.Policy
 {
     protected static final Logger log   = Logger.getLogger(DatabasePolicy.class);
     
-    protected Permissions cachedPermissions;
+    /** Timestamp when the cache will expire */
     protected Date cacheExpirationTime;
-    final protected int cacheExpirationInSeconds = 10 * 60; // use cache for at most 10 minutes
+    
+    /** Cache of permissions per principal */
+    protected Map<Principal, Permissions> cachedPermissions = new HashMap<Principal, Permissions>();
+    
+    /** Time in seconds to keep cache */
+    final protected int cacheExpirationInSeconds = 1 * 60; 
     
     /**
-     * 
+     * Constructor.
      */
     public DatabasePolicy()
     {
@@ -64,9 +71,19 @@ public class DatabasePolicy extends java.security.Policy
      * 
      * @return Boolean indicating whether the current cached permissions are still valid (fresh) or not.
      */
-    protected boolean isCacheValid() {
+    protected boolean isCacheValid(final Principal principal) {
     	// cache is invalid if it hasn't been set yet, or if expiration time is past
-    	return (cachedPermissions != null && cacheExpirationTime.after(new Date()));
+        boolean expired = cacheExpirationTime.before(new Date());
+        if (expired)
+        {
+            // cache time expired, so clear all data in cache
+            cachedPermissions.clear();
+            // cache time expired, so it's invalid: return false
+            return false;
+        }
+
+        // cache hasn't expired, so check if it has data for this principal 
+        return (cachedPermissions.get(principal) != null);
     }
     
     /**
@@ -84,38 +101,42 @@ public class DatabasePolicy extends java.security.Policy
      * @see java.security.Policy#getPermissions(java.security.ProtectionDomain)
      */
     @SuppressWarnings("unchecked") //$NON-NLS-1$
-    public PermissionCollection getPermissions(final ProtectionDomain domain)
+    public PermissionCollection getPermissions(final Principal principal)
     {
-    	if (isCacheValid()) 
+        Permissions principalPermissions = cachedPermissions.get(principal); 
+    	if (isCacheValid(principal) && principalPermissions != null) 
     	{
     		// cache is still valid, so there's no need to get permissions all over again
     	    // Note that we should really cache permissions for each different ProtectionDomain
     	    // provided in method getPermissions, but we all know it will always be the same 
     	    // (the current user) for our custom policy.
-    		return cachedPermissions;
+    		return principalPermissions;
     	}
     	
     	resetCacheTimer();
     	
-    	cachedPermissions = new Permissions();
-        Principal[] principals = domain.getPrincipals();
-        if (principals != null && principals.length > 0)
-        {
-            for (Principal principal : principals)
-            {
-            	if (!(principal instanceof BasicPrincipal))
-            		continue;
-            	
-            	BasicPrincipal basicPrincipal = (BasicPrincipal) principal; 
-            	List perms = PermissionService.findPrincipalBasedPermissions(basicPrincipal.getId());
-                for (Iterator itr = perms.iterator(); itr.hasNext();)
-                {
-                	Permission perm = (Permission)itr.next();
-                	cachedPermissions.add(perm);
-                }
-            }
-        } 
-        return cachedPermissions;
+    	principalPermissions = new Permissions();
+
+    	if (!(principal instanceof BasicPrincipal))
+    	{
+    	    // It's not the kind of principal we care about
+    	    // so just return an empty set
+    	    // there's also no need to store this in cache
+    	    return principalPermissions;
+    	}
+    	
+	    BasicPrincipal basicPrincipal = (BasicPrincipal) principal; 
+	    List perms = PermissionService.findPrincipalBasedPermissions(basicPrincipal.getId());
+	    for (Iterator itr = perms.iterator(); itr.hasNext();)
+	    {
+	        Permission perm = (Permission)itr.next();
+	        principalPermissions.add(perm);
+	    }
+
+	    // store principal permissions in cache for later
+    	cachedPermissions.put(principal, principalPermissions);
+    	// and also return them
+    	return principalPermissions;
     }
 
     /* (non-Javadoc)
@@ -154,10 +175,18 @@ public class DatabasePolicy extends java.security.Policy
             	// administrator has all permissions by default
     			return true;
     		}
+    		else
+    		{
+    		    // check if we can imply the permission from the principal permissions  
+    	        PermissionCollection perms = getPermissions(principal);
+    	        if (perms.implies(permission)) {
+    	            return true;
+    	        }
+    		}
     	}
-    	
-        PermissionCollection perms = getPermissions(domain);
-        return perms.implies(permission);
+
+    	// permission can't be implied from permissions of all principals 
+        return false;
     }
 
     /**
