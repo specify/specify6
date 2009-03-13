@@ -1128,6 +1128,14 @@ public class FormViewObj implements Viewable,
             }
         }
     }
+    
+    /**
+     * @return the entire list of controls.
+     */
+    public List<FVOFieldInfo> getComps()
+    {
+        return compsList;
+    }
 
     /**
      * @return the isAutoNumberOn

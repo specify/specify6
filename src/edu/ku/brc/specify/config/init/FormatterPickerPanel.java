@@ -15,6 +15,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -43,6 +44,7 @@ import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.af.ui.forms.formatters.UIFormatterEditorDlg;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.util.Pair;
 
 /**
  * @author rod
@@ -294,4 +296,16 @@ public class FormatterPickerPanel extends BaseSetupPanel
         updateBtnUI();
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.config.init.SetupPanelIFace#getSummary()
+     */
+    @Override
+    public List<Pair<String, String>> getSummary()
+    {
+        List<Pair<String, String>> list = new ArrayList<Pair<String, String>>();
+        String lbl   = getResourceString(doingCatNums ? "CollectionObject" : "Accession") + " " + getResourceString("Formatter");
+        String value = formatterCBX.getSelectedIndex() == -1 ? "" : formatterCBX.getSelectedItem().toString(); 
+        list.add(new Pair<String, String>(lbl, value));
+        return list;
+    }
 }

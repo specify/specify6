@@ -38,6 +38,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.Pair;
 
 /**
  * @author rod
@@ -70,7 +71,7 @@ public class DivisionSetupPanel extends JPanel implements SetupPanelIFace
         
         CellConstraints cc = new CellConstraints();
         PanelBuilder bldr = new PanelBuilder(new FormLayout("p,2px,p", "p,10px,p,4px,p"), this);
-        bldr.add(UIHelper.createI18NFormLabel("Select a Division"), cc.xy(1, 1));
+        bldr.add(UIHelper.createI18NFormLabel("Select a Division"), cc.xy(1, 1)); // I18N
         bldr.add(cbx, cc.xy(3, 1));
         
         bldr.add(UIHelper.createI18NFormLabel("Division"), cc.xy(1, 3));
@@ -258,6 +259,15 @@ public class DivisionSetupPanel extends JPanel implements SetupPanelIFace
     @Override
     public void updateBtnUI()
     {
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.config.init.SetupPanelIFace#getSummary()
+     */
+    @Override
+    public List<Pair<String, String>> getSummary()
+    {
+        return null;
     }
 
 }

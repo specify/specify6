@@ -10,6 +10,8 @@
 package edu.ku.brc.specify.config.init;
 
 import java.awt.Component;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import javax.swing.JButton;
@@ -22,8 +24,11 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayPanel;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.FormViewObj;
+import edu.ku.brc.af.ui.forms.FormViewObj.FVOFieldInfo;
 import edu.ku.brc.af.ui.forms.validation.UIValidator;
 import edu.ku.brc.af.ui.forms.validation.ValidationListener;
+import edu.ku.brc.ui.GetSetValueIFace;
+import edu.ku.brc.util.Pair;
 
 /**
  * @author rod
@@ -146,6 +151,24 @@ public class FormSetupPanel extends ViewBasedDisplayPanel implements SetupPanelI
     public void updateBtnUI()
     {
         
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.config.init.SetupPanelIFace#getSummary()
+     */
+    @Override
+    public List<Pair<String, String>> getSummary()
+    {
+        List<Pair<String, String>> list = new ArrayList<Pair<String, String>>();
+        for (FVOFieldInfo info : formViewObj.getComps())
+        {
+            FVOFieldInfo lblInfo = formViewObj.getLabelInfoFor(info.getId());
+            if (info.getComp() instanceof GetSetValueIFace)
+            {
+                list.add(new Pair<String, String>(lblInfo.getLabel(), ((GetSetValueIFace)info.getComp()).getValue().toString()));
+            }
+        }
+        return list;
     }
 
     /* (non-Javadoc)

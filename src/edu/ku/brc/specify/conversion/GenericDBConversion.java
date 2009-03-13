@@ -235,8 +235,6 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             dispToObjTypeHash.put(DisciplineType.getDiscipline(dt), new Pair<Integer, Boolean>(objTypes[i], isEmbdded[i]));
             i++;
         }
-        
-
     }
 
     /**
@@ -2282,6 +2280,10 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         return false;
     }
     
+    /**
+     * @param collId
+     * @param autoNumId
+     */
     protected void joinCollectionAndAutoNum(final Integer collId, 
                                             final Integer autoNumId)
     {
@@ -2982,7 +2984,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     /**
      * Convert all the biological attributes to Collection Object Attributes. Each old record may
      * end up being multiple records in the new schema. This will first figure out which columns in
-     * the old schema were used and olnly map those columns to the new database.<br>
+     * the old schema were used and only map those columns to the new database.<br>
      * <br>
      * It also will use the old name if there is not mapping for it. The old name is converted from
      * lower/upper case to be space separated where each part of the name starts with a capital
@@ -2994,8 +2996,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
      *            stored in a float)
      * @return true for success
      */
-    public boolean convertBiologicalAttrs(Discipline discipline, @SuppressWarnings("unused")
-    final Map<String, String> colToNameMap, final Map<String, Short> typeMap)
+    public boolean convertBiologicalAttrs(final Discipline discipline, 
+                                          @SuppressWarnings("unused") final Map<String, String> colToNameMap, 
+                                          final Map<String, Short> typeMap)
     {
         AttributeIFace.FieldType[] attrTypes = { AttributeIFace.FieldType.IntegerType,
                 AttributeIFace.FieldType.FloatType, AttributeIFace.FieldType.DoubleType,
@@ -3258,6 +3261,327 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             log.error(e);
             throw new RuntimeException(e);
         }
+        return true;
+    }
+
+    /**
+     * Converts all the CollectionObject Physical records and CollectionObjectCatalog Records into
+     * the new schema Preparation table.
+     * @return true if no errors
+     */
+    public boolean convertLoanRecords(final Hashtable<Integer, Map<String, PrepType>> collToPrepTypeHash)
+    {
+        BasicSQLUtils.setIdentityInsertONCommandForSQLServer(newDBConn, "loan", BasicSQLUtils.myDestinationServerType);
+
+        deleteAllRecordsFromTable(newDBConn, "loan", BasicSQLUtils.myDestinationServerType); // automatically closes the connection
+
+        if (BasicSQLUtils.getNumRecords(oldDBConn, "loan") == 0) 
+        { 
+            return true; 
+        }
+
+        String oldDetermination_Current = "Current";
+        String oldDetermination_Date    = "Date";
+
+        if (BasicSQLUtils.mySourceServerType == BasicSQLUtils.SERVERTYPE.MySQL)
+        {
+            oldDetermination_Date     = "Date1";
+            oldDetermination_Current = "IsCurrent";
+        }
+
+        Map<String, String> colNewToOldMap = createFieldNameMap(new String[] {
+                "CollectionObjectID", "BiologicalObjectID", // meg is this right?
+                "IsCurrent", oldDetermination_Current,
+                "DeterminedDate", oldDetermination_Date, // want to change  over to DateField TODO Meg!!!
+                "TaxonID", "TaxonNameID" });
+
+        try
+        {
+            Statement stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            StringBuilder str = new StringBuilder();
+
+            List<String> oldFieldNames = new ArrayList<String>();
+
+            StringBuilder sql = new StringBuilder("SELECT ");
+            List<String> names = new ArrayList<String>();
+            getFieldNamesFromSchema(oldDBConn, "determination", names, BasicSQLUtils.mySourceServerType);
+
+            sql.append(buildSelectFieldList(names, "determination"));
+            oldFieldNames.addAll(names);
+
+            sql.append(" FROM determination");
+
+            log.info(sql);
+
+            if (BasicSQLUtils.mySourceServerType == BasicSQLUtils.SERVERTYPE.MS_SQLServer)
+            {
+                log.debug("FIXING select statement to run against SQL Server.......");
+                log.debug("old string: " + sql.toString());
+                String currentSQL = sql.toString();
+                currentSQL = currentSQL.replaceAll("Current", "[" + "Current" + "]");
+                log.debug("new string: " + currentSQL);
+                sql = new StringBuilder(currentSQL);
+
+            }
+            log.info(sql);
+            List<BasicSQLUtils.FieldMetaData> newFieldMetaData = new ArrayList<BasicSQLUtils.FieldMetaData>();
+            getFieldMetaDataFromSchema(newDBConn, "determination", newFieldMetaData, BasicSQLUtils.myDestinationServerType);
+
+            log.info("Number of Fields in New Determination " + newFieldMetaData.size());
+            String sqlStr = sql.toString();
+
+            Map<String, Integer> oldNameIndex = new Hashtable<String, Integer>();
+            int inx = 0;
+            for (String name : oldFieldNames)
+            {
+                oldNameIndex.put(name, inx++);
+            }
+
+            String tableName = "determination";
+
+            int isCurrentInx = oldNameIndex.get(oldDetermination_Current) + 1;
+
+            log.info(sqlStr);
+            ResultSet rs = stmt.executeQuery(sqlStr);
+
+            if (hasFrame)
+            {
+                if (rs.last())
+                {
+                    setProcess(0, rs.getRow());
+                    rs.first();
+
+                } else
+                {
+                    rs.close();
+                    stmt.close();
+                    return true;
+                }
+            } else
+            {
+                if (!rs.first())
+                {
+                    rs.close();
+                    stmt.close();
+                    return true;
+                }
+            }
+
+            Pair<String, String> datePair = new Pair<String, String>();
+            
+            int lastEditedByInx = oldNameIndex.get("LastEditedBy") + 1;
+            Integer detDateInx  = oldNameIndex.get("Date1") + 1;
+            if (detDateInx == null)
+            {
+                detDateInx = oldNameIndex.get("Date") + 1;
+            }
+            
+            int count = 0;
+            do
+            {
+                datePair.first  = null;
+                datePair.second = null;
+                
+                String lastEditedBy = rs.getString(lastEditedByInx);
+
+                str.setLength(0);
+                StringBuffer fieldList = new StringBuffer();
+                fieldList.append("( ");
+                for (int i = 0; i < newFieldMetaData.size(); i++)
+                {
+                    if ((i > 0) && (i < newFieldMetaData.size()))
+                    {
+                        fieldList.append(", ");
+                    }
+                    String newFieldName = newFieldMetaData.get(i).getName();
+                    fieldList.append(newFieldName + " ");
+                }
+                
+                fieldList.append(")");
+                str.append("INSERT INTO determination " + fieldList + " VALUES (");
+                for (int i = 0; i < newFieldMetaData.size(); i++)
+                {
+                    if (i > 0)
+                    {
+                        str.append(", ");
+                    }
+
+                    String newFieldName = newFieldMetaData.get(i).getName();
+
+                    if (i == 0)
+                    {
+                        Integer recId = count + 1;
+                        str.append(getStrValue(recId));
+
+                    } else if (newFieldName.equals("Version")) // User/Security changes
+                    {
+                        str.append("0");
+
+                    } else if (newFieldName.equals("DeterminedDate"))
+                    {
+                        if (datePair.first == null)
+                        {
+                            getPartialDate(rs.getObject(detDateInx), datePair);
+                        }
+                        str.append(datePair.first);
+                        
+                        
+                    } else if (newFieldName.equals("DeterminedDatePrecision"))
+                    {
+                        if (datePair.first == null)
+                        {
+                            getPartialDate(rs.getObject(detDateInx), datePair);
+                        }
+                        str.append(datePair.second);
+                        
+                    } else if (newFieldName.equals("CreatedByAgentID")) // User/Security changes
+                    {
+                        str.append(getCreatorAgentId(null));
+
+                    } else if (newFieldName.equals("ModifiedByAgentID")) // User/Security changes
+                    {
+                        str.append(getModifiedByAgentId(lastEditedBy));
+
+                    } else if (newFieldName.equals("Qualifier") || 
+                               newFieldName.equals("Addendum") || 
+                               newFieldName.equals("AlternateName") || 
+                               newFieldName.equals("NameUsage") || 
+                               newFieldName.equals("PreferredTaxonID"))
+                    {
+                        str.append("NULL");
+
+                    } else if (newFieldName.equals("CollectionMemberID")) // User/Security changes
+                    {
+                        str.append(getCollectionMemberId());
+
+                    } else
+                    {
+                        Integer index = null;
+                        String oldMappedColName = colNewToOldMap.get(newFieldName);
+                        if (oldMappedColName != null)
+                        {
+                            index = oldNameIndex.get(oldMappedColName);
+
+                        } else
+                        {
+                            index = oldNameIndex.get(newFieldName);
+                            oldMappedColName = newFieldName;
+                        }
+
+                        if (index == null)
+                        {
+                            String msg = "Couldn't find new field name[" + newFieldName  + "] in old field name in index Map";
+                            log.error(msg);
+                            stmt.close();
+                            throw new RuntimeException(msg);
+                        }
+
+                        Object data = rs.getObject(index + 1);
+
+                        if (data != null)
+                        {
+                            int idInx = newFieldName.lastIndexOf("ID");
+                            if (idMapperMgr != null && idInx > -1)
+                            {
+                                IdMapperIFace idMapper = idMapperMgr.get(tableName,
+                                        oldMappedColName);
+                                if (idMapper != null)
+                                {
+                                    data = idMapper.get(rs.getInt(index + 1));
+                                } else
+                                {
+                                    log.error("No Map for [" + tableName + "][" + oldMappedColName + "]");
+                                }
+                            }
+                        }
+
+                        // hack for ??bug?? found in Sp5 that inserted null values in
+                        // timestampmodified field of determination table?
+                        if (newFieldName.equals("TimestampModified"))
+                        {
+                            // log.error("******TimestampModified***************" +
+                            // getStrValue(data, newFieldMetaData.get(i).getType()));
+                            if (getStrValue(data, newFieldMetaData.get(i).getType()).toString().toLowerCase().equals("null"))
+                            {
+                                // log.error("******TimestampModified***************" + "found null
+                                // value, appending string: " + "'"+nowStr+"'");
+                                str.append("'" + nowStr + "'");
+                                // log.error("new string: " +str);
+                            } else
+                            {
+                                str.append(getStrValue(data, newFieldMetaData.get(i).getType()));
+                            }
+                        } else
+                        {
+                            // log.error("my debgings - ##########################" +
+                            // getStrValue(data, newFieldMetaData.get(i).getType()).toString());
+                            str.append(getStrValue(data, newFieldMetaData.get(i).getType()));
+                            // log.error("new string: " +str);
+                        }
+                    }
+                }
+                str.append(")");
+
+                if (hasFrame)
+                {
+                    if (count % 100 == 0)
+                    {
+                        setProcess(count);
+                    }
+
+                } else
+                {
+                    if (count % 2000 == 0)
+                    {
+                        log.info("Determination Records: " + count);
+                    }
+                }
+
+                try
+                {
+                    Statement updateStatement = newDBConn.createStatement();
+                    // updateStatement.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
+                    updateStatement.executeUpdate(str.toString());
+                    updateStatement.clearBatch();
+                    updateStatement.close();
+                    updateStatement = null;
+
+                } catch (SQLException e)
+                {
+                    log.error("Count: " + count);
+                    log.error("Exception on insert: " + str.toString());
+                    e.printStackTrace();
+                    log.error(e);
+                    rs.close();
+                    stmt.close();
+                    throw new RuntimeException(e);
+                }
+
+                count++;
+                // if (count > 10) break;
+            } while (rs.next());
+
+            if (hasFrame)
+            {
+                setProcess(count);
+            } else
+            {
+                log.info("Processed Determination " + count + " records.");
+            }
+            rs.close();
+
+            stmt.close();
+
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+            log.error(e);
+            throw new RuntimeException(e);
+        }
+
+        BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer(newDBConn, "determination",
+                BasicSQLUtils.myDestinationServerType);
+
         return true;
     }
 

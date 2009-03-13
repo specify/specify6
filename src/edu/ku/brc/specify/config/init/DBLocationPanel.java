@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Properties;
 
 import javax.swing.ButtonGroup;
@@ -30,6 +31,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.af.ui.BrowseBtnPanel;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.Pair;
 
 /**
  * Creates a dialog for entering database name and selecting the appropriate driver.
@@ -215,6 +217,16 @@ class DBLocationPanel extends BaseSetupPanel
     {
         return filePath.getText();
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.config.init.SetupPanelIFace#getSummary()
+     */
+    @Override
+    public List<Pair<String, String>> getSummary()
+    {
+        return null;
+    }
+    
 }
 
 

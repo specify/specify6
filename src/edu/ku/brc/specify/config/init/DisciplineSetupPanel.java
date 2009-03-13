@@ -9,10 +9,13 @@
  */
 package edu.ku.brc.specify.config.init;
 
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+
 import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
@@ -38,6 +41,7 @@ import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.Pair;
 
 /**
  * @author rod
@@ -305,6 +309,17 @@ public class DisciplineSetupPanel extends JPanel implements SetupPanelIFace
     @Override
     public void updateBtnUI()
     {
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.config.init.SetupPanelIFace#getSummary()
+     */
+    @Override
+    public List<Pair<String, String>> getSummary()
+    {
+        List<Pair<String, String>> list = new ArrayList<Pair<String, String>>();
+        list.add(new Pair<String, String>(getResourceString("Discipline"), discipline.getType()));
+        return list;
     }
 
 }

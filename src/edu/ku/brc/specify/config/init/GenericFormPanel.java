@@ -12,7 +12,9 @@ package edu.ku.brc.specify.config.init;
 import static edu.ku.brc.ui.UIHelper.createDuplicateJGoodiesDef;
 import static edu.ku.brc.ui.UIHelper.createI18NLabel;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Properties;
 
 import javax.swing.JButton;
@@ -49,8 +51,10 @@ public class GenericFormPanel extends BaseSetupPanel
     protected DataSetterForObj setter    = null;
     protected Hashtable<String, Boolean> reqHash  = null;
 
-    protected PanelBuilder     builder   = null;
-    protected int              row       = 1;
+    protected PanelBuilder          builder   = null;
+    protected int                   row       = 1;
+    protected String[]              labels;
+    protected ArrayList<JComponent> compList  = new ArrayList<JComponent>();
     
     /**
      * @param panelName
@@ -134,19 +138,18 @@ public class GenericFormPanel extends BaseSetupPanel
         this.dataObj      = dataObj;
         this.fieldsNames  = fields;
         this.makeStretchy = makeStretchy;
+        this.labels       = labels;
         
-        init(title, labels, fields, required);
+        init(title, fields, required);
     }
     
     /**
      * @param title
-     * @param labels
      * @param fields
      * @param required
      */
-    protected void init(final String title, 
-                        final String[] labels, 
-                        final String[] fields, 
+    protected void init(final String    title, 
+                        final String[]  fields, 
                         final boolean[] required)
     {
         CellConstraints cc = new CellConstraints();
@@ -168,14 +171,18 @@ public class GenericFormPanel extends BaseSetupPanel
         {
             if (fName.equals("-"))
             {
-                builder.addSeparator(UIRegistry.getResourceString(labels[i]), cc.xyw(1, row, 4));
+                JComponent c = builder.addSeparator(UIRegistry.getResourceString(labels[i]), cc.xyw(1, row, 4));
+                compList.add(c);
+                
             } else
             {
                 if (reqHash != null)
                 {
                     reqHash.put(fName, required[i]);
                 }
-                comps.put(fName, createField(builder, labels[i], required != null ? required[i] : true, row));
+                JComponent comp = createField(builder, labels[i], required != null ? required[i] : true, row);
+                compList.add(comp);
+                comps.put(fName, comp);
             }
             row += 2;
             i++;
@@ -312,6 +319,24 @@ public class GenericFormPanel extends BaseSetupPanel
             i++;
         }
         return true;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.config.init.SetupPanelIFace#getSummary()
+     */
+    @Override
+    public List<Pair<String, String>> getSummary()
+    {
+        List<Pair<String, String>> list = new ArrayList<Pair<String, String>>();
+        for (int i=0;i<labels.length;i++)
+        {
+            JComponent comp = compList.get(i);
+            if (comp instanceof JTextField)
+            {
+                list.add(new Pair<String, String>(UIRegistry.getResourceString(labels[i]), ((JTextField)comp).getText()));
+            }
+        }
+        return list;
     }
 
     /* (non-Javadoc)

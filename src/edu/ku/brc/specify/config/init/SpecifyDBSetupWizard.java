@@ -25,6 +25,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
@@ -101,6 +102,7 @@ public class SpecifyDBSetupWizard extends JPanel
     protected Vector<BaseSetupPanel> panels     = new Vector<BaseSetupPanel>();
     
     protected String                 setupXMLPath;
+    protected JProgressBar           progressBar;
     
     /**
      * @param specify
@@ -268,6 +270,8 @@ public class SpecifyDBSetupWizard extends JPanel
         }  
         panels.add(new FormatterPickerPanel("CATNOFMT", nextBtn, true));
         panels.add(new FormatterPickerPanel("ACCNOFMT", nextBtn, false));
+        
+        panels.add(new SummaryPanel("SUMMARY", nextBtn, panels));
          
         lastStep = panels.size();
         
@@ -301,6 +305,7 @@ public class SpecifyDBSetupWizard extends JPanel
                     step++;
                     panels.get(step).doingNext();
                     cardLayout.show(cardPanel, Integer.toString(step));
+
                     updateBtnBar();
                     if (listener != null)
                     {
@@ -358,6 +363,10 @@ public class SpecifyDBSetupWizard extends JPanel
         iconBldr.add(iconLbl, cc.xy(2, 3));
         add(iconBldr.getPanel(), BorderLayout.WEST);
         add(builder.getPanel(), BorderLayout.CENTER);
+        
+        progressBar = new JProgressBar(0, lastStep-1);
+        progressBar.setStringPainted(true);
+        add(progressBar, BorderLayout.SOUTH);
     }
     
     /**
@@ -381,6 +390,9 @@ public class SpecifyDBSetupWizard extends JPanel
      */
     protected void updateBtnBar()
     {
+        progressBar.setValue(step);
+        progressBar.setString(String.format("%d", (int)(((step) * 100.0) / (lastStep-1)))+"% Complete"); // I18N
+
         if (step == lastStep-1)
         {
             nextBtn.setEnabled(panels.get(step).isUIValid());

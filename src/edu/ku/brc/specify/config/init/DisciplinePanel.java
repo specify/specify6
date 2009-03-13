@@ -14,6 +14,8 @@ import static edu.ku.brc.ui.UIHelper.createI18NFormLabel;
 import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 
@@ -31,6 +33,7 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.util.Pair;
 
 /**
  * This is the configuration window for create a new discipline.
@@ -157,4 +160,18 @@ public class DisciplinePanel extends BaseSetupPanel
     {
         return (DisciplineType)disciplines.getSelectedItem();
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.config.init.SetupPanelIFace#getSummary()
+     */
+    @Override
+    public List<Pair<String, String>> getSummary()
+    {
+        List<Pair<String, String>> list = new ArrayList<Pair<String, String>>();
+        list.add(new Pair<String, String>(getResourceString("DSP_TYPE"), disciplines.getSelectedItem().toString()));
+        list.add(new Pair<String, String>(getResourceString("DSP_NAME"), disciplineName.getText()));
+        return list;
+    }
+    
+    
 }

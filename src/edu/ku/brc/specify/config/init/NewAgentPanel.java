@@ -11,6 +11,7 @@ package edu.ku.brc.specify.config.init;
 
 import static edu.ku.brc.ui.UIHelper.createLabel;
 
+import java.util.List;
 import java.util.Properties;
 
 import javax.swing.JButton;
@@ -23,6 +24,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.util.Pair;
 
 /**
  * This is the configuration window for create a new user and new database.
@@ -49,7 +51,7 @@ public class NewAgentPanel extends BaseSetupPanel
         
         CellConstraints cc = new CellConstraints();
 
-        String header = "Fill in your information:";
+        String header = "Fill in your information:"; // I1bN
 
         PanelBuilder builder = new PanelBuilder(new FormLayout("p,2px,p,f:p:g", "p,5px," + UIHelper.createDuplicateJGoodiesDef("p", "2px", 3)+",p:g"), this);
         int row = 1;
@@ -60,7 +62,7 @@ public class NewAgentPanel extends BaseSetupPanel
         lastNameTxt     = createField(builder, "Last Name",  true, row);row += 2;
         emailTxt        = createField(builder, "EMail",      true, row);row += 2;
         
-        if (DO_DEBUG) // XXX Debug
+        if (DO_DEBUG) // XXX Debug RELEASE
         {
             firstNameTxt.setText("Rod");
             lastNameTxt.setText("Spears");
@@ -134,6 +136,17 @@ public class NewAgentPanel extends BaseSetupPanel
     {
         return lastNameTxt.getText();
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.config.init.SetupPanelIFace#getSummary()
+     */
+    @Override
+    public List<Pair<String, String>> getSummary()
+    {
+        return null;
+    }
+    
+    
 }
 
 

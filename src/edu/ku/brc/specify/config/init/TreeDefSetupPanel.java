@@ -22,6 +22,8 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 
@@ -50,6 +52,7 @@ import edu.ku.brc.specify.config.DisciplineType.STD_DISCIPLINES;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.StorageTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
+import edu.ku.brc.util.Pair;
 
 /**
  * @author rod
@@ -312,6 +315,28 @@ public class TreeDefSetupPanel extends BaseSetupPanel implements SetupPanelIFace
         fullnameDisplayTxt.setText(sb.toString());
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.config.init.SetupPanelIFace#getSummary()
+     */
+    @Override
+    public List<Pair<String, String>> getSummary()
+    {
+        List<Pair<String, String>> list = new ArrayList<Pair<String, String>>();
+        for (int i=0;i<model.getRowCount();i++)
+        {
+            if (((Boolean)model.getValueAt(i, 1)))
+            {
+                list.add(new Pair<String, String>(classTitle, model.getValueAt(i, 0).toString()));
+            }
+        }
+        return list;
+
+    }
+    
+    //--------------------------------------------------------------
+    //--
+    //--------------------------------------------------------------
+
     class TreeDefTableModel extends DefaultTableModel
     {
         protected String[] header = null;

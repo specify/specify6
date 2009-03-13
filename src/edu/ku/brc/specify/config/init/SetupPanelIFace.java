@@ -7,7 +7,10 @@
 package edu.ku.brc.specify.config.init;
 
 import java.awt.Component;
+import java.util.List;
 import java.util.Properties;
+
+import edu.ku.brc.util.Pair;
 
 public interface SetupPanelIFace
 {
@@ -30,5 +33,7 @@ public interface SetupPanelIFace
     public abstract void doingPrev();
     
     public abstract void doingNext();
+    
+    public abstract List<Pair<String, String>> getSummary();
 
 }

@@ -14,6 +14,8 @@ import static edu.ku.brc.ui.UIHelper.createI18NFormLabel;
 import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 
@@ -31,6 +33,7 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.util.Pair;
 
 /**
  * This is the configuration window for create a new user and new database.
@@ -184,5 +187,19 @@ public class DatabasePanel extends BaseSetupPanel
     public String getUsername()
     {
         return usernameTxt.getText();
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.config.init.SetupPanelIFace#getSummary()
+     */
+    @Override
+    public List<Pair<String, String>> getSummary()
+    {
+        List<Pair<String, String>> list = new ArrayList<Pair<String, String>>();
+        list.add(new Pair<String, String>(getResourceString("IT_USERNAME"), usernameTxt.getText()));
+        list.add(new Pair<String, String>(getResourceString("IT_PASSWORD"), passwordTxt.getText()));
+        list.add(new Pair<String, String>(getResourceString("DB_NAME"), dbNameTxt.getText()));
+        list.add(new Pair<String, String>(getResourceString("HOST_NAME"), hostNameTxt.getText()));
+        return list;
     }
 }

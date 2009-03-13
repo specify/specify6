@@ -36,6 +36,7 @@ import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.Pair;
 
 /**
  * @author rod
@@ -54,6 +55,7 @@ public class NumberingSchemeSetup extends JPanel implements SetupPanelIFace
     protected JTextField           divisionTxt;
     protected JTextField           disciplineTxt;
     protected Properties           props      = null;
+    
 
     /*
       Localization:
@@ -283,6 +285,15 @@ public class NumberingSchemeSetup extends JPanel implements SetupPanelIFace
     @Override
     public void updateBtnUI()
     {
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.config.init.SetupPanelIFace#getSummary()
+     */
+    @Override
+    public List<Pair<String, String>> getSummary()
+    {
+        return null;
     }
 
 }
