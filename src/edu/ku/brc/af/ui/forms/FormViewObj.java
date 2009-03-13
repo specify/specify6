@@ -697,7 +697,7 @@ public class FormViewObj implements Viewable,
                 shortName = viewArg.getClassName();
             }
             
-            PermissionSettings perm = SecurityMgr.getInstance().getPermission("DO."+shortName);
+            PermissionSettings perm = SecurityMgr.getInstance().getPermission("DO."+shortName.toLowerCase());
             //perm.dumpPermissions(mvParentArg.getViewName(), perm.getOptions());
             
             if (perm.hasNoPerm() && restrictableUI != null)
@@ -3274,12 +3274,18 @@ public class FormViewObj implements Viewable,
             {
                 if (perm == null)
                 {
-                    String shortName = StringUtils.substringAfterLast(view.getClassName(), ".");
-                    if (shortName == null)
+                    if (tableInfo != null)
                     {
-                        shortName = view.getClassName();
+                        perm = tableInfo.getPermissions();
+                    } else
+                    {
+                        String shortName = StringUtils.substringAfterLast(view.getClassName(), ".");
+                        if (shortName == null)
+                        {
+                            shortName = view.getClassName();
+                        }
+                        perm = SecurityMgr.getInstance().getPermission("DO."+shortName.toLowerCase());
                     }
-                    perm = SecurityMgr.getInstance().getPermission("DO."+shortName.toLowerCase());
                     //SecurityMgr.dumpPermissions(mvParentArg.getViewName(), perm.getOptions());
                     canAdd = perm.canAdd();
                     canDel = perm.canDelete();

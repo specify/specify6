@@ -51,7 +51,6 @@ import edu.ku.brc.ui.UIHelper;
  */
 public class CollectingEventDataObjFmt implements DataObjDataFieldFormatIFace, Cloneable
 {
-    protected static final String securityPrefix = "DO.";
     protected static final String DEF_FMT_STR    = "FN; DT; LC; LA, LO; CO, ST, CT";
     
 
