@@ -224,6 +224,9 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
                 ((RolloverCommand)nbi.getUIComponent()).addDropDataFlavor(null);
             }
         } 
+        treeNavBox.setVisible(treeNavBox.getComponentCount() > 0);
+        treeDefNavBox.setVisible(treeDefNavBox.getComponentCount() > 0);
+        unlockNavBox.setVisible(unlockNavBox.getComponentCount() > 0);
     }
     
     /**
