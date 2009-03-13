@@ -184,16 +184,35 @@ public class UIFieldFormatterSampler implements SQLExecutionListener
 				" ON " + secondTable.getName() + "." + rel.getColName() + " = " + 
 				firstTable.getName() + "." + firstTable.getIdColumnName();
 			}
-			else if (rel.getType() == RelationshipType.ManyToOne || rel.getType() == RelationshipType.OneToOne)
+			else if (rel.getType() == RelationshipType.ManyToOne || 
+			         rel.getType() == RelationshipType.OneToOne)
 			{
 				sql = " INNER JOIN " + secondTable.getName() + 
 				" ON " + firstTable.getName() + "." + rel.getColName() + " = " + 
 				secondTable.getName() + "." + secondTable.getIdColumnName();
 			}
+			else if (rel.getType() == RelationshipType.ManyToMany)
+			{
+			    String joinTable = firstTable.getName() + "_" + secondTable.getName();
+			    
+			    // XXX in the case of agent_discipline table, the field name in the join table (DisciplineID) isn't the same as in the discipline table (UserGroupScopeId)
+			    // also, there's no such information on the DBRelationshipInfo instance, so we treat this case separately
+			    String joinTableSecondIdColumnName = secondTable.getIdColumnName();
+			    if ("agent_discipline".equals(joinTable))
+			    {
+			        joinTableSecondIdColumnName = "DisciplineID";
+			    }
+			    
+                sql = " INNER JOIN " + joinTable + " ON " + firstTable.getName() + "." +
+                    firstTable.getIdColumnName() + " = " + joinTable + "." + firstTable.getIdColumnName() + 
+                    " INNER JOIN " + secondTable.getName() + " ON " + secondTable.getName() + "." + 
+                    secondTable.getIdColumnName() + " = " + joinTable + "." + joinTableSecondIdColumnName;
+                System.out.println(sql);
+			}
 			else
 			{
 			    // don't know what to do, really
-			    System.out.println("Relationship Type: " + rel.getType());
+			   log.warn("Relationship Type: " + rel.getType());
 			}
 			
 			joins.append(sql);
@@ -211,7 +230,7 @@ public class UIFieldFormatterSampler implements SQLExecutionListener
 	 */
 	protected List<Pair<DBTableInfo, DBRelationshipInfo>> getShortestPath()
 	{
-		// hash that stored the distance between the source table and the given table
+		// stores the distance between the source table and the given table
 		Hashtable<DBTableInfo, Integer> distance = new Hashtable<DBTableInfo, Integer>();
 
 		// list of previous vertex to a given vertex (table) 
@@ -248,10 +267,13 @@ public class UIFieldFormatterSampler implements SQLExecutionListener
 			{
 				DBTableInfo neighborTable = getTableInfo(relationship.getClassName()); 
 
+                System.out.println(String.format("Dist: %4d | Link: %30s - %s", distanceToCurrent, currentVertex.getName(), neighborTable.getName()));
+
 				if (visited.contains(neighborTable) ||
 					neighborTable.getName().equals(currentVertex.getName()))
 				{
 					// already visited or it is a relationships to the same table
+//                    System.out.println(String.format("Already visited: %30s | curr=**** | dist=%4d", neighborTable.getName(), distanceToCurrent));
 					continue;
 				}
 				
@@ -260,12 +282,13 @@ public class UIFieldFormatterSampler implements SQLExecutionListener
 				if (distanceToNeighbor == null || 
 					distanceToCurrent + 1 < distanceToNeighbor)
 				{
+//				    System.out.println(String.format("neighborTable:   %30s | curr=%4d | dist=%4d", neighborTable.getName(), distanceToNeighbor , distanceToCurrent));
 					distance.put(neighborTable, new Integer(distanceToCurrent + 1));
 					previous.put(neighborTable, new Pair<DBTableInfo, DBRelationshipInfo>(currentVertex, relationship));
 				}
 				
 				// check if we reached the destination
-				if (neighborTable.getName().equals("collectionobject"))
+				if ("collectionobject".equals(neighborTable.getName()))
 				{
 					// destination reached: bail out
 					currentVertex = neighborTable;
