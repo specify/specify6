@@ -295,12 +295,15 @@ public class ReportsBaseTask extends BaseTask
             }
             else
             {
-                navBox = new NavBox(navMime.getFirst());
+                //XXX huh?
+            	navBox = new NavBox(navMime.getFirst()); 
             }
             
             // no particular table at the moment
             List<TaskCommandDef> cmds = getAppResCommandsByMimeType(navMime
                     .getSecond(), "Report", navMime.getFirst(), null);
+            cmds.addAll(getAppResCommandsByMimeType(navMime
+                    .getSecond(), "Invoice", navMime.getFirst(), null));
 
             // Then add
             for (TaskCommandDef tcd : cmds)
