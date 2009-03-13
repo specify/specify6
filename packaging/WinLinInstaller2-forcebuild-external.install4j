@@ -805,9 +805,6 @@
                 <serializedBean>
                   <java class="java.beans.XMLDecoder">
                     <object class="com.install4j.runtime.beans.screens.FormScreen">
-                      <void property="subTitle">
-                        <string>The Specify Software Project recommends that you update your installation with this update. The list of enhancements for this update is online at www.specifysoftware.org</string>
-                      </void>
                       <void property="title">
                         <string>New Version Available</string>
                       </void>
@@ -820,6 +817,26 @@
                 <postActivation />
                 <actions />
                 <formComponents>
+                  <formComponent name="" id="989" beanClass="com.install4j.runtime.beans.formcomponents.MultilineHtmlLabelComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
+                    <serializedBean>
+                      <java class="java.beans.XMLDecoder">
+                        <object class="com.install4j.runtime.beans.formcomponents.MultilineHtmlLabelComponent">
+                          <void property="labelHtml">
+                            <string>The Specify Software Project recommends that you update your installation with this release.  A list of the enhancements included in this update is online at: &lt;a href="http://www.specifysoftware.org"&gt;www.specifysoftware.org&lt;/a&gt;.</string>
+                          </void>
+                        </object>
+                      </java>
+                    </serializedBean>
+                    <initScript />
+                  </formComponent>
+                  <formComponent name="" id="990" beanClass="com.install4j.runtime.beans.formcomponents.SeparatorComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
+                    <serializedBean>
+                      <java class="java.beans.XMLDecoder">
+                        <object class="com.install4j.runtime.beans.formcomponents.SeparatorComponent" />
+                      </java>
+                    </serializedBean>
+                    <initScript />
+                  </formComponent>
                   <formComponent name="" id="104" beanClass="com.install4j.runtime.beans.formcomponents.KeyValuePairComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
                     <serializedBean>
                       <java class="java.beans.XMLDecoder">
