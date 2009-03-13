@@ -18,21 +18,42 @@
 package edu.ku.brc.af.core.expresssearch;
 
 import java.awt.Color;
+import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.Vector;
 import java.util.concurrent.Future;
 
 import org.apache.commons.lang.StringUtils;
 
+import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.AppResourceIFace;
+import edu.ku.brc.af.core.ContextMgr;
+import edu.ku.brc.af.core.ServiceInfo;
+import edu.ku.brc.af.core.ServiceProviderIFace;
+import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.ui.ESTermParser;
 import edu.ku.brc.af.ui.db.ERTICaptionInfo;
 import edu.ku.brc.af.ui.db.QueryForIdResultsIFace;
 import edu.ku.brc.af.ui.db.ERTICaptionInfo.ColInfo;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
+import edu.ku.brc.specify.datamodel.SpAppResource;
+import edu.ku.brc.specify.datamodel.SpReport;
+import edu.ku.brc.specify.tasks.QueryTask;
+import edu.ku.brc.specify.tasks.ReportsBaseTask;
+import edu.ku.brc.specify.tasks.ReportsTask;
+import edu.ku.brc.specify.tasks.subpane.qb.SearchResultReportServiceCmdData;
+import edu.ku.brc.specify.tasks.subpane.qb.SearchResultReportServiceInfo;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -43,8 +64,9 @@ import edu.ku.brc.util.Pair;
  * Created Date: Sep 14, 2007
  *
  */
-public class QueryForIdResultsHQL implements QueryForIdResultsIFace
+public class QueryForIdResultsHQL implements QueryForIdResultsIFace, ServiceProviderIFace
 {
+    protected static final int      SRCHQIdRHQLTblId      = -123;
 
     protected SearchTableConfig     searchTableConfig;
     protected Color                 bannerColor;
@@ -59,7 +81,10 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
     protected RecordSetIFace        recordSet;
     protected boolean               isMultipleSelection   = true;
     protected boolean               isEditable            = false;
-    
+    protected int                   tableId;
+
+    protected SortedSet<SearchResultReportServiceInfo> reports = null;
+
     @SuppressWarnings("unchecked") //$NON-NLS-1$
     public QueryForIdResultsHQL(final SearchTableConfig searchTableConfig,
                                 final Color             bannerColor,
@@ -70,6 +95,7 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
         this.bannerColor       = bannerColor;
         this.searchTerm        = searchTerm;
         this.recordSet         = null;
+        this.tableId           = searchTableConfig != null ? searchTableConfig.getTableId() : -1;
         
         if (listOfIds != null)
         {
@@ -80,6 +106,17 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
         }
     }
 
+    public QueryForIdResultsHQL(final SearchTableConfig searchTableConfig,
+            final Color  bannerColor,
+            final int tableId)
+    {
+    	this.searchTableConfig = searchTableConfig;
+    	this.bannerColor       = bannerColor;
+    	this.searchTerm        = null;
+    	this.recordSet         = null;
+    	this.tableId           = tableId;
+    }
+    
     /**
      * @param searchTableConfig
      * @param bannerColor
@@ -93,13 +130,27 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
         this.bannerColor       = bannerColor;
         this.searchTerm        = ""; //$NON-NLS-1$
         this.recordSet         = recordSet;
-
+        this.tableId           = searchTableConfig != null ? searchTableConfig.getTableId() : -1;
         for (RecordSetItemIFace item : recordSet.getOrderedItems())
         {
             recIds.add(item.getRecordId());
         }
     }
 
+    protected void createReports()
+    {
+    	reports = new TreeSet<SearchResultReportServiceInfo>(
+                new Comparator<SearchResultReportServiceInfo>()
+                {
+                    public int compare(SearchResultReportServiceInfo o1,
+                                       SearchResultReportServiceInfo o2)
+                    {
+                        return o1.getReportName().compareTo(o2.getReportName());
+                    }
+
+                });
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.expresssearch.QueryForIdResultsIFace#isHQL()
      */
@@ -427,6 +478,113 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
     {
         // nothing to do
     }    
+
+    /**
+     * @return the reports
+     */
+    public SortedSet<SearchResultReportServiceInfo> getReports()
+    {
+        if (reports == null)
+        {
+        	createReports();
+        	buildReports();
+        }
+        return reports;
+    }
     
-    
+    //--------------------------------------------------------------------
+    // ServiceProviderIFace Interface
+    //--------------------------------------------------------------------
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.ServiceProviderIFace#getServices()
+     */
+    public List<ServiceInfo> getServices(final Object data)
+    {
+        if (reports == null)
+        {
+        	createReports();
+        	buildReports();
+        }
+        
+    	if (reports.size() == 0)
+        {
+            return null;
+        }
+        
+        List<ServiceInfo> result = new LinkedList<ServiceInfo>();
+        
+        
+        result.add(new ServiceInfo(40, "QB_RESULT_REPORT_SERVICE", 
+                SRCHQIdRHQLTblId, 
+                new CommandAction(QueryTask.QUERY, QueryTask.QUERY_RESULTS_REPORT, 
+                        new SearchResultReportServiceCmdData(this, data)),
+                ContextMgr.getTaskByClass(QueryTask.class),
+                "Reports",
+                UIRegistry.getResourceString("QB_RESULTS_REPORT_TT")));
+        return result;
+    }
+
+    /**
+     * Builds list of reports available for the results.
+     */
+    public void buildReports()
+    {
+        reports.clear();
+        boolean buildEm = true;
+        if (UIHelper.isSecurityOn())
+        {
+            Taskable reportsTask = ContextMgr.getTaskByClass(ReportsTask.class);
+            if (reportsTask != null)
+            {
+                buildEm = reportsTask.getPermissions().canView();
+            }
+        }
+        if (buildEm)
+        {
+            if (tableId != -1)
+            {
+                //second add reports associated with the same table as the current results
+                List<AppResourceIFace> reps = AppContextMgr.getInstance().getResourceByMimeType(ReportsBaseTask.LABELS_MIME);
+                reps.addAll(AppContextMgr.getInstance().getResourceByMimeType(ReportsBaseTask.REPORTS_MIME));
+                for (AppResourceIFace rep : reps)
+                {
+                    String tblIdStr = rep.getMetaData("tableid");
+                    if (tblIdStr != null)
+                    {
+                        if (tableId == Integer.valueOf(tblIdStr))
+                        {
+                            reports.add(new SearchResultReportServiceInfo(rep.getDescription() /*'title' seems to be currently stored in description */,
+                                    rep.getName() /* and filename in name */, false, null, ((SpAppResource)rep).getId(), null));
+                        }
+                        else
+                        {
+                            //third add reports based on other queries...
+                            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                            try
+                            {
+                                SpReport spRep = (SpReport)session.getData("from SpReport where appResourceId = " + ((SpAppResource)rep).getId());
+                                if (spRep != null && spRep.getQuery() != null && spRep.getQuery().getContextTableId().intValue() == tableId)
+                                {
+                                    reports
+                                            .add(new SearchResultReportServiceInfo(
+                                                rep.getDescription() /*
+                                                                         * 'title' seems to be
+                                                                         * currently stored in
+                                                                         * description
+                                                                         */,
+                                                rep.getName() /* and filename in name */, false, spRep.getId(),
+                                                ((SpAppResource)rep).getId(), null));
+                                }
+                            }
+                            finally
+                            {
+                                session.close();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 }

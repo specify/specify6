@@ -1048,4 +1048,12 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
     {
         return parentERTP;
     }
+    
+    /**
+     * @return true if results are still being loaded or created.
+     */
+    public boolean isLoadingCells()
+    {
+    	return false;
+    }
 }

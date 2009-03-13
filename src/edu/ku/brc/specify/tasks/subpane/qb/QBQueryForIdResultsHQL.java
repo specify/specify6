@@ -11,11 +11,8 @@ package edu.ku.brc.specify.tasks.subpane.qb;
 
 import java.awt.Color;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.Vector;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -24,23 +21,14 @@ import java.util.concurrent.atomic.AtomicReference;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.af.core.ContextMgr;
-import edu.ku.brc.af.core.ServiceInfo;
-import edu.ku.brc.af.core.ServiceProviderIFace;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.expresssearch.QueryForIdResultsHQL;
 import edu.ku.brc.af.ui.db.ERTICaptionInfo;
 import edu.ku.brc.dbsupport.CustomQueryIFace;
-import edu.ku.brc.dbsupport.DataProviderFactory;
-import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.specify.datamodel.SpAppResource;
 import edu.ku.brc.specify.datamodel.SpReport;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
-import edu.ku.brc.specify.tasks.QueryTask;
-import edu.ku.brc.specify.tasks.ReportsBaseTask;
 import edu.ku.brc.specify.tasks.ReportsTask;
-import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -51,10 +39,8 @@ import edu.ku.brc.util.Pair;
  * Oct 18, 2007
  *
  */
-public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements ServiceProviderIFace
+public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL 
 {
-    protected static final int                                QBQIdRHQLTblId = -123;
-
     protected final QueryBldrPane                             queryBuilder;
     protected final AtomicReference<Future<CustomQueryIFace>> queryTask      = new AtomicReference<Future<CustomQueryIFace>>();
     protected final AtomicReference<CustomQueryIFace>         query          = new AtomicReference<CustomQueryIFace>();
@@ -62,25 +48,13 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
                                                                                      false);
     protected List<Pair<String, Object>>                      params = null;
     protected String                                          title;
-    protected int                                             tableId;
     protected String                                          iconName;
     protected List<SortElement>                               sortElements = null;
     protected boolean 										  filterDups = false;							
     protected Vector<Vector<Object>>                          cache = null;
     protected boolean                                         recIdsLoaded = false;
     protected boolean                                         hasIds = true;
-    
-    protected final SortedSet<QBResultReportServiceInfo> reports = new TreeSet<QBResultReportServiceInfo>(
-                new Comparator<QBResultReportServiceInfo>()
-                {
-                    public int compare(QBResultReportServiceInfo o1,
-                                       QBResultReportServiceInfo o2)
-                    {
-                        return o1.getReportName().compareTo(o2.getReportName());
-                    }
-
-                });
-    
+        
     /**
      * @param bannerColor
      * @param title
@@ -94,12 +68,10 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
                                   final int       tableId,
                                   final QueryBldrPane queryBuilder)
     {
-        super(null, bannerColor, "", null);
+        super(null, bannerColor, tableId);
         this.title    = title;
-        this.tableId  = tableId;
         this.iconName = iconName;
         this.queryBuilder = queryBuilder;
-        buildReports();
     }
     
     /**
@@ -155,35 +127,10 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
         return tableId;
     }
 
-    //--------------------------------------------------------------------
-    // ServiceProviderIFace Interface
-    //--------------------------------------------------------------------
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.core.ServiceProviderIFace#getServices()
-     */
-    public List<ServiceInfo> getServices(final Object data)
-    {
-        if (reports.size() == 0)
-        {
-            return null;
-        }
-        
-        List<ServiceInfo> result = new LinkedList<ServiceInfo>();
-        
-        
-        result.add(new ServiceInfo(40, "QB_RESULT_REPORT_SERVICE", 
-                QBQIdRHQLTblId, 
-                new CommandAction(QueryTask.QUERY, QueryTask.QUERY_RESULTS_REPORT, 
-                        new QBResultReportServiceCmdData(this, data)),
-                ContextMgr.getTaskByClass(QueryTask.class),
-                "Reports",
-                UIRegistry.getResourceString("QB_RESULTS_REPORT_TT")));
-        return result;
-    }
     
     public synchronized void reportDeleted(final Integer resourceId)
     {
-        for (QBResultReportServiceInfo repInfo : reports)
+        for (SearchResultReportServiceInfo repInfo : reports)
         {
             if (repInfo.getResourceId() != null && repInfo.getResourceId().equals(resourceId))
             {
@@ -192,79 +139,7 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
             }
         }
     }
-    
-    public void buildReports()
-    {
-        reports.clear();
-        boolean buildEm = true;
-        if (UIHelper.isSecurityOn())
-        {
-            Taskable reportsTask = ContextMgr.getTaskByClass(ReportsTask.class);
-            if (reportsTask != null)
-            {
-                buildEm = reportsTask.getPermissions().canView();
-            }
-        }
-        if (buildEm)
-        {
-            //first add reports associated directly with the results
-            if (queryBuilder != null)
-            {
-                for (SpReport rep : queryBuilder.getReportsForQuery())
-                {
-                    if (repContextIsActive(rep.getAppResource()))
-                    {
-                        reports.add(new QBResultReportServiceInfo(rep.getName(), rep.getName(), true, null, rep.getAppResource().getId(), rep.getRepeats()));
-                    }
-                }
-            }
-        
-            if (tableId != -1)
-            {
-                //second add reports associated with the same table as the current results
-                List<AppResourceIFace> reps = AppContextMgr.getInstance().getResourceByMimeType(ReportsBaseTask.LABELS_MIME);
-                reps.addAll(AppContextMgr.getInstance().getResourceByMimeType(ReportsBaseTask.REPORTS_MIME));
-                for (AppResourceIFace rep : reps)
-                {
-                    String tblIdStr = rep.getMetaData("tableid");
-                    if (tblIdStr != null)
-                    {
-                        if (tableId == Integer.valueOf(tblIdStr))
-                        {
-                            reports.add(new QBResultReportServiceInfo(rep.getDescription() /*'title' seems to be currently stored in description */,
-                                    rep.getName() /* and filename in name */, false, null, ((SpAppResource)rep).getId(), null));
-                        }
-                        else
-                        {
-                            //third add reports based on other queries...
-                            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-                            try
-                            {
-                                SpReport spRep = (SpReport)session.getData("from SpReport where appResourceId = " + ((SpAppResource)rep).getId());
-                                if (spRep != null && spRep.getQuery() != null && spRep.getQuery().getContextTableId().intValue() == tableId)
-                                {
-                                    reports
-                                            .add(new QBResultReportServiceInfo(
-                                                rep.getDescription() /*
-                                                                         * 'title' seems to be
-                                                                         * currently stored in
-                                                                         * description
-                                                                         */,
-                                                rep.getName() /* and filename in name */, false, spRep.getId(),
-                                                ((SpAppResource)rep).getId(), null));
-                                }
-                            }
-                            finally
-                            {
-                                session.close();
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
+     
     /**
      * @param repResource
      * @returns true if repResource is currently available from the AppContextMgr.
@@ -274,13 +149,6 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
         AppResourceIFace match = AppContextMgr.getInstance().getResource(repResource.getName());
         //XXX - Is it really safe to assume there there won't be more than one resource with the same name and mimeType?
         return match != null && match.getMimeType().equalsIgnoreCase(repResource.getMimeType());
-    }
-    /**
-     * @return the reports
-     */
-    public SortedSet<QBResultReportServiceInfo> getReports()
-    {
-        return reports;
     }
 
     /* (non-Javadoc)
@@ -541,6 +409,9 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
         return sortElements != null && sortElements.size() > 0; 
     }
     
+    /**
+     * @return the query name.
+     */
     public String getQueryName()
     {
         return queryBuilder.getQuery().getName();
@@ -554,4 +425,36 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
 		return filterDups;
 	}
     
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.af.core.expresssearch.QueryForIdResultsHQL#buildReports()
+	 */
+	@Override
+	public void buildReports()
+	{
+		boolean buildEm = true;
+		if (UIHelper.isSecurityOn())
+		{
+			Taskable reportsTask = ContextMgr.getTaskByClass(ReportsTask.class);
+			if (reportsTask != null)
+			{
+				buildEm = reportsTask.getPermissions().canView();
+			}
+		}
+		if (buildEm)
+		{
+			super.buildReports();
+			//add reports associated directly with the results
+			if (queryBuilder != null)
+			{
+				for (SpReport rep : queryBuilder.getReportsForQuery())
+				{
+					if (repContextIsActive(rep.getAppResource()))
+					{
+						reports.add(new SearchResultReportServiceInfo(rep.getName(), rep.getName(), true, null, rep.getAppResource().getId(), rep.getRepeats()));
+					}
+				}
+			}
+		}
+	}
+	
 }

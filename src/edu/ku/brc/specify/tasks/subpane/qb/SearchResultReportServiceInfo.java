@@ -17,7 +17,7 @@ import edu.ku.brc.util.Pair;
  * @code_status Alpha
  *
  */
-public class QBResultReportServiceInfo extends Pair<String, String>
+public class SearchResultReportServiceInfo extends Pair<String, String>
 {
     /**
      * true if the report can be run directly from the current query results. False if record ids must be retrieved for results.
@@ -45,7 +45,7 @@ public class QBResultReportServiceInfo extends Pair<String, String>
      * @param liveData - true if the report uses the fields provided by the current QB results
      * @param spReportId - id of SpReport record if another query is required to generate report
      */
-    public QBResultReportServiceInfo(final String reportName, final String fileName, final boolean liveData, final Integer spReportId,
+    public SearchResultReportServiceInfo(final String reportName, final String fileName, final boolean liveData, final Integer spReportId,
                                      final Integer resourceId, final Object repeats)
     {
         super(reportName, fileName);

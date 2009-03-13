@@ -67,6 +67,7 @@ public class QBResultSetTableModel extends ResultSetTableModel
     /**
      * @return true while background cell-loading tasks are still running.
      */
+    @Override
     public synchronized boolean isLoadingCells()
     {
         return bgTaskCount != 0;

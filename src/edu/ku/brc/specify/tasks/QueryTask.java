@@ -89,13 +89,13 @@ import edu.ku.brc.specify.tasks.subpane.SQLQueryPane;
 import edu.ku.brc.specify.tasks.subpane.qb.ERTICaptionInfoQB;
 import edu.ku.brc.specify.tasks.subpane.qb.QBLiveJRDataSource;
 import edu.ku.brc.specify.tasks.subpane.qb.QBReportInfoPanel;
-import edu.ku.brc.specify.tasks.subpane.qb.QBResultReportServiceCmdData;
-import edu.ku.brc.specify.tasks.subpane.qb.QBResultReportServiceInfo;
-import edu.ku.brc.specify.tasks.subpane.qb.QBResultSetTableModel;
 import edu.ku.brc.specify.tasks.subpane.qb.QueryBldrPane;
+import edu.ku.brc.specify.tasks.subpane.qb.SearchResultReportServiceCmdData;
+import edu.ku.brc.specify.tasks.subpane.qb.SearchResultReportServiceInfo;
 import edu.ku.brc.specify.tasks.subpane.qb.TableTree;
 import edu.ku.brc.specify.tasks.subpane.qb.TreeLevelQRI;
 import edu.ku.brc.specify.tools.schemalocale.SchemaLocalizerDlg;
+import edu.ku.brc.specify.ui.db.ResultSetTableModel;
 import edu.ku.brc.specify.ui.treetables.TreeDefinitionEditor;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
@@ -1289,13 +1289,13 @@ public class QueryTask extends BaseTask
         
         if (cmdAction.isAction(QUERY_RESULTS_REPORT))
         {
-            if (cmdAction.getData() instanceof QBResultReportServiceCmdData)
+            if (cmdAction.getData() instanceof SearchResultReportServiceCmdData)
             {
-               QBResultReportServiceCmdData srvData = (QBResultReportServiceCmdData)cmdAction.getData();
-               List<QBResultReportServiceInfo> reps = new Vector<QBResultReportServiceInfo>(srvData.getInfo().getReports());
-               QBResultReportServiceInfo selectedRep = null;
+               SearchResultReportServiceCmdData srvData = (SearchResultReportServiceCmdData)cmdAction.getData();
+               List<SearchResultReportServiceInfo> reps = new Vector<SearchResultReportServiceInfo>(srvData.getInfo().getReports());
+               SearchResultReportServiceInfo selectedRep = null;
                JTable dataTbl = ((ESResultsTablePanel)srvData.getData()).getTable();
-               QBResultSetTableModel rsm = (QBResultSetTableModel)dataTbl.getModel();
+               ResultSetTableModel rsm = (ResultSetTableModel)dataTbl.getModel();
                if (reps.size() == 0)
                {
                    log.error("no reports for query. Should't have gotten here.");
@@ -1306,7 +1306,7 @@ public class QueryTask extends BaseTask
                }
                else
                {
-                   ChooseFromListDlg<QBResultReportServiceInfo> dlg = new ChooseFromListDlg<QBResultReportServiceInfo>((Frame) UIRegistry
+                   ChooseFromListDlg<SearchResultReportServiceInfo> dlg = new ChooseFromListDlg<SearchResultReportServiceInfo>((Frame) UIRegistry
                            .getTopWindow(), UIRegistry.getResourceString("REP_CHOOSE_SP_REPORT"),
                            reps);
                    dlg.setVisible(true);

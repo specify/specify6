@@ -9,6 +9,8 @@
  */
 package edu.ku.brc.specify.tasks.subpane.qb;
 
+import edu.ku.brc.af.core.expresssearch.QueryForIdResultsHQL;
+
 
 /**
  * @author timbo
@@ -16,15 +18,15 @@ package edu.ku.brc.specify.tasks.subpane.qb;
  * @code_status Alpha
  *
  */
-public class QBResultReportServiceCmdData
+public class SearchResultReportServiceCmdData
 {
-    protected QBQueryForIdResultsHQL info;
+    protected QueryForIdResultsHQL info;
     protected Object data;
     /**
      * @param info
      * @param data
      */
-    public QBResultReportServiceCmdData(QBQueryForIdResultsHQL info, Object data)
+    public SearchResultReportServiceCmdData(QueryForIdResultsHQL info, Object data)
     {
         super();
         this.info = info;
@@ -33,7 +35,7 @@ public class QBResultReportServiceCmdData
     /**
      * @return the info
      */
-    public QBQueryForIdResultsHQL getInfo()
+    public QueryForIdResultsHQL getInfo()
     {
         return info;
     }
