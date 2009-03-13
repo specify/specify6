@@ -22,6 +22,7 @@ import edu.ku.brc.af.ui.forms.DataGetterForObj;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterField;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -110,6 +111,12 @@ public class AutoNumberGeneric implements AutoNumberIFace
                                       final Pair<Integer, Integer> yearPos, 
                                       final Pair<Integer, Integer> pos) throws Exception
     {
+        if (value == null || pos == null)
+        {
+            UIRegistry.showLocalizedError("AUTONUM_INC_ERR");
+            return null;
+        }
+        
         Integer yearVal = null;
         if (yearPos != null && StringUtils.isNotEmpty(value) && value.length() >= yearPos.second)
         {
@@ -373,8 +380,8 @@ public class AutoNumberGeneric implements AutoNumberIFace
                 UIFieldFormatterField  yearField = formatter.getYear();
                 Pair<Integer, Integer> yrPos     = yearField != null ? formatter.getYearPosition() : null;
                 
-                Object                 dataObj       = getHighestObject(session, formValue, yrPos, formatter.getIncPosition());
-                String                 highestValue  = dataObj != null ? (String)getter.getFieldValue(dataObj, fieldName) : null;
+                Object dataObj = getHighestObject(session, formValue, yrPos, formatter.getIncPosition());
+                String highestValue  = dataObj != null ? (String)getter.getFieldValue(dataObj, fieldName) : null;
                 
                 Pair<Integer, Integer> yearAndIncVal = getYearAndIncVal(formatter, highestValue, formValue);
                 

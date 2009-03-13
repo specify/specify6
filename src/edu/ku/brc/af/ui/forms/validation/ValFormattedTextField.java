@@ -946,7 +946,7 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.GetSetValueIFace#setValue(java.lang.Object, java.lang.String)
      */
-    public void setValue(Object value, String defaultValue)
+    public void setValue(final Object value, final String defaultValue)
     {
         this.defaultValue = defaultValue;
 
@@ -988,7 +988,7 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
             {
                 if (data.length() > 0 && data.length() != formatter.getLength())
                 {
-                    UIRegistry.showError(String.format("For Formatter Name '%s' the data is the wrong size.\nData size '%d' and format Len '%d'", formatter.getName(), data.length(), formatter.getLength()));
+                    UIRegistry.showError(String.format("For formatter named '%s' the data is the wrong size.\nData size '%d' and format Len '%d'", formatter.getName(), data.length(), formatter.getLength()));
                 }
                 needsUpdating = (StringUtils.isEmpty(data) || data.length() != formatter.getLength()) && formatter.getAutoNumber() != null && formatter.isIncrementer();
                 

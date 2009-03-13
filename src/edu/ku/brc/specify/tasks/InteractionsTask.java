@@ -83,6 +83,7 @@ import edu.ku.brc.helpers.EMailHelper;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
+import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Discipline;
@@ -94,9 +95,11 @@ import edu.ku.brc.specify.datamodel.InfoRequest;
 import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.LoanPreparation;
 import edu.ku.brc.specify.datamodel.LoanReturnPreparation;
+import edu.ku.brc.specify.datamodel.Permit;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.PreparationsProviderIFace;
 import edu.ku.brc.specify.datamodel.RecordSet;
+import edu.ku.brc.specify.datamodel.RepositoryAgreement;
 import edu.ku.brc.specify.datamodel.Shipment;
 import edu.ku.brc.specify.datamodel.SpAppResource;
 import edu.ku.brc.specify.datamodel.SpReport;
@@ -164,8 +167,6 @@ public class InteractionsTask extends BaseTask
 
     // Data Members
     protected NavBox                  infoRequestNavBox;
-    //protected NavBox                  loansNavBox;
-    //protected NavBox                  giftsNavBox;
     protected Vector<NavBoxIFace>     extendedNavBoxes = new Vector<NavBoxIFace>();
     protected Vector<NavBoxItemIFace> invoiceList      = new Vector<NavBoxItemIFace>();
     protected NavBoxItemIFace         exchgNavBtn      = null; 
@@ -192,62 +193,6 @@ public class InteractionsTask extends BaseTask
         INFOREQUEST_FLAVOR.addTableId(50);
     }
 
-    /**
-     * @author timbo
-     *
-     * @code_status Alpha
-     *
-     *Stores info about reports.
-     */
-    private class InvoiceInfo extends Pair<SpAppResource, SpReport> implements Comparable<InvoiceInfo>
-    {
-        /**
-         * @param appResource
-         * @param report
-         */
-        public InvoiceInfo(final SpAppResource spAppResource, final SpReport spReport)
-        {
-            super(spAppResource, spReport);
-        }
-        
-        /**
-         * @return the appResource
-         */
-        public SpAppResource getSpAppResource()
-        {
-            return getFirst();
-        }
-        
-        /**
-         * @return the spReport
-         */
-        public SpReport getSpReport()
-        {
-            return getSecond();
-        }
-
-        /* (non-Javadoc)
-         * @see edu.ku.brc.util.Pair#toString()
-         */
-        @Override
-        public String toString()
-        {
-            return getSpAppResource().getName();
-        }
-
-        /* (non-Javadoc)
-         * @see java.lang.Comparable#compareTo(java.lang.Object)
-         */
-        @Override
-        public int compareTo(InvoiceInfo o)
-        {
-            // TODO Auto-generated method stub
-            return getSpAppResource().getName().compareTo(o.getSpAppResource().getName());
-        }
-        
-        
-    }
-    
    /**
      * Default Constructor
      *
@@ -327,6 +272,22 @@ public class InteractionsTask extends BaseTask
     }
     
     /**
+     * Returns whether a table id if considered to be an Interaction.
+     * @param tableId the table ID in question
+     * @return
+     */
+    public static boolean isInteractionTable(final int tableId)
+    {
+        return tableId == Loan.getClassTableId() ||
+               tableId == Gift.getClassTableId() ||
+               tableId == Accession.getClassTableId() ||
+               tableId == Permit.getClassTableId() ||
+               tableId == RepositoryAgreement.getClassTableId() ||
+               tableId == ExchangeIn.getClassTableId() ||
+               tableId == ExchangeOut.getClassTableId();
+    }
+    
+    /**
      * Reads the entries set up information from the database.
      */
     @SuppressWarnings("unchecked")
@@ -365,10 +326,10 @@ public class InteractionsTask extends BaseTask
             
         } catch (Exception ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(InteractionsTask.class, ex);
             log.error(ex);
             ex.printStackTrace();
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(InteractionsTask.class, ex);
         }
     }
     
@@ -421,6 +382,7 @@ public class InteractionsTask extends BaseTask
             try
             {
                 list.add((TaskConfigItemIFace)entry.clone());
+                
             } catch (CloneNotSupportedException ex) {/* ignore */}
         }
         
@@ -614,6 +576,8 @@ public class InteractionsTask extends BaseTask
         {
             cmdAction.setProperty("view", entry.getViewName());
             cmdAction.setProperty(NavBoxAction.ORGINATING_TASK, this);
+            ContextMgr.registerService(10, entry.getViewName(), tableInfo.getTableId(), cmdAction, this, "Data_Entry", tableInfo.getTitle(), true); // the Name gets Hashed
+
         }
         
         NavBoxButton roc = (NavBoxButton)makeDnDNavBtn(navBox, entry.getTitle(), entry.getIconName(), cmdAction, null, true, false);// true means make it draggable
@@ -2188,8 +2152,6 @@ public class InteractionsTask extends BaseTask
             return;
         }
         
-        //log.debug(cmdAction);
-        
         if (cmdAction.isType(DB_CMD_TYPE))
         {
             processDatabaseCommands(cmdAction);
@@ -2245,4 +2207,62 @@ public class InteractionsTask extends BaseTask
                                 {true, true, false, false},
                                 {true, false, false, false}};
     }
+    
+    /**
+     * @author timbo
+     *
+     * @code_status Alpha
+     *
+     *Stores info about reports.
+     */
+    private class InvoiceInfo extends Pair<SpAppResource, SpReport> implements Comparable<InvoiceInfo>
+    {
+        /**
+         * @param appResource
+         * @param report
+         */
+        public InvoiceInfo(final SpAppResource spAppResource, final SpReport spReport)
+        {
+            super(spAppResource, spReport);
+        }
+        
+        /**
+         * @return the appResource
+         */
+        public SpAppResource getSpAppResource()
+        {
+            return getFirst();
+        }
+        
+        /**
+         * @return the spReport
+         */
+        public SpReport getSpReport()
+        {
+            return getSecond();
+        }
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.util.Pair#toString()
+         */
+        @Override
+        public String toString()
+        {
+            return getSpAppResource().getName();
+        }
+
+        /* (non-Javadoc)
+         * @see java.lang.Comparable#compareTo(java.lang.Object)
+         */
+        @Override
+        public int compareTo(InvoiceInfo o)
+        {
+            // TODO Auto-generated method stub
+            return getSpAppResource().getName().compareTo(o.getSpAppResource().getName());
+        }
+        
+        
+    }
+    
+
 }

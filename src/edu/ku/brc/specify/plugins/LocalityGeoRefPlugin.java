@@ -194,7 +194,7 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
                 command.setProperty("listener", this);
                 
                 JStatusBar statusBar = UIRegistry.getStatusBar();
-                statusBar.setText(UIRegistry.getResourceString("BGM_PROCESSING"));
+                statusBar.setText(UIRegistry.getResourceString(doGeoLocate ? "GEOLOC_PROCESSING" : "BGM_PROCESSING"));
                 CommandDispatcher.dispatch(command);
                 
             } else

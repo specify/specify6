@@ -95,15 +95,15 @@ public class DataEntryConfigDlg extends TaskConfigureDlg
         Hashtable<String, ViewIFace> newAvailViews = new Hashtable<String, ViewIFace>();
         for (ViewIFace view : views)
         {
-            System.out.println("["+view.getName()+"]["+view.getTitle()+"]");
+            //System.out.println("["+view.getName()+"]["+view.getTitle()+"]");
             
             if (hash.get(view.getName()) == null)
             {
                 DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
-                if (!ti.isHidden())
+                if (!ti.isHidden() && !InteractionsTask.isInteractionTable(ti.getTableId()))
                 {
                     hash.put(view.getName(), view);
-                    String      title = ti != null ? ti.getTitle() : view.getName();
+                    String title = ti != null ? ti.getTitle() : view.getName();
                     if (newAvailViews.get(title) != null)
                     {
                         title = view.getName();

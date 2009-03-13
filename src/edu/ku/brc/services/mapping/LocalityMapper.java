@@ -1132,7 +1132,7 @@ public class LocalityMapper implements TimingTarget
 //                    mapMinLat, mapMinLong, mapMaxLat, mapMaxLong, maxMapHeight, maxMapWidth);
 
             Image mapImage = getMapFromService("lifemapper.org", //$NON-NLS-1$
-                    "/pymod/sdl.py/ogc?map=specify.map&service=WMS&request=GetMap&srs=EPSG:4326&version=1.3.1&STYLES=&format=image/png&transparent=TRUE", //$NON-NLS-1$
+                    "/ogc?map=specify.map&service=WMS&request=GetMap&srs=EPSG:4326&version=1.3.1&STYLES=&format=image/png&transparent=TRUE", //$NON-NLS-1$
                     "global_mosaic,states,rivers", //$NON-NLS-1$
                     mapMinLat, mapMinLong, mapMaxLat, mapMaxLong, maxMapHeight, maxMapWidth);
 

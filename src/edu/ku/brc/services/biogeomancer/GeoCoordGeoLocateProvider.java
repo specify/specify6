@@ -28,6 +28,7 @@ import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.services.geolocate.client.GeoLocate;
 import edu.ku.brc.services.geolocate.client.GeorefResult;
 import edu.ku.brc.services.geolocate.client.GeorefResultSet;
+import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.ProgressDialog;
 import edu.ku.brc.ui.UIHelper;
@@ -82,8 +83,7 @@ public class GeoCoordGeoLocateProvider implements GeoCoordServiceProviderIFace
         progressDialog.setModal(true);
         progressDialog.setProcess(0, items.size());
 
-        // XXX Java 6
-        //progressDialog.setIconImage( IconManager.getImage("AppIcon").getImage());
+        progressDialog.setIconImage( IconManager.getImage("AppIcon").getImage());
 
         // create the thread pool for doing the GEOLocate web service requests
         final ExecutorService glExecServ = Executors.newFixedThreadPool(10);
