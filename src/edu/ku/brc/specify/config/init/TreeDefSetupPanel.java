@@ -192,7 +192,9 @@ public class TreeDefSetupPanel extends BaseSetupPanel implements SetupPanelIFace
                 {
                     if (!e.getValueIsAdjusting())
                     {
-                        if (table.getSelectedColumn() == 2)
+                        updateBtnUI();
+
+                        if (table.getSelectedColumn() == 1 || table.getSelectedColumn() == 3)
                         {
                             TreeDefRow row = treeDefList.get(table.getSelectedRow());
                             if (row.isRequired())
@@ -201,7 +203,7 @@ public class TreeDefSetupPanel extends BaseSetupPanel implements SetupPanelIFace
                                     @Override
                                     public void run()
                                     {
-                                        showLocalizedMsg("NO_CHANGE_REQ");
+                                        showLocalizedMsg(table.getSelectedColumn() == 1 ? "NO_CHANGE_REQ" : "NO_CHANGE_INCL");
                                     }
                                 });
                             }
@@ -213,14 +215,14 @@ public class TreeDefSetupPanel extends BaseSetupPanel implements SetupPanelIFace
             updateBtnUI();
         }
     }
-
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.config.init.SetupPanelIFace#doingNext()
      */
     @Override
     public void doingNext()
     {
-        
+        updateBtnUI();
     }
 
     /* (non-Javadoc)
@@ -257,14 +259,20 @@ public class TreeDefSetupPanel extends BaseSetupPanel implements SetupPanelIFace
     @Override
     public boolean isUIValid()
     {
+        boolean isEnforced   = false;
+        boolean isInFullName = false;
         for (TreeDefRow row : treeDefList)
         {
             if (row.isEnforced())
             {
-                return true;
+                isEnforced = true;
+            }
+            if (row.isInFullName())
+            {
+                isInFullName = true;
             }
         }
-        return false;
+        return isEnforced && isInFullName;
     }
 
     /* (non-Javadoc)

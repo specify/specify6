@@ -130,7 +130,7 @@ public class SpecifyDBSetupWizard extends JPanel
         
         cardPanel = new JPanel(cardLayout);
         
-        cancelBtn  = createButton(UIRegistry.getResourceString("EXIT"));
+        cancelBtn  = createButton(UIRegistry.getResourceString("CANCEL"));
         helpBtn    = createButton(UIRegistry.getResourceString("HELP"));
         
         JPanel btnBar;
@@ -671,7 +671,7 @@ public class SpecifyDBSetupWizard extends JPanel
                         {
                             Object[] options = { 
                                     getResourceString("PROCEED"), 
-                                    getResourceString("EXIT")
+                                    getResourceString("CANCEL")
                                   };
                             int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
                                                                          UIRegistry.getLocalizedMessage("DEL_CUR_DB", dbPanel.getDbName()), 
