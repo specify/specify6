@@ -478,9 +478,9 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
         nxtEmptyBtn    = createI18NButton("SL_NEXT_EMPTY");
         fldSpellChkBtn = createI18NButton("SL_SPELL_CHECK");
         
-        JPanel bbp = ButtonBarFactory.buildCenteredBar(adjustButtonArray(new JButton[] {nxtEmptyBtn, nxtBtn, fldSpellChkBtn}));
-        bbp.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
-        pb.add(bbp,   cc.xywh(3, y, 8, 1));
+        //JPanel bbp = ButtonBarFactory.buildCenteredBar(adjustButtonArray(new JButton[] {nxtEmptyBtn, nxtBtn, fldSpellChkBtn}));
+        //bbp.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
+        //pb.add(bbp,   cc.xywh(3, y, 8, 1));
         
         nxtBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)

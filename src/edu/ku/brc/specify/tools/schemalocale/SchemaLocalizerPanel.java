@@ -186,8 +186,8 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         CellConstraints cc = new CellConstraints();
         
         // LocalizableContainerIFace Section Layout
-        tblSpellChkBtn               = createButton(getResourceString("SL_SPELL_CHECK"));
-        JPanel      tpbbp            = ButtonBarFactory.buildCenteredBar(adjustButtonArray(new JButton[] {tblSpellChkBtn}));
+        //tblSpellChkBtn               = createButton(getResourceString("SL_SPELL_CHECK"));
+        //JPanel      tpbbp            = ButtonBarFactory.buildCenteredBar(adjustButtonArray(new JButton[] {tblSpellChkBtn}));
         JScrollPane sp               = new JScrollPane(tblDescText, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         //tblDescText.setRows(4);
         tblDescText.setLineWrap(true);
@@ -235,7 +235,7 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         topInner.add(tblNameLbl = createI18NFormLabel("SL_DESC", SwingConstants.RIGHT), cc.xy(1, y)); 
         topInner.add(sp,    cc.xy(3, y));   y += 2;
 
-        topInner.add(tpbbp, cc.xywh(1, y, 3, 1)); y += 2;
+        //topInner.add(tpbbp, cc.xywh(1, y, 3, 1)); y += 2;
 
         // formatter panel
         PanelBuilder fmtPanel = new PanelBuilder(new FormLayout("200px,r:m", "p"));
@@ -282,65 +282,18 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
 
         pb.getPanel().setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
         
+        /*
         tblSpellChkBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
-                /*Window win = UIRegistry.getMostRecentWindow();
-                
-                final SchemaConfigSearchDlg dlg = new SchemaConfigSearchDlg(win instanceof Dialog ? (Dialog)win : null, localizableIO);
-                dlg.createUI();
-                dlg.addTableListener(new ListSelectionListener() {
-                    @Override
-                    public void valueChanged(ListSelectionEvent e)
-                    {
-                        if (!e.getValueIsAdjusting())
-                        {
-                            final Pair<String, String> selection = dlg.getSelection();
-                            if (selection != null)
-                            {
-                                int r = 0;
-                                for (LocalizableJListItem item : localizableIO.getContainerDisplayItems())
-                                {
-                                    if (item.getName().equals(selection.first))
-                                    {
-                                        tablesList.setSelectedIndex(r);
-                                        localizableIO.getContainer(item, new LocalizableIOIFaceListener() {
-                                            @Override
-                                            public void containterRetrieved(LocalizableContainerIFace container)
-                                            {
-                                                if (selection.second != null && !selection.second.isEmpty())
-                                                {
-                                                    DefaultListModel model = (DefaultListModel)fieldPanel.getFieldsList().getModel();
-                                                    for (int i=0;i<model.getSize();i++)
-                                                    {
-                                                        LocalizableJListItem fItem = (LocalizableJListItem)model.get(i);
-                                                        if (fItem.getName().equals(selection.second))
-                                                        {
-                                                            fieldPanel.getFieldsList().setSelectedIndex(i);
-                                                            break;
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        });
-                                    }
-                                    r++;
-                                }
-                            }
-                        }
-                    }
-                });
-                //dlg.setAlwaysOnTop(true);
-                dlg.setVisible(true);*/
-                
                 if (checker != null)
                 {
                     checker.spellCheck(tblDescText);
                     checker.spellCheck(tblNameText);
                 }
             }
-            
         });
+        */
         
         tblHideChk.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e)
@@ -682,7 +635,7 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         
         if (!enable)
         {
-            tblSpellChkBtn.setEnabled(false);
+            //tblSpellChkBtn.setEnabled(false);
             
         } else
         {
@@ -906,8 +859,8 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
     @Override
     protected void enableSpellCheck()
     {
-        boolean ok = SchemaI18NService.getCurrentLocale().getLanguage().equals("en")  && tablesList.isEnabled();
-        tblSpellChkBtn.setEnabled(ok && checker != null && spellCheckLoaded && currContainer != null);
+        //boolean ok = SchemaI18NService.getCurrentLocale().getLanguage().equals("en")  && tablesList.isEnabled();
+        //tblSpellChkBtn.setEnabled(ok && checker != null && spellCheckLoaded && currContainer != null);
     }
 
     /* (non-Javadoc)

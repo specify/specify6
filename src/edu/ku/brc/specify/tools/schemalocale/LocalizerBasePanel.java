@@ -77,8 +77,6 @@ public abstract class LocalizerBasePanel extends JPanel
         SchemaI18NService.initializeLocales(); // this should have already been done, but the cost is minimal
     }
     
-    
-    
     /**
      * @return the localizableStrFactory
      */
@@ -100,74 +98,76 @@ public abstract class LocalizerBasePanel extends JPanel
      */
     public void init()
     {
-        
-        SwingWorker workerThread = new SwingWorker()
+        if (false) // turn off loading the spellchecker
         {
-            @Override
-            public Object construct()
+            SwingWorker workerThread = new SwingWorker()
             {
-                try
+                @Override
+                public Object construct()
                 {
-                    File           phoneticFile = XMLHelper.getConfigDir(phoneticFileName);
-                    File           file         = XMLHelper.getConfigDir(dictionaryFileName);
-                    ZipInputStream zip          = null;
-
                     try
                     {
-                        zip = new ZipInputStream(new FileInputStream(file));
-
-                    } catch (NullPointerException e)
+                        File           phoneticFile = XMLHelper.getConfigDir(phoneticFileName);
+                        File           file         = XMLHelper.getConfigDir(dictionaryFileName);
+                        ZipInputStream zip          = null;
+    
+                        try
+                        {
+                            zip = new ZipInputStream(new FileInputStream(file));
+    
+                        } catch (NullPointerException e)
+                        {
+                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(LocalizerBasePanel.class, e);
+                            FileInputStream fin = new FileInputStream(file);
+                            zip = new ZipInputStream(fin);
+                        }
+    
+                        zip.getNextEntry();
+                        
+                        dictionary = new SpellDictionaryHashMap(new BufferedReader(new InputStreamReader(zip)), new FileReader(phoneticFile));
+                        File userDictFile = new File(userFileName);
+                        if (!userDictFile.exists())
+                        {
+                            userDictFile.createNewFile();
+                        }
+                        checker  = new JTextComponentSpellChecker(dictionary);
+                        userDict = new SpellDictionaryHashMap(userDictFile, phoneticFile);
+                        checker.setUserDictionary(userDict);
+                        
+                    } catch (MalformedURLException e)
                     {
                         edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                         edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(LocalizerBasePanel.class, e);
-                        FileInputStream fin = new FileInputStream(file);
-                        zip = new ZipInputStream(fin);
-                    }
-
-                    zip.getNextEntry();
-                    
-                    dictionary = new SpellDictionaryHashMap(new BufferedReader(new InputStreamReader(zip)), new FileReader(phoneticFile));
-                    File userDictFile = new File(userFileName);
-                    if (!userDictFile.exists())
+                        e.printStackTrace();
+    
+                    } catch (FileNotFoundException e)
                     {
-                        userDictFile.createNewFile();
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(LocalizerBasePanel.class, e);
+                        e.printStackTrace();
+    
+                    } catch (IOException e)
+                    {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(LocalizerBasePanel.class, e);
+                        e.printStackTrace();
                     }
-                    checker  = new JTextComponentSpellChecker(dictionary);
-                    userDict = new SpellDictionaryHashMap(userDictFile, phoneticFile);
-                    checker.setUserDictionary(userDict);
-                    
-                } catch (MalformedURLException e)
-                {
-                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(LocalizerBasePanel.class, e);
-                    e.printStackTrace();
-
-                } catch (FileNotFoundException e)
-                {
-                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(LocalizerBasePanel.class, e);
-                    e.printStackTrace();
-
-                } catch (IOException e)
-                {
-                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(LocalizerBasePanel.class, e);
-                    e.printStackTrace();
+                    return null;
                 }
-                return null;
-            }
+                
+                @SuppressWarnings("unchecked")
+                @Override
+                public void finished()
+                {
+                    spellCheckLoaded = true;
+                    enableSpellCheck();
+                }
+            };
             
-            @SuppressWarnings("unchecked")
-            @Override
-            public void finished()
-            {
-                spellCheckLoaded = true;
-                enableSpellCheck();
-            }
-        };
-        
-        // start the background task
-        workerThread.start();
+            // start the background task
+            workerThread.start();
+        }
     }
     
     /**
