@@ -147,7 +147,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
             navBoxes.add(treeDefNavBox);
             navBoxes.add(unlockNavBox);
             
-            if (isTreeOnByDefault())
+            //if (isTreeOnByDefault())
             {
                 DBTableInfo treeTI = DBTableIdMgr.getInstance().getByClassName(getTreeClass().getName());
                 DBTableInfo tdTI   = DBTableIdMgr.getInstance().getByClassName(getTreeDefClass().getName());
