@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
 
-  Last Id for ExpressSearch 31
+  Last Id for ExpressSearch 37
   Last Id for Other Search  125
 
  -->
@@ -516,7 +516,6 @@
             <joins>
                 <join tableid="7" primary="true">accession.AccessionID</join>
                 <join tableid="1">collectionobject.CollectionObjectID</join>
-                <join tableid="4">taxon.taxonID</join>
             </joins>
             <detailView icon="CollectionObject">
                 <sql>
@@ -541,6 +540,192 @@
                 </captions>
             </detailView>
         </table>
+        
+        <table id="32" tableid="5" indexed="false" name="AccessionToAgent" priority="1" color="30, 144, 144">
+            <joins>
+                <join tableid="7" primary="true">accession.AccessionID</join>
+                <join tableid="5">agent.AgentID</join>
+            </joins>
+            <detailView icon="Agent">
+                <sql>
+                    <![CDATA[SELECT 
+ agent.AgentID, 
+ accession.AccessionNumber,
+ agent.LastName,
+ agent.FirstName,
+ accessionagent.Role,  
+  %s 
+ FROM 
+ accession
+ INNER JOIN accessionagent ON accessionagent.accessionid = accession.accessionid
+ INNER JOIN agent ON agent.agentid = accessionagent.agentid
+ WHERE %s ORDER BY AccessionNumber, LastName, FirstName]]>
+                </sql>
+                <captions>
+                    <caption tableid="5" col="AgentID" visible="false"/>
+                    <caption tableid="7" col="AccessionNumber" formatter="AccessionNumber" />
+                    <caption tableid="5" col="LastName" />
+                    <caption tableid="5" col="FirstName" />
+                    <caption tableid="12" col="Role" />
+                </captions>
+            </detailView>
+        </table>
+
+        <table id="33" tableid="5" indexed="false" name="BorrowToAgent" priority="1" color="30, 144, 144">
+            <joins>
+                <join tableid="18">borrow.BorrowID</join>
+                <join tableid="5" primary="true">agent.AgentID</join>
+            </joins>
+            <detailView icon="Agent">
+                <sql>
+                    <![CDATA[SELECT 
+ agent.AgentID, 
+ borrow.InvoiceNumber,
+ agent.LastName,
+ agent.FirstName,
+ borrowagent.Role,  
+  %s 
+ FROM 
+ borrow
+ INNER JOIN borrowagent ON borrowagent.borrowid = borrow.borrowid
+ INNER JOIN agent ON agent.agentid = borrowagent.agentid
+ WHERE %s ORDER BY InvoiceNumber, LastName, FirstName]]>
+                </sql>
+                <captions>
+                    <caption tableid="5" col="AgentID" visible="false"/>
+                    <caption tableid="18" col="InvoiceNumber" />
+                    <caption tableid="5" col="LastName" />
+                    <caption tableid="5" col="FirstName" />
+                    <caption tableid="19" col="Role" />
+                </captions>
+            </detailView>
+        </table>
+        
+        <table id="34" tableid="5" indexed="false" name="AppraisalToAgent" priority="1" color="30, 144, 144">
+            <joins>
+                <join tableid="67">appraisal.AppriasalID</join>
+                <join tableid="5"  primary="true">agent.AgentID</join>
+            </joins>
+            <detailView icon="Agent">
+                <sql>
+                    <![CDATA[SELECT 
+ agent.AgentID, 
+ appraisal.AppraisalNumber,
+ agent.LastName,
+ agent.FirstName,
+  %s 
+ FROM 
+ appraisal
+  INNER JOIN agent ON agent.agentid = appraisal.agentid
+ WHERE %s ORDER BY AppraisalNumber, LastName, FirstName]]>
+                </sql>
+                <captions>
+                    <caption tableid="5" col="AgentID" visible="false"/>
+                    <caption tableid="67" col="AppraisalNumber" />
+                    <caption tableid="5" col="LastName" />
+                    <caption tableid="5" col="FirstName" />
+                 </captions>
+            </detailView>
+        </table>
+        
+        
+        <table id="35" tableid="1" indexed="false" name="GeoTimePeriodToCO" priority="1" color="30, 144, 144">
+            <joins>
+                <join tableid="46">geologictimeperiod.GeologicTimePeriodID</join>
+                <join tableid="1" primary="true">collectionobject.CollectionObjectID</join>
+            </joins>
+            <detailView icon="CollectionObject">
+                <sql>
+                    <![CDATA[SELECT 
+ geologictimeperiod.GeologicTimePeriodID, 
+ geologictimeperiod.FullName,
+ collectionobject.CatalogNumber,
+  %s 
+ FROM 
+ geologictimeperiod
+  INNER JOIN paleocontext ON paleocontext.chronosstratid = geologictimeperiod.geologictimeperiodid
+  INNER JOIN collectionobject ON collectionobject.paleocontextid = paleocontext.paleocontextid
+ WHERE %s ORDER BY FullName, CatalogNumber]]>
+                </sql>
+                <captions>
+                    <caption tableid="46" col="GeologicTimePeriodID" visible="false"/>
+                    <caption tableid="46" col="FullName" />
+                    <caption tableid="1" col="CatalogNumber" formatter="CatalogNumber" />
+                 </captions>
+            </detailView>
+        </table>
+        
+        <table id="36" tableid="5" indexed="false" name="CollEventToCollectors" priority="1" color="30, 144, 144">
+            <joins>
+                <join tableid="5" primary="true">agent.AgentID</join>
+                <join tableid="10">collectingevent.CollectingEventID</join>
+            </joins>
+            <detailView icon="Agent">
+                <sql>
+                    <![CDATA[SELECT 
+ agent.AgentID, 
+ agent.LastName,
+ agent.FirstName,
+ collector.OrderNumber,
+ collectingevent.StartDate,
+ collectingevent.StartDatePrecision,
+ collectingevent.StationFieldNumber,
+  %s 
+ FROM 
+ collectingevent
+  INNER JOIN collector ON collector.collectingeventid = collectingevent.collectingeventid
+  INNER JOIN agent ON agent.agentid = collector.agentid
+ WHERE %s ORDER BY LastName, FirstName, StartDate, StationFieldNumber]]>
+                </sql>
+                <captions>
+                    <caption tableid="5" col="AgentID" visible="false"/>
+                    <caption tableid="5" col="LastName" />
+                    <caption tableid="5" col="FirstName" />
+                    <caption tableid="30" col="OrderNumber" />
+                    <caption tableid="10" formatter="PartialDate">
+                        <col name="StartDate"          field="startDate"/>
+                        <col name="StartDatePrecision" field="startDatePrecision"/>
+                    </caption>
+                    <caption tableid="10" col="StationFieldNumber"/>
+                 </captions>
+            </detailView>
+        </table>
+        
+        
+        <table id="37" tableid="87" indexed="false" name="CollTripCollEvent" priority="1" color="30, 144, 144">
+            <joins>
+                <join tableid="87" primary="true">collectingtrip.CollectingTripID</join>
+                <join tableid="10">collectingevent.CollectingTripID</join>
+            </joins>
+            <detailView icon="CollectingTrip">
+                <sql>
+                    <![CDATA[SELECT 
+ collectingtrip.CollectingTripID, 
+ collectingtrip.CollectingTripName,
+ collectingevent.StartDate,
+ collectingevent.StartDatePrecision,
+ collectingevent.StationFieldNumber,
+   %s 
+ FROM 
+ collectingevent
+  INNER JOIN collectingtrip ON collectingtrip.collectingtripid = collectingevent.collectingtripid
+ WHERE %s ORDER BY collectingTripName, StartDate, StationFieldNumber]]>
+                </sql>
+                <captions>
+                    <caption tableid="87" col="CollectingTripID" visible="false"/>
+                    <caption tableid="87" col="CollectingTripName" />
+                    <caption tableid="10" formatter="PartialDate">
+                        <col name="StartDate"          field="startDate"/>
+                        <col name="StartDatePrecision" field="startDatePrecision"/>
+                    </caption>
+                    <caption tableid="10" col="StationFieldNumber"/>
+                 </captions>
+            </detailView>
+        </table>
+        
+        
+        
+        
         
         
         <!-- ============================ -->
