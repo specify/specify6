@@ -10676,7 +10676,7 @@ Specify, determiner information is stored in the Agent table.</text>
         <names>
           <str language="en">
             <version>0</version>
-            <text>Accepted Geography</text>
+            <text>Preferred Geography</text>
           </str>
         </names>
         <descs/>
@@ -11329,7 +11329,7 @@ Specify, determiner information is stored in the Agent table.</text>
         <names>
           <str language="en">
             <version>0</version>
-            <text>Accepted Chronostratigraphy</text>
+            <text>Preferred Chronostratigraphy</text>
           </str>
         </names>
         <descs/>
@@ -12649,7 +12649,7 @@ Specify, determiner information is stored in the Agent table.</text>
         <names>
           <str language="en">
             <version>0</version>
-            <text>Accepted Litho Strat</text>
+            <text>Preferred Litho Strat</text>
           </str>
         </names>
         <descs/>
@@ -15287,7 +15287,7 @@ incremented when a loan is made. </text>
         <names>
           <str language="en">
             <version>0</version>
-            <text>Accepted Children</text>
+            <text>Children</text>
           </str>
         </names>
         <descs/>
@@ -15424,7 +15424,7 @@ incremented when a loan is made. </text>
         <names>
           <str language="en">
             <version>0</version>
-            <text>Accepted Storage</text>
+            <text>Preferred Storage</text>
           </str>
         </names>
         <descs/>
@@ -15446,7 +15446,7 @@ incremented when a loan is made. </text>
         <names>
           <str language="en" country="" variant="">
             <version>0</version>
-            <text>Is Accepted</text>
+            <text>Is Preferred</text>
           </str>
         </names>
         <descs/>
@@ -20863,7 +20863,7 @@ Specify provides an extensive array of utilities for curatorial management of sp
         <names>
           <str language="en">
             <version>0</version>
-            <text>Accepted Taxon</text>
+            <text>Preferred Taxon</text>
           </str>
         </names>
         <descs/>
