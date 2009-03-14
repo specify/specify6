@@ -130,6 +130,7 @@ import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.dbsupport.DBMSUserMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
@@ -6960,77 +6961,34 @@ public class BuildSampleDatabase
      * @param saPassword
      * @return
      */
-    public static boolean createSpecifySAUser(final DatabaseDriverInfo driverInfo,
-                                              final String saUserName,
-                                              final String saPassword,
+    public static boolean createSpecifySAUser(final String hostName,
+									          final String itUsername,
+									          final String itPassword,
+									          final String saUsername,
+									          final String saPassword,
                                               final String databaseName)
     {
-        Connection conn = DBConnection.getInstance().createConnection();
-        if (driverInfo.getName().equals("MySQL"))
+		DBMSUserMgr mgr = DBMSUserMgr.getInstance();
+        
+        mgr.setHostName(hostName);
+        
+        boolean isOK = false;
+        if (mgr.connect(itUsername, itPassword))
         {
-            Statement stmt = null;
-            try
+            if (!mgr.doesUserExists(saUsername))
             {
-                stmt = conn.createStatement();
-                if (stmt != null)
-                {
-                    String sqlStr = "SELECT user, host, db, select_priv, insert_priv, grant_priv FROM mysql.db WHERE db = '"+databaseName+"' AND user = '"+saUserName+"'";
-                    ResultSet rs = stmt.executeQuery(sqlStr);
-                    if (rs.next())
-                    {
-                        try
-                        {
-                            String dropSQl = "DROP USER "+saUserName;
-                            log.debug(dropSQl);
-                            stmt.executeUpdate(dropSQl);
-                            
-                        } catch (Exception ex) { }
-                    }
-                    rs.close();
-                    
-                    /*try
-                    {
-                        String createUserStr = "GRANT SELECT,INSERT,UPDATE,DELETE ON "+databaseName+".* TO '"+saUserName+"'@'%' IDENTIFIED BY '"+saPassword+"'";
-                        int rv = stmt.executeUpdate(createUserStr);
-                        if (rv == 0)
-                        {
-                            //JOptionPane.showMessageDialog(null, "Master User["+saUserName+"] could not be created!");
-                            //System.exit(0);
-                        }
-                        createUserStr = "GRANT SELECT,INSERT,UPDATE,DELETE ON "+databaseName+".* TO '"+saUserName+"'@'localhost' IDENTIFIED BY '"+saPassword+"'";
-                        rv = stmt.executeUpdate(createUserStr);
-                        return rv == 0;
-                        
-                    } catch (Exception e)
-                    {
-                        //JOptionPane.showMessageDialog(null, "Master User["+saUserName+"] could not be created!");
-                        e.printStackTrace();
-                    }*/
-                    return true;
-                }
-            } catch (SQLException ex)
+                isOK = mgr.createUser(saUsername, saPassword, databaseName, DBMSUserMgr.PERM_ALL);
+            } else
             {
-                ex.printStackTrace();
-                
-            } finally
-            {
-                try
-                {
-                    if (stmt != null)
-                    {
-                        stmt.close();
-                    }
-                    if (conn != null)
-                    {
-                        conn.close();
-                    }
-                } catch (SQLException ex1)
-                {
-                    ex1.printStackTrace();
-                }
+                isOK = true;
             }
+        } else
+        {
+            // No Connect Error
+            isOK = false;
         }
-        return false;
+        mgr.close();
+        return isOK;
     }
     
     /** 
@@ -7135,7 +7093,7 @@ public class BuildSampleDatabase
             String saUserName = props.getProperty("saUserName"); // Master Username
             String saPassword = props.getProperty("saPassword"); // Master Password
             
-            createSpecifySAUser(driverInfo, saUserName, saPassword, dbName);
+            createSpecifySAUser(props.getProperty("hostName"), itUsername, itPassword, saUserName, saPassword, dbName);
 
             if (!UIHelper.tryLogin(driverInfo.getDriverClassName(), 
                                    driverInfo.getDialectClassName(), 
@@ -7317,7 +7275,7 @@ public class BuildSampleDatabase
                 dbUser.first, 
                 dbUser.second))
             
-        createSpecifySAUser(driverInfo, saUser.first, saUser.second, dbName);
+        createSpecifySAUser(databaseHost, dbUser.first, dbUser.second, saUser.first, saUser.second, dbName);
 
         if (UIHelper.tryLogin(driverInfo.getDriverClassName(), 
                               driverInfo.getDialectClassName(), 
@@ -7798,6 +7756,7 @@ public class BuildSampleDatabase
      */
     public static void main(final String[] args)
     {
+    	System.setProperty(DBMSUserMgr.factoryName, "edu.ku.brc.dbsupport.MySQLDMBSUserMgr");
         try
         {
             ResourceBundle.getBundle("resources", Locale.getDefault()); //$NON-NLS-1$

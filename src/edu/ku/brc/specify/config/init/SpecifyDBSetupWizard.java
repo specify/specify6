@@ -12,7 +12,9 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -300,6 +302,24 @@ public class SpecifyDBSetupWizard extends JPanel
         nextBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae)
             {
+                if (step == lastStep-2)
+                {
+            		SwingUtilities.invokeLater(new Runnable() {
+						@Override
+						public void run() {
+							Component c = SpecifyDBSetupWizard.this.getParent();
+		                	while (!(c instanceof Window) && c != null)
+		                	{
+		                		c = c.getParent();
+		                	}
+		                	if (c != null)
+		                	{
+		                		((Window)c).pack();
+		                	}
+						}
+            		});
+                }
+
                 if (step < lastStep-1)
                 {
                     step++;
@@ -311,7 +331,7 @@ public class SpecifyDBSetupWizard extends JPanel
                     {
                         listener.panelChanged(getResourceString(panels.get(step).getPanelName()+".TITLE"));
                     }
-
+                    
                 } else
                 {
                     configSetup();

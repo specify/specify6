@@ -353,7 +353,7 @@ public final class UIHelper
     {
         if (isWindows())
         {
-            UIManager.put("Table.selectionBackground", new ColorUIResource(161, 175, 191));
+            //UIManager.put("Table.selectionBackground", new ColorUIResource(161, 175, 191));
         }
     }
     

@@ -536,7 +536,7 @@ public class SpecifyDBConverter
                 log.debug("SOURCE dialect class: "     + driverInfoSource.getDialectClassName());       
                 log.debug("SOURCE Connection String: " + driverInfoSource.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, databaseHostSource, databaseNameSource, userNameSource, passwordSource, driverNameSource));
                 
-                BuildSampleDatabase.createSpecifySAUser(driverInfoDest, saUser.first, saUser.second, databaseNameDest);
+                //BuildSampleDatabase.createSpecifySAUser(databaseHostSource, saUser.first, saUser.second, saUser.first, saUser.second, databaseNameDest);
           
                 GenericDBConversion conversion = new GenericDBConversion(driverInfoSource.getDriverClassName(),
                                                                          databaseNameSource,
