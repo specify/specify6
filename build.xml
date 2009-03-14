@@ -197,7 +197,8 @@
 		</copy>
         <copy todir="${installer.dir}/libs">
 			<fileset dir="libs">
-				<exclude name="**/*.svn" />
+                <exclude name="**/*.svn" />
+                <exclude name="**/derby.jar" />
 			</fileset>
 		</copy>
 		
