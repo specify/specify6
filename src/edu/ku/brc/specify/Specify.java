@@ -476,9 +476,9 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         {
             localPrefs.putInt(schemaKey, schemaFileSize);
             
-            BuildSampleDatabase builder = new BuildSampleDatabase();
-            builder.buildSetup(null);
-            return;
+            //BuildSampleDatabase builder = new BuildSampleDatabase();
+            //builder.buildSetup(null);
+            //return;
         }
         /////////////////////////////////////////////
         // DONE - NOT FOR RELEASE
