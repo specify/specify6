@@ -26,6 +26,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.DefaultCellEditor;
@@ -96,9 +98,10 @@ public class DataObjFieldFormatMultiplePanel extends DataObjFieldFormatPanel imp
                                            final DataObjSwitchFormatterContainerIface formatContainer,
                                            final DataObjFieldFormatMgr                dataObjFieldFormatMgrCache,
                                            final UIFieldFormatterMgr                  uiFieldFormatterMgrCache,    
-                                           final ChangeListener                       listener)
+                                           final ChangeListener                       listener,
+                                           final JButton                              okButton)
     {
-        super(tableInfo, formatContainer, dataObjFieldFormatMgrCache, uiFieldFormatterMgrCache, listener);
+        super(tableInfo, formatContainer, dataObjFieldFormatMgrCache, uiFieldFormatterMgrCache, listener, okButton);
     }
 
     /* (non-Javadoc)
@@ -133,6 +136,7 @@ public class DataObjFieldFormatMultiplePanel extends DataObjFieldFormatPanel imp
      */
     public void enableUIControls() 
     {
+        okButton.setEnabled(!isInError());
         controlPanel.getDelBtn().setEnabled(formatSwitchTbl.getSelectedRowCount() > 0);
     }
 
@@ -192,15 +196,27 @@ public class DataObjFieldFormatMultiplePanel extends DataObjFieldFormatPanel imp
         {
             return false; // formatter is not valid if there are no internal formatters attached to it
         }
-        
+     
+        Set<String> valueSet = new HashSet<String>();
+        // check if there are valid values in each row
         for (int i = 0; i < model.getRowCount(); ++i)
         {
             for (int j = 0; j <= 1; ++j)
             {
                 Object obj = model.getValueAt(i, j);
-                if (obj == null || StringUtils.isEmpty(obj.toString()))
+                String value = obj.toString(); 
+                if (obj == null || StringUtils.isEmpty(value))
                 {
                     return false;
+                }
+                // also check if field value is unique (column 0)
+                if (j == 0)
+                {
+                    // value already in the set: so it's not unique
+                    if (valueSet.contains(value))
+                        return false;
+                    
+                    valueSet.add(value);
                 }
             }
         }

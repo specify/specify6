@@ -82,7 +82,8 @@ public class DataObjFieldFormatSingleDlg extends CustomDialog implements ChangeL
         
         // format editing panel (single format only)
         DataObjSwitchFormatterContainerIface fmtContainer = new DataObjSwitchFormatterSingleContainer(formatter);
-        fmtSingleEditingPanel = new DataObjFieldFormatSinglePanel(tableInfo, fmtContainer, dataObjFieldFormatMgrCache, uiFieldFormatterMgrCache, this);
+        fmtSingleEditingPanel = new DataObjFieldFormatSinglePanel(tableInfo, fmtContainer, 
+                dataObjFieldFormatMgrCache, uiFieldFormatterMgrCache, this, getOkBtn());
         pb.add(fmtSingleEditingPanel);
         contentPanel = pb.getPanel();
         mainPanel.add(contentPanel, BorderLayout.CENTER);

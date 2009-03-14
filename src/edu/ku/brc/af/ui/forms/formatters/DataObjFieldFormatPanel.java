@@ -15,6 +15,7 @@
 
 package edu.ku.brc.af.ui.forms.formatters;
 
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -45,6 +46,8 @@ public abstract class DataObjFieldFormatPanel extends JPanel
     protected ChangeListener                       listener;
     protected ChangeEvent                          changeEvent = new ChangeEvent(this);
 
+    protected JButton                              okButton;
+    
     /**
      * Fills the editor with the DataObjSwitchFormatter
      * @param fmt DataObjSwitchFormatter
@@ -62,7 +65,8 @@ public abstract class DataObjFieldFormatPanel extends JPanel
                                    final DataObjSwitchFormatterContainerIface formatContainer,
                                    final DataObjFieldFormatMgr                dataObjFieldFormatMgrCache,
                                    final UIFieldFormatterMgr                  uiFieldFormatterMgrCache,
-                                   final ChangeListener                       listener) 
+                                   final ChangeListener                       listener,
+                                   final JButton                              okButton) 
     {
         super();
 
@@ -82,6 +86,7 @@ public abstract class DataObjFieldFormatPanel extends JPanel
         this.formatContainer            = formatContainer;
         this.listener                   = listener;
         this.newFormat                  = false;
+        this.okButton                   = okButton;
         
         init();
         buildUI();

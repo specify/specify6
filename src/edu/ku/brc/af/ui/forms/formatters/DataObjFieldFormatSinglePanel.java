@@ -58,6 +58,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.apache.commons.lang.StringUtils;
 
+import bsh.StringUtil;
+
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -105,9 +107,10 @@ public class DataObjFieldFormatSinglePanel extends DataObjFieldFormatPanel
                                          final DataObjSwitchFormatterContainerIface formatContainer,
                                          final DataObjFieldFormatMgr                dataObjFieldFormatMgrCache,
                                          final UIFieldFormatterMgr                  uiFieldFormatterMgrCache,    
-                                         final ChangeListener                       listener)
+                                         final ChangeListener                       listener,
+                                         final JButton                              okButton)
     {
-        super(tableInfo, formatContainer, dataObjFieldFormatMgrCache, uiFieldFormatterMgrCache, listener);
+        super(tableInfo, formatContainer, dataObjFieldFormatMgrCache, uiFieldFormatterMgrCache, listener, okButton);
     }
     
     /* (non-Javadoc)
@@ -122,6 +125,19 @@ public class DataObjFieldFormatSinglePanel extends DataObjFieldFormatPanel
         // to make sure the component shrinks with the dialog
         formatEditor.setMinimumSize(new Dimension(200, 50));
         formatEditor.setPreferredSize(new Dimension(350, 100));
+        
+        formatEditor.getDocument().addDocumentListener(new DocumentListener()
+        {
+            @Override public void changedUpdate(DocumentEvent e) { changed(e); }
+            @Override public void insertUpdate(DocumentEvent e) { changed(e); }
+            @Override public void removeUpdate(DocumentEvent e) { changed(e); }
+
+            public void changed(DocumentEvent e)
+            {
+                updateUIEnabled();
+            }
+        }
+        );
 
         PanelBuilder addFieldPB         = new PanelBuilder(new FormLayout("p,2px,p,f:p:g,r:m", "p,2px,p"));  
         sepText     = createTextField(4);
@@ -192,6 +208,10 @@ public class DataObjFieldFormatSinglePanel extends DataObjFieldFormatPanel
         addFieldListeners();
     }
     
+    private void updateUIEnabled() 
+    {
+        okButton.setEnabled(!isInError() && StringUtils.isNotEmpty(formatEditor.getText()));
+    }
     
     
     /* (non-Javadoc)
@@ -443,6 +463,7 @@ public class DataObjFieldFormatSinglePanel extends DataObjFieldFormatPanel
                         // find position of the field definition button in question
                         int pos = findFieldButtonPosition();
                         formatEditor.getDocument().remove(pos, 1);
+                        updateUIEnabled();
                         formatChanged();
                     }
                     catch (BadLocationException ble) {}

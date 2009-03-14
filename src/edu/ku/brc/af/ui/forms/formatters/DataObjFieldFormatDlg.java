@@ -177,8 +177,8 @@ public class DataObjFieldFormatDlg extends CustomDialog implements ChangeListene
     
             // format editing panels (dependent on the type for format: single/multiple)
             DataObjSwitchFormatterContainerIface formatterContainer = new DataObjSwitchFormatterSingleContainer(dataObjFormatter);
-            fmtSingleEditingPanel   = new DataObjFieldFormatSinglePanel(tableInfo, formatterContainer, dataObjFieldFormatMgrCache, uiFieldFormatterMgrCache, this);
-            fmtMultipleEditingPanel = new DataObjFieldFormatMultiplePanel(tableInfo, formatterContainer, dataObjFieldFormatMgrCache, uiFieldFormatterMgrCache, this);
+            fmtSingleEditingPanel   = new DataObjFieldFormatSinglePanel(tableInfo, formatterContainer, dataObjFieldFormatMgrCache, uiFieldFormatterMgrCache, this, getOkBtn());
+            fmtMultipleEditingPanel = new DataObjFieldFormatMultiplePanel(tableInfo, formatterContainer, dataObjFieldFormatMgrCache, uiFieldFormatterMgrCache, this, getOkBtn());
     
             // Panel for radio buttons and display formatting editing panel
             PanelBuilder pb = new PanelBuilder(new FormLayout("r:p,4px,f:p:g", "p,2px,p,10px,p,p,10px,f:p:g"));
