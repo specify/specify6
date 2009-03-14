@@ -135,12 +135,13 @@ public class UsageTracker
     {
         try
         {
-            usageProps.store(new FileOutputStream(usageFile.getAbsoluteFile()), "User Stats"); //$NON-NLS-1$
+            if (usageProps != null && usageFile != null)
+            {
+                usageProps.store(new FileOutputStream(usageFile.getAbsoluteFile()), "User Stats"); //$NON-NLS-1$
+            }
             
         } catch (IOException ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(UsageTracker.class, ex);
             // ok to die silently
             ex.printStackTrace();
         }
