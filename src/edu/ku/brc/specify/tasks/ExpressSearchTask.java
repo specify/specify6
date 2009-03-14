@@ -216,10 +216,13 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
      */
     public void appContextHasChanged()
     {
-        searchText.setPickListAdapter(PickListDBAdapterFactory.getInstance().create("ExpressSearch", true));
-        
-        AppPreferences localPrefs = AppPreferences.getLocalPrefs();
-        searchText.setText(localPrefs.get(getLastSearchKey(), ""));
+        if (searchText != null)
+        {
+            searchText.setPickListAdapter(PickListDBAdapterFactory.getInstance().create("ExpressSearch", true));
+            
+            AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+            searchText.setText(localPrefs.get(getLastSearchKey(), ""));
+        }
         
         if (searchBtn != null)
         {

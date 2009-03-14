@@ -340,7 +340,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
      */
     public int getNumOfCollectionsForUser()
     {
-        String sqlStr = "select count(cos) From Agent as spua Inner Join spua.specifyUser spu Inner Join spua.disciplines as dsp Inner Join dsp.collections as cos where spu.specifyUserId = "+user.getSpecifyUserId(); //$NON-NLS-1$
+        String sqlStr = "SELECT count(cs) From Collection as cs Inner Join cs.userGroups as princ Inner Join princ.specifyUsers as user where user.specifyUserId = "+user.getSpecifyUserId(); //$NON-NLS-1$
         
         DataProviderSessionIFace session = null;
         try
@@ -471,7 +471,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             
             // First get the Collections the User has access to.
             Hashtable<String, Collection> collectionHash = new Hashtable<String, Collection>();
-            String sqlStr = "SELECT cs From Discipline as ct Inner Join ct.agents cta Inner Join cta.specifyUser as user Inner Join ct.collections as cs where user.specifyUserId = "+spUser.getSpecifyUserId(); //$NON-NLS-1$
+            String sqlStr = "SELECT cs From Collection as cs Inner Join cs.userGroups as princ Inner Join princ.specifyUsers as user where user.specifyUserId = "+spUser.getSpecifyUserId(); //$NON-NLS-1$
             for (Object obj : session.getDataList(sqlStr))
             {
                 Collection collection = (Collection)obj; 
