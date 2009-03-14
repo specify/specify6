@@ -56,6 +56,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.auth.SecurityMgr;
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.af.ui.SearchBox;
@@ -246,8 +247,27 @@ public class SecurityAdminPane extends BaseSubPane
                 DataModelObjBaseWrapper secondObjWrp = null;
                 if (dataWrp.getDataObj() instanceof SpecifyUser)
                 {
-                    DefaultMutableTreeNode parent = (DefaultMutableTreeNode) node.getParent();
-                    secondObjWrp = (DataModelObjBaseWrapper) parent.getUserObject();
+                    // XXX Also might need to check to see if anyone is logged into the Group
+                    // when editing a Group
+                    SpecifyUser currentUser = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
+                    SpecifyUser spUser      = (SpecifyUser)dataWrp.getDataObj();
+                    if (!spUser.getIsLoggedIn() || currentUser.getId().equals(spUser.getId()))
+                    {
+                        DefaultMutableTreeNode parent = (DefaultMutableTreeNode) node.getParent();
+                        secondObjWrp = (DataModelObjBaseWrapper) parent.getUserObject();
+                    } else
+                    {
+                        UIRegistry.showLocalizedError("SecuirytAdminPane.USR_IS_ON", spUser.getName());
+                        
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run()
+                            {
+                                tree.clearSelection();
+                            }
+                        });
+                        return;
+                    }
                 }
 
                 showInfoPanel(dataWrp, secondObjWrp, node.toString());

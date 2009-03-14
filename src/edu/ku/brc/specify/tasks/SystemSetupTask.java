@@ -748,45 +748,43 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
      */
     protected void doSchemaConfig(final Byte schemaType, final DBTableIdMgr tableMgr)
     {
-        if (!isTabsClosed())
+        if (SubPaneMgr.getInstance().aboutToShutdown())
         {
-            return;
-        }
-        
-        boolean ok = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).displayAgentsLoggedInDlg("SystemSetupTask.SCHEMA_CFG");
-        if (!ok)
-        {
-            return;
-        }
-        
-        UsageTracker.incrUsageCount("SS.SCHEMACFG");
-        
-        UIRegistry.getStatusBar().setIndeterminate(SYSTEMSETUPTASK, true);
-        UIRegistry.getStatusBar().setText(getResourceString(getI18NKey("LOADING_LOCALES"))); //$NON-NLS-1$
-        UIRegistry.getStatusBar().repaint();
-        
-        SwingWorker workerThread = new SwingWorker()
-        {
-            @Override
-            public Object construct()
+            boolean ok = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).displayAgentsLoggedInDlg("SystemSetupTask.SCHEMA_CFG");
+            if (!ok)
             {
-                Locale.getAvailableLocales(); // load all the locales
-                return null;
+                return;
             }
             
-            @Override
-            public void finished()
+            UsageTracker.incrUsageCount("SS.SCHEMACFG");
+            
+            UIRegistry.getStatusBar().setIndeterminate(SYSTEMSETUPTASK, true);
+            UIRegistry.getStatusBar().setText(getResourceString(getI18NKey("LOADING_LOCALES"))); //$NON-NLS-1$
+            UIRegistry.getStatusBar().repaint();
+            
+            SwingWorker workerThread = new SwingWorker()
             {
-                UIRegistry.getStatusBar().setText(""); //$NON-NLS-1$
-                UIRegistry.getStatusBar().setProgressDone(SYSTEMSETUPTASK);
+                @Override
+                public Object construct()
+                {
+                    Locale.getAvailableLocales(); // load all the locales
+                    return null;
+                }
                 
-                SchemaToolsDlg dlg = new SchemaToolsDlg((Frame)UIRegistry.getTopWindow(), schemaType, tableMgr);
-                dlg.setVisible(true);
-            }
-        };
-        
-        // start the background task
-        workerThread.start();
+                @Override
+                public void finished()
+                {
+                    UIRegistry.getStatusBar().setText(""); //$NON-NLS-1$
+                    UIRegistry.getStatusBar().setProgressDone(SYSTEMSETUPTASK);
+                    
+                    SchemaToolsDlg dlg = new SchemaToolsDlg((Frame)UIRegistry.getTopWindow(), schemaType, tableMgr);
+                    dlg.setVisible(true);
+                }
+            };
+            
+            // start the background task
+            workerThread.start();
+        }
     }
     
     
@@ -839,6 +837,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             TaskMgr.reenableAllDisabledTasks();
         }
     }
+    
     /**
      * @param key
      * @return

@@ -40,7 +40,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -311,7 +310,7 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
     @Column(name = "IsLoggedIn", unique = false, nullable = false, insertable = true, updatable = true)
     public Boolean getIsLoggedIn()
     {
-        return isLoggedIn;
+        return isLoggedIn != null ? isLoggedIn : false;
     }
 
     /**

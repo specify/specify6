@@ -67,10 +67,11 @@ public class NavigationTreeMgr
     
     /**
      * @param tree
+     * @param spUsers
      */
-    NavigationTreeMgr(final JTree tree, Set<SpecifyUser> spUsers)
+    NavigationTreeMgr(final JTree tree, final Set<SpecifyUser> spUsers)
     {
-        this.tree = tree;
+        this.tree    = tree;
         this.spUsers = spUsers;
     }
 

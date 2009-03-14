@@ -33,13 +33,13 @@ import javax.swing.event.DocumentEvent;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.af.auth.UserAndMasterPasswordMgr;
 import edu.ku.brc.af.auth.SecurityMgr;
+import edu.ku.brc.af.auth.UserAndMasterPasswordMgr;
 import edu.ku.brc.af.auth.specify.permission.BasicSpPermission;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.SubPaneIFace;
-import edu.ku.brc.af.core.SubPaneMgr;
+import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.tasks.subpane.FormPane;
@@ -49,7 +49,6 @@ import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.validation.ValPasswordField;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
-import edu.ku.brc.specify.tasks.DataEntryTask.DroppableFormRecordSetAccepter;
 import edu.ku.brc.specify.tasks.subpane.security.SecurityAdminPane;
 import edu.ku.brc.specify.tasks.subpane.security.SecuritySummaryDlg;
 import edu.ku.brc.ui.CommandAction;
@@ -94,24 +93,31 @@ public class SecurityAdminTask extends BaseTask
      */
     public SubPaneIFace getStarterPane()
     {
-        for (SubPaneIFace sb : SubPaneMgr.getInstance().getSubPanes())
-        {
-            if (sb.getTask() == this)
-            {
-                if (sb instanceof DroppableFormRecordSetAccepter)
-                {
-                    return sb;
-                }
-            }
-        }
-        
-        //if (starterPane == null)
+        if (starterPane == null)
         {
         	SecurityAdminPane userGroupAdminPane = new SecurityAdminPane(title, this);
         	userGroupAdminPane.createMainControlUI();
             starterPane = userGroupAdminPane;
+            
+            TaskMgr.disableAllEnabledTasks();
         }
         return starterPane;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.SubPaneMgrListener#subPaneRemoved(edu.ku.brc.af.ui.SubPaneIFace)
+     */
+    @Override
+    public void subPaneRemoved(final SubPaneIFace subPane)
+    {
+        super.subPaneRemoved(subPane);
+        
+        if (starterPane != null && (starterPane == subPane || subPanes.size() == 0))
+        {
+            starterPane.shutdown();
+            starterPane = null;
+            TaskMgr.reenableAllDisabledTasks();
+        }
     }
     
     /**
@@ -221,6 +227,17 @@ public class SecurityAdminTask extends BaseTask
         }
     }
     
+    
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#requestContext()
+     */
+    @Override
+    public void requestContext()
+    {
+        super.requestContext();
+    }
+
     /**
      * @param key
      * @return

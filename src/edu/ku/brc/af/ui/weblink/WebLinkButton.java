@@ -32,6 +32,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 
 import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -466,6 +467,9 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
             }
             
             url = StringUtils.replace(url, "AMP", "&"); //$NON-NLS-2$
+            
+            
+            url = StringEscapeUtils.escapeHtml(url);
             
             return url;
         }
