@@ -939,7 +939,7 @@ public class UIFormatterEditorDlg extends CustomDialog
                 fieldTxt.repaint();
                 currentTxtBGColor = null;
             }
-            return false;
+            return true;
         }
         
         if (currLen > maxLen)
@@ -1044,13 +1044,13 @@ public class UIFormatterEditorDlg extends CustomDialog
         
         totLenLbl.setText(String.format("%d / %d", totalLen, fieldInfo.getLength()));
         
-        boolean badLen = checkFieldLen(totalLen, fieldInfo.getLength());
+        boolean lenOK = checkFieldLen(totalLen, fieldInfo.getLength());
         
         okBtn.setEnabled(hasChanged && 
                          !isInError && 
                          nameTF.getText().length() > 0 && 
                          titleTF.getText().length() > 0 &&
-                         fields.size() > 0 && !badLen);
+                         fields.size() > 0 && lenOK);
         
         // create a sample and display it, if there's no error
         // otherwise, leave the sample panel area with the error message, set in setError() method.  
