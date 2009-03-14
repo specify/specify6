@@ -284,7 +284,7 @@ public class UIFormatterListEdtDlg extends CustomDialog
     	boolean selected = uif != null && !uif.isSystem();
         dedaPanel.getDelBtn().setEnabled(selected);
         dedaPanel.getEditBtn().setEnabled(selected);
-        dedaPanel.getDefBtn().setEnabled(selected);
+        dedaPanel.getDefBtn().setEnabled(uif != null);
         okBtn.setEnabled(formatList.getSelectedIndex() > -1);
     }
     
