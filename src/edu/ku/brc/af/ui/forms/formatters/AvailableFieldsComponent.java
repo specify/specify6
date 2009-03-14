@@ -18,6 +18,7 @@ package edu.ku.brc.af.ui.forms.formatters;
 import java.awt.event.MouseListener;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Stack;
 
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -127,7 +128,10 @@ public class AvailableFieldsComponent
     protected void setupAvailableFieldsTree()
     {
         fieldsByName.clear();
-        DefaultMutableTreeNode root = createTreeNodeRecursive(tableInfo, 1, 4);
+        // stack to store the path from the initial to the current table
+        // used to generate the appropriate name for the fields (
+        Stack<DBInfoBase> tableStack = new Stack<DBInfoBase>();
+        DefaultMutableTreeNode root = createTreeNodeRecursive(tableStack, tableInfo, 1, 4);
         availableFieldsTree = new JTree(root);
         // only one field can be selected at a time
         availableFieldsTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
@@ -140,9 +144,10 @@ public class AvailableFieldsComponent
      * @param maxLevel
      * @return
      */
-    protected DefaultMutableTreeNode createTreeNodeRecursive(final DBInfoBase infoBase, 
-                                                             final int        currentLevel, 
-                                                             final int           maxLevel)
+    protected DefaultMutableTreeNode createTreeNodeRecursive(Stack<DBInfoBase> tableStack, 
+                                                             final DBInfoBase  infoBase, 
+                                                             final int         currentLevel, 
+                                                             final int         maxLevel)
     {    
         if (infoBase == null || infoBase.isHidden())
         {
@@ -186,7 +191,8 @@ public class AvailableFieldsComponent
                 break;
             }
             
-            DataObjDataField dataField = new DataObjDataField(field.getName(), field.getDataClass(), null, "", null, null);
+            DataObjDataField dataField = new DataObjDataField(getFieldNameFromStack(tableStack, field.getName()), 
+                    field.getDataClass(), null, "", null, null);
             dataField.setDbInfo(currentTableInfo, field, relInfo);
             DataObjDataFieldWrapper fieldWrapper = new DataObjDataFieldWrapper(dataField);
             node.add(new DefaultMutableTreeNode(fieldWrapper)); // leaf (field)
@@ -196,7 +202,8 @@ public class AvailableFieldsComponent
             List<UIFieldFormatterIFace> formatters = uiFieldFormatterMgrCache.getFormatterList(field.getTableInfo().getClassObj(), field.getName());
             for (UIFieldFormatterIFace formatter : formatters)
             {
-                dataField = new DataObjDataField(field.getName(), field.getDataClass(), null, "", null, formatter.getName());
+                dataField = new DataObjDataField(getFieldNameFromStack(tableStack, field.getName()), 
+                        field.getDataClass(), null, "", null, formatter.getName());
                 dataField.setDbInfo(currentTableInfo, field, relInfo);
                 fieldWrapper = new DataObjDataFieldWrapper(dataField);
                 node.add(new DefaultMutableTreeNode(fieldWrapper)); // leaf (data obj formatter)
@@ -213,7 +220,8 @@ public class AvailableFieldsComponent
             formatters = dataObjFieldFormatMgrCache.getFormatterList(clazz);
             for (DataObjSwitchFormatter formatter : formatters)
             {
-                DataObjDataField dataField = new DataObjDataField(relInfo.getName(), clazz, null, "", formatter.getName(), null);
+                DataObjDataField dataField = new DataObjDataField(getFieldNameFromStack(tableStack, relInfo.getName()), 
+                        clazz, null, "", formatter.getName(), null);
                 dataField.setDbInfo(currentTableInfo, null, relInfo);
                 DataObjDataFieldWrapper fieldWrapper = new DataObjDataFieldWrapper(dataField);
                 node.add(new DefaultMutableTreeNode(fieldWrapper)); // leaf (data obj formatter)
@@ -230,7 +238,8 @@ public class AvailableFieldsComponent
             }
             
             // add sub-tree corresponding to the fields (and relationships) from the current relationship table
-            DefaultMutableTreeNode child = createTreeNodeRecursive(rel, currentLevel + 1, maxLevel);
+            tableStack.add(rel);
+            DefaultMutableTreeNode child = createTreeNodeRecursive(tableStack, rel, currentLevel + 1, maxLevel);
             if (child != null)
             {
                 node.add(child);
@@ -238,5 +247,16 @@ public class AvailableFieldsComponent
         }
         
         return node;
+    }
+
+    private String getFieldNameFromStack(final Stack<DBInfoBase> tableStack, final String fieldName)
+    {
+        StringBuilder sb = new StringBuilder();
+        for (DBInfoBase infoBase : tableStack) 
+        {
+            sb.append(infoBase.getName() + ".");
+        }
+        sb.append(fieldName);
+        return sb.toString();
     }
 }
