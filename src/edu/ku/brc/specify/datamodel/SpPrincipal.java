@@ -65,6 +65,7 @@ public class SpPrincipal extends DataModelObjBase implements java.io.Serializabl
     protected String            groupType;
 	protected String            remarks;
 	protected String            groupSubClass;
+	protected Byte              priority;         // Zero is the Highest (Admin)
 	protected UserGroupScope    scope;
     protected Set<SpecifyUser>  specifyUsers;
     protected Set<SpPermission> permissions;
@@ -90,6 +91,7 @@ public class SpPrincipal extends DataModelObjBase implements java.io.Serializabl
 		spUserGroupId = null;
 		name          = null;
 		remarks       = null;
+		priority      = null;
 		groupSubClass = null;
 		scope         = null;
 		specifyUsers  = new HashSet<SpecifyUser>();
@@ -180,6 +182,31 @@ public class SpPrincipal extends DataModelObjBase implements java.io.Serializabl
 	}
 
 	/**
+     * @return the priority
+     */
+    @Column(name = "Priority", unique = false, nullable = false, updatable = true, insertable = true)
+    public Byte getPriority()
+    {
+        return priority;
+    }
+
+    /**
+     * @param priority the priority to set
+     */
+    public void setPriority(Byte priority)
+    {
+        this.priority = priority;
+    }
+
+    /**
+     * @param priority the priority to set
+     */
+    public void setPriority(int priority)
+    {
+        this.priority = (byte)priority;
+    }
+
+    /**
 	 *
 	 */
 	@ManyToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "spPrincipals")
@@ -314,9 +341,15 @@ public class SpPrincipal extends DataModelObjBase implements java.io.Serializabl
      */
     public int compareTo(SpPrincipal obj)
     {
-        if (name != null && obj != null && StringUtils.isNotEmpty(obj.name))
+        if (priority < 80)
         {
-            return name.compareTo(obj.name);
+            if (name != null && obj != null && StringUtils.isNotEmpty(obj.name))
+            {
+                return name.compareTo(obj.name);
+            }
+        } else if (priority != null && obj != null && obj.priority != null)
+        {
+            return priority.compareTo(obj.priority);
         }
         
         // else

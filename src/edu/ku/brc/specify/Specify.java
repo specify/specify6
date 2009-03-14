@@ -2599,7 +2599,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                     @Override
                     public Object construct()
                     {
-                        restartApp(null, databaseName, userName, false, false);
+                        restartApp(null, databaseName, userName, true, false);
                         return null;
                     }
                     

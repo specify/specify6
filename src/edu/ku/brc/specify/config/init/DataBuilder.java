@@ -122,6 +122,7 @@ import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.tasks.BaseTask;
 import edu.ku.brc.specify.tasks.PermissionOptionPersist;
+import edu.ku.brc.util.Pair;
 
 public class DataBuilder
 {
@@ -2334,11 +2335,15 @@ public class DataBuilder
         return taxoncitation;
     }
 
-    public static SpPrincipal createGroup(final String name, final String type, final UserGroupScope scope)
+    public static SpPrincipal createGroup(final String name, 
+                                          final String type, 
+                                          final int priority, 
+                                          final UserGroupScope scope)
     {
         SpPrincipal usergroup = new SpPrincipal();
         usergroup.initialize();
         usergroup.setName(name);
+        usergroup.setPriority(priority);
         usergroup.setGroupType(type);
         usergroup.setGroupSubClass(GroupPrincipal.class.getCanonicalName());
         usergroup.setScope(scope);
@@ -2351,6 +2356,7 @@ public class DataBuilder
         SpPrincipal groupPrincipal = new SpPrincipal();
         groupPrincipal.initialize();
         groupPrincipal.setName(name);
+        groupPrincipal.setPriority(0);
         groupPrincipal.setScope(scope);
         groupPrincipal.setGroupSubClass(AdminPrincipal.class.getCanonicalName());
         persist(groupPrincipal);
@@ -2362,6 +2368,7 @@ public class DataBuilder
         SpPrincipal userPrincipal = new SpPrincipal();
         userPrincipal.initialize();
         userPrincipal.setName(user.getName());
+        userPrincipal.setPriority(80);
         userPrincipal.setGroupSubClass(UserPrincipal.class.getCanonicalName());
         user.getSpPrincipals().add(userPrincipal);
         persist(userPrincipal);
@@ -2402,7 +2409,7 @@ public class DataBuilder
 
     // TODO: move this property up where it belongs
     /** Maps usertype strings to the name of the default groups */
-    static Map<String, String> usertypeToDefaultGroup;
+    static Map<String, Pair<String, Byte>> usertypeToDefaultGroup;
     
     /**
      * Load definition of default groups
@@ -2415,11 +2422,11 @@ public class DataBuilder
             return;
         }
         
-        usertypeToDefaultGroup = new HashMap<String, String>();
-        usertypeToDefaultGroup.put(SpecifyUserTypes.UserType.Manager.toString(),       "Managers");
-        usertypeToDefaultGroup.put(SpecifyUserTypes.UserType.FullAccess.toString(),    "Full Access Users");
-        usertypeToDefaultGroup.put(SpecifyUserTypes.UserType.LimitedAccess.toString(), "Limited Access Users");
-        usertypeToDefaultGroup.put(SpecifyUserTypes.UserType.Guest.toString(),         "Guests");
+        usertypeToDefaultGroup = new HashMap<String, Pair<String, Byte>>();
+        usertypeToDefaultGroup.put(SpecifyUserTypes.UserType.Manager.toString(),       new Pair<String, Byte>("Managers", (byte)10));
+        usertypeToDefaultGroup.put(SpecifyUserTypes.UserType.FullAccess.toString(),    new Pair<String, Byte>("Full Access Users", (byte)20));
+        usertypeToDefaultGroup.put(SpecifyUserTypes.UserType.LimitedAccess.toString(), new Pair<String, Byte>("Limited Access Users", (byte)30));
+        usertypeToDefaultGroup.put(SpecifyUserTypes.UserType.Guest.toString(),         new Pair<String, Byte>("Guests", (byte)40));
     }
 
     /**
@@ -2434,7 +2441,8 @@ public class DataBuilder
 
         for (String usertype : usertypeToDefaultGroup.keySet()) 
         {
-            SpPrincipal group = createGroup(usertypeToDefaultGroup.get(usertype), usertype, scope);
+            Pair<String, Byte> grpInfo = usertypeToDefaultGroup.get(usertype);
+            SpPrincipal group = createGroup(grpInfo.first, usertype, grpInfo.second, scope);
             groupMap.put(usertype, group);
         }
         createDefaultPermissions(groupMap);

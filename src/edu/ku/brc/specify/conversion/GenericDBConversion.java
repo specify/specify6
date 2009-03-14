@@ -170,7 +170,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     protected Hashtable<String, String>                     prefixHash             = new Hashtable<String, String>();
     protected Hashtable<String, Integer>                    catNumSchemeHash       = new Hashtable<String, Integer>();
     
-    protected Hashtable<DisciplineType, Pair<Integer, Boolean>> dispToObjTypeHash = new Hashtable<DisciplineType, Pair<Integer, Boolean>>();
+    protected Hashtable<DisciplineType.STD_DISCIPLINES, Pair<Integer, Boolean>> dispToObjTypeHash = new Hashtable<DisciplineType.STD_DISCIPLINES, Pair<Integer, Boolean>>();
 
     protected Session                                       session;
 
@@ -221,19 +221,18 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         oldDBConn = oldDB.createConnection();
         newDBConn = DBConnection.getInstance().createConnection();
         
+        //                      0        1     2     3     4     5    6      7     8     9    10    11   12    13
         int[]     objTypes  = {10,      14,   11,   17,   18,   15,   9,    12,   13,   16,   19,    0,   0,    0,  };
         boolean[] isEmbdded = {false, true, true, true, true, true, true, true, true, true, true, true, true, true, };
         
         /*
-         fish, herpetology, reptile, paleobotany, invertpaleo, vertpaleo, bird, 
-                                 mammal, insect, botany, invertebrate, minerals, fungi, 
-                                 anthropology
+            0            1        2            3            4          5     6       7       8       9            10        11     12            13
+         fish, herpetology, reptile, paleobotany, invertpaleo, vertpaleo, bird, mammal, insect, botany, invertebrate, minerals, fungi, anthropology
          */
-        int i = 0;
         for (DisciplineType.STD_DISCIPLINES dt : DisciplineType.STD_DISCIPLINES.values())
         {
-            dispToObjTypeHash.put(DisciplineType.getDiscipline(dt), new Pair<Integer, Boolean>(objTypes[i], isEmbdded[i]));
-            i++;
+            int i = dt.ordinal();
+            dispToObjTypeHash.put(dt, new Pair<Integer, Boolean>(objTypes[i], isEmbdded[i]));
         }
     }
 
@@ -4449,17 +4448,39 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         Discipline discipline = (Discipline)AppContextMgr.getInstance().getClassObject(Discipline.class);
         if (discipline != null)
         {
+            System.out.println("discipline.getType()["+discipline.getType()+"]");
             dt = DisciplineType.getDiscipline(discipline.getType());
         } else
         {
             Vector<Object[]> list = BasicSQLUtils.query(newDBConn, "SELECT Type FROM discipline");
             String typeStr = (String)list.get(0)[0];
+            System.out.println("typeStr["+typeStr+"]");
             dt = DisciplineType.getDiscipline(typeStr);
         }
         
-        Pair<Integer, Boolean> objTypePair = dispToObjTypeHash.get(dt);
-        
-        int     objTypeId  = objTypePair.first;
+        Pair<Integer, Boolean> objTypePair = dispToObjTypeHash.get(dt.getDisciplineType());
+        if (objTypePair == null)
+        {
+            System.out.println("objTypePair is null dt["+dt.getName()+"]["+dt.getTitle()+"]");
+            
+            for (DisciplineType.STD_DISCIPLINES key : dispToObjTypeHash.keySet())
+            {
+                Pair<Integer, Boolean> p = dispToObjTypeHash.get(key);
+                System.out.println("["+key+"] ["+p.first+"]["+p.second+"]");
+            }
+            
+        } else if (objTypePair.first == null)
+        {
+            System.out.println("objTypePair.first is null dt["+dt+"]");
+            
+            for (DisciplineType.STD_DISCIPLINES key : dispToObjTypeHash.keySet())
+            {
+                Pair<Integer, Boolean> p = dispToObjTypeHash.get(key);
+                System.out.println("["+key+"] ["+p.first+"]["+p.second+"]");
+            }
+
+        }
+        int objTypeId  = objTypePair.first;
         //boolean isEmbedded = objTypePair.second;
         
         idMapperMgr.dumpKeys();

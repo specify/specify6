@@ -14,6 +14,7 @@
  */
 package edu.ku.brc.specify.tasks;
 
+import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Frame;
@@ -31,6 +32,7 @@ import java.util.Locale;
 import java.util.Vector;
 
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 
 import org.apache.commons.lang.StringUtils;
@@ -793,11 +795,26 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
      */
     protected void doResourceImportExport()
     {
-        ResourceImportExportDlg dlg = new ResourceImportExportDlg();
-        dlg.setVisible(true);
-        if (dlg.hasChanged())
+        if (SubPaneMgr.getInstance().aboutToShutdown())
         {
-            CommandDispatcher.dispatch(new CommandAction(APP_CMD_TYPE, APP_REQ_RESTART));
+            Object[] options = { getResourceString("CONTINUE"),  //$NON-NLS-1$
+                                 getResourceString("CANCEL")  //$NON-NLS-1$
+                  };
+            int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
+                                                             getLocalizedMessage(getI18NKey("REI_MSG")),  //$NON-NLS-1$
+                                                             getResourceString(getI18NKey("REI_TITLE")),  //$NON-NLS-1$
+                                                             JOptionPane.YES_NO_OPTION,
+                                                             JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+            if (userChoice == JOptionPane.YES_OPTION)
+            {
+                ResourceImportExportDlg dlg = new ResourceImportExportDlg();
+                dlg.setVisible(true);
+                if (dlg.hasChanged())
+                {
+                    //CommandDispatcher.dispatch(new CommandAction(APP_CMD_TYPE, APP_REQ_RESTART));
+                    CommandDispatcher.dispatch(new CommandAction(APP_CMD_TYPE, APP_REQ_EXIT));
+                }
+            }
         }
     }
 

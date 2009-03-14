@@ -486,7 +486,7 @@ public class ResourceImportExportDlg extends CustomDialog
                         {
                             viewSetsModel.insertElementAt(revertedNewVSO, index);
                             viewSetsList.setSelectedIndex(index);
-                            hasChanged = true;
+                            setHasChanged(true);
                         }
                     }
                 }
@@ -502,7 +502,7 @@ public class ResourceImportExportDlg extends CustomDialog
                 
             		AppResourceIFace revertedNewAR = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).revertResource(virtualDirName, appRes);
                 
-            		hasChanged = true;
+            		setHasChanged(true);
                 
             		if (revertedNewAR != null)
             		{
@@ -525,6 +525,12 @@ public class ResourceImportExportDlg extends CustomDialog
             
             enableUI();
         }
+    }
+    
+    private void setHasChanged(final boolean changed)
+    {
+        hasChanged = changed;
+        okBtn.setText(getResourceString(changed ? "EXIT" : "CLOSE"));
     }
     
     /**
@@ -1102,7 +1108,7 @@ public class ResourceImportExportDlg extends CustomDialog
 						session.commit();
 						session.flush();
 
-						hasChanged = true;
+						setHasChanged(true);
 						isOK = true;
 
 					} catch (Exception ex)
