@@ -539,7 +539,12 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         		{
                     setTableInfoChanged(true);
                     setHasChanged(true);
-        			fillAggregatorCombo();
+                    // update aggregator combo selection
+                    // also update its list with any new values may have been added
+                    fillAggregatorCombo();
+                    // user may also have added a new formatter using the ellipsis button 
+                    // next to the display combo 
+                    fillDataObjFormatterCombo();
         		}
         	}
         };

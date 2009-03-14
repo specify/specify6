@@ -151,9 +151,20 @@ public class DataObjAggregatorDlg extends CustomDialog implements DataChangeList
             {
                 // subtract 1 from selected index to account for empty entry at the beginning
                 // if selected index is zero, then select "new" entry in the dialog, which is the last one
-                //int correctIndex = (displayCbo.getSelectedIndex() == 0)? displayCbo.getModel().getSize() - 1 : displayCbo.getSelectedIndex() - 1; 
                 
-                DataObjSwitchFormatter dosf = (DataObjSwitchFormatter)displayCbo.getSelectedItem();
+                boolean newFormatter;
+                DataObjSwitchFormatter dosf;
+                if (displayCbo.getSelectedIndex() == 0)
+                {
+                    // no formatter selected: create a new one and pass it to the dialog so the user can edit it
+                    newFormatter = true;
+                    dosf = new DataObjSwitchFormatter(null, null, true, false, tableInfo.getClassObj(), "");
+                } else
+                {
+                    // pass selected formatter to the dialog so the user can edit it
+                    newFormatter = false;
+                    dosf = (DataObjSwitchFormatter)displayCbo.getSelectedItem();                    
+                }
                 DataObjFieldFormatDlg dlg = new DataObjFieldFormatDlg(null, 
                                                                       tableInfo, 
                                                                       dataObjFieldFormatMgrCache, 
@@ -169,6 +180,13 @@ public class DataObjAggregatorDlg extends CustomDialog implements DataChangeList
                     if (dlg.getBtnPressed() == OK_BTN)
                     {
                         selectedAggregator.setFormatName(dosf.getName());
+                        if (newFormatter)
+                        {
+                            // must add new DO formatter and then select it
+                            dataObjFieldFormatMgrCache.addFormatter(dosf);
+                        }
+                        // update the display combo, adding the new formatter and selecting it
+                        // if that's the case
                         updateDisplayCombo();
                     }
                 }
