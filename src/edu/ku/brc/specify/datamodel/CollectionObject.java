@@ -1156,6 +1156,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     {
         determinations.size();
         preparations.size();
+        projects.size();
     }
     
     //----------------------------------------------------------------------

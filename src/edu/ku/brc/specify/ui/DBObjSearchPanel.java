@@ -62,6 +62,7 @@ import edu.ku.brc.af.ui.SearchTermField;
 import edu.ku.brc.af.ui.db.ERTICaptionInfo;
 import edu.ku.brc.af.ui.db.QueryForIdResultsIFace;
 import edu.ku.brc.af.ui.db.ViewBasedSearchQueryBuilderIFace;
+import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.ViewFactory;
@@ -663,6 +664,7 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
                             {
                                 objList = new Vector<Object>();
                             }
+                            ((FormDataObjIFace)list.get(0)).forceLoad();
                             objList.add(list.get(0));
                             
                         } else
