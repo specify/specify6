@@ -8,7 +8,7 @@
       </entry>
       <entry>
         <string>Guest</string>
-        <tp name="Record_Set" type="Guest" view="false" modify="false" del="false" add="false"/>
+        <tp name="Record_Set" type="Guest" view="true" modify="true" del="true" add="true"/>
       </entry>
       <entry>
         <string>LimitedAccess</string>
@@ -29,7 +29,7 @@
       </entry>
       <entry>
         <string>Guest</string>
-        <tp name="InfoRequest" type="Guest" view="false" modify="false" del="false" add="false"/>
+        <tp name="InfoRequest" type="Guest" view="true" modify="true" del="true" add="true"/>
       </entry>
       <entry>
         <string>LimitedAccess</string>
@@ -71,7 +71,7 @@
       </entry>
       <entry>
         <string>Guest</string>
-        <tp name="Statistics" type="Guest" view="true" modify="false" del="false" add="false"/>
+        <tp name="Statistics" type="Guest" view="false" modify="false" del="false" add="false"/>
       </entry>
       <entry>
         <string>LimitedAccess</string>
@@ -92,7 +92,7 @@
       </entry>
       <entry>
         <string>Guest</string>
-        <tp name="Plugins" type="Guest" view="false" modify="false" del="false" add="false"/>
+        <tp name="Plugins" type="Guest" view="true" modify="false" del="false" add="false"/>
       </entry>
       <entry>
         <string>LimitedAccess</string>
@@ -134,7 +134,7 @@
       </entry>
       <entry>
         <string>Guest</string>
-        <tp name="Express_Search" type="Guest" view="false" modify="false" del="false" add="false"/>
+        <tp name="Express_Search" type="Guest" view="true" modify="true" del="true" add="true"/>
       </entry>
       <entry>
         <string>LimitedAccess</string>
@@ -155,7 +155,7 @@
       </entry>
       <entry>
         <string>Guest</string>
-        <tp name="LithoStratTree" type="Guest" view="false" modify="false" del="false" add="false"/>
+        <tp name="LithoStratTree" type="Guest" view="true" modify="false" del="false" add="false"/>
       </entry>
       <entry>
         <string>LimitedAccess</string>
@@ -218,7 +218,7 @@
       </entry>
       <entry>
         <string>Guest</string>
-        <tp name="Query" type="Guest" view="false" modify="false" del="false" add="false"/>
+        <tp name="Query" type="Guest" view="true" modify="true" del="true" add="true"/>
       </entry>
       <entry>
         <string>LimitedAccess</string>
@@ -239,7 +239,7 @@
       </entry>
       <entry>
         <string>Guest</string>
-        <tp name="Data_Entry" type="Guest" view="false" modify="false" del="false" add="false"/>
+        <tp name="Data_Entry" type="Guest" view="true" modify="false" del="false" add="false"/>
       </entry>
       <entry>
         <string>LimitedAccess</string>
@@ -260,7 +260,7 @@
       </entry>
       <entry>
         <string>Guest</string>
-        <tp name="GeographyTree" type="Guest" view="false" modify="false" del="false" add="false"/>
+        <tp name="GeographyTree" type="Guest" view="true" modify="false" del="false" add="false"/>
       </entry>
       <entry>
         <string>LimitedAccess</string>
@@ -281,7 +281,7 @@
       </entry>
       <entry>
         <string>Guest</string>
-        <tp name="Interactions" type="Guest" view="false" modify="false" del="false" add="false"/>
+        <tp name="Interactions" type="Guest" view="true" modify="false" del="false" add="false"/>
       </entry>
       <entry>
         <string>LimitedAccess</string>
@@ -365,7 +365,7 @@
       </entry>
       <entry>
         <string>Guest</string>
-        <tp name="GeoTimePeriodTree" type="Guest" view="false" modify="false" del="false" add="false"/>
+        <tp name="GeoTimePeriodTree" type="Guest" view="true" modify="false" del="false" add="false"/>
       </entry>
       <entry>
         <string>LimitedAccess</string>
@@ -386,7 +386,7 @@
       </entry>
       <entry>
         <string>Guest</string>
-        <tp name="Workbench" type="Guest" view="false" modify="false" del="false" add="false"/>
+        <tp name="Workbench" type="Guest" view="true" modify="true" del="true" add="true"/>
       </entry>
       <entry>
         <string>LimitedAccess</string>
@@ -407,7 +407,7 @@
       </entry>
       <entry>
         <string>Guest</string>
-        <tp name="TaxonTree" type="Guest" view="false" modify="false" del="false" add="false"/>
+        <tp name="TaxonTree" type="Guest" view="true" modify="false" del="false" add="false"/>
       </entry>
       <entry>
         <string>LimitedAccess</string>
