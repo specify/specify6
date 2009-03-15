@@ -38,7 +38,7 @@
           <![CDATA[SELECT count(*) FROM preparation WHERE CollectionMemberID = COLMEMID]]>
        </stat>
        <stat name="num_prpcnt" desc="Total Number of Preparations Counts">
-          <![CDATA[SELECT SUM(Count) FROM preparation WHERE CollectionMemberID = COLMEMID]]>
+          <![CDATA[SELECT SUM(CountAmt) FROM preparation WHERE CollectionMemberID = COLMEMID]]>
        </stat>
        <stat name="num_litho" desc="Number of Litho Stratigraphy">
           <![CDATA[SELECT count(*) FROM lithostrat WHERE LithoStratTreeDefID = LITHOTREEDEFID]]>
