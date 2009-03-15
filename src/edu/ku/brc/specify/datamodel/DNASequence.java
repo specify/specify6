@@ -192,7 +192,7 @@ public class DNASequence extends CollectionMember
     @Column(name = "GeneSequence", unique = false, nullable = true, insertable = true, updatable = true, length = 2048)
 	public String getGeneSequence()
 	{
-		return remarks;
+		return geneSequence;
 	}
 
 	/**
