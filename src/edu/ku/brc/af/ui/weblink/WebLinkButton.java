@@ -18,8 +18,11 @@ import java.awt.Component;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Vector;
@@ -32,7 +35,6 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 
 import org.apache.commons.lang.NotImplementedException;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -224,11 +226,15 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
         URI uri;
         try
         {
-            uri = new URI(urlString);
+            uri = new URL(urlString).toURI();
         }
-        catch (URISyntaxException e)
+        catch (MalformedURLException e)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            log.error("Bad URL syntax: " + urlString, e); //$NON-NLS-1$
+            return;
+            
+        } catch (URISyntaxException e)
+        {
             log.error("Bad URL syntax: " + urlString, e); //$NON-NLS-1$
             return;
         }
@@ -237,6 +243,7 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
         try
         {
             AttachmentUtils.openURI(uri);
+            
         }
         catch (Exception e)
         {
@@ -462,15 +469,16 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
                 {
                     val = valueHash.get("this");
                 }
+                try
+                {
+                    val = URLEncoder.encode(val, "UTF-8");
+                } catch (Exception ex) {}
+                
                 url = StringUtils.replace(url, "'"+key+"'", (val != null ? val : "")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                 //System.out.println("|"+key+"|"+url);
             }
             
             url = StringUtils.replace(url, "AMP", "&"); //$NON-NLS-2$
-            
-            
-            url = StringEscapeUtils.escapeHtml(url);
-            
             return url;
         }
         
