@@ -207,7 +207,8 @@ public class UIFieldFormatterSampler implements SQLExecutionListener
                     firstTable.getIdColumnName() + " = " + joinTable + "." + firstTable.getIdColumnName() + 
                     " INNER JOIN " + secondTable.getName() + " ON " + secondTable.getName() + "." + 
                     secondTable.getIdColumnName() + " = " + joinTable + "." + joinTableSecondIdColumnName;
-                System.out.println(sql);
+
+                // System.out.println(sql);
 			}
 			else
 			{
@@ -267,7 +268,7 @@ public class UIFieldFormatterSampler implements SQLExecutionListener
 			{
 				DBTableInfo neighborTable = getTableInfo(relationship.getClassName()); 
 
-                System.out.println(String.format("Dist: %4d | Link: %30s - %s", distanceToCurrent, currentVertex.getName(), neighborTable.getName()));
+                // System.out.println(String.format("Dist: %4d | Link: %30s - %s", distanceToCurrent, currentVertex.getName(), neighborTable.getName()));
 
 				if (visited.contains(neighborTable) ||
 					neighborTable.getName().equals(currentVertex.getName()))
