@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
 
-  Last Id for ExpressSearch 37
+  Last Id for ExpressSearch 42
   Last Id for Other Search  125
 
  -->
@@ -723,7 +723,150 @@
             </detailView>
         </table>
         
+        <table id="38" tableid="39" indexed="false" name="AgentExchangeIn" priority="1" color="30, 144, 144">
+            <joins>
+                <join tableid="39" primary="true">exchangein.ReceivedFromOrganizationID</join>
+                <join tableid="5">agent.AgentID</join>
+            </joins>
+            <detailView icon="ExchangeIn">
+                <sql>
+                    <![CDATA[SELECT 
+ exchangein.exchangeinid, 
+ exchangein.ExchangeDate,
+ exchangein.DescriptionOfMaterial,
+ agent.Abbreviation,
+    %s 
+ FROM 
+ exchangein
+  INNER JOIN agent ON agent.agentid = exchangein.ReceivedFromOrganizationId
+ WHERE %s ORDER BY ExchangeDate, DescriptionOfMaterial]]>
+                </sql>
+                <captions>
+                    <caption tableid="39" col="ExchangeInID" visible="false"/>
+                    <caption tableid="39" col="ExchangeDate" />
+                    <caption tableid="39" col="DescriptionOfMaterial"/>
+                    <caption tableid="5" col="Abbreviation"/>
+                 </captions>
+            </detailView>
+        </table>
         
+        <table id="39" tableid="40" indexed="false" name="AgentExchangeOut" priority="1" color="30, 144, 144">
+            <joins>
+                <join tableid="40" primary="true">exchangeout.SentToOrganizationID</join>
+                <join tableid="5">agent.AgentID</join>
+            </joins>
+            <detailView icon="ExchangeIn">
+                <sql>
+                    <![CDATA[SELECT 
+ exchangeout.exchangeoutid, 
+ exchangeout.ExchangeDate,
+ exchangeout.DescriptionOfMaterial,
+ agent.Abbreviation,
+    %s 
+ FROM 
+ exchangeout
+  INNER JOIN agent ON agent.agentid = exchangeout.SentToOrganizationId
+ WHERE %s ORDER BY ExchangeDate, DescriptionOfMaterial]]>
+                </sql>
+                <captions>
+                    <caption tableid="40" col="ExchangeOutID" visible="false"/>
+                    <caption tableid="40" col="ExchangeDate" />
+                    <caption tableid="40" col="DescriptionOfMaterial"/>
+                    <caption tableid="5" col="Abbreviation"/>
+                 </captions>
+            </detailView>
+        </table>
+
+        <table id="40" tableid="10" indexed="false" name="GeographyCE" priority="1" color="30, 144, 144">
+            <joins>
+                <join tableid="10" primary="true">collectingevent.LocalityID</join>
+                <join tableid="3">geography.GeographyID</join>
+            </joins>
+            <detailView icon="CollectingEvent">
+                <sql>
+                    <![CDATA[SELECT 
+ collectingevent.collectingeventid,                   
+ geography.FullName, 
+ collectingevent.StartDate,
+ collectingevent.StartDatePrecision,
+ collectingevent.StationFieldNumber,
+     %s 
+ FROM 
+ geography
+  INNER JOIN locality ON locality.geographyid = geography.geographyid 
+  INNER JOIN collectingevent on collectingevent.localityid = locality.localityid
+ WHERE %s ORDER BY FullName,StartDate]]>
+                </sql>
+                <captions>
+                    <caption tableid="10" col="CollectingEventID" visible="false"/>
+                    <caption tableid="3" col="FullName" />
+                    <caption tableid="10" formatter="PartialDate">
+                        <col name="StartDate"          field="startDate"/>
+                        <col name="StartDatePrecision" field="startDatePrecision"/>
+                    </caption>
+                    <caption tableid="10" col="StationFieldNumber" />
+                 </captions>
+            </detailView>
+        </table>
+
+        <table id="41" tableid="1" indexed="false" name="GeographyCO" priority="1" color="30, 144, 144">
+            <joins>
+                <join tableid="1" primary="true">collectionobject.CollectionObjectID</join>
+                <join tableid="3">geography.GeographyID</join>
+            </joins>
+            <detailView icon="CollectionObject">
+                <sql>
+                    <![CDATA[SELECT 
+ collectionobject.collectionobjectid,                   
+ geography.FullName, 
+ collectionobject.CatalogNumber,
+     %s 
+ FROM 
+ geography
+  INNER JOIN locality ON locality.geographyid = geography.geographyid 
+  INNER JOIN collectingevent on collectingevent.localityid = locality.localityid
+  INNER JOIN collectionobject on collectionobject.collectingeventid = collectingevent.collectingeventid
+ WHERE %s ORDER BY FullName,CatalogNumber]]>
+                </sql>
+                <captions>
+                    <caption tableid="1" col="CollectionObjectID" visible="false"/>
+                    <caption tableid="3" col="FullName" />
+                    <caption tableid="1" col="CatalogNumber" formatter="CatalogNumber"/>
+                 </captions>
+            </detailView>
+        </table>
+
+        <table id="42" tableid="1" indexed="false" name="GiftCO" priority="1" color="30, 144, 144">
+            <joins>
+                <join tableid="1" primary="true">collectionobject.CollectionObjectID</join>
+                <join tableid="131">gift.GiftID</join>
+            </joins>
+            <detailView icon="CollectionObject">
+                <sql>
+                    <![CDATA[SELECT 
+ collectionobject.collectionobjectid,                   
+ gift.GiftNumber, 
+ collectionobject.CatalogNumber,
+     %s 
+ FROM 
+ gift
+  INNER JOIN giftpreparation ON giftpreparation.giftid = gift.giftid 
+  INNER JOIN preparation on preparation.preparationid = giftpreparation.preparationid
+  INNER JOIN collectionobject on collectionobject.collectionobjectid = preparation.collectionobjectid
+ WHERE %s ORDER BY GiftNumber,CatalogNumber]]>
+                </sql>
+                <captions>
+                    <caption tableid="1" col="CollectionObjectID" visible="false"/>
+                    <caption tableid="131" col="GiftNumber" />
+                    <caption tableid="1" col="CatalogNumber" formatter="CatalogNumber"/>
+                 </captions>
+            </detailView>
+        </table>
+
+
+
+
+
         
         
         
