@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
 
-  Last Id for ExpressSearch 42
+  Last Id for ExpressSearch 46
   Last Id for Other Search  125
 
  -->
@@ -847,21 +847,143 @@
  collectionobject.collectionobjectid,                   
  gift.GiftNumber, 
  collectionobject.CatalogNumber,
+ preptype.Name,
      %s 
  FROM 
  gift
   INNER JOIN giftpreparation ON giftpreparation.giftid = gift.giftid 
   INNER JOIN preparation on preparation.preparationid = giftpreparation.preparationid
+  INNER JOIN preptype on preptype.preptypeid = preparation.preptypeid
   INNER JOIN collectionobject on collectionobject.collectionobjectid = preparation.collectionobjectid
- WHERE %s ORDER BY GiftNumber,CatalogNumber]]>
+ WHERE %s ORDER BY GiftNumber,CatalogNumber,Name]]>
                 </sql>
                 <captions>
                     <caption tableid="1" col="CollectionObjectID" visible="false"/>
                     <caption tableid="131" col="GiftNumber" />
                     <caption tableid="1" col="CatalogNumber" formatter="CatalogNumber"/>
+                    <caption tableid="65" col="Name" />
                  </captions>
             </detailView>
         </table>
+
+        <table id="43" tableid="5" indexed="false" name="GiftAgent" priority="1" color="30, 144, 144">
+            <joins>
+                <join tableid="5" primary="true">agent.AgentID</join>
+                <join tableid="131">gift.GiftID</join>
+            </joins>
+            <detailView icon="Agent">
+                <sql>
+                    <![CDATA[SELECT 
+ agent.AgentID,                   
+ gift.GiftNumber, 
+ giftagent.Role,
+ agent.LastName,
+ agent.FirstName,
+     %s 
+ FROM 
+ gift
+  INNER JOIN giftagent ON giftagent.giftid = gift.giftid 
+  INNER JOIN agent on agent.agentid = giftagent.agentid
+ WHERE %s ORDER BY GiftNumber,Role,LastName,FirstName]]>
+                </sql>
+                <captions>
+                    <caption tableid="1" col="CollectionObjectID" visible="false"/>
+                    <caption tableid="131" col="GiftNumber" />
+                    <caption tableid="133" col="Role" />
+                    <caption tableid="5" col="LastName" />
+                    <caption tableid="5" col="FirstName" />
+                 </captions>
+            </detailView>
+        </table>
+
+        <table id="44" tableid="1" indexed="false" name="LoanCO" priority="1" color="30, 144, 144">
+            <joins>
+                <join tableid="1" primary="true">collectionobject.CollectionObjectID</join>
+                <join tableid="52">loan.LoanID</join>
+            </joins>
+            <detailView icon="CollectionObject">
+                <sql>
+                    <![CDATA[SELECT 
+ collectionobject.collectionobjectid,                   
+ loan.LoanNumber, 
+ collectionobject.CatalogNumber,
+ preptype.Name,
+     %s 
+ FROM 
+ loan
+  INNER JOIN loanpreparation ON loanpreparation.loanid = loan.loanid 
+  INNER JOIN preparation on preparation.preparationid = loanpreparation.preparationid
+  INNER JOIN preptype on preptype.preptypeid = preparation.preptypeid
+  INNER JOIN collectionobject on collectionobject.collectionobjectid = preparation.collectionobjectid
+ WHERE %s ORDER BY LoanNumber,CatalogNumber,Name]]>
+                </sql>
+                <captions>
+                    <caption tableid="1" col="CollectionObjectID" visible="false"/>
+                    <caption tableid="52" col="LoanNumber" />
+                    <caption tableid="1" col="CatalogNumber" formatter="CatalogNumber"/>
+                    <caption tableid="65" col="Name" />
+                 </captions>
+            </detailView>
+        </table>
+
+        <table id="45" tableid="5" indexed="false" name="LoanAgent" priority="1" color="30, 144, 144">
+            <joins>
+                <join tableid="5" primary="true">agent.AgentID</join>
+                <join tableid="52">loan.loanID</join>
+            </joins>
+            <detailView icon="Agent">
+                <sql>
+                    <![CDATA[SELECT 
+ agent.AgentID,                   
+ loan.LoanNumber, 
+ loanagent.Role,
+ agent.LastName,
+ agent.FirstName,
+     %s 
+ FROM 
+ loan
+  INNER JOIN loanagent ON loanagent.loanid = loan.loanid 
+  INNER JOIN agent on agent.agentid = loanagent.agentid
+ WHERE %s ORDER BY LoanNumber,Role,LastName,FirstName]]>
+                </sql>
+                <captions>
+                    <caption tableid="1" col="CollectionObjectID" visible="false"/>
+                    <caption tableid="52" col="LoanNumber" />
+                    <caption tableid="53" col="Role" />
+                    <caption tableid="5" col="LastName" />
+                    <caption tableid="5" col="FirstName" />
+                 </captions>
+            </detailView>
+        </table>
+
+
+        <table id="46" tableid="1" indexed="false" name="LithoStratToCO" priority="1" color="30, 144, 144">
+            <joins>
+                <join tableid="100">lithostrat.LithoStratID</join>
+                <join tableid="1" primary="true">collectionobject.CollectionObjectID</join>
+            </joins>
+            <detailView icon="CollectionObject">
+                <sql>
+                    <![CDATA[SELECT 
+ lithostrat.LithoStratID, 
+ lithostrat.FullName,
+ collectionobject.CatalogNumber,
+  %s 
+ FROM 
+ lithostrat
+  INNER JOIN paleocontext ON paleocontext.LithoStratID = lithostrat.LithoStratID
+  INNER JOIN collectionobject ON collectionobject.paleocontextid = paleocontext.paleocontextid
+ WHERE %s ORDER BY FullName, CatalogNumber]]>
+                </sql>
+                <captions>
+                    <caption tableid="100" col="LithoStratID" visible="false"/>
+                    <caption tableid="100" col="FullName" />
+                    <caption tableid="1" col="CatalogNumber" formatter="CatalogNumber" />
+                 </captions>
+            </detailView>
+        </table>
+
+
 
 
 
