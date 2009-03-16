@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
 
-  Last Id for ExpressSearch 46
+  Last Id for ExpressSearch 47
   Last Id for Other Search  125
 
  -->
@@ -637,7 +637,7 @@
             <detailView icon="CollectionObject">
                 <sql>
                     <![CDATA[SELECT 
- geologictimeperiod.GeologicTimePeriodID, 
+ collectionobject.CollectionObjectID, 
  geologictimeperiod.FullName,
  collectionobject.CatalogNumber,
   %s 
@@ -959,13 +959,13 @@
 
         <table id="46" tableid="1" indexed="false" name="LithoStratToCO" priority="1" color="30, 144, 144">
             <joins>
-                <join tableid="100">lithostrat.LithoStratID</join>
                 <join tableid="1" primary="true">collectionobject.CollectionObjectID</join>
+                <join tableid="100">lithostrat.LithoStratID</join>
             </joins>
             <detailView icon="CollectionObject">
                 <sql>
                     <![CDATA[SELECT 
- lithostrat.LithoStratID, 
+ collectionobject.CollectionObjectID, 
  lithostrat.FullName,
  collectionobject.CatalogNumber,
   %s 
@@ -976,7 +976,7 @@
  WHERE %s ORDER BY FullName, CatalogNumber]]>
                 </sql>
                 <captions>
-                    <caption tableid="100" col="LithoStratID" visible="false"/>
+                    <caption tableid="1" col="CollectionObjectID" visible="false"/>
                     <caption tableid="100" col="FullName" />
                     <caption tableid="1" col="CatalogNumber" formatter="CatalogNumber" />
                  </captions>
@@ -984,6 +984,32 @@
         </table>
 
 
+        <table id="47" tableid="1" indexed="false" name="PermitToCO" priority="1" color="30, 144, 144">
+            <joins>
+                <join tableid="6">permit.PermitID</join>
+                <join tableid="1" primary="true">collectionobject.CollectionObjectID</join>
+            </joins>
+            <detailView icon="CollectionObject">
+                <sql>
+                    <![CDATA[SELECT 
+ collectionobject.CollectionObjectID, 
+ permit.PermitNumber,
+ collectionobject.CatalogNumber,
+  %s 
+ FROM 
+ permit
+  INNER JOIN accessionauthorization ON accessionauthorization.PermitID = permit.PermitID
+  INNER JOIN accession ON accession.accessionid = accessionauthorization.accessionid
+  INNER JOIN collectionobject ON collectionobject.accessionid = accession.accessionid
+ WHERE %s ORDER BY PermitNumber, CatalogNumber]]>
+                </sql>
+                <captions>
+                    <caption tableid="1" col="CollectionObjectID" visible="false"/>
+                    <caption tableid="6" col="PermitNumber" />
+                    <caption tableid="1" col="CatalogNumber" formatter="CatalogNumber" />
+                 </captions>
+            </detailView>
+        </table>
 
 
 
