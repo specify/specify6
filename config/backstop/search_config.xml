@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
 
-  Last Id for ExpressSearch 47
+  Last Id for ExpressSearch 49
   Last Id for Other Search  125
 
  -->
@@ -1011,6 +1011,59 @@
             </detailView>
         </table>
 
+        <table id="48" tableid="1" indexed="false" name="PermitIssuedToAgent" priority="1" color="30, 144, 144">
+            <joins>
+                <join tableid="6">permit.PermitID</join>
+                <join tableid="5" primary="true">agent.AgentID</join>
+            </joins>
+            <detailView icon="Agent">
+                <sql>
+                    <![CDATA[SELECT 
+ agent.AgentID, 
+ permit.PermitNumber,
+ agent.LastName,
+ agent.FirstName,
+  %s 
+ FROM 
+ permit
+  INNER JOIN agent ON agent.AgentID = permit.IssuedToID
+ WHERE %s ORDER BY PermitNumber, LastName, FirstName]]>
+                </sql>
+                <captions>
+                    <caption tableid="5" col="AgentID" visible="false"/>
+                    <caption tableid="6" col="PermitNumber" />
+                    <caption tableid="5" col="LastName" />
+                    <caption tableid="5" col="FirstName" />
+                 </captions>
+            </detailView>
+        </table>
+
+        <table id="49" tableid="1" indexed="false" name="PermitIssuedByAgent" priority="1" color="30, 144, 144">
+            <joins>
+                <join tableid="6">permit.PermitID</join>
+                <join tableid="5" primary="true">agent.AgentID</join>
+            </joins>
+            <detailView icon="Agent">
+                <sql>
+                    <![CDATA[SELECT 
+ agent.AgentID, 
+ permit.PermitNumber,
+ agent.LastName,
+ agent.FirstName,
+  %s 
+ FROM 
+ permit
+  INNER JOIN agent ON agent.AgentID = permit.IssuedByID
+ WHERE %s ORDER BY PermitNumber, LastName, FirstName]]>
+                </sql>
+                <captions>
+                    <caption tableid="5" col="AgentID" visible="false"/>
+                    <caption tableid="6" col="PermitNumber" />
+                    <caption tableid="5" col="LastName" />
+                    <caption tableid="5" col="FirstName" />
+                 </captions>
+            </detailView>
+        </table>
 
 
 
