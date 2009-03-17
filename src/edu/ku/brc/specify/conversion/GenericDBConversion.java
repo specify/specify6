@@ -1328,7 +1328,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 
             } else if (fromTableName.equals("collectingevent"))
             {
-                String[] ignoredFields = {"VisibilitySetBy", "CollectingTripID",
+                String[] ignoredFields = {"VisibilitySetByID", "CollectingTripID",
                         "EndDateVerbatim", "EndDatePrecision", "StartDateVerbatim",
                         "StartDatePrecision", "HabitatAttributeID", "Version", "CreatedByAgentID",
                         "ModifiedByAgentID", "CollectionMemberID", "CollectingEventAttributeID", "DisciplineID" };
@@ -4390,39 +4390,43 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         
         if (data != null && ((Integer)data) > 0)
         {
-            // 012345678
-            // 20051314
+            // 012345678     012345678
+            // 20051314      19800307
             Date   dateObj = null;
             String dateStr = ((Integer)data).toString();
             if (dateStr.length() == 8)
             {
                 //System.out.println("["+dateStr+"]["+data+"]");//["+(dateStr.length() >)+"]");
-                int    fndInx  = dateStr.substring(4, 8).indexOf("00");
+                int  fndInx  = dateStr.substring(4, 8).indexOf("00");
                 if (fndInx > -1)
                 {
                     if (fndInx == 0)
                     {
                         dateStr = dateStr.substring(0, 4) + "0101";
                         dateObj = UIHelper.convertIntToDate(Integer.parseInt(dateStr)); 
-                        datePair.second = "2";
+                        datePair.second = "3";
                         
                     } else if (fndInx == 2)
                     {
                         dateStr = dateStr.substring(0, 6) + "01";
                         dateObj = UIHelper.convertIntToDate(Integer.parseInt(dateStr)); 
-                        datePair.second = "1";
+                        datePair.second = "2";
                         
                     } else
                     {
                         dateObj = UIHelper.convertIntToDate((Integer)data);
-                        datePair.second = "0";
+                        datePair.second = "2";
                     }
                 } else
                 {
                     dateObj = UIHelper.convertIntToDate((Integer)data); 
-                    datePair.second = "0";
+                    datePair.second = "1";
                 }
                 datePair.first = dateObj == null ? "NULL" : '"'+dateFormatter.format(dateObj) + '"';
+                
+            } else 
+            {
+                log.error("Partial Date was't 8 digits! ["+dateStr+"]");
             }
         }
     }

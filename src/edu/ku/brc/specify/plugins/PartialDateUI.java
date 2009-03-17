@@ -381,16 +381,24 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
         {
             inx = ((Short)dateTypeObj).intValue();
             dateTypeIsStr = false;
+            
         } else if (dateTypeObj instanceof Byte)
         {
             inx = ((Byte)dateTypeObj).intValue();
             dateTypeIsStr = false;
+            
         } else 
         {
             inx = 1;
         }
         
-        inx--; // need to subtract one because the first item is "None"
+        if (inx > 0)
+        {
+            inx--; // need to subtract one because the first item is "None"
+        } else
+        {
+            log.error(dateTypeName+" was zero and shouldn't have been!");
+        }
         
         currentUIV = uivs[inx];
         if (currentUIV != null)
