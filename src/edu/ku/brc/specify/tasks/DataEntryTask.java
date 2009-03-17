@@ -1170,26 +1170,7 @@ public class DataEntryTask extends BaseTask
             viewsNavBox.clear();
             
             // unregister all
-            
-            for (TaskConfigItemIFace tii : stdList)
-            {
-                DataEntryView dev = (DataEntryView)tii;
-                if (dev.getTableInfo() != null)
-                {
-                    String srvName = ServiceInfo.getHashKey(dev.getView(), this, dev.getTableInfo().getTableId());
-                    ContextMgr.unregisterService(srvName);  // Must passed in the hashed Name
-                }
-            }
-            
-            for (TaskConfigItemIFace tii : miscList)
-            {
-                DataEntryView dev = (DataEntryView)tii;
-                if (dev.getTableInfo() != null)
-                {
-                    String srvName = ServiceInfo.getHashKey(dev.getView(), this, dev.getTableInfo().getTableId());
-                    ContextMgr.unregisterService(srvName); // Must passed in the hashed Name
-                }
-            }
+            unregisterServices(stdList, miscList);
 
             // This re-registers the items
             buildNavBoxes(stdViews, miscViews, true);
@@ -1215,6 +1196,41 @@ public class DataEntryTask extends BaseTask
             } else
             {
                 AppContextMgr.getInstance().putResourceAsXML(resourceName, xstream.toXML(dataEntryXML));     
+            }
+        }
+    }
+    
+    /**
+     * Unregister Form Services.
+     * @param stdList the standard list
+     * @param miscList the misc list
+     */
+    protected void unregisterServices(final Vector<? extends TaskConfigItemIFace> stdList, 
+                                      final Vector<? extends TaskConfigItemIFace> miscList)
+    {
+        if (stdList != null)
+        {
+            for (TaskConfigItemIFace tii : stdList)
+            {
+                DataEntryView dev = (DataEntryView)tii;
+                if (dev.getTableInfo() != null)
+                {
+                    String srvName = ServiceInfo.getHashKey(dev.getView(), this, dev.getTableInfo().getTableId());
+                    ContextMgr.unregisterService(srvName);  // Must passed in the hashed Name
+                }
+            }
+        }
+        
+        if (miscList != null)
+        {
+            for (TaskConfigItemIFace tii : miscList)
+            {
+                DataEntryView dev = (DataEntryView)tii;
+                if (dev.getTableInfo() != null)
+                {
+                    String srvName = ServiceInfo.getHashKey(dev.getView(), this, dev.getTableInfo().getTableId());
+                    ContextMgr.unregisterService(srvName); // Must passed in the hashed Name
+                }
             }
         }
     }
@@ -1482,6 +1498,9 @@ public class DataEntryTask extends BaseTask
         if (cmdAction.isAction(APP_RESTART_ACT) ||
             cmdAction.isAction(APP_START_ACT))
         {
+            
+            unregisterServices(stdViews, miscViews);
+            
             viewsNavBox.clear();
             initializeViewsNavBoxFromXML();
         }

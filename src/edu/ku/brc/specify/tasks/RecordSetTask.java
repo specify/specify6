@@ -51,6 +51,7 @@ import edu.ku.brc.af.core.NavBoxButton;
 import edu.ku.brc.af.core.NavBoxIFace;
 import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.af.core.NavBoxMgr;
+import edu.ku.brc.af.core.ServiceInfo;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.UsageTracker;
@@ -1205,6 +1206,12 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
         
         if (cmdAction.isAction(APP_RESTART_ACT))
         {
+            for (DBTableInfo ti : DBTableIdMgr.getInstance().getTables())
+            {
+                String srvName = ServiceInfo.getHashKey(ti.getTitle(), this, ti.getTableId());
+                ContextMgr.unregisterService(srvName);  // Must passed in the hashed Name
+            }
+
             isInitialized = false;
             this.initialize();
         } 
