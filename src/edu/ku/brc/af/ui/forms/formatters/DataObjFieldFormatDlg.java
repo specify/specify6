@@ -531,7 +531,9 @@ public class DataObjFieldFormatDlg extends CustomDialog implements ChangeListene
                 subPanelInError = fmtMultipleEditingPanel.isInError();
                 fmtMultipleEditingPanel.enableUIControls();
             }
-            okBtn.setEnabled(!isInError && !subPanelInError);
+            okBtn.setEnabled(!isInError && !subPanelInError && 
+                    StringUtils.isNotEmpty(nameText.getText()) &&
+                    StringUtils.isNotEmpty(titleText.getText()));
         }
     }
 
