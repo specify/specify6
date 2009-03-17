@@ -324,7 +324,9 @@ public class UIFormatterListEdtDlg extends CustomDialog
                 
                 if (selectedUIF.isIncrementer() && selectedUIF.getAutoNumber() == null)
                 {
-                    selectedUIF.setAutoNumber(new AutoNumberGeneric());
+                    selectedUIF.setAutoNumber(new AutoNumberGeneric(
+                            fieldInfo.getTableInfo().getClassName(),
+                            fieldInfo.getName(), false));
                 }
                 
                 DefaultListModel model = (DefaultListModel) formatList.getModel();
