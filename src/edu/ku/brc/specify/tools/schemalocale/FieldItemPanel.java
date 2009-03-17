@@ -6,7 +6,6 @@
  */
 package edu.ku.brc.specify.tools.schemalocale;
 
-import static edu.ku.brc.ui.UIHelper.adjustButtonArray;
 import static edu.ku.brc.ui.UIHelper.createButton;
 import static edu.ku.brc.ui.UIHelper.createCheckBox;
 import static edu.ku.brc.ui.UIHelper.createComboBox;
@@ -38,7 +37,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
 
-import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -65,7 +63,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.factories.ButtonBarFactory;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
@@ -77,6 +74,7 @@ import edu.ku.brc.af.core.db.DBTableChildIFace;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.db.PickListIFace;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatter;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFormatterListEdtDlg;
 import edu.ku.brc.af.ui.weblink.WebLinkConfigDlg;
@@ -150,7 +148,6 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
     protected JComboBox        formatCombo;
     protected JButton          formatMoreBtn;
     protected Hashtable<String, UIFieldFormatterIFace> formatHash = new Hashtable<String, UIFieldFormatterIFace>();
-    protected UIFieldFormatterIFace selectedFormatter = null;
     
     // WebLinks
     protected JComboBox        webLinkCombo;
@@ -370,8 +367,8 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
                     webLinkCombo.setEnabled(!hasFormat);
                     if (hasFormat)
                     {
-                        webLinkCombo.setSelectedIndex(0);
-                        pickListCBX.setSelectedIndex(0);
+                        webLinkCombo.setSelectedIndex(webLinkCombo.getModel().getSize() > 0 ? 0 : -1);
+                        pickListCBX.setSelectedIndex(pickListCBX.getModel().getSize() > 0 ? 0 : -1);
                     }
                 }
             };
@@ -834,7 +831,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
         webLinkCombo.setEnabled(hasFormat);
         
         formatCombo.setSelectedIndex(selectedInx);
-        
+
         formatSwitcherCombo.setEnabled(enableFormatter);
         formatCombo.setEnabled(enableFormatter);
         formatMoreBtn.setEnabled(enableFormatter);
@@ -842,6 +839,25 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
         return selectedFmt;
     }
     
+    private void setAsDefFormatter() {
+        Object item = formatCombo.getSelectedItem();
+        UIFieldFormatter selected = null;
+        if (item instanceof UIFieldFormatter)
+        {
+            selected = (UIFieldFormatter) item;
+        }
+        DefaultComboBoxModel model    = (DefaultComboBoxModel)formatCombo.getModel();
+        for (int i=1;i<model.getSize();i++)
+        {
+            UIFieldFormatter uif = (UIFieldFormatter)model.getElementAt(i);
+            uif.setDefault(uif == selected);
+        }
+        if (fieldInfo != null)
+        {
+            fieldInfo.setFormatter(selected);
+        }
+    }
+
     /**
      * @param container
      * @param jListContainerItem
@@ -1084,6 +1100,10 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
      */
     protected void getFormatterFromUI(final LocalizableItemIFace field)
     {
+        // Each formatter has a flag called isDefault. 
+        // Only the selected formatter should have its default flag marked as true.
+        setAsDefFormatter();
+        
         Object item = formatCombo.getSelectedItem();
         if (item != null) // should never be null
         {
@@ -1135,7 +1155,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
                 PickList pl = (PickList)pickListCBX.getSelectedItem();
                 prevField.setPickListName(pl != null ? pl.getName() : null);
                 
-            } else if (formatCombo != null && formatCombo.getSelectedIndex() > 0)
+            } else if (formatCombo != null)
             {
                 getFormatterFromUI(prevField);
                     

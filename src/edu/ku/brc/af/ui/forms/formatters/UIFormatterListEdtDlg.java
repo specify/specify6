@@ -300,6 +300,11 @@ public class UIFormatterListEdtDlg extends CustomDialog
             UIFieldFormatter uif = (UIFieldFormatter)model.get(i);
             uif.setDefault(uif == selected);
         }
+
+        if (fieldInfo != null)
+        {
+            fieldInfo.setFormatter(selected);
+        }
         setHasChanged(true);
         formatList.repaint();
     }
