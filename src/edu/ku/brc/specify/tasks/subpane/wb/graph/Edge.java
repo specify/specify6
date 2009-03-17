@@ -100,7 +100,7 @@ public class Edge<E, F>
             return false;
 
         Edge<E, F> edge = (Edge<E, F>) edgeObj;
-        return cost.equals(edge.cost) && pointA.equals(edge.getPointA())
+        return (cost == null || cost.equals(edge.cost)) && pointA.equals(edge.getPointA())
                 && pointB.equals(edge.getPointB()) && dataIsEqual(data, edge.getData());
     }
 
