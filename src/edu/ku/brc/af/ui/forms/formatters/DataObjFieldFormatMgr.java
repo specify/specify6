@@ -43,6 +43,8 @@ import edu.ku.brc.af.ui.forms.DataObjectGettable;
 import edu.ku.brc.af.ui.forms.DataObjectGettableFactory;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.FormHelper;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.ui.UIHelper;
 
@@ -590,6 +592,46 @@ public class DataObjFieldFormatMgr
         }
         return list;
     }
+    
+    /**
+     * Tries to get the value and if it gets a lazy exception .
+     * @param fieldNames
+     * @param dataObj
+     * @param getter
+     * @return
+     */
+    private Object[] getFieldValues(final String[] fieldNames,
+                                    final Object dataObj,
+                                    final DataObjectGettable getter)
+    {
+        Object[] values = null;
+        try
+        {
+            values = UIHelper.getFieldValues(fieldNames, dataObj, getter);
+            
+        } catch (org.hibernate.LazyInitializationException hbex) // XXX this Exception should be made generic
+        {
+            DataProviderSessionIFace session = null;
+            try
+            {
+                session = DataProviderFactory.getInstance().createSession();
+                session.attach(dataObj);
+                
+                values = UIHelper.getFieldValues(fieldNames, dataObj, getter);
+                
+            } catch (Exception ex)
+            {
+                
+            } finally
+            {
+                if (session != null)
+                {
+                    session.close();
+                }
+            }
+        }
+        return values;
+    }
 
     /**
      * Format a data object using a named formatter
@@ -629,9 +671,8 @@ public class DataObjFieldFormatMgr
                 StringBuilder strBuf = new StringBuilder(128);
                 for (DataObjDataField field : format.getFields())
                 {
-                    Object[] values = UIHelper.getFieldValues(new String[]{field.getName()}, dataObj, getter);
-                    
-                    Object value = values != null ? values[0] : null;//getter.getFieldValue(dataObj, field.getName());
+                    Object[] values = getFieldValues(new String[]{field.getName()}, dataObj, getter);
+                    Object   value  = values != null ? values[0] : null;
                     if (value != null)
                     {
                         if (UIHelper.isSecurityOn() && value instanceof FormDataObjIFace)

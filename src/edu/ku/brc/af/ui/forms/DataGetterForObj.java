@@ -166,9 +166,12 @@ public class DataGetterForObj implements DataObjectGettable
                 }
             } catch (Exception ex)
             {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataGetterForObj.class, ex);
                 log.error(ex);
+                if (!(ex instanceof org.hibernate.LazyInitializationException))
+                {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataGetterForObj.class, ex);
+                }
             }
         }
         return value;

@@ -58,8 +58,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.apache.commons.lang.StringUtils;
 
-import bsh.StringUtil;
-
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -68,6 +66,7 @@ import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -126,12 +125,9 @@ public class DataObjFieldFormatSinglePanel extends DataObjFieldFormatPanel
         formatEditor.setMinimumSize(new Dimension(200, 50));
         formatEditor.setPreferredSize(new Dimension(350, 100));
         
-        formatEditor.getDocument().addDocumentListener(new DocumentListener()
+        formatEditor.getDocument().addDocumentListener(new DocumentAdaptor()
         {
-            @Override public void changedUpdate(DocumentEvent e) { changed(e); }
-            @Override public void insertUpdate(DocumentEvent e) { changed(e); }
-            @Override public void removeUpdate(DocumentEvent e) { changed(e); }
-
+            @Override
             public void changed(DocumentEvent e)
             {
                 updateUIEnabled();
@@ -139,13 +135,13 @@ public class DataObjFieldFormatSinglePanel extends DataObjFieldFormatPanel
         }
         );
 
-        PanelBuilder addFieldPB         = new PanelBuilder(new FormLayout("p,2px,p,f:p:g,r:m", "p,2px,p"));  
+        PanelBuilder addFieldPB = new PanelBuilder(new FormLayout("p,2px,p,f:p:g,r:m", "p,2px,p"));  
         sepText     = createTextField(4);
         addFieldBtn = createButton(getResourceString("DOF_ADD_FIELD")); 
         sepLbl      = createI18NFormLabel("DOF_SEP_TXT");
         
-        addFieldPB.add(sepLbl, cc.xy(1,1));
-        addFieldPB.add(sepText, cc.xy(3,1));
+        addFieldPB.add(sepLbl,      cc.xy(1,1));
+        addFieldPB.add(sepText,     cc.xy(3,1));
         addFieldPB.add(addFieldBtn, cc.xy(5,1));
         
         addFieldBtn.setEnabled(false);
