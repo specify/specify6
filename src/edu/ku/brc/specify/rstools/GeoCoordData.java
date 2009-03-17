@@ -63,7 +63,7 @@ public class GeoCoordData implements GeoCoordDataIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#getId()
      */
-    public Integer getId()
+    public Integer getGeoCoordId()
     {
         return id;
     }

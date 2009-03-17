@@ -167,7 +167,17 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
     @Transient
     public Integer getId()
     {
-        return this.workbenchRowId;
+    	return this.workbenchRowId;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#getGeoCoordId()
+     */
+    @Transient
+    @Override
+    public Integer getGeoCoordId()
+    {
+        return this.rowNumber.intValue();
     }
     
     public void setWorkbenchRowId(Integer workbenchRowId)

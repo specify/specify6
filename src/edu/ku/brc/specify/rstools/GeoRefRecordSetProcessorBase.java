@@ -303,7 +303,7 @@ public abstract class GeoRefRecordSetProcessorBase implements RecordSetToolsIFac
                         {
                             Locality  locality = (Locality)session.getData(Locality.class, 
                                                                            "localityId", 
-                                                                           item.getId(), 
+                                                                           item.getGeoCoordId(), 
                                                                            DataProviderSessionIFace.CompareType.Equals);
                             if (locality != null)
                             {
