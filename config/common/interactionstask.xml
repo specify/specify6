@@ -107,14 +107,24 @@
       <flavor isdrag="false" classname="edu.ku.brc.specify.tasks.RecordSetTask" humanreadable="Record_Set">
         <tableIds>
           <int>52</int>
-          <int>7</int> <!-- accession -->
-          <int>18</int> <!-- borrow -->
-          <int>34</int> <!-- deaccession -->
-          <int>39</int> <!--  exchangein -->
-          <int>40</int> <!-- exchangeout -->
-          <int>131</int> <!-- gift -->
-          <int>50</int> <!--  inforequest -->
-          <int>6</int> <!--  permit -->
+          <int>7</int>   <!-- accession    -->
+          <int>18</int>  <!-- borrow       -->
+          <int>34</int>  <!-- deaccession  -->
+          <int>39</int>  <!-- exchangein   -->
+          <int>40</int>  <!-- exchangeout  -->
+          <int>131</int> <!-- gift         -->
+          <int>50</int>  <!-- inforequest  -->
+          <int>6</int>   <!-- permit       -->
+        </tableIds>
+      </flavor>
+    </droppableFlavors>
+  </entry>
+  <entry name="repositoryagreement" table="repositoryagreement" view="RepositoryAgreement" type="Interactions" action="OpenNewView" icon="RepositoryAgreement" isonleft="false" order="0">
+    <draggableFlavors/>
+    <droppableFlavors>
+      <flavor isdrag="false" classname="edu.ku.brc.specify.tasks.RecordSetTask" humanreadable="Record_Set">
+        <tableIds>
+          <int>70</int>
         </tableIds>
       </flavor>
     </droppableFlavors>
