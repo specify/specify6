@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
 
-  Last Id for ExpressSearch 49
+  Last Id for ExpressSearch 53
   Last Id for Other Search  125
 
  -->
@@ -1011,7 +1011,7 @@
             </detailView>
         </table>
 
-        <table id="48" tableid="1" indexed="false" name="PermitIssuedToAgent" priority="1" color="30, 144, 144">
+        <table id="48" tableid="5" indexed="false" name="PermitIssuedToAgent" priority="1" color="30, 144, 144">
             <joins>
                 <join tableid="6">permit.PermitID</join>
                 <join tableid="5" primary="true">agent.AgentID</join>
@@ -1038,7 +1038,7 @@
             </detailView>
         </table>
 
-        <table id="49" tableid="1" indexed="false" name="PermitIssuedByAgent" priority="1" color="30, 144, 144">
+        <table id="49" tableid="5" indexed="false" name="PermitIssuedByAgent" priority="1" color="30, 144, 144">
             <joins>
                 <join tableid="6">permit.PermitID</join>
                 <join tableid="5" primary="true">agent.AgentID</join>
@@ -1066,7 +1066,125 @@
         </table>
 
 
+        <table id="50" tableid="1" indexed="false" name="ProjectCO" priority="1" color="30, 144, 144">
+            <joins>
+                <join tableid="1" primary="true">collectionobject.CollectionObjectID</join>
+                <join tableid="66">project.ProjectID</join>
+            </joins>
+            <detailView icon="CollectionObject">
+                <sql>
+                    <![CDATA[SELECT 
+ collectionobject.CollectionObjectID, 
+ project.ProjectName,
+ project.ProjectNumber,
+ collectionobject.CatalogNumber,
+  %s 
+ FROM 
+ project
+  INNER JOIN project_colobj ON project_colobj.projectid = project.projectid
+  INNER JOIN collectionobject ON collectionobject.collectionobjectid = project_colobj.collectionobjectid
+ WHERE %s ORDER BY ProjectName, ProjectNumber, CatalogNumber]]>
+                </sql>
+                <captions>
+                    <caption tableid="1" col="CollectionObjectID" visible="false"/>
+                    <caption tableid="66" col="ProjectName" />
+                    <caption tableid="66" col="ProjectNumber" />
+                    <caption tableid="1" col="CatalogNumber" formatter="CatalogNumber"/>
+                 </captions>
+            </detailView>
+        </table>
 
+        <table id="51" tableid="5" indexed="false" name="ProjectAgent" priority="1" color="30, 144, 144">
+            <joins>
+                <join tableid="5" primary="true">agent.AgentID</join>
+                <join tableid="66">project.ProjectID</join>
+            </joins>
+            <detailView icon="Agent">
+                <sql>
+                    <![CDATA[SELECT 
+ agent.AgentID, 
+ project.ProjectName,
+ project.ProjectNumber,
+ agent.LastName,
+ agent.FirstName,
+  %s 
+ FROM 
+ project
+  INNER JOIN agent ON agent.agentid = project.projectagentid
+ WHERE %s ORDER BY ProjectName, ProjectNumber, LastName, FirstName]]>
+                </sql>
+                <captions>
+                    <caption tableid="5" col="AgentID" visible="false"/>
+                    <caption tableid="66" col="ProjectName" />
+                    <caption tableid="66" col="ProjectNumber" />
+                    <caption tableid="5" col="LastName" />
+                    <caption tableid="5" col="FirstName" />
+                 </captions>
+            </detailView>
+        </table>
+
+        <table id="52" tableid="5" indexed="false" name="RepoAgreeAgent" priority="1" color="30, 144, 144">
+            <joins>
+                <join tableid="5" primary="true">agent.AgentID</join>
+                <join tableid="70">repositoryagreement.RepositoryAgreementID</join>
+            </joins>
+            <detailView icon="Agent">
+                <sql>
+                    <![CDATA[SELECT 
+ agent.AgentID, 
+ repositoryagreement.RepositoryAgreementNumber,
+  agent.LastName,
+ agent.FirstName,
+  %s 
+ FROM 
+ repositoryagreement
+  INNER JOIN agent ON agent.agentid = repositoryagreement.agentid
+ WHERE %s ORDER BY RepositoryAgreementNumber, LastName, FirstName]]>
+                </sql>
+                <captions>
+                    <caption tableid="5" col="AgentID" visible="false"/>
+                    <caption tableid="70" col="RepositoryAgreementNumber" />
+                    <caption tableid="5" col="LastName" />
+                    <caption tableid="5" col="FirstName" />
+                 </captions>
+            </detailView>
+        </table>
+
+        <table id="53" tableid="1" indexed="false" name="StorageCO" priority="1" color="30, 144, 144">
+            <joins>
+                <join tableid="1" primary="true">collectionobject.CollectionObjectID</join>
+                <join tableid="58">repositoryagreement.RepositoryAgreementID</join>
+            </joins>
+            <detailView icon="CollectionObject">
+                <sql>
+                    <![CDATA[SELECT 
+ collectionobject.CollectionObjectID, 
+ storage.FullName,
+  collectionobject.CatalogNumber,
+  %s 
+ FROM 
+ storage
+  INNER JOIN container ON container.storageid = storage.storageid
+  INNER JOIN collectionobject ON collectionobject.containerid = container.containerid
+ WHERE %s ORDER BY FullName, CatalogNumber]]>
+                </sql>
+                <captions>
+                    <caption tableid="1" col="CollectionObjectID" visible="false"/>
+                    <caption tableid="58" col="FullName" />
+                    <caption tableid="1" col="CatalogNumber" formatter="CatalogNumber" />
+                 </captions>
+            </detailView>
+        </table>
+
+
+
+
+
+        
+        
+
+        
+        
 
         
         
