@@ -113,7 +113,7 @@ public class GeoCoordBGMProvider implements GeoCoordServiceProviderIFace
                     BioGeomancerQuerySummaryStruct bgQuerySummary;
                     try
                     {
-                        bgResults = BioGeomancer.getBioGeomancerResponse(item.getId().toString(), country, state, county, localityNameStr);
+                        bgResults = BioGeomancer.getBioGeomancerResponse(item.getGeoCoordId().toString(), country, state, county, localityNameStr);
                         bgQuerySummary = BioGeomancer.parseBioGeomancerResponse(bgResults);
                     }
                     catch (IOException ex1)
@@ -145,7 +145,7 @@ public class GeoCoordBGMProvider implements GeoCoordServiceProviderIFace
                     int resCount = bgQuerySummary.results.length;
                     if (resCount > 0)
                     {
-                        final int rowNumber = item.getId();
+                        final int rowNumber = item.getGeoCoordId();
                         final BioGeomancerQuerySummaryStruct summaryStruct = bgQuerySummary;
                         // create a thread to go grab the map so it will be cached for later use
                         Thread t = new Thread(new Runnable()
@@ -165,7 +165,7 @@ public class GeoCoordBGMProvider implements GeoCoordServiceProviderIFace
                                 }
                             }
                         });
-                        t.setName("Map Pre-Caching Thread: row " + item.getId()); // I18N //$NON-NLS-1$
+                        t.setName("Map Pre-Caching Thread: row " + item.getGeoCoordId()); // I18N //$NON-NLS-1$
                         log.debug("Starting map pre-caching thread"); //$NON-NLS-1$
                         t.start();
                     }

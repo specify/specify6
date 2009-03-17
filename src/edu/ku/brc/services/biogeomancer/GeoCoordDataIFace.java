@@ -30,7 +30,7 @@ public interface GeoCoordDataIFace
     
     public abstract String getLongitude();
     
-    public abstract Integer getId();
+    public abstract Integer getGeoCoordId();
     
     public abstract String getTitle();
     

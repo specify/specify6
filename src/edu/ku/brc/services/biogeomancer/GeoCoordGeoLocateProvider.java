@@ -145,7 +145,7 @@ public class GeoCoordGeoLocateProvider implements GeoCoordServiceProviderIFace
                             {
                                 try
                                 {
-                                    int rowNumber = item.getId();
+                                    int rowNumber = item.getGeoCoordId();
                                     log.info("Requesting map of GEOLocate results for workbench row " + rowNumber); //$NON-NLS-1$
                                     GeoLocate.getMapOfGeographicPoints(glResults.getResultSet(), null);
                                 }
