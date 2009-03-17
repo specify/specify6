@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
 
-  Last Id for ExpressSearch 53
+  Last Id for ExpressSearch 54
   Last Id for Other Search  125
 
  -->
@@ -1176,6 +1176,42 @@
             </detailView>
         </table>
 
+        <table id="54" tableid="1" indexed="false" name="TaxCollObject" priority="1" color="30, 144, 144">
+            <joins>
+                <!-- <join tableid="1" primary="true">collectionobject.CollectionObjectID</join>-->
+                <join tableid="4">taxon.TaxonID</join>
+            </joins>
+            <detailView icon="CollectionObject">
+                <sql>
+                    <![CDATA[
+ SELECT distinct 
+ collectionobject.CollectionObjectID, 
+ FullName, 
+ CatalogNumber, 
+ CatalogedDate, 
+ CatalogedDatePrecision, 
+ IsCurrent,
+ %s 
+ From collectionobject 
+ Inner Join determination AS DT ON DT.CollectionObjectID = collectionobject.CollectionObjectID
+ Inner Join taxon ON taxon.TaxonID = DT.TaxonID 
+ WHERE DT.CollectionMemberID = COLMEMID AND 
+ collectionobject.CollectionMemberID = COLMEMID AND 
+ taxon.TaxonTreeDefID = TAXTREEDEFID AND 
+ %s order by FullName, CatalogNumber]]>
+                </sql>
+                <captions>
+                    <caption tableid="1" col="collectionobject.CollectionObjectID" visible="false"/>
+                    <caption tableid="4" col="FullName" key="TaxonName"/>
+                    <caption tableid="1" col="CatalogNumber" formatter="CatalogNumber"/>
+                    <caption tableid="1" formatter="PartialDate">
+                        <col name="CatalogedDate"          field="catalogedDate"/>
+                        <col name="CatalogedDatePrecision" field="catalogedDatePrecision"/>
+                    </caption>
+                    <caption tableid="9" col="IsCurrent" formatter="Boolean"/>
+                </captions>
+            </detailView>
+        </table>
 
 
 
