@@ -203,7 +203,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
      */
     public void requestContext()
     {
-        if (!isAnyOtherUsersOn() && isTabsClosed())
+        if (!isAnyOtherUsersOn() && SubPaneMgr.getInstance().aboutToShutdown())
         {
             ContextMgr.requestContext(this);
     

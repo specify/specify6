@@ -429,9 +429,9 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
                         }
                     } catch (Exception ex)
                     {
+                        ex.printStackTrace();
                         edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                         edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SubViewBtn.class, ex);
-                        ex.printStackTrace();
                     }
                     
                 } else
@@ -445,9 +445,10 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
                 
             } catch (Exception ex)
             {
+                ex.printStackTrace();
                 edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SubViewBtn.class, ex);
-                ex.printStackTrace();
+                
             } finally
             {
                 if (sessionLocal != null)
@@ -458,7 +459,35 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
         } else
         {
             multiView.setParentDataObj(parentObj);
-            multiView.setData(dataObj);
+            DataProviderSessionIFace sessionLocal = null;
+            try
+            {
+                sessionLocal = DataProviderFactory.getInstance().createSession();
+                multiView.setSession(sessionLocal);
+                if (dataObj instanceof Set<?>)
+                {
+                    for (Object obj : ((Set<?>)dataObj))
+                    {
+                        if (obj instanceof FormDataObjIFace && ((FormDataObjIFace)obj).getId() != null)
+                        {
+                            sessionLocal.attach(obj);
+                        }
+                        
+                    }
+                } else if (dataObj instanceof FormDataObjIFace && ((FormDataObjIFace)dataObj).getId() != null)
+                {
+                    sessionLocal.attach(dataObj);
+                }
+                multiView.setData(dataObj);
+                multiView.setSession(null);
+                
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+            } finally
+            {
+                sessionLocal.close();
+            }
         }
         
         multiView.setClassToCreate(classToCreate);
@@ -500,41 +529,12 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
         {
             if (frame.isEditMode())
             {
-                fvo = frame.getMultiView().getCurrentViewAsFormViewObj();
-                if (fvo != null)
-                {
-                    //boolean removeCurrItem = fvo.getValidator().getState() != UIValidatable.ErrorType.Valid;
+                frame.getMultiView().getDataFromUI();
+                FormViewObj.traverseToGetDataFromForms(frame.getMultiView());
 
-                    switch (dataType)
-                    {
-                        case IS_SET :
-                            fvo.getDataFromUI();
-                            break;
-                            
-                        case IS_SINGLE :
-                            fvo.getDataFromUI();
-                            break;
-                            
-                        case IS_THIS :
-                            fvo.getDataFromUI();
-                            break;
-                            
-                        case IS_SINGLESET_ITEM :
-                            fvo.getDataFromUI();
-                            break;
-                    }
-                } 
                 updateBtnText();
                 
                 mvParent.getCurrentValidator().validateRoot();
-                
-                /*if (fvo.getValidator() != null)
-                {
-                    //fvo.getValidator().setFormValidationState(UIValidatable.ErrorType.Valid);
-                    fvo.getValidator().validateForm();
-                    multiView.validate();
-                    fvo.getValidator().wasValidated(null);
-                }*/
             }
         } else
         {

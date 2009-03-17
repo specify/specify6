@@ -161,9 +161,6 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
         this.collectionObjectId = collectionObjectId;
     }
 
-
-
-
     // Initializer
     @Override
     public void initialize()

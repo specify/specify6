@@ -99,8 +99,8 @@ public class AddExistingUserDlg extends CustomDialog
     private JList createUserList()
     {
         // sort set of users into a list
-        List<SpecifyUser> userList = new ArrayList<SpecifyUser>(spUsers);
-        Collections.sort(userList, new ComparatorByStringRepresentation<SpecifyUser>());
+        List<SpecifyUser> usrArrayList = new ArrayList<SpecifyUser>(spUsers);
+        Collections.sort(usrArrayList, new ComparatorByStringRepresentation<SpecifyUser>());
 
         DefaultListModel listModel = new DefaultListModel();
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
@@ -109,7 +109,7 @@ public class AddExistingUserDlg extends CustomDialog
             session.attach(group);
             session.refresh(group);
             Set<Integer> userIdList = getUserIdsFromGroup(group);
-            for (SpecifyUser user : userList)
+            for (SpecifyUser user : usrArrayList)
             {
                 if (!userIdList.contains(user.getId()))
                 {

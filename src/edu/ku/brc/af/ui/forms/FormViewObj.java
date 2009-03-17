@@ -1522,7 +1522,7 @@ public class FormViewObj implements Viewable,
      * Walks the MultiView hierarchy and has them transfer their data from the UI to the DB Object
      * @param parentMV the parent MultiView
      */
-    protected void traverseToGetDataFromForms(final MultiView parentMV)
+    public static void traverseToGetDataFromForms(final MultiView parentMV)
     {
         for (MultiView mv : parentMV.getKids())
         {

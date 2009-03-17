@@ -96,34 +96,43 @@ public class DNASequence extends CollectionMember
         super.init();
 
         dnaSequenceId = null;
-		moleculeType = null;
-		targetMarker = null;
-		boldBarcodeId = null;
-		genbankAccessionNumber = null;
-		boldSampleId = null;
-		boldTranslationMatrix = null;
-		geneSequence = null;
-		remarks = null;
-		text1 = null;
-		text2 = null;
-		text3 = null;
-		yesNo1 = null;
-		yesNo2 = null;
-		yesNo3 = null;
-		totalResidues = null;
-		compA = null;
-		compG = null;
-		compC = null;
-		compT = null;
-		ambiguousResidues = null;
-		number1 = null;
-		number2 = null;
-		number3 = null;
-		boldLastUpdateDate = null;
+        moleculeType = null;
+        targetMarker = null;
+        boldBarcodeId = null;
+        genbankAccessionNumber = null;
+        boldSampleId = null;
+        boldTranslationMatrix = null;
+        geneSequence = null;
+        remarks = null;
+        text1 = null;
+        text2 = null;
+        text3 = null;
+        yesNo1 = null;
+        yesNo2 = null;
+        yesNo3 = null;
+        totalResidues = null;
+        compA = null;
+        compG = null;
+        compC = null;
+        compT = null;
+        ambiguousResidues = null;
+        number1 = null;
+        number2 = null;
+        number3 = null;
+        boldLastUpdateDate = null;
 
-		sequencer = null;
-		collectionObject = null;
-		dnaSequencingRuns = new HashSet<DNASequencingRun>();
+        sequencer = null;
+        collectionObject = null;
+        dnaSequencingRuns = new HashSet<DNASequencingRun>();
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#forceLoad()
+     */
+    @Override
+    public void forceLoad()
+    {
+        dnaSequencingRuns.size();
     }
 
     /**

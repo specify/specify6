@@ -16,7 +16,6 @@ package edu.ku.brc.specify.prefs;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Properties;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -103,33 +102,4 @@ public class LoginPrefs extends GenericPrefsPanel
             }
         }
     }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.prefs.GenericPrefsPanel#getChangedFields(java.util.Properties)
-     */
-    @Override
-    public void getChangedFields(Properties changeHash)
-    {
-        // not nothing
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.prefs.GenericPrefsPanel#savePrefs()
-     */
-    @Override
-    public void savePrefs()
-    {
-        super.savePrefs(); // gets data from form
-        
-        if (formView != null & form != null && form.getUIComponent() != null)
-        {
-            JCheckBox chkbx = form.getCompById("autologin");
-            if (chkbx != null)
-            {
-                AppPreferences.getLocalPrefs().putBoolean("login.autologin", chkbx.isSelected());
-            }
-        }
-    }
-    
-    
 }

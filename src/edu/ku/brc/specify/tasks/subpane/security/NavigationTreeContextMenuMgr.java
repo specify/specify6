@@ -222,7 +222,7 @@ public class NavigationTreeContextMenuMgr extends MouseAdapter implements TreeSe
      * @param clickedElement
      * @return
      */
-    private JPopupMenu getDisciplineNodeContextMenu(final TreePath clickedElement)
+    /*private JPopupMenu getDisciplineNodeContextMenu(final TreePath clickedElement)
     {
 
         JPopupMenu groupNodeContextMenu = new JPopupMenu("Discipline Context Menu");
@@ -232,19 +232,19 @@ public class NavigationTreeContextMenuMgr extends MouseAdapter implements TreeSe
         deleteAction.setEnabled(canDelete);
         groupNodeContextMenu.add(deleteAction);
         return groupNodeContextMenu;
-    }
+    }*/
 
     /**
      * @param clickedElement
      * @return
      */
-    private JPopupMenu getInstitutionNodeContextMenu(final TreePath clickedElement)
+    /*private JPopupMenu getInstitutionNodeContextMenu(final TreePath clickedElement)
     {
 
         JPopupMenu groupNodeContextMenu = new JPopupMenu("Institution Context Menu");
         groupNodeContextMenu.add(new AddNewDisciplineAction(clickedElement, getTreeMgr()));
         return groupNodeContextMenu;
-    }
+    }*/
 
     /**
      * @return

@@ -4599,7 +4599,13 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
             int catNumInx      = oldNameIndex.get("CatalogNumber") + 1;
             int catDateInx     = oldNameIndex.get("CatalogedDate") + 1;
-            int grpPrmtViewInx = oldNameIndex.get("GroupPermittedToView") + 1;
+            
+            int     grpPrmtViewInx = -1;
+            Integer grpPrmtViewInxObj = oldNameIndex.get("GroupPermittedToView");
+            if (grpPrmtViewInxObj != null)
+            {
+                grpPrmtViewInx = grpPrmtViewInxObj + 1;
+            }
             
             int     colObjAttrsNotMapped = 0;
             int     count                = 0;
@@ -4790,7 +4796,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
                     } else if (newFieldName.equals("Visibility")) // User/Security changes
                     {
-                        str.append(rs.getObject(grpPrmtViewInx));
+                        str.append(grpPrmtViewInx > -1 ? rs.getObject(grpPrmtViewInx) : "NULL");
 
                     } else if (newFieldName.equals("VisibilitySetByID")) // User/Security changes
                     {
@@ -5673,7 +5679,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         String[] ignoredFields = { "GUID", "Visibility", "VisibilitySetBy", "IsHybrid",
                                     "HybridParent1ID", "HybridParent2ID", "EsaStatus", "CitesStatus", "UsfwsCode",
                                     "IsisNumber", "Text1", "Text2", "NcbiTaxonNumber", "Number1", "Number2",
-                                    "CreatedByAgentID", "ModifiedByAgentID", "Version", "CultivarName", "LabelFormat"};
+                                    "CreatedByAgentID", "ModifiedByAgentID", "Version", "CultivarName", "LabelFormat", 
+                                    "COLStatus", "VisibilitySetByID"};
 
         BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);
 

@@ -1903,7 +1903,7 @@
                     <cell type="label" labelfor="23"/>
                     <cell type="field" id="23" name="genbankAccessionNumber" uitype="text"/>
                     <cell type="label" labelfor="24"/>
-                    <cell type="field" id="24" name="BOLDSampleID" uitype="text"/> 
+                    <cell type="field" id="24" name="boldSampleId" uitype="text"/> 
                 </row>
                 <row>
                     <cell type="label" labelfor="3"/>

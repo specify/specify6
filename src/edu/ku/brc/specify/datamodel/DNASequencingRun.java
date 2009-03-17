@@ -117,6 +117,15 @@ public class DNASequencingRun extends CollectionMember
         citations = new HashSet<DNASequencingRunCitation>();
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#forceLoad()
+     */
+    @Override
+    public void forceLoad()
+    {
+        //attachments.size();
+    }
+
     /**
 	 * @return the dnaSequencingRunId
 	 */
@@ -137,9 +146,6 @@ public class DNASequencingRun extends CollectionMember
 	{
 		return ordinal;
 	}
-
-
-
 
 	/**
 	 * @return the readDirection
@@ -456,7 +462,6 @@ public class DNASequencingRun extends CollectionMember
     	return 88;
     }
     
-    
 	/**
 	 * @param dnaSequencingRunId the dnaSequencingRunId to set
 	 */
@@ -464,9 +469,6 @@ public class DNASequencingRun extends CollectionMember
 	{
 		this.dnaSequencingRunId = dnaSequencingRunId;
 	}
-
-
-
 
 	/**
 	 * @param ordinal the ordinal to set
@@ -476,9 +478,6 @@ public class DNASequencingRun extends CollectionMember
 		this.ordinal = ordinal;
 	}
 
-
-
-
 	/**
 	 * @param readDirection the readDirection to set
 	 */
@@ -486,9 +485,6 @@ public class DNASequencingRun extends CollectionMember
 	{
 		this.readDirection = readDirection;
 	}
-
-
-
 
 	/**
 	 * @param runDate the runDate to set
@@ -498,9 +494,6 @@ public class DNASequencingRun extends CollectionMember
 		this.runDate = runDate;
 	}
 
-
-
-
 	/**
 	 * @param pcrCocktailPrimer the pcrCocktailPrimer to set
 	 */
@@ -508,9 +501,6 @@ public class DNASequencingRun extends CollectionMember
 	{
 		this.pcrCocktailPrimer = pcrCocktailPrimer;
 	}
-
-
-
 
 	/**
 	 * @param pcrForwardPrimerCode the pcrForwardPrimerCode to set
@@ -520,9 +510,6 @@ public class DNASequencingRun extends CollectionMember
 		this.pcrForwardPrimerCode = pcrForwardPrimerCode;
 	}
 
-
-
-
 	/**
 	 * @param pcrReversePrimerCode the pcrReversePrimerCode to set
 	 */
@@ -530,9 +517,6 @@ public class DNASequencingRun extends CollectionMember
 	{
 		this.pcrReversePrimerCode = pcrReversePrimerCode;
 	}
-
-
-
 
 	/**
 	 * @param pcrPrimerSequence5_3 the pcrPrimerSequence5_3 to set
@@ -542,9 +526,6 @@ public class DNASequencingRun extends CollectionMember
 		this.pcrPrimerSequence5_3 = pcrPrimerSequence5_3;
 	}
 
-
-
-
 	/**
 	 * @param pcrPrimerName the pcrPrimerName to set
 	 */
@@ -552,9 +533,6 @@ public class DNASequencingRun extends CollectionMember
 	{
 		this.pcrPrimerName = pcrPrimerName;
 	}
-
-
-
 
 	/**
 	 * @param sequencePrimerCode the sequencePrimerCode to set
@@ -564,9 +542,6 @@ public class DNASequencingRun extends CollectionMember
 		this.sequencePrimerCode = sequencePrimerCode;
 	}
 
-
-
-
 	/**
 	 * @param sequencePrimerName the sequencePrimerName to set
 	 */
@@ -574,9 +549,6 @@ public class DNASequencingRun extends CollectionMember
 	{
 		this.sequencePrimerName = sequencePrimerName;
 	}
-
-
-
 
 	/**
 	 * @param sequencePrimerSequence5_3 the sequencePrimerSequence5_3 to set
@@ -586,9 +558,6 @@ public class DNASequencingRun extends CollectionMember
 		this.sequencePrimerSequence5_3 = sequencePrimerSequence5_3;
 	}
 
-
-
-
 	/**
 	 * @param sequenceCocktailPrimer the sequenceCocktailPrimer to set
 	 */
@@ -596,9 +565,6 @@ public class DNASequencingRun extends CollectionMember
 	{
 		this.sequenceCocktailPrimer = sequenceCocktailPrimer;
 	}
-
-
-
 
 	/**
 	 * @param traceFileName the traceFileName to set
@@ -608,9 +574,6 @@ public class DNASequencingRun extends CollectionMember
 		this.traceFileName = traceFileName;
 	}
 
-
-
-
 	/**
 	 * @param scoreFileName the scoreFileName to set
 	 */
@@ -618,9 +581,6 @@ public class DNASequencingRun extends CollectionMember
 	{
 		this.scoreFileName = scoreFileName;
 	}
-
-
-
 
 	/**
 	 * @param remarks the remarks to set
@@ -630,9 +590,6 @@ public class DNASequencingRun extends CollectionMember
 		this.remarks = remarks;
 	}
 
-
-
-
 	/**
 	 * @param number1 the number1 to set
 	 */
@@ -640,9 +597,6 @@ public class DNASequencingRun extends CollectionMember
 	{
 		this.number1 = number1;
 	}
-
-
-
 
 	/**
 	 * @param number2 the number2 to set
@@ -652,9 +606,6 @@ public class DNASequencingRun extends CollectionMember
 		this.number2 = number2;
 	}
 
-
-
-
 	/**
 	 * @param number3 the number3 to set
 	 */
@@ -662,9 +613,6 @@ public class DNASequencingRun extends CollectionMember
 	{
 		this.number3 = number3;
 	}
-
-
-
 
 	/**
 	 * @param text1 the text1 to set
@@ -674,9 +622,6 @@ public class DNASequencingRun extends CollectionMember
 		this.text1 = text1;
 	}
 
-
-
-
 	/**
 	 * @param text2 the text2 to set
 	 */
@@ -684,9 +629,6 @@ public class DNASequencingRun extends CollectionMember
 	{
 		this.text2 = text2;
 	}
-
-
-
 
 	/**
 	 * @param text3 the text3 to set
@@ -696,9 +638,6 @@ public class DNASequencingRun extends CollectionMember
 		this.text3 = text3;
 	}
 
-
-
-
 	/**
 	 * @param yesNo1 the yesNo1 to set
 	 */
@@ -706,9 +645,6 @@ public class DNASequencingRun extends CollectionMember
 	{
 		this.yesNo1 = yesNo1;
 	}
-
-
-
 
 	/**
 	 * @param yesNo2 the yesNo2 to set
@@ -718,9 +654,6 @@ public class DNASequencingRun extends CollectionMember
 		this.yesNo2 = yesNo2;
 	}
 
-
-
-
 	/**
 	 * @param yesNo3 the yesNo3 to set
 	 */
@@ -728,9 +661,6 @@ public class DNASequencingRun extends CollectionMember
 	{
 		this.yesNo3 = yesNo3;
 	}
-
-
-
 
 	/**
 	 * @param dnaSequence the dnaSequence to set
@@ -740,9 +670,6 @@ public class DNASequencingRun extends CollectionMember
 		this.dnaSequence = dnaSequence;
 	}
 
-
-
-
 	/**
 	 * @param citations the citations to set
 	 */
@@ -750,9 +677,6 @@ public class DNASequencingRun extends CollectionMember
 	{
 		this.citations = citations;
 	}
-
-
-
 
 	/**
      * @param attachments the attachments to set

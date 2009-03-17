@@ -232,8 +232,10 @@ public class SecurityAdminPane extends BaseSubPane
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
 
                 if (node == null || !(node.getUserObject() instanceof DataModelObjBaseWrapper))
+                {
                     // Nothing is selected or object type isn't relevant    
                     return;
+                }
 
                 // ask if user he wants to discard changes if that's the case
                 if (!aboutToShutdown())
@@ -373,7 +375,8 @@ public class SecurityAdminPane extends BaseSubPane
      * @param session Data provider session to be used to retrieve data objects 
      * @param root Root of the tree to add children (institutions) to
      */
-    private void addInstitutionsRecursively(DataProviderSessionIFace session, DefaultMutableTreeNode root)
+    private void addInstitutionsRecursively(final DataProviderSessionIFace session, 
+                                            final DefaultMutableTreeNode root)
     {
         // initialize hash of users that will be used to avoid creation of multiple instances of the same persisted user
         spUsers = new HashSet<SpecifyUser>();
@@ -395,7 +398,9 @@ public class SecurityAdminPane extends BaseSubPane
      * @param instNode
      * @param institution
      */
-    private void addDivisionsRecursively(final DataProviderSessionIFace session, final DefaultMutableTreeNode instNode, final Institution institution)
+    private void addDivisionsRecursively(final DataProviderSessionIFace session, 
+                                         final DefaultMutableTreeNode   instNode, 
+                                         final Institution              institution)
     {
         // sort divisions
         TreeSet<Division> divisions = new TreeSet<Division>(institution.getDivisions()); 
@@ -424,7 +429,9 @@ public class SecurityAdminPane extends BaseSubPane
      * @param division
      */
     @SuppressWarnings("unused")
-    private void addDisciplinesRecursively(final DataProviderSessionIFace session, final DefaultMutableTreeNode divNode, final Division division)
+    private void addDisciplinesRecursively(final DataProviderSessionIFace session, 
+                                           final DefaultMutableTreeNode   divNode, 
+                                           final Division                 division)
     {
         // sort disciplines
         TreeSet<Discipline> disciplines = new TreeSet<Discipline>(division.getDisciplines()); 
@@ -442,7 +449,9 @@ public class SecurityAdminPane extends BaseSubPane
      * @param discNode
      * @param discipline
      */
-    private void addCollectionsRecursively(final DataProviderSessionIFace session, final DefaultMutableTreeNode discNode, final Discipline discipline)
+    private void addCollectionsRecursively(final DataProviderSessionIFace session, 
+                                           final DefaultMutableTreeNode   discNode, 
+                                           final Discipline               discipline)
     {
         // sort collections
         TreeSet<Collection> collections = new TreeSet<Collection>(discipline.getCollections()); 
@@ -459,7 +468,7 @@ public class SecurityAdminPane extends BaseSubPane
      * @param node
      * @param scope
      */
-    private void addGroup(DataProviderSessionIFace session, 
+    private void addGroup(final DataProviderSessionIFace session, 
                           final DefaultMutableTreeNode node, 
                           final UserGroupScope scope)
     {
@@ -511,11 +520,12 @@ public class SecurityAdminPane extends BaseSubPane
 //        sp = new JScrollPane(userList, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 //        mainPB.add(sp,                        cc.xy(1, 5));
         int y = 1;
-        PanelBuilder lpb = new PanelBuilder(new FormLayout("p,10px,p:g", "p,2px,p,2px,p,2px,p,2px"));
+        PanelBuilder lpb = new PanelBuilder(new FormLayout("p,10px,p:g", "p,2px,p,2px,p,2px,p,2px,p,2px"));
         lpb.addSeparator(getResourceString("SEC_LGND"), cc.xyw(1, y, 3)); y += 2;
         
-        String[] lbl = {"SEC_ADMINGRP", "SEC_PERSON", "SEC_COLL"};
-        String[] icn = {"AdminGroup",   "person",     "Collection"};
+        Discipline discipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
+        String[] lbl = {"SEC_DSP",            "SEC_COLL",   "SEC_ADMINGRP", "SEC_PERSON"};
+        String[] icn = {discipline.getType(), "Collection", "AdminGroup",   "person"};
         for (int i=0;i<lbl.length;i++)
         {
             lpb.add(createLabel("", IconManager.getIcon(icn[i], IconManager.STD_ICON_SIZE)), cc.xy(1,y));
@@ -546,7 +556,10 @@ public class SecurityAdminPane extends BaseSubPane
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) parent;
             
             if (!(node.getUserObject() instanceof DataModelObjBaseWrapper))
+            {
                 return node.getChildAt(index);
+                
+            }
             
             DataModelObjBaseWrapper parentWrapper = (DataModelObjBaseWrapper) node.getUserObject();
 
@@ -575,7 +588,10 @@ public class SecurityAdminPane extends BaseSubPane
             return node.getChildAt(pos);
         }
         
-        public int getChildCount(Object parent) 
+        /* (non-Javadoc)
+         * @see javax.swing.tree.DefaultTreeModel#getChildCount(java.lang.Object)
+         */
+        public int getChildCount(final Object parent) 
         {
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) parent;
         
@@ -601,7 +617,10 @@ public class SecurityAdminPane extends BaseSubPane
             return childCount;
         }
         
-        public void setFilter(Filter filter) 
+        /**
+         * @param filter
+         */
+        public void setFilter(final Filter filter) 
         {
             if (this.filter == null && filter == null)
                 return;
@@ -626,7 +645,10 @@ public class SecurityAdminPane extends BaseSubPane
             openUserNodesRecursive(root);
         }
 
-        public void openUserNodesRecursive(TreeNode node)
+        /**
+         * @param node
+         */
+        public void openUserNodesRecursive(final TreeNode node)
         {
             DefaultMutableTreeNode defNode = (DefaultMutableTreeNode) node;
             if (defNode.getUserObject() instanceof DataModelObjBaseWrapper)
