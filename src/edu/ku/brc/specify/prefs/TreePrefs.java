@@ -187,7 +187,7 @@ public class TreePrefs extends GenericPrefsPanel
             
             int rankId = AppPreferences.getRemote().getInt(PREF_NAME+fillerClass.getSimpleName(), 0);
 
-            session.attach(tdi);
+            //session.attach(tdi); It seems there is no reason to attach the treedef? Skipping attach fixes bug #6932.
             Vector<TreeDefItemIface<T,D,I>> list = new Vector<TreeDefItemIface<T,D,I>>(tdi.getTreeDefItems());
             
             Comparator<TreeDefItemIface<T,D,I>> itemComparator = new Comparator<TreeDefItemIface<T,D,I>>()
