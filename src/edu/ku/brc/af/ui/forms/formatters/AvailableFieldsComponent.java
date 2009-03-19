@@ -29,6 +29,7 @@ import edu.ku.brc.af.core.db.DBInfoBase;
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.core.db.DBRelationshipInfo.RelationshipType;
 
 /**
  * @author Ricardo
@@ -235,6 +236,14 @@ public class AvailableFieldsComponent
             if (rel.isHidden()) 
             {
                 break;
+            }
+            
+            if (!RelationshipType.ManyToOne.equals(rel.getType()) && 
+                !RelationshipType.OneToOne.equals(rel.getType()))
+            {
+                // Relationship is not *-to-One, so we won't know how to include sets of 
+                // values into the formatted object. Let's not include this relationship.
+                continue;
             }
             
             // add sub-tree corresponding to the fields (and relationships) from the current relationship table
