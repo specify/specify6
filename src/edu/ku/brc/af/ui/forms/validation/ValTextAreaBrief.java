@@ -173,7 +173,7 @@ public class ValTextAreaBrief extends ValTextArea
         final JTextArea ta = UIHelper.createTextArea(10, 60);
         if (getDocument() instanceof ValPlainTextDocument)
         {
-            //ta.setDocument(new ValPlainTextDocument(((ValPlainTextDocument)getDocument()).getLimit()));
+            ta.setDocument(new ValPlainTextDocument(((ValPlainTextDocument)getDocument()).getLimit()));
         }
         ta.setLineWrap(true);
         ta.setWrapStyleWord(true);
