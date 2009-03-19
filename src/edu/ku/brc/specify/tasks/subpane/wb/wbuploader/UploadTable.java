@@ -2519,13 +2519,13 @@ public class UploadTable implements Comparable<UploadTable>
         {
             result.add(new DeleteQuery(
             		session.createQuery("delete from agent_discipline where AgentID =:theKey", true), 
-            		false, -1));
+            		true, -1));
         }
         if (uploader.getAttachToTable() == this)
         {
         	//weird relationships/annotations require extra work. Can't delete attachments
         	//until XXXAttachment records are deleted, but can't know what attachments to delete
-        	//after XXXAttachment records are delete. 
+        	//after XXXAttachment records are deleted. 
         	
         	//gets the ids of the attachments to delete.
         	result.add(new DeleteQuery(session.createQuery("select attachmentid from " + 
@@ -2556,7 +2556,7 @@ public class UploadTable implements Comparable<UploadTable>
      */
     protected void deleteObjects(Iterator<UploadedRecordInfo> objs, final boolean showProgress) throws UploaderException
     {
-        
+        log.debug("deleting from " + getWriteTable().getName());
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         Vector<DeleteQuery> q;
         if (doRawDeletes)
