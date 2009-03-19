@@ -29,6 +29,7 @@ public class InteractionEntry implements TaskConfigItemIFace, Comparable<TaskCon
     protected String  action;
     protected String  iconName;
     protected boolean isOnLeft;
+    protected boolean isSearchService;
     protected int     order;
     
     protected Vector<EntryFlavor> draggableFlavors = new Vector<EntryFlavor>();
@@ -70,6 +71,7 @@ public class InteractionEntry implements TaskConfigItemIFace, Comparable<TaskCon
         this.action = action;
         this.iconName = iconName;
         this.isOnLeft = true;
+        this.isSearchService = false;
     }
 
     public void addDraggable(final Class<?> cls, final String humanReadable, final int[] dndTableIds)
@@ -90,7 +92,6 @@ public class InteractionEntry implements TaskConfigItemIFace, Comparable<TaskCon
         return name;
     }
 
-
     /**
      * @param name the name to set
      */
@@ -98,7 +99,6 @@ public class InteractionEntry implements TaskConfigItemIFace, Comparable<TaskCon
     {
         this.name = name;
     }
-
 
     /**
      * @return the tableName
@@ -124,7 +124,6 @@ public class InteractionEntry implements TaskConfigItemIFace, Comparable<TaskCon
         return labelKey;
     }
 
-
     /**
      * @param labelKey the labelKey to set
      */
@@ -132,7 +131,6 @@ public class InteractionEntry implements TaskConfigItemIFace, Comparable<TaskCon
     {
         this.labelKey = labelKey;
     }
-
 
     /**
      * @return the viewName
@@ -142,7 +140,6 @@ public class InteractionEntry implements TaskConfigItemIFace, Comparable<TaskCon
         return viewName;
     }
 
-
     /**
      * @param viewName the viewName to set
      */
@@ -150,7 +147,6 @@ public class InteractionEntry implements TaskConfigItemIFace, Comparable<TaskCon
     {
         this.viewName = viewName;
     }
-
 
     /**
      * @return the cmdType
@@ -268,6 +264,22 @@ public class InteractionEntry implements TaskConfigItemIFace, Comparable<TaskCon
     }
 
     /**
+     * @return the isSearchService
+     */
+    public boolean isSearchService()
+    {
+        return isSearchService;
+    }
+
+    /**
+     * @param isSearchService the isSearchService to set
+     */
+    public void setSearchService(boolean isSearchService)
+    {
+        this.isSearchService = isSearchService;
+    }
+
+    /**
      * @return the title
      */
     public String getTitle()
@@ -316,15 +328,6 @@ public class InteractionEntry implements TaskConfigItemIFace, Comparable<TaskCon
     protected Object clone() throws CloneNotSupportedException
     {
         InteractionEntry entry = (InteractionEntry)super.clone();
-        entry.name      = name;
-        entry.tableName = tableName;
-        entry.labelKey  = labelKey;  // Key needed for localization
-        entry.viewName  = viewName;
-        entry.cmdType   = cmdType;
-        entry.action    = action;
-        entry.iconName  = iconName;
-        entry.isOnLeft  = isOnLeft;
-        entry.order     = order;
         
         entry.draggableFlavors = new Vector<EntryFlavor>();
         entry.droppableFlavors = new Vector<EntryFlavor>();
@@ -356,6 +359,7 @@ public class InteractionEntry implements TaskConfigItemIFace, Comparable<TaskCon
         xstream.useAttributeFor(InteractionEntry.class, "viewName");
         xstream.useAttributeFor(InteractionEntry.class, "cmdType");
         xstream.useAttributeFor(InteractionEntry.class, "order");
+        xstream.useAttributeFor(InteractionEntry.class, "isSearchService");
         
         xstream.aliasAttribute(InteractionEntry.class, "name",      "name");
         xstream.aliasAttribute(InteractionEntry.class, "tableName", "table");
@@ -365,10 +369,10 @@ public class InteractionEntry implements TaskConfigItemIFace, Comparable<TaskCon
         xstream.aliasAttribute(InteractionEntry.class, "isOnLeft",  "isonleft");
         xstream.aliasAttribute(InteractionEntry.class, "viewName",  "view");
         xstream.aliasAttribute(InteractionEntry.class, "cmdType",   "type");
+        xstream.aliasAttribute(InteractionEntry.class, "isSearchService", "issrchsrv");
         xstream.aliasAttribute(InteractionEntry.class, "order",     "order");
         
         xstream.omitField(InteractionEntry.class, "title");
     }
-
 
 }

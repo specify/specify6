@@ -451,6 +451,9 @@ public class ResourceImportExportDlg extends CustomDialog
                 			//revert not currently working
                 		}
                 		
+                	} else
+                	{
+                	    enable = true;
                 	}
                 }
                 revertBtn.setEnabled(enable);

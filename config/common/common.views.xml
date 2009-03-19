@@ -2989,7 +2989,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="count" uitype="text" isrequired="true"/>
+                    <cell type="field" id="3" name="countAmt" uitype="text" isrequired="true"/>
 
                     <cell type="label" labelfor="4"/>
                     <cell type="field" id="4" name="storage" uitype="querycbx" initialize="name=Storage" cols="20"/>

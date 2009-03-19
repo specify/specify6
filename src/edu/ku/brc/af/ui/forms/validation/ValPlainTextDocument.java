@@ -59,6 +59,14 @@ public class ValPlainTextDocument extends PlainDocument
     }
 
     /**
+     * @return the limit
+     */
+    public int getLimit()
+    {
+        return limit;
+    }
+
+    /**
      * @return whether document notifications are being blocked.
      */
     public boolean isIgnoreNotify()

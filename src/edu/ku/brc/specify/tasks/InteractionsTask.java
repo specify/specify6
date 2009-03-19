@@ -374,16 +374,23 @@ public class InteractionsTask extends BaseTask
         
         Vector<TaskConfigItemIFace> stdList  = new Vector<TaskConfigItemIFace>();
         Vector<TaskConfigItemIFace> miscList = new Vector<TaskConfigItemIFace>();
+        Vector<TaskConfigItemIFace> srvList  = new Vector<TaskConfigItemIFace>();
         
         for (InteractionEntry entry : entries)
         {
-            Vector<TaskConfigItemIFace> list = entry.isOnLeft() ? stdList : miscList;
-            // Clone for undo (Cancel)
-            try
+            if (!entry.isSearchService())
             {
-                list.add((TaskConfigItemIFace)entry.clone());
-                
-            } catch (CloneNotSupportedException ex) {/* ignore */}
+                Vector<TaskConfigItemIFace> list = entry.isOnLeft() ? stdList : miscList;
+                // Clone for undo (Cancel)
+                try
+                {
+                    list.add((TaskConfigItemIFace)entry.clone());
+                    
+                } catch (CloneNotSupportedException ex) {/* ignore */}
+            } else
+            {
+                srvList.add(entry);
+            }
         }
         
         int origNumStd = stdList.size();
@@ -411,6 +418,11 @@ public class InteractionsTask extends BaseTask
                 entries.add((InteractionEntry)ie);
             }
             
+            for (TaskConfigItemIFace ie : srvList)
+            {
+                entries.add((InteractionEntry)ie);
+            }
+            
             writeEntries();
             
             actionsNavBox.clear();
@@ -419,10 +431,15 @@ public class InteractionsTask extends BaseTask
             
             for (InteractionEntry entry : entries)
             {
+                DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoByTableName(entry.getTableName());
                 if (entry.isOnLeft())
                 {
-                    DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoByTableName(entry.getTableName());
                     addCommand(actionsNavBox, tableInfo, entry);
+                    
+                } else if (StringUtils.isNotEmpty(entry.getViewName()) && entry.isSearchService())
+                {
+                    CommandAction cmdAction = createCmdActionFromEntry(entry, tableInfo);
+                    ContextMgr.registerService(10, entry.getViewName(), tableInfo.getTableId(), cmdAction, this, "Data_Entry", tableInfo.getTitle(), true); // the Name gets Hashed
                 }
             }
             
@@ -491,21 +508,28 @@ public class InteractionsTask extends BaseTask
             for (InteractionEntry entry : entries)
             {
                 DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoByTableName(entry.getTableName());
-                
-                String label;
-                if (StringUtils.isNotEmpty(entry.getLabelKey()))
-                {
-                    label = getResourceString(entry.getLabelKey());
-                } else
-                {
-                    label = tableInfo.getTitle();
-                }
-                
-                entry.setTitle(label);
-                
                 if (entry.isOnLeft())
                 {
-                    addCommand(actionsNavBox, tableInfo, entry);
+                    String label;
+                    if (StringUtils.isNotEmpty(entry.getLabelKey()))
+                    {
+                        label = getResourceString(entry.getLabelKey());
+                    } else
+                    {
+                        label = tableInfo.getTitle();
+                    }
+                    
+                    entry.setTitle(label);
+                    
+                    if (entry.isOnLeft())
+                    {
+                        addCommand(actionsNavBox, tableInfo, entry);
+                    }
+                    
+                } else if (StringUtils.isNotEmpty(entry.getViewName()) && entry.isSearchService())
+                {
+                    CommandAction cmdAction = createCmdActionFromEntry(entry, tableInfo);
+                    ContextMgr.registerService(10, entry.getViewName(), tableInfo.getTableId(), cmdAction, this, "Data_Entry", tableInfo.getTitle(), true); // the Name gets Hashed
                 }
             }
             navBoxes.add(actionsNavBox);
@@ -555,6 +579,22 @@ public class InteractionsTask extends BaseTask
         roc.addDropDataFlavor(dfx);
         return roc;
     }
+    
+    /**
+     * @param entry
+     * @param tableInfo
+     * @return
+     */
+    private CommandAction createCmdActionFromEntry(final InteractionEntry entry, final DBTableInfo tableInfo)
+    {
+        CommandAction cmdAction = new CommandAction(entry.getCmdType(), entry.getAction(), tableInfo.getTableId());
+        if (StringUtils.isNotEmpty(entry.getViewName()))
+        {
+            cmdAction.setProperty("view", entry.getViewName());
+            cmdAction.setProperty(NavBoxAction.ORGINATING_TASK, this);
+        }
+        return cmdAction;
+    }
             
     /**
      * @param navBox
@@ -571,13 +611,10 @@ public class InteractionsTask extends BaseTask
                                       final DBTableInfo tableInfo,
                                       final InteractionEntry entry)
     {
-        CommandAction cmdAction = new CommandAction(entry.getCmdType(), entry.getAction(), tableInfo.getTableId());
-        if (StringUtils.isNotEmpty(entry.getViewName()))
+        CommandAction cmdAction = createCmdActionFromEntry(entry, tableInfo);
+        if (StringUtils.isNotEmpty(entry.getViewName()) && entry.isSearchService())
         {
-            cmdAction.setProperty("view", entry.getViewName());
-            cmdAction.setProperty(NavBoxAction.ORGINATING_TASK, this);
             ContextMgr.registerService(10, entry.getViewName(), tableInfo.getTableId(), cmdAction, this, "Data_Entry", tableInfo.getTitle(), true); // the Name gets Hashed
-
         }
         
         NavBoxButton roc = (NavBoxButton)makeDnDNavBtn(navBox, entry.getTitle(), entry.getIconName(), cmdAction, null, true, false);// true means make it draggable
@@ -648,6 +685,13 @@ public class InteractionsTask extends BaseTask
         }
     }
     
+    /**
+     * @param navBox
+     * @param dragFlav
+     * @param dataObj
+     * @param ti
+     * @return
+     */
     protected NavBoxItemIFace createNavBtn(final NavBox     navBox, 
                                            final DataFlavor dragFlav,
                                            final FormDataObjIFace dataObj, 
@@ -674,6 +718,7 @@ public class InteractionsTask extends BaseTask
      * Helper method for registering a NavBoxItem as a GhostMouseDropAdapter
      * @param navBox the parent box for the nbi to be added to
      * @param navBoxItemDropZone the nbi in question
+     * @param params
      * @return returns the new NavBoxItem
      */
     protected NavBoxItemIFace addToNavBoxAndRegisterAsDroppable(final NavBox              navBox,
@@ -2117,7 +2162,7 @@ public class InteractionsTask extends BaseTask
             {
                 deleteInfoRequest((CommandActionForDB)cmdAction);
             }
-        } else if (cmdAction.isAction(OPEN_NEW_VIEW))
+        } else if (cmdAction.isAction(OPEN_NEW_VIEW) || cmdAction.isAction(DataEntryTask.EDIT_DATA))
         {
             try
             {
