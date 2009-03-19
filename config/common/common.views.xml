@@ -747,7 +747,7 @@
                     <cell type="field" id="5" name="dateAccessioned" uitype="formattedtext" uifieldformatter="Date" default="today"/>
                     
                     <cell type="label" labelfor="6"/>
-                    <cell type="field" id="6" name="dateReceived" uitype="formattedtext" uifieldformatter="Date" default="today" isrequired="true"/>
+                    <cell type="field" id="6" name="dateReceived" uitype="formattedtext" uifieldformatter="Date" default="today" />
                 </row>
                 <!--  <row>
                     <cell type="label" labelfor="99"/>
@@ -1655,9 +1655,9 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="agent" uitype="querycbx" initialize="name=Agent" isrequired="true"/>
+                    <cell type="field" id="1" name="agent" uitype="querycbx" initialize="name=Agent" />
                     <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="role" uitype="combobox" picklist="DeaccessionRole" isrequired="true"/>
+                    <cell type="field" id="2" name="role" uitype="combobox" picklist="DeaccessionRole"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="3"/>
@@ -1808,7 +1808,7 @@
 	              <cell type="label" labelfor="2"/>
 	              <cell type="field" id="2" name="moleculeType" uitype="text"/>
 	              <cell type="label" labelfor="7"/>
-	              <cell type="field" id="7" name="collectionObject" uitype="querycbx" initialize="name=CollectionObject;editbtn=false;newbtn=false" isrequired="true"/>
+	              <cell type="field" id="7" name="collectionObject" uitype="querycbx" initialize="name=CollectionObject;editbtn=false;newbtn=false" />
 	          </row>
 	          <row>
 	              <cell type="label" labelfor="3"/>
@@ -1985,15 +1985,15 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="exchangeDate" uitype="formattedtext" uifieldformatter="Date" isrequired="true" default="Today"/>
+                    <cell type="field" id="1" name="exchangeDate" uitype="formattedtext" uifieldformatter="Date"  default="Today"/>
                     <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="agentReceivedFrom" uitype="querycbx" initialize="name=Agent" isrequired="true"/>
+                    <cell type="field" id="3" name="agentReceivedFrom" uitype="querycbx" initialize="name=Agent" />
                    </row>
                 <row>
                     <cell type="label" labelfor="7"/>
                     <cell type="field" id="7" name="quantityExchanged" uitype="text"/>
                     <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="agentCatalogedBy" uitype="querycbx" initialize="name=Agent" isrequired="true"/>
+                    <cell type="field" id="2" name="agentCatalogedBy" uitype="querycbx" initialize="name=Agent" />
                     </row>
                 <row>
                     <cell type="label" labelfor="4"/>
@@ -2024,15 +2024,15 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="exchangeDate" uitype="formattedtext" uifieldformatter="Date" isrequired="true" default="Today"/>
+                    <cell type="field" id="1" name="exchangeDate" uitype="formattedtext" uifieldformatter="Date"  default="Today"/>
                     <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="agentCatalogedBy" uitype="querycbx" initialize="name=Agent" isrequired="true"/>
+                    <cell type="field" id="2" name="agentCatalogedBy" uitype="querycbx" initialize="name=Agent" />
                 </row>
                 <row>
                     <cell type="label" labelfor="7"/>
                     <cell type="field" id="7" name="quantityExchanged" uitype="text"/>
                     <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="agentSentTo" uitype="querycbx" initialize="name=Agent" isrequired="true"/>
+                    <cell type="field" id="3" name="agentSentTo" uitype="querycbx" initialize="name=Agent" />
                 </row>
                 <row>
                     <cell type="label" labelfor="4"/>
@@ -2065,7 +2065,7 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="4"/>
-                    <cell type="field" id="4" name="name" uitype="text" isrequired="true"/>
+                    <cell type="field" id="4" name="name" uitype="text" />
                     <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="location" uitype="text" colspan="5"/>
                 </row>
@@ -2073,9 +2073,9 @@
                     <cell type="label" labelfor="8"/>
                     <cell type="field" id="8" name="ownerAgent" uitype="querycbx" initialize="name=Agent"/>
                     <cell type="label" labelfor="5"/>
-                    <cell type="field" id="5" name="startDate" uitype="formattedtext" uifieldformatter="Date" isrequired="true"/>
+                    <cell type="field" id="5" name="startDate" uitype="formattedtext" uifieldformatter="Date" />
                     <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="endDate" uitype="formattedtext" uifieldformatter="Date" isrequired="true"/>           
+                    <cell type="field" id="2" name="endDate" uitype="formattedtext" uifieldformatter="Date" />           
                 </row>
                 <row>
                     <cell type="label" labelfor="1"/>
@@ -2210,13 +2210,13 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="giftNumber" uitype="formattedtext" uifieldformatter="GiftNumber" isrequired="true"/>
+                    <cell type="field" id="1" name="giftNumber" uitype="formattedtext" uifieldformatter="GiftNumber" />
                     <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="giftagents" uitype="querycbx" initialize="name=Agent;title=Agent"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="giftDate" uitype="formattedtext" uifieldformatter="Date" isrequired="true" default="today"/>
+                    <cell type="field" id="3" name="giftDate" uitype="formattedtext" uifieldformatter="Date"  default="today"/>
                     <cell type="label" labelfor="4"/>
                     <cell type="field" id="4" name="GiftAgents" uitype="querycbx" initialize="name=Agent;title=Agent"/>
                 </row>
@@ -2265,7 +2265,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="quantity" uitype="spinner" initialize="max=2000" isrequired="true"/>
+                    <cell type="field" id="1" name="quantity" uitype="spinner" initialize="max=2000" />
                     <cell type="label" labelfor="2" label="Preparation Type"/>
                     <cell type="field" id="2" name="preparation.prepType.name" uitype="dsptextfield" readonly="true"/>
                 </row>
@@ -2425,7 +2425,7 @@
                     <cell type="label" labelfor="2" label="Preparation Type"/>
                     <cell type="field" id="2" name="preparation.prepType.name" uitype="dsptextfield" readonly="true"/>
                     <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="quantity" uitype="spinner" initialize="max=5000" isrequired="true"/>
+                    <cell type="field" id="1" name="quantity" uitype="spinner" initialize="max=5000" />
                 </row>
                 <row>
                     <cell type="label" labelfor="7"/>
@@ -2469,9 +2469,9 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="quantityReturned" uitype="spinner" initialize="max=5000" isrequired="true"/>
+                    <cell type="field" id="3" name="quantityReturned" uitype="spinner" initialize="max=5000" />
                     <cell type="label" labelfor="5"/>
-                    <cell type="field" id="5" name="quantityResolved" uitype="spinner" initialize="max=5000" isrequired="true"/>
+                    <cell type="field" id="5" name="quantityResolved" uitype="spinner" initialize="max=5000" />
                 </row>
                 <row>
                     <cell type="label" labelfor="4" />
@@ -2498,12 +2498,12 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="localityName"/>
-                    <cell type="field" id="localityName" name="localityName" uitype="text" isrequired="true" colspan="9"/>
+                    <cell type="field" id="localityName" name="localityName" uitype="text"  colspan="9"/>
                 </row>
                 
                 <row>
                     <cell type="label" labelfor="geography"/>
-                    <cell type="field" id="geography" name="geography" uitype="querycbx" initialize="name=Geography" isrequired="true" colspan="9"/>
+                    <cell type="field" id="geography" name="geography" uitype="querycbx" initialize="name=Geography"  colspan="9"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="5"/>
@@ -2647,7 +2647,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="5"/>
-                    <cell type="field" id="5" name="geography" uitype="querycbx" initialize="name=Geography" isrequired="true"/>
+                    <cell type="field" id="5" name="geography" uitype="querycbx" initialize="name=Geography" />
                 </row>
             </rows>
         </viewdef>
@@ -2710,17 +2710,17 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="permitNumber" uitype="text" isrequired="true"/>
+                    <cell type="field" id="1" name="permitNumber" uitype="text" />
 
                     <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="type" uitype="combobox" picklist="PermitType" isrequired="true"/>
+                    <cell type="field" id="2" name="type" uitype="combobox" picklist="PermitType" />
                 </row>
                 <row>
                     <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="issuedBy" uitype="querycbx" initialize="name=Agent" isrequired="true"/>
+                    <cell type="field" id="3" name="issuedBy" uitype="querycbx" initialize="name=Agent" />
 
                     <cell type="label" labelfor="4"/>
-                    <cell type="field" id="4" name="issuedTo" uitype="querycbx" initialize="name=Agent" isrequired="true"/>
+                    <cell type="field" id="4" name="issuedTo" uitype="querycbx" initialize="name=Agent" />
                 </row>
 
                 <row>
@@ -2768,17 +2768,17 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="permitNumber" uitype="text" isrequired="true"/>
+                    <cell type="field" id="1" name="permitNumber" uitype="text" />
                     
                     <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="type" uitype="combobox" initialize="data=N/A, CITES, State, Federal, International"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="4"/>
-                    <cell type="field" id="4" name="issuedBy" uitype="querycbx" initialize="name=Agent" isrequired="true"/>
+                    <cell type="field" id="4" name="issuedBy" uitype="querycbx" initialize="name=Agent" />
                     
                     <cell type="label" labelfor="5"/>
-                    <cell type="field" id="5" name="issuedTo" uitype="querycbx" initialize="name=Agent" isrequired="true"/>
+                    <cell type="field" id="5" name="issuedTo" uitype="querycbx" initialize="name=Agent" />
                 </row>
                 
                 <row>
@@ -2820,7 +2820,7 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="5"/>
-                    <cell type="field" id="5" name="projectName" uitype="text" isrequired="true"/>
+                    <cell type="field" id="5" name="projectName" uitype="text" />
                     <cell type="label" labelfor="6"/>
                     <cell type="field" id="6" name="projectNumber" uitype="text"/>
                 </row>   
@@ -2883,7 +2883,7 @@
              <rows>
                  <row>
                      <cell type="label" labelfor="5"/>
-                     <cell type="field" id="5" name="projectName" uitype="text" isrequired="true" colspan="9"/>
+                     <cell type="field" id="5" name="projectName" uitype="text"  colspan="9"/>
                  </row>
                  <row>
                       <cell type="label" labelfor="6"/>
@@ -2914,9 +2914,9 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="7"/>
-                    <cell type="field" id="7" name="infoReqNumber" uitype="formattedtext" uifieldformatter="InfoRequestNumber" isrequired="true"/>
+                    <cell type="field" id="7" name="infoReqNumber" uitype="formattedtext" uifieldformatter="InfoRequestNumber" />
                         <cell type="label" labelfor="6"/>
-                    <cell type="field" id="6" name="agent" uitype="querycbx" initialize="name=Agent" isrequired="true"/>
+                    <cell type="field" id="6" name="agent" uitype="querycbx" initialize="name=Agent" />
  </row>
                 <row>
                     <cell type="label" labelfor="1"/>
@@ -3014,17 +3014,17 @@
                 </row>
                 <row>
                    <cell type="label" labelfor="7"/>
-                   <cell type="field" id="7" name="prepType" uitype="combobox" picklist="PrepType" isrequired="true"/>
+                   <cell type="field" id="7" name="prepType" uitype="combobox" picklist="PrepType" />
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" uitype="plugin" name="this" initialize="name=PartialDateUI;df=preparedDate;tp=preparedDateDatePrecision" uifieldformatter="Date"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="preparedByAgent" uitype="querycbx" initialize="name=Agent" isrequired="true"/>
+                    <cell type="field" id="2" name="preparedByAgent" uitype="querycbx" initialize="name=Agent" />
                 </row>
                 <row>
                     <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="countAmt" uitype="text" isrequired="true"/>
+                    <cell type="field" id="3" name="countAmt" uitype="text" />
                     <cell type="label" labelfor="4"/>
                     <cell type="field" id="4" name="storage" uitype="querycbx" initialize="name=Storage" cols="20"/>
                 </row>
@@ -3050,11 +3050,11 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="repositoryAgreementNumber" uitype="text" isrequired="true"/> 
+                    <cell type="field" id="1" name="repositoryAgreementNumber" uitype="text" /> 
                     <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="status"  uitype="combobox" picklist="AccessionStatus" isrequired="true"/>
+                    <cell type="field" id="2" name="status"  uitype="combobox" picklist="AccessionStatus" />
                     <cell type="label" labelfor="13"/>
-                    <cell type="field" id="13" name="originator" uitype="querycbx" initialize="name=Agent" isrequired="true"/>
+                    <cell type="field" id="13" name="originator" uitype="querycbx" initialize="name=Agent" />
                 </row>
                 <row>
                     <cell type="label" labelfor="5"/>
@@ -3062,7 +3062,7 @@
                     <cell type="label" labelfor="6"/>
                     <cell type="field" id="6" name="endDate" uitype="formattedtext" uifieldformatter="Date"/>
                     <cell type="label" labelfor="4"/>
-                    <cell type="field" id="4" name="division" uitype="combobox" picklist="Division" isrequired="true"/>
+                    <cell type="field" id="4" name="division" uitype="combobox" picklist="Division" />
                 </row>
                 <row>
                     <cell type="label" labelfor="7"/>
@@ -3166,19 +3166,19 @@
                     <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="shipmentNumber" uitype="text"/>
                     <cell type="label" labelfor="8"/>
-                    <cell type="field" id="8" name="shippedTo" uitype="querycbx" initialize="name=Agent" isrequired="true"/>
+                    <cell type="field" id="8" name="shippedTo" uitype="querycbx" initialize="name=Agent" />
                 </row>
                 <row>
                     <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="shipmentDate" uitype="formattedtext" uifieldformatter="Date" isrequired="true" default="today"/>
+                    <cell type="field" id="1" name="shipmentDate" uitype="formattedtext" uifieldformatter="Date"  default="today"/>
                     <cell type="label" labelfor="7"/>
-                    <cell type="field" id="7" name="shippedBy" uitype="querycbx" initialize="name=Agent" isrequired="true"/>
+                    <cell type="field" id="7" name="shippedBy" uitype="querycbx" initialize="name=Agent" />
                 </row>
                 <row>
                     <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="shipmentMethod"  uitype="combobox" picklist="ShipmentMethod" isrequired="true"/>
+                    <cell type="field" id="3" name="shipmentMethod"  uitype="combobox" picklist="ShipmentMethod" />
                     <cell type="label" labelfor="4"/>
-                    <cell type="field" id="4" name="numberOfPackages" uitype="text"  isrequired="true" default="1"/>
+                    <cell type="field" id="4" name="numberOfPackages" uitype="text"   default="1"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="5"/>
