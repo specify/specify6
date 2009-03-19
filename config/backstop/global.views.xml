@@ -516,7 +516,7 @@
             <rows>
   		        <row>
                     <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="varType" uitype="combobox" picklist="AgentVariant" isrequired="true"/>
+                    <cell type="field" id="2" name="varType" uitype="combobox" picklist="AgentVariant" />
                 
                     <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="name" uitype="text"/>
@@ -566,11 +566,11 @@
                 </row>-->
                 <row>
                     <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="lastName" uitype="text" cols="20"  isrequired="true"/>
+                    <cell type="field" id="3" name="lastName" uitype="text" cols="20"  />
                     <cell type="label" labelfor="4"/>
                     <cell type="field" id="4" name="middleInitial" uitype="text" cols="3"/>
                     <cell type="label" labelfor="5"/>
-                    <cell type="field" id="5" name="firstName" uitype="text" cols="20" colspan="3" isrequired="true"/>
+                    <cell type="field" id="5" name="firstName" uitype="text" cols="20" colspan="3" />
                 </row>
                 <!-- "Initials:" <row>
                 	<cell type="label" labelfor="12" />
@@ -659,7 +659,7 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="6"/>
-                    <cell type="field" id="6" name="lastName" uitype="text" cols="30" isrequired="true"/>
+                    <cell type="field" id="6" name="lastName" uitype="text" cols="30" />
                 </row>
                 <row>
                     <cell type="label" labelfor="7"/>
@@ -697,7 +697,7 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="member" uitype="querycbx" initialize="name=Agent;title=Agent" isrequired="true"/>
+                    <cell type="field" id="1" name="member" uitype="querycbx" initialize="name=Agent;title=Agent" />
                 </row>              
                 <row>
                     <cell type="label" labelfor="3"/>
@@ -721,7 +721,7 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="member" uitype="querycbx" initialize="name=Agent;title=Agent" isrequired="true"/>
+                    <cell type="field" id="1" name="member" uitype="querycbx" initialize="name=Agent;title=Agent" />
                 </row>              
                 <row>
                     <cell type="label" labelfor="3"/>
@@ -760,23 +760,23 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="address" uitype="text" cols="50" colspan="9" isrequired="true"/>
+                    <cell type="field" id="2" name="address" uitype="text" cols="50" colspan="9" />
                 </row>
                 <row>
                     <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="address2" uitype="text" cols="50" colspan="9"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="4" isrequired="true"/>
+                    <cell type="label" labelfor="4" />
                     <cell type="field" id="4" name="city" uitype="text" cols="20"/>
-                    <cell type="label" labelfor="5" isrequired="true"/>
+                    <cell type="label" labelfor="5" />
                     <cell type="field" id="5" name="state" uitype="text" cols="15"/>
                     <cell type="label" labelfor="6"/>
-                    <cell type="field" id="6" name="postalCode" uitype="text" cols="11" isrequired="true"/>
+                    <cell type="field" id="6" name="postalCode" uitype="text" cols="11" />
                 </row>
                 <row>
                     <cell type="label" labelfor="7"/>
-                    <cell type="field" id="7" name="country" uitype="text" cols="20" isrequired="true"/>
+                    <cell type="field" id="7" name="country" uitype="text" cols="20" />
                     <cell type="label" labelfor="11"/>
                     <cell type="field" id="11" name="roomOrBuilding" uitype="text" cols="30"/>
                     <cell type="label" labelfor="12"/>
@@ -877,9 +877,9 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="agent.lastName" uitype="text" cols="20"  isrequired="true"/>
+                    <cell type="field" id="3" name="agent.lastName" uitype="text" cols="20"  />
                     <cell type="label" labelfor="5"/>
-                    <cell type="field" id="5" name="agent.firstName" uitype="text" cols="20" isrequired="true"/>
+                    <cell type="field" id="5" name="agent.firstName" uitype="text" cols="20" />
                     <cell type="label" labelfor="7"/>
                     <cell type="field" id="7" name="agent.email" uitype="text" cols="32"/>
                     <cell type="field" id="mailto" name="agent" uitype="plugin" initialize="name=WebLinkButton;weblink=MailTo;icon=EMail;watch=7"/>
@@ -1182,7 +1182,7 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="name"/>
-                    <cell type="field" id="name" uitype="text" cols="16" name="name" isrequired="true" colspan="7"/>
+                    <cell type="field" id="name" uitype="text" cols="16" name="name"  colspan="7"/>
                     <cell type="field" id="WebLink" name="this" uitype="plugin" initialize="name=WebLinkButton;weblink=FishBase;icon=FishBase"/>
                     <!-- <cell type="field" id="WebLink" name="this" uitype="plugin" initialize="name=WebLinkButton;url=http://www.ncbi.nlm.nih.gov/sites/gquery?term=$genusName$%20$speciesName$;label=NCBI"/> -->
                     <!-- <cell type="field" id="WebLink" name="this" uitype="plugin" initialize="name=WebLinkButton;url=[GBIF_Canada]?king=$kingdomName$AMPp_action=containingAMP;taxa=$genusName$%20$speciesName$AMPp_format=html;label=ITIS"/> -->
@@ -1190,27 +1190,27 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="parent" label="PARENT"/>
-                	<cell type="field" id="parent" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=false;editoncreate=true" name="parent" />
+                	<cell type="field" id="parent"  uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=false;editoncreate=true" name="parent" />
                     <cell type="label" labelfor="definitionItem"/>
-                	<cell type="field" id="definitionItem" isrequired="true" uitype="combobox" name="definitionItem" colspan="3"/>
+                	<cell type="field" id="definitionItem"  uitype="combobox" name="definitionItem" colspan="3"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="commonName"/>
                     <cell type="field" id="commonName" uitype="text" name="commonName" colspan="5"/>
-                	<cell type="field" id="isAccepted" uitype="checkbox" name="isAccepted" default="true" isrequired="true"/>
+                	<cell type="field" id="isAccepted" uitype="checkbox" name="isAccepted" default="true" />
                 </row>
                 <row>
                 	<cell type="label" labelfor="acceptedParent" label="ACCEPTEDPARENT"/>
-                	<cell type="field" id="acceptedParent" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=false" name="acceptedParent" colspan="5"/>
-                	<cell type="field" id="isHybrid" uitype="checkbox" name="isHybrid" default="false" isrequired="true"/>
+                	<cell type="field" id="acceptedParent"  uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=false" name="acceptedParent" colspan="5"/>
+                	<cell type="field" id="isHybrid" uitype="checkbox" name="isHybrid" default="false" />
                 </row>
                 <row>
                 	<cell type="label" labelfor="hybridParent1" label="HYBRIDPARENT1"/>
-                	<cell type="field" id="hybridParent1" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=false" name="hybridParent1" colspan="7"/>
+                	<cell type="field" id="hybridParent1"  uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=false" name="hybridParent1" colspan="7"/>
                 </row>
                 <row>
                 	<cell type="label" labelfor="hybridParent2" label="HYBRIDPARENT2"/>
-                	<cell type="field" id="hybridParent2" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=false" name="hybridParent2" colspan="7"/>
+                	<cell type="field" id="hybridParent2"  uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=false" name="hybridParent2" colspan="7"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="source"/>
@@ -2038,7 +2038,7 @@
     		<rows>
                 <row>
                     <cell type="label" labelfor="origFilename" label="FILENAME"/>
-                    <cell type="field" id="origFilename" name="attachment.origFilename" initialize="editoncreate=true" cols="30" uitype="browse" isrequired="true"/>
+                    <cell type="field" id="origFilename" name="attachment.origFilename" initialize="editoncreate=true" cols="30" uitype="browse" />
                 </row>
                 <row>
                 	<cell type="label" labelfor="title" label="TITLE"/>
