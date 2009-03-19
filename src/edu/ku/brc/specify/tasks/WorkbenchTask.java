@@ -185,6 +185,16 @@ public class WorkbenchTask extends BaseTask
         
 		CommandDispatcher.register(WORKBENCH, this);        
         CommandDispatcher.register("Preferences", this);
+        
+        if (UIHelper.isSecurityOn())
+        {
+        	log.debug("add? " + getPermissions().canAdd() + " modify? " + getPermissions().canModify()
+        			+ " delete? " + getPermissions().canDelete() + " view? " + getPermissions().canView());
+        }
+        else
+        {
+        	log.debug("security off");
+        }
 	}
 
     /* (non-Javadoc)
