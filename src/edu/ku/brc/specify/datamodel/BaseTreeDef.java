@@ -209,7 +209,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
      */
     public boolean getDoNodeNumberUpdates()
     {
-        return TreeDefStatusMgr.isNodeNumbersAreUpToDate(this);
+        return TreeDefStatusMgr.isDoNodeNumberUpdates(this);
     }
 
     /* (non-Javadoc)
