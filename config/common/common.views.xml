@@ -459,6 +459,18 @@
             </altviews>
         </view>
         
+
+        <view name="LoanAgent"
+              objtitle="Loan Agent"
+              class="edu.ku.brc.specify.datamodel.LoanAgent"
+              resourcelabels="false">
+            <desc><![CDATA[Subform within the Accession form.]]></desc>
+            <altviews>
+                <altview name="LoanAgent View" viewdef="LoanAgent" mode="view"/>
+                <altview name="LoanAgent Edit" viewdef="LoanAgent" mode="edit" default="true"/>
+            </altviews>
+        </view>
+        
         <view name="LoanItems"
             class="edu.ku.brc.specify.datamodel.LoanPreparation"
             busrules="edu.ku.brc.specify.datamodel.busrules.LoanPreparationBusRules"
@@ -1676,7 +1688,7 @@
             <desc><![CDATA[Determination subform for Collection Object form.]]></desc>
             <enableRules/>
 
-            <columnDef>p,2px,p,2px,p,2px,p,2px,p,2px,p,2px,p,2px,p,p:g</columnDef>
+            <columnDef>100px,2px,125px,5px,70px,2px,170px,5px,90px,2px,192px,2px,p,2px,p,p:g</columnDef>
             <!-- <rowDef>p,2dlu,p,2dlu,p,2dlu,p:g,2dlu</rowDef>  -->
             <rowDef auto="true" cell="p" sep="2px"/>
             <rows>
@@ -2315,8 +2327,6 @@
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="loanNumber" uitype="formattedtext"/>
                     <cell type="field" id="2" name="isClosed" uitype="checkbox" initialize="editable=true"/>
-                    <cell type="label" labelfor="6"/>
-                    <cell type="field" id="6" name="LoanAgents" uitype="querycbx" initialize="name=Agent;title=Agent" colspan="3"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="3"/>
@@ -2330,12 +2340,13 @@
                     <cell type="label" labelfor="21"/>
                     <cell type="field" id="21" name="originalDueDate" uitype="formattedtext" uifieldformatter="Date"/>
                     <cell type="field" id="20" name="yesNo1" uitype="checkbox" initialize="editable=true"/>
-                    <cell type="label" labelfor="7"/>
-                    <cell type="field" id="7" name="loanagents" uitype="querycbx" initialize="name=Agent;title=Agent" colspan="3"/>
                 </row>
                 <row>
                      <cell type="label" labelfor="5"/>
                      <cell type="field" id="5" name="remarks" uitype="textareabrief" rows="2" colspan="10"/>
+                </row>
+                <row>
+                    <cell type="subview" viewname="LoanAgent" id="8" name="loanAgents" desc="Agents" colspan="13"/>
                 </row>
                 <row>
                     <cell type="subview" viewname="Shipment" id="11" name="shipments" colspan="13"/>
@@ -2356,6 +2367,30 @@
                             </row>
                         </rows>
                     </cell>
+                </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef
+            type="form"
+            name="LoanAgent"
+            class="edu.ku.brc.specify.datamodel.LoanAgent"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The loan form.]]></desc>
+            <enableRules/>
+
+            <columnDef>105px,2px,340px,5px,53px,2px,125px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,215px,5px,231px,2px,155px,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="agent" uitype="querycbx" initialize="name=Agent;title=Agent"/>
+
+                    <cell type="label" labelfor="2"/>
+                    <cell type="field" id="2" name="role" uitype="combobox" />
                 </row>
             </rows>
         </viewdef>
@@ -2420,12 +2455,13 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[LoanReturnPreparation viewing form.]]></desc>
-            <columnDef>p,4px,p,4px,p:g,f:p:g</columnDef>
+            <columnDef>102px,2px,80px,5px,120px,2px,80px,0px:g,f:p:g</columnDef>
+            <columnDef os="mac">130px,2px,100px,5px,150px,2px,100px,0px:g,f:p:g</columnDef>
             <rowDef auto="true" cell="p" sep="1dlu"/>
             <rows>
                 <row>
                     <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="receivedBy" uitype="querycbx" initialize="name=Agent" colspan="3"/>
+                    <cell type="field" id="1" name="receivedBy" uitype="querycbx" initialize="name=Agent" colspan="5"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="2"/>
@@ -2434,14 +2470,12 @@
                 <row>
                     <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="quantityReturned" uitype="spinner" initialize="max=5000" isrequired="true"/>
-                </row>
-                <row>
                     <cell type="label" labelfor="5"/>
                     <cell type="field" id="5" name="quantityResolved" uitype="spinner" initialize="max=5000" isrequired="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="4" />
-                    <cell type="field" id="4" name="remarks" uitype="textareabrief" colspan="4" rows="2" cols="40"/>
+                    <cell type="field" id="4" name="remarks" uitype="textareabrief" colspan="6" rows="2" />
                 </row>
             </rows>
         </viewdef>
@@ -2970,32 +3004,32 @@
             <desc><![CDATA[Preparation for Collection Object form.]]></desc>
             <enableRules/>
 
-            <columnDef>120px,2px,p,2px,p,2px,p,2px,60px,2px,p,p:g</columnDef>
+            <columnDef>100px,2px,192px,5px,150px,2px,170px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
 
             <rows>
                 <row>
-                   <cell type="label" labelfor="7"/>
-                   <cell type="field" id="7" name="prepType" uitype="combobox" picklist="PrepType" isrequired="true"/>
                    <cell type="label" label="  "/>
                    <cell type="field" id="isOnLoan" name="isOnLoan" uitype="checkbox" label="ISONLOAN" readonly="true"/>
                 </row>
                 <row>
+                   <cell type="label" labelfor="7"/>
+                   <cell type="field" id="7" name="prepType" uitype="combobox" picklist="PrepType" isrequired="true"/>
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" uitype="plugin" name="this" initialize="name=PartialDateUI;df=preparedDate;tp=preparedDateDatePrecision" uifieldformatter="Date"/>
-
+                </row>
+                <row>
                     <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="preparedByAgent" uitype="querycbx" initialize="name=Agent" isrequired="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="countAmt" uitype="text" isrequired="true"/>
-
                     <cell type="label" labelfor="4"/>
                     <cell type="field" id="4" name="storage" uitype="querycbx" initialize="name=Storage" cols="20"/>
                 </row>
                 <row>
-                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="preparationAttachments" colspan="12" initialize="btn=true;icon=PreparationAttachment"/>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="preparationAttachments" colspan="7" initialize="btn=true;icon=PreparationAttachment"/>
                 </row>
             </rows>
         </viewdef>
