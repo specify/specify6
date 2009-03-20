@@ -22,10 +22,13 @@ import java.awt.FileDialog;
 import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
 import java.io.File;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
@@ -84,6 +87,7 @@ import edu.ku.brc.specify.datamodel.SpAppResource;
 import edu.ku.brc.specify.datamodel.SpReport;
 import edu.ku.brc.specify.tasks.subpane.LabelsPane;
 import edu.ku.brc.specify.tasks.subpane.qb.QueryBldrPane;
+import edu.ku.brc.specify.tasks.subpane.qb.SearchResultReportServiceInfo;
 import edu.ku.brc.specify.tools.ireportspecify.MainFrameSpecify;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
@@ -175,7 +179,7 @@ public class ReportsBaseTask extends BaseTask
         
         CommandAction cmdAction = new CommandAction(REPORTS, PRINT_GRID);
         ContextMgr.registerService(20, PRINT_GRID, -1, cmdAction, this, "Print", getResourceString("PRINT_GRID_TT"));
-
+        
         //RecordSetTask.addDroppableDataFlavor(defaultFlavor);
         
         // Create and add the Actions NavBox first so it is at the top at the top
@@ -201,6 +205,11 @@ public class ReportsBaseTask extends BaseTask
             if (isVisible)
             {
                 addROCs();
+                for (NavBoxItemIFace repItem : reportsList)
+                {
+                	CommandAction cmd = (CommandAction )repItem.getData();
+                	ContextMgr.registerService(new ReportServiceInfo(this, Integer.valueOf((String )cmd.getData())));
+                }
             }
         }
     }
@@ -1679,6 +1688,82 @@ public class ReportsBaseTask extends BaseTask
                                 {true, true, true, true},
                                 {true, true, false, false},
                                 {true, false, false, false}};
+    }
+
+    /**
+     * Builds list of reports available for the results.
+     */
+    protected SortedSet<SearchResultReportServiceInfo> getReports(int tableId)
+    {
+        //reports.clear();
+    	SortedSet<SearchResultReportServiceInfo> reports = new TreeSet<SearchResultReportServiceInfo>(
+                    new Comparator<SearchResultReportServiceInfo>()
+                    {
+                        public int compare(SearchResultReportServiceInfo o1,
+                                           SearchResultReportServiceInfo o2)
+                        {
+                            return o1.getReportName().compareTo(o2.getReportName());
+                        }
+
+                    });
+       
+
+    	boolean buildEm = true;
+        if (UIHelper.isSecurityOn())
+        {
+            Taskable reportsTask = ContextMgr.getTaskByClass(ReportsTask.class);
+            if (reportsTask != null)
+            {
+                buildEm = reportsTask.getPermissions().canView();
+            }
+        }
+        if (buildEm)
+        {
+            if (tableId != -1)
+            {
+                //second add reports associated with the same table as the current results
+                List<AppResourceIFace> reps = AppContextMgr.getInstance().getResourceByMimeType(ReportsBaseTask.LABELS_MIME);
+                reps.addAll(AppContextMgr.getInstance().getResourceByMimeType(ReportsBaseTask.REPORTS_MIME));
+                for (AppResourceIFace rep : reps)
+                {
+                    String tblIdStr = rep.getMetaData("tableid");
+                    if (tblIdStr != null)
+                    {
+                        if (tableId == Integer.valueOf(tblIdStr))
+                        {
+                            reports.add(new SearchResultReportServiceInfo(rep.getDescription() /*'title' seems to be currently stored in description */,
+                                    rep.getName() /* and filename in name */, false, null, ((SpAppResource)rep).getId(), null));
+                        }
+                        else
+                        {
+                            //third add reports based on other queries...
+                            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                            try
+                            {
+                                SpReport spRep = (SpReport)session.getData("from SpReport where appResourceId = " + ((SpAppResource)rep).getId());
+                                if (spRep != null && spRep.getQuery() != null && spRep.getQuery().getContextTableId().intValue() == tableId)
+                                {
+                                    reports
+                                            .add(new SearchResultReportServiceInfo(
+                                                rep.getDescription() /*
+                                                                         * 'title' seems to be
+                                                                         * currently stored in
+                                                                         * description
+                                                                         */,
+                                                rep.getName() /* and filename in name */, false, spRep.getId(),
+                                                ((SpAppResource)rep).getId(), null));
+                                }
+                            }
+                            finally
+                            {
+                                session.close();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return reports;
     }
 
 }

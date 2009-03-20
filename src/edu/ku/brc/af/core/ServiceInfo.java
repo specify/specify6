@@ -212,7 +212,7 @@ public class ServiceInfo implements Comparable<ServiceInfo>, Cloneable
     {
         isPermissionOK = null;
     }
-    
+
     //------------------------------------------
     //-- Static Methods
     //------------------------------------------

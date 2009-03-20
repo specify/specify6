@@ -218,7 +218,13 @@ public class ContextMgr implements CommandListener
         ServiceInfo serviceInfo = new ServiceInfo(priority, serviceName, tableId, command, task, iconName, tooltip, isDefault);
         //log.debug("REG: "+serviceInfo.getHashKey());
         
-        if (tableId == -1)
+        return registerService(serviceInfo);
+    }
+    
+    public static ServiceInfo registerService(final ServiceInfo serviceInfo)
+    {
+        String hashName = ServiceInfo.getHashKey(serviceInfo.getName(), serviceInfo.getTask(), serviceInfo.getTableId());
+        if (serviceInfo.getTableId() == -1)
         {
             instance.genericService.add(serviceInfo);
             instance.services.put(hashName, serviceInfo);
@@ -226,18 +232,18 @@ public class ContextMgr implements CommandListener
         } else 
         {
             instance.services.put(hashName, serviceInfo);
-            List<ServiceInfo> serviceList = instance.servicesByTable.get(tableId);
+            List<ServiceInfo> serviceList = instance.servicesByTable.get(serviceInfo.getTableId() );
             if (serviceList == null)
             {
                 serviceList = new ArrayList<ServiceInfo>();
-                instance.servicesByTable.put(tableId, serviceList);
+                instance.servicesByTable.put(serviceInfo.getTableId() , serviceList);
             }
             serviceList.add(serviceInfo);
             return serviceInfo;
         }
         return null;
+    	
     }
-    
     /**
      * @param hashName the hashedName
      */

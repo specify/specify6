@@ -20,15 +20,10 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
-import edu.ku.brc.af.core.ContextMgr;
-import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.expresssearch.QueryForIdResultsHQL;
 import edu.ku.brc.af.ui.db.ERTICaptionInfo;
 import edu.ku.brc.dbsupport.CustomQueryIFace;
-import edu.ku.brc.specify.datamodel.SpReport;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
-import edu.ku.brc.specify.tasks.ReportsTask;
-import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -128,17 +123,17 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL
     }
 
     
-    public synchronized void reportDeleted(final Integer resourceId)
-    {
-        for (SearchResultReportServiceInfo repInfo : reports)
-        {
-            if (repInfo.getResourceId() != null && repInfo.getResourceId().equals(resourceId))
-            {
-                reports.remove(repInfo);
-                break;
-            }
-        }
-    }
+//    public synchronized void reportDeleted(final Integer resourceId)
+//    {
+//        for (SearchResultReportServiceInfo repInfo : reports)
+//        {
+//            if (repInfo.getResourceId() != null && repInfo.getResourceId().equals(resourceId))
+//            {
+//                reports.remove(repInfo);
+//                break;
+//            }
+//        }
+//    }
      
     /**
      * @param repResource
@@ -428,33 +423,33 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.af.core.expresssearch.QueryForIdResultsHQL#buildReports()
 	 */
-	@Override
-	public void buildReports()
-	{
-		boolean buildEm = true;
-		if (UIHelper.isSecurityOn())
-		{
-			Taskable reportsTask = ContextMgr.getTaskByClass(ReportsTask.class);
-			if (reportsTask != null)
-			{
-				buildEm = reportsTask.getPermissions().canView();
-			}
-		}
-		if (buildEm)
-		{
-			super.buildReports();
-			//add reports associated directly with the results
-			if (queryBuilder != null)
-			{
-				for (SpReport rep : queryBuilder.getReportsForQuery())
-				{
-					if (repContextIsActive(rep.getAppResource()))
-					{
-						reports.add(new SearchResultReportServiceInfo(rep.getName(), rep.getName(), true, null, rep.getAppResource().getId(), rep.getRepeats()));
-					}
-				}
-			}
-		}
-	}
+//	@Override
+//	public void buildReports()
+//	{
+//		boolean buildEm = true;
+//		if (UIHelper.isSecurityOn())
+//		{
+//			Taskable reportsTask = ContextMgr.getTaskByClass(ReportsTask.class);
+//			if (reportsTask != null)
+//			{
+//				buildEm = reportsTask.getPermissions().canView();
+//			}
+//		}
+//		if (buildEm)
+//		{
+//			super.buildReports();
+//			//add reports associated directly with the results
+//			if (queryBuilder != null)
+//			{
+//				for (SpReport rep : queryBuilder.getReportsForQuery())
+//				{
+//					if (repContextIsActive(rep.getAppResource()))
+//					{
+//						reports.add(new SearchResultReportServiceInfo(rep.getName(), rep.getName(), true, null, rep.getAppResource().getId(), rep.getRepeats()));
+//					}
+//				}
+//			}
+//		}
+//	}
 	
 }

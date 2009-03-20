@@ -3146,17 +3146,18 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             {
                 //nothing else to do
             }
-            else if (cmdAction.isAction(ReportsBaseTask.REPORT_DELETED))
-            {
-                if (runningResults.get() != null)
-                {
-                    runningResults.get().reportDeleted((Integer)cmdAction.getData());
-                }
-                if (completedResults.get() != null)
-                {
-                    completedResults.get().reportDeleted((Integer)cmdAction.getData());
-                }
-            }
+//            else if (cmdAction.isAction(ReportsBaseTask.REPORT_DELETED))
+//            {
+//                if (runningResults.get() != null)
+//                {
+//                    
+//                	runningResults.get().reportDeleted((Integer)cmdAction.getData());
+//                }
+//                if (completedResults.get() != null)
+//                {
+//                    completedResults.get().reportDeleted((Integer)cmdAction.getData());
+//                }
+//            }
         }
     }
     

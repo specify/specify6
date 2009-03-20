@@ -1056,4 +1056,11 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
     {
     	return false;
     }
+
+	public QueryForIdResultsIFace getResults()
+	{
+		return results;
+	}
+    
+    
 }
