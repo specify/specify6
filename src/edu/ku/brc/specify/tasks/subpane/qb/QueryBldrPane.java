@@ -24,8 +24,6 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.ParseException;
@@ -129,7 +127,8 @@ import edu.ku.brc.util.Pair;
  * Feb 23, 2007
  * 
  */
-public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContainerIFace, CommandListener, KeyListener
+@SuppressWarnings("serial")
+public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContainerIFace, CommandListener
 {
     protected static final Logger                            log            = Logger.getLogger(QueryBldrPane.class);
     protected static final Color                             TITLEBAR_COLOR = new Color(82, 160, 52);
@@ -242,9 +241,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         setQueryIntoUI();
         
         CommandDispatcher.register(ReportsBaseTask.REPORTS, this);
-        
-        this.addKeyListener(this);
-            
     }
 
     /**
@@ -395,6 +391,36 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         });
         distinctChk = createCheckBox(UIRegistry.getResourceString("QB_DISTINCT"));
         distinctChk.setSelected(false);
+        distinctChk.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                new SwingWorker() {
+
+                    /* (non-Javadoc)
+                     * @see edu.ku.brc.helpers.SwingWorker#construct()
+                     */
+                    @Override
+                    public Object construct()
+                    {
+                    	if (distinctChk.isSelected())
+                        {
+                          	UsageTracker.incrUsageCount("QB.DistinctOn");
+                        }
+                        else
+                        {
+                           	UsageTracker.incrUsageCount("QB.DistinctOff");
+                        }
+                        if (isTreeLevelSelected() && countOnly && distinctChk.isSelected())
+                        {
+                           	countOnlyChk.setSelected(false);
+                           	countOnly = false;
+                        }
+                       return null;
+                    }
+                }.start();
+            }
+        });
         countOnlyChk = createCheckBox(UIRegistry.getResourceString("QB_COUNT_ONLY"));
         countOnlyChk.setSelected(false);
         countOnlyChk.addActionListener(new ActionListener()
@@ -420,6 +446,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                             else
                             {
                                 UsageTracker.incrUsageCount("QB.CountOnlyOff");
+                            }
+                            if (isTreeLevelSelected() && countOnly && distinctChk.isSelected())
+                            {
+                            	distinctChk.setSelected(false);
                             }
                         }
                         else
@@ -2555,6 +2585,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 queryFieldsPanel.repaint();
                 saveBtn.setEnabled(QueryBldrPane.this.queryFieldItems.size() > 0 && canSave());
                 updateSearchBtn();
+                UIRegistry.displayStatusBarText(null);
             }
         });
     }
@@ -2761,6 +2792,16 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                         }
                         //Sorry, but a new context can't be selected if any fields are selected from the current context.
                         tableList.setEnabled(queryFieldItems.size() == 0);
+                        if (fieldQRI instanceof TreeLevelQRI && distinctChk.isSelected() && countOnly)
+                        {
+                        	countOnly = false;
+                         	countOnlyChk.setSelected(false);
+                        	UIRegistry.displayLocalizedStatusBarText("QB_NO_COUNT_WITH_DISTINCT_WITH_TREELEVEL");
+                        }
+                        else
+                        {
+                        	UIRegistry.displayStatusBarText(null);
+                        }
                     }
                 }
             });
@@ -3178,36 +3219,22 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     public JButton getAddBtn()
     {
         return addBtn;
+    }    
+    
+    /**
+     * @return true if the query's fields list contains a TreeLevel field. 
+     */
+    protected boolean isTreeLevelSelected()
+    {
+    	for (QueryFieldPanel qfp : this.queryFieldItems)
+    	{
+    		if (qfp.getFieldQRI() instanceof TreeLevelQRI)
+    		{
+    			return true;
+    		}
+    	}
+    	return false;
     }
-
-	/* (non-Javadoc)
-	 * @see java.awt.event.KeyListener#keyPressed(java.awt.event.KeyEvent)
-	 */
-	@Override
-	public void keyPressed(KeyEvent arg0) 
-	{
-		System.out.println("heard that");
-	}
-
-	/* (non-Javadoc)
-	 * @see java.awt.event.KeyListener#keyReleased(java.awt.event.KeyEvent)
-	 */
-	@Override
-	public void keyReleased(KeyEvent arg0) 
-	{
-		System.out.println("heard that");
-	}
-
-	/* (non-Javadoc)
-	 * @see java.awt.event.KeyListener#keyTyped(java.awt.event.KeyEvent)
-	 */
-	@Override
-	public void keyTyped(KeyEvent arg0) 
-	{
-		System.out.println("heard that");
-	}
-    
-    
 }
 
 
