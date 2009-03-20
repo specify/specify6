@@ -58,7 +58,7 @@ public class EditorPanel extends JPanel implements ChangeListener,
     /**
      * @param formValidator the formValidator to set
      */
-    public void setFormValidator(FormValidator formValidator)
+    public void setFormValidator(final FormValidator formValidator)
     {
         this.formValidator = formValidator;
     }
@@ -98,7 +98,7 @@ public class EditorPanel extends JPanel implements ChangeListener,
     /* (non-Javadoc)
      * @see javax.swing.event.ChangeListener#stateChanged(javax.swing.event.ChangeEvent)
      */
-    public void stateChanged(ChangeEvent e)
+    public void stateChanged(final ChangeEvent e)
     {
         setHasChanged(true);
     }

@@ -9,6 +9,8 @@ package edu.ku.brc.specify.tasks.subpane.security;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Frame;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
@@ -33,12 +35,14 @@ import javax.swing.table.TableColumnModel;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.auth.PermissionPanelContainerIFace;
+import edu.ku.brc.af.auth.PermissionSettings;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.SpPermission;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.ToggleButtonChooserDlg;
 import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.UIRegistry;
+import static edu.ku.brc.ui.UIRegistry.*;
 import edu.ku.brc.util.ComparatorByStringRepresentation;
 
 
@@ -92,6 +96,7 @@ public class PermissionEditor extends JPanel implements PermissionPanelContainer
      * @param panelName
      * @param enumerator
      * @param listener
+     * @param readOnly
      */
     public PermissionEditor(final String panelName,
                             final PermissionEnumerator enumerator,
@@ -107,6 +112,11 @@ public class PermissionEditor extends JPanel implements PermissionPanelContainer
 	 * @param enumerator
 	 * @param listener
 	 * @param readOnly
+	 * @param nameKey
+	 * @param viewKey
+	 * @param addKey
+	 * @param modKey
+	 * @param delKey
 	 */
 	public PermissionEditor(final String               panelName,
                             final PermissionEnumerator enumerator,
@@ -120,15 +130,14 @@ public class PermissionEditor extends JPanel implements PermissionPanelContainer
 	{
 	    super(new BorderLayout());
 	    
-	    nameColTitle = UIRegistry.getResourceString(nameKey);
-	    viewColTitle = viewKey != null ? UIRegistry.getResourceString(viewKey) : null;
-	    addColTitle  = addKey  != null ? UIRegistry.getResourceString(addKey) : null;
-	    modColTitle  = modKey  != null ? UIRegistry.getResourceString(modKey) : null;
-	    delColTitle  = delKey  != null ? UIRegistry.getResourceString(delKey) : null;
+	    nameColTitle = getResourceString(nameKey);
+	    viewColTitle = viewKey != null ? getResourceString(viewKey) : null;
+	    addColTitle  = addKey  != null ? getResourceString(addKey) : null;
+	    modColTitle  = modKey  != null ? getResourceString(modKey) : null;
+	    delColTitle  = delKey  != null ? getResourceString(delKey) : null;
 
-	    
         this.panelName  = panelName;
-        this.table      = new JTable();
+        this.table      = new JTable(new DefaultTableModel());
 		this.enumerator = enumerator;
 		this.principal 	= null;
 		this.listener   = listener;
@@ -139,8 +148,103 @@ public class PermissionEditor extends JPanel implements PermissionPanelContainer
 		JScrollPane sp = new JScrollPane(table, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		add(sp, BorderLayout.CENTER);
 	}
+	
+	/**
+	 * @return
+	 */
+	private int getColumnsForSelection()
+	{
+	    String[] captions = new String[] {viewColTitle, addColTitle, modColTitle, delColTitle};
+	    int[]    opts     = new int[]    {    1,                  8,           2,           4};
+	    
+	    ArrayList<String> list = new ArrayList<String>(captions.length);
+	    for (String title : captions)
+	    {
+	        if (title != null)
+	        {
+	            list.add(title);
+	        }
+	    }
+	    ToggleButtonChooserDlg<String> dlg = new ToggleButtonChooserDlg<String>((Frame)getTopWindow(), 
+	                                                 getResourceString("SEC_SEL_TITLE"), 
+	                                                 getResourceString("SEC_SEL_DESC"), list);
+        dlg.setVisible(true);
+        
+        int options = PermissionSettings.NO_PERM;
+        for (String str : dlg.getSelectedObjects())
+        {
+            int inx = list.indexOf(str);
+            options |= opts[inx];
+        }
+	    return options;
+	}
+	
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.auth.PermissionPanelContainerIFace#doesSupportSelectAll()
+     */
+    @Override
+    public boolean doesSupportSelectAll()
+    {
+        return true;
+    }
 
-	private void setCellRenderer() {
+	/* (non-Javadoc)
+     * @see edu.ku.brc.af.auth.PermissionPanelContainerIFace#deselectAll()
+     */
+    @Override
+    public void deselectAll()
+    {
+        setSelection(false);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.auth.PermissionPanelContainerIFace#selectAll()
+     */
+    @Override
+    public void selectAll()
+    {
+        setSelection(true);
+    }
+    
+    /**
+     * @param value
+     */
+    private void setSelection(final boolean value)
+    {
+        int options = getColumnsForSelection();
+        int numRows = model.getRowCount();
+        int viewCol = viewColTitle != null ? table.getColumn(viewColTitle).getModelIndex() : -1;
+        int addCol  = addColTitle != null ? table.getColumn(addColTitle).getModelIndex() : -1;
+        int modCol  = modColTitle != null ? table.getColumn(modColTitle).getModelIndex() : -1;
+        int delCol  = delColTitle != null ? table.getColumn(delColTitle).getModelIndex() : -1;
+
+        for (int row = 0; row < numRows; ++row)
+        {
+            if (PermissionSettings.isOn(options, PermissionSettings.CAN_VIEW))
+            {
+                setValueAt(row, viewCol, value);
+            }
+            if (PermissionSettings.isOn(options, PermissionSettings.CAN_MODIFY))
+            {
+                setValueAt(row, modCol, value);
+            }
+            if (PermissionSettings.isOn(options, PermissionSettings.CAN_DELETE))
+            {
+                setValueAt(row, delCol, value);
+            }
+            if (PermissionSettings.isOn(options, PermissionSettings.CAN_ADD))
+            {
+                setValueAt(row, addCol, value);
+            }
+        }
+        ((DefaultTableModel)table.getModel()).fireTableDataChanged();
+    }
+
+    /**
+	 * 
+	 */
+	private void setCellRenderer() 
+	{
 	    
 	    TableCellRenderer renderer;
 	    TableCellEditor editor;
@@ -364,16 +468,36 @@ public class PermissionEditor extends JPanel implements PermissionPanelContainer
 		}
 	}
 	
-	private boolean getValueAt(int row, int column) 
-	{
-	    if (column <= -1)
-	    {
-	        return false;
-	    }
-	    
-	    GeneralPermissionTableCellValueWrapper wrapper;
-	    wrapper = (GeneralPermissionTableCellValueWrapper) model.getValueAt(row, column);
-	    
-	    return wrapper.getPermissionActionValue();
-	}
+    /**
+     * @param row
+     * @param column
+     * @return
+     */
+    private boolean getValueAt(int row, int column) 
+    {
+        if (column <= -1)
+        {
+            return false;
+        }
+        
+        GeneralPermissionTableCellValueWrapper wrapper = (GeneralPermissionTableCellValueWrapper) model.getValueAt(row, column);
+        
+        return wrapper.getPermissionActionValue();
+    }
+    
+    /**
+     * @param row
+     * @param column
+     * @return
+     */
+    private void setValueAt(int row, int column, boolean value) 
+    {
+        if (column > -1)
+        {
+            GeneralPermissionTableCellValueWrapper wrapper = (GeneralPermissionTableCellValueWrapper) model.getValueAt(row, column);
+            wrapper.setPermissionActionValue(value);
+        }
+    }
+    
+	
 }

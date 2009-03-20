@@ -80,6 +80,11 @@ public interface PermissionIFace
     public abstract int getOptions();
 
     /**
+     * @param options
+     */
+    public abstract void setOptions(int options);
+
+    /**
      * @return
      */
     public abstract boolean hasNoPerm();

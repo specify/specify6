@@ -54,4 +54,20 @@ public interface PermissionPanelContainerIFace
      * @return the enumerator used to display the permissions
      */
     public abstract PermissionEnumerator  getPermissionEnumerator();
+    
+    /**
+     * @return whether the editor supports Select All / Delselect All
+     */
+    public abstract boolean doesSupportSelectAll();
+    
+    /**
+     * 
+     */
+    public abstract void selectAll();
+    
+    /**
+     * 
+     */
+    public abstract void deselectAll();
+    
 }

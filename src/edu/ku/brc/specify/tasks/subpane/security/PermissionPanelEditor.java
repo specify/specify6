@@ -15,6 +15,7 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 
@@ -32,7 +33,7 @@ import edu.ku.brc.specify.datamodel.SpPrincipal;
  * 
  * @author rod
  *
- * @code_status Alpha
+ * @code_status Beta
  *
  * Oct 21, 2008
  *
@@ -44,14 +45,22 @@ public class PermissionPanelEditor extends JPanel
     protected CardLayout cardLayout   = new CardLayout();
     protected JComboBox  switcherCBX;
     
+    protected JButton    selectAllBtn;
+    protected JButton    deselectAllBtn;
+    
     protected Vector<PermissionPanelContainerIFace> panels = new Vector<PermissionPanelContainerIFace>();
     
     /**
-     * 
+     * @param selectAllBtn
+     * @param deselectAllBtn
      */
-    public PermissionPanelEditor()
+    public PermissionPanelEditor(final JButton selectAllBtn, 
+                                 final JButton deselectAllBtn)
     {
         super();
+        
+        this.selectAllBtn   = selectAllBtn;
+        this.deselectAllBtn = deselectAllBtn;
         
         cardPanel   = new JPanel(cardLayout);
         
@@ -61,7 +70,7 @@ public class PermissionPanelEditor extends JPanel
         PanelBuilder topPB = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g", "p"));
         topPB.add(switcherCBX, cc.xy(2, 1));
         
-        PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g", "p,10px,p:g"), this);
+        PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g", "p,10px,f:p:g"), this);
         pb.add(topPB.getPanel(), cc.xy(1, 1));
         pb.add(cardPanel,        cc.xy(1, 3));
         
@@ -70,6 +79,12 @@ public class PermissionPanelEditor extends JPanel
             public void actionPerformed(ActionEvent e)
             {
                 cardLayout.show(cardPanel, switcherCBX.getSelectedItem().toString());
+                boolean supportsSelectAll = doesSupportSelectAll();
+                if (selectAllBtn != null)
+                {
+                    selectAllBtn.setEnabled(supportsSelectAll);   
+                    deselectAllBtn.setEnabled(supportsSelectAll);   
+                }
             }
         });
         
@@ -78,6 +93,24 @@ public class PermissionPanelEditor extends JPanel
             cardPanel.setBackground(Color.CYAN);
             setBackground(Color.GREEN);
         }
+    }
+    
+    /* (non-Javadoc)
+     * @see javax.swing.JComponent#setVisible(boolean)
+     */
+    public void setVisible(final boolean vis)
+    {
+       super.setVisible(vis);
+       
+       if (vis)
+       {
+           boolean supportsSelectAll = doesSupportSelectAll();
+           if (selectAllBtn != null)
+           {
+               selectAllBtn.setEnabled(supportsSelectAll);   
+               deselectAllBtn.setEnabled(supportsSelectAll);   
+           }
+       }
     }
     
     /**
@@ -103,6 +136,43 @@ public class PermissionPanelEditor extends JPanel
     }
     
     /**
+     * @return whether the current editor supports Select All / Deselect All.
+     */
+    public boolean doesSupportSelectAll()
+    {
+        int inx = switcherCBX.getSelectedIndex();
+        if (inx > -1)
+        {
+            return panels.get(inx).doesSupportSelectAll();
+        }
+        return false;
+    }
+
+    /**
+     * 
+     */
+    public void selectAll()
+    {
+        int inx = switcherCBX.getSelectedIndex();
+        if (inx > -1)
+        {
+            panels.get(inx).selectAll();
+        }
+    }
+    
+    /**
+     * 
+     */
+    public void deselectAll()
+    {
+        int inx = switcherCBX.getSelectedIndex();
+        if (inx > -1)
+        {
+            panels.get(inx).deselectAll();
+        }  
+    }
+    
+    /**
      * @param principal
      * @param overrulingPrincipal
      */
@@ -125,6 +195,4 @@ public class PermissionPanelEditor extends JPanel
     {
         return panels;
     }
-
-    
 }

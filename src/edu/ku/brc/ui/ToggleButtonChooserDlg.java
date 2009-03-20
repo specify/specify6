@@ -14,8 +14,6 @@
  */
 package edu.ku.brc.ui;
 
-import static edu.ku.brc.ui.UIRegistry.getResourceString;
-
 import java.awt.BorderLayout;
 import java.awt.Frame;
 import java.awt.HeadlessException;
@@ -35,77 +33,74 @@ import javax.swing.BorderFactory;
 public class ToggleButtonChooserDlg<T> extends CustomDialog
 {
     // Needed for Delayed Creation
-    protected String                      title   = null;
     protected ToggleButtonChooserPanel<T> panel;
     
 
     /**
      * Constructor.
      * @param parentFrame the parent Frame
-     * @param title dialog title
+     * @param titleKey dialog title
      * @param desc description label above list (optional)
      * @param items the list to be selected from
      * @throws HeadlessException
      */
     public ToggleButtonChooserDlg(final Frame   parentFrame, 
-                                  final String  title, 
+                                  final String  titleKey, 
                                   final List<T> listItems) throws HeadlessException
     {
-        this(parentFrame, title, null, listItems);
+        this(parentFrame, titleKey, null, listItems);
     }
 
     /**
      * Constructor.
      * @param parentFrame the parent Frame
-     * @param title dialog title
+     * @param titleKey dialog title
      * @param desc description label above list (optional)
      * @param items the list to be selected from
      * @throws HeadlessException
      */
     public ToggleButtonChooserDlg(final Frame   parentFrame, 
-                                  final String  title, 
+                                  final String  titleKey, 
                                   final List<T> listItems,
                                   final ToggleButtonChooserPanel.Type uiType) throws HeadlessException
     {
-        this(parentFrame, title, null, listItems, OKCANCEL, uiType);
+        this(parentFrame, titleKey, null, listItems, OKCANCEL, uiType);
     }
 
     /**
      * Constructor.
-     * @param title dialog title
-     * @param desc description label above list (optional)
+     * @param titleKey dialog title
+     * @param desckey description label above list (optional)
      * @param items the list to be selected from
      * @throws HeadlessException
      */
     public ToggleButtonChooserDlg(final Frame   parentFrame, 
-                                  final String  title,
-                                  final String  desc, 
+                                  final String  titleKey,
+                                  final String  desckey, 
                                   final List<T> listItems) throws HeadlessException
     {
-        this(parentFrame, title, desc, listItems, OKCANCEL, ToggleButtonChooserPanel.Type.Checkbox);
+        this(parentFrame, titleKey, desckey, listItems, OKCANCEL, ToggleButtonChooserPanel.Type.Checkbox);
     }
 
     /**
      * Constructor.
      * @param parentFrame the parent Frame
-     * @param title dialog title
-     * @param desc description label above list (optional)
+     * @param key dialog title
+     * @param descKey description label above list (optional)
      * @param items the list to be selected from
      * @param icon the icon to be displayed in front of each entry in the list
      * @throws HeadlessException
      */
     public ToggleButtonChooserDlg(final Frame     parentFrame, 
-                                  final String    title, 
-                                  final String    desc, 
+                                  final String    key, 
+                                  final String    descKey, 
                                   final List<T>   listItems, 
                                   final int       whichButtons,
                                   final ToggleButtonChooserPanel.Type uiType) throws HeadlessException
     {
-        super(parentFrame, getResourceString(title), true, whichButtons, null);
+        super(parentFrame, UIRegistry.getResourceString(key), true, whichButtons, null);
         
-        this.title  = title;
-        
-        panel = new ToggleButtonChooserPanel<T>(listItems, desc, uiType);
+        panel = new ToggleButtonChooserPanel<T>(listItems, UIRegistry.getResourceString(descKey), uiType);
 
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }

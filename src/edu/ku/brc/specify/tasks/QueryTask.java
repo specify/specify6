@@ -1704,8 +1704,8 @@ public class QueryTask extends BaseTask
         }
         
         ToggleButtonChooserDlg<SpQuery> dlg = new ToggleButtonChooserDlg<SpQuery>((Frame)UIRegistry.getMostRecentWindow(),
-                getResourceString("QY_IMPORT_QUERIES"),
-                getResourceString("QY_SEL_QUERIES_IMP"),
+                "QY_IMPORT_QUERIES",
+                "QY_SEL_QUERIES_IMP",
                 queries,
                 CustomDialog.OKCANCELHELP,
                 ToggleButtonChooserPanel.Type.Checkbox);
@@ -1774,8 +1774,8 @@ public class QueryTask extends BaseTask
         } else
         {
             ToggleButtonChooserDlg<String> dlg = new ToggleButtonChooserDlg<String>((Frame)UIRegistry.getMostRecentWindow(),
-                    getResourceString("QY_EXPORT_QUERIES"),
-                    getResourceString("QY_SEL_QUERIES_EXP"),
+                    "QY_EXPORT_QUERIES",
+                    "QY_SEL_QUERIES_EXP",
                     list,
                     CustomDialog.OKCANCELHELP,
                     ToggleButtonChooserPanel.Type.Checkbox);

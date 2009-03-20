@@ -273,6 +273,41 @@ public class IndvPanelPermEditor extends JPanel implements PermissionPanelContai
         }
     }
     
+    /* (non-Javadoc)
+     * @see javax.swing.JComponent#setVisible(boolean)
+     */
+    public void setVisible(final boolean vis)
+    {
+       super.setVisible(vis); 
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.auth.PermissionPanelContainerIFace#doesSupportSelectAll()
+     */
+    @Override
+    public boolean doesSupportSelectAll()
+    {
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.auth.PermissionPanelContainerIFace#deselectAll()
+     */
+    @Override
+    public void deselectAll()
+    {
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.auth.PermissionPanelContainerIFace#selectAll()
+     */
+    @Override
+    public void selectAll()
+    {
+    }
+
+    //---------------------------------------------------------------
+    //-- 
     //---------------------------------------------------------------
     public class PermWrapperRenderer extends DefaultListCellRenderer 
     {

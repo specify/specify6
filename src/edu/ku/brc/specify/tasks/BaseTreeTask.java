@@ -157,7 +157,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
                 
                 if (UIHelper.isSecurityOn())
                 {
-                    //System.out.println(treeTI.getTitle()+ " "+treePerms.toString());
+                    System.out.println(treeTI.getTitle()+ " "+treePerms.toString());
                     if (treePerms.canView())
                     {
                         treeEditAction = createActionForTreeEditing(treeTI.getTitle(), treePerms.canModify());                        
@@ -208,22 +208,20 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         treeDefNavBox.clear();
         unlockNavBox.clear();
         
-        if (UIHelper.isSecurityOn())
-        {
-            if (!DBTableIdMgr.getInstance().getByShortClassName(treeClass.getSimpleName()).getPermissions().canView())
-            {
-                return;
-            }
-        }
+        boolean skip = UIHelper.isSecurityOn() && !DBTableIdMgr.getInstance().getByShortClassName(treeClass.getSimpleName()).getPermissions().canView();
         
-        //if (isTreeOnByDefault())
+        TreeTaskMgr.getInstance().fillNavBoxes(treeNavBox, treeDefNavBox, unlockNavBox);
+        
+        log.debug(treeClass.getSimpleName()+"  skip "+skip+"  cnt: "+treeNavBox.getComponentCount());
+        if (!skip) //if (isTreeOnByDefault())
         {
-            TreeTaskMgr.getInstance().fillNavBoxes(treeNavBox, treeDefNavBox, unlockNavBox);
             for (NavBoxItemIFace nbi : treeNavBox.getItems())
             {
                 ((RolloverCommand)nbi.getUIComponent()).addDropDataFlavor(null);
             }
         } 
+        
+        log.debug(treeClass.getSimpleName()+"  skip "+skip+"  cnt: "+treeNavBox.getComponentCount());
         treeNavBox.setVisible(treeNavBox.getComponentCount() > 0);
         treeDefNavBox.setVisible(treeDefNavBox.getComponentCount() > 0);
         unlockNavBox.setVisible(unlockNavBox.getComponentCount() > 0);
@@ -280,10 +278,15 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         
     	if (!isOpeningTree) // as oppose to opening the TreeDef
     	{
+            PermissionSettings perms = DBTableIdMgr.getInstance().getByShortClassName(treeClass.getSimpleName()).getPermissions();
+            boolean isViewable = perms == null || perms.isViewOnly();
+            boolean isEditable = perms == null || perms.canModify();
+            
             final TaskSemaphoreMgr.USER_ACTION action = TaskSemaphoreMgr.lock(titleArg, treeDefClass.getSimpleName(), "def", TaskSemaphoreMgr.SCOPE.Discipline, true);
             final boolean isViewMode = action == TaskSemaphoreMgr.USER_ACTION.ViewMode;
             
-            if (action == TaskSemaphoreMgr.USER_ACTION.ViewMode || action == TaskSemaphoreMgr.USER_ACTION.OK)
+            if ((isViewable && action == TaskSemaphoreMgr.USER_ACTION.ViewMode) || 
+                (action == TaskSemaphoreMgr.USER_ACTION.OK && isEditable)) 
             {
         		isOpeningTree = true;
     	        SwingWorker bgWorker = new SwingWorker()

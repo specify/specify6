@@ -39,11 +39,20 @@ public class PermissionSettings implements PermissionIFace
     
     private int permissions;
     
+    /**
+     * @param permissions
+     */
     public PermissionSettings(final int permissions)
     {
         this.permissions = permissions;
     }
     
+    /**
+     * @param canView
+     * @param canModify
+     * @param canDel
+     * @param canAdd
+     */
     public PermissionSettings(final boolean canView, 
                               final boolean canModify, 
                               final boolean canDel, 
@@ -58,6 +67,7 @@ public class PermissionSettings implements PermissionIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.af.auth.PermissionIFace#canModify()
      */
+    @Override
     public boolean canModify()
     {
         return isOn(permissions, CAN_MODIFY);
@@ -66,6 +76,7 @@ public class PermissionSettings implements PermissionIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.af.auth.PermissionIFace#canView()
      */
+    @Override
     public boolean canView()
     {
         return isOn(permissions, CAN_VIEW);
@@ -74,6 +85,7 @@ public class PermissionSettings implements PermissionIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.af.auth.PermissionIFace#canAdd()
      */
+    @Override
     public boolean canAdd()
     {
         return isOn(permissions, CAN_ADD);
@@ -82,6 +94,7 @@ public class PermissionSettings implements PermissionIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.af.auth.PermissionIFace#canDelete()
      */
+    @Override
     public boolean canDelete()
     {
         return isOn(permissions, CAN_DELETE);
@@ -150,6 +163,7 @@ public class PermissionSettings implements PermissionIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.af.auth.PermissionIFace#isViewOnly()
      */
+    @Override
     public boolean isViewOnly()
     {
         return permissions == CAN_VIEW;
@@ -158,6 +172,7 @@ public class PermissionSettings implements PermissionIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.af.auth.PermissionIFace#getOptions()
      */
+    @Override
     public int getOptions()
     {
         return permissions;
@@ -166,6 +181,7 @@ public class PermissionSettings implements PermissionIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.PermissionIFace#clear()
      */
+    @Override
     public void clear()
     {
         permissions = NO_PERM;
@@ -174,11 +190,21 @@ public class PermissionSettings implements PermissionIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.af.auth.PermissionIFace#hasNoPerm()
      */
+    @Override
     public boolean hasNoPerm()
     {
         return permissions == NO_PERM;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.PermissionIFace#setOptions(int)
+     */
+    @Override
+    public void setOptions(int options)
+    {
+        permissions = options;
+    }
+
     /**
      * Helper method to see if an option is turned on.
      * @param options the range of options that can be turned on

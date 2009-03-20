@@ -6,6 +6,7 @@
  */
 package edu.ku.brc.specify.tasks.subpane.security;
 
+import static edu.ku.brc.ui.UIHelper.createI18NButton;
 import static edu.ku.brc.ui.UIHelper.createI18NLabel;
 import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIHelper.createScrollPane;
@@ -16,6 +17,8 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -95,7 +98,7 @@ public class SecurityAdminPane extends BaseSubPane
     
     private JTree                                       tree;
     private JPanel                                      infoCards;
-    private Set<SpecifyUser>                           spUsers;
+    private Set<SpecifyUser>                            spUsers;
     private Hashtable<String, AdminInfoSubPanelWrapper> infoSubPanels;
     private Hashtable<String, EditorPanel>              editorPanels        = new Hashtable<String, EditorPanel>();
     private AdminInfoSubPanelWrapper                    currentDisplayPanel = null;
@@ -142,6 +145,8 @@ public class SecurityAdminPane extends BaseSubPane
      */
     public JPanel createMainControlUI()
     {
+        setLayout(new BorderLayout());
+        
         JPanel securityAdminPanel = new JPanel();
         //JPanel securityAdminPanel = new FormDebugPanel();
         
@@ -831,40 +836,43 @@ public class SecurityAdminPane extends BaseSubPane
         PermissionEditor prefsEdt = new PermissionEditor("Preferences",  new PrefsPermissionEnumerator(), infoPanel,
                                                          false, "SEC_NAME_TITLE", "SEC_ENABLE_PREF", null, null, null);
         
-        PermissionPanelEditor generalEditor = new PermissionPanelEditor();
+        JButton selectAllBtn   = createI18NButton("SELECTALL");
+        JButton deselectAllBtn = createI18NButton("DESELECTALL");
+
+        final PermissionPanelEditor generalEditor = new PermissionPanelEditor(selectAllBtn, deselectAllBtn);
         generalEditor.addPanel(new PermissionEditor("Data Objects", new DataObjPermissionEnumerator(), infoPanel));
         generalEditor.addPanel(new IndvPanelPermEditor("Tasks",     new TaskPermissionEnumerator(),    infoPanel));
         generalEditor.addPanel(prefsEdt);
         
-        PermissionPanelEditor objEditor = new PermissionPanelEditor();
+        final PermissionPanelEditor objEditor = new PermissionPanelEditor(selectAllBtn, deselectAllBtn);
         objEditor.addPanel(new IndvPanelPermEditor("Data Objects", new ObjectPermissionEnumerator(), infoPanel));
         
         // create user form
         ViewBasedDisplayPanel panel = createViewBasedDisplayPanelForUser(infoPanel);
         
         // create tabbed panel for different kinds of permission editing tables
-        JTabbedPane tabbedPane = new JTabbedPane();
+        final JTabbedPane tabbedPane = new JTabbedPane();
         tabbedPane.addTab("General", generalEditor); // I18N
-        tabbedPane.addTab("Objects", objEditor);  // I18N
+        tabbedPane.addTab("Objects", objEditor);     // I18N
         
-        tabbedPane.setBorder(BorderFactory.createLineBorder(Color.RED));
-        infoPanel.setBorder(BorderFactory.createLineBorder(Color.GREEN));
-        
-        final PanelBuilder mainPB = new PanelBuilder(new FormLayout("f:p:g", "t:p,4px,p,5px,p,2dlu,p"), infoPanel);
+        final PanelBuilder mainPB = new PanelBuilder(new FormLayout("f:p:g", "t:p,4px,p,5px,f:p:g,2dlu,p"), infoPanel);
         
         // lay out controls on panel
         int y = 1;
         mainPB.add(panel,                  cc.xy(1, y)); y += 2;
         mainPB.addSeparator("Permissions", cc.xy(1, y)); y += 2; // I18N
         mainPB.add(tabbedPane,             cc.xy(1, y)); y += 2;
-
-        PanelBuilder saveBtnPB = new PanelBuilder(new FormLayout("f:p:g,p,2px,p", "p")/*, new FormDebugPanel()*/);
+        
+        PanelBuilder saveBtnPB = new PanelBuilder(new FormLayout("f:p:g,p,2px,p,2px,p,2px,p", "p"));
         
         Viewable viewable = panel.getMultiView().getCurrentView();
         JButton  valBtn   = FormViewObj.createValidationIndicator(viewable.getUIComponent(), viewable.getValidator());
         panel.getMultiView().getCurrentValidator().setValidationBtn(valBtn);
-        saveBtnPB.add(valBtn, cc.xy(2, 1)); 
-        saveBtnPB.add(infoPanel.getSaveBtn(), cc.xy(4, 1));
+        
+        saveBtnPB.add(selectAllBtn,   cc.xy(2, 1));
+        saveBtnPB.add(deselectAllBtn, cc.xy(4, 1));
+        saveBtnPB.add(valBtn,         cc.xy(6, 1)); 
+        saveBtnPB.add(infoPanel.getSaveBtn(), cc.xy(8, 1));
         
         if (SecurityAdminPane.isDoDebug())
         {
@@ -892,6 +900,21 @@ public class SecurityAdminPane extends BaseSubPane
         infoSubPanels.put(className, subPanel);
         editorPanels.put(className, infoPanel);
         
+        selectAllBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                ((PermissionPanelEditor)tabbedPane.getComponentAt(tabbedPane.getSelectedIndex())).selectAll();
+            }
+        });
+        
+        deselectAllBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                ((PermissionPanelEditor)tabbedPane.getComponentAt(tabbedPane.getSelectedIndex())).deselectAll();
+            }
+        });
     }
     
     /**
@@ -900,12 +923,15 @@ public class SecurityAdminPane extends BaseSubPane
     private void createGroupPanel()
     {
         final EditorPanel     infoPanel = new EditorPanel(this);
-        final CellConstraints cc       = new CellConstraints();
+        final CellConstraints cc        = new CellConstraints();
 
-        PermissionPanelEditor generalEditor = new PermissionPanelEditor();
+        JButton selectAllBtn   = createI18NButton("SELECTALL");
+        JButton deselectAllBtn = createI18NButton("DESELECTALL");
+
+        final PermissionPanelEditor generalEditor = new PermissionPanelEditor(selectAllBtn, deselectAllBtn);
         generalEditor.addPanel(new PermissionEditor("Data Objects", new DataObjPermissionEnumerator(), infoPanel));
-        generalEditor.addPanel(new IndvPanelPermEditor("Tasks",     new TaskPermissionEnumerator(),    infoPanel));
-        generalEditor.addPanel(new PermissionEditor("Preferences",  new PrefsPermissionEnumerator(),   infoPanel));
+        //generalEditor.addPanel(new IndvPanelPermEditor("Tasks",     new TaskPermissionEnumerator(),    infoPanel));
+        //generalEditor.addPanel(new PermissionEditor("Preferences",  new PrefsPermissionEnumerator(),   infoPanel));
         
         // create user form
         ViewBasedDisplayPanel panel = createViewBasedDisplayPanelForGroup(infoPanel);
@@ -918,13 +944,16 @@ public class SecurityAdminPane extends BaseSubPane
         mainPB.addSeparator("Permissions", cc.xy(1, y)); y += 2; // I18N
         mainPB.add(generalEditor,          cc.xy(1, y)); y += 2;
 
-        PanelBuilder saveBtnPB = new PanelBuilder(new FormLayout("f:p:g,p,2px,p", "p"));
+        PanelBuilder saveBtnPB = new PanelBuilder(new FormLayout("f:p:g,p,2px,p,2px,p,2px,p", "p"));
         
         Viewable viewable = panel.getMultiView().getCurrentView();
         JButton  valBtn   = FormViewObj.createValidationIndicator(viewable.getUIComponent(), viewable.getValidator());
         panel.getMultiView().getCurrentValidator().setValidationBtn(valBtn);
-        saveBtnPB.add(valBtn, cc.xy(2, 1)); 
-        saveBtnPB.add(infoPanel.getSaveBtn(), cc.xy(4, 1));
+        
+        saveBtnPB.add(selectAllBtn,   cc.xy(2, 1));
+        saveBtnPB.add(deselectAllBtn, cc.xy(4, 1));
+        saveBtnPB.add(valBtn,         cc.xy(6, 1)); 
+        saveBtnPB.add(infoPanel.getSaveBtn(), cc.xy(8, 1));
 
         mainPB.add(saveBtnPB.getPanel(), cc.xy(1, y)); y += 2;
         
@@ -940,6 +969,23 @@ public class SecurityAdminPane extends BaseSubPane
         {
             infoPanel.setBackground(Color.PINK);
         }
+        
+        selectAllBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                generalEditor.selectAll();
+            }
+        });
+        
+        deselectAllBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                generalEditor.deselectAll();
+            }
+        });
+
     }
 
     /**
@@ -966,9 +1012,9 @@ public class SecurityAdminPane extends BaseSubPane
            
         } catch (Exception ex)
         {
+            ex.printStackTrace();
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SecurityAdminPane.class, ex);
-            ex.printStackTrace();
             session.rollback();
             
         } finally

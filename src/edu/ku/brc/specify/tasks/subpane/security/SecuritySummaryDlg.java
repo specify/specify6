@@ -61,12 +61,12 @@ public class SecuritySummaryDlg extends CustomDialog
         PermissionEditor prefsEdt = new PermissionEditor("Preferences",  new PrefsPermissionEnumerator(), infoPanel,
                 true, "SEC_NAME_TITLE", "SEC_ENABLE_PREF", null, null, null);
 
-        PermissionPanelEditor generalEditor = new PermissionPanelEditor();
+        PermissionPanelEditor generalEditor = new PermissionPanelEditor(null, null);
         generalEditor.addPanel(new PermissionEditor("Data Objects", new DataObjPermissionEnumerator(), infoPanel, true));
         generalEditor.addPanel(new IndvPanelPermEditor("Tasks",     new TaskPermissionEnumerator(),    infoPanel, true));
         generalEditor.addPanel(prefsEdt);
 
-        PermissionPanelEditor objEditor = new PermissionPanelEditor();
+        PermissionPanelEditor objEditor = new PermissionPanelEditor(null, null);
         objEditor.addPanel(new IndvPanelPermEditor("Data Objects", new ObjectPermissionEnumerator(), infoPanel));
 
 

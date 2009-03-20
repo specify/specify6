@@ -19,6 +19,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Vector;
 
+import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.SwingUtilities;
 
@@ -29,6 +30,9 @@ import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.CommandListener;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.RolloverCommand;
 
@@ -43,7 +47,7 @@ import edu.ku.brc.ui.RolloverCommand;
  * Jan 26, 2009
  *
  */
-public class TreeTaskMgr
+public class TreeTaskMgr implements CommandListener
 {
     private static final int SYNC_INTERVAL = 300; // 5 minutes
     
@@ -86,6 +90,7 @@ public class TreeTaskMgr
      */
     private TreeTaskMgr()
     {
+        CommandDispatcher.register(BaseTask.APP_CMD_TYPE, this);
     }
     
     /**
@@ -118,42 +123,55 @@ public class TreeTaskMgr
         
         for (BaseTreeTask<?,?,?> treeTask : treeTasks)
         {
+            System.err.println(treeTask);
+            
             if (treeTask.isTreeOnByDefault())
             {
                 DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(treeTask.getTreeClass().getName());
                 
-                Vector<RolloverCommand> rocs = unlockBtnHash.get(treeTask);
-                if (rocs == null)
+                Action edtTreeAction    = treeTask.getTreeEditAction();
+                Action edtTreeDefAction = treeTask.getTreeDefEditAction();
+                Action unlockTreeAction = treeTask.getTreeUnlockAction();
+                
+                Vector<RolloverCommand> rocs = null;
+                if (edtTreeAction != null || edtTreeDefAction != null || unlockTreeAction != null)
                 {
-                    rocs = new Vector<RolloverCommand>();
-                    unlockBtnHash.put(treeTask, rocs);
+                    rocs = unlockBtnHash.get(treeTask);
+                    if (rocs == null)
+                    {
+                        rocs = new Vector<RolloverCommand>();
+                        unlockBtnHash.put(treeTask, rocs);
+                    }
+                } else
+                {
+                    continue;
                 }
                 
-                if (treeTask.getTreeEditAction() != null)
+                if (edtTreeAction != null)
                 {
                     NavBoxItemIFace nb = BaseTask.makeDnDNavBtn(treeNB, ti.getTitle(), treeTask.getTreeClass().getSimpleName(), null, null, null, false, false);
                     RolloverCommand roc = (RolloverCommand)nb;
-                    roc.addActionListener(treeTask.getTreeEditAction());
+                    roc.addActionListener(edtTreeAction);
                     roc.setToolTip(getResourceString("TASK.SHRTDESC." + treeTask.getTreeClass().getSimpleName()));
                     treeNB.add(nb);
                     //rocs.add(roc);
                 }
                 
-                if (treeTask.getTreeDefEditAction() != null)
+                if (edtTreeDefAction != null)
                 {
                     NavBoxItemIFace nb  = BaseTask.makeDnDNavBtn(treeDefNB, ti.getTitle(), treeTask.getTreeClass().getSimpleName(), null, null, null, false, false);
                     RolloverCommand roc = (RolloverCommand)nb;
-                    roc.addActionListener(treeTask.getTreeDefEditAction());
+                    roc.addActionListener(edtTreeDefAction);
                     roc.setToolTip(getResourceString("TASK.SHRTDESC." + treeTask.getTreeDefClass().getSimpleName()));
                     treeDefNB.add(nb);
                     //rocs.add(roc);
                 }
                 
-                if (treeTask.getTreeUnlockAction() != null)
+                if (unlockTreeAction != null)
                 {
                     NavBoxItemIFace nb  = BaseTask.makeDnDNavBtn(treeDefNB, ti.getTitle(), treeTask.getTreeClass().getSimpleName(), null, null, null, false, false);
                     RolloverCommand roc = (RolloverCommand)nb;
-                    roc.addActionListener(treeTask.getTreeUnlockAction());
+                    roc.addActionListener(unlockTreeAction);
                     roc.setToolTip(getResourceString("TASK.UNLOCK." + treeTask.getTreeClass().getSimpleName()));
                     unlockNB.add(nb);
                     
@@ -177,6 +195,9 @@ public class TreeTaskMgr
         });
     }
     
+    /**
+     * 
+     */
     private static void checkLocksInternal()
     {
         synchronized (instance)
@@ -205,5 +226,44 @@ public class TreeTaskMgr
                 }
             }            
         }
+    }
+    
+    //-------------------------------------------------------
+    // CommandListener Interface
+    //-------------------------------------------------------
+
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.CommandListener#doCommand(edu.ku.brc.af.ui.CommandAction)
+     */
+    @Override
+    public void doCommand(final CommandAction cmdActionArg)
+    {
+        /*CommandAction cmdAction = cmdActionArg;
+        if (cmdAction.isType(BaseTask.APP_CMD_TYPE) && 
+           (cmdAction.isAction(BaseTask.APP_RESTART_ACT) || cmdAction.isAction(BaseTask.APP_START_ACT)))
+        {
+            treeNavBox.clear();
+            treeDefNavBox.clear();
+            unlockNavBox.clear();
+            
+            
+            boolean skip = UIHelper.isSecurityOn() && !DBTableIdMgr.getInstance().getByShortClassName(treeClass.getSimpleName()).getPermissions().canView();
+            
+            log.debug(treeClass.getSimpleName()+"  skip "+skip);
+            if (!skip) //if (isTreeOnByDefault())
+            {
+                TreeTaskMgr.getInstance().fillNavBoxes(treeNavBox, treeDefNavBox, unlockNavBox);
+                for (NavBoxItemIFace nbi : treeNavBox.getItems())
+                {
+                    ((RolloverCommand)nbi.getUIComponent()).addDropDataFlavor(null);
+                }
+            } 
+            
+            treeNavBox.setVisible(treeNavBox.getComponentCount() > 0);
+            treeDefNavBox.setVisible(treeDefNavBox.getComponentCount() > 0);
+            unlockNavBox.setVisible(unlockNavBox.getComponentCount() > 0);
+
+        }*/
     }
 }

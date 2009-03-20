@@ -1035,8 +1035,7 @@ public class FormViewObj implements Viewable,
         });
         
         ToggleButtonChooserDlg<FVOFieldInfo> dlg = new ToggleButtonChooserDlg<FVOFieldInfo>((Frame)UIRegistry.getTopWindow(),
-                UIRegistry.getResourceString("CONFIG_CARRY_FORWARD_TITLE"), 
-                itemLabels);
+                "CONFIG_CARRY_FORWARD_TITLE", itemLabels);
         dlg.setUseScrollPane(true);
         dlg.setAddSelectAll(true);
         dlg.setSelectedObjects(selectedItems);
