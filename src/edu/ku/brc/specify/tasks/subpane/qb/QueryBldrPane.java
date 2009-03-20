@@ -24,6 +24,8 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.ParseException;
@@ -127,7 +129,7 @@ import edu.ku.brc.util.Pair;
  * Feb 23, 2007
  * 
  */
-public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContainerIFace, CommandListener
+public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContainerIFace, CommandListener, KeyListener
 {
     protected static final Logger                            log            = Logger.getLogger(QueryBldrPane.class);
     protected static final Color                             TITLEBAR_COLOR = new Color(82, 160, 52);
@@ -240,6 +242,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         setQueryIntoUI();
         
         CommandDispatcher.register(ReportsBaseTask.REPORTS, this);
+        
+        this.addKeyListener(this);
             
     }
 
@@ -1736,13 +1740,15 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             }
             if (!result || (countOnly && !runningResults.get().getQuery().isCancelled() && !runningResults.get().getQuery().isInError()))
             {
-                if (!runningResults.get().isPostSorted())
+                if (countOnly)
                 {
                     UIRegistry.showLocalizedMsg("QB_COUNT_TITLE", "QB_COUNT_MSG", runningResults.get().getQuery().getDataObjects().size());
                 }
-                else if (!countOnly)
+                else if (runningResults.get().isPostSorted())
                 {
-                    PanelBuilder pb = new PanelBuilder(new FormLayout("5dlu, f:p:g, 5dlu", "5dlu, f:p:g, 2dlu, f:p:g, 2dlu, f:p:g, 5dlu"));
+                    //this should be the case where more records were returned than can be post-sorted...
+                	
+                	PanelBuilder pb = new PanelBuilder(new FormLayout("5dlu, f:p:g, 5dlu", "5dlu, f:p:g, 2dlu, f:p:g, 2dlu, f:p:g, 5dlu"));
                     pb.add(new JLabel(String.format(UIRegistry.getResourceString("QB_CANT_DISPLAY_MSG1"), runningResults.get().getQuery().getDataObjects().size())), new CellConstraints().xy(2, 2));
                     pb.add(new JLabel(String.format(UIRegistry.getResourceString("QB_CANT_DISPLAY_MSG2"), runningResults.get().getMaxTableRows())), new CellConstraints().xy(2, 4));
                     pb.add(new JLabel(UIRegistry.getResourceString("QB_CANT_DISPLAY_MSG3")), new CellConstraints().xy(2, 6));
@@ -3173,6 +3179,35 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     {
         return addBtn;
     }
+
+	/* (non-Javadoc)
+	 * @see java.awt.event.KeyListener#keyPressed(java.awt.event.KeyEvent)
+	 */
+	@Override
+	public void keyPressed(KeyEvent arg0) 
+	{
+		System.out.println("heard that");
+	}
+
+	/* (non-Javadoc)
+	 * @see java.awt.event.KeyListener#keyReleased(java.awt.event.KeyEvent)
+	 */
+	@Override
+	public void keyReleased(KeyEvent arg0) 
+	{
+		System.out.println("heard that");
+	}
+
+	/* (non-Javadoc)
+	 * @see java.awt.event.KeyListener#keyTyped(java.awt.event.KeyEvent)
+	 */
+	@Override
+	public void keyTyped(KeyEvent arg0) 
+	{
+		System.out.println("heard that");
+	}
+    
+    
 }
 
 
