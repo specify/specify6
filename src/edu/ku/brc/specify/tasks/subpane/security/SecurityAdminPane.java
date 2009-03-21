@@ -929,9 +929,9 @@ public class SecurityAdminPane extends BaseSubPane
         JButton deselectAllBtn = createI18NButton("DESELECTALL");
 
         final PermissionPanelEditor generalEditor = new PermissionPanelEditor(selectAllBtn, deselectAllBtn);
-        generalEditor.addPanel(new PermissionEditor("Data Objects", new DataObjPermissionEnumerator(), infoPanel));
-        //generalEditor.addPanel(new IndvPanelPermEditor("Tasks",     new TaskPermissionEnumerator(),    infoPanel));
-        //generalEditor.addPanel(new PermissionEditor("Preferences",  new PrefsPermissionEnumerator(),   infoPanel));
+        generalEditor.addPanel(new PermissionEditor("Data Objects", new DataObjPermissionEnumerator(), infoPanel)); // I18N
+        generalEditor.addPanel(new IndvPanelPermEditor("Tasks",     new TaskPermissionEnumerator(),    infoPanel));
+        generalEditor.addPanel(new PermissionEditor("Preferences",  new PrefsPermissionEnumerator(),   infoPanel));
         
         // create user form
         ViewBasedDisplayPanel panel = createViewBasedDisplayPanelForGroup(infoPanel);

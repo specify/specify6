@@ -6,6 +6,9 @@
  */
 package edu.ku.brc.specify.tasks.subpane.security;
 
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getTopWindow;
+
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -32,8 +35,6 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
-import org.apache.log4j.Logger;
-
 import edu.ku.brc.af.auth.PermissionPanelContainerIFace;
 import edu.ku.brc.af.auth.PermissionSettings;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -42,7 +43,6 @@ import edu.ku.brc.specify.datamodel.SpPrincipal;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
 import edu.ku.brc.ui.UIHelper;
-import static edu.ku.brc.ui.UIRegistry.*;
 import edu.ku.brc.util.ComparatorByStringRepresentation;
 
 
@@ -59,7 +59,7 @@ import edu.ku.brc.util.ComparatorByStringRepresentation;
 @SuppressWarnings("serial")
 public class PermissionEditor extends JPanel implements PermissionPanelContainerIFace
 {
-    private static final Logger log = Logger.getLogger(PermissionEditor.class);
+    //private static final Logger log = Logger.getLogger(PermissionEditor.class);
 
     protected String                panelName;
 	protected JTable				table;
@@ -424,7 +424,7 @@ public class PermissionEditor extends JPanel implements PermissionPanelContainer
 			return;
 		}
 		
-        log.debug("Saving Principal: "+principal.getId()+"  hashCode: "+principal.hashCode());
+        //log.debug("Saving Principal: "+principal.getId()+"  hashCode: "+principal.hashCode());
         
 		int numRows = model.getRowCount();
 		int taskCol = nameColTitle != null ? table.getColumn(nameColTitle).getModelIndex() : -1;

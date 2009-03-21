@@ -30,16 +30,16 @@ import edu.ku.brc.specify.datamodel.SpPrincipal;
  */
 public class ObjectPermissionEditorRow implements PermissionEditorRowIFace
 {
-    private String       type;
-    private String       title;
-	private String       description;
-	private SpPermission ownerPermission;
-	private SpPermission groupPermission;
-	private SpPermission otherPermission;
-	private List<SpPermission> customPermissions;
-	private ImageIcon    icon;
+    private String                  type;
+    private String                  title;
+	private String                  description;
+	private SpPermission            ownerPermission;
+	private SpPermission            groupPermission;
+	private SpPermission            otherPermission;
+	private List<SpPermission>      customPermissions;
+	private ImageIcon               icon;
     protected PermissionEditorIFace editorPanel;
-    protected boolean adminPrincipal;
+    protected boolean               adminPrincipal;
 
 
 	/**
@@ -66,7 +66,7 @@ public class ObjectPermissionEditorRow implements PermissionEditorRowIFace
 		this.otherPermission = otherPermission;
 		this.customPermissions = null;
 		
-        this.type       = type;
+        this.type        = type;
         this.title       = title;
         this.description = description;
         this.icon        = icon;
@@ -109,9 +109,6 @@ public class ObjectPermissionEditorRow implements PermissionEditorRowIFace
         return editorPanel;
     }
 
-    /**
-     * @return the type
-     */
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.security.PermissionEditorRowIFace#getType()
      */
@@ -129,8 +126,8 @@ public class ObjectPermissionEditorRow implements PermissionEditorRowIFace
     {
         int options = PermissionSettings.NO_PERM;
         options |= permission.canModify() ? PermissionSettings.CAN_MODIFY : 0;
-        options |= permission.canView()   ?   PermissionSettings.CAN_VIEW : 0;
-        options |= permission.canAdd()    ?    PermissionSettings.CAN_ADD : 0;
+        options |= permission.canView()   ? PermissionSettings.CAN_VIEW   : 0;
+        options |= permission.canAdd()    ? PermissionSettings.CAN_ADD    : 0;
         options |= permission.canDelete() ? PermissionSettings.CAN_DELETE : 0;
         return new PermissionSettings(options);
     }
@@ -150,6 +147,10 @@ public class ObjectPermissionEditorRow implements PermissionEditorRowIFace
         return list;
     }
     
+    /**
+     * @param permSettings
+     * @param permission
+     */
     private void setPermSettings(final PermissionIFace permSettings, 
                                  final SpPermission permission)
     {
@@ -212,42 +213,66 @@ public class ObjectPermissionEditorRow implements PermissionEditorRowIFace
 		this.groupPermission = groupPermission;
 	}
 
+	/**
+	 * @return
+	 */
 	public SpPermission getOtherPermission() 
 	{
 		return otherPermission;
 	}
 
+	/**
+	 * @param otherPermission
+	 */
 	public void setOtherPermission(SpPermission otherPermission) 
 	{
 		this.otherPermission = otherPermission;
 	}
 
+	/**
+	 * @return
+	 */
 	public List<SpPermission> getCustomPermissions() 
 	{
 		return customPermissions;
 	}
 
+	/**
+	 * @param permission
+	 */
 	public void addCustomPermission(SpPermission permission)
 	{
 		customPermissions.add(permission);
 	}
 	
+	/**
+	 * @param permission
+	 */
 	public void removeCustomPermission(SpPermission permission)
 	{
 		customPermissions.remove(permission);
 	}
 	
+	/**
+	 * 
+	 */
 	public void clearCustomPermission()
 	{
 		customPermissions.clear();
 	}
 	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	public String toString()
 	{
 		return getTitle();
 	}
 	
-	public void addTableRow(DefaultTableModel model, ImageIcon defaultIcon)
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.subpane.security.PermissionEditorRowIFace#addTableRow(javax.swing.table.DefaultTableModel, javax.swing.ImageIcon)
+	 */
+	public void addTableRow(final DefaultTableModel model, final ImageIcon defaultIcon)
 	{
 		model.addRow(new Object[] 
 		        				{ 
@@ -272,7 +297,23 @@ public class ObjectPermissionEditorRow implements PermissionEditorRowIFace
 		        				}
 		        			);
 	}
-	
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.security.PermissionEditorRowIFace#getOverrideText(int)
+     */
+    @Override
+    public String getOverrideText(int option)
+    {
+        return null;
+    }
+
+    /**
+	 * @param session
+	 * @param model
+	 * @param principal
+	 * @param row
+	 * @throws Exception
+	 */
 	public void savePermissions(final DataProviderSessionIFace session, 
 	                            final DefaultTableModel model,
 	                            final SpPrincipal principal,
@@ -296,6 +337,14 @@ public class ObjectPermissionEditorRow implements PermissionEditorRowIFace
 		//}
 	}
 	
+	/**
+	 * @param session
+	 * @param perm
+	 * @param values
+	 * @param principal
+	 * @param col
+	 * @throws Exception
+	 */
 	private void savePermission(final DataProviderSessionIFace session,
 	                            final SpPermission perm,
 	                            final Boolean[] values,
@@ -366,21 +415,30 @@ public class ObjectPermissionEditorRow implements PermissionEditorRowIFace
         }
     }
     
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
     @Override
     public int compareTo(PermissionEditorRowIFace o)
     {
         return getTitle().compareTo(o.getTitle());
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.security.PermissionEditorRowIFace#isAdminPrincipal()
+     */
+    @Override
     public boolean isAdminPrincipal()
     {
         return adminPrincipal;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.security.PermissionEditorRowIFace#setAdminPrincipal(boolean)
+     */
+    @Override
     public void setAdminPrincipal(boolean adminPrincipal)
     {
         this.adminPrincipal = adminPrincipal;
     }
-	
-	
 }

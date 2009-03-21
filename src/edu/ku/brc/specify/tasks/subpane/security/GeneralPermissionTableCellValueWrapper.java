@@ -32,13 +32,12 @@ public class GeneralPermissionTableCellValueWrapper
     /**
      * Constructor that uses permissions to extract field values.
      */
-    public GeneralPermissionTableCellValueWrapper(
-            final SpPermission permission,
-            final SpPermission overrulingPermission,
-            final String permissionAction,
-            final boolean adminPrincipal)
+    public GeneralPermissionTableCellValueWrapper(final SpPermission permission,
+                                                  final SpPermission overrulingPermission,
+                                                  final String       permissionAction,
+                                                  final boolean      adminPrincipal)
     {
-        this.admin = adminPrincipal;
+        this.admin                 = adminPrincipal;
         this.permissionActionValue = permission.hasAction(permissionAction);
         if (adminPrincipal)
         {
@@ -91,8 +90,7 @@ public class GeneralPermissionTableCellValueWrapper
     /**
      * See comments on property getter
      */
-    public void setOverrulingPermissionActionValue(
-            boolean overrulingPermissionActionValue)
+    public void setOverrulingPermissionActionValue(final boolean overrulingPermissionActionValue)
     {
         this.overrulingPermissionActionValue = overrulingPermissionActionValue;
     }
@@ -109,7 +107,7 @@ public class GeneralPermissionTableCellValueWrapper
     /**
      * See comments on property getter
      */
-    public void setOverrulingPermissionText(String overrulingPermissionText)
+    public void setOverrulingPermissionText(final String overrulingPermissionText)
     {
         this.overrulingPermissionText = overrulingPermissionText;
     }
@@ -118,10 +116,14 @@ public class GeneralPermissionTableCellValueWrapper
      * Indicates whether the current permission is overriden by any other. 
      * @return flag indicating whether the current permission is overriden by any other
      */
-    public boolean isOverriden() {
+    public boolean isOverriden() 
+    {
         return overrulingPermissionActionValue;
     }
 
+    /**
+     * @return
+     */
     public boolean isAdmin()
     {
         return admin;
@@ -132,7 +134,7 @@ public class GeneralPermissionTableCellValueWrapper
      *  
      * @param customCheckbox
      */
-    public void prepareComponent(GeneralPermissionTableCheckBox customCheckbox)
+    public void prepareComponent(final GeneralPermissionTableCheckBox customCheckbox)
     {
         // finally, put itself inside the checkbox
         customCheckbox.setCellValue(this);
@@ -151,7 +153,7 @@ public class GeneralPermissionTableCellValueWrapper
         }
         else
         {
-            customCheckbox.setText("          ");
+            customCheckbox.setText("");
             customCheckbox.setEnabled(true);
         }
     }

@@ -71,6 +71,14 @@ public class ObjectPermissionPanel extends JPanel implements PermissionEditorIFa
     }
 
     /* (non-Javadoc)
+     * @see edu.ku.brc.af.auth.PermissionEditorIFace#setOverrideText(int, java.lang.String, boolean)
+     */
+    @Override
+    public void setOverrideText(int option, String text, final boolean isReadOnly)
+    {
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.af.auth.PermissionEditorIFace#addChangeListener(javax.swing.event.ChangeListener)
      */
     @Override
@@ -96,6 +104,14 @@ public class ObjectPermissionPanel extends JPanel implements PermissionEditorIFa
             list.add(tmpList.get(0));
         }
         return list;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.auth.PermissionEditorIFace#setTitle(java.lang.String)
+     */
+    @Override
+    public void setTitle(String title)
+    {
     }
 
     /* (non-Javadoc)
@@ -166,11 +182,5 @@ public class ObjectPermissionPanel extends JPanel implements PermissionEditorIFa
                 panels[i++].setPermissions(tmpList);
             }
         }
-    }
-    
-    @Override
-    public void setReadOnly(boolean readOnly)
-    {
-        // TODO Auto-generated method stub
     }
 }

@@ -15,8 +15,6 @@
 package edu.ku.brc.af.prefs;
 
 import java.awt.Color;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -24,7 +22,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.prefs.BackingStoreException;
 
@@ -154,7 +151,7 @@ public class AppPreferences
     public static void startup()
     {
         connectedToDB = true;
-        schedulePrefSynching();
+        //schedulePrefSynching();
     }
     
     /**
@@ -791,7 +788,7 @@ public class AppPreferences
     /**
      * Schedules a timer for flushing and saving the Prefs.
      */
-    private static void schedulePrefSynching()
+    /*private static void schedulePrefSynching()
     {
         // Add periodic timer task to periodically sync cached prefs
         if (syncTimer == null)
@@ -808,7 +805,7 @@ public class AppPreferences
                 }
             }, SYNC_INTERVAL*1000, SYNC_INTERVAL*1000);
         }
-    }
+    }*/
 
     //---------------------------------------------------------------------------------------
     //-- The Code below is re-purposed from Sun's Preferences.java
@@ -819,7 +816,7 @@ public class AppPreferences
     /**
      * Sync interval in seconds.
      */
-    @SuppressWarnings("unchecked") //$NON-NLS-1$
+    /*@SuppressWarnings("unchecked") //$NON-NLS-1$
     private static final int SYNC_INTERVAL = Math.max(1,
         Integer.parseInt((String)
             AccessController.doPrivileged(new PrivilegedAction() {
@@ -851,7 +848,7 @@ public class AppPreferences
                 return null;
             }
         });
-    }
+    }*/
 
     /**
      * Saves the prefs

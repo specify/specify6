@@ -9,13 +9,14 @@
  */
 package edu.ku.brc.af.auth;
 
-import static edu.ku.brc.ui.UIHelper.createI18NCheckBox;
+import static edu.ku.brc.ui.UIHelper.*;
 
 import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JCheckBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -39,10 +40,14 @@ import edu.ku.brc.ui.UIRegistry;
 public class BasicPermisionPanel extends JPanel implements PermissionEditorIFace
 {
     protected PermissionIFace permissions = null;
-    protected JCheckBox viewChk;
-    protected JCheckBox addChk;
-    protected JCheckBox modifyChk;
-    protected JCheckBox delChk;
+    protected JCheckBox       viewChk;
+    protected JCheckBox       addChk;
+    protected JCheckBox       modifyChk;
+    protected JCheckBox       delChk;
+    
+    protected JLabel          label = new JLabel();
+    
+    protected String[]        originalLabels = new String[4];
     
     protected boolean hasChanged = false; 
     
@@ -125,14 +130,23 @@ public class BasicPermisionPanel extends JPanel implements PermissionEditorIFace
         numRows += viewKey != null ? 1 : 0;
         numRows++;
         
-        PanelBuilder    pb = new PanelBuilder(new FormLayout("p,f:p:g", UIHelper.createDuplicateJGoodiesDef("p", "4px", numRows)), this);
+        PanelBuilder pb = new PanelBuilder(new FormLayout("p,f:p:g", UIHelper.createDuplicateJGoodiesDef("p", "4px", numRows)), this);
+        
+        originalLabels[0] = viewKey != null ? UIRegistry.getResourceString(viewKey) : null;
+        originalLabels[1] = modKey  != null ? UIRegistry.getResourceString(modKey) : null;
+        originalLabels[2] = addKey  != null ? UIRegistry.getResourceString(addKey) : null;
+        originalLabels[3] = delKey  != null ? UIRegistry.getResourceString(delKey) : null;
         
         int y = 1;
-        pb.addSeparator(UIRegistry.getResourceString(titleKey),   cc.xyw(1, y, 2)); y+= 2;
-        if (viewKey != null) pb.add(viewChk   = createI18NCheckBox(viewKey), cc.xy(1, y)); y += 2;
-        if (modKey != null) pb.add(modifyChk = createI18NCheckBox(modKey),   cc.xy(1, y)); y += 2;
-        if (addKey != null) pb.add(addChk    = createI18NCheckBox(addKey),   cc.xy(1, y)); y += 2;
-        if (delKey != null) pb.add(delChk    = createI18NCheckBox(delKey),   cc.xy(1, y)); y += 2;
+        PanelBuilder sepPB = new PanelBuilder(new FormLayout("p,0px,f:p:g", "p"));
+        sepPB.add(label, cc.xy(1,1));
+        sepPB.addSeparator(" ", cc.xy(3, 1));
+        
+        pb.add(sepPB.getPanel(),   cc.xyw(1, y, 2)); y+= 2;
+        if (viewKey != null) pb.add(viewChk  = createCheckBox(originalLabels[0]), cc.xy(1, y)); y += 2;
+        if (modKey != null) pb.add(modifyChk = createCheckBox(originalLabels[1]),   cc.xy(1, y)); y += 2;
+        if (addKey != null) pb.add(addChk    = createCheckBox(originalLabels[2]),   cc.xy(1, y)); y += 2;
+        if (delKey != null) pb.add(delChk    = createCheckBox(originalLabels[3]),   cc.xy(1, y)); y += 2;
         
         addChangeListener(changeListener);
         
@@ -146,6 +160,60 @@ public class BasicPermisionPanel extends JPanel implements PermissionEditorIFace
         });
     }
     
+    /**
+     * @param title
+     */
+    public void setTitle(final String title)
+    {
+        label.setText(title);
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.auth.PermissionEditorIFace#setOverrideText(int, java.lang.String, boolean)
+     */
+    @Override
+    public void setOverrideText(int option, String text, final boolean isReadOnly)
+    {
+        boolean hasText = text != null;
+        
+        switch (option)
+        {
+            case PermissionSettings.CAN_VIEW :
+                if (viewChk != null) 
+                {
+                    viewChk.setText(originalLabels[0] + (hasText ? " ("+ text +")" : ""));
+                    viewChk.setEnabled(!hasText && !isReadOnly);
+                }
+                break;
+                
+            case PermissionSettings.CAN_MODIFY :
+                if (modifyChk != null)
+                {
+                    modifyChk.setText(originalLabels[1] + (hasText ? " ("+ text +")" : ""));
+                    modifyChk.setEnabled(!hasText && !isReadOnly);
+                }
+                break;
+                
+            case PermissionSettings.CAN_ADD :
+                if (addChk != null) 
+                {
+                    addChk.setText(originalLabels[2] + (hasText ? " ("+ text +")" : ""));
+                    addChk.setEnabled(!hasText && !isReadOnly);
+                }
+                
+                break;
+                
+            case PermissionSettings.CAN_DELETE :
+                if (delChk != null)
+                {
+                    delChk.setText(originalLabels[3] + (hasText ? " ("+ text +")" : ""));
+                    delChk.setEnabled(!hasText && !isReadOnly);
+                }
+                
+                break;
+        }
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.af.auth.PermissionEditorIFace#addChangeListener(javax.swing.event.ChangeListener)
      */
@@ -154,10 +222,10 @@ public class BasicPermisionPanel extends JPanel implements PermissionEditorIFace
     {
         if (changeListener != null)
         {
-            if (viewChk != null) viewChk.addChangeListener(changeListener);
-            if (addChk != null) addChk.addChangeListener(changeListener);
+            if (viewChk != null)   viewChk.addChangeListener(changeListener);
+            if (addChk != null)    addChk.addChangeListener(changeListener);
             if (modifyChk != null) modifyChk.addChangeListener(changeListener);
-            if (delChk != null) delChk.addChangeListener(changeListener);
+            if (delChk != null)    delChk.addChangeListener(changeListener);
         }
     }
 
@@ -211,10 +279,10 @@ public class BasicPermisionPanel extends JPanel implements PermissionEditorIFace
     {
         this.permissions = permissionsArg.get(0);
         
-        if (viewChk != null) viewChk.setSelected(permissions.canView());
-        if (addChk != null) addChk.setSelected(permissions.canAdd());
+        if (viewChk != null)   viewChk.setSelected(permissions.canView());
+        if (addChk != null)    addChk.setSelected(permissions.canAdd());
         if (modifyChk != null) modifyChk.setSelected(permissions.canModify());
-        if (delChk != null) delChk.setSelected(permissions.canDelete());
+        if (delChk != null)    delChk.setSelected(permissions.canDelete());
     }
     
     /* (non-Javadoc)
@@ -233,15 +301,6 @@ public class BasicPermisionPanel extends JPanel implements PermissionEditorIFace
     public void setChanged(boolean changed)
     {
         hasChanged = changed;
-    }
-    
-    @Override
-    public void setReadOnly(boolean readOnly)
-    {
-        if (viewChk != null) viewChk.setEnabled(!readOnly);
-        if (addChk != null) addChk.setEnabled(!readOnly);
-        if (modifyChk != null) modifyChk.setEnabled(!readOnly);
-        if (delChk != null) delChk.setEnabled(!readOnly);
     }
     
 }

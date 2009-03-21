@@ -52,13 +52,16 @@ public interface PermissionEditorIFace
     public abstract void setChanged(boolean changed);
 
     /**
-     * Prevent editing on components in editor if parameter is true.
-     * This method should really be called setEnabled() but isn't to avoid collision with JPanel's 
-     * method with the same name.
-     *  
-     * @param readOnly boolean value indicating whether to make the component read only or not.
+     * @param title
      */
-    public abstract void setReadOnly(boolean readOnly);
+    public abstract void setTitle(String title);
+    
+    /**
+     * @param option the option (view, add, modify, delete)
+     * @param text the order text for it or null
+     * @param readOnly whether the panel is readonly
+     */
+    public abstract void setOverrideText(int option, String text, boolean readOnly);
 
     /**
      * @param l

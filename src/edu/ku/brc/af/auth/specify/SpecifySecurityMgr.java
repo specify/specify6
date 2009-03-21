@@ -137,11 +137,11 @@ public class SpecifySecurityMgr extends SecurityMgr
         } 
         catch (java.lang.ClassNotFoundException e)
         {
+            e.printStackTrace();
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifySecurityMgr.class, e);
             log.error("authenticateDB - Could not connect to database, driverclass - ClassNotFoundException: "); //$NON-NLS-1$
             log.error(e.getMessage());
-            e.printStackTrace();
             throw new LoginException("authenticateDB -  Database driver class not found: " + driverClass); //$NON-NLS-1$
         }
         catch (SQLException ex)

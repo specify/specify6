@@ -26,19 +26,26 @@ public interface PermissionEditorRowIFace extends Comparable<PermissionEditorRow
     /**
      * @return
      */
-    public ImageIcon getIcon();
+    public abstract ImageIcon getIcon();
     
     /**
      * @return
      */
     public abstract String getType();
     
-	/**
-	 * @param model
-	 * @param icon
-	 */
-	public abstract void addTableRow(DefaultTableModel model, ImageIcon icon);
-	
+    /**
+     * @param model
+     * @param icon
+     */
+    public abstract void addTableRow(DefaultTableModel model, ImageIcon icon);
+    
+    
+    /**
+     * @return the override text or null
+     */
+    public abstract String getOverrideText(int option);
+
+    
 	/**
 	 * @return
 	 */

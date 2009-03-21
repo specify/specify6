@@ -142,7 +142,11 @@ public class IndvPanelPermEditor extends JPanel implements PermissionPanelContai
                             editor = basicEditor;
                         }
                         
-                        editor.setReadOnly(readOnly);
+                        for (int i=1;i<9;i *= 2)
+                        {
+                            editor.setOverrideText(i, rowData.getOverrideText(i), readOnly);
+                        }
+                        editor.setTitle(rowData.getTitle());
                         editor.setPermissions(rowData.getPermissions());
                         mainPanel.add(editor.getUIComponent(), BorderLayout.CENTER);
                         mainPanel.invalidate();
@@ -150,7 +154,6 @@ public class IndvPanelPermEditor extends JPanel implements PermissionPanelContai
                         mainPanel.repaint();
                     }
                     prevRowData = rowData;
-                    
                     editor.addChangeListener(listener);
                 }
             }
@@ -270,6 +273,7 @@ public class IndvPanelPermEditor extends JPanel implements PermissionPanelContai
         for (PermissionEditorRowIFace permWrapper : rowDataList) 
         {
             model.addElement(permWrapper);
+            //permWrapper.addListRow(model, permWrapper.getIcon());
         }
     }
     

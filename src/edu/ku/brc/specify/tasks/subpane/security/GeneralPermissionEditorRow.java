@@ -34,6 +34,13 @@ public class GeneralPermissionEditorRow implements PermissionEditorRowIFace
     protected ImageIcon             icon;
     protected PermissionEditorIFace editorPanel;
     protected boolean               adminPrincipal;
+    
+    protected GeneralPermissionTableCellValueWrapper viewWrap = null;
+    protected GeneralPermissionTableCellValueWrapper modWrap  = null;
+    protected GeneralPermissionTableCellValueWrapper delWrap  = null;
+    protected GeneralPermissionTableCellValueWrapper addWrap  = null;
+    
+    
 
     /**
      * @param permission
@@ -45,19 +52,27 @@ public class GeneralPermissionEditorRow implements PermissionEditorRowIFace
      * @param editorPanel
      */
     public GeneralPermissionEditorRow(final SpPermission permission,
-            final SpPermission overrulingPermission, final String type,
-            final String title, final String description, final ImageIcon icon,
-            final PermissionEditorIFace editorPanel,
-            final boolean adminPrincipal)
+                                      final SpPermission overrulingPermission, 
+                                      final String type,
+                                      final String title, 
+                                      final String description, 
+                                      final ImageIcon icon,
+                                      final PermissionEditorIFace editorPanel,
+                                      final boolean adminPrincipal)
     {
-        this.permission = permission;
+        this.permission     = permission;
         this.overrulingPermission = overrulingPermission;
-        this.type = type;
-        this.title = title;
-        this.description = description;
-        this.icon = icon;
-        this.editorPanel = editorPanel;
+        this.type           = type;
+        this.title          = title;
+        this.description    = description;
+        this.icon           = icon;
+        this.editorPanel    = editorPanel;
         this.adminPrincipal = adminPrincipal;
+        
+        viewWrap = new GeneralPermissionTableCellValueWrapper(permission, overrulingPermission, "view", adminPrincipal);
+        addWrap  = new GeneralPermissionTableCellValueWrapper(permission, overrulingPermission, "add", adminPrincipal);
+        modWrap  = new GeneralPermissionTableCellValueWrapper(permission, overrulingPermission, "modify", adminPrincipal);
+        delWrap  = new GeneralPermissionTableCellValueWrapper(permission, overrulingPermission, "delete", adminPrincipal);
     }
 
     /*
@@ -140,11 +155,12 @@ public class GeneralPermissionEditorRow implements PermissionEditorRowIFace
     {
         ArrayList<PermissionIFace> list = new ArrayList<PermissionIFace>(1);
 
+        SpPermission perm = overrulingPermission != null ? overrulingPermission : permission;
         int options = PermissionSettings.NO_PERM;
-        options |= permission.canModify() ? PermissionSettings.CAN_MODIFY : 0;
-        options |= permission.canView() ? PermissionSettings.CAN_VIEW : 0;
-        options |= permission.canAdd() ? PermissionSettings.CAN_ADD : 0;
-        options |= permission.canDelete() ? PermissionSettings.CAN_DELETE : 0;
+        options |= perm.canModify() ? PermissionSettings.CAN_MODIFY : 0;
+        options |= perm.canView() ?   PermissionSettings.CAN_VIEW   : 0;
+        options |= perm.canAdd() ?    PermissionSettings.CAN_ADD    : 0;
+        options |= perm.canDelete() ? PermissionSettings.CAN_DELETE : 0;
         list.add(new PermissionSettings(options));
 
         return list;
@@ -159,8 +175,7 @@ public class GeneralPermissionEditorRow implements PermissionEditorRowIFace
     public void setPermissions(final List<PermissionIFace> permissionSettings)
     {
         PermissionIFace permSettings = permissionSettings.get(0);
-        permission.setActions(permSettings.canView(), permSettings.canAdd(),
-                permSettings.canModify(), permSettings.canDelete());
+        permission.setActions(permSettings.canView(), permSettings.canAdd(), permSettings.canModify(), permSettings.canDelete());
     }
 
     /*
@@ -170,19 +185,28 @@ public class GeneralPermissionEditorRow implements PermissionEditorRowIFace
      *      javax.swing.ImageIcon)
      */
     @Override
-    public void addTableRow(DefaultTableModel model, ImageIcon defaultIcon)
+    public void addTableRow(final DefaultTableModel model, final ImageIcon defaultIcon)
     {
-        model.addRow(new Object[] { 
-                icon != null ? icon : defaultIcon, this,
-                new GeneralPermissionTableCellValueWrapper(permission,
-                        overrulingPermission, "view", adminPrincipal),
-                new GeneralPermissionTableCellValueWrapper(permission,
-                        overrulingPermission, "add", adminPrincipal),
-                new GeneralPermissionTableCellValueWrapper(permission,
-                        overrulingPermission, "modify", adminPrincipal),
-                new GeneralPermissionTableCellValueWrapper(permission,
-                        overrulingPermission, "delete", adminPrincipal)
-        });
+        model.addRow(new Object[] { icon != null ? icon : defaultIcon, this, viewWrap, addWrap, modWrap, delWrap});
+    }
+    
+    /**
+     * @param option
+     * @return
+     */
+    public String getOverrideText(final int option)
+    {
+        switch (option)
+        {
+            case  1 : return viewWrap != null && viewWrap.isOverriden() ? viewWrap.getOverrulingPermissionText() : null;
+                
+            case  2 : return modWrap != null && modWrap.isOverriden() ? modWrap.getOverrulingPermissionText() : null;
+                
+            case  4 : return delWrap != null && delWrap.isOverriden() ? delWrap.getOverrulingPermissionText() : null;
+                
+            case  8 : return addWrap != null && addWrap.isOverriden() ? addWrap.getOverrulingPermissionText() : null;
+        }
+        return null;
     }
 
     /*
@@ -192,7 +216,7 @@ public class GeneralPermissionEditorRow implements PermissionEditorRowIFace
      *      edu.ku.brc.specify.datamodel.SpPermission)
      */
     @Override
-    public void updatePerm(SpPermission oldPerm, SpPermission newPerm)
+    public void updatePerm(final SpPermission oldPerm, final SpPermission newPerm)
     {
         if (oldPerm == permission)
         {
@@ -226,11 +250,17 @@ public class GeneralPermissionEditorRow implements PermissionEditorRowIFace
         return getTitle().compareTo(o.getTitle());
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.security.PermissionEditorRowIFace#isAdminPrincipal()
+     */
     public boolean isAdminPrincipal()
     {
         return adminPrincipal;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.security.PermissionEditorRowIFace#setAdminPrincipal(boolean)
+     */
     public void setAdminPrincipal(boolean adminPrincipal)
     {
         this.adminPrincipal = adminPrincipal;
