@@ -9,6 +9,7 @@ package edu.ku.brc.specify.tasks.subpane.security;
 
 import java.awt.CardLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Hashtable;
@@ -65,7 +66,10 @@ public class PermissionPanelEditor extends JPanel
         cardPanel   = new JPanel(cardLayout);
         
         switcherCBX = new JComboBox(new DefaultComboBoxModel());
-        
+
+        // to let the panel shrink correctly (bug 6409)
+        cardPanel.setPreferredSize(new Dimension(200, 50));
+
         CellConstraints cc = new CellConstraints();
         PanelBuilder topPB = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g", "p"));
         topPB.add(switcherCBX, cc.xy(2, 1));
