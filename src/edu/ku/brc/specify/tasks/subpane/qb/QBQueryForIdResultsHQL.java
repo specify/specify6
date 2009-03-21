@@ -123,18 +123,6 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL
     }
 
     
-//    public synchronized void reportDeleted(final Integer resourceId)
-//    {
-//        for (SearchResultReportServiceInfo repInfo : reports)
-//        {
-//            if (repInfo.getResourceId() != null && repInfo.getResourceId().equals(resourceId))
-//            {
-//                reports.remove(repInfo);
-//                break;
-//            }
-//        }
-//    }
-     
     /**
      * @param repResource
      * @returns true if repResource is currently available from the AppContextMgr.
@@ -419,37 +407,15 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL
 	{
 		return filterDups;
 	}
-    
-	/* (non-Javadoc)
-	 * @see edu.ku.brc.af.core.expresssearch.QueryForIdResultsHQL#buildReports()
+
+	/**
+	 * @return the queryBuilder
 	 */
-//	@Override
-//	public void buildReports()
-//	{
-//		boolean buildEm = true;
-//		if (UIHelper.isSecurityOn())
-//		{
-//			Taskable reportsTask = ContextMgr.getTaskByClass(ReportsTask.class);
-//			if (reportsTask != null)
-//			{
-//				buildEm = reportsTask.getPermissions().canView();
-//			}
-//		}
-//		if (buildEm)
-//		{
-//			super.buildReports();
-//			//add reports associated directly with the results
-//			if (queryBuilder != null)
-//			{
-//				for (SpReport rep : queryBuilder.getReportsForQuery())
-//				{
-//					if (repContextIsActive(rep.getAppResource()))
-//					{
-//						reports.add(new SearchResultReportServiceInfo(rep.getName(), rep.getName(), true, null, rep.getAppResource().getId(), rep.getRepeats()));
-//					}
-//				}
-//			}
-//		}
-//	}
+	public QueryBldrPane getQueryBuilder() 
+	{
+		return queryBuilder;
+	}
+    	
+	
 	
 }

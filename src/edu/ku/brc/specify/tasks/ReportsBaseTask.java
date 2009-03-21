@@ -23,10 +23,12 @@ import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
 import java.io.File;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Vector;
@@ -113,7 +115,6 @@ import edu.ku.brc.util.Pair;
  * @author rods
  *
  */
-@SuppressWarnings("serial")
 public class ReportsBaseTask extends BaseTask
 {
     protected static final Logger log = Logger.getLogger(ReportsBaseTask.class);
@@ -205,10 +206,24 @@ public class ReportsBaseTask extends BaseTask
             if (isVisible)
             {
                 addROCs();
+                Set<Integer> usedIds = new HashSet<Integer>();
                 for (NavBoxItemIFace repItem : reportsList)
                 {
                 	CommandAction cmd = (CommandAction )repItem.getData();
-                	ContextMgr.registerService(new ReportServiceInfo(this, Integer.valueOf((String )cmd.getData())));
+                	Integer tblId =  Integer.valueOf((String )cmd.getData());
+                	if (tblId == -1)
+                	{
+                		if (cmd.getProperties().get("spreport") != null)
+                		{
+                			tblId = (Integer )cmd.getProperties().get("tblcontext");
+                		}
+                	}
+                	if (tblId != -1 && !usedIds.contains(tblId))
+                	{
+                		//XXX no need for ReportServiceInfo class. Use old registerService call
+                		ContextMgr.registerService(new ReportServiceInfo(tblId));
+                		usedIds.add(tblId);
+                	}
                 }
             }
         }
@@ -371,6 +386,11 @@ public class ReportsBaseTask extends BaseTask
                     if (rep.getQuery().getContextTableId() != -1)
                     {
                         tblContext = new Integer(rep.getQuery().getContextTableId());
+                        //XXX tableid property needs to be -1 (I think) for report running routines
+                        //to distinguish SpReports from other reports. So need a duplicate way to know tableid
+                        //This is dumb. Report running code needs to be re-thunk.
+                        cmdAction.getProperties().put("tblcontext", tblContext); 
+                        cmdAction.getProperties().put("queryid", rep.getQuery().getId());
                     }
                     repRS  = new RecordSet();
                     repRS.initialize();
@@ -1273,150 +1293,7 @@ public class ReportsBaseTask extends BaseTask
         NavBoxMgr.getInstance().repaint();
         UIRegistry.forceTopFrameRepaint();
     }
-    
-    protected void updateIReportConfig()
-    {
-        //no need to do anything when using in-house-compiled iReport.jar
-        
-//        Element root = XMLHelper.readDOMFromConfigDir("ireportconfig.xml");
-//        List<?> props = root.selectNodes("/iReportProperties/iReportProperty");
-//        boolean writeIt = true;
-//        for (Object propObj : props)
-//        {
-//            Element prop = (Element)propObj;
-//            if (prop.attributeValue("name").equals("LookAndFeel"))
-//            {
-//                if (prop.getText().equals(UIManager.getLookAndFeel().getID()))
-//                {
-//                    writeIt = false;
-//                }
-//                else
-//                {
-//                    prop.clearContent();
-//                    //List<? extends Object> content = prop.content();
-//                    //content.add(new FlyweightCDATA(UIManager.getLookAndFeel().getID()));
-//                    prop.add(new FlyweightCDATA(UIManager.getLookAndFeel().getID()));
-//                    
-//                }
-//                break;
-//            }
-//        }
-//        if (writeIt)
-//        {
-//            try
-//            {
-//                FileWriter out = new FileWriter(XMLHelper.getConfigDirPath("ireportconfig.xml"));
-//                root.getDocument().write(out);
-//                out.close();
-//            }
-//            catch (IOException ex)
-//            {
-//                throw new RuntimeException(ex);
-//            }
-//        }
-    }
-//    /**
-//     * Open the IReport editor.
-//     * @param cmdAction the command to be processed
-//     */
-//    protected void openIReportEditor(final CommandAction cmdAction) 
-//    {
-//        CommandAction repAction = null;
-//        final AppResourceIFace repRes;
-//        final boolean doNewWiz = cmdAction.getProperty("newwizard") != null ? true : false;
-//        if (cmdAction.isAction(OPEN_EDITOR)) //EditReport was clicked or dropped on
-//        {
-//            Object data = cmdAction.getData();
-//            if (data instanceof CommandAction && ((CommandAction)data).isAction(PRINT_REPORT))
-//            {
-//                repAction = (CommandAction)data;
-//            }
-//            
-//        }
-//        else if (cmdAction.isAction(PRINT_REPORT))//Report was dropped upon
-//        {
-//            repAction = cmdAction;
-//        }
-//        
-//        if (repAction != null)
-//        {
-//            JasperReportsCache.refreshCacheFromDatabase();
-//            repRes = AppContextMgr.getInstance().getResource((String)repAction.getProperty("name")); 
-//        }
-//        else
-//        {
-//            repRes = null;
-//        }
-//        
-//        
-//        Thread appThread = new Thread() {
-//            @Override
-//            public void run() {
-//                try {
-//                    SwingUtilities.invokeAndWait(new Runnable()
-//                    {
-//                        public void run()
-//                        {
-//                            //UIRegistry.getStatusBar().setVisible(true);
-//                            UIRegistry.getStatusBar().setText(
-//                                getResourceString("REP_INITIALIZING_DESIGNER"));
-//                            UIRegistry.getStatusBar().getProgressBar().setIndeterminate(true);
-//                            //UIRegistry.getStatusBar().getProgressBar().setValue(100);
-//                            UIRegistry.getStatusBar().setVisible(true);
-//                            UIRegistry.forceTopFrameRepaint();
-//                        }
-//                    });
-//                }
-//                catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        };
-//        appThread.start();
-//        
-//        
-//        SwingUtilities.invokeLater(new Runnable()
-//        {
-//            public void run()
-//            {
-//                try
-//                {
-//                    if (iReportMainFrame == null)
-//                    {
-//                        
-//                        MainFrame.reportClassLoader.rescanLibDirectory();
-//                        Thread.currentThread().setContextClassLoader(MainFrame.reportClassLoader);
-//                        updateIReportConfig();
-//                        //iReportMainFrame = new MainFrameSpecify(MainFrameSpecify.getDefaultArgs(), true, true);
-//                        iReportMainFrame = new MainFrame(MainFrameSpecify.getDefaultArgs());
-//                    }
-//                    //iReportMainFrame.refreshSpQBConnections();
-//                    if (repRes != null)
-//                    {
-//                      //  iReportMainFrame.openReportFromResource(repRes);
-//                    }
-//                    //iReportMainFrame.setVisible(true);    
-//                    if (doNewWiz)
-//                    {
-//                        //iReportMainFrame.newWizard();
-//                    }
-//                }
-//                catch (Exception e)
-//                {
-//                    e.printStackTrace();
-//                    throw new RuntimeException(e);
-//                }
-//                finally
-//                {
-//                    UIRegistry.getStatusBar().setText("");
-//                    //UIRegistry.getStatusBar().setVisible(false);
-//                    UIRegistry.getStatusBar().setProgressDone(REPORTS);
-//                    UIRegistry.forceTopFrameRepaint();
-//                }
-//            }
-//        });
-//    }
-//        
+           
     /**
      * @param cmd
      * @return a fully-loaded SpReport
@@ -1576,29 +1453,6 @@ public class ReportsBaseTask extends BaseTask
     }
     
     
-    /*private void dumpProps(final Properties props, final int level)
-    {
-        StringBuilder sb = new StringBuilder();
-        for (int i=0;i<level;i++) sb.append(" ");
-        
-        log.debug("--------------------");
-        if (props != null)
-        {
-            for (Object key : props.keySet())
-            {
-                Object val = props.get(key);
-                if (val instanceof Properties)
-                {
-                    dumpProps((Properties)val, level+2);
-                } else
-                {
-                    log.debug(sb.toString()+"["+key+"]\t["+val+"]");
-                }
-                
-            }
-        }
-    }*/
-
 
     /* (non-Javadoc)
      * @see edu.ku.brc.af.tasks.BaseTask#doProcessAppCommands(edu.ku.brc.ui.CommandAction)
@@ -1691,24 +1545,32 @@ public class ReportsBaseTask extends BaseTask
     }
 
     /**
-     * Builds list of reports available for the results.
+     * @param repResource
+     * @returns true if repResource is currently available from the AppContextMgr.
      */
-    protected SortedSet<SearchResultReportServiceInfo> getReports(int tableId)
+    protected boolean repContextIsActive(final AppResourceIFace repResource)
     {
-        //reports.clear();
+        AppResourceIFace match = AppContextMgr.getInstance().getResource(repResource.getName());
+        //XXX - Is it really safe to assume there there won't be more than one resource with the same name and mimeType?
+        return match != null && match.getMimeType().equalsIgnoreCase(repResource.getMimeType());
+    }
+
+    /**
+     * Builds list of reports available for tableid.
+     */
+   protected SortedSet<SearchResultReportServiceInfo> getReports(int tableId, final QueryBldrPane queryBuilder)
+    {
     	SortedSet<SearchResultReportServiceInfo> reports = new TreeSet<SearchResultReportServiceInfo>(
-                    new Comparator<SearchResultReportServiceInfo>()
+                new Comparator<SearchResultReportServiceInfo>()
+                {
+                    public int compare(SearchResultReportServiceInfo o1,
+                                       SearchResultReportServiceInfo o2)
                     {
-                        public int compare(SearchResultReportServiceInfo o1,
-                                           SearchResultReportServiceInfo o2)
-                        {
-                            return o1.getReportName().compareTo(o2.getReportName());
-                        }
+                        return o1.getReportName().compareTo(o2.getReportName());
+                    }
 
-                    });
-       
-
-    	boolean buildEm = true;
+                });
+        boolean buildEm = true;
         if (UIHelper.isSecurityOn())
         {
             Taskable reportsTask = ContextMgr.getTaskByClass(ReportsTask.class);
@@ -1719,6 +1581,18 @@ public class ReportsBaseTask extends BaseTask
         }
         if (buildEm)
         {
+            //first add reports associated directly with the results
+            if (queryBuilder != null)
+            {
+                for (SpReport rep : queryBuilder.getReportsForQuery())
+                {
+                    if (repContextIsActive(rep.getAppResource()))
+                    {
+                        reports.add(new SearchResultReportServiceInfo(rep.getName(), rep.getName(), true, null, rep.getAppResource().getId(), rep.getRepeats()));
+                    }
+                }
+            }
+        
             if (tableId != -1)
             {
                 //second add reports associated with the same table as the current results
@@ -1765,5 +1639,20 @@ public class ReportsBaseTask extends BaseTask
         }
         return reports;
     }
+
+   //XXX might be good to register and un-register services as reports are added/deleted???
+   
+// public synchronized void reportDeleted(final Integer resourceId)
+// {
+//     for (SearchResultReportServiceInfo repInfo : reports)
+//     {
+//         if (repInfo.getResourceId() != null && repInfo.getResourceId().equals(resourceId))
+//         {
+//             reports.remove(repInfo);
+//             break;
+//         }
+//     }
+// }
+  
 
 }

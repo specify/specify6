@@ -66,6 +66,7 @@ import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.db.ERTICaptionInfo;
+import edu.ku.brc.af.ui.db.QueryForIdResultsIFace;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.af.ui.forms.FormHelper;
 import edu.ku.brc.af.ui.forms.MultiView;
@@ -84,13 +85,12 @@ import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
-import edu.ku.brc.specify.tasks.subpane.ESResultsTablePanel;
 import edu.ku.brc.specify.tasks.subpane.SQLQueryPane;
 import edu.ku.brc.specify.tasks.subpane.qb.ERTICaptionInfoQB;
 import edu.ku.brc.specify.tasks.subpane.qb.QBLiveJRDataSource;
+import edu.ku.brc.specify.tasks.subpane.qb.QBQueryForIdResultsHQL;
 import edu.ku.brc.specify.tasks.subpane.qb.QBReportInfoPanel;
 import edu.ku.brc.specify.tasks.subpane.qb.QueryBldrPane;
-import edu.ku.brc.specify.tasks.subpane.qb.SearchResultReportServiceCmdData;
 import edu.ku.brc.specify.tasks.subpane.qb.SearchResultReportServiceInfo;
 import edu.ku.brc.specify.tasks.subpane.qb.TableTree;
 import edu.ku.brc.specify.tasks.subpane.qb.TreeLevelQRI;
@@ -754,7 +754,6 @@ public class QueryTask extends BaseTask
     /**
      * Show a dialog letting them choose from a list of available misc views.   
      */
-    @SuppressWarnings("unchecked")
     protected void showOtherViewsDlg()
     {
         List<SpQuery> queryList = new Vector<SpQuery>();
@@ -1348,8 +1347,10 @@ public class QueryTask extends BaseTask
                SearchResultReportServiceInfo selectedRep = null;
                JTable dataTbl = (JTable )cmdAction.getProperties().get("jtable");
                ResultSetTableModel rsm = (ResultSetTableModel)dataTbl.getModel();
+               QueryForIdResultsIFace results = rsm.getResults();
+               QueryBldrPane qb = results instanceof QBQueryForIdResultsHQL ? ((QBQueryForIdResultsHQL )results).getQueryBuilder() : null;
                int tableId = ((RecordSet )cmdAction.getData()).getDbTableId();
-               List<SearchResultReportServiceInfo> reps = new Vector<SearchResultReportServiceInfo>(((ReportsBaseTask )ContextMgr.getTaskByClass(ReportsTask.class)).getReports(tableId));
+               List<SearchResultReportServiceInfo> reps = new Vector<SearchResultReportServiceInfo>(((ReportsBaseTask )ContextMgr.getTaskByClass(ReportsTask.class)).getReports(tableId, qb));
                if (reps.size() == 0)
                {
                    log.error("no reports for query. Should't have gotten here.");
