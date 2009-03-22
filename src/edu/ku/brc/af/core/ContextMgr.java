@@ -388,6 +388,10 @@ public class ContextMgr implements CommandListener
                 {
                     continue;
                 }
+                if (!srvInfo.isAvailable(tableId))
+                {
+                	continue;
+                }
                 serviceList.add(srvInfo);
             }
         }

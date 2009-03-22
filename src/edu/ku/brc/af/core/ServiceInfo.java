@@ -213,6 +213,14 @@ public class ServiceInfo implements Comparable<ServiceInfo>, Cloneable
         isPermissionOK = null;
     }
 
+    /**
+     * @param tableId
+     * @return true if the (probably generic) service is available for tableId.
+     */
+    public boolean isAvailable(final int tableId)
+    {
+    	return true;
+    }
     //------------------------------------------
     //-- Static Methods
     //------------------------------------------

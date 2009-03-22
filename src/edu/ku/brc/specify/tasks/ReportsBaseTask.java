@@ -23,12 +23,10 @@ import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
 import java.io.File;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Vector;
@@ -206,25 +204,7 @@ public class ReportsBaseTask extends BaseTask
             if (isVisible)
             {
                 addROCs();
-                Set<Integer> usedIds = new HashSet<Integer>();
-                for (NavBoxItemIFace repItem : reportsList)
-                {
-                	CommandAction cmd = (CommandAction )repItem.getData();
-                	Integer tblId =  Integer.valueOf((String )cmd.getData());
-                	if (tblId == -1)
-                	{
-                		if (cmd.getProperties().get("spreport") != null)
-                		{
-                			tblId = (Integer )cmd.getProperties().get("tblcontext");
-                		}
-                	}
-                	if (tblId != -1 && !usedIds.contains(tblId))
-                	{
-                		//XXX no need for ReportServiceInfo class. Use old registerService call
-                		ContextMgr.registerService(new ReportServiceInfo(tblId));
-                		usedIds.add(tblId);
-                	}
-                }
+                ContextMgr.registerService(new ReportServiceInfo());
             }
         }
     }
@@ -576,7 +556,6 @@ public class ReportsBaseTask extends BaseTask
      * @param data the data in a nbi
      * @return a Properties
      */
-    @SuppressWarnings("unchecked")
     protected Properties convertDataToMap(final Object data)
     {
         if (data instanceof Map)
