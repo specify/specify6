@@ -1793,7 +1793,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                                                        SpLocaleContainer.CORE_SCHEMA, 
                                                        DBTableIdMgr.getInstance(),
                                                        "CatalogNumberNumeric",
-                                                       "AccessionStringFormatter");
+                                                       null);
             localSession.save(discipline);
             trans.commit();
 
