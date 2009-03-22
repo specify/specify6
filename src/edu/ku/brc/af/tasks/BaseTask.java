@@ -1531,6 +1531,15 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
         return defPermsHash.get(userType);
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.Taskable#isPermissionsSettable()
+     */
+    @Override
+    public boolean isPermissionsSettable()
+    {
+        return true;
+    }
+
     /**
      * @return
      */

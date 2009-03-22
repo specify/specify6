@@ -6,13 +6,9 @@
  */
 package edu.ku.brc.specify.tasks.subpane.security;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
-
-import org.apache.commons.io.FileUtils;
 
 import com.thoughtworks.xstream.XStream;
 
@@ -57,44 +53,49 @@ public class TaskPermissionEnumerator extends PermissionEnumerator
             {
                 XStream xstream = new XStream();
                 PermissionOptionPersist.config(xstream);
-                try
-                {
+                //try
+                //{
                     Hashtable<String, Hashtable<String, PermissionOptionPersist>> hash = new Hashtable<String, Hashtable<String, PermissionOptionPersist>>();
                     for (Taskable task : TaskMgr.getInstance().getAllTasks())
                     {
-                        String name = task.getName();
-                        //System.out.println("Task: "+name);
-                        
-                        Hashtable<String, PermissionOptionPersist> hashItem = new Hashtable<String, PermissionOptionPersist>();
-                        hash.put(name, hashItem);
-                        int i = 0;
-                        for (SpecifyUserTypes.UserType spUserType : SpecifyUserTypes.UserType.values())
+                        if (task.isPermissionsSettable())
                         {
-                            String          typeName = spUserType.toString();
-                            PermissionIFace perm     = task.getDefaultPermissions(typeName);
-                            if (perm == null)
+                            String name = task.getName();
+                            //System.out.println("Task: "+name);
+                            
+                            Hashtable<String, PermissionOptionPersist> hashItem = new Hashtable<String, PermissionOptionPersist>();
+                            hash.put(name, hashItem);
+                            int i = 0;
+                            for (SpecifyUserTypes.UserType spUserType : SpecifyUserTypes.UserType.values())
                             {
-                                perm = new PermissionSettings(false, false, false, false);
+                                String          typeName = spUserType.toString();
+                                PermissionIFace perm     = task.getDefaultPermissions(typeName);
+                                if (perm == null)
+                                {
+                                    perm = new PermissionSettings(false, false, false, false);
+                                }
+                                hashItem.put(typeName, new PermissionOptionPersist(name, typeName, perm));
+                                i++;
                             }
-                            hashItem.put(typeName, new PermissionOptionPersist(name, typeName, perm));
-                            i++;
                         }
                     }
-                    FileUtils.writeStringToFile(new File("tasks_new.xml"), xstream.toXML(hash)); //$NON-NLS-1$
+                    
+                    //FileUtils.writeStringToFile(new File("tasks_new.xml"), xstream.toXML(hash)); //$NON-NLS-1$
                     //System.out.println(xstream.toXML(config));
                     
-                } catch (IOException ex)
-                {
-                    ex.printStackTrace();
-                }
+                //} catch (IOException ex)
+                //{
+                //    ex.printStackTrace();
+                //}
             }
 
             taskOptions = new ArrayList<SecurityOptionIFace>();
             
             for (Taskable task : TaskMgr.getInstance().getAllTasks())
             {
-                if (!(StatsTrackerTask.class.isAssignableFrom(task.getTaskClass()) ||
-                      StartUpTask.class.isAssignableFrom(task.getTaskClass())))
+                if (task.isPermissionsSettable() &&
+                        (!(StatsTrackerTask.class.isAssignableFrom(task.getTaskClass()) ||
+                          StartUpTask.class.isAssignableFrom(task.getTaskClass()))))
                 {
                     taskOptions.add(task);
                 }

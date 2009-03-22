@@ -501,16 +501,19 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
             if (multiView.getCurrentViewAsFormViewObj() != null)
             {
                 final ResultSetController rsc = multiView.getCurrentViewAsFormViewObj().getRsController();
-                rsc.getNewRecBtn().setEnabled(true);
-                if (rsc.getLength() == 0)
+                if (rsc != null && rsc.getNewRecBtn() != null)
                 {
-                    SwingUtilities.invokeLater(new Runnable() {
-                        @Override
-                        public void run()
-                        {
-                            //rsc.getNewRecBtn().doClick();
-                        }
-                    });
+                    rsc.getNewRecBtn().setEnabled(true);
+                    /*if (rsc.getLength() == 0)
+                    {
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run()
+                            {
+                                //rsc.getNewRecBtn().doClick();
+                            }
+                        });
+                    }*/
                 }
             }
         }

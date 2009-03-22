@@ -176,4 +176,9 @@ public interface Taskable extends SecurityOptionIFace
      */
     public abstract boolean isEnabled();
     
+    /**
+     * @return whether the task should be configurable for Permissions
+     */
+    public abstract boolean isPermissionsSettable();
+    
 }

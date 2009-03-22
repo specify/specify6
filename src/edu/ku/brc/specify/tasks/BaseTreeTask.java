@@ -103,6 +103,9 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
     protected Action treeDefEditAction = null;
     protected Action unlockAction      = null;
     
+    protected static SubPaneIFace starterPaneTree = null;
+
+    
 
 	/**
      * Constructor.
@@ -157,7 +160,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
                 
                 if (UIHelper.isSecurityOn())
                 {
-                    System.out.println(treeTI.getTitle()+ " "+treePerms.toString());
+                    //System.out.println(treeTI.getTitle()+ " "+treePerms.toString());
                     if (treePerms.canView())
                     {
                         treeEditAction = createActionForTreeEditing(treeTI.getTitle(), treePerms.canModify());                        
@@ -176,6 +179,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
                 }
             }
         }
+        isShowDefault = true;
 	}
 	
     /* (non-Javadoc)
@@ -279,14 +283,14 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
     	if (!isOpeningTree) // as oppose to opening the TreeDef
     	{
             PermissionSettings perms = DBTableIdMgr.getInstance().getByShortClassName(treeClass.getSimpleName()).getPermissions();
-            boolean isViewable = perms == null || perms.isViewOnly();
-            boolean isEditable = perms == null || perms.canModify();
+            final boolean isViewable = perms == null || perms.isViewOnly();
+            final boolean isEditable = perms == null || perms.canModify();
             
-            final TaskSemaphoreMgr.USER_ACTION action = TaskSemaphoreMgr.lock(titleArg, treeDefClass.getSimpleName(), "def", TaskSemaphoreMgr.SCOPE.Discipline, true);
+            final TaskSemaphoreMgr.USER_ACTION action = isViewable ? TaskSemaphoreMgr.USER_ACTION.ViewMode : TaskSemaphoreMgr.lock(titleArg, treeDefClass.getSimpleName(), "def", TaskSemaphoreMgr.SCOPE.Discipline, true);
             final boolean isViewMode = action == TaskSemaphoreMgr.USER_ACTION.ViewMode;
             
-            if ((isViewable && action == TaskSemaphoreMgr.USER_ACTION.ViewMode) || 
-                (action == TaskSemaphoreMgr.USER_ACTION.OK && isEditable)) 
+            if ((isViewable && (action == TaskSemaphoreMgr.USER_ACTION.ViewMode || action == TaskSemaphoreMgr.USER_ACTION.OK)) || 
+                (isEditable && action == TaskSemaphoreMgr.USER_ACTION.OK)) 
             {
         		isOpeningTree = true;
     	        SwingWorker bgWorker = new SwingWorker()
@@ -298,7 +302,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
     	            {
     	                UsageTracker.incrUsageCount("TR.OPEN."+treeDefClass.getSimpleName());
     
-    	                treeViewer = createTreeViewer(titleArg, !isViewMode);
+    	                treeViewer = createTreeViewer(titleArg, !isViewMode && isEditable);
     	                if (isViewMode)
     	                {
     	                    treeViewer.setDoUnlock(false);
@@ -650,9 +654,15 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
 	@Override
     public SubPaneIFace getStarterPane()
     {
-        // This starter pane will only be visible for a brief moment while the tree loads.
-        // It doesn't need to be fancy.
-        return starterPane = StartUpTask.createFullImageSplashPanel(getResourceString("BaseTreeTask.Trees"), this);
+	    if (starterPaneTree == null)
+        {
+	        // This starter pane will only be visible for a brief moment while the tree loads.
+	        // It doesn't need to be fancy.
+	        starterPaneTree = StartUpTask.createFullImageSplashPanel(getResourceString("BaseTreeTask.Trees"), this);
+        }
+        
+        return starterPaneTree;
+        
     }
 
 	/* (non-Javadoc)
@@ -781,6 +791,51 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         return Uploader.checkUploadLock(this);
     }
     
+    /**
+     * Adds a SubPane to the Mgr and caches a pointer to it and clear the starterPane data member.
+     * @param subPane the subpane in question
+     */
+    protected SubPaneIFace addSubPaneToMgr(final SubPaneIFace subPane)
+    {
+        if (starterPaneTree != null)
+        {
+            SubPaneMgr.getInstance().replacePane(starterPaneTree, subPane);
+            starterPaneTree = null;
+            
+        } else
+        {
+            SubPaneMgr.getInstance().addPane(subPane);
+        }
+        return subPane;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.Taskable#setStarterPane(edu.ku.brc.af.core.SubPaneIFace)
+     */
+    @Override
+    public void setStarterPane(SubPaneIFace pane)
+    {
+        starterPaneTree = pane;
+    }
+
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.Taskable#isStarterPane()
+     */
+    @Override
+    public boolean isStarterPane()
+    {
+        return starterPaneTree != null;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.Taskable#isPermissionsSettable()
+     */
+    @Override
+    public boolean isPermissionsSettable()
+    {
+        return false;
+    }
     
     /**
      * @return the permissions array

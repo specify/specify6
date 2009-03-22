@@ -686,7 +686,8 @@ public class PermissionService
             return true;
         } catch (SecurityException e)
         {
-            log.warn("runCheckPermssion - Does not have permission" + perm.toString()); //$NON-NLS-1$
+            //log.warn("runCheckPermssion - Does not have permission" + perm.toString()); //$NON-NLS-1$
+            
         } catch (Exception ee)
         {
             log.error("runCheckPermssion - exception caught"); //$NON-NLS-1$

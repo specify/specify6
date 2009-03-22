@@ -23,6 +23,7 @@ import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.SwingUtilities;
 
+import edu.ku.brc.af.auth.PermissionSettings;
 import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
@@ -123,14 +124,18 @@ public class TreeTaskMgr implements CommandListener
         
         for (BaseTreeTask<?,?,?> treeTask : treeTasks)
         {
-            System.err.println(treeTask);
+            //System.err.println(treeTask);
             
             if (treeTask.isTreeOnByDefault())
             {
-                DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(treeTask.getTreeClass().getName());
+                DBTableInfo        treeTI    = DBTableIdMgr.getInstance().getByClassName(treeTask.getTreeClass().getName());
+                DBTableInfo        treeDefTI = DBTableIdMgr.getInstance().getByClassName(treeTask.getTreeDefClass().getName());
                 
-                Action edtTreeAction    = treeTask.getTreeEditAction();
-                Action edtTreeDefAction = treeTask.getTreeDefEditAction();
+                PermissionSettings treePerms    = treeTI.getPermissions();
+                PermissionSettings treeDefPerms = treeDefTI.getPermissions();
+                
+                Action edtTreeAction    = treePerms != null && treePerms.canView() ? treeTask.getTreeEditAction() : null;
+                Action edtTreeDefAction = treeDefPerms != null && treeDefPerms.canModify() ? treeTask.getTreeDefEditAction() : null;
                 Action unlockTreeAction = treeTask.getTreeUnlockAction();
                 
                 Vector<RolloverCommand> rocs = null;
@@ -149,27 +154,25 @@ public class TreeTaskMgr implements CommandListener
                 
                 if (edtTreeAction != null)
                 {
-                    NavBoxItemIFace nb = BaseTask.makeDnDNavBtn(treeNB, ti.getTitle(), treeTask.getTreeClass().getSimpleName(), null, null, null, false, false);
+                    NavBoxItemIFace nb  = BaseTask.makeDnDNavBtn(treeNB, treeTI.getTitle(), treeTask.getTreeClass().getSimpleName(), null, null, null, false, false);
                     RolloverCommand roc = (RolloverCommand)nb;
                     roc.addActionListener(edtTreeAction);
                     roc.setToolTip(getResourceString("TASK.SHRTDESC." + treeTask.getTreeClass().getSimpleName()));
                     treeNB.add(nb);
-                    //rocs.add(roc);
                 }
                 
                 if (edtTreeDefAction != null)
                 {
-                    NavBoxItemIFace nb  = BaseTask.makeDnDNavBtn(treeDefNB, ti.getTitle(), treeTask.getTreeClass().getSimpleName(), null, null, null, false, false);
+                    NavBoxItemIFace nb  = BaseTask.makeDnDNavBtn(treeDefNB, treeTI.getTitle(), treeTask.getTreeClass().getSimpleName(), null, null, null, false, false);
                     RolloverCommand roc = (RolloverCommand)nb;
                     roc.addActionListener(edtTreeDefAction);
                     roc.setToolTip(getResourceString("TASK.SHRTDESC." + treeTask.getTreeDefClass().getSimpleName()));
                     treeDefNB.add(nb);
-                    //rocs.add(roc);
                 }
                 
                 if (unlockTreeAction != null)
                 {
-                    NavBoxItemIFace nb  = BaseTask.makeDnDNavBtn(treeDefNB, ti.getTitle(), treeTask.getTreeClass().getSimpleName(), null, null, null, false, false);
+                    NavBoxItemIFace nb  = BaseTask.makeDnDNavBtn(treeDefNB, treeTI.getTitle(), treeTask.getTreeClass().getSimpleName(), null, null, null, false, false);
                     RolloverCommand roc = (RolloverCommand)nb;
                     roc.addActionListener(unlockTreeAction);
                     roc.setToolTip(getResourceString("TASK.UNLOCK." + treeTask.getTreeClass().getSimpleName()));
