@@ -71,6 +71,8 @@ public abstract class PermissionEnumerator
      * @param principal
      * @param existingPerms
      * @param overrulingPerms
+     * @param userType
+     * @param admin
      */
     protected void checkAndAddPermission(final List<PermissionEditorRowIFace>  perms,
                                          final SecurityOptionIFace             securityOption,
@@ -106,8 +108,7 @@ public abstract class PermissionEnumerator
         
         String desc = UIRegistry.getLocalizedMessage(descKey, securityOption.getShortDesc());
 
-        PermissionEditorIFace editPanel = null;
-        editPanel = securityOption.getPermEditorPanel();
+        PermissionEditorIFace editPanel = securityOption.getPermEditorPanel();
         
         // add newly created permission to the bag that will be returned
         perms.add(new GeneralPermissionEditorRow(perm, oPerm, permBaseName, securityOption.getPermissionTitle(), 

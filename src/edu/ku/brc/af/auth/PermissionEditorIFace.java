@@ -17,6 +17,10 @@ import javax.swing.event.ChangeListener;
 import edu.ku.brc.af.core.PermissionIFace;
 
 /**
+ * A custom editor for a set of permissions. It is used when View/Modify/Delete/Add are used differently
+ * to describe permissions for an object. For example, the Backup tool may use View for enabling 
+ * Backup and Modify for enabling Restore.
+ * 
  * @author rod
  *
  * @code_status Alpha
@@ -55,6 +59,11 @@ public interface PermissionEditorIFace
      * @param title
      */
     public abstract void setTitle(String title);
+    
+    /**
+     * @return an array of table ids that is associated with the object that the editor is representing.
+     */
+    public abstract int[] getAssociatedTableIds();
     
     /**
      * @param option the option (view, add, modify, delete)

@@ -8,7 +8,6 @@
 package edu.ku.brc.specify.tasks.subpane.security;
 
 import java.awt.CardLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -91,12 +90,6 @@ public class PermissionPanelEditor extends JPanel
                 }
             }
         });
-        
-        if (SecurityAdminPane.isDoDebug())
-        {
-            cardPanel.setBackground(Color.CYAN);
-            setBackground(Color.GREEN);
-        }
     }
     
     /* (non-Javadoc)
@@ -179,6 +172,9 @@ public class PermissionPanelEditor extends JPanel
     /**
      * @param principal
      * @param overrulingPrincipal
+     * @param existingPerms
+     * @param overrulingPerms
+     * @param userType
      */
     public void updateData(final SpPrincipal                     principal, 
                            final SpPrincipal                     overrulingPrincipal, 

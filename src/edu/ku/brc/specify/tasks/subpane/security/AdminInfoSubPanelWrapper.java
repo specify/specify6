@@ -104,7 +104,7 @@ public class AdminInfoSubPanelWrapper
         }
         
         Object firstObj = firstWrp.getDataObj();
-        Object secondObj = (secondWrp != null)? secondWrp.getDataObj() : null;
+        Object secondObj = (secondWrp != null) ? secondWrp.getDataObj() : null;
         
         ViewBasedDisplayPanel panel = (ViewBasedDisplayPanel) displayPanel;
         panel.setData(null);

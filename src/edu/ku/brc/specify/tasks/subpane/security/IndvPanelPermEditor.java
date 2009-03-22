@@ -7,6 +7,7 @@
 package edu.ku.brc.specify.tasks.subpane.security;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.util.Collections;
 import java.util.Hashtable;
@@ -20,6 +21,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.SwingConstants;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -36,6 +38,8 @@ import edu.ku.brc.specify.datamodel.SpPermission;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.VerticalSeparator;
 import edu.ku.brc.util.ComparatorByStringRepresentation;
 
 /**
@@ -55,7 +59,11 @@ public class IndvPanelPermEditor extends JPanel implements PermissionPanelContai
     
     protected String                panelName;
     protected PermissionEnumerator  enumerator;
-    protected SpPrincipal           principal;
+    protected SpPrincipal           principal                 = null;
+    protected SpPrincipal           overrulingPrincipal; 
+    protected Hashtable<String, SpPermission> existingPerms;
+    protected Hashtable<String, SpPermission> overrulingPerms;
+    protected String                userType;
     protected ChangeListener        listener;
     protected boolean               readOnly;
     
@@ -69,17 +77,20 @@ public class IndvPanelPermEditor extends JPanel implements PermissionPanelContai
     protected PermissionEditorRowIFace         prevRowData = null;
     protected BasicPermisionPanel              basicEditor = new BasicPermisionPanel();
     
-    
+    protected PermissionEditor                 tableEditor;
+    protected TablePermissionEnumerator        tblEnumerator    = null;
+    protected boolean                          doAddTableEditor = false;
     
     /**
      * @param permissionTable
      * @param enumerator
      */
-    public IndvPanelPermEditor(final String panelName,
+    public IndvPanelPermEditor(final String               panelNameKey,
+                               final String               descKey,
                                final PermissionEnumerator enumerator,
                                final ChangeListener       listener)
     {
-        this(panelName, enumerator, listener, false);
+        this(panelNameKey, descKey, enumerator, listener, false);
     }
 
     /**
@@ -88,18 +99,27 @@ public class IndvPanelPermEditor extends JPanel implements PermissionPanelContai
      * @param listener
      * @param readOnly
      */
-    public IndvPanelPermEditor(final String               panelName,
+    public IndvPanelPermEditor(final String               panelNameKey,
+                               final String               descKey,
                                final PermissionEnumerator enumerator,
                                final ChangeListener       listener, 
                                final boolean              readOnly)
     {
         super(new BorderLayout());
         
-        this.panelName          = panelName;
+        this.panelName          = UIRegistry.getResourceString(panelNameKey);
         this.enumerator         = enumerator;
         this.principal          = null;
         this.listener           = listener;
         this.readOnly           = readOnly;
+        
+        if (doAddTableEditor)
+        {
+            tblEnumerator = new TablePermissionEnumerator();
+            tblEnumerator.setTableIds(new int[] {});
+            tableEditor = new PermissionEditor("SEC_TABLES", tblEnumerator, listener);
+            tableEditor.setVisible(false);
+        }
         
         list = new JList(model);
         JScrollPane sp = UIHelper.createScrollPane(list);
@@ -107,11 +127,20 @@ public class IndvPanelPermEditor extends JPanel implements PermissionPanelContai
         
         mainPanel = new JPanel(new BorderLayout());
         
-        PanelBuilder pb = new PanelBuilder(new FormLayout("p,10px,f:p:g", "f:p:g"), this);
+        PanelBuilder pb = new PanelBuilder(new FormLayout("p,10px,p:g,5px,p,5px,f:p:g", "p,2px,f:p:g"), this);
         CellConstraints cc = new CellConstraints();
         
-        pb.add(sp,        cc.xy(1, 1));
-        pb.add(mainPanel, cc.xy(3, 1));
+        pb.add(UIHelper.createI18NLabel(descKey, SwingConstants.CENTER),  cc.xy(1, 1));
+        pb.add(sp,          cc.xy(1, 3));
+        pb.add(mainPanel,   cc.xywh(3, 1, 1, 3));
+        
+        // This needs a little work for saving and refreshing
+        // I am disabling it for now
+        if (doAddTableEditor)
+        {
+            pb.add(new VerticalSeparator(new Color(224, 224, 224), new Color(124, 124, 124)), cc.xywh(5, 1, 1, 3));
+            pb.add(tableEditor, cc.xy(7, 3));
+        }
         
         //basicEditor.addChangeListener(listener);
         
@@ -148,6 +177,26 @@ public class IndvPanelPermEditor extends JPanel implements PermissionPanelContai
                         }
                         editor.setTitle(rowData.getTitle());
                         editor.setPermissions(rowData.getPermissions());
+                        
+                        if (doAddTableEditor)
+                        {
+                            int[] tableIds = editor.getAssociatedTableIds();
+                            if (tableIds != null && tableIds.length > 0)
+                            {
+                                tblEnumerator.setTableIds(tableIds);
+                                tableEditor.setVisible(true);
+                                
+                                if (tableEditor != null && principal != null)
+                                {
+                                    tableEditor.updateData(principal, overrulingPrincipal, existingPerms, overrulingPerms, userType);
+                                }
+    
+                            } else
+                            {
+                                tableEditor.setVisible(false);
+                            }
+                        }
+                        
                         mainPanel.add(editor.getUIComponent(), BorderLayout.CENTER);
                         mainPanel.invalidate();
                         mainPanel.validate();
@@ -240,17 +289,21 @@ public class IndvPanelPermEditor extends JPanel implements PermissionPanelContai
      */
     @Override
     public void updateData(final SpPrincipal                     principalArg, 
-                           final SpPrincipal                     overrulingPrincipal, 
-                           final Hashtable<String, SpPermission> existingPerms,
-                           final Hashtable<String, SpPermission> overrulingPerms,
-                           final String                          userType)
+                           final SpPrincipal                     overrulingPrincipalArg, 
+                           final Hashtable<String, SpPermission> existingPermsArg,
+                           final Hashtable<String, SpPermission> overrulingPermsArg,
+                           final String                          userTypeArg)
     {
         // save principal used when saving permissions later
-        this.principal = principalArg;
+        this.principal           = principalArg;
+        this.overrulingPrincipal = overrulingPrincipalArg;
+        this.existingPerms       = existingPermsArg;
+        this.overrulingPerms     = overrulingPermsArg;
+        this.userType            = userTypeArg;
         
         rowDataList.clear();
         
-        List<PermissionEditorRowIFace> perms = enumerator.getPermissions(principalArg, existingPerms, overrulingPerms, userType);
+        List<PermissionEditorRowIFace> perms = enumerator.getPermissions(principalArg, existingPermsArg, overrulingPermsArg, userTypeArg);
         Collections.sort(perms, new ComparatorByStringRepresentation<PermissionEditorRowIFace>(true));
         for (PermissionEditorRowIFace perm : perms) 
         {
@@ -274,6 +327,14 @@ public class IndvPanelPermEditor extends JPanel implements PermissionPanelContai
         {
             model.addElement(permWrapper);
             //permWrapper.addListRow(model, permWrapper.getIcon());
+        }
+        
+        if (doAddTableEditor)
+        {
+            if (tableEditor != null && principal != null)
+            {
+                tableEditor.updateData(principal, overrulingPrincipal, existingPerms, overrulingPerms, userType);
+            }
         }
     }
     

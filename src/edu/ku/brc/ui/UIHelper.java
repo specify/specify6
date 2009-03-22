@@ -144,6 +144,7 @@ import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.conversion.CustomDBConverter;
 import edu.ku.brc.specify.conversion.CustomDBConverterDlg;
 import edu.ku.brc.specify.conversion.CustomDBConverterListener;
+import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.dnd.GhostDataAggregatable;
 import edu.ku.brc.util.Triple;
 
@@ -3275,5 +3276,26 @@ public final class UIHelper
         UIHelper.hoverColor = hoverColor;
     }
     
+    /**
+     * @param helpContext
+     * @return
+     */
+    public static JButton getHelpIconButton(final String helpContext)
+    {
+        JButton helpBtn;
+        if (UIHelper.isMacOS())
+        {
+            helpBtn = new JButton("");
+            helpBtn.putClientProperty( "JButton.buttonType", "help" );
+           
+        } else
+        {
+            helpBtn = createButton(IconManager.getIcon("Help"));
+            helpBtn.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
+        }
+        helpBtn.setFocusable(false);
+        HelpMgr.registerComponent(helpBtn, helpContext);
+        return helpBtn;
+    }
     
 }

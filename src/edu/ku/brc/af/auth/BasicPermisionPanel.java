@@ -45,9 +45,10 @@ public class BasicPermisionPanel extends JPanel implements PermissionEditorIFace
     protected JCheckBox       modifyChk;
     protected JCheckBox       delChk;
     
-    protected JLabel          label = new JLabel();
+    protected JLabel          label          = new JLabel();
     
     protected String[]        originalLabels = new String[4];
+    protected int[]           tableIds       = null;
     
     protected boolean hasChanged = false; 
     
@@ -302,5 +303,23 @@ public class BasicPermisionPanel extends JPanel implements PermissionEditorIFace
     {
         hasChanged = changed;
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.auth.PermissionEditorIFace#getAssociatedTableIds()
+     */
+    @Override
+    public int[] getAssociatedTableIds()
+    {
+        return tableIds;
+    }
+
+    /**
+     * @param tableIds the tableIds to set
+     */
+    public void setAssociatedTableIds(int[] tableIds)
+    {
+        this.tableIds = tableIds;
+    }
+    
     
 }

@@ -183,4 +183,13 @@ public class ObjectPermissionPanel extends JPanel implements PermissionEditorIFa
             }
         }
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.auth.PermissionEditorIFace#getAssociatedTableIds()
+     */
+    @Override
+    public int[] getAssociatedTableIds()
+    {
+        return null;
+    }
 }

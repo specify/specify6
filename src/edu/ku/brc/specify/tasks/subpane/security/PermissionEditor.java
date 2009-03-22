@@ -84,11 +84,11 @@ public class PermissionEditor extends JPanel implements PermissionPanelContainer
      * @param enumerator
      * @param listener
      */
-    public PermissionEditor(final String panelName,
+    public PermissionEditor(final String panelNameKey,
                             final PermissionEnumerator enumerator,
                             final ChangeListener       listener)
     {
-        this(panelName, enumerator, listener, false, 
+        this(panelNameKey, enumerator, listener, false, 
              "SEC_NAME_TITLE", "SEC_VIEW_TITLE", "SEC_ADD_TITLE", "SEC_MOD_TITLE", "SEC_DEL_TITLE");
     }
 
@@ -98,12 +98,12 @@ public class PermissionEditor extends JPanel implements PermissionPanelContainer
      * @param listener
      * @param readOnly
      */
-    public PermissionEditor(final String panelName,
+    public PermissionEditor(final String panelNameKey,
                             final PermissionEnumerator enumerator,
                             final ChangeListener       listener,
                             final boolean              readOnly)
     {
-        this(panelName, enumerator, listener, readOnly, 
+        this(panelNameKey, enumerator, listener, readOnly, 
              "SEC_NAME_TITLE", "SEC_VIEW_TITLE", "SEC_ADD_TITLE", "SEC_MOD_TITLE", "SEC_DEL_TITLE");
     }
 
@@ -118,7 +118,7 @@ public class PermissionEditor extends JPanel implements PermissionPanelContainer
 	 * @param modKey
 	 * @param delKey
 	 */
-	public PermissionEditor(final String               panelName,
+	public PermissionEditor(final String               panelNameKey,
                             final PermissionEnumerator enumerator,
                             final ChangeListener       listener, 
 	                        final boolean              readOnly,
@@ -136,7 +136,7 @@ public class PermissionEditor extends JPanel implements PermissionPanelContainer
 	    modColTitle  = modKey  != null ? getResourceString(modKey) : null;
 	    delColTitle  = delKey  != null ? getResourceString(delKey) : null;
 
-        this.panelName  = panelName;
+        this.panelName  = getResourceString(panelNameKey);
         this.table      = new JTable(new DefaultTableModel());
 		this.enumerator = enumerator;
 		this.principal 	= null;
@@ -298,11 +298,11 @@ public class PermissionEditor extends JPanel implements PermissionPanelContainer
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.af.auth.PermissionPanelContainerIFace#updateData(edu.ku.brc.specify.datamodel.SpPrincipal, edu.ku.brc.specify.datamodel.SpPrincipal, java.util.Hashtable, java.util.Hashtable, java.lang.String)
 	 */
-	public void updateData(final SpPrincipal principalArg, 
-                           final SpPrincipal overrulingPrincipalArg, 
+	public void updateData(final SpPrincipal       principalArg, 
+                           final SpPrincipal       overrulingPrincipalArg, 
                            final Hashtable<String, SpPermission> existingPerms,
                            final Hashtable<String, SpPermission> overrulingPerms,
-                           final String     userType)
+                           final String            userType)
 	{
 		// save principal used when saving permissions later
 		this.principal = principalArg;

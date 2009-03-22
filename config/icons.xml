@@ -17,6 +17,7 @@
     <icon name="SpBuilder"        file="spbuilder.png" sizes="NonStd"/>
     <icon name="SpecifyWhite32"   file="specify32White.png" sizes="32"/>
     
+    <icon name="Help"             file="win_help.png" sizes="16"/>
     <icon name="Save"             file="Save32x32.png" sizes="all"/>
     <icon name="Import16"         file="ImportData16x16.png" sizes="16"/>
     <icon name="ImportImages"     file="ImportImages16x16.png" sizes="16"/>

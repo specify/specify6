@@ -34,25 +34,61 @@ import edu.ku.brc.specify.tasks.PermissionOptionPersist;
  * Aug 15, 2008
  *
  */
-public class DataObjPermissionEnumerator extends PermissionEnumerator 
+public class TablePermissionEnumerator extends PermissionEnumerator 
 {
-    protected List<SecurityOptionIFace> tableOptions = null;
+    protected List<SecurityOptionIFace>   tableOptions = null;
+    protected Hashtable<Integer, Boolean> tableIdHash  = null;
     
-	/**
+    /**
      * 
      */
-    public DataObjPermissionEnumerator()
+    public TablePermissionEnumerator()
     {
         super("DO", "ADMININFO_DESC");
     }
     
     /**
-     * @param tblInfo
-     * @return
+     * @param tableIds the int array of ids
+     */
+    public TablePermissionEnumerator(final int[] tableIds)
+    {
+        this();
+        
+        setTableIds(tableIds);
+    }
+    
+    /**
+     * Sets the usable Table Ids into the enumerator.
+     * @param tableIds the int array of ids
+     */
+    public void setTableIds(final int[] tableIds)
+    {
+        if (tableIdHash == null)
+        {
+            tableIdHash = new Hashtable<Integer, Boolean>();
+        } else
+        {
+            tableIdHash.clear();
+        }
+        
+        for (int id : tableIds)
+        {
+            tableIdHash.put(id, true);
+        }
+        if (tableOptions != null)
+        {
+            tableOptions.clear();
+        }
+        tableOptions = null;
+    }
+    
+    /**
+     * @param tblInfo the table info
+     * @return true if table is ok
      */
     protected boolean isTableOK(final DBTableInfo tblInfo)
     {
-        if (tblInfo.getTableId() < 500)
+        if (tblInfo.getTableId() < 500 && (tableIdHash == null || tableIdHash.get(tblInfo.getTableId()) != null))
         {
             String shortName = tblInfo.getShortClassName();
             if ((!shortName.startsWith("Workbench") || shortName.equals("Workbench")) &&

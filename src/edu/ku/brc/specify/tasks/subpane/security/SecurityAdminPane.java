@@ -17,7 +17,6 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collections;
@@ -38,7 +37,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
@@ -57,7 +55,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.debug.FormDebugPanel;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
@@ -97,8 +94,6 @@ public class SecurityAdminPane extends BaseSubPane
     @SuppressWarnings("unused")
     private static final Logger log = Logger.getLogger(SecurityAdminPane.class);
 
-    private static boolean doDebug = false;
-    
     private JTree                                       tree;
     private JPanel                                      infoCards;
     private Set<SpecifyUser>                            spUsers;
@@ -151,41 +146,21 @@ public class SecurityAdminPane extends BaseSubPane
         setLayout(new BorderLayout());
         
         JPanel securityAdminPanel = new JPanel();
-        //JPanel securityAdminPanel = new FormDebugPanel();
         
-        final PanelBuilder mainPB = new PanelBuilder(new FormLayout(
+        PanelBuilder mainPB = new PanelBuilder(new FormLayout(
                 "3dlu,p,4px,3dlu,4px,f:p:g,3dlu",
                 "3dlu,f:p:g,3dlu,p,3dlu,p,3dlu"), 
                 securityAdminPanel);
-        final CellConstraints cc = new CellConstraints();
         
+        CellConstraints cc = new CellConstraints();
 
-        if (SecurityAdminPane.isDoDebug())
-        {
-            mainPB.add(createScrollPane(createNavigationPanel()),  cc.xy(2, 2));
-            mainPB.add(new VerticalSeparator(new Color(224, 224, 224), new Color(124, 124, 124)),  cc.xy(4, 2));
-            mainPB.add(createScrollPane(createInformationPanel()), cc.xy(6, 2));
-        } else
-        {
-            mainPB.add(createNavigationPanel(),  cc.xy(2, 2));
-            mainPB.add(new VerticalSeparator(new Color(224, 224, 224), new Color(124, 124, 124)),  cc.xy(4, 2));
-            mainPB.add(createInformationPanel(), cc.xy(6, 2));
-        }
+        mainPB.add(createNavigationPanel(),  cc.xy(2, 2));
+        mainPB.add(new VerticalSeparator(new Color(224, 224, 224), new Color(124, 124, 124)),  cc.xy(4, 2));
+        mainPB.add(createInformationPanel(), cc.xy(6, 2));
+        
         updateUIEnabled(null);
         
-        if (SecurityAdminPane.isDoDebug())
-        {
-            mainPB.getPanel().setBackground(Color.RED);
-            setBackground(Color.ORANGE);
-        }
-        
-        if (isDoDebug())
-        {
-            this.add(createScrollPane(securityAdminPanel), BorderLayout.CENTER);
-        } else
-        {
-            this.add(securityAdminPanel, BorderLayout.CENTER);
-        }
+        this.add(createScrollPane(securityAdminPanel), BorderLayout.CENTER);
         
         return securityAdminPanel;
     }
@@ -197,41 +172,12 @@ public class SecurityAdminPane extends BaseSubPane
     private JPanel createNavigationPanel()
     {
         JPanel navigationPanel = new JPanel();
-        //JPanel navigationPanel = new FormDebugPanel();
         final PanelBuilder mainPB = new PanelBuilder(new FormLayout(
-                "min(210px;p):g", "p,3dlu,p,3dlu,f:p:g,p,15px,p,p,p,5px,p"), navigationPanel);
+                "f:p:g", "p,3dlu,p,3dlu,f:p:g,3dlu,p,3dlu,p,3dlu,p,3dlu,p"), navigationPanel);
         final CellConstraints cc = new CellConstraints();
 
         JPanel navTreePanel = createFullTreeNavPanel(); // navigation jTree gets created here 
-        navTreePanel.setMinimumSize(new Dimension(200, 200));
 
-        // Other components that were added to the tree panel are now created here
-        // It's better to include the scrollpane with the navigation JTree in a separate palen
-        // to let it shrink correctly (bug 6409)
-
-        String helpStr = getResourceString("ADD_USER_HINT");
-        JLabel userDnDHelp = createLabel(helpStr);
-        
-        final PanelBuilder tbRightPB = new PanelBuilder(new FormLayout("f:p:g,p", "p"));
-        mainPB.add(tbRightPB.getPanel(),         cc.xy(1, 6));
-        
-        int y = 1;
-        PanelBuilder lpb = new PanelBuilder(new FormLayout("p,10px,p:g", "p,2px,p,2px,p,2px,p,2px,p,2px"));
-        lpb.addSeparator(getResourceString("SEC_LGND"), cc.xyw(1, y, 3)); y += 2;
-        
-        Discipline discipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
-        String[] lbl = {"SEC_DSP",            "SEC_COLL",   "SEC_ADMINGRP", "SEC_PERSON"};
-        String[] icn = {discipline.getType(), "Collection", "AdminGroup",   "person"};
-        for (int i=0;i<lbl.length;i++)
-        {
-            lpb.add(createLabel("", IconManager.getIcon(icn[i], IconManager.STD_ICON_SIZE)), cc.xy(1,y));
-            lpb.add(createI18NLabel(lbl[i]), cc.xy(3,y)); y+= 2;
-        }
-        
-        mainPB.add(userDnDHelp,               cc.xy(1, 10));
-        mainPB.add(lpb.getPanel(),            cc.xy(1, 12));
-        
-        
         DocumentListener searchDL = new DocumentAdaptor()
         {
             @Override
@@ -360,6 +306,9 @@ public class SecurityAdminPane extends BaseSubPane
         //expandAll(tree, true);
     }
 
+    /**
+     * @return
+     */
     private boolean formHasChanged()
     {
         // check if there are unsaved data to save
@@ -536,16 +485,40 @@ public class SecurityAdminPane extends BaseSubPane
     private JPanel createFullTreeNavPanel()
     {
         createNavigationTree();
+        //JList userList = createUserList();
+        
+        String helpStr = getResourceString("ADD_USER_HINT");
+        JLabel userDnDHelp = createLabel(helpStr);
         
         // adding the tree as f:p:g makes it grow too large
         final PanelBuilder mainPB = new PanelBuilder(new FormLayout("min(210px;p):g", 
-                                                                    "f:p:g")/*, new FormDebugPanel()*/);
+                                                                    "min(500px;p),p,15px,p,p,p,5px,p")/*, new FormDebugPanel()*/);
         final CellConstraints cc = new CellConstraints();
 
-        // to let the panel shrink correctly (bug 6409)
-        JScrollPane sp = createScrollPane(tree, true);
-        sp.setPreferredSize(new Dimension(200, 50));
-        mainPB.add(sp, cc.xy(1, 1));
+        final PanelBuilder tbRightPB = new PanelBuilder(new FormLayout("f:p:g,p", "p"));
+        
+        mainPB.add(createScrollPane(tree, true), cc.xy(1, 1));
+        mainPB.add(tbRightPB.getPanel(),         cc.xy(1, 2));
+        
+//        mainPB.addSeparator("Users",          cc.xy(1, 4)); // I18N
+//        
+//        sp = new JScrollPane(userList, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+//        mainPB.add(sp,                        cc.xy(1, 5));
+        int y = 1;
+        PanelBuilder lpb = new PanelBuilder(new FormLayout("p,10px,p:g", "p,2px,p,2px,p,2px,p,2px,p,2px"));
+        lpb.addSeparator(getResourceString("SEC_LGND"), cc.xyw(1, y, 3)); y += 2;
+        
+        Discipline discipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
+        String[] lbl = {"SEC_DSP",            "SEC_COLL",   "SEC_ADMINGRP", "SEC_PERSON"};
+        String[] icn = {discipline.getType(), "Collection", "AdminGroup",   "person"};
+        for (int i=0;i<lbl.length;i++)
+        {
+            lpb.add(createLabel("", IconManager.getIcon(icn[i], IconManager.STD_ICON_SIZE)), cc.xy(1,y));
+            lpb.add(createI18NLabel(lbl[i]), cc.xy(3,y)); y+= 2;
+        }
+        
+        mainPB.add(userDnDHelp,               cc.xy(1, 6));
+        mainPB.add(lpb.getPanel(),            cc.xy(1, 8));
 
         return mainPB.getPanel();
     }
@@ -840,27 +813,27 @@ public class SecurityAdminPane extends BaseSubPane
         final EditorPanel     infoPanel = new EditorPanel(this);
         final CellConstraints cc        = new CellConstraints();
 
-        PermissionEditor prefsEdt = new PermissionEditor("Preferences",  new PrefsPermissionEnumerator(), infoPanel,
+        PermissionEditor prefsEdt = new PermissionEditor("SEC_PREFS",  new PrefsPermissionEnumerator(), infoPanel,
                                                          false, "SEC_NAME_TITLE", "SEC_ENABLE_PREF", null, null, null);
         
         JButton selectAllBtn   = createI18NButton("SELECTALL");
         JButton deselectAllBtn = createI18NButton("DESELECTALL");
 
         final PermissionPanelEditor generalEditor = new PermissionPanelEditor(selectAllBtn, deselectAllBtn);
-        generalEditor.addPanel(new PermissionEditor("Data Objects", new DataObjPermissionEnumerator(), infoPanel));
-        generalEditor.addPanel(new IndvPanelPermEditor("Tasks",     new TaskPermissionEnumerator(),    infoPanel));
+        generalEditor.addPanel(new IndvPanelPermEditor("SEC_TOOLS", "SEC_TOOLS_DSC", new TaskPermissionEnumerator(), infoPanel));
+        generalEditor.addPanel(new PermissionEditor("SEC_TABLES",   new TablePermissionEnumerator(), infoPanel));
         generalEditor.addPanel(prefsEdt);
         
         final PermissionPanelEditor objEditor = new PermissionPanelEditor(selectAllBtn, deselectAllBtn);
-        objEditor.addPanel(new IndvPanelPermEditor("Data Objects", new ObjectPermissionEnumerator(), infoPanel));
+        objEditor.addPanel(new IndvPanelPermEditor("SEC_DOS", "SEC_DOS_DSC", new ObjectPermissionEnumerator(), infoPanel));
         
         // create user form
         ViewBasedDisplayPanel panel = createViewBasedDisplayPanelForUser(infoPanel);
         
         // create tabbed panel for different kinds of permission editing tables
         final JTabbedPane tabbedPane = new JTabbedPane();
-        tabbedPane.addTab("General", generalEditor); // I18N
-        tabbedPane.addTab("Objects", objEditor);     // I18N
+        tabbedPane.addTab(getResourceString("SEC_GENERAL"), generalEditor); // I18N
+        //tabbedPane.addTab("Objects", objEditor);     // I18N
         
         final PanelBuilder mainPB = new PanelBuilder(new FormLayout("f:p:g", "t:p,4px,p,5px,f:p:g,2dlu,p"), infoPanel);
         
@@ -881,24 +854,10 @@ public class SecurityAdminPane extends BaseSubPane
         saveBtnPB.add(valBtn,         cc.xy(6, 1)); 
         saveBtnPB.add(infoPanel.getSaveBtn(), cc.xy(8, 1));
         
-        if (SecurityAdminPane.isDoDebug())
-        {
-            saveBtnPB.getPanel().setBackground(Color.RED);
-            infoPanel.setBackground(Color.ORANGE);
-            panel.setBackground(Color.BLUE);
-            setBackground(new Color(200,100,50));
-        }
-        
         mainPB.add(saveBtnPB.getPanel(), cc.xy(1, y)); y += 2;
         
         String className = SpecifyUser.class.getCanonicalName();
-        if (isDoDebug())
-        {
-            infoCards.add(createScrollPane(infoPanel), className);
-        } else
-        {
-            infoCards.add(infoPanel, className);
-        }
+        infoCards.add(infoPanel, className);
         
         AdminInfoSubPanelWrapper subPanel = new AdminInfoSubPanelWrapper(panel);
         
@@ -936,9 +895,9 @@ public class SecurityAdminPane extends BaseSubPane
         JButton deselectAllBtn = createI18NButton("DESELECTALL");
 
         final PermissionPanelEditor generalEditor = new PermissionPanelEditor(selectAllBtn, deselectAllBtn);
-        generalEditor.addPanel(new PermissionEditor("Data Objects", new DataObjPermissionEnumerator(), infoPanel)); // I18N
-        generalEditor.addPanel(new IndvPanelPermEditor("Tasks",     new TaskPermissionEnumerator(),    infoPanel));
-        generalEditor.addPanel(new PermissionEditor("Preferences",  new PrefsPermissionEnumerator(),   infoPanel));
+        generalEditor.addPanel(new IndvPanelPermEditor("SEC_TOOLS", "SEC_TOOLS_DSC", new TaskPermissionEnumerator(), infoPanel));
+        generalEditor.addPanel(new PermissionEditor("SEC_TABLES", new TablePermissionEnumerator(), infoPanel)); // I18N
+        generalEditor.addPanel(new PermissionEditor("SEC_PREFS", new PrefsPermissionEnumerator(),   infoPanel));
         
         // create user form
         ViewBasedDisplayPanel panel = createViewBasedDisplayPanelForGroup(infoPanel);
@@ -948,7 +907,7 @@ public class SecurityAdminPane extends BaseSubPane
         // lay out controls on panel
         int y = 1;
         mainPB.add(panel,                  cc.xy(1, y)); y += 2;
-        mainPB.addSeparator("Permissions", cc.xy(1, y)); y += 2; // I18N
+        mainPB.addSeparator(getResourceString("SEC_PERMS"), cc.xy(1, y)); y += 2;
         mainPB.add(generalEditor,          cc.xy(1, y)); y += 2;
 
         PanelBuilder saveBtnPB = new PanelBuilder(new FormLayout("f:p:g,p,2px,p,2px,p,2px,p", "p"));
@@ -971,11 +930,6 @@ public class SecurityAdminPane extends BaseSubPane
         subPanel.addPermissionEditor(generalEditor);
         infoSubPanels.put(className, subPanel);
         editorPanels.put(className, infoPanel);
-        
-        if (SecurityAdminPane.isDoDebug())
-        {
-            infoPanel.setBackground(Color.PINK);
-        }
         
         selectAllBtn.addActionListener(new ActionListener() {
             @Override
@@ -1121,15 +1075,6 @@ public class SecurityAdminPane extends BaseSubPane
         return result;
     }
 
-
-    /**
-     * @return the doDebug
-     */
-    public static boolean isDoDebug()
-    {
-        return doDebug;
-    }
-    
     //--------------------------------------------------------------------
     private class MyTreeCellRenderer extends DefaultTreeCellRenderer
     {

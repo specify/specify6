@@ -39,12 +39,10 @@ public interface PermissionEditorRowIFace extends Comparable<PermissionEditorRow
      */
     public abstract void addTableRow(DefaultTableModel model, ImageIcon icon);
     
-    
     /**
      * @return the override text or null
      */
     public abstract String getOverrideText(int option);
-
     
 	/**
 	 * @return
@@ -72,7 +70,7 @@ public interface PermissionEditorRowIFace extends Comparable<PermissionEditorRow
 	public abstract void setPermissions(List<PermissionIFace> permSettings);
 	
 	/**
-	 * @param session
+	 * @return the list of permission objects
 	 */
 	public abstract List<SpPermission> getPermissionList();
 	

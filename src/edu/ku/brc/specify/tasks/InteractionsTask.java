@@ -44,6 +44,8 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import com.thoughtworks.xstream.XStream;
 
+import edu.ku.brc.af.auth.BasicPermisionPanel;
+import edu.ku.brc.af.auth.PermissionEditorIFace;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.af.core.ContextMgr;
@@ -2241,6 +2243,17 @@ public class InteractionsTask extends BaseTask
         return Uploader.checkUploadLock(this);
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#getPermEditorPanel()
+     */
+    @Override
+    public PermissionEditorIFace getPermEditorPanel()
+    {
+        BasicPermisionPanel editor = new BasicPermisionPanel();
+        editor.setAssociatedTableIds(new int[] {52});
+        return editor;
+    }
+
     /**
      * @return the permissions array
      */

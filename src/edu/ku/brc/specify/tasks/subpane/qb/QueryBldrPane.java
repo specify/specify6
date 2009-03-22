@@ -107,7 +107,6 @@ import edu.ku.brc.specify.tasks.QueryTask;
 import edu.ku.brc.specify.tasks.ReportsBaseTask;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
 import edu.ku.brc.specify.tasks.subpane.JasperCompilerRunnable;
-import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
@@ -501,8 +500,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         outer.add(saveBtn, cc.xy(9, 1));
         JPanel bottom = new JPanel(new BorderLayout());
         bottom.add(outer.getPanel(), BorderLayout.EAST);
-        JButton helpBtn = createButton(UIRegistry.getResourceString("HELP"));
-        HelpMgr.registerComponent(helpBtn, "QB");
+        
+        JButton helpBtn = UIHelper.getHelpIconButton("QB");
         bottom.add(helpBtn, BorderLayout.WEST);
         add(bottom, BorderLayout.SOUTH);
 
