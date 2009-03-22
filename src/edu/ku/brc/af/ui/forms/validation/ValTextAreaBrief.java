@@ -211,7 +211,7 @@ public class ValTextAreaBrief extends ValTextArea
         dlg.pack();
         
         dlg.setVisible(true);
-        if (!dlg.isCancelled())
+        if (!dlg.isCancelled() && isEditting)
         {
             setText(ta.getText());
         }
