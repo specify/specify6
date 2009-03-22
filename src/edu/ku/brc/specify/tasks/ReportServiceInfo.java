@@ -12,7 +12,6 @@ import edu.ku.brc.ui.UIRegistry;
  * @author timbo
  *
  */
-//XXX Turns out this class is unnecessary. Dump It.
 public class ReportServiceInfo extends ServiceInfo 
 {
     public ReportServiceInfo()
