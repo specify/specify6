@@ -4324,9 +4324,25 @@ public class FormViewObj implements Viewable,
      */
     private void ensurePermissions()
     {
+        // Make sure we get the right class name, the dataObj is sometimes a "Set<?>"
         if (perm == null)
         {
-            perm = SecurityMgr.getInstance().getPermission("DO."+dataObj.getClass().getSimpleName());
+            Class<?> cls;
+            if (classToCreate == null)
+            {
+                try
+                {
+                    cls = Class.forName(view.getClassName());
+                } catch (Exception ex) 
+                {
+                    cls = dataObj.getClass();
+                }
+                
+            } else
+            {
+                cls = classToCreate;
+            }
+            perm = SecurityMgr.getInstance().getPermission("DO."+cls.getSimpleName().toLowerCase());
         }
     }
 
