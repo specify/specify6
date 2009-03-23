@@ -410,6 +410,11 @@ public class UIRegistry
         try 
         {
             //log.error("["+key+"]["+resourceBundle.getString(key)+"]");
+            if (StringUtils.isEmpty(key))
+            {
+                log.warn("The key was null/empty for localization");
+                return "";
+            }
             return resourceBundle.getString(key);
             
         } catch (MissingResourceException ex) 
