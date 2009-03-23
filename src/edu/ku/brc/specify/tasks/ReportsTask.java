@@ -89,7 +89,7 @@ public class ReportsTask extends ReportsBaseTask
                 new CommandAction(REPORTS, RUN_REPORT, SpReport.getClassTableId()), null, false, false);// true means make it draggable
         roc.addDropDataFlavor(runReportFlavor);
         
-//        if (!UIHelper.isSecurityOn() || getPermissions().canAdd())
+//        if (!AppContextMgr.isSecurityOn() || getPermissions().canAdd())
 //        {
 //            actionNavBox.add(NavBox.createBtnWithTT(getResourceString("ImportReport"), name,
 //                getResourceString("IMPORT_REPORT_TT"), IconManager.STD_ICON_SIZE,
@@ -115,7 +115,7 @@ public class ReportsTask extends ReportsBaseTask
 //                }));
 //        }
         
-        if (!UIHelper.isSecurityOn() || getPermissions().canModify() || getPermissions().canAdd())
+        if (!AppContextMgr.isSecurityOn() || getPermissions().canModify() || getPermissions().canAdd())
         {
             actionNavBox.add(NavBox.createBtnWithTT(getResourceString("RefreshReports"), "Reload",
                 getResourceString("REFRESH_REPORT_TT"), IconManager.STD_ICON_SIZE,

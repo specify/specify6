@@ -677,7 +677,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
      */
     protected boolean userCanUpdateTree()
     {
-        if (!UIHelper.isSecurityOn())
+        if (!AppContextMgr.isSecurityOn())
         {
             return true;
         }

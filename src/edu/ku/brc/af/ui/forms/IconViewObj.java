@@ -42,6 +42,7 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.auth.PermissionSettings;
 import edu.ku.brc.af.auth.SecurityMgr;
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
@@ -698,7 +699,7 @@ public class IconViewObj implements Viewable
     @SuppressWarnings("unchecked")
     public void setDataObj(Object dataObj)
     {
-        if (UIHelper.isSecurityOn() && dataObj != null)
+        if (AppContextMgr.isSecurityOn() && dataObj != null)
         {
             if (perm == null)
             {

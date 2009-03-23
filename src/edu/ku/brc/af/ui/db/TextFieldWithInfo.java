@@ -41,6 +41,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.auth.PermissionSettings;
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPreferences;
@@ -246,7 +247,7 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
     private void updateEnabled(final boolean enabled)
     {
         boolean isSecurityEnabledForBtn = true;
-        if (enabled && UIHelper.isSecurityOn())
+        if (enabled && AppContextMgr.isSecurityOn())
         {
             DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByShortClassName(classObj.getSimpleName());
             if (tblInfo != null)

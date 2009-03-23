@@ -28,6 +28,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.auth.PermissionSettings;
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPrefsCache;
@@ -155,7 +156,7 @@ public class CollectingEventDataObjFmt implements DataObjDataFieldFormatIFace, C
             return "The Collecting Event is empty."; // I18N
         }
         
-        boolean isSecurityOn = UIHelper.isSecurityOn();
+        boolean isSecurityOn = AppContextMgr.isSecurityOn();
         
         if (isSecurityOn)
         {

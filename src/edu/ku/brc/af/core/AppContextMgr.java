@@ -212,6 +212,8 @@ public abstract class AppContextMgr
      * @return the default Taskable from a table id
      */
     public Taskable getTaskFromTableId(int tableId) { return null; }
+    
+    public static boolean isSecurityOn() { return getInstance().isSecurity(); }
 
     /**
      * Copies all the fields except the data.
@@ -329,4 +331,16 @@ public abstract class AppContextMgr
     {
         classObjHash.clear();
     }
+    
+    /**
+     * @return whether Security has been turned on
+     */
+    public abstract boolean isSecurity();
+
+    
+    /**
+     * @param secVal true to turn on security
+     */
+    public abstract boolean setSecurity(final boolean secVal);
+
 }

@@ -66,7 +66,7 @@ public class BackupTask extends BaseTask
      */
     public List<MenuItemDesc> getMenuItems()
     {
-        /*if (UIHelper.isSecurityOn())
+        /*if (AppContextMgr.isSecurityOn())
         {
             getPermissions(); // Gets the Permissions
             if (permissions != null && permissions.hasNoPerm())

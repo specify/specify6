@@ -436,7 +436,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                     {
                         if (!table.getTableInfo().isHidden())
                         {
-                            if (UIHelper.isSecurityOn())
+                            if (AppContextMgr.isSecurityOn())
                             {
                                 if (table.getTableInfo().getPermissions().canView())
                                 {
@@ -548,7 +548,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                     
                     //log.debug("Id: "+erti.getId()+"  "+erti.getTitle()+"  "+erti.getTableInfo().getPermissions().canView());
                     //SecurityMgr.dumpPermissions(erti.getTableInfo().getTitle(), erti.getTableInfo().getPermissions().getOptions());
-                    if (UIHelper.isSecurityOn())
+                    if (AppContextMgr.isSecurityOn())
                     {
                         if (!erti.getTableInfo().getPermissions().canView())
                         {
@@ -599,7 +599,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                                 {
                                     joinColTableId = jci.getJoinTableIdAsInt();
                                     //log.debug("CHK: "+jci.getTableInfo().getTitle()+"  "+jci.getTableInfo().getPermissions().canView());
-                                    if (UIHelper.isSecurityOn() && !jci.getTableInfo().getPermissions().canView())
+                                    if (AppContextMgr.isSecurityOn() && !jci.getTableInfo().getPermissions().canView())
                                     {
                                         continue;
                                     }
@@ -1388,7 +1388,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                 for (SearchTableConfig stc : scService.getSearchConfig().getTables())
                 {
                     // This needed for the first time in before there are any settings
-                    if (UIHelper.isSecurityOn())
+                    if (AppContextMgr.isSecurityOn())
                     {
                         PermissionSettings perm = stc.getTableInfo().getPermissions(); 
                         if (!perm.canView())

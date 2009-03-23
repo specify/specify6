@@ -875,11 +875,11 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
         JMenuItem mi;
         String    menuDesc = getResourceString(COLSETUP_MENU);
         
-        if (!UIHelper.isSecurityOn() || 
+        if (!AppContextMgr.isSecurityOn() || 
             (secMgr.getPermission(WBSCHEMACONFIG_SECURITY) != null && 
              secMgr.getPermission(WBSCHEMACONFIG_SECURITY).canAdd()))
         {
-            titleArg = getI18NKey("WBSCHEMA_CONFIG"); //$NON-NLS-1$
+            titleArg = getI18NKey("WBSCHEMA_CONFIG_MENU"); //$NON-NLS-1$
             mneu     = getI18NKey("WBSCHEMA_CONFIG_MNU");  //$NON-NLS-1$
             mi       = UIHelper.createLocalizedMenuItem(titleArg, mneu, titleArg, true, null); 
             mi.addActionListener(new ActionListener()
@@ -896,7 +896,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             menuItems.add(mid);
         }
         
-        if (!UIHelper.isSecurityOn() || 
+        if (!AppContextMgr.isSecurityOn() || 
             (secMgr.getPermission(RESIMPORTEXPORT_SECURITY) != null && 
              !secMgr.getPermission(RESIMPORTEXPORT_SECURITY).hasNoPerm()))
         {
@@ -915,11 +915,11 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             menuItems.add(mid);
         }
         
-        if (!UIHelper.isSecurityOn() || 
+        if (!AppContextMgr.isSecurityOn() || 
             (secMgr.getPermission(SCHEMACONFIG_SECURITY) != null && 
              secMgr.getPermission(SCHEMACONFIG_SECURITY).canAdd()))
         {
-            titleArg = getI18NKey("SCHEMA_CONFIG"); //$NON-NLS-1$
+            titleArg = getI18NKey("SCHEMA_CONFIG_MENU"); //$NON-NLS-1$
             mneu = getI18NKey("SCHEMA_CONFIG_MNU");  //$NON-NLS-1$
             mi = UIHelper.createLocalizedMenuItem(titleArg, mneu, titleArg, true, null);
             mi.addActionListener(new ActionListener()
@@ -934,7 +934,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             menuItems.add(mid);
         }
         
-        if (!UIHelper.isSecurityOn() || 
+        if (!AppContextMgr.isSecurityOn() || 
              (getPermissions() != null && getPermissions().canAdd()))
         {
             titleArg = getI18NKey("COLL_CONFIG"); 

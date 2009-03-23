@@ -46,6 +46,7 @@ import com.thoughtworks.xstream.XStream;
 
 import edu.ku.brc.af.auth.BasicPermisionPanel;
 import edu.ku.brc.af.auth.PermissionEditorIFace;
+import edu.ku.brc.af.auth.PermissionSettings;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.af.core.ContextMgr;
@@ -510,35 +511,37 @@ public class InteractionsTask extends BaseTask
             for (InteractionEntry entry : entries)
             {
                 DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoByTableName(entry.getTableName());
-                if (entry.isOnLeft())
+                if (!AppContextMgr.isSecurityOn() || tableInfo.getPermissions().canView())
                 {
-                    String label;
-                    if (StringUtils.isNotEmpty(entry.getLabelKey()))
-                    {
-                        label = getResourceString(entry.getLabelKey());
-                    } else
-                    {
-                        label = tableInfo.getTitle();
-                    }
-                    
-                    entry.setTitle(label);
-                    
                     if (entry.isOnLeft())
                     {
-                        addCommand(actionsNavBox, tableInfo, entry);
+                        String label;
+                        if (StringUtils.isNotEmpty(entry.getLabelKey()))
+                        {
+                            label = getResourceString(entry.getLabelKey());
+                        } else
+                        {
+                            label = tableInfo.getTitle();
+                        }
+                        
+                        entry.setTitle(label);
+                        
+                        if (entry.isOnLeft())
+                        {
+                            addCommand(actionsNavBox, tableInfo, entry);
+                        }
+                        
+                    } else if (StringUtils.isNotEmpty(entry.getViewName()) && entry.isSearchService())
+                    {
+                        CommandAction cmdAction = createCmdActionFromEntry(entry, tableInfo);
+                        ContextMgr.registerService(10, entry.getViewName(), tableInfo.getTableId(), cmdAction, this, "Data_Entry", tableInfo.getTitle(), true); // the Name gets Hashed
                     }
-                    
-                } else if (StringUtils.isNotEmpty(entry.getViewName()) && entry.isSearchService())
-                {
-                    CommandAction cmdAction = createCmdActionFromEntry(entry, tableInfo);
-                    ContextMgr.registerService(10, entry.getViewName(), tableInfo.getTableId(), cmdAction, this, "Data_Entry", tableInfo.getTitle(), true); // the Name gets Hashed
                 }
             }
             navBoxes.add(actionsNavBox);
             
             infoRequestNavBox  = new NavBox(getResourceString("InfoRequest"));
             loadNavBox(infoRequestNavBox, InfoRequest.class, INFOREQUEST_FLAVOR);
-            
         }
         isShowDefault = true;
     }
@@ -559,29 +562,7 @@ public class InteractionsTask extends BaseTask
         }
         return ars;
     }
-    
-    /**
-     * @param navBox
-     * @param action
-     * @param cmdName
-     * @param iconNameStr
-     * @param tableIds
-     * @return
-     */
-    protected NavBoxButton addCommand(final NavBox navBox, 
-                                      final String action, 
-                                      final String cmdName, 
-                                      final String iconNameStr,
-                                      final int[]  tableIds)
-    {
-        CommandAction cmdAction = new CommandAction(INTERACTIONS, action);
-        NavBoxButton roc = (NavBoxButton)makeDnDNavBtn(navBox, getResourceString(cmdName), iconNameStr, cmdAction, null, true, false);// true means make it draggable
-        DataFlavorTableExt dfx = new DataFlavorTableExt(RecordSetTask.RECORDSET_FLAVOR.getDefaultRepresentationClass(), 
-                                                        RecordSetTask.RECORDSET_FLAVOR.getHumanPresentableName(), tableIds);
-        roc.addDropDataFlavor(dfx);
-        return roc;
-    }
-    
+  
     /**
      * @param entry
      * @param tableInfo
@@ -674,9 +655,9 @@ public class InteractionsTask extends BaseTask
             
         } catch (Exception ex)
         {
+            ex.printStackTrace();
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(InteractionsTask.class, ex);
-            ex.printStackTrace();
             
         } finally
         {
@@ -2038,6 +2019,23 @@ public class InteractionsTask extends BaseTask
     protected void processInteractionsCommands(final CommandAction cmdAction)
     {
         boolean isNewLoan = cmdAction.isAction(NEW_LOAN);
+        boolean isNewGift = cmdAction.isAction(NEW_GIFT);
+        boolean isInfoReq = cmdAction.isAction(INFO_REQ_MESSAGE);
+
+        boolean isOKToAdd;
+        if (AppContextMgr.isSecurityOn())
+        {
+            PermissionSettings loanPerms = DBTableIdMgr.getInstance().getInfoById(Loan.getClassTableId()).getPermissions();
+            PermissionSettings giftPerms = DBTableIdMgr.getInstance().getInfoById(Gift.getClassTableId()).getPermissions();
+            PermissionSettings irPerms   = DBTableIdMgr.getInstance().getInfoById(InfoRequest.getClassTableId()).getPermissions();
+            
+            isOKToAdd = (isNewLoan && (loanPerms == null || loanPerms.canAdd())) ||
+                        (isNewGift && (giftPerms == null || giftPerms.canAdd())) ||
+                        (isInfoReq && (irPerms == null || irPerms.canAdd()));
+        } else
+        {
+            isOKToAdd = isNewLoan || isNewGift || isInfoReq;
+        }
         
         UsageTracker.incrUsageCount("IN."+cmdAction.getType());
 
@@ -2060,17 +2058,20 @@ public class InteractionsTask extends BaseTask
                 }
             }
             
-        } else if (isNewLoan || cmdAction.isAction(NEW_GIFT))
+        } else if (isNewLoan || isNewGift)
         {
             if (cmdAction.getData() == cmdAction)
             {
-                // We get here when a user clicks on a Loan NB action 
-                if (isNewLoan)
+                if (isOKToAdd)
                 {
-                    loanProcessor.createOrAdd();
-                } else
-                {
-                    giftProcessor.createOrAdd();
+                    // We get here when a user clicks on a Loan NB action 
+                    if (isNewLoan)
+                    {
+                        loanProcessor.createOrAdd();
+                    } else
+                    {
+                        giftProcessor.createOrAdd();
+                    }
                 }
                 
             } else if (cmdAction.getData() instanceof RecordSetIFace)
@@ -2078,12 +2079,15 @@ public class InteractionsTask extends BaseTask
                 RecordSetIFace rs = (RecordSetIFace)cmdAction.getData();
                 if (rs.getDbTableId() == colObjTableId || rs.getDbTableId() == infoRequestTableId)
                 {
-                    if (isNewLoan)
-                    {    
-                        loanProcessor.createOrAdd(rs);
-                    } else
+                    if (isOKToAdd)
                     {
-                        giftProcessor.createOrAdd(rs);
+                        if (isNewLoan)
+                        {    
+                            loanProcessor.createOrAdd(rs);
+                        } else
+                        {
+                            giftProcessor.createOrAdd(rs);
+                        }
                     }
                 } else
                 {
@@ -2092,28 +2096,33 @@ public class InteractionsTask extends BaseTask
                 
             } else if (cmdAction.getData() instanceof InfoRequest)
             {
-                if (isNewLoan)
+                if (isOKToAdd)
                 {
-                    loanProcessor.createFromInfoRequest((InfoRequest)cmdAction.getData());
-                } else
-                {
-                    giftProcessor.createFromInfoRequest((InfoRequest)cmdAction.getData());
+                    if (isNewLoan)
+                    {
+                        loanProcessor.createFromInfoRequest((InfoRequest)cmdAction.getData());
+                    } else
+                    {
+                        giftProcessor.createFromInfoRequest((InfoRequest)cmdAction.getData());
+                    }
                 }
                 
             }  else if (cmdAction.getData() instanceof CommandActionForDB)
             {
-                CommandActionForDB cmdActionDB = (CommandActionForDB)cmdAction.getData();
-                RecordSetIFace     rs          = RecordSetFactory.getInstance().createRecordSet("", cmdActionDB.getTableId(), RecordSet.GLOBAL);
-                rs.addItem(cmdActionDB.getId());
-                
-                if (isNewLoan)
+                if (isOKToAdd)
                 {
-                    loanProcessor.createOrAdd(rs);
-                } else
-                {
-                    giftProcessor.createOrAdd(rs);
+                    CommandActionForDB cmdActionDB = (CommandActionForDB)cmdAction.getData();
+                    RecordSetIFace     rs          = RecordSetFactory.getInstance().createRecordSet("", cmdActionDB.getTableId(), RecordSet.GLOBAL);
+                    rs.addItem(cmdActionDB.getId());
+                    
+                    if (isNewLoan)
+                    {
+                        loanProcessor.createOrAdd(rs);
+                    } else
+                    {
+                        giftProcessor.createOrAdd(rs);
+                    }
                 }
-                
             }
             
         } else if (cmdAction.isAction(ADD_TO_LOAN))
@@ -2123,7 +2132,6 @@ public class InteractionsTask extends BaseTask
         } else if (cmdAction.isAction(ADD_TO_GIFT))
         {
             giftProcessor.createOrAdd((Gift)cmdAction.getData());
-            
             
         } else if (cmdAction.isAction(INFO_REQ_MESSAGE))
         {

@@ -267,7 +267,7 @@ public class QueryTask extends BaseTask
     {
         freqQueries  = readResourceForList("QueryFreqList");
         extraQueries = readResourceForList("QueryExtraList");
-        if (UIHelper.isSecurityOn())
+        if (AppContextMgr.isSecurityOn())
         {
             securityFilter(freqQueries);
             securityFilter(extraQueries);
@@ -549,7 +549,7 @@ public class QueryTask extends BaseTask
             {
                 Object[] obj = (Object[]) iter.next();
                 SpQuery query = (SpQuery) obj[0];
-                if (!UIHelper.isSecurityOn()
+                if (!AppContextMgr.isSecurityOn()
                         || DBTableIdMgr.getInstance().getInfoById(query.getContextTableId())
                                 .getPermissions().canView())
                 {
@@ -848,7 +848,7 @@ public class QueryTask extends BaseTask
             for (Object obj : tableNodes)
             {
                 String sName = XMLHelper.getAttr((Element)obj, "name", null);
-                if (!UIHelper.isSecurityOn() || DBTableIdMgr.getInstance().getByShortClassName(sName).getPermissions().canView())
+                if (!AppContextMgr.isSecurityOn() || DBTableIdMgr.getInstance().getByShortClassName(sName).getPermissions().canView())
                 {
                     stdQueries.add(sName);
                 }
@@ -911,7 +911,7 @@ public class QueryTask extends BaseTask
      */
     protected NavBoxItemIFace addToNavBox(final RecordSet recordSet)
     {
-        boolean canDelete = UIHelper.isSecurityOn() ? getPermissions().canDelete() : true;
+        boolean canDelete = AppContextMgr.isSecurityOn() ? getPermissions().canDelete() : true;
         
         final RolloverCommand roc = (RolloverCommand) makeDnDNavBtn(navBox, recordSet.getName(),
                 "Query", null,
@@ -967,7 +967,7 @@ public class QueryTask extends BaseTask
             {
                 Object[] obj = (Object[]) iter.next();
                 SpQuery query = (SpQuery) obj[0];
-                if (!UIHelper.isSecurityOn()
+                if (!AppContextMgr.isSecurityOn()
                         || DBTableIdMgr.getInstance().getInfoById(query.getContextTableId())
                                 .getPermissions().canView())
                 {
@@ -1559,7 +1559,7 @@ public class QueryTask extends BaseTask
     {
         String tableName = XMLHelper.getAttr(parent, "name", null);
         DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByShortClassName(tableName);
-        if (!tableInfo.isHidden() && (!UIHelper.isSecurityOn() || tableInfo.getPermissions().canView()))
+        if (!tableInfo.isHidden() && (!AppContextMgr.isSecurityOn() || tableInfo.getPermissions().canView()))
         {
             String fieldName = XMLHelper.getAttr(parent, "field", null);
             if (StringUtils.isEmpty(fieldName))
@@ -1652,7 +1652,7 @@ public class QueryTask extends BaseTask
                 Element kidElement = (Element) obj;
                 String kidClassName = XMLHelper.getAttr(kidElement, "name", null);
                 tableInfo = DBTableIdMgr.getInstance().getByShortClassName(kidClassName);
-                if (!tableInfo.isHidden() && (!UIHelper.isSecurityOn() || tableInfo.getPermissions().canView()))
+                if (!tableInfo.isHidden() && (!AppContextMgr.isSecurityOn() || tableInfo.getPermissions().canView()))
                 {
                     tableName = XMLHelper.getAttr(kidElement, "name", null);
                     fieldName = XMLHelper.getAttr(kidElement, "field", null);

@@ -33,7 +33,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -43,6 +42,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.auth.PermissionSettings;
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
@@ -247,7 +247,7 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
     {
         if (dObj != null)
         {
-            if (UIHelper.isSecurityOn())
+            if (AppContextMgr.isSecurityOn())
             {
                 if (perm == null)
                 {
@@ -562,7 +562,7 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
             
             String blank = "  ";
             String lblStr = null;
-            if (UIHelper.isSecurityOn() && ((perm != null && perm.hasNoPerm()) || perm == null))
+            if (AppContextMgr.isSecurityOn() && ((perm != null && perm.hasNoPerm()) || perm == null))
             {
                 lblStr = blank;
             }

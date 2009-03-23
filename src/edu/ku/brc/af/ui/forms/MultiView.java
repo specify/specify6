@@ -218,7 +218,7 @@ public class MultiView extends JPanel
             ViewLoader.clearFieldVerInfo();
         }
         
-        if (UIHelper.isSecurityOn())
+        if (AppContextMgr.isSecurityOn())
         {
             this.permissions = getPremissionFromView(view);
             log.debug("*** View: "+view.getName() + " - " + permissions);
@@ -307,7 +307,7 @@ public class MultiView extends JPanel
         
         initializeCardPanel(options);
         
-        if (UIHelper.isSecurityOn())
+        if (AppContextMgr.isSecurityOn())
         {
             this.permissions = getPremissionFromView(view);
         } else
@@ -1368,7 +1368,7 @@ public class MultiView extends JPanel
      */
     public boolean isOKToAddAllAltViews()
     {
-        if (UIHelper.isSecurityOn() && permissions.isViewOnly())
+        if (AppContextMgr.isSecurityOn() && permissions.isViewOnly())
         {
             return false;
         }

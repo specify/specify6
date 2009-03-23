@@ -520,7 +520,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         });
         // enable or disable along with Google Earth and Geo Ref Convert buttons
         
-        if (UIHelper.isSecurityOn() && !task.getPermissions().canModify())
+        if (AppContextMgr.isSecurityOn() && !task.getPermissions().canModify())
         {
             exportKmlBtn = null;
         }
@@ -635,7 +635,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
         }
         
-        if (UIHelper.isSecurityOn() && !task.getPermissions().canModify())
+        if (AppContextMgr.isSecurityOn() && !task.getPermissions().canModify())
         {
             exportExcelCsvBtn = null;
         }

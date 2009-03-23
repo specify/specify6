@@ -36,6 +36,7 @@ import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
 import edu.ku.brc.af.auth.PermissionSettings;
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
@@ -640,7 +641,7 @@ public class DataObjFieldFormatMgr
      */
     protected String formatInternal(final DataObjDataFieldFormatIFace format, final Object dataObj)
     {
-        if (UIHelper.isSecurityOn() && dataObj != null && dataObj instanceof FormDataObjIFace)
+        if (AppContextMgr.isSecurityOn() && dataObj != null && dataObj instanceof FormDataObjIFace)
         {
             DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByShortClassName(dataObj.getClass().getSimpleName());
             if (tblInfo != null)
@@ -675,7 +676,7 @@ public class DataObjFieldFormatMgr
                     Object   value  = values != null ? values[0] : null;
                     if (value != null)
                     {
-                        if (UIHelper.isSecurityOn() && value instanceof FormDataObjIFace)
+                        if (AppContextMgr.isSecurityOn() && value instanceof FormDataObjIFace)
                         {
                             DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByShortClassName(value.getClass().getSimpleName());
                             if (tblInfo != null)

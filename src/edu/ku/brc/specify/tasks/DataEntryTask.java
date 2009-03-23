@@ -256,7 +256,7 @@ public class DataEntryTask extends BaseTask
                         try
                         {
                             Class<?> dataClass = Class.forName(className);
-                            if (UIHelper.isSecurityOn())
+                            if (AppContextMgr.isSecurityOn())
                             {
                                 DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByShortClassName(dataClass.getSimpleName());
                                 if (tblInfo != null)
@@ -419,7 +419,7 @@ public class DataEntryTask extends BaseTask
     public static void openView(final Taskable task, final ViewIFace view, final String mode, final String idStr)
     {
         int tableId = DBTableIdMgr.getInstance().getIdByClassName(view.getClassName());
-        if (UIHelper.isSecurityOn())
+        if (AppContextMgr.isSecurityOn())
         {
             DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(tableId);
             if (tblInfo != null)
@@ -522,7 +522,7 @@ public class DataEntryTask extends BaseTask
     {
         boolean readOnly = readOnlyArg;
         
-        if (UIHelper.isSecurityOn())
+        if (AppContextMgr.isSecurityOn())
         {
             DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(recordSet.getDbTableId());
             if (tblInfo.getPermissions().hasNoPerm())
@@ -657,7 +657,7 @@ public class DataEntryTask extends BaseTask
                 DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
                 dev.setTableInfo(tableInfo);
                 
-                if (UIHelper.isSecurityOn())
+                if (AppContextMgr.isSecurityOn())
                 {
                     if (!tableInfo.getPermissions().canView())
                     {
@@ -947,7 +947,7 @@ public class DataEntryTask extends BaseTask
                 if (view != null)
                 {
                     DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
-                    if (UIHelper.isSecurityOn())
+                    if (AppContextMgr.isSecurityOn())
                     {
                         if (!tableInfo.getPermissions().canView())
                         {

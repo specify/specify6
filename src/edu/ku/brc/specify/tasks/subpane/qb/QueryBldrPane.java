@@ -693,7 +693,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     protected boolean canSave()
     {
         boolean result = true;
-        if (UIHelper.isSecurityOn() && (!task.getPermissions().canAdd() || !task.getPermissions().canModify()))
+        if (AppContextMgr.isSecurityOn() && (!task.getPermissions().canAdd() || !task.getPermissions().canModify()))
         {
             if (!task.getPermissions().canAdd() && !task.getPermissions().canModify())
             {
@@ -1475,7 +1475,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             if (qf.getContextTableIdent() != null)
             {
                 DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(qf.getContextTableIdent());
-                if (!UIHelper.isSecurityOn() || ti.getPermissions().canView())
+                if (!AppContextMgr.isSecurityOn() || ti.getPermissions().canView())
                 {
                     DBFieldInfo fi = ti.getFieldByColumnName(qf.getFieldName());
                     String colName = ti.getAbbrev() + '.' + qf.getFieldName();

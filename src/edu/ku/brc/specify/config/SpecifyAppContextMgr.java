@@ -2944,6 +2944,47 @@ public class SpecifyAppContextMgr extends AppContextMgr
         }
         return true;
     }
+    
+    /**
+     * @return true if security is on
+     */
+    public boolean isSecurity()
+    {
+        return BasicSQLUtils.getCount("SELECT COUNT(IsSecurityOn) FROM institution WHERE IsSecurityOn = 0") == 0;
+    }
+    
+    /**
+     * @param secVal
+     */
+    public boolean setSecurity(final boolean secVal)
+    {
+        boolean status = true;
+        DataProviderSessionIFace session = null;
+        try
+        {
+            session = openSession();
+            Institution inst = (Institution)session.getData("FROM edu.ku.brc.specify.datamodel.Institution");
+            inst.setIsSecurityOn(secVal);
+            session.beginTransaction();
+            session.saveOrUpdate(inst);
+            session.commit();
+            //setClassObject(Institution.class, inst);
+            
+        } catch (Exception ex)
+        {
+            session.rollback();
+            
+            ex.printStackTrace();
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyAppContextMgr.class, ex);
+            status = false;
+             
+        } finally
+        {
+            closeSession();
+        }
+        return status;
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.AppContextMgr#clear()

@@ -58,6 +58,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.thoughtworks.xstream.XStream;
 
 import edu.ku.brc.af.auth.PermissionSettings;
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
@@ -232,7 +233,7 @@ public class ExpressSearchConfigDlg extends CustomDialog
         Collections.sort(config.getTables());
         for (SearchTableConfig stc : config.getTables())
         {
-            if (UIHelper.isSecurityOn())
+            if (AppContextMgr.isSecurityOn())
             {
                 PermissionSettings perm = stc.getTableInfo().getPermissions(); 
                 if (!perm.canView())

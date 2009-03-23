@@ -29,7 +29,6 @@ import edu.ku.brc.specify.config.SpecifyAppPrefs;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
-import edu.ku.brc.ui.UIHelper;
 
 /**
  * @author timbo
@@ -95,9 +94,8 @@ public class IReportLauncher implements DatabaseLoginListener
         }
         //...end specify.restartApp snatch
         
-        UIHelper.setSecurityOn(false);//XXX - not for release!!!
         boolean canOpen = true;
-        if (UIHelper.isSecurityOn())
+        if (AppContextMgr.isSecurityOn())
         {
             PermissionIFace permissions = SecurityMgr.getInstance().getPermission("Task.Reports");
             canOpen = permissions.canView();
@@ -116,6 +114,9 @@ public class IReportLauncher implements DatabaseLoginListener
     }
 
     
+    /**
+     * 
+     */
     protected void openIReportEditor() 
     {
        SwingUtilities.invokeLater(new Runnable()

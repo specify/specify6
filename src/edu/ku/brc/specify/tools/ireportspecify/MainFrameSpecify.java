@@ -208,7 +208,7 @@ public class MainFrameSpecify extends MainFrame
     @SuppressWarnings("unchecked")  //iReport doesn't parameterize generics.
     protected void addSpQBConn(final SpQuery q)
     {
-        if (!UIHelper.isSecurityOn() ||
+        if (!AppContextMgr.isSecurityOn() ||
                 DBTableIdMgr.getInstance().getInfoById(q.getContextTableId()).getPermissions().canView())
         {
             QBJRDataSourceConnection newq = new QBJRDataSourceConnection(q);
@@ -464,7 +464,7 @@ public class MainFrameSpecify extends MainFrame
                 ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getUserName(), 
                 true, false);
 
-        if (UIHelper.isSecurityOn())
+        if (AppContextMgr.isSecurityOn())
         {
             PermissionIFace permissions = SecurityMgr.getInstance().getPermission("Task.Reports");
             if (!permissions.canModify())
@@ -540,7 +540,7 @@ public class MainFrameSpecify extends MainFrame
             }
         }
         // else
-        if (UIHelper.isSecurityOn())
+        if (AppContextMgr.isSecurityOn())
         {
             PermissionIFace permissions = SecurityMgr.getInstance().getPermission("Task.Reports");
             if (!permissions.canAdd())
@@ -1258,7 +1258,7 @@ public class MainFrameSpecify extends MainFrame
     @Override
     public Report newWizard()
     {
-        if (UIHelper.isSecurityOn())
+        if (AppContextMgr.isSecurityOn())
         {
             PermissionIFace permissions = SecurityMgr.getInstance().getPermission("Task.Reports");
             if (!permissions.canAdd())

@@ -449,40 +449,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         defClassActionHandler.registerActionHandler(TaxonAttachment.class,                attachmentDisplayer);
         
         //defClassActionHandler.registerActionHandler(Collector.class, new CollectorActionListener());
-        
-        
-        /////////////////////////////////////////////
-        // NOT FOR RELEASE
-        /////////////////////////////////////////////
-        
-        boolean isSecurityOn = AppPreferences.getLocalPrefs().getBoolean("security", false);
-        UIHelper.setSecurityOn(isSecurityOn);
-        
-        String schemaKey = "schemaSize";
-        int    schemaFileSize = 0;
-        File schemaFile = XMLHelper.getConfigDir("specify_datamodel.xml");
-        if (schemaFile != null)
-        {
-            schemaFileSize = (int)schemaFile.length();
-        }
-        
-        Integer schemaSize = localPrefs.getInt(schemaKey, null);
-        if (schemaSize == null)
-        {
-            localPrefs.putInt(schemaKey, schemaFileSize);
-            
-        } else if (schemaFileSize != schemaSize)
-        {
-            localPrefs.putInt(schemaKey, schemaFileSize);
-            
-            //BuildSampleDatabase builder = new BuildSampleDatabase();
-            //builder.buildSetup(null);
-            //return;
-        }
-        /////////////////////////////////////////////
-        // DONE - NOT FOR RELEASE
-        /////////////////////////////////////////////
-        
+       
         UsageTracker.incrUsageCount("RunCount"); //$NON-NLS-1$
         
         //UIHelper.attachUnhandledException();
@@ -723,10 +690,10 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         statusField.setWarningIcon(IconManager.getIcon("Warning", IconManager.IconSize.Std16)); //$NON-NLS-1$
         UIRegistry.setStatusBar(statusField);
         
-        boolean isSecurityOn = AppPreferences.getLocalPrefs().getBoolean("security", false);
         JLabel secLbl = statusField.getSectionLabel(3);
         if (secLbl != null)
         {
+            boolean isSecurityOn = AppContextMgr.isSecurityOn();
             secLbl.setIcon(IconManager.getImage(isSecurityOn ? "SecurityOn" : "SecurityOff", IconManager.IconSize.Std16));
             secLbl.setHorizontalAlignment(SwingConstants.CENTER);
             secLbl.setHorizontalTextPosition(SwingConstants.LEFT);
@@ -1339,13 +1306,12 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         
         JCheckBoxMenuItem cbMenuItem = new JCheckBoxMenuItem("Security Activated"); //$NON-NLS-1$
         menu.add(cbMenuItem);
-        cbMenuItem.setSelected(UIHelper.isSecurityOn());
+        cbMenuItem.setSelected(AppContextMgr.isSecurityOn());
         cbMenuItem.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent ae)
                     {
-                        boolean isSecurityOn = !UIHelper.isSecurityOn()   ;                 
-                        AppPreferences.getLocalPrefs().putBoolean("security", isSecurityOn);
-                        UIHelper.setSecurityOn(isSecurityOn);
+                        boolean isSecurityOn = !SpecifyAppContextMgr.isSecurityOn();                 
+                        AppContextMgr.getInstance().setSecurity(isSecurityOn);
                         ((JMenuItem)ae.getSource()).setSelected(isSecurityOn);
                         
                         JLabel secLbl = statusField.getSectionLabel(3);

@@ -605,7 +605,7 @@ public class StatsPane extends BaseSubPane
         // not sure if the default should be true or false
         // certainly is security is off it should return true.
         boolean isOK = true; 
-        if (UIHelper.isSecurityOn())
+        if (AppContextMgr.isSecurityOn())
         {
             if (list != null)
             {

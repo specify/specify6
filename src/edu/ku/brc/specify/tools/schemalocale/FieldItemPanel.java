@@ -87,6 +87,7 @@ import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -180,7 +181,12 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
     protected String           disciplineName = null;
     
     /**
-     * 
+     * @param schemaPanel
+     * @param webLinkMgrCache
+     * @param includeHiddenUI
+     * @param includeFormatAndAutoNumUI
+     * @param isDBSchema
+     * @param pcl
      */
     public FieldItemPanel(final SchemaLocalizerPanel schemaPanel,
                           final WebLinkMgr           webLinkMgrCache,
@@ -348,7 +354,8 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
                     dlg.setVisible(true);
                     if (!dlg.isCancelled() && dlg.hasChanged())
                     {
-                        schemaPanel.setHasChanged(true);
+                        //schemaPanel.setHasChanged(true);
+                        formHasChanged();
                         
                         //fillFormatBox(dlg.getSelectedFormat());
                         setSelectedFieldFormatter(dlg.getSelectedFormat());
@@ -520,16 +527,9 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
             
         });
         
-        DocumentListener dl = new DocumentListener() {
-            public void changedUpdate(DocumentEvent e)
-            {
-                formHasChanged();
-            }
-            public void insertUpdate(DocumentEvent e)
-            {
-                formHasChanged();
-            }
-            public void removeUpdate(DocumentEvent e)
+        DocumentListener dl = new DocumentAdaptor() {
+            @Override
+            protected void changed(DocumentEvent e)
             {
                 formHasChanged();
             }
@@ -555,12 +555,15 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
      */
     protected void formHasChanged()
     {
+        System.err.print("formHasChanged ");
         if (!isIgnoreChanges())
         {
             setHasChanged(true);
             schemaPanel.setHasChanged(true);
             schemaPanel.setTableInfoChanged(true);
+            System.err.print("SET ");
         }
+        System.err.print("\n");
     }
     
     /**

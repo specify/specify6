@@ -23,6 +23,7 @@ import javax.swing.Action;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.auth.PermissionSettings;
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
@@ -51,7 +52,6 @@ import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
-import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -158,7 +158,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
                 PermissionSettings treePerms = treeTI.getPermissions();
                 PermissionSettings tdPerms   = tdTI.getPermissions();
                 
-                if (UIHelper.isSecurityOn())
+                if (AppContextMgr.isSecurityOn())
                 {
                     //System.out.println(treeTI.getTitle()+ " "+treePerms.toString());
                     if (treePerms.canView())
@@ -212,7 +212,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         treeDefNavBox.clear();
         unlockNavBox.clear();
         
-        boolean skip = UIHelper.isSecurityOn() && !DBTableIdMgr.getInstance().getByShortClassName(treeClass.getSimpleName()).getPermissions().canView();
+        boolean skip = AppContextMgr.isSecurityOn() && !DBTableIdMgr.getInstance().getByShortClassName(treeClass.getSimpleName()).getPermissions().canView();
         
         TreeTaskMgr.getInstance().fillNavBoxes(treeNavBox, treeDefNavBox, unlockNavBox);
         

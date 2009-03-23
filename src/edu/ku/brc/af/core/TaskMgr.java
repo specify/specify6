@@ -550,7 +550,7 @@ public class TaskMgr implements CommandListener
                         Taskable task = (Taskable)newObj;
                         
                         boolean shouldAddToUI =  getAttr(pluginElement, "addui", false);
-                        if (UIHelper.isSecurityOn())
+                        if (AppContextMgr.isSecurityOn())
                         {
                             PermissionIFace perm = task.getPermissions();
                             if (perm != null)
@@ -661,7 +661,7 @@ public class TaskMgr implements CommandListener
         {
             for (Taskable task : instance.tasks.values())
             {
-                if (UIHelper.isSecurityOn())
+                if (AppContextMgr.isSecurityOn())
                 {
                     task.setPermissions(null); // for relo0ad of permissions
                     PermissionIFace perm = task.getPermissions();

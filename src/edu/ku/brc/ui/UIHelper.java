@@ -178,7 +178,6 @@ public final class UIHelper
     protected static RenderingHints  txtRenderingHints;
     protected static Hashtable<String, Boolean> baseClassHash = new Hashtable<String, Boolean>();
     protected static CONTROLSIZE     controlSize     = CONTROLSIZE.regular;
-    protected static boolean         isSecurityOn    = false;
     protected static Color           hoverColor      = new Color(0, 0, 150, 100);
     
     private static final Color clrGlowInnerHi = new Color(253, 239, 175, 148);
@@ -2373,22 +2372,6 @@ public final class UIHelper
             str.append(props.get(key).toString());
         }
         return str.toString();
-    }
-    
-    /**
-     * @return whether security is on
-     */
-    public static boolean isSecurityOn()
-    {
-        return isSecurityOn;
-    }
-
-    /**
-     * @param isSecurityOn the isSecurityOn to set
-     */
-    public static void setSecurityOn(boolean isSecurityOn)
-    {
-        UIHelper.isSecurityOn = isSecurityOn;
     }
 
     /**

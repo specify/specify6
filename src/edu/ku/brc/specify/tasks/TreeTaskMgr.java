@@ -251,7 +251,7 @@ public class TreeTaskMgr implements CommandListener
             unlockNavBox.clear();
             
             
-            boolean skip = UIHelper.isSecurityOn() && !DBTableIdMgr.getInstance().getByShortClassName(treeClass.getSimpleName()).getPermissions().canView();
+            boolean skip = AppContextMgr.isSecurityOn() && !DBTableIdMgr.getInstance().getByShortClassName(treeClass.getSimpleName()).getPermissions().canView();
             
             log.debug(treeClass.getSimpleName()+"  skip "+skip);
             if (!skip) //if (isTreeOnByDefault())

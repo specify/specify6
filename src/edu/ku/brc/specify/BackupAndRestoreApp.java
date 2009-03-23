@@ -74,7 +74,6 @@ import edu.ku.brc.specify.config.SpecifyAppPrefs;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.prefs.MySQLPrefs;
 import edu.ku.brc.specify.ui.HelpMgr;
-import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
@@ -542,37 +541,6 @@ public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener
         
         // Load Local Prefs
         AppPreferences localPrefs = AppPreferences.getLocalPrefs();
-        
-        /////////////////////////////////////////////
-        // NOT FOR RELEASE
-        /////////////////////////////////////////////
-        
-        UIHelper.setSecurityOn(AppPreferences.getLocalPrefs().getBoolean("security", false));
-        
-        String schemaKey = "schemaSize";
-        int    schemaFileSize = 0;
-        File schemaFile = XMLHelper.getConfigDir("specify_datamodel.xml");
-        if (schemaFile != null)
-        {
-            schemaFileSize = (int)schemaFile.length();
-        }
-        
-        Integer schemaSize = localPrefs.getInt(schemaKey, null);
-        if (schemaSize == null)
-        {
-            localPrefs.putInt(schemaKey, schemaFileSize);
-            
-        } else if (schemaFileSize != schemaSize)
-        {
-            localPrefs.putInt(schemaKey, schemaFileSize);
-            
-            BuildSampleDatabase builder = new BuildSampleDatabase();
-            builder.buildSetup(null);
-            return;
-        }
-        /////////////////////////////////////////////
-        // DONE - NOT FOR RELEASE
-        /////////////////////////////////////////////
         
         UsageTracker.incrUsageCount("RunCount"); //$NON-NLS-1$
         

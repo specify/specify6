@@ -44,6 +44,7 @@ import org.dom4j.Node;
 
 import edu.ku.brc.af.auth.PermissionSettings;
 import edu.ku.brc.af.auth.SecurityMgr;
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.NavBoxButton;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.ui.IconManager;
@@ -191,7 +192,7 @@ public class PrefsToolbar extends JPanel
                 String viewName    = pref.attributeValue("viewname"); //$NON-NLS-1$
                 String hContext    = pref.attributeValue("help"); //$NON-NLS-1$
                 
-                if (UIHelper.isSecurityOn())
+                if (AppContextMgr.isSecurityOn())
                 {
                     PermissionSettings perm = SecurityMgr.getInstance().getPermission("Prefs."+prefName);
                     PermissionSettings.dumpPermissions("Prefs: "+prefName, perm.getOptions());
@@ -256,7 +257,7 @@ public class PrefsToolbar extends JPanel
                             prefPanel.setName(prefName);
                             prefPanel.setTitle(prefTitle);
                             
-                            if (!prefPanel.isOKToLoad() || (UIHelper.isSecurityOn() && !prefPanel.getPermissions().canView()))
+                            if (!prefPanel.isOKToLoad() || (AppContextMgr.isSecurityOn() && !prefPanel.getPermissions().canView()))
                             {
                                 continue;
                             }

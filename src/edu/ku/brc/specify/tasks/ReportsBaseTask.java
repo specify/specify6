@@ -317,7 +317,7 @@ public class ReportsBaseTask extends BaseTask
                 if (tableIdStr != null)
                 {
                     boolean makeROC = true;
-                    if (UIHelper.isSecurityOn())
+                    if (AppContextMgr.isSecurityOn())
                     {
                         DBTableInfo tblFo = DBTableIdMgr.getInstance().getInfoById(Integer.valueOf(tableIdStr));
                         if (tblFo != null)
@@ -388,7 +388,7 @@ public class ReportsBaseTask extends BaseTask
         CommandAction delCmd = null;
         if (repRS != null || cmdAction.getProperties().get("isimport") != null)
         {
-            if (!UIHelper.isSecurityOn() || getPermissions().canDelete())
+            if (!AppContextMgr.isSecurityOn() || getPermissions().canDelete())
             {
                 delCmd = new CommandAction(REPORTS, DELETE_CMD_ACT, repRS);
                 if (cmdAction.getProperties().get("isimport") != null)
@@ -1550,7 +1550,7 @@ public class ReportsBaseTask extends BaseTask
 
                 });
         boolean buildEm = true;
-        if (UIHelper.isSecurityOn())
+        if (AppContextMgr.isSecurityOn())
         {
             Taskable reportsTask = ContextMgr.getTaskByClass(ReportsTask.class);
             if (reportsTask != null)

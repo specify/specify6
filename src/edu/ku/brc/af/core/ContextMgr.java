@@ -28,7 +28,6 @@ import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
-import edu.ku.brc.ui.UIHelper;
 
 /**
  * Manages the task context of the UI. The task context is controlled by what tab is visible in the main pane
@@ -279,7 +278,7 @@ public class ContextMgr implements CommandListener
         {
             if (si.isDefault())
             {
-                if (UIHelper.isSecurityOn() && !si.isPermissionOK())
+                if (AppContextMgr.isSecurityOn() && !si.isPermissionOK())
                 {
                     return null;
                 }
@@ -384,7 +383,7 @@ public class ContextMgr implements CommandListener
         {
             if (!serviceList.contains(srvInfo))
             {
-                if (UIHelper.isSecurityOn() && !srvInfo.isPermissionOK())
+                if (AppContextMgr.isSecurityOn() && !srvInfo.isPermissionOK())
                 {
                     continue;
                 }
@@ -409,7 +408,7 @@ public class ContextMgr implements CommandListener
         {
             for (ServiceInfo srvInfo : instance.genericService)
             {
-                if (UIHelper.isSecurityOn())
+                if (AppContextMgr.isSecurityOn())
                 {
                     srvInfo.resetPermissions();
                 }

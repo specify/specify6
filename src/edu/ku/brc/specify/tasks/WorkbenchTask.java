@@ -186,7 +186,7 @@ public class WorkbenchTask extends BaseTask
 		CommandDispatcher.register(WORKBENCH, this);        
         CommandDispatcher.register("Preferences", this);
         
-        if (UIHelper.isSecurityOn())
+        if (AppContextMgr.isSecurityOn())
         {
         	log.debug("add? " + getPermissions().canAdd() + " modify? " + getPermissions().canModify()
         			+ " delete? " + getPermissions().canDelete() + " view? " + getPermissions().canView());
@@ -211,7 +211,7 @@ public class WorkbenchTask extends BaseTask
             
             RolloverCommand roc = null;
             NavBox navBox = new NavBox(getResourceString("Actions"));
-            if (!UIHelper.isSecurityOn() || getPermissions().canAdd())
+            if (!AppContextMgr.isSecurityOn() || getPermissions().canAdd())
             {
                 makeDnDNavBtn(navBox, getResourceString("WB_IMPORTDATA"), "Import16", getResourceString("WB_IMPORTDATA_TT"), new CommandAction(WORKBENCH, IMPORT_DATA_FILE, wbTblId), null, false, false);// true means make it draggable
                 makeDnDNavBtn(navBox, getResourceString("WB_IMPORT_CARDS"),  "ImportImages", getResourceString("WB_IMPORTCARDS_TT"), new CommandAction(WORKBENCH, WB_IMPORTCARDS, wbTblId),   null, false, false);// true means make it draggable
@@ -220,7 +220,7 @@ public class WorkbenchTask extends BaseTask
                 roc.addDropDataFlavor(DATASET_FLAVOR);
             }
 
-            if (!UIHelper.isSecurityOn() || getPermissions().canModify())
+            if (!AppContextMgr.isSecurityOn() || getPermissions().canModify())
             {
                 roc = (RolloverCommand)makeDnDNavBtn(navBox, getResourceString("WB_EXPORT_DATA"), "Export16", getResourceString("WB_EXPORT_DATA_TT"), new CommandAction(WORKBENCH, EXPORT_DATA_FILE, wbTblId), null, true, false);// true means make it draggable
                 roc.addDropDataFlavor(DATASET_FLAVOR);
@@ -261,7 +261,7 @@ public class WorkbenchTask extends BaseTask
 
             
             // Then add
-            if (commands != null && (!UIHelper.isSecurityOn() || canViewReports()))
+            if (commands != null && (!AppContextMgr.isSecurityOn() || canViewReports()))
             {
                 NavBox reportsNavBox = new NavBox(getResourceString("Reports"));
                 
@@ -399,14 +399,14 @@ public class WorkbenchTask extends BaseTask
         rs.addItem(workbench.getWorkbenchId());
         cmd.setProperty("workbench", rs);
         CommandAction deleteCmd = null;
-        if (!UIHelper.isSecurityOn() || getPermissions().canDelete())
+        if (!AppContextMgr.isSecurityOn() || getPermissions().canDelete())
         {
             deleteCmd = new CommandAction(WORKBENCH, DELETE_CMD_ACT, rs);
         }
         final RolloverCommand roc = (RolloverCommand)makeDnDNavBtn(workbenchNavBox, workbench.getName(), "DataSet16", cmd, 
                                                                    deleteCmd, 
                                                                    true, true);// true means make it draggable
-        if (!UIHelper.isSecurityOn() || getPermissions().canModify())
+        if (!AppContextMgr.isSecurityOn() || getPermissions().canModify())
         {
             roc.setToolTip(getResourceString("WB_CLICK_EDIT_DATA_TT"));
         }
@@ -419,7 +419,7 @@ public class WorkbenchTask extends BaseTask
         roc.addDragDataFlavor(DATASET_FLAVOR);
         
         // Drop Flavors
-        if (!UIHelper.isSecurityOn() || getPermissions().canModify())
+        if (!AppContextMgr.isSecurityOn() || getPermissions().canModify())
         {
             roc.addDropDataFlavor(new DataFlavor(Workbench.class, EXPORT_DATA_FILE));
         }
@@ -455,7 +455,7 @@ public class WorkbenchTask extends BaseTask
             }
         });
 
-        if (!UIHelper.isSecurityOn() || getPermissions().canDelete())
+        if (!AppContextMgr.isSecurityOn() || getPermissions().canDelete())
         {
             popupMenu.addSeparator();
             menuTitle = "Delete";
@@ -742,7 +742,7 @@ public class WorkbenchTask extends BaseTask
         if (template != null)
         {
             mapper = new TemplateEditor((Frame)UIRegistry.get(UIRegistry.FRAME), getResourceString(titleKey), template);
-            if (UIHelper.isSecurityOn() && !getPermissions().canAdd())
+            if (AppContextMgr.isSecurityOn() && !getPermissions().canAdd())
             {
                 //XXX OK to require add permission to modify props and structure?
                 mapper.setReadOnly(true);
@@ -1620,7 +1620,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             boolean   alwaysAsk   = true;
             Workbench foundWB     = null;
             boolean   shouldCheck = false;
-            boolean canEdit = !UIHelper.isSecurityOn() || getPermissions().canAdd(); //XXX OK to require Add permission to modify props and structure?
+            boolean canEdit = !AppContextMgr.isSecurityOn() || getPermissions().canAdd(); //XXX OK to require Add permission to modify props and structure?
             do
             {
                 if (StringUtils.isEmpty(newWorkbenchName))
@@ -1870,7 +1870,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                          }
                          
                          WorkbenchPaneSS workbenchPane = new WorkbenchPaneSS(workbench.getName(), thisTask, workbench, showImageView, 
-                                     UIHelper.isSecurityOn() && !getPermissions().canModify());
+                                     AppContextMgr.isSecurityOn() && !getPermissions().canModify());
                          addSubPaneToMgr(workbenchPane);
                          
                          if (convertedAnImage)
@@ -2971,7 +2971,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             {
                 // create a new WorkbenchPaneSS
                 workbenchPane = new WorkbenchPaneSS(workbench.getName(), this, importWB, false, 
-                        (UIHelper.isSecurityOn() && !getPermissions().canModify()));
+                        (AppContextMgr.isSecurityOn() && !getPermissions().canModify()));
             }
             else
             {
