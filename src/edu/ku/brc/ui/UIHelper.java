@@ -3263,7 +3263,7 @@ public final class UIHelper
      * @param helpContext
      * @return
      */
-    public static JButton getHelpIconButton(final String helpContext)
+    public static JButton createHelpIconButton(final String helpContext)
     {
         JButton helpBtn;
         if (UIHelper.isMacOS())

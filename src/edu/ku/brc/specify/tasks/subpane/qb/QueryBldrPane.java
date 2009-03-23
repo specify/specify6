@@ -501,7 +501,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         JPanel bottom = new JPanel(new BorderLayout());
         bottom.add(outer.getPanel(), BorderLayout.EAST);
         
-        JButton helpBtn = UIHelper.getHelpIconButton("QB");
+        JButton helpBtn = UIHelper.createHelpIconButton("QB");
         bottom.add(helpBtn, BorderLayout.WEST);
         add(bottom, BorderLayout.SOUTH);
 

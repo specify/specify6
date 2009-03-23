@@ -133,7 +133,7 @@ public class ESResultsSubPane extends BaseSubPane implements ExpressSearchResult
             explainPanel = new JPanel(new BorderLayout());
             explainPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
             
-            moreInfoHelpBtn    = UIHelper.getHelpIconButton("ESTellMeMore");
+            moreInfoHelpBtn    = UIHelper.createHelpIconButton("ESTellMeMore");
             moreInfoCaptionBtn = UIHelper.createButton(UIRegistry.getResourceString("EXPRESSSEARCH_TELL_ME_MORE"));
             moreInfoCaptionBtn.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
             moreInfoCaptionBtn.setFocusable(false);

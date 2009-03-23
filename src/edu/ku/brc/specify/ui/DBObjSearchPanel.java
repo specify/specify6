@@ -425,7 +425,7 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
             int cnt = 0;
             for (ERTICaptionInfo captionInfo : esTableInfo.getVisibleCaptionInfo())
             {
-                Object value  = dataMap.get(captionInfo.getColName());
+                Object value  = StringUtils.isNotEmpty(captionInfo.getColName()) ? dataMap.get(captionInfo.getColName()) : null;
                 
                 //log.debug("Column Name["+captionInfo.getColName()+"] Value["+value+"]");
                 if (value != null)

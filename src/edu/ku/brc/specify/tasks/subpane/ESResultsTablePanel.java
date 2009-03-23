@@ -292,50 +292,57 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         
         moveToRSCmd = new DragSelectedRowsBtn(IconManager.getIcon("Record_Set", IconManager.IconSize.Std16));
         
-        PanelBuilder bottomBar = new PanelBuilder(new FormLayout("4px,p,4px,p,4px,p,"+(delRSItems != null ? "4px,p," : "")+"f:p:g", "p"));
-        bottomBar.add(moveToRSCmd,    cc.xy(2,1));
-        bottomBar.add(selectAllBtn,   cc.xy(4,1));
-        bottomBar.add(deselectAllBtn, cc.xy(6,1));
-        if (delRSItems != null)
+        if (installServices)
         {
-            bottomBar.add(delRSItems, cc.xy(8,1));
+            PanelBuilder bottomBar = new PanelBuilder(new FormLayout("4px,p,4px,p,4px,p,"+(delRSItems != null ? "4px,p," : "")+"f:p:g", "p"));
+            bottomBar.add(moveToRSCmd,    cc.xy(2,1));
+            bottomBar.add(selectAllBtn,   cc.xy(4,1));
+            bottomBar.add(deselectAllBtn, cc.xy(6,1));
+            if (delRSItems != null)
+            {
+                bottomBar.add(delRSItems, cc.xy(8,1));
+            }
+            botBtnPanel = bottomBar.getPanel();
+            
+            deselectAllBtn.setEnabled(false);
+            selectAllBtn.setEnabled(true);
+            moveToRSCmd.setEnabled(true);
+            
+            deselectAllBtn.setToolTipText(getResourceString("SELALLTOOLTIP"));
+            selectAllBtn.setToolTipText(getResourceString("DESELALLTOOLTIP"));
+            moveToRSCmd.setToolTipText(getResourceString("MOVEROWSTOOLTIP"));
+            
+            selectAllBtn.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    table.selectAll(); 
+                }
+            });
+            
+            deselectAllBtn.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    table.clearSelection();
+                }
+            });
+            
+            moveToRSCmd.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    RecordSetIFace src = (RecordSetIFace)moveToRSCmd.getData();
+                    CommandDispatcher.dispatch(new CommandAction(RecordSetTask.RECORD_SET, "AskForNewRS", src, null, null));
+                }
+            });
+            
+            add(botBtnPanel, BorderLayout.SOUTH);
+
+        } else
+        {
+            botBtnPanel = null;
         }
-        botBtnPanel = bottomBar.getPanel();
-        
-        deselectAllBtn.setEnabled(false);
-        selectAllBtn.setEnabled(true);
-        moveToRSCmd.setEnabled(true);
-        
-        deselectAllBtn.setToolTipText(getResourceString("SELALLTOOLTIP"));
-        selectAllBtn.setToolTipText(getResourceString("DESELALLTOOLTIP"));
-        moveToRSCmd.setToolTipText(getResourceString("MOVEROWSTOOLTIP"));
-        
-        selectAllBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                table.selectAll(); 
-            }
-        });
-        
-        deselectAllBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                table.clearSelection();
-            }
-        });
-        
-        moveToRSCmd.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                RecordSetIFace src = (RecordSetIFace)moveToRSCmd.getData();
-                CommandDispatcher.dispatch(new CommandAction(RecordSetTask.RECORD_SET, "AskForNewRS", src, null, null));
-            }
-        });
-        
-        add(botBtnPanel, BorderLayout.SOUTH);
 
         expandBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
@@ -415,9 +422,12 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
             {
                 if (!e.getValueIsAdjusting())
                 {
-                    deselectAllBtn.setEnabled(table.getSelectedRowCount() > 0);
-                    selectAllBtn.setEnabled(table.getSelectedRowCount() != table.getRowCount());
-                    moveToRSCmd.setEnabled(table.getSelectedRowCount() > 0);
+                    if (botBtnPanel != null)
+                    {
+                        deselectAllBtn.setEnabled(table.getSelectedRowCount() > 0);
+                        selectAllBtn.setEnabled(table.getSelectedRowCount() != table.getRowCount());
+                        moveToRSCmd.setEnabled(table.getSelectedRowCount() > 0);
+                    }
                 }
                 if (propChangeListener != null)
                 {
@@ -597,7 +607,10 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         expandBtn.setToolTipText(isExpanded ? getResourceString("CollapseTBL") : getResourceString("ExpandTBL"));
 
         tablePane.setVisible(isExpanded);
-        botBtnPanel.setVisible(isExpanded);
+        if (botBtnPanel != null)
+        {
+            botBtnPanel.setVisible(isExpanded);
+        }
 
         if (!showingAllRows && morePanel != null)
         {
