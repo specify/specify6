@@ -4397,7 +4397,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             if (dateStr.length() == 8)
             {
                 //System.out.println("["+dateStr+"]["+data+"]");//["+(dateStr.length() >)+"]");
-                int  fndInx  = dateStr.substring(4, 8).indexOf("00");
+                int fndInx  = dateStr.substring(4, 8).indexOf("00");
                 if (fndInx > -1)
                 {
                     if (fndInx == 0)
@@ -4415,7 +4415,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     } else
                     {
                         dateObj = UIHelper.convertIntToDate((Integer)data);
-                        datePair.second = "2";
+                        datePair.second = "1";
                     }
                 } else
                 {
