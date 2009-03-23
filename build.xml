@@ -24,8 +24,8 @@
 	<property name="data.dir" value="data" />
 
 	<!-- Needed for building help search index -->
-	<property name ="javahelp-home" value="/home/timbo/installs/jh2.0" />
-	<property name ="javahelp-home-mac" value="/Users/rod/workspace/jh2.0" />
+	<property name ="javahelp-home" value="/home/specify/jh2.0" />
+	<property name ="javahelp-home-mac" value="/Applications/jh2.0" />
 	
 	<!-- Needed for Packing on the Mac -->
 	<property name="packaging" value="packaging" />
