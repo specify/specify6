@@ -94,7 +94,7 @@ public class ChooseRecordSetDlg extends CustomDialog
             setApplyLabel(getResourceString("New"));
         }
         
-        this.helpContext = "ChooseRecordSet";
+        this.helpContext = "RS_Add";
     }
 
     /**
