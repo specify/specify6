@@ -2968,7 +2968,6 @@ public class SpecifyAppContextMgr extends AppContextMgr
             session.beginTransaction();
             session.saveOrUpdate(inst);
             session.commit();
-            //setClassObject(Institution.class, inst);
             
         } catch (Exception ex)
         {

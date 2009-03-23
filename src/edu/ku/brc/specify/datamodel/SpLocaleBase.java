@@ -37,6 +37,7 @@ public abstract class SpLocaleBase extends DataModelObjBase
     protected String  name;
     protected String  type;
     protected Boolean isHidden;
+    protected Boolean isSystem;
     
     protected String  format;
     protected Boolean isUIFormatter;
@@ -60,6 +61,7 @@ public abstract class SpLocaleBase extends DataModelObjBase
         name     = null;
         type     = null;
         isHidden = false;
+        isSystem = false;
         format   = null;
         isUIFormatter = null;
         pickListName  = null;
@@ -132,6 +134,23 @@ public abstract class SpLocaleBase extends DataModelObjBase
         this.isHidden = isHidden;
     }
     
+    /**
+     * @return the isSystem
+     */
+    @Column(name = "IsSystem", unique = false, nullable = false, insertable = true, updatable = true)
+    public Boolean getIsSystem()
+    {
+        return isSystem;
+    }
+
+    /**
+     * @param isSystem the isSystem to set
+     */
+    public void setIsSystem(Boolean isSystem)
+    {
+        this.isSystem = isSystem;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#isChangeNotifier()
      */
