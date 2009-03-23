@@ -63,22 +63,22 @@ public class SecuritySummaryDlg extends CustomDialog
 
         PermissionPanelEditor generalEditor = new PermissionPanelEditor(null, null);
         generalEditor.addPanel(new IndvPanelPermEditor("SEC_TOOLS", "SEC_TOOLS_DSC", new TaskPermissionEnumerator(), infoPanel, true));
+        generalEditor.addPanel(new PermissionEditor("SEC_TABLES", new TablePermissionEnumerator(), infoPanel, true));
         generalEditor.addPanel(prefsEdt);
-        //generalEditor.addPanel(new PermissionEditor("SEC_DOS", new DataObjPermissionEnumerator(), infoPanel, true));
 
         PermissionPanelEditor objEditor = new PermissionPanelEditor(null, null);
         objEditor.addPanel(new IndvPanelPermEditor("SEC_DOS", "SEC_DOS_DSC", new ObjectPermissionEnumerator(), infoPanel));
 
-        //      create tabbed panel for different kinds of permission editing tables
+        // create tabbed panel for different kinds of permission editing tables
         JTabbedPane tabbedPane = new JTabbedPane();
-        tabbedPane.addTab("SEC_GENERAL", generalEditor);
-        tabbedPane.addTab("SEC_OBJS", objEditor);
+        tabbedPane.addTab(getResourceString("SEC_GENERAL"), generalEditor);
+        //tabbedPane.addTab("SEC_OBJS", objEditor);
 
         final PanelBuilder mainPB = new PanelBuilder(
-        		new FormLayout("f:p:g", "p,5px,min(325px;p),2dlu,p"), infoPanel);
+        		new FormLayout("f:p:g", "f:p:g,5px,min(325px;p),2dlu,p"), infoPanel);
         
         // lay out controls on panel
-        mainPB.add(tabbedPane,             cc.xy(1, 1)); 
+        mainPB.add(tabbedPane, cc.xy(1, 1)); 
 
         // adds panel to custom dialog
         contentPanel = infoPanel;
@@ -95,6 +95,8 @@ public class SecuritySummaryDlg extends CustomDialog
 		generalEditor.updateData(principal, null, existingPerms, overridingPerms, null);
         
         pack();
+        
+        setSize(600, 500);
     }
 }
 
