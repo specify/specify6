@@ -45,7 +45,6 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.CriteriaIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
-import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.AccessionAgent;
 import edu.ku.brc.specify.datamodel.AccessionAuthorization;
@@ -207,7 +206,9 @@ public class UploadTable implements Comparable<UploadTable>
     protected Discipline                                discipline                   = null;
     
     UploadedRecFinalizerIFace                           finalizer                    = null;
-    List<Pair<UploadField, Method>>                     precisionDateFields         = new LinkedList<Pair<UploadField, Method>>();
+    List<Pair<UploadField, Method>>                     precisionDateFields          = new LinkedList<Pair<UploadField, Method>>();
+    
+    protected boolean                                   isSecurityOn; //Storing this here since checking security now requires db access.
     
     
     /**
@@ -429,6 +430,7 @@ public class UploadTable implements Comparable<UploadTable>
     {
         uploadedRecs.clear();
         matchSetting.clear();
+        isSecurityOn = AppContextMgr.isSecurityOn();
     }
 
     /**
@@ -2256,8 +2258,7 @@ public class UploadTable implements Comparable<UploadTable>
                 {
                     if (skipMatch || !findMatch(recNum, false))
                     {
-                        boolean isSecOn = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).isSecurityOn();
-                    	if (isSecOn && !getWriteTable().getTableInfo().getPermissions().canAdd())
+                    	if (isSecurityOn && !getWriteTable().getTableInfo().getPermissions().canAdd())
                     	{
                     		throw new UploaderException(String.format(UIRegistry.getResourceString("WB_UPLOAD_NO_ADD_PERMISSION"), getWriteTable().getTableInfo().getTitle()),
                     				UploaderException.ABORT_ROW);

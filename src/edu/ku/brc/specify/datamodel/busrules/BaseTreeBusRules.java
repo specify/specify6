@@ -785,7 +785,7 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
      * @param rankChanged
      */
     @SuppressWarnings("unchecked")
-    protected void updateFullNamesIfNecessary(T node, @SuppressWarnings("unused") DataProviderSessionIFace session)
+    protected void updateFullNamesIfNecessary(T node, DataProviderSessionIFace session)
     {        
         if (node.getTreeId() == null)
         {

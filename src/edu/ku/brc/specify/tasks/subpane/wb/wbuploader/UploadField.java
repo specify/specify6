@@ -118,7 +118,6 @@ public class UploadField
      * @param val
      * @return true if val is a valid value for this field.
      */
-    @SuppressWarnings("unused")
     public boolean validate(final String val)
     {
         return true;
@@ -139,8 +138,11 @@ public class UploadField
         {
             return item.getValueObject().toString();
         }
-        //this should have already been caught.
-        log.error("Invalid value '" + value + "' for field '" + wbFldName + "'");
+        if (!StringUtils.isBlank(value))
+        {
+        	//this should have already been caught.
+        	log.error("Invalid value '" + value + "' for field '" + wbFldName + "'");
+        }
         return null;
     }
     /**
