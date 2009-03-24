@@ -844,10 +844,10 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
     
     private void setAsDefFormatter() {
         Object item = formatCombo.getSelectedItem();
-        UIFieldFormatter selected = null;
-        if (item instanceof UIFieldFormatter)
+        UIFieldFormatterIFace selected = null;
+        if (item instanceof UIFieldFormatterIFace)
         {
-            selected = (UIFieldFormatter) item;
+            selected = (UIFieldFormatterIFace) item;
         }
         DefaultComboBoxModel model    = (DefaultComboBoxModel)formatCombo.getModel();
         for (int i=1;i<model.getSize();i++)
