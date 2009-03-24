@@ -142,7 +142,6 @@ import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
@@ -3528,7 +3527,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 
     protected boolean isUploadPermitted()
     {
-    	return ContextMgr.getTaskByClass(WorkbenchTask.class).getPermissions().canAdd();	
+    	return ContextMgr.getTaskByClass(WorkbenchTask.class).getPermissions().canModify();	
     }
     /**
      * @return true if it is OK/possible to perform an upload.
