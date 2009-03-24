@@ -108,6 +108,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.Taskable;
@@ -141,6 +142,7 @@ import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.RecordSet;
+import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
@@ -659,6 +661,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                 doDatasetUpload();
             }
         });
+        uploadDatasetBtn.setVisible(isUploadPermitted());
         uploadDatasetBtn.setEnabled(canUpload());
         if (!uploadDatasetBtn.isEnabled())
         {
@@ -3523,12 +3526,16 @@ public class WorkbenchPaneSS extends BaseSubPane
         }
     }
 
+    protected boolean isUploadPermitted()
+    {
+    	return ContextMgr.getTaskByClass(WorkbenchTask.class).getPermissions().canAdd();	
+    }
     /**
      * @return true if it is OK/possible to perform an upload.
      */
     protected boolean canUpload()
     {
-        return datasetUploader == null;
+    	return datasetUploader == null && isUploadPermitted();
     }
     //------------------------------------------------------------
     // Inner Classes

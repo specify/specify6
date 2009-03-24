@@ -76,7 +76,7 @@ public class CollectionAutoNumber extends AutoNumberGeneric
                                       final Pair<Integer, Integer> yearPos,
                                       final Pair<Integer, Integer> pos) throws Exception
     {
-        boolean doDebug = true;
+        boolean doDebug = false;
         
         Collection          currCol      = AppContextMgr.getInstance().getClassObject(Collection.class);
         AutoNumberingScheme catNumScheme = currCol.getNumberingSchemesByType(CollectionObject.getClassTableId());

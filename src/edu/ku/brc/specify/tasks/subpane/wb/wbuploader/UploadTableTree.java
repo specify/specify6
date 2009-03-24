@@ -635,7 +635,6 @@ public class UploadTableTree extends UploadTable
         super.finishUpload(cancelled);
         if (this.parent == null  && !this.incrementalNodeNumberUpdates && !cancelled)
         {
-            //System.out.println("HEY! uncomment TreeDef upload sets.");
             try
             {
                 getTreeDef().updateAllNodeNumbers((DataModelObjBase)getTreeRoot());
@@ -660,7 +659,6 @@ public class UploadTableTree extends UploadTable
         super.shutdown();
         if (parent == null  && !this.incrementalNodeNumberUpdates)
         {
-            //System.out.println("HEY! uncomment TreeDef upload sets.");
             getTreeDef().setDoNodeNumberUpdates(true);
             getTreeDef().setUploadInProgress(false);
         }

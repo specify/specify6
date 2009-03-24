@@ -55,6 +55,8 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.auth.BasicPermisionPanel;
+import edu.ku.brc.af.auth.PermissionEditorIFace;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.af.core.ContextMgr;
@@ -211,7 +213,8 @@ public class WorkbenchTask extends BaseTask
             
             RolloverCommand roc = null;
             NavBox navBox = new NavBox(getResourceString("Actions"));
-            if (!AppContextMgr.isSecurityOn() || getPermissions().canAdd())
+            //if (!AppContextMgr.isSecurityOn() || getPermissions().canAdd())
+            if (isPermitted())
             {
                 makeDnDNavBtn(navBox, getResourceString("WB_IMPORTDATA"), "Import16", getResourceString("WB_IMPORTDATA_TT"), new CommandAction(WORKBENCH, IMPORT_DATA_FILE, wbTblId), null, false, false);// true means make it draggable
                 makeDnDNavBtn(navBox, getResourceString("WB_IMPORT_CARDS"),  "ImportImages", getResourceString("WB_IMPORTCARDS_TT"), new CommandAction(WORKBENCH, WB_IMPORTCARDS, wbTblId),   null, false, false);// true means make it draggable
@@ -220,7 +223,8 @@ public class WorkbenchTask extends BaseTask
                 roc.addDropDataFlavor(DATASET_FLAVOR);
             }
 
-            if (!AppContextMgr.isSecurityOn() || getPermissions().canModify())
+            //if (!AppContextMgr.isSecurityOn() || getPermissions().canModify())
+            if (isPermitted())
             {
                 roc = (RolloverCommand)makeDnDNavBtn(navBox, getResourceString("WB_EXPORT_DATA"), "Export16", getResourceString("WB_EXPORT_DATA_TT"), new CommandAction(WORKBENCH, EXPORT_DATA_FILE, wbTblId), null, true, false);// true means make it draggable
                 roc.addDropDataFlavor(DATASET_FLAVOR);
@@ -399,14 +403,16 @@ public class WorkbenchTask extends BaseTask
         rs.addItem(workbench.getWorkbenchId());
         cmd.setProperty("workbench", rs);
         CommandAction deleteCmd = null;
-        if (!AppContextMgr.isSecurityOn() || getPermissions().canDelete())
+        //if (!AppContextMgr.isSecurityOn() || getPermissions().canDelete())
+        if (isPermitted())
         {
             deleteCmd = new CommandAction(WORKBENCH, DELETE_CMD_ACT, rs);
         }
         final RolloverCommand roc = (RolloverCommand)makeDnDNavBtn(workbenchNavBox, workbench.getName(), "DataSet16", cmd, 
                                                                    deleteCmd, 
                                                                    true, true);// true means make it draggable
-        if (!AppContextMgr.isSecurityOn() || getPermissions().canModify())
+        //if (!AppContextMgr.isSecurityOn() || getPermissions().canModify())
+        if (isPermitted())
         {
             roc.setToolTip(getResourceString("WB_CLICK_EDIT_DATA_TT"));
         }
@@ -419,7 +425,8 @@ public class WorkbenchTask extends BaseTask
         roc.addDragDataFlavor(DATASET_FLAVOR);
         
         // Drop Flavors
-        if (!AppContextMgr.isSecurityOn() || getPermissions().canModify())
+        //if (!AppContextMgr.isSecurityOn() || getPermissions().canModify())
+        if (isPermitted())	
         {
             roc.addDropDataFlavor(new DataFlavor(Workbench.class, EXPORT_DATA_FILE));
         }
@@ -455,7 +462,8 @@ public class WorkbenchTask extends BaseTask
             }
         });
 
-        if (!AppContextMgr.isSecurityOn() || getPermissions().canDelete())
+        //if (!AppContextMgr.isSecurityOn() || getPermissions().canDelete())
+        if (isPermitted())
         {
             popupMenu.addSeparator();
             menuTitle = "Delete";
@@ -742,7 +750,8 @@ public class WorkbenchTask extends BaseTask
         if (template != null)
         {
             mapper = new TemplateEditor((Frame)UIRegistry.get(UIRegistry.FRAME), getResourceString(titleKey), template);
-            if (AppContextMgr.isSecurityOn() && !getPermissions().canAdd())
+            //if (AppContextMgr.isSecurityOn() && !getPermissions().canAdd())
+            if (isPermitted())
             {
                 //XXX OK to require add permission to modify props and structure?
                 mapper.setReadOnly(true);
@@ -1620,7 +1629,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             boolean   alwaysAsk   = true;
             Workbench foundWB     = null;
             boolean   shouldCheck = false;
-            boolean canEdit = !AppContextMgr.isSecurityOn() || getPermissions().canAdd(); //XXX OK to require Add permission to modify props and structure?
+            //boolean canEdit = !AppContextMgr.isSecurityOn() || getPermissions().canAdd(); //XXX OK to require Add permission to modify props and structure?
+            boolean canEdit = isPermitted();
             do
             {
                 if (StringUtils.isEmpty(newWorkbenchName))
@@ -1869,8 +1879,10 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                              }
                          }
                          
+//                         WorkbenchPaneSS workbenchPane = new WorkbenchPaneSS(workbench.getName(), thisTask, workbench, showImageView, 
+//                                     AppContextMgr.isSecurityOn() && !getPermissions().canModify());
                          WorkbenchPaneSS workbenchPane = new WorkbenchPaneSS(workbench.getName(), thisTask, workbench, showImageView, 
-                                     AppContextMgr.isSecurityOn() && !getPermissions().canModify());
+                                 !isPermitted());
                          addSubPaneToMgr(workbenchPane);
                          
                          if (convertedAnImage)
@@ -2970,8 +2982,10 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             if (workbenchArg == null) // meaning a new one was created
             {
                 // create a new WorkbenchPaneSS
+//                workbenchPane = new WorkbenchPaneSS(workbench.getName(), this, importWB, false, 
+//                        (AppContextMgr.isSecurityOn() && !getPermissions().canModify()));
                 workbenchPane = new WorkbenchPaneSS(workbench.getName(), this, importWB, false, 
-                        (AppContextMgr.isSecurityOn() && !getPermissions().canModify()));
+                        !isPermitted());
             }
             else
             {
@@ -3402,6 +3416,12 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         }
     }
     
+    public boolean isPermitted()
+    {
+    	//view Permission => access to workbenches 
+    	//(add Permission => access to Uploader)
+    	return !AppContextMgr.isSecurityOn() || getPermissions().canView();
+    }
     /**
      * @return the permissions array
      */
@@ -3413,4 +3433,15 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                                 {true, true, true, true},
                                 {false, false, false, false}};
     }
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.af.tasks.BaseTask#getPermEditorPanel()
+	 */
+	@Override
+	public PermissionEditorIFace getPermEditorPanel()
+	{
+		return new BasicPermisionPanel("WorkbenchTask.PermTitle", "WorkbenchTask.PermEnable", "WorkbenchTask.PermUpload", null, null);
+	}
+    
+    
 }
