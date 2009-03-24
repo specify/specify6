@@ -65,9 +65,10 @@ public class UserInfoPanel extends GenericFormPanel
     @Override
     protected void init(final String    title, 
                         final String[]  fields, 
-                        final boolean[] required)
+                        final boolean[] required,
+                        final String[] types)
     {
-        super.init(title, fields, required);
+        super.init(title, fields, required, types);
         
         CellConstraints cc = new CellConstraints();
         

@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Properties;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -92,7 +93,7 @@ public class GenericFormPanel extends BaseSetupPanel
                             final JButton  nextBtn,
                             final boolean makeStretchy)
     {
-        this(null, name, title, labels, fields, null, nextBtn, makeStretchy);
+        this(null, name, title, labels, fields, (boolean[])null, nextBtn, makeStretchy);
     }
     
     /**
@@ -140,7 +141,25 @@ public class GenericFormPanel extends BaseSetupPanel
         this.makeStretchy = makeStretchy;
         this.labels       = labels;
         
-        init(title, fields, required);
+        init(title, fields, required, null);
+    }
+    
+    public GenericFormPanel(final String   name,
+                            final String   title,
+                            final String[] labels,
+                            final String[] fields, 
+                            final String[] types, 
+                            final JButton  nextBtn,
+                            final boolean makeStretchy)
+    {
+        super(name, nextBtn);
+        
+        this.dataObj      = null;
+        this.fieldsNames  = fields;
+        this.makeStretchy = makeStretchy;
+        this.labels       = labels;
+        
+        init(title, fields, null, types);
     }
     
     /**
@@ -150,7 +169,8 @@ public class GenericFormPanel extends BaseSetupPanel
      */
     protected void init(final String    title, 
                         final String[]  fields, 
-                        final boolean[] required)
+                        final boolean[] required, 
+                        final String[]  types)
     {
         CellConstraints cc = new CellConstraints();
         
@@ -176,11 +196,20 @@ public class GenericFormPanel extends BaseSetupPanel
                 
             } else
             {
+                JComponent comp;
                 if (reqHash != null)
                 {
                     reqHash.put(fName, required[i]);
                 }
-                JComponent comp = createField(builder, labels[i], required != null ? required[i] : true, row);
+                
+                if (types != null && types[i].equals("checkbox"))
+                {
+                    comp = createCheckBox(builder, labels[i], row);
+
+                } else
+                {
+                    comp = createField(builder, labels[i], required != null ? required[i] : true, row);
+                }
                 compList.add(comp);
                 comps.put(fName, comp);
             }
@@ -248,21 +277,27 @@ public class GenericFormPanel extends BaseSetupPanel
     {
         for (String fName : comps.keySet())
         {
+            Object val = null;
             JComponent comp = comps.get(fName);
             if (comp instanceof JTextField)
             {
-                String val = ((JTextField)comp).getText();
+                val = ((JTextField)comp).getText();
                 props.put(fName, val);
-                
-                if (dataObj != null && setter != null)
+
+            } else if (comp instanceof JCheckBox)
+            {
+                Boolean isChecked = ((JCheckBox)comp).isSelected();
+                props.put(fName, isChecked);
+            }
+            
+            if (dataObj != null && setter != null && val != null)
+            {
+                Object dataVal = getter.getFieldValue(dataObj, fName);
+                if (dataVal != null)
                 {
-                    Object dataVal = getter.getFieldValue(dataObj, fName);
-                    if (dataVal != null)
+                    if (!dataVal.toString().equals(val))
                     {
-                        if (!dataVal.toString().equals(val))
-                        {
-                            setter.setFieldValue(dataObj, fName, val);
-                        }
+                        setter.setFieldValue(dataObj, fName, val);
                     }
                 }
             }

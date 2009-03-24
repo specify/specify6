@@ -77,6 +77,8 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -123,6 +125,8 @@ import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
+import edu.ku.brc.af.ui.forms.DataSetterForObj;
+import edu.ku.brc.af.ui.forms.FormHelper;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.dbsupport.AttributeIFace;
@@ -239,6 +243,23 @@ public class BuildSampleDatabase
 {
     private static final Logger  log      = Logger.getLogger(BuildSampleDatabase.class);
     
+    //                                                  0                   1                  2                 3                   4                     5                   6                   7                     8
+    private static String[] TaxonIndexNames = {"family_common_name", "species author", "species source", "species lsid", "species common name", "subspecies author", "subspecies source", "subspecies lsid", "subspecies common name"};
+    private static String[] TaxonFieldNames = {"commonName",         "author",         "source",         "guid",         "commonName",          "author",            "source",            "guid",            "commonName"};
+    
+    private static int FAMILY_COMMON_NAME     = 0;
+    private static int SPECIES_AUTHOR         = 1;
+    private static int SPECIES_SOURCE         = 2;
+    private static int SPECIES_LSID           = 3;
+    private static int SPECIES_COMMON_NAME    = 4;
+    private static int SUBSPECIES_AUTHOR      = 5;
+    private static int SUBSPECIES_SOURCE      = 6;
+    private static int SUBSPECIES_LSID        = 7;
+    private static int SUBSPECIES_COMMON_NAME = 8;
+    
+    protected Hashtable<String, Integer> taxonIndexes = new Hashtable<String, Integer>();
+    private DataSetterForObj setter = new DataSetterForObj();
+
     protected static boolean     debugOn  = false;
     protected static final int   TIME_THRESHOLD = 3000;
     protected static Hashtable<String, Boolean> fieldsToHideHash = new Hashtable<String, Boolean>();
@@ -646,6 +667,8 @@ public class BuildSampleDatabase
         createStorageDefFromXML(storages, stgTreeDef, props.getProperty("StorageTreeDef.treedefs"));
         
         createTaxonDefFromXML(taxa, taxonTreeDef, props.getProperty("TaxonTreeDef.treedefs"));
+        
+        convertTaxonFromXLS(taxonTreeDef, "mammals.xls");
         
         createGeographyDefFromXML(geos, geoTreeDef, props.getProperty("GeographyTreeDef.treedefs"));
         
@@ -3320,6 +3343,7 @@ public class BuildSampleDatabase
 
         return earth;
     }
+    
     /**
      * @param root
      */
@@ -7788,6 +7812,307 @@ public class BuildSampleDatabase
     }
     
 
+    /**
+     * @param treeDef
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public Taxon convertTaxonFromXLS(final TaxonTreeDef treeDef, final String fileName)
+    {
+        Hashtable<String, Taxon> taxonHash = new Hashtable<String, Taxon>();
+        
+        taxonHash.clear();
 
+        File file = new File("demo_files/"+fileName);
+        if (!file.exists())
+        {
+            log.error("Couldn't file[" + file.getAbsolutePath() + "] checking the config dir");
+            file = XMLHelper.getConfigDir(fileName);
+            if (!file.exists())
+            {
+                file = new File("Specify/demo_files/"+fileName);
+            }
+        }
 
+        if (file == null || !file.exists())
+        {
+            log.error("Couldn't file[" + file.getAbsolutePath() + "]");
+            return null;
+        }
+        
+        Vector<TaxonTreeDefItem>   rankedItems = new Vector<TaxonTreeDefItem>();
+        Hashtable<String, Boolean> colNames    = new Hashtable<String, Boolean>();
+        for (TaxonTreeDefItem item : treeDef.getTreeDefItems())
+        {
+            colNames.put(item.getName().toLowerCase(), true);
+            rankedItems.add(item);
+        }
+        
+        Collections.sort(rankedItems, new Comparator<TaxonTreeDefItem>() {
+            @Override
+            public int compare(TaxonTreeDefItem o1, TaxonTreeDefItem o2)
+            {
+                return o1.getRankId().compareTo(o2.getRankId());
+            }
+        });
+        
+        TaxonTreeDefItem rootTreeDefItem = rankedItems.get(0);
+        Set<Taxon>       rootKids        = rootTreeDefItem.getTreeEntries();
+        Taxon root = rootKids.iterator().next();
+
+        int counter     = 0;
+        int numDataCols = 0; 
+        try
+        {
+            startTx();
+            
+            for (TaxonTreeDefItem item : treeDef.getTreeDefItems())
+            {
+                persist(item);
+            }
+            
+            persist(root);
+            
+            String[]        cells    = new String[35];
+            InputStream     input    = new FileInputStream(file);
+            POIFSFileSystem fs       = new POIFSFileSystem(input);
+            HSSFWorkbook    workBook = new HSSFWorkbook(fs);
+            HSSFSheet       sheet    = workBook.getSheetAt(0);
+            Iterator<?> rows = sheet.rowIterator();
+            while (rows.hasNext())
+            {
+                for (int i=0;i<cells.length;i++)
+                {
+                    cells[i] = null;
+                }
+                
+                if (counter == 0)
+                {
+                    HSSFRow row = (HSSFRow) rows.next();
+                    Iterator<?> cellsIter = row.cellIterator();
+                    int i = 0;
+                    while (cellsIter.hasNext())
+                    {
+                        HSSFCell cell = (HSSFCell)cellsIter.next();
+                        if (cell != null)
+                        {
+                            cells[i] = StringUtils.trim(cell.getRichStringCellValue().getString());
+                            i++;
+                        }
+                    }
+                    for (i=0;i<cells.length;i++)
+                    {
+                        if (cells[i] == null) break;
+                        
+                        if (colNames.get(cells[i].toLowerCase()) != null)
+                        {
+                            numDataCols = i+1;
+                        } else
+                        {
+                            System.out.println("Not Found: "+cells[i].toLowerCase());
+                            break;
+                        }
+                    }
+                    loadIndexes(cells);
+                    counter = 1;
+                    continue;
+                }
+                
+                if (counter % 100 == 0)
+                {
+                    if (frame != null) frame.setProcess(counter);
+                    log.info("Converted " + counter + " Taxon records");
+                }
+                
+                HSSFRow row = (HSSFRow) rows.next();
+                Iterator<?> cellsIter = row.cellIterator();
+                int i = 0;
+                while (cellsIter.hasNext() && i < cells.length)
+                {
+                    HSSFCell cell = (HSSFCell)cellsIter.next();
+                    if (cell != null)
+                    {
+                        cells[i] = StringUtils.trim(cell.getRichStringCellValue().getString());
+                        i++;
+                    }
+                }
+
+                @SuppressWarnings("unused")
+                Taxon newTaxon = convertTaxonRecord(cells, numDataCols, root, rankedItems);
+    
+                counter++;
+            }
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+
+        if (frame != null) frame.setProcess(counter);
+        
+        log.info("Converted " + counter + " Taxon records");
+
+        TreeHelper.fixFullnameForNodeAndDescendants(root);
+        root.setNodeNumber(1);
+        fixNodeNumbersFromRoot(root);
+        
+        commitTx();
+        
+        log.info("Converted " + counter + " Stratigraphy records");
+
+        // set up Taxon foreign key mapping for locality
+        taxonHash.clear();
+
+        return root;
+    }
+    
+    /**
+     * @param cells
+     */
+    private void loadIndexes(final String[] cells)
+    {
+        for (int i=FAMILY_COMMON_NAME;i<=SUBSPECIES_COMMON_NAME;i++)
+        {
+            for (int inx=0;inx<cells.length;inx++)
+            {
+                if (cells[inx] == null) break;
+
+                //System.out.println(cells[inx]+"  "+TaxonIndexNames[i]);
+                if (cells[inx].equals(TaxonIndexNames[i]))
+                {
+                    //System.out.println(TaxonIndexNames[i]+" -> "+inx);
+                    taxonIndexes.put(TaxonIndexNames[i], inx);
+                    break;
+                }
+            }
+        }
+    }
+
+    /**
+     * @param continent
+     * @param country
+     * @param state
+     * @param county
+     * @param taxonRoot
+     * @return
+     */
+    protected Taxon convertTaxonRecord(final String[]  levelNames,
+                                       final int       numColumns,
+                                       final Taxon     taxonRoot,
+                                       final Vector<TaxonTreeDefItem> rankedItems)
+    {
+        int levelsToBuild = numColumns;
+
+        for (int i = 0; i < levelsToBuild; i++)
+        {
+            if (StringUtils.isEmpty(levelNames[i]))
+            {
+                levelNames[i] = "(Empty)";
+            }
+        }
+
+        Taxon prevLevelTaxon = taxonRoot;
+        for (int i = 0; i < levelsToBuild; ++i)
+        {
+            Taxon newLevelTaxon = buildTaxonLevel(levelNames[i], prevLevelTaxon, levelNames, rankedItems);
+            if (newLevelTaxon != null)
+            {
+                prevLevelTaxon = newLevelTaxon;
+            } else 
+            {
+                break;
+            }
+        }
+
+        return prevLevelTaxon;
+    }
+
+    /**
+     * @param nameArg
+     * @param parentArg
+     * @return
+     */
+    protected Taxon buildTaxonLevel(final String nameArg,
+                                    final Taxon  parentArg,
+                                    final String[] cells,
+                                    final Vector<TaxonTreeDefItem> rankedItems)
+    {
+        if (StringUtils.isEmpty(nameArg))
+        {
+            return null;
+        }
+        
+        String name = nameArg;
+        if (name == null)
+        {
+            name = "N/A";
+        }
+
+        // search through all of parent's children to see if one already exists with the same name
+        Set<Taxon> children = parentArg.getChildren();
+        for (Taxon child : children)
+        {
+            if (name.equalsIgnoreCase(child.getName()))
+            {
+                // this parent already has a child by the given name
+                // don't create a new one, just return this one
+                return child;
+            }
+        }
+
+        // we didn't find a child by the given name
+        // we need to create a new Taxon record
+        Taxon newTaxon = new Taxon();
+        newTaxon.initialize();
+        newTaxon.setName(name);
+        newTaxon.setParent(parentArg);
+        parentArg.addChild(newTaxon);
+        newTaxon.setDefinition(parentArg.getDefinition());
+        
+        int inx = rankedItems.indexOf(parentArg.getDefinitionItem());
+        
+        TaxonTreeDefItem ttdi = rankedItems.elementAt(inx+1);
+        newTaxon.setDefinitionItem(ttdi);
+        newTaxon.setRankId(ttdi.getRankId());
+        
+        switch (ttdi.getRankId())
+        {
+            case 140: // family
+                loadTaxonFields(newTaxon, new int[] {FAMILY_COMMON_NAME}, cells);
+                break;
+                
+            case 220: // Species
+                loadTaxonFields(newTaxon, new int[] {SPECIES_AUTHOR, SPECIES_SOURCE, SPECIES_LSID, SPECIES_COMMON_NAME}, cells);
+                break;
+                
+            case 230: // SubSpecies
+                loadTaxonFields(newTaxon, new int[] {SUBSPECIES_AUTHOR, SUBSPECIES_SOURCE, SUBSPECIES_LSID, SUBSPECIES_COMMON_NAME}, cells);
+                break;
+                
+            default:
+                break;
+        }
+
+        persist(newTaxon);
+        
+        return newTaxon;
+    }
+    
+    /**
+     * @param taxon
+     * @param indexes
+     * @param cells
+     */
+    private void loadTaxonFields(final Taxon taxon, final int[] indexes, final String[] cells)
+    {
+        for (int inx : indexes)
+        {
+            int index = taxonIndexes.get(TaxonIndexNames[inx]);
+            String data = cells[index];
+            if (StringUtils.isNotEmpty(data))
+            {
+                FormHelper.setFieldValue(TaxonFieldNames[inx], taxon, data, null, setter);
+            }
+        }
+    }
 }

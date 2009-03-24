@@ -70,6 +70,7 @@ public class TreeDefSetupPanel extends BaseSetupPanel implements SetupPanelIFace
     protected DefaultTableModel                model;
     protected JComboBox                        directionCBX;
     protected JLabel                           fullnameDisplayTxt;
+    protected DisciplinePanel                  disciplinePanel;
     
     protected Vector<TreeDefRow>               treeDefList = new Vector<TreeDefRow>();
     
@@ -86,64 +87,19 @@ public class TreeDefSetupPanel extends BaseSetupPanel implements SetupPanelIFace
                              final String        panelName,
                              final String        descKey,
                              final JButton       nextBtn,
-                             final STD_DISCIPLINES disciplineType)
+                             final DisciplinePanel disciplinePanel)
     {
         super(panelName, nextBtn);
         
-        this.classType  = classType;
-        this.classTitle = classTitle;
+        this.classType       = classType;
+        this.classTitle      = classTitle;
+        this.disciplinePanel = disciplinePanel;
         
         if (classType == TaxonTreeDef.class || 
-                classType == GeographyTreeDef.class || 
-                classType == StorageTreeDef.class)
+            classType == GeographyTreeDef.class || 
+            classType == StorageTreeDef.class)
         {
-            DisciplineType dType  = DisciplineType.getDiscipline(disciplineType);
-            
-            String fileName = null;
-            if (classType == TaxonTreeDef.class)
-            {
-                fileName = dType.getName()+ File.separator + "taxon_init.xml";
-                
-            } else if (classType == GeographyTreeDef.class)
-            {
-                fileName = "common" + File.separator + "geography_init.xml";
-                
-            } else if (classType == StorageTreeDef.class)
-            {
-                fileName = "common" + File.separator + "storage_init.xml";
-            }
-            
-            File file = getConfigDir(fileName);
-            if (file.exists())
-            {
-                try
-                {
-                    Element root = readFileToDOM4J(file);
-                    for (Object levelObj : root.selectNodes("/tree/treedef/level"))
-                    {
-                        Element level        = (Element)levelObj;
-                        String  name         = getAttr(level, "name", null);
-                        int     rank         = getAttr(level, "rank", -1);
-                        boolean enforced     = getAttr(level, "enforced", false);
-                        boolean isInFullName = getAttr(level, "infullname", false);
-                        if (rank > -1)
-                        {
-                            boolean required = false;
-                            if (classType == TaxonTreeDef.class)
-                            {
-                                required = TaxonTreeDef.isStdRequiredLevel(rank) || rank == 0;
-                            } else
-                            {
-                                required = GeographyTreeDef.isStdRequiredLevel(rank) || rank == 0;
-                            }
-                            treeDefList.add(new TreeDefRow(name, rank, required, enforced, isInFullName, required || rank == 0, ", "));
-                        }
-                    }
-                } catch (Exception ex)
-                {
-                    ex.printStackTrace();
-                }
-            }
+            loadTree(disciplinePanel != null ? disciplinePanel.getDisciplineType().getDisciplineType() : null);
             
             model = new TreeDefTableModel();
             model.addTableModelListener(new TableModelListener() {
@@ -216,12 +172,75 @@ public class TreeDefSetupPanel extends BaseSetupPanel implements SetupPanelIFace
         }
     }
     
+    /**
+     * @param disciplineType
+     */
+    private void loadTree(final STD_DISCIPLINES disciplineType)
+    {
+        treeDefList.clear();
+        
+        DisciplineType dType  = disciplineType == null ? null : DisciplineType.getDiscipline(disciplineType);
+        
+        String fileName = null;
+        if (classType == TaxonTreeDef.class)
+        {
+            fileName = dType.getName()+ File.separator + "taxon_init.xml";
+            
+        } else if (classType == GeographyTreeDef.class)
+        {
+            fileName = "common" + File.separator + "geography_init.xml";
+            
+        } else if (classType == StorageTreeDef.class)
+        {
+            fileName = "common" + File.separator + "storage_init.xml";
+        }
+        
+        System.out.println(fileName);
+        File file = getConfigDir(fileName);
+        if (file.exists())
+        {
+            try
+            {
+                Element root = readFileToDOM4J(file);
+                for (Object levelObj : root.selectNodes("/tree/treedef/level"))
+                {
+                    Element level        = (Element)levelObj;
+                    String  name         = getAttr(level, "name", null);
+                    int     rank         = getAttr(level, "rank", -1);
+                    boolean enforced     = getAttr(level, "enforced", false);
+                    boolean isInFullName = getAttr(level, "infullname", false);
+                    if (rank > -1)
+                    {
+                        boolean required = false;
+                        if (classType == TaxonTreeDef.class)
+                        {
+                            required = TaxonTreeDef.isStdRequiredLevel(rank) || rank == 0;
+                        } else
+                        {
+                            required = GeographyTreeDef.isStdRequiredLevel(rank) || rank == 0;
+                        }
+                        treeDefList.add(new TreeDefRow(name, rank, required, enforced, isInFullName, required || rank == 0, ", "));
+                        System.out.println(name);
+                    }
+                }
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
+        }
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.config.init.SetupPanelIFace#doingNext()
      */
     @Override
     public void doingNext()
     {
+        if (disciplinePanel != null)
+        {
+            loadTree(disciplinePanel.getDisciplineType().getDisciplineType());
+        }
+        
         updateBtnUI();
     }
 

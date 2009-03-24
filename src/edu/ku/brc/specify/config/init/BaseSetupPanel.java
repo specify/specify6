@@ -18,6 +18,7 @@ import java.awt.event.KeyEvent;
 import java.util.Properties;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -28,6 +29,8 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 
 import edu.ku.brc.ui.DocumentAdaptor;
+import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * This is the configuration window for create a new user and new database.
@@ -172,6 +175,27 @@ public abstract class BaseSetupPanel extends JPanel implements SetupPanelIFace
             protected void changed(DocumentEvent e) { updateBtnUI(); }
         });
         return txt;
+    }
+
+    /**
+     * Helper function for creating the UI.
+     * @param builder builder
+     * @param label the string label
+     * @param row the row to place it on
+     * @return the create JCheckBox
+     */
+    protected JCheckBox createCheckBox(final PanelBuilder builder, 
+                                       final String       label, 
+                                       final int          row)
+    {
+        CellConstraints cc = new CellConstraints();
+        
+        JCheckBox checkbox = UIHelper.createCheckBox(UIRegistry.getResourceString(label));
+        
+        JLabel lbl = UIHelper.createI18NLabel(" ", SwingConstants.RIGHT);
+        builder.add(lbl, cc.xy(1, row));
+        builder.add(checkbox, cc.xyw(3, row, makeStretchy ? 2 : 1));
+        return checkbox;
     }
 
     /* (non-Javadoc)

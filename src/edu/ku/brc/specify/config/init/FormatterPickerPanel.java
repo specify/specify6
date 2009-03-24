@@ -7,7 +7,6 @@
 package edu.ku.brc.specify.config.init;
 
 import static edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr.createAutoNumber;
-import static edu.ku.brc.ui.UIHelper.createCheckBox;
 import static edu.ku.brc.ui.UIHelper.createComboBox;
 import static edu.ku.brc.ui.UIHelper.createI18NFormLabel;
 import static edu.ku.brc.ui.UIHelper.createLabel;
@@ -44,6 +43,7 @@ import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.af.ui.forms.formatters.UIFormatterEditorDlg;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -56,7 +56,7 @@ import edu.ku.brc.util.Pair;
  */
 public class FormatterPickerPanel extends BaseSetupPanel
 {
-    protected JCheckBox isNumericChk    = createCheckBox(getResourceString("IS_NUM_CHK"));
+    protected JCheckBox isNumericChk    = UIHelper.createCheckBox(getResourceString("IS_NUM_CHK"));
     protected JComboBox formatterCBX    = createComboBox(new DefaultComboBoxModel());
     protected JLabel    isNumericLbl    = createLabel("");
     

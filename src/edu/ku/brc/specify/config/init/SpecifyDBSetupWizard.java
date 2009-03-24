@@ -188,6 +188,8 @@ public class SpecifyDBSetupWizard extends JPanel
             props.put("country", "USA");
             props.put("zip", "66044");
             props.put("phone", "785-864-5555");
+            
+            props.put("addtaxon",   true);
         }
 
         props.put("userType", SpecifyUserTypes.UserType.Manager.toString());
@@ -227,7 +229,15 @@ public class SpecifyDBSetupWizard extends JPanel
                     new String[] { "addr1", "addr2", "city", "state", "country", "zip", "phone"}, 
                     new boolean[] {true, false, true, true, true, true, true},
                     nextBtn, true));
+
+            panels.add(new GenericFormPanel("ACCESSIONGLOBALLY", 
+                    "ENTER_ACC_INFO",
+                    new String[] { "ACCGLOBALLY"}, 
+                    new String[] { "accglobal"},
+                    new String[] { "checkbox"},
+                    nextBtn, true));
             
+
             storageTDPanel = new TreeDefSetupPanel(StorageTreeDef.class, 
                     getResourceString("Storage"), 
                     "Storage", 
@@ -251,7 +261,7 @@ public class SpecifyDBSetupWizard extends JPanel
                                              "Taxon", 
                                              "CONFIG_TREEDEF", 
                                              nextBtn, 
-                                             disciplinePanel.getDisciplineType().getDisciplineType());
+                                             disciplinePanel);
         panels.add(taxonTDPanel);
          
         geoTDPanel = new TreeDefSetupPanel(GeographyTreeDef.class, 
@@ -259,7 +269,7 @@ public class SpecifyDBSetupWizard extends JPanel
                                            "Geography", 
                                            "CONFIG_TREEDEF", 
                                            nextBtn, 
-                                           disciplinePanel.getDisciplineType().getDisciplineType());
+                                           disciplinePanel);
         panels.add(geoTDPanel);
 
         if (wizardType == WizardType.Full)
