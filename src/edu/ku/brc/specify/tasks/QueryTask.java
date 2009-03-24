@@ -50,6 +50,8 @@ import org.dom4j.Element;
 
 import com.thoughtworks.xstream.XStream;
 
+import edu.ku.brc.af.auth.BasicPermisionPanel;
+import edu.ku.brc.af.auth.PermissionEditorIFace;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.af.core.ContextMgr;
@@ -911,8 +913,8 @@ public class QueryTask extends BaseTask
      */
     protected NavBoxItemIFace addToNavBox(final RecordSet recordSet)
     {
-        boolean canDelete = AppContextMgr.isSecurityOn() ? getPermissions().canDelete() : true;
-        
+        //boolean canDelete = AppContextMgr.isSecurityOn() ? getPermissions().canDelete() : true;
+        boolean canDelete = ((QueryTask )ContextMgr.getTaskByClass(QueryTask.class)).isPermitted();
         final RolloverCommand roc = (RolloverCommand) makeDnDNavBtn(navBox, recordSet.getName(),
                 "Query", null,
                 canDelete ? new CommandAction(QUERY, DELETE_CMD_ACT, recordSet) : null, 
@@ -1909,6 +1911,24 @@ public class QueryTask extends BaseTask
     }
     
     /**
+     * @return true if the current user has permission to use the QueryBuilder
+     */
+    public boolean isPermitted()
+    {
+    	return getPermissions().canView();
+    }
+    
+    /* (non-Javadoc)
+	 * @see edu.ku.brc.af.tasks.BaseTask#getPermEditorPanel()
+	 */
+	@Override
+	public PermissionEditorIFace getPermEditorPanel()
+	{
+		return new BasicPermisionPanel("QueryTask.PermTitle", "QueryTask.PermEnable", null, null, null);
+	}
+
+
+	/**
      * @author timbo
      *
      * @code_status Alpha
@@ -2019,4 +2039,5 @@ public class QueryTask extends BaseTask
             editQuery(queryId);
         }
     }
+    
 }

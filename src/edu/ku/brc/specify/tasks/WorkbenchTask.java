@@ -192,6 +192,11 @@ public class WorkbenchTask extends BaseTask
         {
         	log.debug("add? " + getPermissions().canAdd() + " modify? " + getPermissions().canModify()
         			+ " delete? " + getPermissions().canDelete() + " view? " + getPermissions().canView());
+//        	System.out.println("add? " + getPermissions().canAdd() + " modify? " + getPermissions().canModify()
+//        			+ " delete? " + getPermissions().canDelete() + " view? " + getPermissions().canView());
+//        	DBTableInfo wbtbl = DBTableIdMgr.getInstance().getByClassName("edu.ku.brc.specify.datamodel.Workbench");
+//        	System.out.println("tbl add? " + wbtbl.getPermissions().canAdd() + " tbl modify? " + wbtbl.getPermissions().canModify()
+//        			+ " tbl delete? " + wbtbl.getPermissions().canDelete() + " tbl view? " + wbtbl.getPermissions().canView());
         }
         else
         {
