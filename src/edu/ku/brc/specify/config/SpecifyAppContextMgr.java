@@ -1477,17 +1477,21 @@ public class SpecifyAppContextMgr extends AppContextMgr
     }
     
     /**
-     * 
+     * Checks a for a format file created by the Wizard for reading and adding a new
+     * wizard to the UIFieldFormatMgr.
+     * @param fmtFileName the name of the file.
+     * @return true if the formatter was added
      */
     protected boolean addFormatFromFile(final String fmtFileName)
     {
-        String path    = UIRegistry.getAppDataDir() + File.separator + fmtFileName;
-        File   uifFile = new File(path);
+        String  path     = UIRegistry.getAppDataDir() + File.separator + fmtFileName;
+        File    uifFile  = new File(path);
+        boolean loadedOK = false;
         if (uifFile.exists())
         {
             try
             {
-                boolean loadedOK =  UIFieldFormatterMgr.getInstance().addFormatter(uifFile);
+                loadedOK =  UIFieldFormatterMgr.getInstance().addFormatter(uifFile);
                 if (loadedOK)
                 {
                     try
@@ -1501,7 +1505,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 ex.printStackTrace();
             }
         }
-        return false;
+        return loadedOK;
     }
     
     /**

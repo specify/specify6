@@ -916,7 +916,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
             xmlAttr(sb, "default", isDefault);
         }
         
-        if (type != FormatterType.generic)
+        if (type != FormatterType.generic && type != null)
         {
             xmlAttr(sb, "type", type.toString());
         }

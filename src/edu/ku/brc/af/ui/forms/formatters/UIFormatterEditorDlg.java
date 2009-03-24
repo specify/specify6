@@ -801,7 +801,7 @@ public class UIFormatterEditorDlg extends CustomDialog
         
         if (fields.size() == 1 && fields.get(0).getType() == FieldType.numeric)
         {
-            selectedFormat.setType(UIFieldFormatterIFace.FormatterType.numeric);
+            //selectedFormat.setType(UIFieldFormatterIFace.FormatterType.numeric);
         } else
         {
             selectedFormat.setType(UIFieldFormatterIFace.FormatterType.generic);

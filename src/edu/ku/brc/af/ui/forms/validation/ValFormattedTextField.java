@@ -21,6 +21,7 @@ import static edu.ku.brc.ui.UIHelper.setControlSize;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -696,7 +697,18 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
         
         if (!isViewOnly && !isPartialOK && !isNew && valState == UIValidatable.ErrorType.Error && isEnabled())
         {
-            UIHelper.drawRoundedRect((Graphics2D)g, valTextColor.getColor(), getSize(), 1);
+            Dimension size;
+            if (editTF != null)
+            {
+                size = editTF.getSize();
+            } else if (comps != null && comps.length == 1)
+            {
+                size = comps[0].getSize();
+            } else
+            {
+                size = getSize();
+            }
+            UIHelper.drawRoundedRect((Graphics2D)g, valTextColor.getColor(), size, 1);
         }
     }
 

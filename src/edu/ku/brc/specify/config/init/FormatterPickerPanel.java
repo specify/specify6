@@ -144,9 +144,12 @@ public class FormatterPickerPanel extends BaseSetupPanel
         dlg.setVisible(true);
         if (!dlg.isCancelled())
         {
-            AutoNumberIFace autoNum = doingCatNums ? createAutoNumber("edu.ku.brc.specify.dbsupport.CollectionAutoNumber", "edu.ku.brc.specify.datamodel.CollectionObject", "catalogNumber") :
-                                                     createAutoNumber("edu.ku.brc.af.core.db.AutoNumberGeneric", "edu.ku.brc.specify.datamodel.Accession", "accessionNumber");
-            newFormatter.setAutoNumber(autoNum);
+            if (!newFormatter.isUserInputNeeded())
+            {
+                AutoNumberIFace autoNum = doingCatNums ? createAutoNumber("edu.ku.brc.specify.dbsupport.CollectionAutoNumber", "edu.ku.brc.specify.datamodel.CollectionObject", "catalogNumber") :
+                                                         createAutoNumber("edu.ku.brc.af.core.db.AutoNumberGeneric", "edu.ku.brc.specify.datamodel.Accession", "accessionNumber");
+                newFormatter.setAutoNumber(autoNum);
+            }
         } else
         {
             newFormatter = null;
@@ -208,7 +211,7 @@ public class FormatterPickerPanel extends BaseSetupPanel
         if (!doingCatNums)
         {
             ((DefaultComboBoxModel)formatterCBX.getModel()).addElement(getResourceString("NONE"));
-            newFmtInx++;
+            newFmtInx = 1;
         }
         ((DefaultComboBoxModel)formatterCBX.getModel()).addElement(getResourceString("CREATE"));
 
