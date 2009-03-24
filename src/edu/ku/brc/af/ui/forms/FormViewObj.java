@@ -699,7 +699,7 @@ public class FormViewObj implements Viewable,
             }
             
             PermissionSettings perm = SecurityMgr.getInstance().getPermission("DO."+shortName.toLowerCase());
-            //perm.dumpPermissions(mvParentArg.getViewName(), perm.getOptions());
+            PermissionSettings.dumpPermissions(mvParentArg.getViewName(), perm.getOptions());
             
             if (perm.hasNoPerm() && restrictableUI != null)
             {
@@ -711,7 +711,8 @@ public class FormViewObj implements Viewable,
             {
                 boolean isSecurityModeOK = perm.getOptions() > 0 && ((perm.isViewOnly() && (mode == AltViewIFace.CreationMode.VIEW)) ||
                                                                      !perm.isViewOnly());
-                if (isSecurityModeOK && av.getMode() == mode)
+                //PermissionSettings.dumpPermissions(viewArg.getClassName()+"  "+isSecurityModeOK+"  "+av.getTitle()+"  "+mode, perm.getOptions());
+                if (isSecurityModeOK && (av.getMode() == mode || (mvParentArg.isTopLevel() && mvParentArg.isOKToAddAllAltViews())))
                 {
                     altViewsListArg.add(av);
                 }

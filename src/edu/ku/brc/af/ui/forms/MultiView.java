@@ -49,7 +49,6 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
-import edu.ku.brc.ui.UIHelper;
 
 /**
  * A MulitView is a "view" that contains multiple Viewable object that can display the current data object in any of the given views.
@@ -221,8 +220,7 @@ public class MultiView extends JPanel
         if (AppContextMgr.isSecurityOn())
         {
             this.permissions = getPremissionFromView(view);
-            log.debug("*** View: "+view.getName() + " - " + permissions);
-            PermissionSettings.dumpPermissions("DO."+view.getName(), permissions.getOptions());
+            //PermissionSettings.dumpPermissions("DO."+view.getName(), permissions.getOptions());
         } else
         {
             this.permissions = new PermissionSettings(PermissionSettings.ALL_PERM);
