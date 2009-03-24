@@ -518,6 +518,8 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
                     sla = new SchemaLocalizerFrame(SpLocaleContainer.CORE_SCHEMA, DBTableIdMgr.getInstance());
                 }
                 
+                AppContextMgr.getInstance().setHasContext(true);
+                
                 sla.createDisplay();
                 sla.pack();
                 Dimension size = sla.getSize();

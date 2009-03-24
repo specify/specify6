@@ -555,15 +555,15 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
      */
     protected void formHasChanged()
     {
-        System.err.print("formHasChanged ");
+        //System.err.print("formHasChanged ");
         if (!isIgnoreChanges())
         {
             setHasChanged(true);
             schemaPanel.setHasChanged(true);
             schemaPanel.setTableInfoChanged(true);
-            System.err.print("SET ");
+            //System.err.print("SET ");
         }
-        System.err.print("\n");
+        //System.err.print("\n");
     }
     
     /**
@@ -818,13 +818,13 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
             fieldInfo.getName().equals("catalogNumber"))
         {
             Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
-            if (collection.getNumberingSchemes().size() > 0)
+            if (collection != null && collection.getNumberingSchemes().size() > 0)
             {
                 enableFormatter = false;
             }
             
         } else if (tableInfo.getTableId() == CollectionObject.getClassTableId() &&
-            fieldInfo.getName().equals("catalogNumber"))
+                   fieldInfo.getName().equals("catalogNumber"))
         {
         
         }
@@ -852,7 +852,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
         DefaultComboBoxModel model    = (DefaultComboBoxModel)formatCombo.getModel();
         for (int i=1;i<model.getSize();i++)
         {
-            UIFieldFormatter uif = (UIFieldFormatter)model.getElementAt(i);
+            UIFieldFormatterIFace uif = (UIFieldFormatterIFace)model.getElementAt(i);
             uif.setDefault(uif == selected);
         }
         if (fieldInfo != null)

@@ -843,10 +843,10 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                 
                 FileUtils.writeStringToFile(outFile, xstream.toXML(containers));
                 
-            } else
+            } /*else
             {
                 log.info("There were no items to write to ["+outFile.getAbsolutePath()+"]");
-            }
+            }*/
             
             return true;
             
