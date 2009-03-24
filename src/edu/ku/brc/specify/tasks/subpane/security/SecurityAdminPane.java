@@ -17,6 +17,7 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collections;
@@ -37,6 +38,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
@@ -173,10 +175,37 @@ public class SecurityAdminPane extends BaseSubPane
     {
         JPanel navigationPanel = new JPanel();
         final PanelBuilder mainPB = new PanelBuilder(new FormLayout(
-                "f:p:g", "p,3dlu,p,3dlu,f:p:g,3dlu,p,3dlu,p,3dlu,p,3dlu,p"), navigationPanel);
+                "min(210px;p)", "p,3dlu,p,3dlu,f:p:g,p,15px,p,p,p,5px,p"), navigationPanel);
         final CellConstraints cc = new CellConstraints();
 
         JPanel navTreePanel = createFullTreeNavPanel(); // navigation jTree gets created here 
+        navTreePanel.setMinimumSize(new Dimension(200, 200));
+        
+        // Other components that were added to the tree panel are now created here
+        // It's better to include the scrollpane with the navigation JTree in a separate palen
+        // to let it shrink correctly (bug 6409)
+
+        String helpStr = getResourceString("ADD_USER_HINT");
+        JLabel userDnDHelp = createLabel(helpStr);
+                
+        final PanelBuilder tbRightPB = new PanelBuilder(new FormLayout("f:p:g,p", "p"));
+        mainPB.add(tbRightPB.getPanel(),         cc.xy(1, 6));
+                
+        int y = 1;
+        PanelBuilder lpb = new PanelBuilder(new FormLayout("p,10px,p:g", "p,2px,p,2px,p,2px,p,2px,p,2px"));
+        lpb.addSeparator(getResourceString("SEC_LGND"), cc.xyw(1, y, 3)); y += 2;
+
+        Discipline discipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
+        String[] lbl = {"SEC_DSP",            "SEC_COLL",   "SEC_ADMINGRP", "SEC_PERSON"};
+        String[] icn = {discipline.getType(), "Collection", "AdminGroup",   "person"};
+        for (int i=0;i<lbl.length;i++)
+        {
+            lpb.add(createLabel("", IconManager.getIcon(icn[i], IconManager.STD_ICON_SIZE)), cc.xy(1,y));
+            lpb.add(createI18NLabel(lbl[i]), cc.xy(3,y)); y+= 2;
+        }
+                
+        mainPB.add(userDnDHelp,               cc.xy(1, 10));
+        mainPB.add(lpb.getPanel(),            cc.xy(1, 12));
 
         DocumentListener searchDL = new DocumentAdaptor()
         {
@@ -485,40 +514,19 @@ public class SecurityAdminPane extends BaseSubPane
     private JPanel createFullTreeNavPanel()
     {
         createNavigationTree();
-        //JList userList = createUserList();
         
         String helpStr = getResourceString("ADD_USER_HINT");
         JLabel userDnDHelp = createLabel(helpStr);
         
         // adding the tree as f:p:g makes it grow too large
-        final PanelBuilder mainPB = new PanelBuilder(new FormLayout("min(210px;p):g", 
-                                                                    "min(500px;p),p,15px,p,p,p,5px,p")/*, new FormDebugPanel()*/);
+        final PanelBuilder mainPB = new PanelBuilder(new FormLayout("min(210px;p):g", "f:p:g"));
         final CellConstraints cc = new CellConstraints();
 
-        final PanelBuilder tbRightPB = new PanelBuilder(new FormLayout("f:p:g,p", "p"));
-        
-        mainPB.add(createScrollPane(tree, true), cc.xy(1, 1));
-        mainPB.add(tbRightPB.getPanel(),         cc.xy(1, 2));
-        
-//        mainPB.addSeparator("Users",          cc.xy(1, 4)); // I18N
-//        
-//        sp = new JScrollPane(userList, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-//        mainPB.add(sp,                        cc.xy(1, 5));
-        int y = 1;
-        PanelBuilder lpb = new PanelBuilder(new FormLayout("p,10px,p:g", "p,2px,p,2px,p,2px,p,2px,p,2px"));
-        lpb.addSeparator(getResourceString("SEC_LGND"), cc.xyw(1, y, 3)); y += 2;
-        
-        Discipline discipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
-        String[] lbl = {"SEC_DSP",            "SEC_COLL",   "SEC_ADMINGRP", "SEC_PERSON"};
-        String[] icn = {discipline.getType(), "Collection", "AdminGroup",   "person"};
-        for (int i=0;i<lbl.length;i++)
-        {
-            lpb.add(createLabel("", IconManager.getIcon(icn[i], IconManager.STD_ICON_SIZE)), cc.xy(1,y));
-            lpb.add(createI18NLabel(lbl[i]), cc.xy(3,y)); y+= 2;
-        }
-        
-        mainPB.add(userDnDHelp,               cc.xy(1, 6));
-        mainPB.add(lpb.getPanel(),            cc.xy(1, 8));
+
+        // to let the panel shrink correctly (bug 6409)
+        JScrollPane sp = createScrollPane(tree, true);
+        sp.setPreferredSize(new Dimension(200, 50));
+        mainPB.add(sp, cc.xy(1, 1));
 
         return mainPB.getPanel();
     }
