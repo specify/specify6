@@ -110,8 +110,10 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
             final ValComboBox rankComboBox = (ValComboBox)comp;
     
             final JCheckBox            acceptedCheckBox     = (JCheckBox)formViewObj.getControlByName("isAccepted");
-            final ValComboBoxFromQuery acceptedParentWidget = (ValComboBoxFromQuery)formViewObj.getControlByName("acceptedParent");
-
+            Component apComp = formViewObj.getControlByName("acceptedParent");
+            final ValComboBoxFromQuery acceptedParentWidget = apComp instanceof ValComboBoxFromQuery ?
+            		(ValComboBoxFromQuery )apComp : null;
+            
             
             if (parentField instanceof ValComboBoxFromQuery)
             {
