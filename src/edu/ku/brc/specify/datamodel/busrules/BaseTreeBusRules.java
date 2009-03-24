@@ -1184,7 +1184,7 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
         		DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         		try
         		{
-        			session.attach(parent);
+        			session.refresh(parent);
         			Set<T> siblings = parent.getChildren();
         			for (T sibling : siblings)
         			{
