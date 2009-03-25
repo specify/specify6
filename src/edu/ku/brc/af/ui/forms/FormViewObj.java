@@ -4727,10 +4727,10 @@ public class FormViewObj implements Viewable,
         }
 
 
-        if (doResetAfterFill && mvParent != null && mvParent.isTopLevel() && saveControl != null && isEditing)
-        {
-            //saveControl.setEnabled(false);
-        }
+        //if (doResetAfterFill && mvParent != null && mvParent.isTopLevel() && saveControl != null && isEditing)
+        //{
+        //    saveControl.setEnabled(false);
+        //}
         
         // See comment above where I turn this on
         if (formValidator != null)

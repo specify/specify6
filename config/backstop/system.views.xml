@@ -218,14 +218,14 @@
             </altviews>
         </view>
 
-        <view name="ViewProps"
+        <!--  <view name="ViewProps"
             class="edu.ku.brc.specify.datamodel.SpView"
             resourcelabels="false">
             <desc><![CDATA[]]></desc>
             <altviews>
                 <altview name="View Edit" viewdef="ViewProps" mode="edit" validated="true"/>
             </altviews>
-        </view>
+        </view> -->
         
         <view name="ExcelExportInfo"
             class="java.util.Hashtable"
@@ -893,6 +893,7 @@
             </rows>
         </viewdef>
         
+        <!-- 
         <viewdef
             type="form"
             name="ViewProps"
@@ -938,7 +939,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="8" label="Default Mode"/>
-                    <!--   <cell type="field" id="8" name="defaultMode" uitype="text" initialize="helper=;"/> -->
+                    // <cell type="field" id="8" name="defaultMode" uitype="text" initialize="helper=;"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="9" label="Selector Name"/>
@@ -946,7 +947,8 @@
                 </row>
 			</rows>
 		</viewdef>
-		
+		 -->
+		 
         <viewdef
             type="form"
             name="ExcelExportInfo"

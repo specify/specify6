@@ -52,6 +52,9 @@ public class FormPane extends DroppableTaskPane
     protected boolean        isNewObj;
     protected boolean        firstTimeShown = true;
     protected boolean        isShuttingDown = false;
+    
+    // Form Form Image creation
+    protected boolean        doSuppressBusRules = false;
 
     /**
      * Creates a form pane for a task.
@@ -85,6 +88,37 @@ public class FormPane extends DroppableTaskPane
                     final int      options)
     {
         this(name, task, viewSetName, viewName, mode, data, options, null);
+    }
+
+    /**
+     * Constructor used for creating a View for Form Imaging.
+     * @param name
+     * @param task
+     * @param viewSetName
+     * @param viewName
+     * @param mode
+     * @param data
+     * @param options
+     * @param doSuppressBusRules
+     */
+    public FormPane(final String   name,
+                    final Taskable task,
+                    final String   viewSetName,
+                    final String   viewName,
+                    final String   mode,
+                    final Object   data,
+                    final int      options,
+                    final boolean  doSuppressBusRules)
+    {
+        this(name, task, ""); //$NON-NLS-1$
+
+        this.viewSetName = viewSetName;
+        this.viewName    = viewName;
+        this.data        = data;
+        this.doSuppressBusRules = doSuppressBusRules;
+        
+        createForm(viewSetName, viewName, AltView.parseMode(mode, AltViewIFace.CreationMode.VIEW), data, options, null);
+
     }
 
     /**
@@ -378,7 +412,7 @@ public class FormPane extends DroppableTaskPane
                         }
                         
                         BusinessRulesIFace busRule = DBTableIdMgr.getInstance().getBusinessRule(newDataObj);
-                        if (busRule != null)
+                        if (busRule != null && !doSuppressBusRules)
                         {
                             busRule.addChildrenToNewDataObjects(newDataObj);
                         }
@@ -568,6 +602,13 @@ public class FormPane extends DroppableTaskPane
         return multiView != null ? multiView.getFirstFocusable() : null;
     }
 
+    /**
+     * @param doSuppressBusRules the doSuppressBusRules to set
+     */
+    public void setDoSuppressBusRules(boolean doSuppressBusRules)
+    {
+        this.doSuppressBusRules = doSuppressBusRules;
+    }
     
     /**
      * This interface is used to make form adjustments before any data is set into the form, at creation time.
@@ -576,4 +617,5 @@ public class FormPane extends DroppableTaskPane
     {
         public abstract void adjustForm(FormViewObj fvo);
     }
+
 }

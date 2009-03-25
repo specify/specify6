@@ -79,6 +79,9 @@
 	        <attr name="colspan" type="integer" required="false" default="1">
 	            <desc>The number of columns the separator will span.</desc>
 	        </attr>
+	        <attr name="rows" type="integer" required="false" default="5">
+                <desc>Indicates how many rows the grid should be.</desc>
+            </attr>
 	    </attrs>
 	    <params>             
 	        <param name="addsearch" type="boolean" required="false" default="false">

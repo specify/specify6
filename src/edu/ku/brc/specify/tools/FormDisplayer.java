@@ -205,18 +205,19 @@ public class FormDisplayer
                         }
                     }
                 }
-            } catch (Exception ex)
+            } catch (Exception ex) {}
+            
+            if (data instanceof Discipline)
             {
-                //edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormDisplayer.class, ex);
+                ((Discipline)data).setType("fish");
             }
-            FormPane formPane = new FormPane(view.getName(), null, null, view.getName(), "edit", data, MultiView.IS_NEW_OBJECT | MultiView.HIDE_SAVE_BTN); //$NON-NLS-1$
+            FormPane formPane = new FormPane(view.getName(), null, null, view.getName(), "edit", data, MultiView.IS_NEW_OBJECT | MultiView.HIDE_SAVE_BTN, true); //$NON-NLS-1$
             frame = new JFrame();
             frame.setContentPane(formPane);
             frame.setSize(1024, 768);
             frame.setVisible(true);
             
-            frame.setLocation(1024, 0);
+            frame.setLocation(0, 0);
             
             Dimension size = frame.getContentPane().getPreferredSize();
             size.height += 40;

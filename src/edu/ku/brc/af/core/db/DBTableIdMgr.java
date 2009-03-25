@@ -64,9 +64,12 @@ public class DBTableIdMgr
     protected static  DBTableIdMgr instance = null;
     
     // Data Members
-    protected Hashtable<Integer, DBTableInfo> hash   = new Hashtable<Integer, DBTableInfo>();
-    protected Vector<DBTableInfo>             tables = new Vector<DBTableInfo>();
-    protected boolean                         isFullSchema = true;
+    protected Hashtable<Integer, DBTableInfo> hash            = new Hashtable<Integer, DBTableInfo>();
+    protected Hashtable<String, DBTableInfo>  byClassNameHash = new Hashtable<String, DBTableInfo>();
+    protected Hashtable<String, DBTableInfo>  byShortClassNameHash = new Hashtable<String, DBTableInfo>();
+    
+    protected Vector<DBTableInfo>             tables          = new Vector<DBTableInfo>();
+    protected boolean                         isFullSchema    = true;
 
     /**
      * Can now be created as a standalone class to read in other types of Schema Definitions (i.e. Workbench Schema).
@@ -188,6 +191,8 @@ public class DBTableIdMgr
                         log.error("Table ID used twice["+tableId+"]"); //$NON-NLS-1$ //$NON-NLS-2$
                     }
 					hash.put(tableId, tblInfo); 
+                    byClassNameHash.put(classname.toLowerCase(), tblInfo);
+                    byShortClassNameHash.put(tblInfo.getShortClassName().toLowerCase(), tblInfo);
                     tables.add(tblInfo);
                     
                     Element idElement = (Element)tableNode.selectSingleNode("id"); //$NON-NLS-1$
@@ -315,6 +320,8 @@ public class DBTableIdMgr
             ti.cleanUp();
         }
         hash.clear();
+        byClassNameHash.clear();
+        byShortClassNameHash.clear();
     }
     
     /**
@@ -393,14 +400,13 @@ public class DBTableIdMgr
      */
     public int getIdByClassName(final String className)
     {
-        for (DBTableInfo tableInfo : hash.values())
+        DBTableInfo tableInfo = getByClassName(className);
+        if (tableInfo != null)
         {
-            if (tableInfo.getClassName().equalsIgnoreCase(className))
-            {
-                return tableInfo.getTableId();
-            }
+            return tableInfo.getTableId();
         }
-        throw new RuntimeException("Couldn't find table id for table name[" + className + "]"); //$NON-NLS-1$ //$NON-NLS-2$
+        log.error("Couldn't find table id for table name[" + className + "]"); //$NON-NLS-1$ //$NON-NLS-2$
+        return -1;
     }
 
     /**
@@ -412,13 +418,11 @@ public class DBTableIdMgr
      */
     public DBTableInfo getByClassName(final String className)
     {
-        for (DBTableInfo tableInfo : hash.values())
+        if (className != null)
         {
-            if (tableInfo.getClassName().equalsIgnoreCase(className))
-            {
-                return tableInfo;
-            }
+            return byClassNameHash.get(className.toLowerCase());
         }
+        log.error("Couldn't find table id for table name[" + className + "]"); //$NON-NLS-1$ //$NON-NLS-2$
         return null;
     }
 
@@ -430,15 +434,13 @@ public class DBTableIdMgr
      */
     public DBTableInfo getByShortClassName(final String shortClassName)
     {
-        // for now just use a brute force linear search
-        for (DBTableInfo tableInfo : hash.values())
+        System.err.println("["+shortClassName+"]");
+        if (shortClassName != null)
         {
-        	if (tableInfo.getShortClassName().equalsIgnoreCase(shortClassName))
-            {
-                return tableInfo;
-            }
+            return byShortClassNameHash.get(shortClassName.toLowerCase());
         }
-        throw new RuntimeException("Couldn't find table id for table name[" + shortClassName + "]"); //$NON-NLS-1$ //$NON-NLS-2$
+        log.error("Couldn't find table id for table name[" + shortClassName + "]"); //$NON-NLS-1$ //$NON-NLS-2$
+        return null;
     }
     
     /**
@@ -660,15 +662,22 @@ public class DBTableIdMgr
      */
     public BusinessRulesIFace getBusinessRule(String className)
     {
-        try
+        if (StringUtils.isNotEmpty(className))
         {
-            return getBusinessRule(Class.forName(className));
-            
-        } catch (Exception ex)
+            try
+            {
+                System.err.println(className);
+                return getBusinessRule(Class.forName(className));
+                
+            } catch (Exception ex)
+            {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DBTableIdMgr.class, ex);
+                //log.error(ex); // this isn't an error
+            }
+        } else
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DBTableIdMgr.class, ex);
-            //log.error(ex); // this isn't an error
+            log.warn("Class Name was empty.");
         }
         return null;
     }

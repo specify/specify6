@@ -369,6 +369,11 @@ public class GenericFormPanel extends BaseSetupPanel
             if (comp instanceof JTextField)
             {
                 list.add(new Pair<String, String>(UIRegistry.getResourceString(labels[i]), ((JTextField)comp).getText()));
+            } else if (comp instanceof JCheckBox)
+            {
+                JCheckBox chkbx = (JCheckBox)comp;
+                list.add(new Pair<String, String>(UIRegistry.getResourceString(labels[i]), 
+                        UIRegistry.getResourceString(Boolean.toString(chkbx.isSelected()))));
             }
         }
         return list;
