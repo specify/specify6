@@ -244,7 +244,7 @@ public class BuildSampleDatabase
     private static final Logger  log      = Logger.getLogger(BuildSampleDatabase.class);
     
     //                                                  0                   1                  2                 3                   4                     5                   6                   7                     8
-    private static String[] TaxonIndexNames = {"family_common_name", "species author", "species source", "species lsid", "species common name", "subspecies author", "subspecies source", "subspecies lsid", "subspecies common name"};
+    private static String[] TaxonIndexNames = {"family common name", "species author", "species source", "species lsid", "species common name", "subspecies author", "subspecies source", "subspecies lsid", "subspecies common name"};
     private static String[] TaxonFieldNames = {"commonName",         "author",         "source",         "guid",         "commonName",          "author",            "source",            "guid",            "commonName"};
     
     private static int FAMILY_COMMON_NAME     = 0;
@@ -481,6 +481,8 @@ public class BuildSampleDatabase
                                  props.getProperty("divAbbrev"), 
                                  null); //props.getProperty("divTitle");
         
+        division.setIsAccessionBound((Boolean)props.get("accglobal"));
+        
         // create tree defs (later we will make the def items and nodes)
         TaxonTreeDef              taxonTreeDef      = createTaxonTreeDef("Taxon");
         GeographyTreeDef          geoTreeDef        = createGeographyTreeDef("Geography");
@@ -668,7 +670,28 @@ public class BuildSampleDatabase
         
         createTaxonDefFromXML(taxa, taxonTreeDef, props.getProperty("TaxonTreeDef.treedefs"));
         
-        convertTaxonFromXLS(taxonTreeDef, "mammals.xls");
+        if ((Boolean)props.get("preloadtaxon"))
+        {
+            String fileName = null;
+            switch (DisciplineType.getByName(discipline.getType()).getDisciplineType())
+            {
+                case fish         : break;
+                case herpetology  : fileName = "col2008_herps.xls"; break;
+                case reptile      : fileName = "col2008_reptilia.xls"; break;
+                case paleobotany  : break;
+                case invertpaleo  : break;
+                case vertpaleo    : break;
+                case bird         : fileName = "col2008_aves.xls"; break;
+                case mammal       : fileName = "col2008_mammalia.xls"; break;
+                case insect       : break;
+                case botany       : break;
+                case invertebrate : break; 
+            }
+            if (fileName != null)
+            {
+                convertTaxonFromXLS(taxonTreeDef, fileName);
+            }
+        }
         
         createGeographyDefFromXML(geos, geoTreeDef, props.getProperty("GeographyTreeDef.treedefs"));
         
@@ -7823,7 +7846,7 @@ public class BuildSampleDatabase
         
         taxonHash.clear();
 
-        File file = new File("demo_files/"+fileName);
+        File file = new File("demo_files/taxonomy/"+fileName);
         if (!file.exists())
         {
             log.error("Couldn't file[" + file.getAbsolutePath() + "] checking the config dir");
@@ -7977,10 +8000,10 @@ public class BuildSampleDatabase
             {
                 if (cells[inx] == null) break;
 
-                //System.out.println(cells[inx]+"  "+TaxonIndexNames[i]);
+                System.out.println(cells[inx]+"  "+TaxonIndexNames[i]);
                 if (cells[inx].equals(TaxonIndexNames[i]))
                 {
-                    //System.out.println(TaxonIndexNames[i]+" -> "+inx);
+                    System.out.println("** "+TaxonIndexNames[i]+" -> "+inx);
                     taxonIndexes.put(TaxonIndexNames[i], inx);
                     break;
                 }
@@ -8107,11 +8130,14 @@ public class BuildSampleDatabase
     {
         for (int inx : indexes)
         {
-            int index = taxonIndexes.get(TaxonIndexNames[inx]);
-            String data = cells[index];
-            if (StringUtils.isNotEmpty(data))
+            if (TaxonIndexNames[inx] != null)
             {
-                FormHelper.setFieldValue(TaxonFieldNames[inx], taxon, data, null, setter);
+                int index = taxonIndexes.get(TaxonIndexNames[inx]);
+                String data = cells[index];
+                if (StringUtils.isNotEmpty(data))
+                {
+                    FormHelper.setFieldValue(TaxonFieldNames[inx], taxon, data, null, setter);
+                }
             }
         }
     }
