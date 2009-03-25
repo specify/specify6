@@ -24,6 +24,8 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.auth.PermissionSettings;
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBTableChildIFace;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
@@ -35,6 +37,7 @@ import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 
 
 /**
@@ -573,6 +576,55 @@ public final class FormHelper
         // else
         log.error("The Default Form Name is empty for Object type ["+dataObj.getClass().getName()+"]");
         
+        return null;
+    }
+    
+    /**
+     * Retrieves a string for restricted values.
+     * @param dataObj a data object that implements FormDataObjIFace
+     * @return a localized string "(Resticted)" or null
+     */
+    public static String checkForRestrictedValue(final Object dataObj)
+    {
+        if (AppContextMgr.isSecurityOn() && dataObj != null && dataObj instanceof FormDataObjIFace)
+        {
+            return checkForRestrictedValue(DBTableIdMgr.getInstance().getByShortClassName(dataObj.getClass().getSimpleName()));
+        }
+        return null;
+    }
+    
+    /**
+     * Retrieves a string for restricted values.
+     * @param tableId the ID of the table info
+     * @return a localized string "(Resticted)" or null
+     */
+    public static String checkForRestrictedValue(final int tableId)
+    {    
+        if (AppContextMgr.isSecurityOn())
+        {
+            return checkForRestrictedValue(DBTableIdMgr.getInstance().getInfoById(tableId));
+        }
+        return null;
+    }
+    
+    /**
+     * Checks to see if a DBTableInfo is restricted or not and returns the "Restricted" sring or null.
+     * @param tblInfo the table info
+     * @return a localized string "(Resticted)" or null
+     */
+    public static String checkForRestrictedValue(final DBTableInfo tblInfo)
+    {    
+        if (tblInfo != null)
+        {
+            PermissionSettings perm = tblInfo.getPermissions();
+            if (perm != null)
+            {
+                if (!perm.canView())
+                {
+                    return UIRegistry.getResourceString("RESTRICTED");
+                }
+            }
+        }
         return null;
     }
 }

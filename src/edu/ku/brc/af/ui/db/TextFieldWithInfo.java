@@ -50,7 +50,7 @@ import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
 import edu.ku.brc.af.prefs.AppPrefsChangeListener;
 import edu.ku.brc.af.ui.ViewBasedDialogFactoryIFace;
 import edu.ku.brc.af.ui.forms.DataGetterForObj;
-import edu.ku.brc.af.ui.forms.FormDataObjIFace;
+import edu.ku.brc.af.ui.forms.FormHelper;
 import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
@@ -355,24 +355,12 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
         
         if (value != null)
         {
-            if (AppContextMgr.isSecurityOn() && dataObj != null && dataObj instanceof FormDataObjIFace)
+            String restricted = FormHelper.checkForRestrictedValue(dataObj);
+            if (restricted != null)
             {
-                DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByShortClassName(dataObj.getClass().getSimpleName());
-                if (tblInfo != null)
-                {
-                    // Security - Check security on incoming object
-                    PermissionSettings perm = tblInfo.getPermissions();
-                    if (perm != null)
-                    {
-                        if (!perm.canView())
-                        {
-                            String restricted = "(Restricted)"; // I18N
-                            textField.setText(restricted);
-                            textField.setCaretPosition(0);
-                            return;
-                        }
-                    }
-                }
+                textField.setText(restricted);
+                textField.setCaretPosition(0);
+                return;
             }
             
             if (getter == null)

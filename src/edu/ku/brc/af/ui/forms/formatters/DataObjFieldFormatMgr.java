@@ -641,21 +641,10 @@ public class DataObjFieldFormatMgr
      */
     protected String formatInternal(final DataObjDataFieldFormatIFace format, final Object dataObj)
     {
-        if (AppContextMgr.isSecurityOn() && dataObj != null && dataObj instanceof FormDataObjIFace)
+        String restricted = FormHelper.checkForRestrictedValue(dataObj);
+        if (restricted != null)
         {
-            DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByShortClassName(dataObj.getClass().getSimpleName());
-            if (tblInfo != null)
-            {
-                // Security - Check security on incoming object
-                PermissionSettings perm = tblInfo.getPermissions();
-                if (perm != null)
-                {
-                    if (!perm.canView())
-                    {
-                        return "(Restricted)"; // I18N
-                    }
-                }
-            }
+            return restricted;
         }
         
         if (format != null)

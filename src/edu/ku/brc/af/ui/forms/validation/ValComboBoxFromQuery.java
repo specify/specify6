@@ -143,7 +143,8 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     protected FormDataObjIFace   newDataObj  = null;
     protected MODE               currentMode = MODE.Unknown;
     protected boolean            hasFocus    = false;
-
+    protected boolean            isRestricted;
+    protected String             restrictedStr;
 
     protected ViewBasedDisplayIFace frame          = null;
     protected MultiView             multiView      = null;
@@ -202,6 +203,12 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         this.dataObjFormatterName  = dataObjFormatterName;
         this.frameTitle            = tableInfo.getTitle();
         this.helpContext           = helpContext;
+        
+        restrictedStr = FormHelper.checkForRestrictedValue(tableInfo);
+        if (restrictedStr != null)
+        {
+            isRestricted = true;
+        }
         
         textWithQuery = new TextFieldWithQuery(tableInfo, 
                                                keyFieldName, 
@@ -1193,6 +1200,12 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
      */
     public void setValue(final Object value, final String defaultValue)
     {
+        if (isRestricted)
+        {
+            textWithQuery.setText(restrictedStr);
+            return;
+        }
+        
         if (value == null || value instanceof FormDataObjIFace)
         {
             dataObj = (FormDataObjIFace)value;

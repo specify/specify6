@@ -32,6 +32,7 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPrefsCache;
+import edu.ku.brc.af.ui.forms.FormHelper;
 import edu.ku.brc.af.ui.forms.formatters.DataObjDataField;
 import edu.ku.brc.af.ui.forms.formatters.DataObjDataFieldFormatIFace;
 import edu.ku.brc.af.ui.forms.formatters.DataObjSwitchFormatter;
@@ -156,23 +157,13 @@ public class CollectingEventDataObjFmt implements DataObjDataFieldFormatIFace, C
             return "The Collecting Event is empty."; // I18N
         }
         
-        boolean isSecurityOn = AppContextMgr.isSecurityOn();
-        
-        if (isSecurityOn)
+        String restricted = FormHelper.checkForRestrictedValue(CollectingEvent.getClassTableId());
+        if (restricted != null)
         {
-            DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(CollectingEvent.getClassTableId());
-            if (tblInfo != null)
-            {
-                PermissionSettings perm = tblInfo.getPermissions();
-                if (perm != null)
-                {
-                    if (!perm.canView())
-                    {
-                        return "(Restricted)"; // I18N
-                    }
-                }
-            }
+            return restricted;
         }
+        
+        boolean isSecurityOn = AppContextMgr.isSecurityOn();
         
         CollectingEvent ce = (CollectingEvent)dataValue;
         
