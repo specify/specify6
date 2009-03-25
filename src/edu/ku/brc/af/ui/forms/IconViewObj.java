@@ -703,9 +703,24 @@ public class IconViewObj implements Viewable
         {
             if (perm == null)
             {
-                perm = SecurityMgr.getInstance().getPermission("DO."+dataObj.getClass().getSimpleName().toLowerCase());
+                Class<?> cls;
+                if (classToCreate == null)
+                {
+                    try
+                    {
+                        cls = Class.forName(view.getClassName());
+                    } catch (Exception ex) 
+                    {
+                        cls = dataObj.getClass();
+                    }
+                    
+                } else
+                {
+                    cls = classToCreate;
+                }
+                perm = SecurityMgr.getInstance().getPermission("DO."+cls.getSimpleName().toLowerCase());                
                 //SecurityMgr.dumpPermissions(dataObj.getClass().getSimpleName(), perm2.getOptions());
-            }
+               }
             
             if ((isEditing && perm.isViewOnly()) || (!isEditing && !perm.canView()))
             {
