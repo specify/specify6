@@ -18,11 +18,14 @@ package edu.ku.brc.af.ui.forms.validation;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.KeyStroke;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.text.Document;
@@ -132,6 +135,24 @@ public class ValTextAreaBrief extends ValTextArea
             public void actionPerformed(ActionEvent e)
             {
                 showPopup();
+            }
+        });
+        
+        // Enable being able to TAB out of TextArea
+        getInputMap().put(KeyStroke.getKeyStroke("TAB"), "none");
+        addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent event) {
+                if (event.getKeyCode() == KeyEvent.VK_TAB )
+                {
+                    if (event.isShiftDown())
+                    {
+                        transferFocusBackward();
+                    } else
+                    {
+                        transferFocus();
+                    }
+                }
             }
         });
     }

@@ -483,7 +483,7 @@ public class ViewFactory
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
 
-        textArea.setEditable(!cellField.isReadOnly());
+        textArea.setEditable(!cellField.isReadOnly() && validator != null);
 
         return textArea;
     }
@@ -527,7 +527,7 @@ public class ViewFactory
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
 
-        textArea.setEditable(!cellField.isReadOnly());
+        textArea.setEditable(!cellField.isReadOnly() && validator != null);
 
         return textArea;
     }
@@ -1703,12 +1703,19 @@ public class ViewFactory
                             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ViewFactory.class, ex);
                         }
                         
+                        if (isSingle)
+                        {
+                            isACollection = true;
+                        }
+                        
                         boolean useNoScrollbars = UIHelper.getProperty(props, "noscrollbars", false);
                         
                         int options = (isACollection && !isSingle ? MultiView.RESULTSET_CONTROLLER : MultiView.IS_SINGLE_OBJ) | MultiView.VIEW_SWITCHER |
                         (MultiView.isOptionOn(parent.getCreateOptions(), MultiView.IS_NEW_OBJECT) ? MultiView.IS_NEW_OBJECT : MultiView.NO_OPTIONS) |
                         (mode == AltViewIFace.CreationMode.EDIT ? MultiView.IS_EDITTING : MultiView.NO_OPTIONS) |
                         (useNoScrollbars ? MultiView.NO_SCROLLBARS : MultiView.NO_OPTIONS);
+                        
+                        MultiView.printCreateOptions("HERE", options);
                         
                         options |= cellSubView.getPropertyAsBoolean("nosep", false) ? MultiView.DONT_USE_EMBEDDED_SEP : 0;
                         options |= cellSubView.getPropertyAsBoolean("nosepmorebtn", false) ? MultiView.NO_MORE_BTN_FOR_SEP : 0;

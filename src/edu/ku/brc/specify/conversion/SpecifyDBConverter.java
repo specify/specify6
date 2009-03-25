@@ -345,6 +345,9 @@ public class SpecifyDBConverter
         convertDB(sourceDatabaseName, destDatabaseName, false, null,  null);
     }
     
+    /**
+     * 
+     */
     protected void setUpSystemProperties()
     {
         // Name factories
