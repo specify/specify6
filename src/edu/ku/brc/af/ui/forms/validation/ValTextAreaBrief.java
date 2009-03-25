@@ -238,6 +238,20 @@ public class ValTextAreaBrief extends ValTextArea
         }
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.validation.ValTextArea#setValue(java.lang.Object, java.lang.String)
+     */
+    @Override
+    public void setValue(Object value, String defaultValue)
+    {
+        super.setValue(value, defaultValue);
+        
+        if (!isEditting)
+        {
+            iconButton.setEnabled(!getText().isEmpty());
+        }
+    }
+
     /**
      * @return
      */

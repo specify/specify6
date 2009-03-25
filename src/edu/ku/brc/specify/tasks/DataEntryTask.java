@@ -263,6 +263,7 @@ public class DataEntryTask extends BaseTask
                                     PermissionSettings perm = tblInfo.getPermissions();
                                     if (!perm.canAdd())
                                     {
+                                        UIRegistry.showLocalizedMsg("DET_NO_ADD_PERM");
                                         return;
                                     }
                                 }
