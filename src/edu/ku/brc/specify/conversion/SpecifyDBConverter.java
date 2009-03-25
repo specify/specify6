@@ -53,6 +53,7 @@ import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.dbsupport.ResultsPager;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.SpecifyUserTypes;
+import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.config.init.DataBuilder;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Collection;
@@ -746,7 +747,11 @@ public class SpecifyDBConverter
                     
                     if (startfromScratch)
                     {
-                        boolean isEmbddedCE = false; // XXX Hard-coded for now
+                        Discipline discipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
+                        DisciplineType dType = DisciplineType.getByName(discipline.getType());
+                        DisciplineType.STD_DISCIPLINES dspType = dType.getDisciplineType();
+                        
+                        boolean isEmbddedCE = dspType != DisciplineType.STD_DISCIPLINES.fish;
                         int     catSeriesId = 0;
                         conversion.convertCollectionObjectDefs(specifyUser.getSpecifyUserId(), isEmbddedCE, catSeriesId, userAgent);
                         
