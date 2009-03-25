@@ -312,23 +312,28 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                 
                 if (isOK)
                 {
+                    // 03/25/09 rods - Added these extra null checks because of Bug 6848
+                    // I can't reproduce it and these should never be null.
                     for (Preparation prep : colObj.getPreparations())
                     {
-                        if (!prep.getLoanPreparations().isEmpty())
+                        if (prep != null)
                         {
-                            isOK = false;
-                            addDeleteReason(LoanPreparation.getClassTableId());
-                        }
-                        
-                        if (!prep.getDeaccessionPreparations().isEmpty())
-                        {
-                            isOK = false;
-                            addDeleteReason(DeaccessionPreparation.getClassTableId());
-                        }
-                        
-                        if (!isOK)
-                        {
-                            break;
+                            if (prep.getLoanPreparations() != null && !prep.getLoanPreparations().isEmpty())
+                            {
+                                isOK = false;
+                                addDeleteReason(LoanPreparation.getClassTableId());
+                            }
+                            
+                            if (prep.getDeaccessionPreparations() != null && !prep.getDeaccessionPreparations().isEmpty())
+                            {
+                                isOK = false;
+                                addDeleteReason(DeaccessionPreparation.getClassTableId());
+                            }
+                            
+                            if (!isOK)
+                            {
+                                break;
+                            }
                         }
                     }
                 }
