@@ -14,6 +14,7 @@
  */
 package edu.ku.brc.specify.tasks;
 
+import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Component;
@@ -381,6 +382,7 @@ public class InteractionsTask extends BaseTask
         
         for (InteractionEntry entry : entries)
         {
+            System.err.println(entry.getName()+"  "+entry.isSearchService()+"   "+entry.isOnLeft());
             if (!entry.isSearchService())
             {
                 Vector<TaskConfigItemIFace> list = entry.isOnLeft() ? stdList : miscList;
@@ -412,17 +414,23 @@ public class InteractionsTask extends BaseTask
             for (TaskConfigItemIFace ie : stdList)
             {
                 ((InteractionEntry)ie).setOnLeft(true);
+                InteractionEntry entry = (InteractionEntry)ie;
+                System.err.println("1 "+entry.getName()+"  "+entry.isSearchService()+"   "+entry.isOnLeft());
                 entries.add((InteractionEntry)ie);
             }
             
             for (TaskConfigItemIFace ie : miscList)
             {
                 ((InteractionEntry)ie).setOnLeft(false);
+                InteractionEntry entry = (InteractionEntry)ie;
+                System.err.println("2 "+entry.getName()+"  "+entry.isSearchService()+"   "+entry.isOnLeft());
                 entries.add((InteractionEntry)ie);
             }
             
             for (TaskConfigItemIFace ie : srvList)
             {
+                InteractionEntry entry = (InteractionEntry)ie;
+                System.err.println("3 "+entry.getName()+"  "+entry.isSearchService()+"   "+entry.isOnLeft());
                 entries.add((InteractionEntry)ie);
             }
             
@@ -437,9 +445,10 @@ public class InteractionsTask extends BaseTask
                 DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoByTableName(entry.getTableName());
                 if (entry.isOnLeft())
                 {
-                    addCommand(actionsNavBox, tableInfo, entry);
+                    NavBoxButton navBtn = addCommand(actionsNavBox, tableInfo, entry);
+                    navBtn.setToolTip(entry.getI18NTooltip());
                     
-                } else if (StringUtils.isNotEmpty(entry.getViewName()) && entry.isSearchService())
+                } else if (StringUtils.isNotEmpty(entry.getViewName()) && !entry.isSearchService())
                 {
                     CommandAction cmdAction = createCmdActionFromEntry(entry, tableInfo);
                     ContextMgr.registerService(10, entry.getViewName(), tableInfo.getTableId(), cmdAction, this, "Data_Entry", tableInfo.getTitle(), true); // the Name gets Hashed
@@ -508,27 +517,44 @@ public class InteractionsTask extends BaseTask
 
             actionsNavBox = new NavBox(getResourceString("CreateAndUpdate"));
             
+            SpecifyAppContextMgr acm = (SpecifyAppContextMgr)AppContextMgr.getInstance();
+            
             for (InteractionEntry entry : entries)
             {
                 DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoByTableName(entry.getTableName());
                 if (!AppContextMgr.isSecurityOn() || tableInfo.getPermissions().canView())
                 {
+                    String label;
+                    if (StringUtils.isNotEmpty(entry.getLabelKey()))
+                    {
+                        label = getResourceString(entry.getLabelKey());
+                    } else
+                    {
+                        label = tableInfo.getTitle();
+                    }
+                    
+                    String tooltip = "";
+                    if (StringUtils.isEmpty(entry.getTooltip()) && StringUtils.isNotEmpty(entry.getViewName()))
+                    {
+                        ViewIFace view = acm.getView(entry.getViewName());
+                        if (view != null)
+                        {
+                            tooltip = getLocalizedMessage("DET_OPEN_VIEW", view.getObjTitle());
+                        }
+                    } else
+                    {
+                        tooltip = getLocalizedMessage(entry.getTooltip());
+                    }
+                    
+                    entry.setTitle(label);
+                    entry.setI18NTooltip(tooltip);
+
                     if (entry.isOnLeft())
                     {
-                        String label;
-                        if (StringUtils.isNotEmpty(entry.getLabelKey()))
-                        {
-                            label = getResourceString(entry.getLabelKey());
-                        } else
-                        {
-                            label = tableInfo.getTitle();
-                        }
-                        
-                        entry.setTitle(label);
-                        
                         if (entry.isOnLeft())
                         {
-                            addCommand(actionsNavBox, tableInfo, entry);
+                            NavBoxButton navBtn = addCommand(actionsNavBox, tableInfo, entry);
+                            navBtn.setToolTip(entry.getI18NTooltip());
                         }
                         
                     } else if (StringUtils.isNotEmpty(entry.getViewName()) && entry.isSearchService())

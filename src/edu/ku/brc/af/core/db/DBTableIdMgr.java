@@ -434,7 +434,6 @@ public class DBTableIdMgr
      */
     public DBTableInfo getByShortClassName(final String shortClassName)
     {
-        System.err.println("["+shortClassName+"]");
         if (shortClassName != null)
         {
             return byShortClassNameHash.get(shortClassName.toLowerCase());
@@ -666,7 +665,6 @@ public class DBTableIdMgr
         {
             try
             {
-                System.err.println(className);
                 return getBusinessRule(Class.forName(className));
                 
             } catch (Exception ex)

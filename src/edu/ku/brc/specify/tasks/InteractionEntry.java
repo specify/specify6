@@ -28,6 +28,7 @@ public class InteractionEntry implements TaskConfigItemIFace, Comparable<TaskCon
     protected String  cmdType;
     protected String  action;
     protected String  iconName;
+    protected String  tooltip;
     protected boolean isOnLeft;
     protected boolean isSearchService;
     protected int     order;
@@ -37,6 +38,7 @@ public class InteractionEntry implements TaskConfigItemIFace, Comparable<TaskCon
     
     // Transient
     protected String title;
+    protected String i18NTooltip;
     
     /**
      * 
@@ -216,6 +218,14 @@ public class InteractionEntry implements TaskConfigItemIFace, Comparable<TaskCon
     }
 
     /**
+     * @return the tooltip
+     */
+    public String getTooltip()
+    {
+        return tooltip;
+    }
+
+    /**
      * @return the draggableFlavors
      */
     public Vector<EntryFlavor> getDraggableFlavors()
@@ -295,6 +305,22 @@ public class InteractionEntry implements TaskConfigItemIFace, Comparable<TaskCon
         this.title = title;
     }
 
+    /**
+     * @return the i18NTooltip
+     */
+    public String getI18NTooltip()
+    {
+        return i18NTooltip;
+    }
+
+    /**
+     * @param tooltip the i18NTooltip to set
+     */
+    public void setI18NTooltip(String tooltip)
+    {
+        i18NTooltip = tooltip;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.TaskConfigItemIFace#isVisible()
      */
@@ -360,19 +386,18 @@ public class InteractionEntry implements TaskConfigItemIFace, Comparable<TaskCon
         xstream.useAttributeFor(InteractionEntry.class, "cmdType");
         xstream.useAttributeFor(InteractionEntry.class, "order");
         xstream.useAttributeFor(InteractionEntry.class, "isSearchService");
+        xstream.useAttributeFor(InteractionEntry.class, "tooltip");
         
-        xstream.aliasAttribute(InteractionEntry.class, "name",      "name");
         xstream.aliasAttribute(InteractionEntry.class, "tableName", "table");
         xstream.aliasAttribute(InteractionEntry.class, "labelKey",  "label");
-        xstream.aliasAttribute(InteractionEntry.class, "action",    "action");
         xstream.aliasAttribute(InteractionEntry.class, "iconName",  "icon");
         xstream.aliasAttribute(InteractionEntry.class, "isOnLeft",  "isonleft");
         xstream.aliasAttribute(InteractionEntry.class, "viewName",  "view");
         xstream.aliasAttribute(InteractionEntry.class, "cmdType",   "type");
         xstream.aliasAttribute(InteractionEntry.class, "isSearchService", "issrchsrv");
-        xstream.aliasAttribute(InteractionEntry.class, "order",     "order");
         
         xstream.omitField(InteractionEntry.class, "title");
+        xstream.omitField(InteractionEntry.class, "i18NTooltip");
     }
 
 }

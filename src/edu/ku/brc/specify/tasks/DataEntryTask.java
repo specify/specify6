@@ -84,7 +84,6 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
 import edu.ku.brc.ui.ToggleButtonChooserPanel;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
-import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.DataActionEvent;
 import edu.ku.brc.ui.dnd.GhostActionable;
@@ -871,6 +870,9 @@ public class DataEntryTask extends BaseTask
                         {
                             dev.setToolTip(getLocalizedMessage("DET_OPEN_VIEW", view.getObjTitle()));
                         }
+                    } else
+                    {
+                        dev.setToolTip(getLocalizedMessage(dev.getToolTip()));
                     }
                 }
                 
@@ -883,6 +885,9 @@ public class DataEntryTask extends BaseTask
                         {
                             dev.setToolTip(getLocalizedMessage("DET_OPEN_VIEW", view.getObjTitle()));
                         }
+                    } else
+                    {
+                        dev.setToolTip(getLocalizedMessage(dev.getToolTip()));
                     }
                 }
                 
