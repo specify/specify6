@@ -181,7 +181,9 @@ public class TableViewObj implements Viewable,
     protected DateWrapper                   scrDateFormat;
     protected boolean                       isLoaded        = false;
     protected boolean                       isSkippingAttach = false; // Indicates whether to skip before setting data into the form
-
+    protected Boolean                       isRestricted     = null;
+    protected String                        restrictedStr    = null;
+    
     protected String                        dataClassName;
     protected String                        dataSetFieldName;
 
@@ -254,6 +256,20 @@ public class TableViewObj implements Viewable,
         businessRules    = view.createBusinessRule();
         dataGetter       = altView.getViewDef().getDataGettable();
         this.formViewDef = (FormViewDefIFace)altView.getViewDef();
+        
+        if (AppContextMgr.isSecurityOn())
+        {
+            DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
+            perm = SecurityMgr.getInstance().getPermission("DO."+tableInfo.getShortClassName().toLowerCase());
+            isRestricted = !perm.canView();
+            if (isRestricted)
+            {
+                restrictedStr = getResourceString("RESTRICTED");
+            }
+        } else
+        {
+            perm = new PermissionSettings(PermissionSettings.ALL_PERM);
+        }
         
         scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
 
@@ -332,6 +348,7 @@ public class TableViewObj implements Viewable,
                                 deleteRow(table.getSelectedRow());
                             }
                         });
+                        deleteButton.setVisible(perm.canDelete());
                         
                         if (addSearch)
                         {
@@ -375,6 +392,8 @@ public class TableViewObj implements Viewable,
                                     editRow(table.getSelectedRow(), true);
                                 }
                             });
+                            editButton.setVisible(perm.canModify());
+                            newButton.setVisible(perm.canAdd());
                         }
                         
                         boolean isAbove = mvParent.getSeparator() != null;  
@@ -1333,35 +1352,6 @@ public class TableViewObj implements Viewable,
     public void setDataObj(final Object dataObj)
     {
         this.dataObj = dataObj;
-        
-        if (AppContextMgr.isSecurityOn() && dataObj != null)
-        {
-            if (perm == null)
-            {
-                Class<?> cls;
-                if (classToCreate == null)
-                {
-                    try
-                    {
-                        cls = Class.forName(view.getClassName());
-                    } catch (Exception ex) 
-                    {
-                        cls = dataObj.getClass();
-                    }
-                    
-                } else
-                {
-                    cls = classToCreate;
-                }
-                perm = SecurityMgr.getInstance().getPermission("DO."+cls.getSimpleName().toLowerCase());                
-                //SecurityMgr.dumpPermissions(dataObj.getClass().getSimpleName(), perm2.getOptions());
-            }
-            
-            if ((isEditing && perm.isViewOnly()) || (!isEditing && !perm.canView()))
-            {
-                return;
-            }
-        }
         
         if (dataObj instanceof List)
         {
@@ -2462,7 +2452,7 @@ public class TableViewObj implements Viewable,
 
         public int getRowCount()
         {
-            if (isLoading)
+            if (isLoading || (isRestricted != null && isRestricted))
             {
                 return 1;
             }
@@ -2479,6 +2469,10 @@ public class TableViewObj implements Viewable,
             if (isLoading)
             {
                 return column == 0 && row == 0 ? UIRegistry.getResourceBundle("LOADING") : "";
+                
+            } else if (isRestricted != null && isRestricted)
+            {
+                return restrictedStr;
             }
 
             if (columnList != null && dataObjList != null && dataObjList.size() > 0)
@@ -2634,6 +2628,11 @@ public class TableViewObj implements Viewable,
         @Override
         public Class<?> getColumnClass(int columnIndex)
         {
+            if (isRestricted != null && isRestricted)
+            {
+                return String.class;
+            }
+            
             Object obj = getValueAt(0, columnIndex);
             if (obj != null)
             {
