@@ -360,7 +360,7 @@
 	                    <rows>
 			                <row>
                                 <cell type="field" id="5" name="locale" uitype="combobox" colspan="1"/>
-                                <cell type="field" uitype="dsptextfield" id="6" name="6" ignore="true" default="Loading..." initialize="transparent=true"/>
+                                <cell type="field" uitype="dsptextfield" id="6" name="6" ignore="true" default="Loading..." initialize="transparent=true" colspan="2"/>
 			                </row>
                         </rows>
                     </cell>
