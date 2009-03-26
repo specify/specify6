@@ -787,97 +787,115 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             list.clear();
             FieldQRI pqri = qfi.getFieldQRI();
             TableTree parent = pqri.getTableTree();
-            boolean addToList = true;
-            if (pqri instanceof RelQRI)
-            {
-                RelQRI relQRI = (RelQRI)pqri;
-                RelationshipType relType = relQRI.getRelationshipInfo().getType();
-                
-                //XXX Formatter.getSingleField() checks for ZeroOrOne and OneToOne rels.
-                
-                if (!relType.equals(RelationshipType.ManyToOne) 
-                        && !relType.equals(RelationshipType.ManyToMany)/*treat manytomany as onetomany*/) //Maybe need to consider some types of OneToOne also?????????
-                {
-                    //parent will initially point to the related table
-                    //and don't need to add related table unless it has children displayed/queried,
-                    parent = parent.getParent();
-                    addToList = false;
-                }
-                else
-                {
-                    DataObjDataFieldFormatIFace formatter = relQRI.getDataObjFormatter();
-                    if (formatter != null)
-                    {
-                        addToList = formatter.getSingleField() != null;
-                    }
-                    else
-                    {
-                        addToList = false;
-                    }
-                }
-            }
-            if (addToList)
-            {
-                list.insertElementAt(pqri, 0);
-            }
-            while (parent != tblTree)
-            {
-                list.insertElementAt(parent.getTableQRI(), 0);
-                parent = parent.getParent();
-            }
+            if (qfi.isForDisplay() || qfi.hasCriteria() || orderSpec != null
+					|| pqri instanceof RelQRI)
+			{
+				boolean addToList = true;
+				if (pqri instanceof RelQRI)
+				{
+					RelQRI relQRI = (RelQRI) pqri;
+					RelationshipType relType = relQRI.getRelationshipInfo()
+							.getType();
 
-            if (debug)
-            {
-                log.debug("Path From Top Down:");
-                for (BaseQRI qri : list)
-                {
-                    log.debug("  " + qri.getTitle());
-                }
-            }
+					// XXX Formatter.getSingleField() checks for ZeroOrOne and
+					// OneToOne rels.
 
-            // Now walk the stack top (the top most parent)
-            // down and if the path form the top down doesn't
-            // exist then add a new node
-            ProcessNode parentNode = root;
-            for (BaseQRI qri : list)
-            {
-                if (debug)
-                {
-                    log.debug("ProcessNode[" + qri.getTitle() + "]");
-                }
-                if (!parentNode.contains(qri) && qri instanceof TableQRI)
-                {
-                    ProcessNode newNode = new ProcessNode(qri);
-                    parentNode.getKids().add(newNode);
-                    if (debug)
-                    {
-                        log.debug("Adding new node["
-                                + newNode.getQri().getTitle()
-                                + "] to Node["
-                                + (parentNode.getQri() == null ? "root" : parentNode.getQri()
-                                        .getTitle()) + "]");
-                    }
-                    parentNode = newNode;
-                }
-                else
-                {
-                    for (ProcessNode kidNode : parentNode.getKids())
-                    {
-                        if (kidNode.getQri().equals(qri))
-                        {
-                            parentNode = kidNode;
-                            break;
-                        }
-                    }
-                }
-            }
+					if (!relType.equals(RelationshipType.ManyToOne)
+							&& !relType.equals(RelationshipType.ManyToMany)/*
+																			 * treat
+																			 * manytomany
+																			 * as
+																			 * onetomany
+																			 */) // Maybe
+																					// need
+																					// to
+																					// consider
+																					// some
+																					// types
+																					// of
+																					// OneToOne
+																					// also?????????
+					{
+						// parent will initially point to the related table
+						// and don't need to add related table unless it has
+						// children displayed/queried,
+						parent = parent.getParent();
+						addToList = false;
+					} else
+					{
+						DataObjDataFieldFormatIFace formatter = relQRI
+								.getDataObjFormatter();
+						if (formatter != null)
+						{
+							addToList = formatter.getSingleField() != null;
+						} else
+						{
+							addToList = false;
+						}
+					}
+				}
+				if (addToList)
+				{
+					list.insertElementAt(pqri, 0);
+				}
+				while (parent != tblTree)
+				{
+					list.insertElementAt(parent.getTableQRI(), 0);
+					parent = parent.getParent();
+				}
 
-            if (debug)
-            {
-                log.debug("Current Tree:");
-                printTree(root, 0);
-            }
+				if (debug)
+				{
+					log.debug("Path From Top Down:");
+					for (BaseQRI qri : list)
+					{
+						log.debug("  " + qri.getTitle());
+					}
+				}
 
+				// Now walk the stack top (the top most parent)
+				// down and if the path form the top down doesn't
+				// exist then add a new node
+				ProcessNode parentNode = root;
+				for (BaseQRI qri : list)
+				{
+					if (debug)
+					{
+						log.debug("ProcessNode[" + qri.getTitle() + "]");
+					}
+					if (!parentNode.contains(qri) && qri instanceof TableQRI)
+					{
+						ProcessNode newNode = new ProcessNode(qri);
+						parentNode.getKids().add(newNode);
+						if (debug)
+						{
+							log.debug("Adding new node["
+									+ newNode.getQri().getTitle()
+									+ "] to Node["
+									+ (parentNode.getQri() == null ? "root"
+											: parentNode.getQri().getTitle())
+									+ "]");
+						}
+						parentNode = newNode;
+					} else
+					{
+						for (ProcessNode kidNode : parentNode.getKids())
+						{
+							if (kidNode.getQri().equals(qri))
+							{
+								parentNode = kidNode;
+								break;
+							}
+						}
+					}
+				}
+
+				if (debug)
+				{
+					log.debug("Current Tree:");
+					printTree(root, 0);
+				}
+			}
         }
         if (debug)
         {
