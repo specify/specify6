@@ -1158,7 +1158,7 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Collecting Event]]></desc>
-            <columnDef>100px,2px,125px,5px,63px,2px,210px,5px,52px,2px,111px,0px,11px,p:g</columnDef>
+            <columnDef>100px,2px,111px,5px,60px,2px,210px,5px,45px,2px,135px,0px,11px,p:g</columnDef>
             <columnDef os="mac">130px,2px,150px,5px,80px,2px,250px,5px,70px,2px,144px,0px,11px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             
@@ -1177,10 +1177,11 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="6"/>
-                    <cell type="field" id="6" name="remarks" uitype="textareabrief" rows="2" colspan="10" cols="50"/>
+                    <cell type="field" id="6" name="remarks" uitype="textareabrief" rows="2" colspan="10"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="Collectors" id="5" name="collectors" colspan="13"/>
+                    <cell type="subview" viewname="Collectors" id="5" name="collectors" colspan="13" rows="3"/>
+
                 </row>
                 <row>
                     <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectingEventAttachments" colspan="11" initialize="btn=true;icon=CollectingEventAttachment"/>
@@ -2097,17 +2098,7 @@
                     </row> -->
             </rows>
         </viewdef>
-        
-        <viewdef
-            type="formtable"
-            name="FieldNotebookPage Table"
-            class="edu.ku.brc.specify.datamodel.FieldNotebookPage"
-            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
-            
-            <desc><![CDATA[Determination subform table for Collection Object form.]]></desc>
-            <definition>FieldNotebookPage</definition>
-        </viewdef>
+
         
         <viewdef 
             type="form" 
@@ -2141,6 +2132,17 @@
             </rows>
         </viewdef>
         
+        <viewdef
+            type="formtable"
+            name="FieldNotebookPage Table"
+            class="edu.ku.brc.specify.datamodel.FieldNotebookPage"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Determination subform table for Collection Object form.]]></desc>
+            <definition>FieldNotebookPage</definition>
+        </viewdef>
+                
         <viewdef 
             type="form" 
             name="FieldNotebookPageSet" 
@@ -2455,7 +2457,7 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[LoanReturnPreparation viewing form.]]></desc>
-            <columnDef>105px,2px,80px,5px,120px,2px,80px,0px:g,f:p:g</columnDef>
+            <columnDef>102px,2px,80px,5px,120px,2px,80px,0px:g,f:p:g</columnDef>
             <columnDef os="mac">130px,2px,100px,5px,150px,2px,100px,0px:g,f:p:g</columnDef>
             <rowDef auto="true" cell="p" sep="1dlu"/>
             <rows>
@@ -2917,7 +2919,7 @@
                     <cell type="field" id="7" name="infoReqNumber" uitype="formattedtext" uifieldformatter="InfoRequestNumber" />
                         <cell type="label" labelfor="6"/>
                     <cell type="field" id="6" name="agent" uitype="querycbx" initialize="name=Agent" />
- </row>
+                </row>
                 <row>
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="requestDate" uitype="formattedtext" uifieldformatter="Date" default="today"/>
@@ -3004,32 +3006,27 @@
             <desc><![CDATA[Preparation for Collection Object form.]]></desc>
             <enableRules/>
 
-            <columnDef>100px,2px,192px,5px,150px,2px,170px,p:g</columnDef>
+            <columnDef>100px,2px,120px,5px,100px,2px,223px,5px,70px,2px,151px,2px,70px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,170px,5px,130px,2px,255px,5px,70px,2px,164px,2px,70px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
 
             <rows>
                 <row>
-                   <cell type="label" label="  "/>
-                   <cell type="field" id="isOnLoan" name="isOnLoan" uitype="checkbox" label="ISONLOAN" readonly="true"/>
-                </row>
-                <row>
-                   <cell type="label" labelfor="7"/>
-                   <cell type="field" id="7" name="prepType" uitype="combobox" picklist="PrepType" />
+                    <cell type="label" labelfor="7"/>
+                    <cell type="field" id="7" name="prepType" uitype="combobox" picklist="PrepType" />
                     <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" uitype="plugin" name="this" initialize="name=PartialDateUI;df=preparedDate;tp=preparedDatePrecision" uifieldformatter="Date"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="preparedByAgent" uitype="querycbx" initialize="name=Agent" />
+                    <cell type="field" id="1" uitype="plugin" name="this" initialize="name=PartialDateUI;df=preparedDate;tp=preparedDateDatePrecision" uifieldformatter="Date"/>
+                    <cell type="label" label=""/>
+                    <cell type="field" id="isOnLoan" name="isOnLoan" uitype="checkbox" label="ISONLOAN" readonly="true"/>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="preparationAttachments" initialize="btn=true;icon=PreparationAttachment"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="countAmt" uitype="text" />
+                    <cell type="label" labelfor="2"/>
+                    <cell type="field" id="2" name="preparedByAgent" uitype="querycbx" initialize="name=Agent"/>
                     <cell type="label" labelfor="4"/>
-                    <cell type="field" id="4" name="storage" uitype="querycbx" initialize="name=Storage" cols="20"/>
-                </row>
-                <row>
-                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="preparationAttachments" colspan="7" initialize="btn=true;icon=PreparationAttachment"/>
+                    <cell type="field" id="4" name="storage" uitype="querycbx" initialize="name=Storage" cols="20" colspan="3"/>
                 </row>
             </rows>
         </viewdef>
@@ -3043,7 +3040,7 @@
             <desc><![CDATA[The Accession form.]]></desc>
             <enableRules/>
             
-            <columnDef>100px,2px,95px,5px,67px,2px,115px,5px,73px,2px,201px,0px,15px,p:g</columnDef>
+            <columnDef>105px,2px,95px,5px,50px,2px,110px,5px,66px,2px,190px,0px,15px,p:g</columnDef>
             <columnDef os="mac">130px,2px,120px,5px,90px,2px,150px,5px,119px,2px,215px,0px,15px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="1px"/>
             
@@ -3103,7 +3100,7 @@
             <desc><![CDATA[The Accession form.]]></desc>
             <enableRules/>
 
-            <columnDef>100px,2px,200px,2px,181px,2px,165px,p:g</columnDef>
+            <columnDef>105px,2px,200px,5px,153px,2px,165px,p:g</columnDef>
             <columnDef os="mac">130px,2px,215px,5px,271px,2px,215px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
 
@@ -3133,7 +3130,7 @@
             <desc><![CDATA[Permit subform for AccessionAuthorization.]]></desc>
             <enableRules/>
 
-            <columnDef>100px,2px,200px,350px,p:g</columnDef>
+            <columnDef>100px,2px,200px,325px,p:g</columnDef>
             <columnDef os="mac">130px,2px,215px,493px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             <rows>
