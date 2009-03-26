@@ -685,7 +685,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
     /**
      * @param recordSet
      */
-    public void displayRecordSet(final RecordSetIFace recordSet)
+    public void displayRecordSet(final RecordSetIFace recordSet, final boolean isEditable)
     {
         SearchConfig      config            = SearchConfigService.getInstance().getSearchConfig();
         SearchTableConfig searchTableConfig = config.getSearchTableConfigById(recordSet.getDbTableId());
@@ -703,7 +703,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                 esrPane.setIcon(IconManager.getIcon("Record_Set", IconManager.IconSize.Std16));
                 Hashtable<String, QueryForIdResultsSQL> resultsForJoinsHash = new Hashtable<String, QueryForIdResultsSQL>();
                 QueryForIdResultsHQL results = new QueryForIdResultsHQL(searchTableConfig, new Color(255, 158, 6), recordSet);
-                results.setEditable(true);
+                results.setEditable(isEditable);
                 results.setExpanded(true);
                 displayResults(esrPane, results, resultsForJoinsHash);
                 addSubPaneToMgr(esrPane);
@@ -1002,7 +1002,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                 }
                 if (recordSet != null)
                 {
-                    displayRecordSet(recordSet);
+                    displayRecordSet(recordSet, (Boolean)cmdAction.getProperty("canModify"));
                 }
             }
         }

@@ -379,6 +379,14 @@ public class ContextMgr implements CommandListener
             serviceList = new ArrayList<ServiceInfo>();
         }
         
+        for (ServiceInfo srvInfo : new ArrayList<ServiceInfo>(serviceList))
+        {
+            if (AppContextMgr.isSecurityOn() && !srvInfo.isPermissionOK())
+            {
+                serviceList.remove(srvInfo);
+            }
+        }
+        
         for (ServiceInfo srvInfo : instance.genericService)
         {
             if (!serviceList.contains(srvInfo))

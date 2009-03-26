@@ -22,6 +22,7 @@ import edu.ku.brc.specify.datamodel.CollectionObjectAttr;
 import edu.ku.brc.specify.datamodel.CollectionRelType;
 import edu.ku.brc.specify.datamodel.CollectionRelationship;
 import edu.ku.brc.specify.datamodel.PreparationAttr;
+import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.tasks.BaseTask;
 import edu.ku.brc.specify.tasks.PermissionOptionPersist;
@@ -101,7 +102,8 @@ public class TablePermissionEnumerator extends PermissionEnumerator
                       PreparationAttr.class.isAssignableFrom(tblInfo.getClassObj()) ||
                       AutoNumberingScheme.class.isAssignableFrom(tblInfo.getClassObj()) ||
                       CollectionRelationship.class.isAssignableFrom(tblInfo.getClassObj()) ||
-                      CollectionRelType.class.isAssignableFrom(tblInfo.getClassObj())))
+                      CollectionRelType.class.isAssignableFrom(tblInfo.getClassObj()) ||
+                      RecordSet.class.isAssignableFrom(tblInfo.getClassObj())))
                 {
                     return true;
                 }

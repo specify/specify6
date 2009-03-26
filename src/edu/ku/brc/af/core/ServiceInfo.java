@@ -197,6 +197,10 @@ public class ServiceInfo implements Comparable<ServiceInfo>, Cloneable
             {
                 DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(tableId);
                 isPermissionOK = tableInfo != null ? tableInfo.getPermissions().canView() : false;
+            } else if (task != null)
+            {
+                isPermissionOK = task.getPermissions() == null || task.getPermissions().canView();
+                
             } else
             {
                 isPermissionOK = true;
@@ -217,10 +221,11 @@ public class ServiceInfo implements Comparable<ServiceInfo>, Cloneable
      * @param tableId
      * @return true if the (probably generic) service is available for tableId.
      */
-    public boolean isAvailable(final int tableId)
+    public boolean isAvailable(@SuppressWarnings("hiding") final int tableId)
     {
     	return true;
     }
+    
     //------------------------------------------
     //-- Static Methods
     //------------------------------------------

@@ -60,7 +60,6 @@ import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.PreferencesDlg;
-
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.FormHelper;
@@ -82,7 +81,6 @@ import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.DataFlavorTableExt;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.RolloverCommand;
-import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.DataActionEvent;
 import edu.ku.brc.ui.dnd.Trash;
@@ -260,11 +258,15 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
     {
         //NavBoxItemIFace nbi = addNavBoxItem(navBox, recordSet.getName(), name, new CommandAction(RECORD_SET, DELETE_CMD_ACT, recordSet), recordSet);
         
+        boolean delOK = permissions == null || permissions.canDelete();
+        boolean modOK = permissions == null || permissions.canModify();
+        CommandAction delCmdAction = delOK ? new CommandAction(RECORD_SET, DELETE_CMD_ACT, recordSet) : null;
+        
         final RolloverCommand roc = (RolloverCommand)makeDnDNavBtn(navBox, recordSet.getName(), RECORD_SET, null, 
-                                                                   new CommandAction(RECORD_SET, DELETE_CMD_ACT, recordSet), 
+                                                                   delCmdAction, 
                                                                    true, true);// true means make it draggable
         roc.setData(recordSet);
-        addPopMenu(roc);
+        addPopMenu(roc, delOK, modOK);
         
         NavBoxItemIFace nbi = (NavBoxItemIFace)roc;
         
@@ -291,32 +293,42 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
      * Adds the Context PopupMenu for the RecordSet.
      * @param roc the RolloverCommand btn to add the pop to
      */
-    public void addPopMenu(final RolloverCommand roc)
+    public void addPopMenu(final RolloverCommand roc, 
+                           final boolean isOKDelete, 
+                           final boolean isOKModify)
     {
         if (roc.getLabelText() != null)
         {
             final JPopupMenu popupMenu = new JPopupMenu();
             
-            JMenuItem renameMenuItem = new JMenuItem(UIRegistry.getResourceString("Rename"));
-            renameMenuItem.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent actionEvent) {
-                    roc.startEditting(RecordSetTask.this);
-                }
-              });
-            popupMenu.add(renameMenuItem);
+            if (isOKModify)
+            {
+                JMenuItem renameMenuItem = new JMenuItem(UIRegistry.getResourceString("Rename"));
+                renameMenuItem.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent actionEvent) {
+                        roc.startEditting(RecordSetTask.this);
+                    }
+                  });
+                popupMenu.add(renameMenuItem);
+            }
             
-            JMenuItem delMenuItem = new JMenuItem(UIRegistry.getResourceString("Delete"));
-            delMenuItem.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent actionEvent) {
-                    CommandDispatcher.dispatch(new CommandAction(RECORD_SET, DELETE_CMD_ACT, roc));
-                }
-              });
-            popupMenu.add(delMenuItem);
+            if (isOKDelete)
+            {
+                JMenuItem delMenuItem = new JMenuItem(UIRegistry.getResourceString("Delete"));
+                delMenuItem.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent actionEvent) {
+                        CommandDispatcher.dispatch(new CommandAction(RECORD_SET, DELETE_CMD_ACT, roc));
+                    }
+                  });
+                popupMenu.add(delMenuItem);
+            }
             
             JMenuItem viewMenuItem = new JMenuItem(UIRegistry.getResourceString("View"));
             viewMenuItem.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent actionEvent) {
-                    CommandDispatcher.dispatch(new CommandAction("Express_Search", "ViewRecordSet", roc));
+                    CommandAction cmdAction = new CommandAction("Express_Search", "ViewRecordSet", roc);
+                    cmdAction.setProperty("canModify", isOKDelete);
+                    CommandDispatcher.dispatch(cmdAction);
                 }
               });
             popupMenu.add(viewMenuItem);

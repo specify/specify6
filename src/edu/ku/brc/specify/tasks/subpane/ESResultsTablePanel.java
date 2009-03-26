@@ -292,7 +292,7 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         
         moveToRSCmd = new DragSelectedRowsBtn(IconManager.getIcon("Record_Set", IconManager.IconSize.Std16));
         
-        if (installServices)
+        if (installServices && isEditable)
         {
             PanelBuilder bottomBar = new PanelBuilder(new FormLayout("4px,p,4px,p,4px,p,"+(delRSItems != null ? "4px,p," : "")+"f:p:g", "p"));
             bottomBar.add(moveToRSCmd,    cc.xy(2,1));
