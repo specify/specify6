@@ -69,9 +69,10 @@ public class SecurityMgr
                  
             } catch (Exception e) 
             {
+                e.printStackTrace();
                 edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SecurityMgr.class, e);
-                InternalError error = new InternalError("Can't instantiate RecordSet factory " + factoryNameStr); //$NON-NLS-1$
+                InternalError error = new InternalError("Can't instantiate SecurityMgr factory " + factoryNameStr); //$NON-NLS-1$
                 error.initCause(e);
                 throw error;
             }

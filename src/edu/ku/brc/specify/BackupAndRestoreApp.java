@@ -54,7 +54,8 @@ import org.apache.log4j.Logger;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.ExperienceBlue;
 
-import edu.ku.brc.af.auth.UserAndMasterPasswordMgr;
+import edu.ku.brc.af.auth.PermissionSettings;
+import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.FrameworkAppIFace;
 import edu.ku.brc.af.core.MacOSAppHandler;
@@ -90,7 +91,6 @@ import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
 import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.FileCache;
-import edu.ku.brc.util.Pair;
 
 /**
  * @author rods
@@ -572,40 +572,8 @@ public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener
         
         CommandDispatcher.register(BaseTask.APP_CMD_TYPE, this);
         
-        DatabaseLoginPanel.MasterPasswordProviderIFace usrPwdProvider = new DatabaseLoginPanel.MasterPasswordProviderIFace()
-        {
-            @Override
-            public boolean hasMasterUserAndPwdInfo(final String username, final String password)
-            {
-                if (StringUtils.isNotEmpty(username) && StringUtils.isNotEmpty(password))
-                {
-                    UserAndMasterPasswordMgr.getInstance().setUsersUserName(username);
-                    UserAndMasterPasswordMgr.getInstance().setUsersPassword(password);
-                    return UserAndMasterPasswordMgr.getInstance().hasMasterUsernameAndPassword();
-                }
-                return false;
-            }
-
-            @Override
-            public Pair<String, String> getUserNamePassword(final String username, final String password)
-            {
-                UserAndMasterPasswordMgr.getInstance().setUsersUserName(username);
-                UserAndMasterPasswordMgr.getInstance().setUsersPassword(password);
-                
-                Pair<String, String> usrPwd = UserAndMasterPasswordMgr.getInstance().getUserNamePasswordForDB();
-                
-                return usrPwd;
-            }
-
-            @Override
-            public boolean editMasterInfo(final String username, final boolean askForCredentials)
-            {
-                return UserAndMasterPasswordMgr.getInstance().editMasterInfo(username, askForCredentials);
-            }
-            
-        };
         
-        dbLoginPanel = UIHelper.doLogin(usrPwdProvider, false, false, this, "DatabaseIcon", getTitle(), null, "SpecifyWhite32"); // true means do auto login if it can, second bool means use dialog instead of frame
+        dbLoginPanel = UIHelper.doLogin(null, false, false, this, "DatabaseIcon", getTitle(), null, "SpecifyWhite32"); // true means do auto login if it can, second bool means use dialog instead of frame
         localPrefs.load();
     }
     /**
@@ -756,6 +724,19 @@ public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener
     }
 
     
+    class BRSecurityMgr extends SecurityMgr
+    {
+        /* (non-Javadoc)
+         * @see edu.ku.brc.af.auth.SecurityMgr#getPermission(java.lang.String)
+         */
+        @Override
+        public PermissionSettings getPermission(String nameStr)
+        {
+            return new PermissionSettings(PermissionSettings.ALL_PERM);
+        }
+        
+    }
+
    /**
     *
     */

@@ -220,7 +220,7 @@ public class MySQLPrefs extends JPanel implements PrefsSavable, PrefsPanelIFace
             }
         });
         
-        if (isSecurityOn())
+        if (!doShowRestore && isSecurityOn())
         {
             PermissionSettings perm = SecurityMgr.getInstance().getPermission(MYSQL_PREF_NAME);
             restoreBtn.setVisible(perm.canModify()); // this means Enabled
