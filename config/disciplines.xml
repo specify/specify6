@@ -19,6 +19,7 @@
     <discipline name="insect"       title="Entomology"   abbrev="ENTO" isembedce="true" type="0"/>
     <discipline name="botany"       title="Botany"       abbrev="BNTY" isembedce="true" type="0"/>
     <discipline name="invertebrate" title="Invertebrate Zoology" abbrev="IVTZ" isembedce="true" type="0"/>
+    <discipline name="vascplant"    title="Vascular Plants"     abbrev="VP" isembedce="true"    type="0"/>
     <discipline name="minerals"     title="Mineralogy"   abbrev="MIN"  isembedce="true" type="4"/>
     <discipline name="fungi"        title="Mycology"     abbrev="MYCO" isembedce="true" type="0"/>
     <discipline name="anthropology" title="Anthropology" abbrev="ANTH" isembedce="true" type="3"/>

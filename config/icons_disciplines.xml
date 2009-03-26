@@ -19,11 +19,12 @@ NOTE: The "name" must be entered into the localization resource file.
     <icon name="Snake"       file="snake.png" sizes="all"/>    
     <icon name="Spider"      file="spider.png" sizes="all"/>    
     <icon name="VertPaleo"   file="paleo_vert.png" sizes="all"/>    
-    <icon name="Invertebrate" file="starfish.png" sizes="all"/>    
+    <icon name="Invertebrate" file="starfish.png" sizes="all"/>
+    <icon name="VascularPlants"      file="flower.png" sizes="all"/>
  
     <!--
     fish, herpetology, reptile, paleobotany, invertpaleo, vertpaleo, bird, 
-    mammal, insect, botany, invertebrate, 
+    mammal, insect, botany, invertebrate, vascplant
     
     These do not have icons
     minerals, fungi, 
@@ -45,5 +46,6 @@ NOTE: The "name" must be entered into the localization resource file.
     <icon name="spider"      alias="Spider"/>
     <icon name="vertpaleo"    alias="VertPaleo"/>
     <icon name="invertebrate" alias="Invertebrate"/>
+    <icon name="vascplants"   alias="VascularPlants"/>
  
 </icons>
