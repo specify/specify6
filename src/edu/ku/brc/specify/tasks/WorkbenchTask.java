@@ -756,7 +756,7 @@ public class WorkbenchTask extends BaseTask
         {
             mapper = new TemplateEditor((Frame)UIRegistry.get(UIRegistry.FRAME), getResourceString(titleKey), template);
             //if (AppContextMgr.isSecurityOn() && !getPermissions().canAdd())
-            if (isPermitted())
+            if (!isPermitted())
             {
                 //XXX OK to require add permission to modify props and structure?
                 mapper.setReadOnly(true);
