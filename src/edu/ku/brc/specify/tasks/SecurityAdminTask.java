@@ -48,6 +48,7 @@ import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.validation.ValPasswordField;
+import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.tasks.subpane.security.SecurityAdminPane;
 import edu.ku.brc.specify.tasks.subpane.security.SecuritySummaryDlg;
@@ -203,7 +204,7 @@ public class SecurityAdminTask extends BaseTask
                         {
                             AppPreferences.getLocalPrefs().put(username+"_"+UserAndMasterPasswordMgr.MASTER_PATH, encryptedMasterUP);
                             spUser.setPassword(newPwd1);
-                            if (!SpecifyUser.save(spUser))
+                            if (!DataModelObjBase.save(spUser))
                             {
                                 UIRegistry.writeTimedSimpleGlassPaneMsg(getResourceString(getKey("PWD_ERR_SAVE")), Color.RED);
                             }

@@ -78,6 +78,7 @@ import edu.ku.brc.specify.prefs.FormattingPrefsPanel;
 import edu.ku.brc.specify.ui.ChooseRecordSetDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.DataFlavorTableExt;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.RolloverCommand;
@@ -754,7 +755,7 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
             dlg.setVisible(true); // modal (waits for answer here)
             if (!dlg.isCancelled())
             {
-                if (dlg.getBtnPressed() == ChooseRecordSetDlg.OK_BTN)
+                if (dlg.getBtnPressed() == CustomDialog.OK_BTN)
                 {
                     mergeRecordSets(recordSet, dlg.getSelectedRecordSet());
                     

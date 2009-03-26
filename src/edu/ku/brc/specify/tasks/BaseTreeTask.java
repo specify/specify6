@@ -544,7 +544,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
      * @return the editor
      */
     @SuppressWarnings("unchecked")
-    protected TreeDefinitionEditor<T,D,I> createDefEditor(final String titleArg)
+    protected TreeDefinitionEditor<T,D,I> createDefEditor(@SuppressWarnings("unused") final String titleArg)
 	{
         DataProviderSessionIFace session = null;
         try

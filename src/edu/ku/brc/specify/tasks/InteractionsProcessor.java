@@ -595,8 +595,8 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
                    {
                        for (Object[] row : rows)
                        {
-                           int qty    = getInt((Integer)row[1]);
-                           int qtyRes = getInt((Integer)row[2]);
+                           int qty    = getInt(row[1]);
+                           int qtyRes = getInt(row[2]);
                            prepIdToLoanQnt.put((Integer)row[0], qty-qtyRes);
                        }
                    }
