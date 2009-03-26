@@ -245,8 +245,9 @@ public class CollectingEventDataObjFmt implements DataObjDataFieldFormatIFace, C
                     
                     if (StringUtils.isEmpty(valStr))
                     {
+                        valStr = "";
                         int  inx = formattedValue.indexOf(token);
-                        char sep = formattedValue.charAt(inx+token.length());
+                        char sep = (inx+token.length() < formattedValue.length()) ? formattedValue.charAt(inx+token.length()) : ' ';
                         if (sep == ',' || sep == ';')
                         {
                             token += sep;
@@ -254,6 +255,10 @@ public class CollectingEventDataObjFmt implements DataObjDataFieldFormatIFace, C
                     }
                     formattedValue = StringUtils.replace(formattedValue, token, valStr);
                 }
+            }
+            if (StringUtils.deleteWhitespace(formattedValue).isEmpty())
+            {
+                formattedValue = "";
             }
             return formattedValue;
         }
