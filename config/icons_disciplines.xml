@@ -46,6 +46,6 @@ NOTE: The "name" must be entered into the localization resource file.
     <icon name="spider"      alias="Spider"/>
     <icon name="vertpaleo"    alias="VertPaleo"/>
     <icon name="invertebrate" alias="Invertebrate"/>
-    <icon name="vascplants"   alias="VascularPlants"/>
+    <icon name="vascplant"   alias="VascularPlants"/>
  
 </icons>
