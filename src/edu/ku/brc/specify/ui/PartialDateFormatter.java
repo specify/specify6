@@ -11,6 +11,7 @@ package edu.ku.brc.specify.ui;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Vector;
 
 import edu.ku.brc.af.prefs.AppPrefsCache;
@@ -28,7 +29,7 @@ import edu.ku.brc.ui.DateWrapper;
  */
 public class PartialDateFormatter extends UIFieldFormatter
 {
-    protected static DateWrapper scrDateFormat     = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");    
+    //protected static DateWrapper scrDateFormat     = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");    
     protected static DateWrapper scrDateFormatMon  = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformatmon");    
     protected static DateWrapper scrDateFormatYear = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformatyear");    
 
@@ -75,12 +76,16 @@ public class PartialDateFormatter extends UIFieldFormatter
         {
             date = (Date)datas[0];
             
+        } else if (datas[0] instanceof GregorianCalendar)
+        {
+            date = ((GregorianCalendar)datas[0]).getTime();
+            
         } else if (datas[0] instanceof Calendar)
         {
             date = ((Calendar)datas[0]).getTime();
         }
         
-        Integer dType = datas[1] instanceof Number ? ((Number)datas[1]).intValue() : 0;
+        Integer dType = datas[1] instanceof Number ? ((Number)datas[1]).intValue() : 1;
         
         if (datas.length == 2 && date != null)
         {
