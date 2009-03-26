@@ -256,6 +256,14 @@
         <copy file="./demo_files/topbrc195x68.png" todir="${installer.dir}/demo_files" />
         <copy file="./demo_files/Geography.xls" todir="${installer.dir}/demo_files" />
 		
+		<!-- Copy of Wizard Taxon Information -->
+		<copy file="./demo_files/taxonomy/col2008_amphib.xls" todir="${installer.dir}/demo_files/taxonomy" />
+		<copy file="./demo_files/taxonomy/col2008_aves.xls" todir="${installer.dir}/demo_files/taxonomy" />
+		<copy file="./demo_files/taxonomy/col2008_herps.xls" todir="${installer.dir}/demo_files/taxonomy" />
+		<copy file="./demo_files/taxonomy/col2008_mammalia.xls" todir="${installer.dir}/demo_files/taxonomy" />
+		<copy file="./demo_files/taxonomy/col2008_reptilia.xls" todir="${installer.dir}/demo_files/taxonomy" />
+		
+		
 	</target>
 	
 	<target name="installer-updater" depends="">
