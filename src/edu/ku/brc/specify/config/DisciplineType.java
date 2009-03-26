@@ -46,7 +46,7 @@ public class DisciplineType implements Comparable<DisciplineType>
     private static final Logger  log = Logger.getLogger(DisciplineType.class);
     
     public enum STD_DISCIPLINES {fish, herpetology, reptile, paleobotany, invertpaleo, vertpaleo, bird, 
-                                 mammal, insect, botany, invertebrate, vascplants, minerals, fungi, 
+                                 mammal, insect, botany, invertebrate, vascplant, minerals, fungi, 
                                  anthropology}
             
     // Static SoftReference Data Members
@@ -252,10 +252,10 @@ public class DisciplineType implements Comparable<DisciplineType>
             }
         } catch (Exception ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DisciplineType.class, ex);
             ex.printStackTrace();
-            log.error(ex);
+            //edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DisciplineType.class, ex);
+            //log.error(ex);
         }
         
         Collections.sort(list);
