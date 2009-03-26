@@ -91,8 +91,8 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
         }
         private byte ord;
         private static final String[] names = {"Like", "=", ">", "<", ">=", "<=", 
-            UIRegistry.getResourceString("WB_TRUE"), 
-            UIRegistry.getResourceString("WB_FALSE"),
+            UIRegistry.getResourceString("true"), 
+            UIRegistry.getResourceString("false"),
             " ", UIRegistry.getResourceString("QB_BETWEEN"),
             UIRegistry.getResourceString("QB_IN"),
             UIRegistry.getResourceString("QB_CONTAINS"),
