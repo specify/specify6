@@ -211,68 +211,83 @@ public class InteractionsTask extends BaseTask
         CommandDispatcher.register(DataEntryTask.DATA_ENTRY, this);
         CommandDispatcher.register(PreferencesDlg.PREFERENCES, this);
         
-        /*
-        if (false)
+        readEntries();
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.core.Taskable#initialize()
+     */
+    @Override
+    public void initialize()
+    {
+        if (!isInitialized)
         {
-            // temporary
-            String I = INTERACTIONS;
-            String F = OPEN_FORM_CMD_ACT;
-            String D = DataEntryTask.DATA_ENTRY;
-            String OPEN_NEW_VIEW = DataEntryTask.OPEN_NEW_VIEW;
+            super.initialize(); // sets isInitialized to false
             
-            String RECORD_SET = "Record_Set";
+            setUpCachedPrefs();
             
-            InteractionEntry entry;
-            //                                 name          table       lblKey    View         Type    Action      Icon         isOn
-            entry = new InteractionEntry("accession",   "accession",   null,  "Accession",   D,   OPEN_NEW_VIEW,    "Accession");
-            entry.addDroppable(RecordSetTask.class, RECORD_SET, new int[] {Accession.getClassTableId()});
-            entries.add(entry);
+            extendedNavBoxes.clear();
+            invoiceList.clear();
+
+            actionsNavBox = new NavBox(getResourceString("CreateAndUpdate"));
             
-            entry = new InteractionEntry("permit",      "permit",      null,  "Permit",      D,   OPEN_NEW_VIEW,    "Permit");
-            entry.addDroppable(RecordSetTask.class, RECORD_SET, new int[] {Permit.getClassTableId()});
-            entries.add(entry);
+            SpecifyAppContextMgr acm = (SpecifyAppContextMgr)AppContextMgr.getInstance();
             
-            entry = new InteractionEntry("loan",        "loan",        null,  "Loan",        I,   NEW_LOAN,         "Loan");
-            entry.addDroppable(RecordSetTask.class, RECORD_SET, new int[] {Loan.getClassTableId(), CollectionObject.getClassTableId(), InfoRequest.getClassTableId()});
-            entries.add(entry);
-            
-            entry = new InteractionEntry("gift",        "gift",        null,  "Gift",        F,   NEW_GIFT,         "Gift");
-            entry.addDroppable(RecordSetTask.class, RECORD_SET, new int[] {Gift.getClassTableId()});
-            entries.add(entry);
-            
-            entry = new InteractionEntry("exchangein",  "exchangein",  null,  "ExchangeIn",  F,   NEW_EXCHANGE_IN,  "ExchangeIn");
-            entry.addDroppable(RecordSetTask.class, RECORD_SET, new int[] {ExchangeIn.getClassTableId()});
-            entries.add(entry);
-            
-            entry = new InteractionEntry("exchangeout", "exchangeout", null,  "ExchangeOut", F,   NEW_EXCHANGE_OUT, "ExchangeOut");
-            entry.addDroppable(RecordSetTask.class, RECORD_SET, new int[] {ExchangeOut.getClassTableId()});
-            entries.add(entry);
-            
-            entry = new InteractionEntry("inforequest", "inforequest", null,  null,          I,   INFO_REQ_MESSAGE, "InfoRequest");
-            entry.addDroppable(RecordSetTask.class, RECORD_SET, new int[] {ExchangeIn.getClassTableId(), ExchangeOut.getClassTableId(), CollectionObject.getClassTableId(), InfoRequest.getClassTableId()});
-            entry.addDroppable(InfoRequest.class, "InfoRequest", new int[] {InfoRequest.getClassTableId()});
-            entries.add(entry);
-            
-            entry = new InteractionEntry("printloan",   "loan",        "PRINT_LOANINVOICE",  null, I,   PRINT_LOAN, "Reports");
-            entry.addDroppable(RecordSetTask.class, RECORD_SET, new int[] {Loan.getClassTableId()});
-            entries.add(entry);
-            
-            try
+            boolean showIRBox = true;
+            for (InteractionEntry entry : entries)
             {
-                XStream xstream = new XStream();
-                InteractionEntry.config(xstream);
-                EntryFlavor.config(xstream);
-                
-                FileUtils.writeStringToFile(new File("interactions.xml"), xstream.toXML(entries));
-                
-            } catch (Exception ex)
-            {
-                ex.printStackTrace();
+                DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoByTableName(entry.getTableName());
+                if (!AppContextMgr.isSecurityOn() || tableInfo.getPermissions().canView())
+                {
+                    String label;
+                    if (StringUtils.isNotEmpty(entry.getLabelKey()))
+                    {
+                        label = getResourceString(entry.getLabelKey());
+                    } else
+                    {
+                        label = tableInfo.getTitle();
+                    }
+                    
+                    String tooltip = "";
+                    if (StringUtils.isEmpty(entry.getTooltip()) && StringUtils.isNotEmpty(entry.getViewName()))
+                    {
+                        ViewIFace view = acm.getView(entry.getViewName());
+                        if (view != null)
+                        {
+                            tooltip = getLocalizedMessage("DET_OPEN_VIEW", view.getObjTitle());
+                        }
+                    } else
+                    {
+                        tooltip = getLocalizedMessage(entry.getTooltip());
+                    }
+                    
+                    entry.setTitle(label);
+                    entry.setI18NTooltip(tooltip);
+
+                    if (entry.isOnLeft())
+                    {
+                        if (entry.isOnLeft())
+                        {
+                            NavBoxButton navBtn = addCommand(actionsNavBox, tableInfo, entry);
+                            navBtn.setToolTip(entry.getI18NTooltip());
+                        }
+                        
+                    } else if (StringUtils.isNotEmpty(entry.getViewName()) && entry.isSearchService())
+                    {
+                        CommandAction cmdAction = createCmdActionFromEntry(entry, tableInfo);
+                        ContextMgr.registerService(10, entry.getViewName(), tableInfo.getTableId(), cmdAction, this, "Data_Entry", tableInfo.getTitle(), true); // the Name gets Hashed
+                    }
+                } else if (tableInfo.getTableId() == infoRequestTableId)
+                {
+                    showIRBox = false;
+                }
             }
-        } else
-        {*/
-            readEntries();
-        //}
+            navBoxes.add(actionsNavBox);
+            
+            infoRequestNavBox  = new NavBox(getResourceString("InfoRequest"));
+            loadNavBox(infoRequestNavBox, InfoRequest.class, INFOREQUEST_FLAVOR, showIRBox);
+        }
+        isShowDefault = true;
     }
     
     /**
@@ -380,22 +395,44 @@ public class InteractionsTask extends BaseTask
         Vector<TaskConfigItemIFace> miscList = new Vector<TaskConfigItemIFace>();
         Vector<TaskConfigItemIFace> srvList  = new Vector<TaskConfigItemIFace>();
         
+        boolean showIRBox = true;
         for (InteractionEntry entry : entries)
         {
-            System.err.println(entry.getName()+"  "+entry.isSearchService()+"   "+entry.isOnLeft());
-            if (!entry.isSearchService())
+            DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoByTableName(entry.getTableName());
+            if (!AppContextMgr.isSecurityOn() || tableInfo.getPermissions().canView())
             {
-                Vector<TaskConfigItemIFace> list = entry.isOnLeft() ? stdList : miscList;
-                // Clone for undo (Cancel)
-                try
+                //System.err.println(entry.getName()+"  "+entry.isSearchService()+"   "+entry.isOnLeft());
+                entry.setEnabled(true);
+                if (!entry.isSearchService())
                 {
-                    list.add((TaskConfigItemIFace)entry.clone());
-                    
-                } catch (CloneNotSupportedException ex) {/* ignore */}
+                    Vector<TaskConfigItemIFace> list = entry.isOnLeft() ? stdList : miscList;
+                    // Clone for undo (Cancel)
+                    try
+                    {
+                        list.add((TaskConfigItemIFace)entry.clone());
+                        
+                    } catch (CloneNotSupportedException ex) {/* ignore */}
+                } else
+                {
+                    srvList.add(entry);
+                }
             } else
             {
-                srvList.add(entry);
+                entry.setEnabled(false);
+                
+                if (tableInfo.getTableId() == infoRequestTableId)
+                {
+                    showIRBox = false;
+                }
             }
+        }
+        
+        if (showIRBox)
+        {
+            navBoxes.add(infoRequestNavBox);
+        } else
+        {
+            navBoxes.remove(infoRequestNavBox);
         }
         
         int origNumStd = stdList.size();
@@ -414,23 +451,17 @@ public class InteractionsTask extends BaseTask
             for (TaskConfigItemIFace ie : stdList)
             {
                 ((InteractionEntry)ie).setOnLeft(true);
-                InteractionEntry entry = (InteractionEntry)ie;
-                System.err.println("1 "+entry.getName()+"  "+entry.isSearchService()+"   "+entry.isOnLeft());
                 entries.add((InteractionEntry)ie);
             }
             
             for (TaskConfigItemIFace ie : miscList)
             {
                 ((InteractionEntry)ie).setOnLeft(false);
-                InteractionEntry entry = (InteractionEntry)ie;
-                System.err.println("2 "+entry.getName()+"  "+entry.isSearchService()+"   "+entry.isOnLeft());
                 entries.add((InteractionEntry)ie);
             }
             
             for (TaskConfigItemIFace ie : srvList)
             {
-                InteractionEntry entry = (InteractionEntry)ie;
-                System.err.println("3 "+entry.getName()+"  "+entry.isSearchService()+"   "+entry.isOnLeft());
                 entries.add((InteractionEntry)ie);
             }
             
@@ -443,15 +474,18 @@ public class InteractionsTask extends BaseTask
             for (InteractionEntry entry : entries)
             {
                 DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoByTableName(entry.getTableName());
-                if (entry.isOnLeft())
+                if ( entry.isEnabled())
                 {
-                    NavBoxButton navBtn = addCommand(actionsNavBox, tableInfo, entry);
-                    navBtn.setToolTip(entry.getI18NTooltip());
-                    
-                } else if (StringUtils.isNotEmpty(entry.getViewName()) && !entry.isSearchService())
-                {
-                    CommandAction cmdAction = createCmdActionFromEntry(entry, tableInfo);
-                    ContextMgr.registerService(10, entry.getViewName(), tableInfo.getTableId(), cmdAction, this, "Data_Entry", tableInfo.getTitle(), true); // the Name gets Hashed
+                    if (entry.isOnLeft())
+                    {
+                        NavBoxButton navBtn = addCommand(actionsNavBox, tableInfo, entry);
+                        navBtn.setToolTip(entry.getI18NTooltip());
+                        
+                    } else if (StringUtils.isNotEmpty(entry.getViewName()) && !entry.isSearchService())
+                    {
+                        CommandAction cmdAction = createCmdActionFromEntry(entry, tableInfo);
+                        ContextMgr.registerService(10, entry.getViewName(), tableInfo.getTableId(), cmdAction, this, "Data_Entry", tableInfo.getTitle(), true); // the Name gets Hashed
+                    }
                 }
             }
             
@@ -498,78 +532,6 @@ public class InteractionsTask extends BaseTask
         AppPreferences remotePrefs = AppPreferences.getRemote();
         String ds = AppContextMgr.getInstance().getClassObject(Discipline.class).getType();
         isUsingInteractions = remotePrefs.getBoolean(IS_USING_INTERACTIONS_PREFNAME+ds, true);
-    }
-    
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.core.Taskable#initialize()
-     */
-    @Override
-    public void initialize()
-    {
-        if (!isInitialized)
-        {
-            super.initialize(); // sets isInitialized to false
-            
-            setUpCachedPrefs();
-            
-            extendedNavBoxes.clear();
-            invoiceList.clear();
-
-            actionsNavBox = new NavBox(getResourceString("CreateAndUpdate"));
-            
-            SpecifyAppContextMgr acm = (SpecifyAppContextMgr)AppContextMgr.getInstance();
-            
-            for (InteractionEntry entry : entries)
-            {
-                DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoByTableName(entry.getTableName());
-                if (!AppContextMgr.isSecurityOn() || tableInfo.getPermissions().canView())
-                {
-                    String label;
-                    if (StringUtils.isNotEmpty(entry.getLabelKey()))
-                    {
-                        label = getResourceString(entry.getLabelKey());
-                    } else
-                    {
-                        label = tableInfo.getTitle();
-                    }
-                    
-                    String tooltip = "";
-                    if (StringUtils.isEmpty(entry.getTooltip()) && StringUtils.isNotEmpty(entry.getViewName()))
-                    {
-                        ViewIFace view = acm.getView(entry.getViewName());
-                        if (view != null)
-                        {
-                            tooltip = getLocalizedMessage("DET_OPEN_VIEW", view.getObjTitle());
-                        }
-                    } else
-                    {
-                        tooltip = getLocalizedMessage(entry.getTooltip());
-                    }
-                    
-                    entry.setTitle(label);
-                    entry.setI18NTooltip(tooltip);
-
-                    if (entry.isOnLeft())
-                    {
-                        if (entry.isOnLeft())
-                        {
-                            NavBoxButton navBtn = addCommand(actionsNavBox, tableInfo, entry);
-                            navBtn.setToolTip(entry.getI18NTooltip());
-                        }
-                        
-                    } else if (StringUtils.isNotEmpty(entry.getViewName()) && entry.isSearchService())
-                    {
-                        CommandAction cmdAction = createCmdActionFromEntry(entry, tableInfo);
-                        ContextMgr.registerService(10, entry.getViewName(), tableInfo.getTableId(), cmdAction, this, "Data_Entry", tableInfo.getTitle(), true); // the Name gets Hashed
-                    }
-                }
-            }
-            navBoxes.add(actionsNavBox);
-            
-            infoRequestNavBox  = new NavBox(getResourceString("InfoRequest"));
-            loadNavBox(infoRequestNavBox, InfoRequest.class, INFOREQUEST_FLAVOR);
-        }
-        isShowDefault = true;
     }
     
     /**
@@ -662,7 +624,8 @@ public class InteractionsTask extends BaseTask
      */
     protected void loadNavBox(final NavBox     navBox, 
                               final Class<?>   dataClass,
-                              final DataFlavor dragFlav)
+                              final DataFlavor dragFlav,
+                              final boolean    addBox)
     {
         DBTableInfo ti = DBTableIdMgr.getInstance().getByShortClassName(dataClass.getSimpleName());
         DataProviderSessionIFace session = null;
@@ -676,8 +639,11 @@ public class InteractionsTask extends BaseTask
             {
                 FormDataObjIFace   dataObj = (FormDataObjIFace)iter.next();
                 createNavBtn(navBox, dragFlav, dataObj, ti);
-            }      
-            navBoxes.add(navBox);
+            }
+            if (addBox)
+            {
+                navBoxes.add(navBox);
+            }
             
         } catch (Exception ex)
         {

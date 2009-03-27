@@ -31,6 +31,7 @@ public class InteractionEntry implements TaskConfigItemIFace, Comparable<TaskCon
     protected String  tooltip;
     protected boolean isOnLeft;
     protected boolean isSearchService;
+    protected boolean isEnabled;
     protected int     order;
     
     protected Vector<EntryFlavor> draggableFlavors = new Vector<EntryFlavor>();
@@ -46,34 +47,7 @@ public class InteractionEntry implements TaskConfigItemIFace, Comparable<TaskCon
     public InteractionEntry()
     {
         super();
-    }
-
-    /**
-     * @param name
-     * @param labelKey
-     * @param viewName
-     * @param action
-     * @param iconName
-     * @param isOnLeft
-     */
-    public InteractionEntry(String name, 
-                            String tableName, 
-                            String labelKey, 
-                            String viewName, 
-                            String cmdType,
-                            String action,
-                            String iconName)
-    {
-        super();
-        this.name = name;
-        this.tableName = tableName;
-        this.labelKey = labelKey;
-        this.viewName = viewName;
-        this.cmdType = cmdType;
-        this.action = action;
-        this.iconName = iconName;
-        this.isOnLeft = true;
-        this.isSearchService = false;
+        this.isEnabled = true;
     }
 
     public void addDraggable(final Class<?> cls, final String humanReadable, final int[] dndTableIds)
@@ -329,6 +303,22 @@ public class InteractionEntry implements TaskConfigItemIFace, Comparable<TaskCon
         return true;
     }
 
+    /**
+     * @return the isEnabled
+     */
+    public boolean isEnabled()
+    {
+        return isEnabled;
+    }
+
+    /**
+     * @param isEnabled the isEnabled to set
+     */
+    public void setEnabled(boolean isEnabled)
+    {
+        this.isEnabled = isEnabled;
+    }
+
     /* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
@@ -387,6 +377,7 @@ public class InteractionEntry implements TaskConfigItemIFace, Comparable<TaskCon
         xstream.useAttributeFor(InteractionEntry.class, "order");
         xstream.useAttributeFor(InteractionEntry.class, "isSearchService");
         xstream.useAttributeFor(InteractionEntry.class, "tooltip");
+        xstream.useAttributeFor(InteractionEntry.class, "isEnabled");
         
         xstream.aliasAttribute(InteractionEntry.class, "tableName", "table");
         xstream.aliasAttribute(InteractionEntry.class, "labelKey",  "label");
@@ -395,6 +386,7 @@ public class InteractionEntry implements TaskConfigItemIFace, Comparable<TaskCon
         xstream.aliasAttribute(InteractionEntry.class, "viewName",  "view");
         xstream.aliasAttribute(InteractionEntry.class, "cmdType",   "type");
         xstream.aliasAttribute(InteractionEntry.class, "isSearchService", "issrchsrv");
+        xstream.aliasAttribute(InteractionEntry.class, "isEnabled", "enabled");
         
         xstream.omitField(InteractionEntry.class, "title");
         xstream.omitField(InteractionEntry.class, "i18NTooltip");
