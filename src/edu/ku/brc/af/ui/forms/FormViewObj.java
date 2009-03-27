@@ -1577,10 +1577,12 @@ public class FormViewObj implements Viewable,
                 if (fv != null && fv.hasChanged())
                 {
                     // They might be different because of a previous save or merge
-                    FormHelper.updateLastEdittedInfo(parentMV.getData());
+                    boolean doSetCreate = parentMV.getData() instanceof FormDataObjIFace && ((FormDataObjIFace)parentMV.getData()).getId() == null;
+                    FormHelper.updateLastEdittedInfo(parentMV.getData(), doSetCreate);
                     if (parentMV.getData() != v.getDataObj())
                     {
-                        FormHelper.updateLastEdittedInfo(v.getDataObj());
+                        doSetCreate = v.getDataObj() instanceof FormDataObjIFace && ((FormDataObjIFace)v.getDataObj()).getId() == null;
+                        FormHelper.updateLastEdittedInfo(v.getDataObj(), doSetCreate);
                     }
                 }
             }

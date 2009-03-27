@@ -68,6 +68,21 @@ public final class FormHelper
      */
     public static boolean updateLastEdittedInfo(final Object dataObj)
     {
+        return updateLastEdittedInfo(dataObj, false);
+    }
+    
+    /**
+     * XXX This needs to be moved! This references the specify packge
+     * 
+     * Sets the "timestampModified" and the "lastEditedBy" by fields if the exist, if they don't then 
+     * then it just ignores the request (no error is thrown). The lastEditedBy use the value of the string
+     * set by the method currentUserEditStr.
+     * @param dataObj the data object to have the fields set
+     * @param doCreatedTime indicates it should set the created time also
+     * @return true if it was able to set the at least one of the fields
+     */
+    public static boolean updateLastEdittedInfo(final Object dataObj, final boolean doCreatedTime)
+    {
         log.debug("updateLastEdittedInfo for [" + (dataObj != null ? dataObj.getClass() : "dataObj was null") + "]");
         if (dataObj != null)
         {
@@ -89,12 +104,23 @@ public final class FormHelper
                 DataObjectSettable setter  = DataObjectSettableFactory.get(dataObj.getClass().getName(), DATA_OBJ_SETTER);
                 if (setter != null)
                 {
+                    Timestamp timestamp = new Timestamp(System.currentTimeMillis());
                     boolean foundOne = false;
                     PropertyDescriptor descr = PropertyUtils.getPropertyDescriptor(dataObj, "timestampModified");
                     if (descr != null)
                     {
-                        setter.setFieldValue(dataObj, "timestampModified", new Timestamp(System.currentTimeMillis()));
+                        setter.setFieldValue(dataObj, "timestampModified", timestamp);
                         foundOne = true;
+                    }
+                    
+                    if (doCreatedTime)
+                    {
+                        descr = PropertyUtils.getPropertyDescriptor(dataObj, "timestampCreated");
+                        if (descr != null)
+                        {
+                            setter.setFieldValue(dataObj, "timestampCreated", timestamp);
+                            foundOne = true;
+                        }
                     }
                     
                     descr = PropertyUtils.getPropertyDescriptor(dataObj, "modifiedByAgent");
@@ -195,9 +221,9 @@ public final class FormHelper
             
         } catch (ClassNotFoundException ex)
         {
+            ex.printStackTrace();
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormHelper.class, ex);
-            ex.printStackTrace();
         }
     
         return null;
@@ -220,21 +246,21 @@ public final class FormHelper
     
         } catch (NoSuchMethodException ex)
         {
+            ex.printStackTrace();
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormHelper.class, ex);
-            ex.printStackTrace();
     
         } catch (IllegalAccessException ex)
         {
+            ex.printStackTrace();
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormHelper.class, ex);
-            ex.printStackTrace();
     
         } catch (InvocationTargetException ex)
         {
+            ex.printStackTrace();
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormHelper.class, ex);
-            ex.printStackTrace();
         }
     
         return false;
@@ -279,21 +305,21 @@ public final class FormHelper
         
             } catch (NoSuchMethodException ex)
             {
+                ex.printStackTrace();
                 edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormHelper.class, ex);
-                ex.printStackTrace();
         
             } catch (IllegalAccessException ex)
             {
+                ex.printStackTrace();
                 edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormHelper.class, ex);
-                ex.printStackTrace();
         
             } catch (InvocationTargetException ex)
             {
+                ex.printStackTrace();
                 edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormHelper.class, ex);
-                ex.printStackTrace();
             }
         } else
         {
@@ -316,21 +342,21 @@ public final class FormHelper
     
         } catch (NoSuchMethodException ex)
         {
+            ex.printStackTrace();
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormHelper.class, ex);
-            ex.printStackTrace();
     
         } catch (IllegalAccessException ex)
         {
+            ex.printStackTrace();
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormHelper.class, ex);
-            ex.printStackTrace();
     
         } catch (InvocationTargetException ex)
         {
+            ex.printStackTrace();
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormHelper.class, ex);
-            ex.printStackTrace();
         }
     
         return null;
@@ -405,27 +431,27 @@ public final class FormHelper
                                     }
                                 } catch (NoSuchMethodException ex)
                                 {
+                                    ex.printStackTrace();
                                     edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                                     edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormHelper.class, ex);
-                                    ex.printStackTrace();
     
                                 } catch (IllegalAccessException ex)
                                 {
+                                    ex.printStackTrace();
                                     edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                                     edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormHelper.class, ex);
-                                    ex.printStackTrace();
     
                                 } catch (InvocationTargetException ex)
                                 {
+                                    ex.printStackTrace();
                                     edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                                     edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormHelper.class, ex);
-                                    ex.printStackTrace();
     
                                 } catch (InstantiationException ex)
                                 {
+                                    ex.printStackTrace();
                                     edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                                     edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormHelper.class, ex);
-                                    ex.printStackTrace();
                                 }
                             }
                         } else

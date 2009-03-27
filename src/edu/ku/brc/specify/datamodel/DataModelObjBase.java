@@ -141,6 +141,7 @@ public abstract class DataModelObjBase implements FormDataObjIFace,
     public void setTimestampCreated(Timestamp timestampCreated)
     {
         this.timestampCreated = timestampCreated;
+        setTimestampModified(timestampCreated);
     }
 
     /* (non-Javadoc)
