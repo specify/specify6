@@ -77,7 +77,7 @@
       </flavor>
     </droppableFlavors>
   </entry>
-  <entry name="exchangein" table="exchangein" view="ExchangeIn" type="Interactions" action="OpenNewView" icon="ExchangeIn" isonleft="false" issrchsrv="true" order="0" enabled="true" tooltip="">
+  <entry name="exchangein" table="exchangein" view="ExchangeIn" type="Interactions" action="OpenNewView" icon="ExchangeIn" isonleft="false" issrchsrv="false" order="0" enabled="true" tooltip="">
     <draggableFlavors/>
     <droppableFlavors>
       <flavor isdrag="false" classname="edu.ku.brc.specify.tasks.RecordSetTask" humanreadable="Record_Set">
@@ -87,7 +87,7 @@
       </flavor>
     </droppableFlavors>
   </entry>
-  <entry name="exchangeout" table="exchangeout" view="ExchangeOut" type="Interactions" action="OpenNewView" icon="ExchangeOut" isonleft="false" issrchsrv="true" order="0" enabled="true" tooltip="">
+  <entry name="exchangeout" table="exchangeout" view="ExchangeOut" type="Interactions" action="OpenNewView" icon="ExchangeOut" isonleft="false" issrchsrv="false" order="0" enabled="true" tooltip="">
     <draggableFlavors/>
     <droppableFlavors>
       <flavor isdrag="false" classname="edu.ku.brc.specify.tasks.RecordSetTask" humanreadable="Record_Set">
