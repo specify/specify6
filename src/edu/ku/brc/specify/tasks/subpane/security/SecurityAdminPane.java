@@ -515,8 +515,8 @@ public class SecurityAdminPane extends BaseSubPane
     {
         createNavigationTree();
         
-        String helpStr = getResourceString("ADD_USER_HINT");
-        JLabel userDnDHelp = createLabel(helpStr);
+        //String helpStr = getResourceString("ADD_USER_HINT");
+        //JLabel userDnDHelp = createLabel(helpStr);
         
         // adding the tree as f:p:g makes it grow too large
         final PanelBuilder mainPB = new PanelBuilder(new FormLayout("min(210px;p):g", "f:p:g"));

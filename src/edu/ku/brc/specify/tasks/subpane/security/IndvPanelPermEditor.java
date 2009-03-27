@@ -261,13 +261,15 @@ public class IndvPanelPermEditor extends JPanel implements PermissionPanelContai
         {
             for (SpPermission perm : rowData.getPermissionList())
             {
+                SpPermission newPerm = perm;
                 if ( !(perm.canView() || perm.canAdd() || perm.canModify() || perm.canDelete()))
                 {
                     // no flag is set, so delete the permission
                     if (perm.getId() != null)
                     {
                         perm.setActions("");
-                        session.saveOrUpdate(session.merge(perm));
+                        newPerm = session.merge(perm);
+                        session.saveOrUpdate(newPerm);
                     }
                 }
                 else if (perm.hasSameFlags(perm.canView(), perm.canAdd(), perm.canModify(), perm.canDelete()))
@@ -278,8 +280,10 @@ public class IndvPanelPermEditor extends JPanel implements PermissionPanelContai
                         // permission doesn't yet exist in database: attach it to its principal
                         perm.getPrincipals().add(principal);
                     }
-                    session.saveOrUpdate(session.merge(perm));
+                    newPerm = perm.getId() == null ? perm : session.merge(perm);
+                    session.saveOrUpdate(newPerm);
                 }
+                rowData.updatePerm(perm, newPerm);
             }
         }
     }

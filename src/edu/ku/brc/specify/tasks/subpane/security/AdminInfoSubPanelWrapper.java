@@ -163,9 +163,9 @@ public class AdminInfoSubPanelWrapper
         Object obj = mv.getData();
         
         obj = session.merge(obj);
-        session.update(obj);
+        session.saveOrUpdate(obj);
         principal = session.merge(principal);
-        session.update(principal);
+        session.saveOrUpdate(principal);
         
         for (PermissionPanelEditor editor : permissionEditors)
         {
