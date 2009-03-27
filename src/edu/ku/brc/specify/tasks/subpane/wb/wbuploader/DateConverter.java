@@ -396,11 +396,7 @@ public class DateConverter
                     public Calendar convertToCalendar(String dateStr) throws ParseException
                     {
                         DateFormat df;
-                        if (dateStr.contains(" "))
-                        {
-                            df = new SimpleDateFormat("dd MMM yyyy");
-                        }
-                        else if (dateStr.contains("/"))
+                        if (dateStr.contains("/"))
                         {
                             df = new SimpleDateFormat("dd/MMM/yyy");
                         }
@@ -411,6 +407,10 @@ public class DateConverter
                         else if (dateStr.contains("-"))
                         {
                             df = new SimpleDateFormat("dd-MMM-yyyy");
+                        }
+                        else if (dateStr.contains(" "))
+                        {
+                            df = new SimpleDateFormat("dd MMM yyyy");
                         }
                         else
                         {
@@ -450,7 +450,7 @@ public class DateConverter
                         if (prec.equals(UIFieldFormatterIFace.PartialDateEnum.Year))
                         {
                             //NOTE: this switches the format to DAY_MON_LYEAR 
-                            return "01" + dateStr.substring(2,3) + "01" + dateStr.substring(5);
+                            return "01" + dateStr.substring(2,3) + "01" + dateStr.substring(6);
                         }
                         if (prec.equals(UIFieldFormatterIFace.PartialDateEnum.Month))
                         {
