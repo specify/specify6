@@ -1066,6 +1066,25 @@ public class UploadTable implements Comparable<UploadTable>
                     {
                         fldStr = dateConverter.adjustForPrecision(fldStr);
                     }
+                    else
+                    {
+                    	//need to do this because even with lenient = false, Calendar.parse
+                    	//will still interpret '00/Jun/2004' as '31/May/2004'.
+                    	try
+                    	{
+                    		UIFieldFormatterIFace.PartialDateEnum prec = dateConverter.getDatePrecision(fldStr);
+                    		if (prec.equals(UIFieldFormatterIFace.PartialDateEnum.Month)
+                    				|| prec.equals(UIFieldFormatterIFace.PartialDateEnum.Year))
+                    		{
+                    			ParseException pex = new ParseException(UIRegistry.getResourceString("WB_UPLOAD_INVALID_FORMAT"), 0);
+                    			throw new UploaderException(pex, UploaderException.INVALID_DATA);
+                    		}
+                    	}
+                    	catch (ParseException pex)
+                    	{
+                    		//ignore. Problem should get caught in dateConverter.convert call below.
+                    	}
+                    }
                     
                     arg[0] = dateConverter.convert(fldStr);
                 }
