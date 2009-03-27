@@ -275,7 +275,7 @@
  collectionobject co INNER JOIN determination d ON d.CollectionObjectID = co.CollectionObjectID 
  INNER JOIN taxon t ON d.TaxonID = t.TaxonID 
  INNER JOIN taxon t2 ON t2.TaxonID = d.PreferredTaxonID 
- WHERE dt.TaxonId <> dt.PreferredTaxonId AND t.TaxonTreeDefID = TAXTREEDEFID AND co.CollectionMemberID = COLMEMID AND %s]]>
+ WHERE d.TaxonId <> d.PreferredTaxonId AND t.TaxonTreeDefID = TAXTREEDEFID AND co.CollectionMemberID = COLMEMID AND %s]]>
                 </sql>
                 <captions>
                     <caption tableid="1" col="co.CollectionObjectID" visible="false"/>
