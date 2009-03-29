@@ -50,11 +50,7 @@ public class DateConverter
             public Calendar convertToCalendar(String dateStr) throws ParseException
             {
                 DateFormat df;
-                if (dateStr.contains(" "))
-                {
-                    df = new SimpleDateFormat("MM dd yyyy");
-                }
-                else if (dateStr.contains("/"))
+                if (dateStr.contains("/"))
                 {
                     df = new SimpleDateFormat("MM/dd/yyyy");
                 }
@@ -65,6 +61,10 @@ public class DateConverter
                 else if (dateStr.contains("-"))
                 {
                     df = new SimpleDateFormat("MM-dd-yyyy");
+                }
+                else if (dateStr.contains(" "))
+                {
+                    df = new SimpleDateFormat("MM dd yyyy");
                 }
                 else
                 {
@@ -119,11 +119,7 @@ public class DateConverter
             public Calendar convertToCalendar(String dateStr) throws ParseException
             {
                 DateFormat df;
-                if (dateStr.contains(" "))
-                {
-                    df = new SimpleDateFormat("MM dd yy");
-                }
-                else if (dateStr.contains("/"))
+                if (dateStr.contains("/"))
                 {
                     df = new SimpleDateFormat("MM/dd/yy");
                 }
@@ -134,6 +130,10 @@ public class DateConverter
                 else if (dateStr.contains("-"))
                 {
                     df = new SimpleDateFormat("MM-dd-yy");
+                }
+                else if (dateStr.contains(" "))
+                {
+                    df = new SimpleDateFormat("MM dd yy");
                 }
                 else
                 {
@@ -188,11 +188,7 @@ public class DateConverter
             public Calendar convertToCalendar(String dateStr) throws ParseException
             {
                 DateFormat df;
-                if (dateStr.contains(" "))
-                {
-                    df = new SimpleDateFormat("dd MM yyyy");
-                }
-                else if (dateStr.contains("/"))
+                if (dateStr.contains("/"))
                 {
                     df = new SimpleDateFormat("dd/MM/yyyy");
                 }
@@ -203,6 +199,10 @@ public class DateConverter
                 else if (dateStr.contains("-"))
                 {
                     df = new SimpleDateFormat("dd-MM-yyyy");
+                }
+                else if (dateStr.contains(" "))
+                {
+                    df = new SimpleDateFormat("dd MM yyyy");
                 }
                 else
                 {
@@ -256,11 +256,7 @@ public class DateConverter
             public Calendar convertToCalendar(String dateStr) throws ParseException
             {
                 DateFormat df;
-                if (dateStr.contains(" "))
-                {
-                    df = new SimpleDateFormat("dd MM yy");
-                }
-                else if (dateStr.contains("/"))
+                if (dateStr.contains("/"))
                 {
                     df = new SimpleDateFormat("dd/MM/yy");
                 }
@@ -271,6 +267,10 @@ public class DateConverter
                 else if (dateStr.contains("-"))
                 {
                     df = new SimpleDateFormat("dd-MM-yy");
+                }
+                else if (dateStr.contains(" "))
+                {
+                    df = new SimpleDateFormat("dd MM yy");
                 }
                 else
                 {
@@ -326,11 +326,7 @@ public class DateConverter
             public Calendar convertToCalendar(String dateStr) throws ParseException
             {
                 DateFormat df;
-                if (dateStr.contains(" "))
-                {
-                    df = new SimpleDateFormat("yyyy MM dd");
-                }
-                else if (dateStr.contains("/"))
+                if (dateStr.contains("/"))
                 {
                     df = new SimpleDateFormat("yyyy/MM/dd");
                 }
@@ -341,6 +337,10 @@ public class DateConverter
                 else if (dateStr.contains("-"))
                 {
                     df = new SimpleDateFormat("yyyy-MM-dd");
+                }
+                else if (dateStr.contains(" "))
+                {
+                    df = new SimpleDateFormat("yyyy MM dd");
                 }
                 else
                 {
