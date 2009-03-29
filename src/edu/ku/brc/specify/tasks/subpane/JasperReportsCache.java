@@ -72,7 +72,7 @@ public class JasperReportsCache implements DataCacheIFace
     {
         File imageDir;
         
-        String imgPath = AppPreferences.getLocalPrefs().get("REPORT_IMAGE_PATH", null);
+        String imgPath = AppPreferences.getRemote().get("REPORT_IMAGE_PATH", null);
         if (StringUtils.isNotEmpty(imgPath))
         {
             imageDir = new File(imgPath);

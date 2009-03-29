@@ -346,6 +346,12 @@
                 <row>
                     <cell type="field" id="8" name="attachment.path" cols="30" uitype="browse" initialize="dirsonly=true" colspan="4"/>
                 </row>
+                <!--<row>
+                    <cell type="separator" label="REP_IMG_PATH" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="field" id="88" name="REPORT_IMAGE_PATH" cols="30" uitype="browse" initialize="dirsonly=true" colspan="4"/>
+                </row>-->
                 <row>
                     <cell type="separator" label="GEO_REF" colspan="4"/>
                 </row>
