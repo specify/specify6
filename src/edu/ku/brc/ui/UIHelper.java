@@ -2033,7 +2033,7 @@ public final class UIHelper
                                         final boolean              withEmptyBorder,
                                         final ActionListener       al)
     {
-        String ttText = toolTipTextKey != null ? getResourceString(toolTipTextKey) : null;
+        String ttText = StringUtils.isNotEmpty(toolTipTextKey) ? getResourceString(toolTipTextKey) : null;
         return createIconBtnTT(iconName, size, ttText, withEmptyBorder, al);
     }
 
