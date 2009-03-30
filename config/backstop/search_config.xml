@@ -1239,7 +1239,7 @@ repositoryagreement.RepositoryAgreementNumber,
   attachment.Title,
   %s
   FROM accession INNER JOIN accessionattachment ON accession.AccessionID = accessionattachment.AccessionID
-  INNER JOIN attachment ON accessionattachment.AttachmentID = attachment.AttachmentID]]>
+  INNER JOIN attachment ON accessionattachment.AttachmentID = attachment.AttachmentID WHERE %s]]>
                 </sql>
                 <captions>
                     <caption tableid="7" col="AccessionID" visible="false"/>
@@ -1263,7 +1263,9 @@ repositoryagreement.RepositoryAgreementNumber,
   attachment.Title,
   %s
   FROM agent INNER JOIN agentattachment ON agent.AgentID = agentattachment.AgentID
-  INNER JOIN attachment ON agentattachment.AttachmentID = attachment.AttachmentID]]>
+  INNER JOIN attachment ON agentattachment.AttachmentID = attachment.AttachmentID
+  WHERE %s
+  ]]>
                 </sql>
                 <captions>
                     <caption tableid="5" col="AgentID" visible="false"/>
@@ -1287,7 +1289,7 @@ repositoryagreement.RepositoryAgreementNumber,
   attachment.Title,
   %s
   FROM collectingevent INNER JOIN collectingeventattachment ON collectingevent.CollectingEventID = collectingeventattachment.CollectingEventID
-  INNER JOIN attachment ON collectingeventattachment.AttachmentID = attachment.AttachmentID]]>
+  INNER JOIN attachment ON collectingeventattachment.AttachmentID = attachment.AttachmentID WHERE %s]]>
                 </sql>
                 <captions>
                     <caption tableid="10" col="CollectingEventID" visible="false"/>
@@ -1310,7 +1312,7 @@ repositoryagreement.RepositoryAgreementNumber,
   attachment.Title,
   %s
   FROM collectionobject INNER JOIN collectionobjectattachment ON collectionobject.CollectionObjectID = collectionobjectattachment.CollectionObjectID
-  INNER JOIN attachment ON collectionobjectattachment.AttachmentID = attachment.AttachmentID]]>
+  INNER JOIN attachment ON collectionobjectattachment.AttachmentID = attachment.AttachmentID WHERE %s]]>
                 </sql>
                 <captions>
                     <caption tableid="1" col="CollectionObjectID" visible="false"/>
@@ -1333,7 +1335,7 @@ repositoryagreement.RepositoryAgreementNumber,
   attachment.Title,
   %s
   FROM conservdescription INNER JOIN conservdescriptionattachment ON conservdescription.ConservDescriptionID = conservdescriptionattachment.ConservDescriptionID
-  INNER JOIN attachment ON conservdescriptionattachment.AttachmentID = attachment.AttachmentID]]>
+  INNER JOIN attachment ON conservdescriptionattachment.AttachmentID = attachment.AttachmentID WHERE %s]]>
                 </sql>
                 <captions>
                     <caption tableid="103" col="ConservDescriptionID" visible="false"/>
@@ -1357,7 +1359,7 @@ repositoryagreement.RepositoryAgreementNumber,
   attachment.Title,
   %s
   FROM conservevent INNER JOIN conserveventattachment ON conservevent.ConservEventID = conserveventattachment.ConservEventID
-  INNER JOIN attachment ON conserveventattachment.AttachmentID = attachment.AttachmentID]]>
+  INNER JOIN attachment ON conserveventattachment.AttachmentID = attachment.AttachmentID WHERE %s]]>
                 </sql>
                 <captions>
                     <caption tableid="73" col="ConservEventID" visible="false"/>
@@ -1405,7 +1407,7 @@ repositoryagreement.RepositoryAgreementNumber,
   attachment.Title,
   %s
   FROM fieldnotebook INNER JOIN fieldnotebookattachment ON fieldnotebook.FieldNotebookID = fieldnotebookattachment.FieldNotebookID
-  INNER JOIN attachment ON fieldnotebookattachment.AttachmentID = attachment.AttachmentID]]>
+  INNER JOIN attachment ON fieldnotebookattachment.AttachmentID = attachment.AttachmentID WHERE %s]]>
                 </sql>
                 <captions>
                     <caption tableid="83" col="FieldNotebookID" visible="false"/>
@@ -1431,7 +1433,7 @@ repositoryagreement.RepositoryAgreementNumber,
   attachment.Title,
   %s
   FROM fieldnotebookpage INNER JOIN fieldnotebookpageattachment ON fieldnotebookpage.FieldNotebookPageID = fieldnotebookpageattachment.FieldNotebookPageID
-  INNER JOIN attachment ON fieldnotebookpageattachment.AttachmentID = attachment.AttachmentID]]>
+  INNER JOIN attachment ON fieldnotebookpageattachment.AttachmentID = attachment.AttachmentID WHERE %s]]>
                 </sql>
                 <captions>
                     <caption tableid="85" col="FieldNotebookPageID" visible="false"/>
@@ -1457,7 +1459,7 @@ repositoryagreement.RepositoryAgreementNumber,
   attachment.Title,
   %s
   FROM fieldnotebookpageset INNER JOIN fieldnotebookpagesetattachment ON fieldnotebookpageset.FieldNotebookPageSetID = fieldnotebookpagesetattachment.FieldNotebookPageSetID
-  INNER JOIN attachment ON fieldnotebookpagesetattachment.AttachmentID = attachment.AttachmentID]]>
+  INNER JOIN attachment ON fieldnotebookpagesetattachment.AttachmentID = attachment.AttachmentID WHERE %s]]>
                 </sql>
                 <captions>
                     <caption tableid="84" col="FieldNotebookPageSetID" visible="false"/>
@@ -1482,7 +1484,7 @@ repositoryagreement.RepositoryAgreementNumber,
   attachment.Title,
   %s
   FROM locality INNER JOIN localityattachment ON locality.LocalityID = localityattachment.LocalityID
-  INNER JOIN attachment ON localityattachment.AttachmentID = attachment.AttachmentID]]>
+  INNER JOIN attachment ON localityattachment.AttachmentID = attachment.AttachmentID WHERE %s]]>
                 </sql>
                 <captions>
                     <caption tableid="2" col="LocalityID" visible="false"/>
@@ -1506,7 +1508,7 @@ repositoryagreement.RepositoryAgreementNumber,
   attachment.Title,
   %s
   FROM permit INNER JOIN permitattachment ON permit.PermitID = permitattachment.PermitID
-  INNER JOIN attachment ON permitattachment.AttachmentID = attachment.AttachmentID]]>
+  INNER JOIN attachment ON permitattachment.AttachmentID = attachment.AttachmentID WHERE %s]]>
                 </sql>
                 <captions>
                     <caption tableid="6" col="PermitID" visible="false"/>
@@ -1530,7 +1532,7 @@ repositoryagreement.RepositoryAgreementNumber,
   attachment.Title,
   %s
   FROM preparation INNER JOIN preparationattachment ON preparation.PreparationID = preparationattachment.PreparationID
-  INNER JOIN attachment ON preparationattachment.AttachmentID = attachment.AttachmentID]]>
+  INNER JOIN attachment ON preparationattachment.AttachmentID = attachment.AttachmentID WHERE %s]]>
                 </sql>
                 <captions>
                     <caption tableid="63" col="PreparationID" visible="false"/>
@@ -1554,7 +1556,7 @@ repositoryagreement.RepositoryAgreementNumber,
   attachment.Title,
   %s
   FROM repositoryagreement INNER JOIN repositoryagreementattachment ON repositoryagreement.RepositoryAgreementID = repositoryagreementattachment.RepositoryAgreementID
-  INNER JOIN attachment ON repositoryagreementattachment.AttachmentID = attachment.AttachmentID]]>
+  INNER JOIN attachment ON repositoryagreementattachment.AttachmentID = attachment.AttachmentID WHERE %s]]>
                 </sql>
                 <captions>
                     <caption tableid="70" col="RepositoryAgreementID" visible="false"/>
@@ -1581,7 +1583,7 @@ repositoryagreement.RepositoryAgreementNumber,
   attachment.OrigFilename,
   %s
   FROM taxon INNER JOIN taxonattachment ON taxon.TaxonID = taxonattachment.TaxonID
-  INNER JOIN attachment ON taxonattachment.AttachmentID = attachment.AttachmentID]]>
+  INNER JOIN attachment ON taxonattachment.AttachmentID = attachment.AttachmentID WHERE %s]]>
                 </sql>
                 <captions>
                     <caption tableid="4" col="TaxonID" visible="false"/>
