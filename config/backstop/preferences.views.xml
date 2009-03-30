@@ -325,7 +325,7 @@
             <desc><![CDATA[System Preference Form.]]></desc>
             
             <columnDef>p,4px,p,f:p:g</columnDef>
-            <rowDef>p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px</rowDef>
+            <rowDef>p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px</rowDef>
                
             <rows>
                 <row>
@@ -346,12 +346,12 @@
                 <row>
                     <cell type="field" id="8" name="attachment.path" cols="30" uitype="browse" initialize="dirsonly=true" colspan="4"/>
                 </row>
-                <!--<row>
+                <row>
                     <cell type="separator" label="REP_IMG_PATH" colspan="4"/>
                 </row>
                 <row>
                     <cell type="field" id="88" name="REPORT_IMAGE_PATH" cols="30" uitype="browse" initialize="dirsonly=true" colspan="4"/>
-                </row>-->
+                </row>
                 <row>
                     <cell type="separator" label="GEO_REF" colspan="4"/>
                 </row>
