@@ -382,11 +382,11 @@
     <hashtable>
       <entry>
         <string>Manager</string>
-        <tp name="Workbench" type="Manager" view="false" modify="false" del="false" add="false"/>
+        <tp name="Workbench" type="Manager" view="true" modify="true" del="true" add="true"/>
       </entry>
       <entry>
         <string>Guest</string>
-        <tp name="Workbench" type="Guest" view="true" modify="true" del="true" add="true"/>
+        <tp name="Workbench" type="Guest" view="true" modify="false" del="false" add="false"/>
       </entry>
       <entry>
         <string>LimitedAccess</string>

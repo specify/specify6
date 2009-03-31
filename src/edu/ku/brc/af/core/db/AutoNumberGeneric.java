@@ -22,7 +22,7 @@ import edu.ku.brc.af.ui.forms.DataGetterForObj;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterField;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
-import edu.ku.brc.ui.UIRegistry;
+import static edu.ku.brc.ui.UIRegistry.*;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -39,6 +39,9 @@ public class AutoNumberGeneric implements AutoNumberIFace
     protected String           fieldName = null;
     protected DataGetterForObj getter    = new DataGetterForObj();
     protected boolean          isGeneric = true;
+    
+    // For Errors
+    protected String           errorMsg  = null;
     
     /**
      * 
@@ -113,7 +116,7 @@ public class AutoNumberGeneric implements AutoNumberIFace
     {
         if (value == null || pos == null)
         {
-            UIRegistry.showLocalizedError("AUTONUM_INC_ERR");
+            errorMsg  = getLocalizedMessage("AUTONUM_INC_ERR", value != null ? value : "null", (pos != null ? pos : "null"));
             return null;
         }
         
@@ -156,11 +159,13 @@ public class AutoNumberGeneric implements AutoNumberIFace
             {
                 return list.get(0);
             }
+            
         } catch (Exception ex)
         {
+            ex.printStackTrace();
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AutoNumberGeneric.class, ex);
-            ex.printStackTrace();
+            errorMsg  = ex.toString();
         }
         return null;
     }
@@ -186,6 +191,7 @@ public class AutoNumberGeneric implements AutoNumberIFace
                         
                     } catch (Exception ex) 
                     {
+                        errorMsg = ex.toString();
                         edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                         edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AutoNumberGeneric.class, ex);
                         //ex.printStackTrace();
@@ -237,7 +243,7 @@ public class AutoNumberGeneric implements AutoNumberIFace
             Integer highestYear = getYearValue(formatter, highestValue);
             Integer formYear    = getYearValue(formatter, formValue);
             
-            boolean calcNewValue   = false;          // Caused by year changing
+            boolean calcNewValue = false;          // Caused by year changing
             
             if (highestYear != null && formYear != null)
             {
@@ -274,8 +280,8 @@ public class AutoNumberGeneric implements AutoNumberIFace
                 // If this is a "by Year" and the year was null for both than we need to start from scratch
                 if (isByYear)
                 {
-                    strToUseForInc     = null;
-                    calcNewValue = true;
+                    strToUseForInc = null;
+                    calcNewValue   = true;
                 }
             }
     
@@ -319,9 +325,9 @@ public class AutoNumberGeneric implements AutoNumberIFace
      * @param yearAndIncVal a year,incVal pair
      * @return the new formatted value
      */
-    public String buildNewNumber(final UIFieldFormatterIFace  formatter, 
-                                 final String                 value, 
-                                 final Pair<Integer, Integer> yearAndIncVal)
+    protected String buildNewNumber(final UIFieldFormatterIFace  formatter, 
+                                    final String                 value, 
+                                    final Pair<Integer, Integer> yearAndIncVal)
     {
         String trimmedValue = StringUtils.deleteWhitespace(value);
         int    fmtLen       = formatter.getLength();
@@ -330,7 +336,7 @@ public class AutoNumberGeneric implements AutoNumberIFace
             Pair<Integer, Integer> pos = formatter.getIncPosition();
             if (pos != null)
             {
-                if (pos.first != null && pos.second != null)
+                if (pos.second != null)
                 {
                     int incVal = yearAndIncVal.second + 1;
                     
@@ -350,17 +356,14 @@ public class AutoNumberGeneric implements AutoNumberIFace
                         {
                             sb.replace(yrPos.first, yrPos.second, Integer.toString(yearAndIncVal.first));
                         }
-                        
-                        //return sb.toString();
-                        
                     } // else
                     //throw new RuntimeException("There was an error trying to obtain the highest number, there may be a bad value in the database.");
                     return sb.toString();
                 } // else
-                throw new RuntimeException("There was an error trying to obtain the highest number, there may be a bad value in the database."); //$NON-NLS-1$
+                //errorMsg = "There was an error trying to obtain the highest number, there may be a bad value in the database."; //$NON-NLS-1$
             }
             // else
-            throw new RuntimeException("Formatter ["+formatter.getName()+"] doesn't have an incrementer field."); //$NON-NLS-1$ //$NON-NLS-2$
+            errorMsg = "Formatter ["+formatter.getName()+"] doesn't have an incrementer field."; //$NON-NLS-1$ //$NON-NLS-2$
         }   
         return null;
     }
@@ -370,6 +373,8 @@ public class AutoNumberGeneric implements AutoNumberIFace
      */
     public String getNextNumber(final UIFieldFormatterIFace formatter, final String formValue)
     {
+        errorMsg = null;
+            
         if (StringUtils.isNotEmpty(formValue) && formatter.isLengthOK(formValue.length()))
         {
             Session session = null;
@@ -381,22 +386,34 @@ public class AutoNumberGeneric implements AutoNumberIFace
                 Pair<Integer, Integer> yrPos     = yearField != null ? formatter.getYearPosition() : null;
                 
                 Object dataObj = getHighestObject(session, formValue, yrPos, formatter.getIncPosition());
-                String highestValue  = dataObj != null ? (String)getter.getFieldValue(dataObj, fieldName) : null;
-                
-                Pair<Integer, Integer> yearAndIncVal = getYearAndIncVal(formatter, highestValue, formValue);
-                
-                // Should NEVER be null
-                if (yearAndIncVal != null)
+                //if (dataObj != null)
                 {
-                    return buildNewNumber(formatter, formValue, yearAndIncVal);
+                    String highestValue  = dataObj != null ? (String)getter.getFieldValue(dataObj, fieldName) : null;
+                    
+                    Pair<Integer, Integer> yearAndIncVal = getYearAndIncVal(formatter, highestValue, formValue);
+                    
+                    // Should NEVER be null
+                    if (yearAndIncVal != null)
+                    {
+                        if (yearAndIncVal.second != null)
+                        {
+                            return buildNewNumber(formatter, formValue, yearAndIncVal);
+                        }
+                        errorMsg = getResourceString("AUTONUM_BAD_DATA_ERR");
+                        
+                    } else
+                    {
+                        errorMsg = "yearAndIncVal was NULL and should NEVER be!"; //$NON-NLS-1$
+                    }
                 }
-                throw new RuntimeException("yearAndIncVal was NULL and should NEVER be!"); //$NON-NLS-1$
+                return null;
                 
             } catch (Exception ex)
             {
+                errorMsg = ex.toString();
+                ex.printStackTrace();
                 edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(AutoNumberGeneric.class, ex);
-                ex.printStackTrace();
                 
             } finally
             {
@@ -406,8 +423,9 @@ public class AutoNumberGeneric implements AutoNumberIFace
                 }
             }
         }
-        // This should never happen, so let's throw an exception
-        throw new RuntimeException("Value ["+formValue+"] was not the proper length to be incremented."); //$NON-NLS-1$ //$NON-NLS-2$
+        errorMsg = errorMsg == null ? "" : "\n";
+        errorMsg += "Value ["+formValue+"] was not the proper length to be incremented."; //$NON-NLS-1$ //$NON-NLS-2$
+        return null;
     }
 
     /**
@@ -434,6 +452,24 @@ public class AutoNumberGeneric implements AutoNumberIFace
         xmlAttr(sb, "field", fieldName);
         sb.append("/>\n");
         */
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.db.AutoNumberIFace#getErrorMsg()
+     */
+    @Override
+    public String getErrorMsg()
+    {
+        return errorMsg;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.db.AutoNumberIFace#isInError()
+     */
+    @Override
+    public boolean isInError()
+    {
+        return errorMsg != null;
     }
 
 }

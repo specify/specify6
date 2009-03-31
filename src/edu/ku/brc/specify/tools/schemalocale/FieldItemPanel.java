@@ -74,7 +74,6 @@ import edu.ku.brc.af.core.db.DBTableChildIFace;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.db.PickListIFace;
-import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatter;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFormatterListEdtDlg;
 import edu.ku.brc.af.ui.weblink.WebLinkConfigDlg;
@@ -614,8 +613,9 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
     {
     	LocalizableItemIFace fld = getSelectedFieldItem();
     	String oldFormat = fld.getFormat();
-    	String newFormat = (formatter != null)? formatter.getName() : "";
+    	String newFormat = (formatter != null) ? formatter.getName() : "";
     	fld.setFormat( newFormat );
+    	fld.setIsUIFormatter(true);
     	
     	// first reset combo box in case any formatters have been deleted
     	fillWithFieldFormatter(formatter);
@@ -842,7 +842,8 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
         return selectedFmt;
     }
     
-    private void setAsDefFormatter() {
+    private void setAsDefFormatter() 
+    {
         Object item = formatCombo.getSelectedItem();
         UIFieldFormatterIFace selected = null;
         if (item instanceof UIFieldFormatterIFace)

@@ -229,8 +229,8 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
     private static final String ATTACHMENT_PATH_PREF = "attachment.path";
     
     // The preferred size of the demo
-    private static final int    PREFERRED_WIDTH    = 900;
-    private static final int    PREFERRED_HEIGHT   = 800;
+    private static final int    PREFERRED_WIDTH    = 1024;
+    private static final int    PREFERRED_HEIGHT   = 768;
 
     private static Specify      specifyApp         = null; // needed for ActionListeners etc.
 
@@ -1322,6 +1322,15 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                             secLbl.setToolTipText(getResourceString("Specify.SEC_" + (isSecurityOn ? "ON" : "OFF")));
                         }
                     }});
+        
+        JMenuItem sizeMenuItem = new JMenuItem("Set to "+PREFERRED_WIDTH+"x"+PREFERRED_HEIGHT); //$NON-NLS-1$
+        menu.add(sizeMenuItem);
+        sizeMenuItem.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent ae)
+                    {
+                        topFrame.setSize(PREFERRED_WIDTH, PREFERRED_HEIGHT);
+                    }});
+        
         //----------------------------------------------------
         //-- Helper Menu
         //----------------------------------------------------

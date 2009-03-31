@@ -2460,6 +2460,21 @@ public class DataBuilder
         createDefaultPermissions("tasks.xml",      "Task.",  groupMap);
     }
     
+    public static void writePerms(final Hashtable<String, Hashtable<String, PermissionOptionPersist>> hash,
+                                  final String fileName)
+    {
+        XStream xstream = new XStream();
+        PermissionOptionPersist.config(xstream);
+        try
+        {
+            FileUtils.writeStringToFile(new File(fileName), xstream.toXML(hash)); //$NON-NLS-1$
+            
+        } catch (IOException ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+    
     /**
      * @param filename
      * @param prefix
@@ -2470,6 +2485,21 @@ public class DataBuilder
                                                 final Map<String, SpPrincipal> groupMap)
     {
         Hashtable<String, Hashtable<String, PermissionOptionPersist>> mainHash = BaseTask.readDefaultPermsFromXML(filename);
+        if (true)
+        {
+            for (String permName : mainHash.keySet())
+            {
+                String userType = "LimitedAccess";
+                Hashtable<String, PermissionOptionPersist> hash = mainHash.get(permName);
+                if (hash.get(userType) == null)
+                {
+                    PermissionOptionPersist permOpts = hash.get("FullAccess");
+                    PermissionOptionPersist newPermOpts = new PermissionOptionPersist(permOpts.getTaskName(), userType, permOpts.isCanView(), permOpts.isCanModify(), permOpts.isCanDel(), permOpts.isCanAdd());
+                    hash.put(userType, newPermOpts);
+                }
+            }
+            writePerms(mainHash, filename);
+        }
 
         for (SpPrincipal p : groupMap.values())
         {

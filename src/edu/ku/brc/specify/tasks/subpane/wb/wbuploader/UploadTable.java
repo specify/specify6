@@ -1197,6 +1197,7 @@ public class UploadTable implements Comparable<UploadTable>
                                 if (!this.validatingValues || autoAssignedVal == null)
                                 {
                                     val = formatter.getNextNumber("");
+                                    // XXX timo - Need to check here for a null return value.
                                     autoAssignedVal = formatter.formatToUI(val);
                                 }
                                 if (autoAssignedField == null)
@@ -1207,7 +1208,7 @@ public class UploadTable implements Comparable<UploadTable>
                             else
                             {
                                 val = formatter.formatFromUI(fldStr);
-                                if (!formatter.isValid((String )val))
+                                if (!formatter.isValid((String)val))
                                 {
                                     throw new UploaderException(UIRegistry.getResourceString("WB_UPLOAD_INVALID_FORMAT"), UploaderException.INVALID_DATA);
                                 }

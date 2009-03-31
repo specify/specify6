@@ -219,6 +219,7 @@ import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.dbsupport.SpecifyDeleteHelper;
 import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
+import edu.ku.brc.specify.tools.schemalocale.DisciplineBasedContainer;
 import edu.ku.brc.specify.tools.schemalocale.SchemaLocalizerXMLHelper;
 import edu.ku.brc.specify.treeutils.TreeFactory;
 import edu.ku.brc.specify.treeutils.TreeHelper;
@@ -260,7 +261,7 @@ public class BuildSampleDatabase
     protected Hashtable<String, Integer> taxonIndexes = new Hashtable<String, Integer>();
     private DataSetterForObj setter = new DataSetterForObj();
 
-    protected static boolean     debugOn  = false;
+    protected static boolean     debugOn        = false;
     protected static final int   TIME_THRESHOLD = 3000;
     protected static Hashtable<String, Boolean> fieldsToHideHash = new Hashtable<String, Boolean>();
     protected static Hashtable<String, Boolean> fieldsToSkipHash = new Hashtable<String, Boolean>();
@@ -7520,11 +7521,14 @@ public class BuildSampleDatabase
      * @param newItem
      * @param hideGenericFields
      */
-    public static void loadLocalization(final String tableName, 
-                                        final SpLocaleContainerItem memoryItem, 
+    public static void loadLocalization(final String                tableName, 
+                                        final SpLocaleContainerItem memoryItemArg, 
                                         final SpLocaleContainerItem newItem,
-                                        final boolean hideGenericFields)
+                                        final SpLocaleContainerItem dispItem,
+                                        final boolean               hideGenericFields)
     {
+        SpLocaleContainerItem memoryItem = dispItem != null ? dispItem : memoryItemArg;
+        
         String itemName = memoryItem.getName();
         newItem.setName(itemName);
         
@@ -7572,7 +7576,8 @@ public class BuildSampleDatabase
      * @param memoryContainer
      * @param newContainer
      */
-    public static void loadLocalization(final SpLocaleContainer memoryContainer, 
+    public static void loadLocalization(final String            disciplineName,
+                                        final SpLocaleContainer memoryContainer, 
                                         final SpLocaleContainer newContainer,
                                         final boolean hideGenericFields,
                                         final String catFmtName,
@@ -7620,6 +7625,18 @@ public class BuildSampleDatabase
             str.setContainerDesc(newContainer);
         }
         
+        Hashtable<String, SpLocaleContainerItem> dispItemHash = new Hashtable<String, SpLocaleContainerItem>();
+        if (memoryContainer instanceof DisciplineBasedContainer)
+        {
+            DisciplineBasedContainer dbc = (DisciplineBasedContainer)memoryContainer;
+            
+            Set<SpLocaleContainerItem> itemsSet = dbc.getDisciplineItems(disciplineName);
+            for (SpLocaleContainerItem item : itemsSet)
+            {
+                dispItemHash.put(item.getName(), item);
+            }
+        }
+        
         for (SpLocaleContainerItem item : memoryContainer.getItems())
         {
             SpLocaleContainerItem newItem = new SpLocaleContainerItem();
@@ -7628,7 +7645,9 @@ public class BuildSampleDatabase
             newContainer.getItems().add(newItem);
             newItem.setContainer(newContainer);
             
-            loadLocalization(memoryContainer.getName(), item, newItem, hideGenericFields);
+            SpLocaleContainerItem dispItem = dispItemHash.get(item.getName());
+            
+            loadLocalization(memoryContainer.getName(), item, newItem, dispItem, hideGenericFields);
             
             if (isColObj && item.getName().equals("catalogNumber") && catFmtName != null)
             {
@@ -7678,7 +7697,7 @@ public class BuildSampleDatabase
             
             container.setIsHidden(hiddenTableMgr.isHidden(discipline.getType(), table.getName()));
             
-            loadLocalization(table, container, hideGenericFields, catFmtName, accFmtName);
+            loadLocalization(discipline.getType().toString(), table, container, hideGenericFields, catFmtName, accFmtName);
             
             discipline.getSpLocaleContainers().add(container);
             container.setDiscipline(discipline);

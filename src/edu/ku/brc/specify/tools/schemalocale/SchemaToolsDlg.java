@@ -35,8 +35,12 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.tasks.BaseTask;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -213,8 +217,15 @@ public class SchemaToolsDlg extends CustomDialog
 
                     SchemaLocalizerDlg dlg = new SchemaLocalizerDlg((Frame)UIRegistry.getTopWindow(), schemaType, tableMgr); // MUST BE MODAL!
                     dlg.setVisible(true);
-                    
                     SchemaI18NService.setCurrentLocale(currLocale);
+                    
+                    if (dlg.wasSaved())
+                    {
+                        CommandDispatcher.dispatch(new CommandAction(BaseTask.APP_CMD_TYPE, BaseTask.APP_REQ_EXIT));
+                    } else
+                    {
+                        ContextMgr.getTaskByName("Startup").requestContext();
+                    }
 
                 }
             }

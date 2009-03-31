@@ -107,6 +107,8 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
     protected Vector<LocalizableStrIFace> descsList = new Vector<LocalizableStrIFace>();
     
     protected List<PickList> pickLists = null;
+    protected boolean        wasSaved  = false;
+    
 
     /**
      * @param frame
@@ -218,40 +220,56 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
         UIRegistry.getStatusBar().setText(getResourceString("SL_SAVING_SCHEMA_LOC"));
         UIRegistry.getStatusBar().setIndeterminate(SCHEMALOCDLG, true);
         
-        SwingWorker workerThread = new SwingWorker()
+        if (false) // Old Way
         {
-            @Override
-            public Object construct()
-            {
-                save();
-                
-                //SchemaI18NService.getInstance().loadWithLocale(new Locale("de", "", ""));
-                int disciplineeId = AppContextMgr.getInstance().getClassObject(Discipline.class).getDisciplineId();
-                SchemaI18NService.getInstance().loadWithLocale(schemaType, disciplineeId, tableMgr, Locale.getDefault());
-                
-                SpecifyAppContextMgr.getInstance().setForceReloadViews(true);
-                
-                WebLinkMgr.getInstance().reload();
-                
-                DataObjFieldFormatMgr.clear();
-                
-                return null;
-            }
             
-            @Override
-            public void finished()
+            SwingWorker workerThread = new SwingWorker()
             {
-                enabledDlgBtns(true);
-                UIRegistry.getStatusBar().setProgressDone(SCHEMALOCDLG);
-                UIRegistry.getStatusBar().setText("");
-                finishedSaving();
-            }
-        };
-        
-        // start the background task
-        workerThread.start();
+                @Override
+                public Object construct()
+                {
+                    save();
+                    
+                    //SchemaI18NService.getInstance().loadWithLocale(new Locale("de", "", ""));
+                    int disciplineeId = AppContextMgr.getInstance().getClassObject(Discipline.class).getDisciplineId();
+                    SchemaI18NService.getInstance().loadWithLocale(schemaType, disciplineeId, tableMgr, Locale.getDefault());
+                    
+                    SpecifyAppContextMgr.getInstance().setForceReloadViews(true);
+                    
+                    WebLinkMgr.getInstance().reload();
+                    
+                    DataObjFieldFormatMgr.clear();
+                    
+                    return null;
+                }
+                
+                @Override
+                public void finished()
+                {
+                    enabledDlgBtns(true);
+                    UIRegistry.getStatusBar().setProgressDone(SCHEMALOCDLG);
+                    UIRegistry.getStatusBar().setText("");
+                    finishedSaving();
+                }
+            };
+            
+            // start the background task
+            workerThread.start();
+        } else
+        {
+            save();
+            wasSaved = true;
+            finishedSaving();
+        }
     }
     
+    /**
+     * @return
+     */
+    public boolean wasSaved()
+    {
+        return wasSaved;
+    }
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.CustomDialog#applyButtonPressed()
      */

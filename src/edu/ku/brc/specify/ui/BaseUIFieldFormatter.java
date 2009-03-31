@@ -409,7 +409,15 @@ public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
                     val += ' ';
                 }
             }
-            return autoNumber.getNextNumber(this, val);
+            
+            String number = autoNumber.getNextNumber(this, val);
+            if (number == null && autoNumber.isInError())
+            {
+                UIRegistry.showError(autoNumber.getErrorMsg());
+            } else
+            {
+                return number;
+            }
         }
         return null;
     }

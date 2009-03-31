@@ -755,6 +755,8 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
                 try
                 {
                     setValue(nextNum, nextNum);
+                    needsUpdating = false;
+                    return;
                     
                 } catch (Exception ex)
                 {
@@ -763,7 +765,7 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
                     ex.printStackTrace();
                 }
             }
-            needsUpdating = false;
+            needsUpdating = true;
         }
     }
     
@@ -1130,7 +1132,9 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
         }
     }
 
-    
+    //-------------------------------------------------------------------------
+    //-- 
+    //-------------------------------------------------------------------------
     public class JFormattedDoc extends ValPlainTextDocument
     {
         protected int                       docLimit;

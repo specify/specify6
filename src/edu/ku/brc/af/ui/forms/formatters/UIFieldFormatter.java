@@ -553,7 +553,14 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     {
         if (autoNumber != null)
         {
-            return autoNumber.getNextNumber(this, value);
+            String number = autoNumber.getNextNumber(this, value);
+            if (number == null && autoNumber.isInError())
+            {
+                UIRegistry.showError(autoNumber.getErrorMsg());
+            } else
+            {
+                return number;
+            }
         }
         return null;
     }

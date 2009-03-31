@@ -310,6 +310,7 @@ public class PrefsToolbar extends JPanel
 
         } catch (Exception ex)
         {
+            ex.printStackTrace();
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PrefsToolbar.class, ex);
             

@@ -2,18 +2,20 @@
 <tree>
 
 	<treedef>
-		<level name="Life" enforced="false" infullname="false" rank="0"/>
-		<level name="Kingdom" enforced="false" infullname="false" rank="10"/>
-		<level name="Phylum" enforced="false" infullname="false" rank="30"/>
-		<level name="Subphylum" enforced="false" infullname="false" rank="40" /> 
-		<level name="Superclass" enforced="false" infullname="false" rank="50" /> 		
-		<level name="Class" enforced="false" infullname="false" rank="60"/>
-		<level name="Subclass" enforced="false" infullname="false" rank="70" /> 		
-		<level name="Order" enforced="false" infullname="false" rank="100"/>
+        <level name="Life" enforced="false" infullname="false" rank="0"/>
+        <level name="Kingdom" enforced="false" infullname="false" rank="10"/>
+        <level name="Phylum" enforced="false" infullname="false" rank="30"/>
+        <level name="Subphylum" enforced="false" infullname="false" rank="40" /> 
+        <level name="Superclass" enforced="false" infullname="false" rank="50" />       
+        <level name="Class" enforced="false" infullname="false" rank="60"/>
+        <level name="Subclass" enforced="false" infullname="false" rank="70" />         
+        <level name="Infraclass" enforced="false" infullname="false" rank="80" />       
+        <level name="Superorder" enforced="false" infullname="false" rank="90" />       
+        <level name="Order" enforced="false" infullname="false" rank="100"/>
         <level name="Family" enforced="true" infullname="false" rank="140"/>
-		<level name="Genus"  enforced="true" infullname="true" rank="180"/>
-		<level name="Species" enforced="true" infullname="true" rank="220"/>
-		<level name="Subspecies" enforced="false" infullname="true" rank="230" /> 		
+        <level name="Genus"  enforced="true" infullname="true" rank="180"/>
+        <level name="Species" enforced="true" infullname="true" rank="220"/>
+        <level name="Subspecies" enforced="false" infullname="true" rank="230" /> 		
     </treedef>
 	
 	<nodes>

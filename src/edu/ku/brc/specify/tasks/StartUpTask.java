@@ -70,8 +70,9 @@ public class StartUpTask extends edu.ku.brc.af.tasks.StartUpTask
     @Override
     public JPanel createSplashPanel()
     {
-        int width  = 300;
-        int height = 500;
+        AppPreferences ap = AppPreferences.getLocalPrefs();
+        int width  = ap.getInt("Startup.Image.width", 400);
+        int height = ap.getInt("Startup.Image.height", 700);
         
         Image img = null;
         ImageIcon bgImg = IconManager.getIcon(SPECIFY_SPLASH);

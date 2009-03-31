@@ -40,6 +40,7 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
@@ -1734,7 +1735,7 @@ public class FormViewObj implements Viewable,
             for (FVOFieldInfo fieldInfo : controlsById.values())
             {
                 Component comp = fieldInfo.getComp();
-                if (comp instanceof AutoNumberableIFace)
+                if (comp instanceof AutoNumberableIFace && comp.isEnabled())
                 {
                     ((AutoNumberableIFace)comp).updateAutoNumbers();
                 }
@@ -4853,7 +4854,7 @@ public class FormViewObj implements Viewable,
                     
                     String id = fieldInfo.getFormCell().getIdent();
                     
-                    log.debug(fieldInfo.getName()+"\t"+fieldInfo.getFormCell().getName()+"\t   hasChanged: "+(!isReadOnly && hasFormControlChanged(id)));
+                    //log.debug(fieldInfo.getName()+"\t"+fieldInfo.getFormCell().getName()+"\t   hasChanged: "+(!isReadOnly && hasFormControlChanged(id)));
                     
                      if (!isReadOnly && !isInoreGetSet && hasFormControlChanged(id))
                     {
@@ -5484,7 +5485,9 @@ public class FormViewObj implements Viewable,
         {
             if (controlsById.get(formCell.getIdent()) != null)
             {
-                throw new RuntimeException("Two controls have the same id ["+formCell.getIdent()+"] "+formViewDef.getName());
+                UIRegistry.showError("Two controls have the same id ["+formCell.getIdent()+"] "+formViewDef.getName() +
+                        "\nThe form will not operate correctly. Please fix it before continuing.");
+                formCell.setIdent(Long.toString((Calendar.getInstance().getTimeInMillis())));
             }
 
             if (!formCell.getName().equals("this") && controlsByName.get(formCell.getName()) != null)

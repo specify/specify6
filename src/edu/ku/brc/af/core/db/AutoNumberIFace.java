@@ -49,4 +49,16 @@ public interface AutoNumberIFace
      */
     public abstract void toXML(StringBuilder sb);
     
+    /**
+     * 
+     * @return true if there was a problem when trying to auto number and the code should check 
+     * the ErrorKey for the localized error message.
+     */
+    public abstract boolean isInError();
+    
+    /**
+     * @return the localized error message.
+     */
+    public abstract String getErrorMsg();
+    
 }

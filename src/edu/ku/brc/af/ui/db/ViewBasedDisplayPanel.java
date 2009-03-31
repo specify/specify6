@@ -175,7 +175,7 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
                             final MultiView mvParent,
                             final int     options)
     {
-
+        MultiView.printCreateOptions("createUI", options);
         formView = AppContextMgr.getInstance().getView(viewSetName, viewName);
         if (formView != null)
         {

@@ -221,9 +221,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         oldDBConn = oldDB.createConnection();
         newDBConn = DBConnection.getInstance().createConnection();
         
-        //                      0        1     2     3     4     5    6      7     8     9    10    11   12    13
-        int[]     objTypes  = {10,      14,   11,   17,   18,   15,   9,    12,   13,   16,   19,    0,   0,    0,  };
-        boolean[] isEmbdded = {false, true, true, true, true, true, true, true, true, true, true, true, true, true, };
+        //                      0        1     2     3     4     5    6      7     8     9    10    11   12    13    14
+        int[]     objTypes  = {10,      14,   11,   17,   18,   15,   9,    12,   13,   16,   19,    0,   0,    0,    0,  };
+        boolean[] isEmbdded = {false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, };
         
         /*
             0            1        2            3            4          5     6       7       8       9            10        11     12            13
@@ -1970,10 +1970,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
      * @param specifyUserId
      * @return true on success, false on failure
      */
-    public boolean convertCollectionObjectDefs(final int     specifyUserId,
-                                               final boolean isEmbeddedCE,
-                                               final int     catSeriesId,
-                                               final Agent   userAgent)
+    public boolean convertCollectionObjectDefs(final int   specifyUserId,
+                                               final int   catSeriesId,
+                                               final Agent userAgent)
     {
         try
         {
@@ -1995,6 +1994,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             ResultSet rs = stmt.executeQuery(taxonomyTypeMapper.getSql());
             int recordCnt = 0;
             
+            boolean isEmbeddedCE = false;
+
+            
             while (rs.next())
             {
                 int    taxonomyTypeID   = rs.getInt(1);
@@ -2015,10 +2017,14 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     continue;
                 }
                 log.info("Creating a new Discipline for taxonomyTypeName[" + taxonomyTypeName + "] disciplineType[" + disciplineName + "]");
+                
+                DisciplineType.STD_DISCIPLINES dspType = disciplineType.getDisciplineType();
+                
+                isEmbeddedCE = dspType != DisciplineType.STD_DISCIPLINES.fish;
 
                 taxonomyTypeName = disciplineName;
 
-                // Figure out what type of standard adat type this is from the
+                // Figure out what type of standard data type this is from the
                 // CollectionObjectTypeName
                 BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer(newDBConn, "datatype", BasicSQLUtils.myDestinationServerType);
 
@@ -2155,7 +2161,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     // catNumSchemeHash.put(hashKey, catNumSchemeId);
                     // localSession.close();
 
-                    // Now craete the proper record in the Join Table
+                    // Now create the proper record in the Join Table
                     /*
                         +---------------------------+-------------+------+-----+---------+----------------+
                         | Field                     | Type        | Null | Key | Default | Extra          |

@@ -748,7 +748,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
      */
     protected void doSchemaConfig(final Byte schemaType, final DBTableIdMgr tableMgr)
     {
-        if (SubPaneMgr.getInstance().aboutToShutdown())
+        if (askBeforeStartingTool())
         {
             boolean ok = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).displayAgentsLoggedInDlg("SystemSetupTask.SCHEMA_CFG");
             if (!ok)
@@ -791,27 +791,35 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
     /**
      * Launches dialog for Importing and Exporting Forms and Resources.
      */
-    protected void doResourceImportExport()
+    public static boolean askBeforeStartingTool()
     {
         if (SubPaneMgr.getInstance().aboutToShutdown())
         {
             Object[] options = { getResourceString("CONTINUE"),  //$NON-NLS-1$
                                  getResourceString("CANCEL")  //$NON-NLS-1$
                   };
-            int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
+            return JOptionPane.YES_OPTION == JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
                                                              getLocalizedMessage(getI18NKey("REI_MSG")),  //$NON-NLS-1$
                                                              getResourceString(getI18NKey("REI_TITLE")),  //$NON-NLS-1$
                                                              JOptionPane.YES_NO_OPTION,
                                                              JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-            if (userChoice == JOptionPane.YES_OPTION)
+        }
+        return false;
+
+    }
+
+    /**
+     * Launches dialog for Importing and Exporting Forms and Resources.
+     */
+    protected void doResourceImportExport()
+    {
+        if (askBeforeStartingTool())
+        {
+            ResourceImportExportDlg dlg = new ResourceImportExportDlg();
+            dlg.setVisible(true);
+            if (dlg.hasChanged())
             {
-                ResourceImportExportDlg dlg = new ResourceImportExportDlg();
-                dlg.setVisible(true);
-                if (dlg.hasChanged())
-                {
-                    //CommandDispatcher.dispatch(new CommandAction(APP_CMD_TYPE, APP_REQ_RESTART));
-                    CommandDispatcher.dispatch(new CommandAction(APP_CMD_TYPE, APP_REQ_EXIT));
-                }
+                CommandDispatcher.dispatch(new CommandAction(APP_CMD_TYPE, APP_REQ_EXIT));
             }
         }
     }
@@ -842,7 +850,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
      * @param key
      * @return
      */
-    private String getI18NKey(final String key)
+    private static String getI18NKey(final String key)
     {
         return "SystemSetupTask." + key;
     }

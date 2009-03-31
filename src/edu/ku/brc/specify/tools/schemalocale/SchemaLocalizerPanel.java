@@ -95,9 +95,9 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
     protected DBTableInfo               tableInfo       = null;
     
     protected LocalizableContainerIFace currContainer   = null;
-    protected boolean                   includeHiddenUI = true;              // Must be set before creatng the panel
+    protected boolean                   includeHiddenUI = true;              // Must be set before creating the panel
     protected boolean                   isDBSchema      = true;
-    protected boolean                   useDisciplines  = false;
+    protected boolean                   useDisciplines  = true;
     
     protected DisciplineBasedPanel      disciplineBasedPanel = null;
 
@@ -583,9 +583,6 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
     public void setIncludeHiddenUI(boolean includeHiddenUI)
     {
         this.includeHiddenUI = includeHiddenUI;
-        
-        // XXX For Now
-        useDisciplines = this.includeHiddenUI;
     }
 
     /**

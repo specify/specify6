@@ -53,7 +53,6 @@ import edu.ku.brc.stats.StatGroupTableFromCustomQuery;
 import edu.ku.brc.stats.StatGroupTableFromQuery;
 import edu.ku.brc.stats.StatsMgr;
 import edu.ku.brc.ui.CommandAction;
-import edu.ku.brc.ui.UIHelper;
 
 /**
  * A class that loads a page of statistics from an XML description

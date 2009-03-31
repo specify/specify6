@@ -575,7 +575,7 @@ public class SpecifyDBConverter
                 //---------------------------------------------------------------------------------------
                 conversion.doInitialize();
                 
-                if (false)
+                /*if (false)
                 {
                     frame.incOverall();
                     
@@ -649,7 +649,7 @@ public class SpecifyDBConverter
                     }
                     frame.incOverall();
                     return;
-                }
+                }*/
   
 
                 if (startfromScratch)
@@ -735,6 +735,8 @@ public class SpecifyDBConverter
                         specifyUser = DataBuilder.createAdminGroupAndUser(institution,  username, email, password, userType);
                         specifyUser.addReference(userAgent, "agents");
                         
+                        DataBuilder.getSession().saveOrUpdate(institution);
+                        
                         userAgent.setDivision(AppContextMgr.getInstance().getClassObject(Division.class));
                         DataBuilder.getSession().saveOrUpdate(userAgent);
                         
@@ -750,13 +752,8 @@ public class SpecifyDBConverter
                     
                     if (startfromScratch)
                     {
-                        Discipline discipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
-                        DisciplineType dType = DisciplineType.getByName(discipline.getType());
-                        DisciplineType.STD_DISCIPLINES dspType = dType.getDisciplineType();
-                        
-                        boolean isEmbddedCE = dspType != DisciplineType.STD_DISCIPLINES.fish;
                         int     catSeriesId = 0;
-                        conversion.convertCollectionObjectDefs(specifyUser.getSpecifyUserId(), isEmbddedCE, catSeriesId, userAgent);
+                        conversion.convertCollectionObjectDefs(specifyUser.getSpecifyUserId(), catSeriesId, userAgent);
                         
                     } else
                     {
@@ -1069,6 +1066,8 @@ public class SpecifyDBConverter
                     AppContextMgr.getInstance().setClassObject(Collection.class, collection);
                     AppContextMgr.getInstance().setClassObject(Division.class, division);
                     AppContextMgr.getInstance().setClassObject(Institution.class, institution);
+                    
+                    DataBuilder.setSession(localSession);
                     
                     if (true)
                     {
