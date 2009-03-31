@@ -1139,6 +1139,8 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
         
         if (prevField != null && changed)
         {
+            String prevPickListName = prevField.getPickListName();
+            
             prevField.setPickListName(null);
             prevField.setWebLinkName(null);
             prevField.setFormat(null);
@@ -1158,6 +1160,10 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
             {
                 PickList pl = (PickList)pickListCBX.getSelectedItem();
                 prevField.setPickListName(pl != null ? pl.getName() : null);
+                if (isDBSchema && pl != null && pl.getName() != null && (prevPickListName == null || pl.getName().equals(prevPickListName)))
+                {
+                    UIRegistry.showLocalizedMsg("SL_WARN_PL_CREATION");
+                }
                 
             } else if (formatCombo != null)
             {
