@@ -16,6 +16,8 @@ import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.Gift;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.Shipment;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
 
 /**
  * @author rod
@@ -27,6 +29,8 @@ import edu.ku.brc.specify.datamodel.Shipment;
  */
 public class GiftBusRules extends BaseBusRules
 {
+    public static final String CMDTYPE  = "Interactions";
+    public final String NEW_GIFT = "NEW_GIFT";
 
     /**
      * @param dataClasses
@@ -146,4 +150,22 @@ public class GiftBusRules extends BaseBusRules
         }
      }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#canCreateNewDataObject()
+     */
+    @Override
+    public boolean canCreateNewDataObject()
+    {
+        return true;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#createNewObj(boolean, java.lang.Object)
+     */
+    @Override
+    public void createNewObj(boolean doSetIntoAndValidateArg, Object oldDataObj)
+    {
+        CommandAction cmdAction = new CommandAction(CMDTYPE, NEW_GIFT, viewable);
+        CommandDispatcher.dispatch(cmdAction);
+    }
 }

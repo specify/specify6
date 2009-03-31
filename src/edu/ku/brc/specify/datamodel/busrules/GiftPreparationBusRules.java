@@ -33,7 +33,7 @@ import edu.ku.brc.ui.CommandListener;
  */
 public class GiftPreparationBusRules extends BaseBusRules implements CommandListener
 {
-    private final String CMDTYPE = "Interactions";
+    
     /**
      * 
      */
@@ -41,7 +41,7 @@ public class GiftPreparationBusRules extends BaseBusRules implements CommandList
     {
         super(GiftPreparation.class);
         
-        CommandDispatcher.register(CMDTYPE, this);
+        CommandDispatcher.register(GiftBusRules.CMDTYPE, this);
     }
 
     /* (non-Javadoc)
@@ -84,7 +84,7 @@ public class GiftPreparationBusRules extends BaseBusRules implements CommandList
                         {
                             formViewObj.getDataFromUI();
                         }
-                        CommandDispatcher.dispatch(new CommandAction(CMDTYPE, "AddToGift", giftMV.getCurrentViewAsFormViewObj().getCurrentDataObj()));
+                        CommandDispatcher.dispatch(new CommandAction(GiftBusRules.CMDTYPE, "AddToGift", giftMV.getCurrentViewAsFormViewObj().getCurrentDataObj()));
                     }
                 }
             });
@@ -125,7 +125,7 @@ public class GiftPreparationBusRules extends BaseBusRules implements CommandList
     {
         super.formShutdown();
         
-        CommandDispatcher.unregister(CMDTYPE, this);
+        CommandDispatcher.unregister(GiftBusRules.CMDTYPE, this);
     }
 
     /* (non-Javadoc)
@@ -134,7 +134,7 @@ public class GiftPreparationBusRules extends BaseBusRules implements CommandList
     @Override
     public void doCommand(CommandAction cmdAction)
     {
-        if (cmdAction.isType(CMDTYPE) && cmdAction.isAction("REFRESH_GIFT_PREPS"))
+        if (cmdAction.isType(GiftBusRules.CMDTYPE) && cmdAction.isAction("REFRESH_GIFT_PREPS"))
         {
             if (formViewObj != null)
             {
