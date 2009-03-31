@@ -13,7 +13,8 @@
 	
     <mapID target="specify"             url="http://specify6.specifysoftware.org" />
     <mapID target="About"               url="SpecifyHelp/Intro/about.html" />
-	<mapID target="login"               url="SpecifyHelp/Dialogs/Login.html" />
+	<mapID target="login"               url="SpecifyHelp/Dialogs/Login.html#login" />
+	<mapID target="starting"             url="SpecifyHelp/Dialogs/Login.html" />
     <mapID target="SetupSpecifyDB"      url="SpecifyHelp/Dialogs/Login.html" />
     <mapID target="MASTERPWD_MAIN"      url="SpecifyHelp/Dialogs/Login.html" />
     <mapID target="MASTERPWD_GEN"       url="SpecifyHelp/Dialogs/Login.html" />
@@ -86,7 +87,7 @@
     <!-- Data Entry -->
     <mapID target="Using_Forms"         url="SpecifyHelp/Data_Entry/Using_Forms.html" />
     <mapID target="DataEntryConfigure"  url="SpecifyHelp/Data_Entry/Data_Entry.html#data_entry_configure" />
-    <mapID target="SUBVIEW_FORM_HELP"   url="SpecifyHelp/Dialogs/subform_dialog.html" />
+    <mapID target="SUBVIEW_FORM_HELP"   url="SpecifyHelp/Dialogs/Using_Forms.html#sub_form" />
 	<mapID target="Using_Forms"         url="SpecifyHelp/Data_Entry/Using_Forms.html" />
     <mapID target="Data_Entry"          url="SpecifyHelp/Data_Entry/Data_Entry.html" />
 	<mapID target="Barcodes"           url="SpecifyHelp/Data_Entry/Using_Forms.html#forms_barcodes" />
@@ -107,13 +108,13 @@
 	<mapID target="Data_Entry_Agent"   url="SpecifyHelp/Data_Entry/Data_Entry.html#data_entry_agent" />
 	<mapID target="Data_Entry_Preparations"   url="SpecifyHelp/Data_Entry/Data_Entry.html#data_entry_preparations" />
 	<mapID target="Data_Entry_Attachments"   url="SpecifyHelp/Data_Entry/Data_Entry.html#data_entry_attachments" />
+    <mapID target="Int_Accessions"   url="SpecifyHelp/Interactions/Interactions.html#int_accession" />
 	<mapID target="Int_Gifts_Loans"   url="SpecifyHelp/Interactions/Interactions.html#int_gifts_loans" />
 	<mapID target="Int_Return_Loans"   url="SpecifyHelp/Interactions/Interactions.html#int_return_loans" />
 	<mapID target="Int_Info_Requests"   url="SpecifyHelp/Interactions/Interactions.html#int_info_request" />
 	<mapID target="Int_Borrows"   url="SpecifyHelp/Interactions/Interactions.html#int_borrows" />
 	<mapID target="Int_Exchange"   url="SpecifyHelp/Interactions/Interactions.html#int_exchange" />
-
-
+    <mapID target="Repos_Agree"   url="SpecifyHelp/Interactions/Interactions.html#repository_agreements" />
     
     <!-- Trees -->
     <mapID target="Trees_About"         url="SpecifyHelp/Trees/Trees_About.html" />
@@ -131,7 +132,7 @@
 	<mapID target="Trees_More"           url="SpecifyHelp/Trees/Trees_About.html#trees_more" />
 	<mapID target="Trees_Find"           url="SpecifyHelp/Trees/Trees_About.html#trees_find" />
 	<mapID target="Trees_Title"          url="SpecifyHelp/Trees/editing_tree_def.html#trees_title" />
-	<mapID target="Trees_Ranks"          url="SpecifyHelp/Trees/editing_tree_def.html#trees_ranks" />
+	<mapID target="Trees_Ranks"          url="SpecifyHelp/Trees/editing_tree_def.html#tree_ranks" />
 	<mapID target="Trees_Pre"            url="SpecifyHelp/Trees/editing_tree_def.html#trees_pre" />
 	
     <mapID target="TreeDef"             url="SpecifyHelp/Trees/editing_tree_def.html" />
@@ -158,7 +159,8 @@
     <mapID target="QBImport"               url="SpecifyHelp/QueryBuilder/Query_Builder.html#import_query" />
     <mapID target="QBExport"              url="SpecifyHelp/QueryBuilder/Query_Builder.html#import_query" />
     <mapID target="QBUndeletableReps"     url="SpecifyHelp/Dialogs/no_delete_query.html" />
-	<mapID target="Q_Tables"              url="SpecifyHelp/QueryBuilder/Query_Builder.html#q_tables" />
+	<mapID target="Q_Fields"              url="SpecifyHelp/QueryBuilder/Query_Builder.html#q_fields" />
+    <mapID target="Q_Tables"              url="SpecifyHelp/QueryBuilder/Query_Builder.html#q_tables" />
 	<mapID target="Q_Express"             url="SpecifyHelp/QueryBuilder/Query_Builder.html#q_express" />
 	<mapID target="Q_Wild"                url="SpecifyHelp/QueryBuilder/Query_Builder.html#q_wild" />
 	<mapID target="Q_Controls"            url="SpecifyHelp/QueryBuilder/Query_Builder.html#q_controls" />
@@ -166,7 +168,7 @@
 	<mapID target="QB_Results"             url="SpecifyHelp/QueryBuilder/Query_Builder.html#q_results" />
 	<mapID target="Q_Saved"               url="SpecifyHelp/QueryBuilder/Query_Builder.html#q_saved" />
 	<mapID target="Q_Delete"              url="SpecifyHelp/QueryBuilder/Query_Builder.html#q_delete" />
-    
+    <mapID target="Q_Edit"              url="SpecifyHelp/QueryBuilder/Query_Builder.html#edit_query" />    
    
 
 	
@@ -245,8 +247,8 @@
 	<mapID target="SL_TOOLS_HELP_CONTEXT"   url="SpecifyHelp/SchemaConfig/schema_config.html"/>
 	<mapID target="WEBLNK_EDITOR"           url="SpecifyHelp/SchemaConfig/WebLinks.html"/>
 	<mapID target="WEBLNK_ARGS_EDITOR"      url="SpecifyHelp/SchemaConfig/WebLinks.html"/>
-	<mapID target="Web_Global"      url="SpecifyHelp/SchemaConfigWebLinks.html#web_global"/>
-	<mapID target="Web_Field"      url="SpecifyHelp/SchemaConfigWebLinks.html#web_field"/>
+	<mapID target="Web_Global"      url="SpecifyHelp/SchemaConfig/WebLinks.html#web_global"/>
+	<mapID target="Web_Field"      url="SpecifyHelp/SchemaConfig/WebLinks.html#web_field"/>
 	<mapID target="Web_New_Field"      url="SpecifyHelp/SchemaConfig/WebLinks.html#web_new_field"/>
 	<mapID target="Web_URL"      url="SpecifyHelp/SchemaConfig/WebLinks.html#web_url"/>
 	

@@ -43,7 +43,7 @@
 
 		  
 		  
-		  <tocitem text="Starting Specify" target="Login">
+		  <tocitem text="Starting Specify" target="staring">
 		  	 <tocitem text="Login to Specify" target="Login"/>
 		  	 <tocitem text="Update Specify" target="Update"/>
 		  </tocitem>
@@ -54,11 +54,11 @@
 				<tocitem text="Add Disciplines" target="Add_Discipline"/>
 				<tocitem text="Add Collections" target="Add_Collection"/>
 			  </tocitem>
-			  <tocitem text="Permissions Overview" target="Permissions">
+			  <tocitem text="Adding Users and Setting Permissions" target="Permissions">
 			 	<tocitem text="Adding Users" target="Add_User"/>
 				<tocitem text="Setting User Permissions" target="Set_Permissions"/>
 			  </tocitem>
-			 <tocitem text="Setting Number Formats" target="Number_Formats" />
+			 <tocitem text="Creating Field Formats" target="Number_Formats" />
 			 <tocitem text="Using Backup and Restore" target="Backup_Restore" />
 			 <tocitem text="Editing System Pick Lists" target="System_Picklist" />
 			 <tocitem text="Editing Preparation Type" target="Prep_Type" />
@@ -68,8 +68,8 @@
 	
 		  
 		  
-		  <tocitem text="Using Specify" target="Intro">
-		    <tocitem text="Introduction to the Specify Components" target="Intro"/>
+		  <tocitem text="Introduction to Specify" target="Intro">
+		    <tocitem text="Components in Specify" target="Intro"/>
 		  </tocitem>  
 
 		  <tocitem text="Setting Specify Preferences" target="PreferencesOverview">
@@ -107,40 +107,38 @@
 		      </tocitem>
            	  <tocitem text="Interactions Forms" target="Interactions">
 			    <tocitem text="Side Bar Configuration" target="InteractionsConfig"/>
+			    <tocitem text="Accessions" target="Int_Accessions"/>
 				<tocitem text="Gifts and Loans" target="Int_Gifts_Loans"/>
 				<tocitem text="Returning Loans" target="Int_Return_Loans"/>
 				<tocitem text="Information Requests" target="Int_Info_Requests"/>
 				<tocitem text="Borrows" target="Int_Borrows"/>
 				<tocitem text="Exchange In / Exchange Out" target="Int_Exchange"/>
+				<tocitem text="Repository Agreements" target="Repos_Agree"/>
 			  </tocitem>
 			</tocitem>
 			
 			
-			<tocitem text="Trees" target="Trees_About">
-			  <tocitem text="Trees in Specify" target="Trees_About">
+			<tocitem text="Trees in Specify" target="Trees_About">
 			    <tocitem text="Tree Terminology" target="Trees_Terms"/>
 			    <tocitem text="Building Trees" target="Trees_Build"/>
 			    <tocitem text="Using Trees" target="Trees_Using"/>
-			    <tocitem text="Expand" target="Trees_Expand"/>
-			    <tocitem text="Toolbar Buttons" target="Trees_Toolbar"/>
 			    <tocitem text="Reparent Node" target="Trees_Reparent"/>
 			    <tocitem text="Synonymize Node" target="SYNONIMIZE_NODE"/>
 			    <tocitem text="Collection Object Counts" target="Trees_Counts"/>
 			    <tocitem text="More Options" target="Trees_More"/>
 			    <tocitem text="Find" target="Trees_Find"/>
-			  </tocitem>
-		      <tocitem text="Tree Definitions" target="TreeDef">
-			    <tocitem text="Edit the Tree Title" target="Trees_Title"/>
-			    <tocitem text="Tree Ranks" target="Trees_Ranks"/>
-			    <tocitem text="Predefined Ranks" target="Trees_Pre"/>
-			  </tocitem>
+		        <tocitem text="Tree Definitions" target="TreeDef">
+			      <tocitem text="Edit the Tree Title" target="Trees_Title"/>
+			      <tocitem text="Tree Ranks" target="Trees_Ranks"/>
+			      <tocitem text="Predefined Ranks" target="Trees_Pre"/>
+			    </tocitem>
 			</tocitem>
 			
 			<tocitem text="Searching Data" target="SS">
 			  <tocitem text="Simple Search" target="Simple_Search">
 			  	<tocitem text="Using Simple Search" target="SS_Execute"/>
 				<tocitem text="Simple Search Wild Cards" target="SS_Cards"/>
-				<tocitem text="Search Results" target="SS_Results"/>
+				<tocitem text="Simple Search Results" target="SS_Results"/>
 			  </tocitem>
 	      	  <tocitem text="Configuring Simple Search" target="Simple_Search_Config">
 			  	<tocitem text="Configuring Search Fields" target="ESConfigSearchFields"/>
@@ -149,44 +147,42 @@
 			  </tocitem>
 			  <tocitem text="Query" target="Query">
 			    <tocitem text="Configure Query Side Bar" target="QBNewQueryConfig"/>
-				<tocitem text="Choose Tables and Fields" target="Q_Tables"/>
+				<tocitem text="Choose Fields" target="Q_Fields"/>
+				<tocitem text="Choose Tables" target="Q_Tables"/>
 				<tocitem text="Query Expressions" target="Q_Express"/>
 				<tocitem text="Using Wild Cards" target="Q_Wild"/>
 				<tocitem text="Other Controls" target="Q_Controls"/>
 				<tocitem text="Editing a Query" target="Q_Edit"/>
-				<tocitem text="Query Results" target="QB_Results"/>
-				<tocitem text="Saved Queries" target="Q_Saved" />
-				<tocitem text="Import and Export Saved Queries" target="QBImport"/>
-				<tocitem text="Deleting a Query" target="Q_Delete"/>
+				<tocitem text="Using Query Results" target="QB_Results"/>
+				<tocitem text="Saved Query Menu" target="Q_Saved" />
+				<tocitem text="Import and Export Queries" target="QBImport"/>
+				<tocitem text="Delete a Query" target="Q_Delete"/>
+				<tocitem text="Edit a Query" target="Q_Edit"/>
 			  </tocitem>
 		    </tocitem>
 			
 			<tocitem text="Record Sets" target="RecordSet">
-			  <tocitem text="Introduction to Record Sets" target="RecordSet"/>
 			  <tocitem text="Creating a Record Set" target="RS_Create"/>
-			  <tocitem text="Adding Records to an Existing Record Set" target="RS_Add"/>
+			  <tocitem text="Adding Records to a Record Set" target="RS_Add"/>
 			  <tocitem text="Using Record Sets" target="RS_Use"/>
-			  <tocitem text="Record Set Menus" target="RS_Menu"/>
+			  <tocitem text="Record Set Context Menu" target="RS_Menu"/>
 			</tocitem>
 			
 		  <tocitem text="Reports and Labels" target="Reports">
 		    <tocitem text="Reports Side Bar Tools" target="Report_Sidebar"/>
 			<tocitem text="SpecifyiReport" target="iReport">
 			  <tocitem text="Creating a Report from a Query" target="IR_Create"/>
-			  <tocitem text="Components of SpecifyiReport" target="IR_Components">
-			    <tocitem text="Report Properties" target="IR_Properties"/>
-				<tocitem text="Report Bands" target="IR_Bands"/>
-				<tocitem text="Report Groups" target="IR_Groups"/>
-				<tocitem text="Report Panes" target="IR_Panes"/>
-				<tocitem text="Task Examples" target="IR_Tasks"/>
-				<tocitem text="Including Barcodes" target="IR_Barcodes"/>
-				<tocitem text="Saving a Report" target="IR_Save"/>
-			  </tocitem>
+			  <tocitem text="Report Properties" target="IR_Properties"/>
+			  <tocitem text="Report Bands" target="IR_Bands"/>
+			  <tocitem text="Report Groups" target="IR_Groups"/>
+			  <tocitem text="Report Panes" target="IR_Panes"/>
+			  <tocitem text="Task Examples" target="IR_Tasks"/>
+			  <tocitem text="Including Barcodes" target="IR_Barcodes"/>
+			  <tocitem text="Saving a Report" target="IR_Save"/>
 	        </tocitem>
 		  </tocitem>
 			
 		  <tocitem text="Plugins" target="Plugins">
-		    <tocitem text="Overview" target="Plugins"/>
 		    <tocitem text="Google Earth" target="GE"/>
 			<tocitem text="BioGeomancer" target="BioGeo"/>
 			<tocitem text="GEOLocate" target="BioGeo"/>
@@ -247,8 +243,8 @@
           		<tocitem text="Record Mapping Tool" target="WorkbenchRecordMappingTool"/>
           		<tocitem text="Google Earth" target="WorkbenchGoogleEarth"/>
           		<tocitem text="Lat Long Converter" target="WorkbenchLatLongConverter"/>
-				<tocitem text="Uploading Data Set to Specify" target="uploading"/>
           </tocitem>
+          <tocitem text="WorkBench Uploader" target="uploading"/>
       </tocitem>
         
     </tocitem>

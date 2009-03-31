@@ -20,21 +20,20 @@
 <tr><td><img src="../../images/upload_data.gif" width="48" height="48" /></td>
 <td><h2>WorkBench Uploader</h2></td></tr>
 </table>
-<p>The Upload function is not available from the stand alone WorkBench. Data Sets created using the stand alone version will need to be exported and reimported into the Specify 6 WorkBench  for uploading. The current version of the stand alone WorkBench is not able to keep Data Set mapping information, but a future release of the WorkBench will have this capability, which will make the import into the Specify WorkBench an easier task. </p>
-<p>Data Sets in the WorkBench can be uploaded into Specify 6 with the Uploader Tool. This makes the uploader a fast and easy way to transfer data from an MS Excel or CSV file into Specify by first <a href="../Workbench/ImportData.html">importing</a> the data into the WorkBench. Before uploading the Data Set please note the following:</p>
+<p>The WorkBench is both a stand alone tool and an integrate part of the Specify platform. The Upload function is only available in the Specify WorkBench, not the stand alone WorkBench. Data Sets created using the stand alone version will need to be exported and reimported into the Specify 6 WorkBench  for uploading. The current version of the stand alone WorkBench is not able to export Data Sets along with their mapping information, but a future release of the WorkBench will have this capability.</p>
+<p>Data Sets in the WorkBench can be uploaded into Specify 6 with the Uploader tool. This makes the uploader a fast and easy way to transfer data from an MS Excel or CSV file into Specify by first <a href="../Workbench/ImportData.html">importing</a> the data into the WorkBench. Before uploading the Data Set please note the following:</p>
 <ul>
-  <li>The Data Set mapping must be correct for data to be accurately uploaded into Specify 6.</li>
+  <li>The Data Set mapping must be correct for data to be accurately uploaded into Specify 6.</li></br>
+  <li>Columns in imported files that do not map to a specific Specify  field should be mapped to a Text or Number field. These fields will then need to be renamed accordingly within Specify to display correctly on forms and become searchable in queries. This can be accomplished by changing the field caption in the <a href="../../SchemaConfig/schema_config.html#change_caption">Schema Configuration tool</a>. </li>
   <br />
   <li>Fields that are required in Specify 6 must include data in the Data Set. For example; if a Data Set column is mapped to a Taxon field in Specify,  all required Taxon fields, including enforced ranks, must be mapped and include data in the Data Set.</li><br />
   <li>At this time the Uploader does not update or change data, it only adds new records. </li><br />
   <li>Any Specify tabs that allow data to be written to the database must be closed when uploading from the WorkBench. In other words, while uploading no user in a Collection can edit Forms, Trees, Tree Definitions, System Configuration or the Schema Configuration. Specify will automatically close any open tabs after prompting the user.</li><br />
   <li>In a multi-collection database the WorkBench is unable to verify Data Sets and their appropriate collections. It is up to the user to ensure that the Data Set is being uploaded to the correct Collection.</li><br />
- <li> When uploading Data Sets with attachments only the Collection Object, Accession, Taxon, Locality and Collecting Event tables can accept attachments in the uploader. If one of these tables is not present in the mapping file for the data set an error message will display informing the user that the attachments can not be uploaded. <br />
-   <br />
- Also, the uploaded attachment will be attached to the 'main' table that is present in the data set mapping. The uploader will look for main tables in this order; Collection Object, Accession, Taxon, Collecting Event and then Locality. </li>
+ <li> When uploading Data Sets with attachments only the Collection Object, Accession, Taxon, Locality and Collecting Event tables can accept attachments in the uploader. If one of these tables is not present in the mapping file for the data set an error message will display informing the user that the attachments can not be uploaded. Also, the uploaded attachment will be attached to the 'main' table that is present in the data set mapping. The uploader will look for main tables in this order; Collection Object, Accession, Taxon, Collecting Event and then Locality. </li>
 </ul>
 <p>&nbsp;</p>
-<p>Uploading is a complex process, that requires user input at each vital step. Each step in the process is explained in detail below.</p>
+<p>Uploading is a complex process, that requires user input at each vital step. Each step  is explained in detail below.</p>
 <p><strong>Upload a Data Set</strong></p>
 <ol>
   <li>Open a Data Set in the Specify 6 WorkBench. </li>
@@ -66,22 +65,49 @@
 
   <br />
   <br />
-  <li>Click the <em>Validate</em> button to validate the data. This checks the data within the field for any incorrect data formats (such as dates and lat/longs) and fields that are required in the Specify Schema. It also ensures that the necessary related fields are present between multiple tables. When validation errors are present the Uploader will split the <em>Messages</em> window showing validation errors in the top portion and general messages below as well as  a <em>View Report</em> button. Click the button to view and print a report of the validation errors. The Upload button will remain inactive until all validation errors have been corrected.
+  <li>Click the <em>Validate</em> button to validate the data. This checks the data set mapping against the Specify schema to ensure that all required fields and field formats are included. It also ensures that the necessary related fields are present between multiple tables. When validation errors are present the Uploader will split the <em>Messages</em> window showing validation errors in the top portion and general messages below as well as  a <em>View Report</em> button. Click the button to view and print a report of the validation errors. The Upload button will remain inactive until all validation errors have been corrected.
+    Some errors may need to be fixed within the data set and require the user to exit the Uploader tool by clicking the <em>Close</em> button.<br />
     <br />
-    <br />
-    Examples of invalid data:<br />
+    Examples of data set mapping requirements:<br />
     
     <table width="100%" border="0" cellspacing="2" cellpadding="6">
       <tr>
         <td><blockquote>
+          <p><u>Catalog Number</u><br />
+          Taxon and Collecting Event data must be associated with a Catalog Number. 
+          </p>
+          <p><u>Accession</u><br />
+            The format of the accession number in the data set must match the field format for Accession Number in Specify.
+          </p>
           <p><u>Locality</u><br />
-            The Latitude and Longitude must be in one of the accepted formats (Decimal Degrees, Degrees:Decimal Minutes or Degrees:Minutes:Seconds). Formats can be changed using the <a href="LatLongConvert.html"> Lat/Long Converter.</a></p>
-            <p><u>Taxon, Geography, Lithostratigraphy, Chronostratigraphy and Storage </u><br />
+            The Latitude and Longitude must be in one of the accepted formats (Decimal Degrees, Degrees:Decimal Minutes or Degrees:Minutes:Seconds). Formats can be changed using the <a href="LatLongConvert.html"> Lat/Long Converter</a>.</p>
+          <p><u>Taxon, Geography, Lithostratigraphy, Chronostratigraphy and Storage </u><br />
               All required ranks must be present and contain data.<br />
-              Tree definition levels (ranks) must be present in the Tree Definition.<br />
+            Tree definition levels (ranks) must be present in the Tree Definition.</p>
+            <p>When uploading Taxon data  use the mapping fields from the  Taxon Only data types.</p>
+            <p>When uploading Taxon data along with other data the Genus, Species, Subspecies and Variety fields need to come from the Determinations data type.<br />
             </p>
             <p><u>Collection Objects, Accessions, Loan</u><br />
-            umber formats must match the format specified for this field in Specify. </p>
+            Any formats used in the Data Set must match the format specified for the mapped field in Specify. </p>
+            <p>Any preset values for Pick Lists in Specify must match the values in the data set or the data will not upload.</p>
+            <p><u>Dates</u><br />
+            Partial Dates are allowed for Collecting Event Start, Collecting Event End, Cataloged Date, Determination Date and Preparation Date in both the uploader and in the Specify database. Dates are uploaded in the US format (month, day, year) and allow zeros or dashes for unknown month or day. Any dashes or zeros for month or day are stored as '01' in the Specify database, which is used for search results. </p>
+            <p>00 --- 1968 (= 1968 in the form but 01 01 1968 in the database)<br />
+              00-----1968 (= 1968 in the form but 01/01/1968 in the database)<br />
+              00 00 1999  (= 1999 in the form but 01/01/1999 in the database)<br />
+              11.00.1989 (= 11/1999 in the form but 11/01/1989 in the database)<br />
+              00 11 1989 (this is invalid)<br />
+              11 12 1989 (= 11/12/1989 on the form and in the database)<br />
+              00/---/2000 (= 2000 in the form but 01/01/2000 in the database)<br />
+              00 00 04 (= 2004 in the form but 01/01/2004 in the database)<br />
+              00-00-04 (= 2004 in the form but 01/01/1968 in the database)<br />
+              04 00 04 (= 04/2004 in the form but 04/01/1968 in the database)<br />
+              04-00-04 (= 04/2004 in the form but 04/01/1968 in the database)<br />
+              1989/00/00 (= 1989 in the form but 01/01/1989 in the database)<br />
+              1999/01/00 (= 1999 in the form but 01/01/1999 in the database)<br />
+              1999 00 00 (= 1999 in the form but 01/01/1999 in the database)<br />
+            1999 02 00 (= 02/1999 in the form but 01/01/1989 in the database)</p>
+            <p>Valid separators are '.' (period), '/' (forward slash), ' ' (space),and '-' (dash).</p>
             <p>&nbsp;</p>
         </blockquote></td>
       </tr>
@@ -113,15 +139,15 @@
     </li></ul><br />
     <strong>Match Empty Cells</strong> will search empty fields as part of the search criteria and require a match when set to <em>True</em> and disregard empty fields when set to <em>False</em>.<br />
     <br /><br />
-  <li>Click Upload.  While the upload is processing each Table in the Affected Tables window keeps a tally of the number of records updated. The individual records that are updated are listed in the Messages window. The Upload can be stopped at any time by clicking the <em>Stop</em> button on the status bar and any uploaded records can be discarded by clicking the <em>Undo</em> button on the Workspace.  </li>
+  <li>Click Upload.  While the upload is processing each Table in the Affected Tables window keeps a tally of the number of records updated. The individual records that are updated are listed in the Messages window. The Upload can be paused at any time by clicking the <em>Pause</em> button on the status bar, or stopped by clicking the <em>Pause</em> button and then the <em>Close</em> button. Click the <em>Upload</em> button to start the upload process again. Any uploaded records can be discarded by clicking the <em>Undo</em> button on the Workspace.  </li>
   <br />
-  <li>Once the upload is complete the data is still not committed to the database. Both Query and Simple Searches can be used to examine the uploaded data before committing it. Records opened in a form from  the results window are only available to view  and can not be edited. Records in the results window can not be saved as Record Sets. The following buttons will appear on the Uploader:<br />
+  <li>Once the upload is complete the data is still not committed to the database. Both Query and Simple Searches can be used to examine the uploaded data before committing it. Records opened in a form from  the results window are only available to view  and can not be edited. Records in the results window can not be saved as Record Sets. The following buttons will be enabled on the Uploader:<br />
     <br />
     <strong>View</strong> displays the uploaded records in a custom results page, indicating each table that is affected. These results can be printed viewed in a form or exported as an MS Excel file.<br />
     <br />
     <strong>Undo</strong> removes all uploaded data from the database.<br />
     <br />
-    <strong>Save</strong> will save the upload and 
+    <strong>Close</strong> will open a dialog to 
     <br />
   </li>
   <br />
