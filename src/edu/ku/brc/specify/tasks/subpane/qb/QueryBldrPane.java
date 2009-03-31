@@ -158,8 +158,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     protected JCheckBox                                      distinctChk;
     protected JCheckBox                                      countOnlyChk;
     protected JCheckBox                                      searchSynonymyChk;
-    protected static boolean                                 searchSynonymy     = true;
-    protected static boolean                                 hqlHasSynJoins;
+    protected boolean                                 		 searchSynonymy     = true;
     
     /**
      * When countOnly is true, count of matching records is displayed, but the records are not displayed.
@@ -415,6 +414,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                            	countOnlyChk.setSelected(false);
                            	countOnly = false;
                         }
+                        query.setCountOnly(countOnly);
+                        query.setSelectDistinct(distinctChk.isSelected());
+                        saveBtn.setEnabled(queryFieldItems.size() > 0);
                        return null;
                     }
                 }.start();
@@ -456,6 +458,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                             //This might be awkward and/or klunky...
                             countOnlyChk.setSelected(countOnly);
                         }
+                        query.setCountOnly(countOnly);
+                        query.setSelectDistinct(distinctChk.isSelected());
+                        saveBtn.setEnabled(queryFieldItems.size() > 0);
                         return null;
                     }
                 }.start();
@@ -485,6 +490,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                         {
                             UsageTracker.incrUsageCount("QB.SearchSynonymyOn");
                         }
+                        query.setSearchSynonymy(searchSynonymy);
+                        saveBtn.setEnabled(queryFieldItems.size() > 0);
                         return null;
                     }
                 }.start();
@@ -671,6 +678,22 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         }
         qualifyFieldLabels();
         
+        SwingUtilities.invokeLater(new Runnable(){
+
+			/* (non-Javadoc)
+			 * @see java.lang.Runnable#run()
+			 */
+			@Override
+			public void run()
+			{
+				distinctChk.setSelected(query.getSelectDistinct() == null ? false : query.getSelectDistinct());
+				countOnlyChk.setSelected(query.getCountOnly() == null ? false : query.getCountOnly());
+				countOnly = countOnlyChk.isSelected();
+				searchSynonymyChk.setSelected(query.getSearchSynonymy() == null ? true : query.getSearchSynonymy());
+				searchSynonymy = searchSynonymyChk.isSelected();
+			}
+        	
+        });
         final boolean saveBtnEnabled = dirty;
         if (!isHeadless)
         {
@@ -741,7 +764,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                                        final boolean distinct, 
                                        final Vector<QueryFieldPanel> qfps,
                                        final TableTree tblTree, 
-                                       final RecordSetIFace keysToRetrieve) throws ParseException
+                                       final RecordSetIFace keysToRetrieve,
+                                       final boolean searchSynonymy) throws ParseException
     {
         if (qfps.size() == 0)
             return null;
@@ -905,8 +929,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         StringBuilder fromStr = new StringBuilder();
         TableAbbreviator tableAbbreviator = new TableAbbreviator();
         List<Pair<DBTableInfo,String>> fromTbls = new LinkedList<Pair<DBTableInfo,String>>();
-        hqlHasSynJoins = false;        
-        processTree(root, fromStr, fromTbls, 0, tableAbbreviator, tblTree, qfps);
+        boolean hqlHasSynJoins = processTree(root, fromStr, fromTbls, 0, tableAbbreviator, tblTree, qfps, searchSynonymy);
 
         StringBuilder sqlStr = new StringBuilder();
         sqlStr.append("select ");
@@ -1079,7 +1102,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     {
         try
         {
-            HQLSpecs hql = buildHQL(rootTable, distinct, queryFieldItems, tableTree, null);    
+            HQLSpecs hql = buildHQL(rootTable, distinct, queryFieldItems, tableTree, null, searchSynonymy);    
             processSQL(queryFieldItems, hql, rootTable.getTableInfo(), distinct);
         }
         catch (Exception ex)
@@ -1218,13 +1241,18 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      * @param parent
      * @param sqlStr
      * @param level
+     * @param searchSynonymy
+     * 
+     * returns true if Joins on synonymizable tree tables are present.
      */
-    protected static void processTree(final ProcessNode parent, final StringBuilder sqlStr, final List<Pair<DBTableInfo,String>> fromTbls,
+    protected static boolean processTree(final ProcessNode parent, final StringBuilder sqlStr, final List<Pair<DBTableInfo,String>> fromTbls,
                                final int level, 
                                final TableAbbreviator tableAbbreviator, final TableTree tblTree,
-                               List<QueryFieldPanel> fieldPanels)
+                               List<QueryFieldPanel> fieldPanels,
+                               final boolean searchSynonymy)
     {
         BaseQRI qri = parent.getQri();
+        boolean hqlHasSynJoins = false;
         if (qri != null && qri.getTableTree() != tblTree)
         {
             if (qri instanceof TableQRI)
@@ -1287,8 +1315,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         }
         for (ProcessNode kid : parent.getKids())
         {
-            processTree(kid, sqlStr, fromTbls, level + 1, tableAbbreviator, tblTree, fieldPanels);
+            hqlHasSynJoins |= processTree(kid, sqlStr, fromTbls, level + 1, tableAbbreviator, tblTree, fieldPanels, searchSynonymy);
         }
+        return hqlHasSynJoins;
     }
 
     /**
@@ -1636,7 +1665,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 
                 try
                 {
-                    sql = QueryBldrPane.buildHQL(rootQRI, !includeRecordIds, qfps, tblTree, rs);
+                    sql = QueryBldrPane.buildHQL(rootQRI, !includeRecordIds, qfps, tblTree, rs, 
+                    		report.getQuery().getSearchSynonymy() == null ? false : report.getQuery().getSearchSynonymy());
                 }
                 catch (Exception ex)
                 {

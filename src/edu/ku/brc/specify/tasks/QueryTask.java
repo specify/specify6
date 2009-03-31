@@ -1158,8 +1158,6 @@ public class QueryTask extends BaseTask
             query.setIsFavorite(true);
         }
         
-        persistQuery(query);
-        
         RecordSet rs = new RecordSet();
         rs.initialize();
         rs.set(query.getName(), SpQuery.getClassTableId(), RecordSet.GLOBAL);
