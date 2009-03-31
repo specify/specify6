@@ -257,20 +257,6 @@ public class TableViewObj implements Viewable,
         dataGetter       = altView.getViewDef().getDataGettable();
         this.formViewDef = (FormViewDefIFace)altView.getViewDef();
         
-        if (AppContextMgr.isSecurityOn())
-        {
-            DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
-            perm = SecurityMgr.getInstance().getPermission("DO."+tableInfo.getShortClassName().toLowerCase());
-            isRestricted = !perm.canView();
-            if (isRestricted)
-            {
-                restrictedStr = getResourceString("RESTRICTED");
-            }
-        } else
-        {
-            perm = new PermissionSettings(PermissionSettings.ALL_PERM);
-        }
-        
         scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
 
         AppPreferences.getRemote().addChangeListener("ui.formatting.viewfieldcolor", this);
@@ -284,7 +270,6 @@ public class TableViewObj implements Viewable,
         {
             isEditing = false;
         }
-                
         
         setValidator(formValidator);
 
@@ -348,7 +333,6 @@ public class TableViewObj implements Viewable,
                                 deleteRow(table.getSelectedRow());
                             }
                         });
-                        deleteButton.setVisible(perm.canDelete());
                         
                         if (addSearch)
                         {
@@ -392,8 +376,6 @@ public class TableViewObj implements Viewable,
                                     editRow(table.getSelectedRow(), true);
                                 }
                             });
-                            editButton.setVisible(perm.canModify());
-                            newButton.setVisible(perm.canAdd());
                         }
                         
                         boolean isAbove = mvParent.getSeparator() != null;  
@@ -500,6 +482,43 @@ public class TableViewObj implements Viewable,
             controlPanel.addComponents(comps, false); // false -> right side
             //mainBuilder.add(controlPanel, cc.xy(1, mainCompRowInx+2));
             mainComp.add(controlPanel, BorderLayout.SOUTH);
+        }
+        
+        if (AppContextMgr.isSecurityOn())
+        {
+            setPermsFromTableInfo(view.getClassName());
+        } else
+        {
+            perm = new PermissionSettings(PermissionSettings.ALL_PERM);
+        }
+    }
+    
+    /**
+     * @param tableInfo
+     */
+    private void setPermsFromTableInfo(final String className)
+    {
+        DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(className);
+        if (tableInfo != null)
+        {
+            perm = SecurityMgr.getInstance().getPermission("DO."+tableInfo.getShortClassName().toLowerCase());
+            isRestricted = !perm.canView();
+            if (isRestricted)
+            {
+                restrictedStr = getResourceString("RESTRICTED");
+            }
+            if (deleteButton != null)
+            {
+                deleteButton.setVisible(perm.canDelete());
+            }
+            if (editButton != null)
+            {
+                editButton.setVisible(perm.canModify());
+            }
+            if (editButton != null)
+            {
+                newButton.setVisible(perm.canAdd());
+            }
         }
     }
     
@@ -629,7 +648,6 @@ public class TableViewObj implements Viewable,
         {
             log.error("The search name is empty is there one defined in the display tag for the XML?");
         }
-   
     }
     
     /* (non-Javadoc)
@@ -638,6 +656,11 @@ public class TableViewObj implements Viewable,
     public void setClassToCreate(final Class<?> classToCreate)
     {
         this.classToCreate = classToCreate;
+        
+        if (perm == null && this.classToCreate != null)
+        {
+            setPermsFromTableInfo(classToCreate.getName());
+        }
     }
     
     /**
