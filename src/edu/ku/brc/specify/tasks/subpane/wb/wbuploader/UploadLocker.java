@@ -83,7 +83,7 @@ public class UploadLocker implements TaskSemaphoreMgrCallerIFace
 				}
 			} else
 			{
-				msg = String.format(UIRegistry.getResourceString("UploaderLocker.LockedByUserMachine"),
+				msg = String.format(UIRegistry.getResourceString("UploadLocker.LockedByUserMachine"),
 						Uploader.getLockTitle(), lockUser.getIdentityTitle(), lockMachineName);
 				if (task != null)
 				{

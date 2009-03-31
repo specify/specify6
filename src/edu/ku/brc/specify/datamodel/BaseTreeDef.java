@@ -27,6 +27,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
@@ -681,11 +682,9 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
         {
             return true;
         }
-        //XXX need to figure out task name for tree to get permissions.
-//        PermissionIFace permissions = SecurityMgr.getInstance().getPermission("Task.TreeDef");
-//        canOpen = permissions.canView();
+        //XXX Need to see if User is in Managers group????? (Something to do with Manager/Full User/Limited User kluge???)
 
-        return true;
+        return DBTableIdMgr.getInstance().getByClassName(getClass().getName()).getPermissions().canModify();
     }
     
     /**

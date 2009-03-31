@@ -16,7 +16,7 @@ import edu.ku.brc.specify.dbsupport.TreeDefStatus;
 public class TreeDefStatusMgr 
 {
 	
-	protected static HashMap<Integer, TreeDefStatus> stats = new HashMap<Integer, TreeDefStatus>();
+	protected static HashMap<Class<?>, TreeDefStatus> stats = new HashMap<Class<?>, TreeDefStatus>();
 	
 	/**
 	 * @param treeDef
@@ -24,11 +24,13 @@ public class TreeDefStatusMgr
 	 */
 	protected static TreeDefStatus getStatus(TreeDefIface<?,?,?> treeDef)
 	{
-		TreeDefStatus treeDefStatus = stats.get(treeDef.getTreeDefId());
+		//TreeDefStatus treeDefStatus = stats.get(treeDef.getTreeDefId());
+		TreeDefStatus treeDefStatus = stats.get(treeDef.getNodeClass());
 		if (treeDefStatus == null)
 		{
 			treeDefStatus = new TreeDefStatus(treeDef);
-			stats.put(treeDef.getTreeDefId(), treeDefStatus);
+			//stats.put(treeDef.getTreeDefId(), treeDefStatus);
+			stats.put(treeDef.getNodeClass(), treeDefStatus);
 		}
 		if (treeDefStatus == null)
 		{

@@ -1277,8 +1277,14 @@ public class SpecifyAppContextMgr extends AppContextMgr
             {
                 //Now force node number updates for trees that are out-of-date
                 goodTrees = discipline.getTaxonTreeDef().checkNodeNumbersUpToDate();
-                goodTrees &= discipline.getGeographyTreeDef().checkNodeNumbersUpToDate();
-                goodTrees  &= division.getInstitution().getStorageTreeDef().checkNodeNumbersUpToDate();
+                if (goodTrees)
+                {
+                	goodTrees = discipline.getGeographyTreeDef().checkNodeNumbersUpToDate();
+                }
+                if (goodTrees)
+                {
+                	goodTrees  = division.getInstitution().getStorageTreeDef().checkNodeNumbersUpToDate();
+                }
                 if (goodTrees && discipline.getGeologicTimePeriodTreeDef() != null)
                 {
                     goodTrees = discipline.getGeologicTimePeriodTreeDef().checkNodeNumbersUpToDate();
