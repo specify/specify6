@@ -562,16 +562,17 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                     SpQueryField.OperatorType.IN,
                     SpQueryField.OperatorType.EMPTY};
         }
-        else if (classObj.equals(Boolean.class))
+        if (classObj.equals(Boolean.class))
         {
             return new SpQueryField.OperatorType[] {SpQueryField.OperatorType.DONTCARE,
                     SpQueryField.OperatorType.TRUE,
                     SpQueryField.OperatorType.FALSE,
                     SpQueryField.OperatorType.EMPTY};
         }
-        else if (classObj.equals(java.sql.Timestamp.class))
+        if (classObj.equals(java.sql.Timestamp.class))
         {
-            return new SpQueryField.OperatorType[] {SpQueryField.OperatorType.GREATERTHAN,
+            return new SpQueryField.OperatorType[] {SpQueryField.OperatorType.EQUALS,
+            		SpQueryField.OperatorType.GREATERTHAN,
                     SpQueryField.OperatorType.LESSTHAN,
                     SpQueryField.OperatorType.BETWEEN,
                     SpQueryField.OperatorType.EMPTY};

@@ -94,6 +94,12 @@ public class FieldQRI extends BaseQRI
             String precName = getFieldInfo().getDatePrecisionName();
             result += ", " + ta.getAbbreviation(table.getTableTree()) + "." + precName;
         }
+        else if (getDataClass().equals(java.sql.Timestamp.class))
+        {
+        	//XXX Portability: MySql Specific??
+        	//necessary because timeStamp criteria can't currently be entered to nano-precision. 
+        	result = "DATE(" + result + ")";
+        }
         return result;
     }
         
