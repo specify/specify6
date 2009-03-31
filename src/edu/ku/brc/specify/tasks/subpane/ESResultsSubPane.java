@@ -133,7 +133,9 @@ public class ESResultsSubPane extends BaseSubPane implements ExpressSearchResult
             explainPanel = new JPanel(new BorderLayout());
             explainPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
             
-            moreInfoHelpBtn    = UIHelper.createHelpIconButton("ESTellMeMore");
+            String helpContext = getHelpTarget();
+            
+            moreInfoHelpBtn    = UIHelper.createHelpIconButton(helpContext);
             moreInfoCaptionBtn = UIHelper.createButton(UIRegistry.getResourceString("EXPRESSSEARCH_TELL_ME_MORE"));
             moreInfoCaptionBtn.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
             moreInfoCaptionBtn.setFocusable(false);
@@ -145,8 +147,8 @@ public class ESResultsSubPane extends BaseSubPane implements ExpressSearchResult
             pb.add(moreInfoHelpBtn, cc.xy(1, 1));
             pb.add(moreInfoCaptionBtn, cc.xy(2, 1));
             explainPanel.add(pb.getPanel(), BorderLayout.WEST);
-            HelpMgr.registerComponent(moreInfoHelpBtn, "ESTellMeMore");
-            HelpMgr.registerComponent(moreInfoCaptionBtn, "ESTellMeMore");
+            HelpMgr.registerComponent(moreInfoHelpBtn, helpContext);
+            HelpMgr.registerComponent(moreInfoCaptionBtn, helpContext);
         }
         
         CommandDispatcher.register(ExpressSearchTask.EXPRESSSEARCH, this);
@@ -294,6 +296,15 @@ public class ESResultsSubPane extends BaseSubPane implements ExpressSearchResult
     public Icon getIcon()
     {
         return icon != null ? icon : super.getIcon();
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.subpane.BaseSubPane#getHelpTarget()
+     */
+    @Override
+    public String getHelpTarget() 
+    {
+        return "ESTellMeMore";
     }
 
     /**
