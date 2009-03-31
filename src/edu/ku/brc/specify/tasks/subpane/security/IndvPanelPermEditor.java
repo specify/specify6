@@ -22,6 +22,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -257,6 +258,8 @@ public class IndvPanelPermEditor extends JPanel implements PermissionPanelContai
             editor.removeChangeListener(listener);
         }
         
+        final int selectedIndex = list.getSelectedIndex();
+        
         for (PermissionEditorRowIFace rowData : rowDataList)
         {
             for (SpPermission perm : rowData.getPermissionList())
@@ -286,6 +289,14 @@ public class IndvPanelPermEditor extends JPanel implements PermissionPanelContai
                 rowData.updatePerm(perm, newPerm);
             }
         }
+        
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run()
+            {
+                list.setSelectedIndex(selectedIndex);
+            }
+        });
     }
 
     /* (non-Javadoc)
@@ -298,6 +309,8 @@ public class IndvPanelPermEditor extends JPanel implements PermissionPanelContai
                            final Hashtable<String, SpPermission> overrulingPermsArg,
                            final String                          userTypeArg)
     {
+        final int selectedIndex = list.getSelectedIndex();
+        
         // save principal used when saving permissions later
         this.principal           = principalArg;
         this.overrulingPrincipal = overrulingPrincipalArg;
@@ -340,6 +353,14 @@ public class IndvPanelPermEditor extends JPanel implements PermissionPanelContai
                 tableEditor.updateData(principal, overrulingPrincipal, existingPerms, overrulingPerms, userType);
             }
         }
+        
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run()
+            {
+                list.setSelectedIndex(selectedIndex == -1 ? 0 : selectedIndex);
+            }
+        });
     }
     
     /* (non-Javadoc)
