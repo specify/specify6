@@ -101,17 +101,18 @@ public class TreeAdditionalProcFactory
          */
         protected boolean processTaxonSynonymy(Session session, final Taxon srcTaxon, final Taxon dstTaxon)
         {
-            log.debug("Source:");
-            for (Determination det : new Vector<Determination>(srcTaxon.getDeterminations()))
+            Vector<Taxon> sources = new Vector<Taxon>();
+            sources.add(srcTaxon);
+            sources.addAll(srcTaxon.getAcceptedChildren());
+        	log.debug("Source:");
+            for (Taxon srcTax : sources)
             {
-                log.debug(det.getCollectionObject().getIdentityTitle()+" has  "+det.getIdentityTitle()+ "  "+det.getTaxon().getIdentityTitle()+" "+det.getCollectionObject().getCollectionMemberId());
-            }
-
-            log.debug("Source:");
-            for (Determination det : new Vector<Determination>(srcTaxon.getDeterminations()))
-            {
-                det.setPreferredTaxon(dstTaxon);
-                session.saveOrUpdate(det);
+            	for (Determination det : new Vector<Determination>(srcTax.getDeterminations()))
+            	{
+            		log.debug(det.getCollectionObject().getIdentityTitle()+" has  "+det.getIdentityTitle()+ "  "+det.getTaxon().getIdentityTitle()+" "+det.getCollectionObject().getCollectionMemberId());
+            		det.setPreferredTaxon(dstTaxon);
+            		session.saveOrUpdate(det);
+            	}
             }
             return true;
         }
