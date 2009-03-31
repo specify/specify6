@@ -59,6 +59,9 @@ public class SpQuery extends DataModelObjBase implements Cloneable
     protected boolean           named = true;
     protected Short             ordinal;
     protected String            remarks;
+    protected Boolean           selectDistinct;
+    protected Boolean			searchSynonymy;
+    protected Boolean           countOnly;
     
     protected Set<SpQueryField> fields;
     protected Set<SpReport>     reports;
@@ -93,6 +96,9 @@ public class SpQuery extends DataModelObjBase implements Cloneable
         isFavorite       = null;
         ordinal          = null;
         remarks          = null;
+        selectDistinct   = null;
+        searchSynonymy   = null;
+        countOnly        = null;
     }
     
     
@@ -240,7 +246,62 @@ public class SpQuery extends DataModelObjBase implements Cloneable
     }
 
     
+    
+    
     /**
+	 * @return the selectDistinct
+	 */
+    @Column(name = "SelectDistinct", unique = false, nullable = true, insertable = true, updatable = true)
+	public Boolean getSelectDistinct() 
+	{
+		return selectDistinct;
+	}
+
+	/**
+	 * @param selectDistinct the selectDistinct to set
+	 */
+	public void setSelectDistinct(Boolean selectDistinct) 
+	{
+		this.selectDistinct = selectDistinct;
+	}
+
+	/**
+	 * @return the searchSynonymy
+	 */
+    @Column(name = "SearchSynonymy", unique = false, nullable = true, insertable = true, updatable = true)
+	public Boolean getSearchSynonymy() 
+	{
+		return searchSynonymy;
+	}
+
+	/**
+	 * @param searchSynonymy the searchSynonymy to set
+	 */
+	public void setSearchSynonymy(Boolean searchSynonymy) 
+	{
+		this.searchSynonymy = searchSynonymy;
+	}
+
+	
+	
+	/**
+	 * @return the countOnly
+	 */
+	@Column(name = "CountOnly", unique = false, nullable = true, insertable = true, updatable = true)
+	public Boolean getCountOnly()
+	{
+		return countOnly;
+	}
+
+	/**
+	 * @param countOnly the countOnly to set
+	 */
+	public void setCountOnly(Boolean countOnly)
+	{
+		this.countOnly = countOnly;
+	}
+
+	/**
      * @return the order
      */
     @Column(name = "Ordinal", unique = false, nullable = true, insertable = true, updatable = true)
