@@ -893,25 +893,56 @@ public class TableViewObj implements Viewable,
     @SuppressWarnings("unchecked")
     protected void editRow(final int rowIndex, final boolean isNew)
     {
-        FormDataObjIFace dObj = null;
         if (isNew)
         {
-            if (classToCreate != null)
+            // Check to see if the business rules will be creating the object
+            // if so the BR will then call setNewObject
+            if (businessRules != null && businessRules.canCreateNewDataObject())
             {
-                dObj = FormHelper.createAndNewDataObj(classToCreate);
+                businessRules.createNewObj(true, null);
+                
             } else
             {
-                dObj = FormHelper.createAndNewDataObj(view.getClassName());
+                // OK, we need to create it locally
+                FormDataObjIFace dObj;
+                if (classToCreate != null)
+                {
+                    dObj = FormHelper.createAndNewDataObj(classToCreate);
+                } else
+                {
+                    dObj = FormHelper.createAndNewDataObj(view.getClassName());
+                }
+                editRow(dObj, rowIndex, isNew);
             }
         } else
         {
-            dObj = (FormDataObjIFace)dataObjList.get(rowIndex);
+            FormDataObjIFace dObj = (FormDataObjIFace)dataObjList.get(rowIndex);
             if (dObj == null)
             {
                 return;
             }
+            editRow(dObj, rowIndex, isNew);
         }
-        
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.Viewable#setNewObject(edu.ku.brc.af.ui.forms.FormDataObjIFace)
+     */
+    @Override
+    public void setNewObject(FormDataObjIFace newDataObj)
+    {
+        editRow(newDataObj, table.getSelectedRow(), true);
+    }
+
+    /**
+     * Can create a new item or edit an existing it; or view and existing item.
+     * @param rowIndex the index tho be editted
+     * @param isEdit whether we are editing or view
+     * @param isNew hwther the object is new
+     */
+    @SuppressWarnings("unchecked")
+    protected void editRow(final FormDataObjIFace dObj, final int rowIndex, final boolean isNew)
+    {
         // Add it in here so the Business Rules has a parent object to
         // get state from.
         if (parentDataObj != null && isEditing && isNew)

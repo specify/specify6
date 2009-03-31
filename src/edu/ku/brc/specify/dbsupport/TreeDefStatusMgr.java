@@ -7,8 +7,6 @@ import java.util.HashMap;
 
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 
-import edu.ku.brc.specify.dbsupport.TreeDefStatus;
-
 /**
  * @author timo
  *

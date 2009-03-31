@@ -25,6 +25,7 @@ import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.tasks.BaseTask.ASK_TYPE;
+import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
@@ -57,6 +58,7 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
     protected InteractionsTask task;
     protected boolean          isLoan;
     protected int              tableId;
+    protected Viewable         viewable = null;
     
     /**
      * 
@@ -115,6 +117,17 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
      */
     public void createOrAdd()
     {
+        createOrAdd(null, null, null);
+    }
+    
+    /**
+     * Creates a new loan/gift and will set the new data object back into the Viewable.
+     * @param viewableArg
+     */
+    public void createOrAdd(final Viewable viewableArg)
+    {
+        this.viewable = viewableArg;
+        
         createOrAdd(null, null, null);
     }
     
@@ -308,10 +321,10 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
                     
                     if (isLoan)
                     {
-                        task.addPrepsToLoan(prepProvider, infoRequest, prepsHash);
+                        task.addPrepsToLoan(prepProvider, infoRequest, prepsHash, viewable);
                     } else
                     {
-                        task.addPrepsToGift(prepProvider, infoRequest, prepsHash);
+                        task.addPrepsToGift(prepProvider, infoRequest, prepsHash, viewable);
                     }
                     
                     return null;

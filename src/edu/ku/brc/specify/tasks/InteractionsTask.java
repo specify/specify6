@@ -862,7 +862,8 @@ public class InteractionsTask extends BaseTask
      */
     protected void addPrepsToLoan(final PreparationsProviderIFace   existingLoanArg, 
                                   final InfoRequest                 infoRequest,
-                                  final Hashtable<Integer, Integer> prepsHash)
+                                  final Hashtable<Integer, Integer> prepsHash,
+                                  final Viewable                    srcViewable)
     {
         Loan existingLoan = (Loan)existingLoanArg;
         Loan loan;
@@ -961,11 +962,18 @@ public class InteractionsTask extends BaseTask
         
         if (existingLoan == null)
         {
-            DataEntryTask dataEntryTask = (DataEntryTask)TaskMgr.getTask(DataEntryTask.DATA_ENTRY);
-            if (dataEntryTask != null)
+            if (srcViewable != null)
             {
-                DBTableInfo loanTableInfo = DBTableIdMgr.getInstance().getInfoById(loan.getTableId());
-                dataEntryTask.openView(this, null, loanTableInfo.getDefaultFormName(), "edit", loan, true);
+                srcViewable.setNewObject(loan);
+                
+            } else
+            {
+                DataEntryTask dataEntryTask = (DataEntryTask)TaskMgr.getTask(DataEntryTask.DATA_ENTRY);
+                if (dataEntryTask != null)
+                {
+                    DBTableInfo loanTableInfo = DBTableIdMgr.getInstance().getInfoById(loan.getTableId());
+                    dataEntryTask.openView(this, null, loanTableInfo.getDefaultFormName(), "edit", loan, true);
+                }
             }
         } else 
         {
@@ -980,7 +988,8 @@ public class InteractionsTask extends BaseTask
      */
     protected void addPrepsToGift(final PreparationsProviderIFace existingGiftArg, 
                                   final InfoRequest               infoRequest,
-                                  final Hashtable<Integer, Integer> prepsHash)
+                                  final Hashtable<Integer, Integer> prepsHash,
+                                  final Viewable                    srcViewable)
     {
         Gift existingGift = (Gift)existingGiftArg;
         Gift gift;
@@ -1079,11 +1088,18 @@ public class InteractionsTask extends BaseTask
         
         if (existingGift == null)
         {
-            DataEntryTask dataEntryTask = (DataEntryTask)TaskMgr.getTask(DataEntryTask.DATA_ENTRY);
-            if (dataEntryTask != null)
+            if (srcViewable != null)
             {
-                DBTableInfo giftTableInfo = DBTableIdMgr.getInstance().getInfoById(gift.getTableId());
-                dataEntryTask.openView(this, null, giftTableInfo.getDefaultFormName(), "edit", gift, true);
+                srcViewable.setNewObject(gift);
+                
+            } else
+            {
+                DataEntryTask dataEntryTask = (DataEntryTask)TaskMgr.getTask(DataEntryTask.DATA_ENTRY);
+                if (dataEntryTask != null)
+                {
+                    DBTableInfo giftTableInfo = DBTableIdMgr.getInstance().getInfoById(gift.getTableId());
+                    dataEntryTask.openView(this, null, giftTableInfo.getDefaultFormName(), "edit", gift, true);
+                }
             }
         } else 
         {
@@ -2084,6 +2100,16 @@ public class InteractionsTask extends BaseTask
                 } else
                 {
                     log.error("Dropped wrong table type."); // this shouldn't happen
+                }
+                
+            } else if (cmdAction.getData() instanceof Viewable)
+            {
+                if (isNewLoan)
+                {    
+                    loanProcessor.createOrAdd((Viewable)cmdAction.getData());
+                } else
+                {
+                    giftProcessor.createOrAdd((Viewable)cmdAction.getData());
                 }
                 
             } else if (cmdAction.getData() instanceof InfoRequest)

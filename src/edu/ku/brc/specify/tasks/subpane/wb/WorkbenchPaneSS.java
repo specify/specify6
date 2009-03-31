@@ -1766,11 +1766,11 @@ public class WorkbenchPaneSS extends BaseSubPane
                 		
                 	});
                 	JLabel lbl = UIHelper.createLabel(UIRegistry.getResourceString("WB_UNCONVERTED_GEOREFS_MSG"));
-                	JPanel pane = new JPanel(new BorderLayout());
-                	pane.add(lbl, BorderLayout.NORTH);
-                	pane.add(unconvertedcells, BorderLayout.CENTER);
+                	JPanel innerPane = new JPanel(new BorderLayout());
+                	innerPane.add(lbl, BorderLayout.NORTH);
+                	innerPane.add(unconvertedcells, BorderLayout.CENTER);
                 	CustomDialog cd = new CustomDialog((Frame )UIRegistry.getTopWindow(), UIRegistry.getResourceString("WB_UNCONVERTED_GEOREFS_TITLE"),
-                			false, CustomDialog.OKHELP, pane);
+                			false, CustomDialog.OKHELP, innerPane);
                 	cd.setHelpContext("UnconvertableGeoCoords");
                 	UIHelper.centerAndShow(cd);
                 }

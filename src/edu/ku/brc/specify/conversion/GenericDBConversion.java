@@ -3344,7 +3344,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
             String tableName = "determination";
 
-            int isCurrentInx = oldNameIndex.get(oldDetermination_Current) + 1;
+            //int isCurrentInx = oldNameIndex.get(oldDetermination_Current) + 1;
 
             log.info(sqlStr);
             ResultSet rs = stmt.executeQuery(sqlStr);
@@ -3728,7 +3728,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             
             prepIdMapper.setShowLogErrors(false);
 
-            int     prepDateInx     = oldNameIndex.get("CatalogedDate") + 1;
+            //int     prepDateInx     = oldNameIndex.get("CatalogedDate") + 1;
             int     lastEditedByInx = oldNameIndex.get("LastEditedBy") + 1;
             Integer idIndex         = oldNameIndex.get("CollectionObjectID");
             int     count           = 0;
@@ -4138,7 +4138,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
             String tableName = "determination";
 
-            int isCurrentInx = oldNameIndex.get(oldDetermination_Current) + 1;
+            //int isCurrentInx = oldNameIndex.get(oldDetermination_Current) + 1;
 
             log.info(sqlStr);
             ResultSet rs = stmt.executeQuery(sqlStr);

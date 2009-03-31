@@ -9,7 +9,7 @@
  */
 package edu.ku.brc.af.auth;
 
-import static edu.ku.brc.ui.UIHelper.*;
+import static edu.ku.brc.ui.UIHelper.createCheckBox;
 
 import java.awt.Component;
 import java.util.ArrayList;

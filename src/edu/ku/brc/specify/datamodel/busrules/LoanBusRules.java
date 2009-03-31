@@ -34,6 +34,8 @@ import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.LoanPreparation;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.Shipment;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.UIRegistry;
@@ -48,6 +50,11 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class LoanBusRules extends AttachmentOwnerBaseBusRules
 {  
+    public static final String CMDTYPE     = "Interactions";
+    public static final String DE_CMDS     = "Data_Entry";
+    public static final String ADD_TO_LOAN = "AddToLoan";
+    public static final String NEW_LOAN    = "NEW_LOAN";
+    
     /**
      * Constructor.
      */
@@ -89,6 +96,50 @@ public class LoanBusRules extends AttachmentOwnerBaseBusRules
                 }
             });
         }
+        
+        /*if (formViewObj.getRsController() != null)
+        {
+            JButton newBtn = formViewObj.getRsController().getNewRecBtn();
+            if (newBtn != null)
+            {
+                // Remove all ActionListeners, there should only be one
+                for (ActionListener al : newBtn.getActionListeners())
+                {
+                    newBtn.removeActionListener(al);
+                }
+                
+                newBtn.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        CommandAction cmdAction = new CommandAction(CMDTYPE, NEW_LOAN, null);
+                        cmdAction.setData(cmdAction); // simulating a click
+                        CommandDispatcher.dispatch(cmdAction);
+                    }
+                });
+            }
+        }*/
+    }
+    
+    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#canCreateNewDataObject()
+     */
+    @Override
+    public boolean canCreateNewDataObject()
+    {
+        return true;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#createNewObj(boolean, java.lang.Object)
+     */
+    @Override
+    public void createNewObj(boolean doSetIntoAndValidateArg, Object oldDataObj)
+    {
+        CommandAction cmdAction = new CommandAction(CMDTYPE, NEW_LOAN, viewable);
+        CommandDispatcher.dispatch(cmdAction);
     }
 
     /* (non-Javadoc)
@@ -207,7 +258,7 @@ public class LoanBusRules extends AttachmentOwnerBaseBusRules
      */
     /*public static int getUsedPrepCount(final Preparation prep)
     {
-        String sql = "SELECT Count FROM preparation WHERE PreparationID = " + prep.getId();
+        String sql = "SELECT CountAmt FROM preparation WHERE PreparationID = " + prep.getId();
         int prepQty = getInt(BasicSQLUtils.getCount(sql));
         
         String lpSQL = "SELECT %s FROM loanpreparation AS lp INNER JOIN preparation AS p ON lp.PreparationID = p.PreparationID WHERE p.PreparationID = %d";

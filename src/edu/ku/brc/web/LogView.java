@@ -151,7 +151,7 @@ public class LogView extends HttpServlet
             
             glExecServ.submit(hostnameLookup);
             
-            String hostname = doSingleReverseDNS(ipAddr);
+            //String hostname = doSingleReverseDNS(ipAddr);
         }
         
         glExecServ.shutdown();

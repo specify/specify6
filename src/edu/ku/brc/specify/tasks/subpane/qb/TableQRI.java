@@ -17,7 +17,6 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
-import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.Locality;
 

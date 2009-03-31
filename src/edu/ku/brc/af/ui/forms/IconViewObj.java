@@ -505,55 +505,81 @@ public class IconViewObj implements Viewable
     /**
      * 
      */
+    protected void createNewDataObject()
+    {
+        // Check to see if the business rules will be creating the object
+        // if so the BR will then call setNewObject
+        if (businessRules != null && businessRules.canCreateNewDataObject())
+        {
+            businessRules.createNewObj(true, null);
+            
+        } else
+        {
+            FormDataObjIFace newObject;
+            if (classToCreate != null)
+            {
+                newObject = FormHelper.createAndNewDataObj(classToCreate);
+            } else
+            {
+                newObject = FormHelper.createAndNewDataObj(view.getClassName());
+            }
+            setNewObject(newObject);
+        }
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.Viewable#setNewObject(edu.ku.brc.af.ui.forms.FormDataObjIFace)
+     */
+    @Override
+    public void setNewObject(final FormDataObjIFace newDataObj)
+    {
+        // get an edit dialog for the object
+        ViewBasedDisplayIFace dialog = FormHelper.createDataObjectDialog(altView, mainComp, newDataObj, true, true);
+        if (dialog == null)
+        {
+            log.error("Unable to create a dialog for data entry.  [" + newDataObj.getClass().getName() + "]");
+            return;
+        }
+        
+        if (mvParent != null)
+        {
+            mvParent.registerDisplayFrame(dialog);
+        }
+        
+        dialog.setData(newDataObj);
+        dialog.showDisplay(true);
+        
+        if (dialog.getBtnPressed() == ViewBasedDisplayIFace.OK_BTN)
+        {
+            dialog.getMultiView().getDataFromUI();
+            
+            log.warn("User clicked OK.  Adding " + newDataObj.getIdentityTitle() + " into " + dataSetFieldName + ".");
+            parentDataObj.addReference(newDataObj, dataSetFieldName);
+            iconTray.addItem(newDataObj);
+
+            rootHasChanged();
+            
+        } else if (dialog.getBtnPressed() == ViewBasedDisplayIFace.CANCEL_BTN)
+        {
+            if (mvParent.getMultiViewParent() != null && mvParent.getMultiViewParent().getCurrentValidator() != null)
+            {
+                mvParent.getMultiViewParent().getCurrentValidator().validateForm();
+            }
+        }
+        dialog.dispose();
+
+    }
+    
+    /**
+     * 
+     */
     protected void addActionListenerToNewButton()
     {
         newBtn.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
-                FormDataObjIFace newObject;
-                if (classToCreate != null)
-                {
-                    newObject = FormHelper.createAndNewDataObj(classToCreate);
-                } else
-                {
-                    newObject = FormHelper.createAndNewDataObj(view.getClassName());
-                }
-                
-                // get an edit dialog for the object
-                ViewBasedDisplayIFace dialog = FormHelper.createDataObjectDialog(altView, mainComp, newObject, true, true);
-                if (dialog == null)
-                {
-                    log.error("Unable to create a dialog for data entry.  [" + newObject.getClass().getName() + "]");
-                    return;
-                }
-                
-                if (mvParent != null)
-                {
-                    mvParent.registerDisplayFrame(dialog);
-                }
-                
-                dialog.setData(newObject);
-                dialog.showDisplay(true);
-                
-                if (dialog.getBtnPressed() == ViewBasedDisplayIFace.OK_BTN)
-                {
-                    dialog.getMultiView().getDataFromUI();
-                    
-                    log.warn("User clicked OK.  Adding " + newObject.getIdentityTitle() + " into " + dataSetFieldName + ".");
-                    parentDataObj.addReference(newObject, dataSetFieldName);
-                    iconTray.addItem(newObject);
-
-                    rootHasChanged();
-                    
-                } else if (dialog.getBtnPressed() == ViewBasedDisplayIFace.CANCEL_BTN)
-                {
-                    if (mvParent.getMultiViewParent() != null && mvParent.getMultiViewParent().getCurrentValidator() != null)
-                    {
-                        mvParent.getMultiViewParent().getCurrentValidator().validateForm();
-                    }
-                }
-                dialog.dispose();
+                createNewDataObject();
             }
         });
     }

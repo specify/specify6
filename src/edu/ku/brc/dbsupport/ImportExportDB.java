@@ -279,6 +279,7 @@ public class ImportExportDB
     }
 
     // for testing
+    @SuppressWarnings("unchecked")
     public Map buildSingleDataBaseObjectTemp(String dbTable, int id, boolean recursion)
     {
         Map dbObject = new HashMap();
@@ -315,6 +316,7 @@ public class ImportExportDB
      * @param dbImport the opend xml file elememt
      * @param dbTable the class name of the table
      */
+    @SuppressWarnings("unchecked")
     protected void dynamicXMLImport(Element dbImport, String dbTable)
     {
         try
@@ -433,6 +435,7 @@ public class ImportExportDB
         }
     }
 
+    @SuppressWarnings("unchecked")
     protected void sequentialXMLImport(Element dbImport,
                                        String dbTable,
                                        String parentName,
@@ -565,6 +568,7 @@ public class ImportExportDB
         }
     }
 
+    @SuppressWarnings("unchecked")
     protected void sequentialXMLImportRecursion(Vector collectionNames,
                                                 Vector collectionIds,
                                                 String parentName,
@@ -708,6 +712,7 @@ public class ImportExportDB
     }
 
     // import a record by its id, as it is in the XML file
+    @SuppressWarnings("unchecked")
     protected void singleXMLImport(Element dbImport,
                                    String dbTable,
                                    String parentName,
@@ -796,6 +801,7 @@ public class ImportExportDB
     }
 
     // return a DBobject that is ready to be imported, also makes and saves new parents
+    @SuppressWarnings("unchecked")
     protected Object buildSingleDBObjectFromXML(Element dbImport,
                                                 String dbTable,
                                                 String parentName,
@@ -891,6 +897,7 @@ public class ImportExportDB
     }
 
     // return a DBobject that is ready to be imported, also makes and saves new parents
+    @SuppressWarnings("unchecked")
     protected Object buildSingleDataBaseObjectFromXML(Element dbImport,
                                                       String dbTable,
                                                       String parentName,
@@ -903,7 +910,7 @@ public class ImportExportDB
         {
             DBTableInfo parentInfo = DBTableIdMgr.getInstance().getInfoByTableName(
                     dbTable.toLowerCase());
-            String lowerdbTable = lowerFirstChar(dbTable);
+            //String lowerdbTable = lowerFirstChar(dbTable);
             String primaryKey = parentInfo.getPrimaryKeyName();
 
             Vector collectionIds = new Vector(20);
@@ -987,6 +994,7 @@ public class ImportExportDB
     }
 
     // return a DBobject that is ready to be imported, also makes and saves new parents
+    @SuppressWarnings("unchecked")
     protected Map buildSingleDataBaseObjectFromXMLTemp(Element dbImport,
                                                        String dbTable,
                                                        String parentName,
@@ -994,13 +1002,13 @@ public class ImportExportDB
                                                        int id,
                                                        boolean recursion)
     {
-        Object dbObject = new Object();
+        //Object dbObject = new Object();
         Map<String, Object> agentMap = new HashMap<String, Object>();
         try
         {
             DBTableInfo parentInfo = DBTableIdMgr.getInstance().getInfoByTableName(
                     dbTable.toLowerCase());
-            String lowerdbTable = lowerFirstChar(dbTable);
+            //String lowerdbTable = lowerFirstChar(dbTable);
             String primaryKey = parentInfo.getPrimaryKeyName();
 
             Vector collectionIds = new Vector(20);
@@ -1072,7 +1080,7 @@ public class ImportExportDB
 
                 sequentialXMLImportRecursion(collectionNames, collectionIds, dbTable, newParentId);
             }
-            dbObject = agent;
+            //dbObject = agent;
         } catch (Exception ex)
         {
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
@@ -1083,6 +1091,7 @@ public class ImportExportDB
         return agentMap;
     }
 
+    @SuppressWarnings("unchecked")
     protected void sequentialXMLImportRecordSet(Element dbImport,
                                                 String dbTable,
                                                 String parentName,
@@ -1095,7 +1104,7 @@ public class ImportExportDB
                     dbTable.toLowerCase());
             // get the records
             List records = dbImport.selectNodes("//" + dbTable); //$NON-NLS-1$
-            String lowerdbTable = lowerFirstChar(dbTable);
+            //String lowerdbTable = lowerFirstChar(dbTable);
             DBTableInfo info = DBTableIdMgr.getInstance().getInfoByTableName(dbTable.toLowerCase());
             String primaryKey = info.getPrimaryKeyName();
             List ids = dbImport.selectNodes("//" + primaryKey); //$NON-NLS-1$
@@ -1189,6 +1198,7 @@ public class ImportExportDB
         }
     }
 
+    @SuppressWarnings("unchecked")
     protected void parentXMLImport(Element dbImport,
                                    String dbTable,
                                    String parentName,
@@ -1230,6 +1240,7 @@ public class ImportExportDB
         } while (i.hasNext());
     }
 
+    @SuppressWarnings("unchecked")
     protected void iterativeXMLImport(Element dbImport,
                                       String dbTable,
                                       String parentName,
@@ -1307,6 +1318,7 @@ public class ImportExportDB
      * @param dbImport the opend xml file elememt
      * @param dbTable the class name of the table
      */
+    @SuppressWarnings("unchecked")
     protected Object dynamicXMLImportRecReturn(Element dbImport, String dbTable)
     {
         Object agent = new Object();
@@ -1420,6 +1432,7 @@ public class ImportExportDB
      * @param parentName the parentName
      * @return a set, or null if not found
      */
+    @SuppressWarnings("unchecked")
     protected Set xmlImportRecursion(Map parentMap,
                                      String dbTable,
                                      List ids,
@@ -1519,6 +1532,7 @@ public class ImportExportDB
 
     }
 
+    @SuppressWarnings("unchecked")
     protected void sequentialDatabaseImport(Element dbImport,
                                             String dbTable,
                                             String parentName,
@@ -2328,6 +2342,7 @@ public class ImportExportDB
     // TODO: delete
     // if the databas object already exisits, then it will add to the exsisting otherwise
     // it will make a new generic database object
+    @SuppressWarnings("unchecked")
     protected Object genericDBObject(String className, long id)
     {
 
@@ -2491,6 +2506,7 @@ public class ImportExportDB
 
     // TODO: make more effiecnt by not adding the parents that don't exsist
     // also ignore agent for now
+    @SuppressWarnings("unchecked")
     public void writeRecordSet(String dbTable, int id)
     {
         List<String> children = new ArrayList();
@@ -2542,6 +2558,7 @@ public class ImportExportDB
 
     // get all assocated child tables for the record
     // ignore agent
+    @SuppressWarnings("unchecked")
     private List<String> getChildTables(String dbTable, List<String> children)
     {
         String lowerdbTable = dbTable.toLowerCase();
@@ -2577,6 +2594,7 @@ public class ImportExportDB
 
     // foundAgent default is false
     // TODO: optimize - dont allows multiple tables to be added
+    @SuppressWarnings("unchecked")
     private List<String> getParentTables(String dbTable, List<String> parents, Boolean foundAgent)
     {
         String lowerdbTable = dbTable.toLowerCase();
@@ -2623,6 +2641,7 @@ public class ImportExportDB
 
     // foundAgent default is false
     // TODO: optimize - dont allows multiple tables to be added
+    @SuppressWarnings("unchecked")
     private List<String> getImmediateParentTables(String dbTable,
                                                   List<String> parents,
                                                   Boolean foundAgent)
@@ -2669,6 +2688,7 @@ public class ImportExportDB
      * print all the records of a table.
      * @param dbTable the class name of the table
      */
+    @SuppressWarnings("unchecked")
     public void printXML(String dbTable)
     {
         Session dom4jSession = session.getSession(EntityMode.DOM4J);
@@ -2698,6 +2718,7 @@ public class ImportExportDB
      * print all associated tables of this table
      * @param dbTable the class name of the table
      */
+    @SuppressWarnings("unchecked")
     public void printRecordSet(String dbTable)
     {
         List<String> children = new ArrayList<String>();
@@ -2764,6 +2785,7 @@ public class ImportExportDB
      * @param dbTable the class name of the table
      * @param id the id number of the record
      */
+    @SuppressWarnings("unchecked")
     public void printSingleRecordXML(String dbTable, int id)
     {
         Session dom4jSession = session.getSession(EntityMode.DOM4J);
@@ -2798,6 +2820,7 @@ public class ImportExportDB
      * @param dbTable the class name of the table
      * @param id the id number of the record
      */
+    @SuppressWarnings("unchecked")
     public void writeSingleRecordXML(String dbTable, int id)
     {
         FileOutputStream fout;
@@ -2842,6 +2865,7 @@ public class ImportExportDB
      * @param dbTable the class name of the table
      * @return creates an xml file with name of the table
      */
+    @SuppressWarnings("unchecked")
     public void writeXMLfile(String dataBase)
     {
         FileOutputStream fout;
@@ -2888,6 +2912,7 @@ public class ImportExportDB
     }
 
     // capitalize the first character of the string
+    @SuppressWarnings("unchecked")
     public String capFirstChar(String text)
     {
         text = text.substring(0, 1).toUpperCase() + text.substring(1);
@@ -2910,6 +2935,7 @@ public class ImportExportDB
 
     // get the database name from a list of elements
     // assume the list is not empty
+    @SuppressWarnings("unchecked")
     public String getDbName(List dbElements)
     {
         Element temp = (Element) dbElements.get(0);
@@ -2917,6 +2943,7 @@ public class ImportExportDB
         return dbName;
     }
 
+    @SuppressWarnings("unchecked")
     public String getDbName(Vector dbElements)
     {
         Element temp = (Element) dbElements.get(0);
@@ -2943,6 +2970,7 @@ public class ImportExportDB
         return cal;
     }
 
+    @SuppressWarnings("unchecked")
     private List removeDuplicates(List list)
     {
         HashSet<List> set = new HashSet<List>();

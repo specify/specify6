@@ -55,6 +55,10 @@ public class HelpIndexer
         this.outFileName = outFileName;
     }
     
+    /**
+     * 
+     */
+    @SuppressWarnings("unchecked")
     public void indexIt()
     {
         if (!jhm.exists())

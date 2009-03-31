@@ -49,10 +49,6 @@ import edu.ku.brc.util.Triple;
  */
 public class LoanPreparationBusRules extends BaseBusRules implements CommandListener
 {
-    private final String CMDTYPE     = "Interactions";
-    private final String DECMDS      = "Data_Entry";
-    private final String ADD_TO_LOAN = "AddToLoan";
-    
     private boolean    isFillingForm    = false;
     private SubViewBtn loanRetBtn       = null;
     
@@ -63,8 +59,8 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
     {
         super(LoanPreparation.class);
         
-        CommandDispatcher.register(CMDTYPE, this);
-        CommandDispatcher.register(DECMDS, this);
+        CommandDispatcher.register(LoanBusRules.CMDTYPE, this);
+        CommandDispatcher.register(LoanBusRules.DE_CMDS, this);
     }
 
     /* (non-Javadoc)
@@ -109,7 +105,7 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
                             if (loanMV != null)
                             {
                                 formViewObj.getDataFromUI();
-                                CommandDispatcher.dispatch(new CommandAction(CMDTYPE, ADD_TO_LOAN, loanMV.getCurrentViewAsFormViewObj().getCurrentDataObj()));
+                                CommandDispatcher.dispatch(new CommandAction(LoanBusRules.CMDTYPE, LoanBusRules.ADD_TO_LOAN, loanMV.getCurrentViewAsFormViewObj().getCurrentDataObj()));
                             }
                         }
                     });
@@ -175,7 +171,7 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
                         MultiView loanMV = tvo.getMVParent().getMultiViewParent();
                         if (loanMV != null)
                         {
-                            CommandDispatcher.dispatch(new CommandAction(CMDTYPE, ADD_TO_LOAN, loanMV.getCurrentViewAsFormViewObj().getCurrentDataObj()));
+                            CommandDispatcher.dispatch(new CommandAction(LoanBusRules.CMDTYPE, LoanBusRules.ADD_TO_LOAN, loanMV.getCurrentViewAsFormViewObj().getCurrentDataObj()));
                         }
                     }
                 });
@@ -251,7 +247,7 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
                 int qQntRet  = 0;
                 int qPrepCnt = 0;
                 
-                Integer pCnt = BasicSQLUtils.getCount("SELECT Count FROM preparation WHERE PreparationID = " + prep.getPreparationId());
+                Integer pCnt = BasicSQLUtils.getCount("SELECT CountAmt FROM preparation WHERE PreparationID = " + prep.getPreparationId());
                 qPrepCnt = pCnt != null ? pCnt : 0;
                 
                 if (loanPrep.getId() != null)
@@ -396,8 +392,8 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
     {
         super.formShutdown();
         
-        CommandDispatcher.unregister(CMDTYPE, this);
-        CommandDispatcher.unregister(DECMDS, this);
+        CommandDispatcher.unregister(LoanBusRules.CMDTYPE, this);
+        CommandDispatcher.unregister(LoanBusRules.DE_CMDS, this);
     }
 
     /* (non-Javadoc)
@@ -407,7 +403,7 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
     @Override
     public void doCommand(CommandAction cmdAction)
     {
-        if (cmdAction.isType(CMDTYPE) && cmdAction.isAction("REFRESH_LOAN_PREPS"))
+        if (cmdAction.isType(LoanBusRules.CMDTYPE) && cmdAction.isAction("REFRESH_LOAN_PREPS"))
         {
             if (formViewObj != null)
             {
@@ -435,7 +431,7 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
                 // Refresh list in the grid
                 tvo.refreshDataList();
             }
-        } else if (cmdAction.isType(DECMDS) && cmdAction.isAction("CLOSE_SUBVIEW"))
+        } else if (cmdAction.isType(LoanBusRules.DE_CMDS) && cmdAction.isAction("CLOSE_SUBVIEW"))
         {
             Triple<Object, Object, Object> dataTriple = (Triple<Object, Object, Object>)cmdAction.getData();
             if (dataTriple.first == formViewObj &&

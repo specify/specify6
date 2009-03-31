@@ -17,7 +17,6 @@ import net.sf.jasperreports.engine.JRField;
 
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceBase.SourceColumnInfo;
 import edu.ku.brc.specify.ui.db.ResultSetTableModel;
 import edu.ku.brc.ui.UIRegistry;
 

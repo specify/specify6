@@ -241,6 +241,10 @@ public class FormViewObj implements Viewable,
     protected String                        searchName      = null;
     protected JButton                       srchRecBtn      = null;
     
+    // When creating a new Data Object
+    protected Object                        oldDataObj           = null;
+    protected boolean                       doSetIntoAndValidate = true;
+    
     // Forms that have a Selector
     protected JComboBox                     selectorCBX     = null;
     protected boolean                       isSelectorForm;
@@ -1482,22 +1486,22 @@ public class FormViewObj implements Viewable,
     protected static void removeFromParent(final MultiView mvParent, 
                                            final Object    parentDataObjArg, 
                                            final String    cellNameArg, 
-                                           final Object    oldDataObj)
+                                           final Object    oldDataObjArg)
     {
-        if (oldDataObj != null)
+        if (oldDataObjArg != null)
         {
             if (parentDataObjArg != null)
             {
-                log.debug("Removing "+oldDataObj+" "+oldDataObj.getClass().getSimpleName()+" from "+parentDataObjArg);
+                log.debug("Removing "+oldDataObjArg+" "+oldDataObjArg.getClass().getSimpleName()+" from "+parentDataObjArg);
                 
-                if (parentDataObjArg instanceof FormDataObjIFace && oldDataObj instanceof FormDataObjIFace)
+                if (parentDataObjArg instanceof FormDataObjIFace && oldDataObjArg instanceof FormDataObjIFace)
                 {
                     boolean addSearch = mvParent != null && MultiView.isOptionOn(mvParent.getOptions(), MultiView.ADD_SEARCH_BTN);
                     
-                    ((FormDataObjIFace)parentDataObjArg).removeReference((FormDataObjIFace)oldDataObj, cellNameArg, addSearch);
-                    if (addSearch && mvParent != null && ((FormDataObjIFace)oldDataObj).getId() != null)
+                    ((FormDataObjIFace)parentDataObjArg).removeReference((FormDataObjIFace)oldDataObjArg, cellNameArg, addSearch);
+                    if (addSearch && mvParent != null && ((FormDataObjIFace)oldDataObjArg).getId() != null)
                     {
-                        mvParent.getTopLevel().addToBeSavedItem(oldDataObj);
+                        mvParent.getTopLevel().addToBeSavedItem(oldDataObjArg);
                     }
                     
                 } else
@@ -1826,15 +1830,14 @@ public class FormViewObj implements Viewable,
             return;
         }
         
-        boolean doSetIntoAndValidate = doSetIntoAndValidateArg;
-        
         if (list != null && !list.isEmpty())
         {
             getDataFromUI();
         }
         
-        Object oldDataObj = dataObj;
-        dataObj = null;
+        doSetIntoAndValidate = doSetIntoAndValidateArg;
+        oldDataObj           = dataObj;
+        dataObj              = null;
     
         UIValidator.setIgnoreAllValidation(this, true);
         for (FVOFieldInfo fieldInfo : controlsById.values())
@@ -1854,18 +1857,37 @@ public class FormViewObj implements Viewable,
                 ((EditViewCompSwitcherPanel)fi.getComp()).putIntoEditMode();
             }
         }
-
-        boolean shouldDoCarryForward = doCarryForward && carryFwdDataObj != null && carryFwdInfo != null;
         
-        //log.info("createNewDataObject "+hashCode() + " Session ["+(session != null ? session.hashCode() : "null")+"] ");
-        FormDataObjIFace obj;
-        if (classToCreate != null)
+        // Check to see if the business rules will be creating the object
+        // if so the BR will then call setNewObject
+        if (businessRules != null && businessRules.canCreateNewDataObject())
         {
-            obj = FormHelper.createAndNewDataObj(classToCreate, !shouldDoCarryForward);
+            businessRules.createNewObj(true, null);
+            
         } else
         {
-            obj = FormHelper.createAndNewDataObj(view.getClassName(), !shouldDoCarryForward);
+            boolean shouldDoCarryForward = doCarryForward && carryFwdDataObj != null && carryFwdInfo != null;
+            
+            //log.info("createNewDataObject "+hashCode() + " Session ["+(session != null ? session.hashCode() : "null")+"] ");
+            FormDataObjIFace obj;
+            if (classToCreate != null)
+            {
+                obj = FormHelper.createAndNewDataObj(classToCreate, !shouldDoCarryForward);
+            } else
+            {
+                obj = FormHelper.createAndNewDataObj(view.getClassName(), !shouldDoCarryForward);
+            }
+            
+            setNewObject(obj);
         }
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.Viewable#setNewObject(edu.ku.brc.af.ui.forms.FormDataObjIFace)
+     */
+    public void setNewObject(final FormDataObjIFace obj)
+    {
+        boolean shouldDoCarryForward = doCarryForward && carryFwdDataObj != null && carryFwdInfo != null;
         
         // The order needs to be set here because some Sets are TreSets which
         // require the ordinal to be set BEFORE it is added to the TreeSet
@@ -1924,7 +1946,7 @@ public class FormViewObj implements Viewable,
         {
             FormHelper.addToParent(parentDataObj, obj);
         }
-        
+
         boolean didCarryForward = false;
         if (shouldDoCarryForward)
         {

@@ -18,6 +18,7 @@ public class TestDataObj
     protected String  noImage = "";
     protected String  stateCode;
     
+    @SuppressWarnings("unchecked")
     protected Set subObjects;
 
     public TestDataObj()
@@ -26,10 +27,12 @@ public class TestDataObj
         date = new java.util.Date();
     }
 
+    @SuppressWarnings("unchecked")
     public Set getSubObjects() {
         return this.subObjects;
     }
     
+    @SuppressWarnings("unchecked")
     public void setSubObjects(Set subObjects) {
         this.subObjects = subObjects;
     }

@@ -12,7 +12,6 @@ package edu.ku.brc.specify.tasks.subpane.qb;
 import java.util.LinkedList;
 import java.util.Vector;
 
-import antlr.collections.List;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableInfo;
 

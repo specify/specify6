@@ -42,7 +42,6 @@ import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.config.SpecifyAppPrefs;
-import edu.ku.brc.specify.config.init.DBConfigInfo;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.AutoNumberingScheme;
@@ -205,7 +204,7 @@ public class TestAutoNumbering extends TestCase
             
             bsd.setSession(session);
             
-            DBConfigInfo config = new DBConfigInfo(driverInfo, 
+            /*DBConfigInfo config = new DBConfigInfo(driverInfo, 
                     hostName, 
                     dbName,
                     username, 
@@ -216,6 +215,7 @@ public class TestAutoNumbering extends TestCase
                     disciplineType, 
                     "Test", 
                     "Test");
+                    */
             
             //bsd.createEmptyDiscipline(config, null);
             

@@ -9,8 +9,6 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 
-import org.apache.log4j.Logger;
-
 import edu.ku.brc.af.ui.db.QueryForIdResultsIFace;
 import edu.ku.brc.specify.tasks.subpane.ESResultsTablePanel;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
@@ -24,7 +22,7 @@ import edu.ku.brc.specify.ui.db.ResultSetTableModel;
  */
 public class UploadResultsTablePanel extends ESResultsTablePanel
 {
-    private static final Logger log = Logger.getLogger(UploadResultsTablePanel.class);
+    //private static final Logger log = Logger.getLogger(UploadResultsTablePanel.class);
 
     /**
      * @param esrPane

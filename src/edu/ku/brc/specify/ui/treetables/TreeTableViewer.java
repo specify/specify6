@@ -2161,9 +2161,9 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         boolean nonNullSelection = (selectedNode != null);
         boolean canAddChild      = (selectedNode != null) ? (selectedNode.getRank() < getHighestPossibleNodeRank()) : false;
         boolean isVisibleRoot    = (selectedNode != null) ? (selectedNode.getId() == listModel.getVisibleRoot().getId()) : false;
-        int rank = nonNullSelection ? selectedNode.getRank() : listModel.getVisibleRoot().getRank(); 
-        List<Integer> ranks = listModel.getVisibleRanks();
-        boolean isLowestRoot = rank == ranks.get(ranks.size()-1);
+        //int rank = nonNullSelection ? selectedNode.getRank() : listModel.getVisibleRoot().getRank(); 
+        //List<Integer> ranks = listModel.getVisibleRanks();
+        //boolean isLowestRoot = rank == ranks.get(ranks.size()-1);
         
         popupMenu.setSelectionSensativeButtonsEnabled(nonNullSelection);
         

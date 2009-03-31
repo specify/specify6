@@ -160,6 +160,23 @@ public class BaseBusRules implements BusinessRulesIFace
         return true;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BusinessRulesIFace#canCreateNewDataObject()
+     */
+    @Override
+    public boolean canCreateNewDataObject()
+    {
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BusinessRulesIFace#createNewObj(boolean, java.lang.Object)
+     */
+    @Override
+    public void createNewObj(boolean doSetIntoAndValidateArg, Object oldDataObj)
+    {
+    }
+
     /**
      * Checks to see if it can be deleted.
      * @param tableName the table name to check

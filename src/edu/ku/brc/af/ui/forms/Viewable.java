@@ -253,6 +253,12 @@ public interface Viewable
     public abstract boolean isDataCompleteAndValid(boolean throwAwayOnDiscard);
     
     /**
+     * After a new data object is created.
+     * @param newDataObj the newly created object.
+     */
+    public abstract void setNewObject(FormDataObjIFace newDataObj);
+    
+    /**
      * @return
      */
     public abstract JComponent getControllerPanel();

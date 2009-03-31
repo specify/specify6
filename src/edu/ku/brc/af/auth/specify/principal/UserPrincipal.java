@@ -16,7 +16,6 @@
  * 
  */
 package edu.ku.brc.af.auth.specify.principal;
-import org.apache.log4j.Logger;
 /**
  * @author megkumin
  *
@@ -26,7 +25,7 @@ import org.apache.log4j.Logger;
 @SuppressWarnings("serial") //$NON-NLS-1$
 public class UserPrincipal extends BasicPrincipal
 {
-    protected static final Logger log = Logger.getLogger(UserPrincipal.class);
+    //protected static final Logger log = Logger.getLogger(UserPrincipal.class);
 
     public UserPrincipal()
     {

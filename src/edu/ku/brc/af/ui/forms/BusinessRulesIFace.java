@@ -250,6 +250,20 @@ public interface BusinessRulesIFace
     public abstract boolean shouldCloneField(final String fieldName);
     
     /**
+     * @return true if the business rules is responsible for creating the new object for the viewable
+     */
+    public abstract boolean canCreateNewDataObject();
+   
+    /**
+     * Creates a new data object for the Viewable and call {@link Viewable#setNewObject(FormDataObjIFace, boolean, Object)}
+     * @param doSetIntoAndValidateArg indicates whether the data should be set into the forma and validated.
+     * @param oldDataObj the previous data object in the form.
+     * @return the new data object or null if there is an error
+     */
+    public abstract void createNewObj(boolean doSetIntoAndValidateArg, Object oldDataObj);
+    
+    
+    /**
      * Call right before formShutdown is called, but the entire UI is still intact.
      */
     public abstract void aboutToShutdown();

@@ -25,7 +25,6 @@ import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import edu.ku.brc.ui.CurvedBorder;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.util.Triple;
 

@@ -63,6 +63,7 @@ public class AuditInterceptor  extends edu.ku.brc.dbsupport.AuditInterceptor
     /* (non-Javadoc)
      * @see org.hibernate.EmptyInterceptor#postFlush(java.util.Iterator)
      */
+    @SuppressWarnings("unchecked")
     public void postFlush(Iterator entities)
     {
         // no op

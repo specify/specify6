@@ -17,7 +17,6 @@
  */
 package edu.ku.brc.af.auth.specify.principal;
 
-import org.apache.log4j.Logger;
 
 
 
@@ -30,7 +29,7 @@ import org.apache.log4j.Logger;
 @SuppressWarnings("serial") //$NON-NLS-1$
 public class GroupPrincipal extends BasicPrincipal
 {
-    protected static final Logger log = Logger.getLogger(GroupPrincipal.class);
+    //protected static final Logger log = Logger.getLogger(GroupPrincipal.class);
 
     public GroupPrincipal()
     {

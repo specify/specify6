@@ -343,6 +343,7 @@ public class DataEntryTask extends BaseTask
                 formPane.focusFirstFormControl();
             }
         });
+
     }
     
     /* (non-Javadoc)

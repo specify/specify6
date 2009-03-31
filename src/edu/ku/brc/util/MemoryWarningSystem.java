@@ -46,8 +46,8 @@ public class MemoryWarningSystem
 
     public interface Listener
     {
-        public void memoryUsageLow(long usedMemory, long maxMemory);
-        public void memoryUsage(long usedMemory, long maxMemory);
+        public void memoryUsageLow(long usedMemoryArg, long maxMemoryArg);
+        public void memoryUsage(long usedMemoryArg, long maxMemoryArg);
     }
 
     public MemoryWarningSystem()
@@ -100,8 +100,8 @@ public class MemoryWarningSystem
             throw new IllegalArgumentException("Percentage not in range"); 
         }
         thresholdPercentage = percentage;
-        long maxMemory = tenuredGenPool.getUsage().getMax();
-        long warningThreshold = (long) (maxMemory * percentage);
+        long maxMem = tenuredGenPool.getUsage().getMax();
+        long warningThreshold = (long) (maxMem * percentage);
         tenuredGenPool.setUsageThreshold(warningThreshold);
     }
 

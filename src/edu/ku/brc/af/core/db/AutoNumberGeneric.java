@@ -10,6 +10,8 @@
 package edu.ku.brc.af.core.db;
 
 import static edu.ku.brc.helpers.XMLHelper.xmlNode;
+import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.util.Calendar;
 import java.util.List;
@@ -22,7 +24,6 @@ import edu.ku.brc.af.ui.forms.DataGetterForObj;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterField;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
-import static edu.ku.brc.ui.UIRegistry.*;
 import edu.ku.brc.util.Pair;
 
 /**
