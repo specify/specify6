@@ -22,6 +22,8 @@ import java.awt.Color;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
@@ -33,6 +35,8 @@ import javax.swing.event.DocumentEvent;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.auth.BasicPermisionPanel;
+import edu.ku.brc.af.auth.PermissionEditorIFace;
 import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.auth.UserAndMasterPasswordMgr;
 import edu.ku.brc.af.auth.specify.permission.BasicSpPermission;
@@ -342,13 +346,21 @@ public class SecurityAdminTask extends BaseTask
     public List<ToolBarItemDesc> getToolBarItems()
     {
         // XXX RELEASE
-        String user = System.getProperty("user.name");
-        if (user.startsWith("rod"))
+        if (!UIRegistry.isRelease())
         {
-            toolbarItems = new Vector<ToolBarItemDesc>();
-            toolbarItems.add(new ToolBarItemDesc(createToolbarButton("Security", iconName, "")));
+            boolean addSecurityBtn = false;
+            try {
+                InetAddress addr = InetAddress.getLocalHost();
+                addSecurityBtn = addr.getHostAddress().startsWith("129.237.201");
+                
+            } catch (UnknownHostException e) {}
+            
+            if (addSecurityBtn)
+            {
+                toolbarItems = new Vector<ToolBarItemDesc>();
+                toolbarItems.add(new ToolBarItemDesc(createToolbarButton("Security", iconName, "")));
+            }
         }
-
         return toolbarItems;
     }
 
@@ -364,9 +376,22 @@ public class SecurityAdminTask extends BaseTask
         } 
     }
    
+    /**
+     * @param cmdAction
+     */
     private void processAdminCommands(@SuppressWarnings("unused") CommandAction cmdAction)
     {
         log.error("not implemented");         //$NON-NLS-1$
+    }
+    
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#getPermEditorPanel()
+     */
+    @Override
+    public PermissionEditorIFace getPermEditorPanel()
+    {
+        return new BasicPermisionPanel(SECURITY_ADMIN, "ENABLE", null, null, null);
     }
     
     /**

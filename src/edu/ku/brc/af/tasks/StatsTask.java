@@ -27,6 +27,8 @@ import javax.swing.JPanel;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
+import edu.ku.brc.af.auth.BasicPermisionPanel;
+import edu.ku.brc.af.auth.PermissionEditorIFace;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.SubPaneIFace;
@@ -161,8 +163,16 @@ public class StatsTask extends BaseTask
             addSubPaneToMgr(pane);
         }
     }
-
-
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#getPermEditorPanel()
+     */
+    @Override
+    public PermissionEditorIFace getPermEditorPanel()
+    {
+        return new BasicPermisionPanel(STATISTICS, "ENABLE", null, null, null);
+    }
+    
     //-------------------------------------------------------
     // BaseTask Taskable Interface
     //-------------------------------------------------------

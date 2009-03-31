@@ -39,6 +39,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.auth.BasicPermisionPanel;
+import edu.ku.brc.af.auth.PermissionEditorIFace;
 import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.auth.SecurityOption;
 import edu.ku.brc.af.auth.SecurityOptionIFace;
@@ -1035,7 +1036,16 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             SubPaneMgr.getInstance().renamePane(subPane, pickList.getName());
         }
     }
-
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#getPermEditorPanel()
+     */
+    @Override
+    public PermissionEditorIFace getPermEditorPanel()
+    {
+        return new BasicPermisionPanel(SYSTEMSETUPTASK, "ENABLE", null, null, null);
+    }
+    
     //-------------------------------------------------------
     // SecurityOption Interface
     //-------------------------------------------------------

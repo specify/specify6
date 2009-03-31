@@ -28,6 +28,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
+import edu.ku.brc.af.auth.BasicPermisionPanel;
+import edu.ku.brc.af.auth.PermissionEditorIFace;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.MenuItemDesc;
@@ -600,6 +602,16 @@ public class PluginsTask extends BaseTask
             }
         }
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#getPermEditorPanel()
+     */
+    @Override
+    public PermissionEditorIFace getPermEditorPanel()
+    {
+        return new BasicPermisionPanel(PLUGINS, "ENABLE", null, null, null);
+    }
+
     
     /**
      * @param cmdAction
