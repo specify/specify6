@@ -40,9 +40,13 @@ import java.util.Vector;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
+import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
@@ -55,6 +59,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
@@ -249,7 +254,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         removeAll();
 
         JMenuItem saveItem = new JMenuItem(UIRegistry.getResourceString("QB_SAVE"));
-        saveItem.addActionListener(new ActionListener()
+        Action saveActionListener = new AbstractAction()
         {
             public void actionPerformed(ActionEvent e)
             {
@@ -258,9 +263,11 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     saveBtn.setEnabled(false);
                 }
             }
-        });
+        };
+        saveItem.addActionListener(saveActionListener);
+        
         JMenuItem saveAsItem = new JMenuItem(UIRegistry.getResourceString("QB_SAVE_AS"));
-        saveAsItem.addActionListener(new ActionListener()
+        Action saveAsActionListener = new AbstractAction()
         {
             public void actionPerformed(ActionEvent e)
             {
@@ -269,20 +276,25 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     saveBtn.setEnabled(false);
                 }
             }
-        });
+        };
+        saveAsItem.addActionListener(saveAsActionListener);
         JComponent[] itemSample = { saveItem, saveAsItem };
         saveBtn = new DropDownButton(UIRegistry.getResourceString("QB_SAVE"), null, 1,
                 java.util.Arrays.asList(itemSample));
-        saveBtn.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                if (saveQuery(false))
-                {
-                    saveBtn.setEnabled(false);
-                }
-            }
-        });
+        saveBtn.addActionListener(saveActionListener);
+        String ACTION_KEY = "SAVE";
+        KeyStroke ctrlS = KeyStroke.getKeyStroke("ctrl S");
+        InputMap inputMap = saveBtn.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        inputMap.put(ctrlS, ACTION_KEY);
+        ActionMap actionMap = saveBtn.getActionMap();
+        actionMap.put(ACTION_KEY, saveActionListener);
+        ACTION_KEY = "SAVE_AS";
+        KeyStroke ctrlA = KeyStroke.getKeyStroke("ctrl shift S");
+        inputMap.put(ctrlA, ACTION_KEY);
+        actionMap = saveBtn.getActionMap();
+        actionMap.put(ACTION_KEY, saveAsActionListener);
+        saveBtn.setActionMap(actionMap);
+        
         UIHelper.setControlSize(saveBtn);
         //saveBtn.setOverrideBorder(true, BasicBorders.getButtonBorder());
         

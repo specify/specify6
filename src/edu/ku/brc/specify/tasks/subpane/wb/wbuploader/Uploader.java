@@ -4312,7 +4312,7 @@ public class Uploader implements ActionListener, KeyListener
     	{
     		UploadTableTree utt = ttp.getFirst();
     		TaskSemaphoreMgr.USER_ACTION action = TaskSemaphoreMgr.lock(utt.getTable().getTableInfo().getTitle(), 
-    				utt.getTblClass().getSimpleName(), null, TaskSemaphoreMgr.SCOPE.Discipline, false, lockCallback);
+    				utt.getTblClass().getSimpleName() + "TreeDef", null, TaskSemaphoreMgr.SCOPE.Discipline, false, lockCallback);
     		if (action == TaskSemaphoreMgr.USER_ACTION.OK)
     		{
     			ttp.setSecond(true);
