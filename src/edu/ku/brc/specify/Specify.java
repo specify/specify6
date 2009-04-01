@@ -2095,11 +2095,15 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         {
             if (okToShutdown && doAppExit)
             {
-                AppPreferences remotePrefs  = AppPreferences.getRemote();
-                Boolean        canSendStats = remotePrefs.getBoolean(sendStatsPrefName, true); //$NON-NLS-1$
+                Boolean canSendStats = false;
+                if (AppContextMgr.getInstance().hasContext())
+                {
+                    canSendStats = AppPreferences.getRemote().getBoolean(sendStatsPrefName, true); //$NON-NLS-1$
+                }
+                
                 if (canSendStats)
                 {
-                    Boolean          canSendISAStats  = remotePrefs.getBoolean(sendISAStatsPrefName, true); //$NON-NLS-1$
+                    Boolean          canSendISAStats  = AppPreferences.getRemote().getBoolean(sendISAStatsPrefName, true); //$NON-NLS-1$
                     StatsTrackerTask statsTrackerTask = (StatsTrackerTask)TaskMgr.getTask(StatsTrackerTask.STATS_TRACKER);
                     if (statsTrackerTask != null)
                     {
