@@ -20,6 +20,7 @@ import java.util.Properties;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
@@ -32,6 +33,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.af.ui.forms.DataGetterForObj;
 import edu.ku.brc.af.ui.forms.DataSetterForObj;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
@@ -193,6 +195,12 @@ public class GenericFormPanel extends BaseSetupPanel
             {
                 JComponent c = builder.addSeparator(UIRegistry.getResourceString(labels[i]), cc.xyw(1, row, 4));
                 compList.add(c);
+                
+            } else if (fName.equals(" "))
+            {
+                JLabel lbl = UIHelper.createLabel("");
+                builder.add(lbl, cc.xyw(1, row, 4));
+                compList.add(lbl);
                 
             } else
             {
@@ -369,6 +377,7 @@ public class GenericFormPanel extends BaseSetupPanel
             if (comp instanceof JTextField)
             {
                 list.add(new Pair<String, String>(UIRegistry.getResourceString(labels[i]), ((JTextField)comp).getText()));
+                
             } else if (comp instanceof JCheckBox)
             {
                 JCheckBox chkbx = (JCheckBox)comp;

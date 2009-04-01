@@ -116,6 +116,9 @@ public class TreeDefSetupPanel extends BaseSetupPanel implements SetupPanelIFace
             fullnameDisplayTxt.setBackground(Color.WHITE);
             fullnameDisplayTxt.setOpaque(true);
             
+            table.setRowSelectionAllowed(false);
+            table.setColumnSelectionAllowed(false);
+            
             CellConstraints cc = new CellConstraints();
             PanelBuilder    pb = new PanelBuilder(new FormLayout("p,2px,p,f:p:g", "p,4px,min(p;250px),4px,p,4px,p"), this);
             
@@ -455,6 +458,8 @@ public class TreeDefSetupPanel extends BaseSetupPanel implements SetupPanelIFace
                     return !trd.isRequired();
                     
                 case 4: 
+                    return trd.isIncluded();
+                    
                 case 5:
                     return true;
             }

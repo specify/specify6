@@ -74,6 +74,7 @@ public class SummaryPanel extends BaseSetupPanel
             {
                 values.addAll(list);
             }
+            values.add(new Pair<String, String>("", ""));
         }
         
         int i = 0;

@@ -209,25 +209,27 @@ public class SpecifyDBSetupWizard extends JPanel
                     new String[] { "SA_USERNAME", "SA_PASSWORD"}, 
                     new String[] { "saUserName", "saPassword"}, 
                     nextBtn, true));
+            
+            panels.add(new GenericFormPanel("SECURITY", 
+                    "SECURITY_INFO",
+                    new String[] { "SECURITY_ON"}, 
+                    new String[] { "security_on"},
+                    new String[] { "checkbox"},
+                    nextBtn, true));
+
     
             userInfoPanel = new UserInfoPanel("AGENT", 
                     "ENTER_COLMGR_INFO", 
-                    new String[] { "FIRSTNAME", "LASTNAME", "MIDNAME",       "EMAIL", "USERLOGININFO", "USERNAME", "PASSWORD"}, 
-                    new String[] { "firstName", "lastName", "middleInitial", "email", "-", "usrUsername", "usrPassword"}, 
+                    new String[] { "FIRSTNAME", "LASTNAME", "MIDNAME",       "EMAIL", null,  "USERLOGININFO", "USERNAME", "PASSWORD"}, 
+                    new String[] { "firstName", "lastName", "middleInitial", "email",  " ",  "-",             "usrUsername", "usrPassword"}, 
                     nextBtn);
             panels.add(userInfoPanel);
             
             panels.add(new GenericFormPanel("INST", 
                     "ENTER_INST_INFO",
-                    new String[] { "NAME",     "ABBREV"}, 
-                    new String[] { "instName", "instAbbrev"}, 
-                    nextBtn, true));
-            
-            panels.add(new GenericFormPanel("ADDR", 
-                    "ENTER_ADDR_INFO",
-                    new String[] { "ADDR1", "ADDR2", "CITY",  "STATE", "COUNTRY", "ZIP", "PHONE"}, 
-                    new String[] { "addr1", "addr2", "city", "state", "country", "zip", "phone"}, 
-                    new boolean[] {true, false, true, true, true, true, true},
+                    new String[]  { "NAME",     "ABBREV",     null,  "INST_ADDR", "ADDR1", "ADDR2", "CITY",  "STATE", "COUNTRY", "ZIP", "PHONE"}, 
+                    new String[]  { "instName", "instAbbrev", " ",   "-",         "addr1", "addr2", "city",  "state", "country", "zip", "phone"}, 
+                    new boolean[] { true,       true,         false,  false,      true,    false,   true,    true,    true,      true,  true},
                     nextBtn, true));
 
             panels.add(new GenericFormPanel("ACCESSIONGLOBALLY", 
