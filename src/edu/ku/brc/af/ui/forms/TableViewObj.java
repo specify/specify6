@@ -515,7 +515,7 @@ public class TableViewObj implements Viewable,
             {
                 editButton.setVisible(perm.canModify());
             }
-            if (editButton != null)
+            if (newButton != null)
             {
                 newButton.setVisible(perm.canAdd());
             }
