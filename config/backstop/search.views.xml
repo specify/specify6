@@ -498,13 +498,24 @@ Good: <cell type="field" name="FieldNum" ...>
             <desc><![CDATA[The CollectingEvent Search Form]]></desc>
             <enableRules/>
             
-            <columnDef>p,3dlu,p</columnDef>
-            <rowDef>p,2dlu,p,2dlu,p</rowDef>
-            
+            <columnDef>p,3dlu,f:p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
             <rows>
                 <row>
                     <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="journalName" uitype="text"/>
+                    <cell type="field" id="1" name="JournalName" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="2"/>
+                    <cell type="field" id="2" name="JournalAbbreviation" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="ISSN" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="4"/>
+                    <cell type="field" id="4" name="GUID" uitype="text"/>
                 </row>
             </rows>
         </viewdef>      
@@ -529,7 +540,6 @@ Good: <cell type="field" name="FieldNum" ...>
                     <cell type="label" labelfor="2" label="Type"/>
                     <cell type="field" id="2" name="Type" uitype="combobox" picklist="PermitType"/>
                 </row>
-                
                 <row>
                     <cell type="label" labelfor="3" label="Issued By (Last Name)"/>
                     <cell type="field" id="3" name="LastName" uitype="text"/>

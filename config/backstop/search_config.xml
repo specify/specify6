@@ -1896,19 +1896,22 @@ repositoryagreement.RepositoryAgreementNumber,
         <table id="119" tableid="51" name="JournalSearch" priority="1" color="30, 144, 255">
             <detailView icon="Journal">
                 <sql>
-                    <![CDATA[SELECT JournalID, JournalName FROM journal WHERE DisciplineID = DSPLNID AND (%s)]]>
+                    <![CDATA[SELECT JournalID, JournalName, JournalAbbreviation, ISSN, GUID FROM journal WHERE (%s)]]>
                 </sql>
                 <captions>
                     <caption tableid="51" col="JournalID" visible="false"/>
                     <caption tableid="51" col="JournalName"/>
+                    <caption tableid="51" col="JournalAbbreviation"/>
+                    <caption tableid="51" col="ISSN"/>
+                    <caption tableid="51" col="GUID"/>
                 </captions>
             </detailView>
         </table>
-        
+
         <table id="120" tableid="67" name="AppraisalSearch" priority="1" color="30, 144, 255">
             <detailView icon="Appraisal">
                 <sql>
-                    <![CDATA[SELECT AppraisalID, AppraisalNumber FROM appraisal WHERE DisciplineID = DSPLNID AND (%s)]]>
+                    <![CDATA[SELECT AppraisalID, AppraisalNumber FROM appraisal WHERE (%s)]]>
                 </sql>
                 <captions>
                     <caption tableid="67" col="AppraisalID" visible="false"/>

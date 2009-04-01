@@ -172,7 +172,7 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
         {
             rowDef = "p";
         }
-        PanelBuilder    pb = new PanelBuilder(new FormLayout("p,1dlu,p", rowDef));
+        PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g,1dlu,p", rowDef));
         CellConstraints cc = new CellConstraints();
 
         
@@ -255,7 +255,7 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
         CellConstraints cc = new CellConstraints();
 
         pb.add(searchText, cc.xy(1,1));
-        pb.add(searchBtn, cc.xy(3,1));
+        pb.add(searchBtn,  cc.xy(3,1));
 
         add(pb.getPanel(), BorderLayout.NORTH);
 
