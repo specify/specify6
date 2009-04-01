@@ -459,6 +459,8 @@ public class BuildSampleDatabase
         institution.setAddress(instAddress);
         instAddress.getInsitutions().add(institution);
         
+        institution.setIsSecurityOn((Boolean)props.get("security_on"));
+        
         Session     dataBuilderSession = switchDataBuilderSession();
         SpecifyUser specifyAdminUser   = DataBuilder.createAdminGroupAndUser(institution, username, email, password, userType);
         
@@ -660,7 +662,7 @@ public class BuildSampleDatabase
         
         List<Object> geos        = new Vector<Object>();
         List<Object> gtps        = createSimpleGeologicTimePeriod(gtpTreeDef, false);
-        List<Object> lithoStrats = isPaleo ? null : createSimpleLithoStrat(lithoStratTreeDef, false);
+        List<Object> lithoStrats = isPaleo ? createSimpleLithoStrat(lithoStratTreeDef, false) : null;
         
         // Create Tree Definition
         taxonTreeDef.setDiscipline(discipline);
@@ -676,7 +678,7 @@ public class BuildSampleDatabase
             String fileName = null;
             switch (DisciplineType.getByName(discipline.getType()).getDisciplineType())
             {
-                case fish         : break;
+                case fish         : fileName = "col2008_fishes.xls"; break;
                 case herpetology  : fileName = "col2008_herps.xls"; break;
                 case reptile      : fileName = "col2008_reptilia.xls"; break;
                 case paleobotany  : break;
@@ -686,7 +688,7 @@ public class BuildSampleDatabase
                 case mammal       : fileName = "col2008_mammalia.xls"; break;
                 case insect       : break;
                 case botany       : break;
-                case invertebrate : break; 
+                case invertebrate : fileName = "col2008_inverts.xls"; break;
             }
             if (fileName != null)
             {
@@ -7920,7 +7922,30 @@ public class BuildSampleDatabase
             POIFSFileSystem fs       = new POIFSFileSystem(input);
             HSSFWorkbook    workBook = new HSSFWorkbook(fs);
             HSSFSheet       sheet    = workBook.getSheetAt(0);
-            Iterator<?> rows = sheet.rowIterator();
+            Iterator<?>     rows     = sheet.rowIterator();
+            
+            int firstRowNum = sheet.getFirstRowNum();
+            int lastRowNum  = sheet.getLastRowNum();
+            int maxCnt = 0;
+            while (rows.hasNext())
+            {
+                rows.next();
+                maxCnt++;
+            }
+            
+            if (frame != null)
+            {
+                final int mx = maxCnt;
+                SwingUtilities.invokeLater(new Runnable()
+                {
+                    public void run()
+                    {
+                        frame.setProcess(0, mx);
+                    }
+                });
+            }
+             
+            rows = sheet.rowIterator();
             while (rows.hasNext())
             {
                 for (int i=0;i<cells.length;i++)
@@ -7990,17 +8015,25 @@ public class BuildSampleDatabase
             ex.printStackTrace();
         }
 
-        if (frame != null) frame.setProcess(counter);
+        if (frame != null && (counter % 100 == 0))
+        {
+            final int c = counter;
+            SwingUtilities.invokeLater(new Runnable()
+            {
+                public void run()
+                {
+                    frame.setProcess(c);
+                }
+            });
+        }
         
-        log.info("Converted " + counter + " Taxon records");
-
         TreeHelper.fixFullnameForNodeAndDescendants(root);
         root.setNodeNumber(1);
         fixNodeNumbersFromRoot(root);
         
         commitTx();
         
-        log.info("Converted " + counter + " Stratigraphy records");
+        log.info("Converted " + counter + " Taxon records");
 
         // set up Taxon foreign key mapping for locality
         taxonHash.clear();
@@ -8160,4 +8193,206 @@ public class BuildSampleDatabase
             }
         }
     }
+    
+    /**
+     * @param treeDef
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public GeologicTimePeriod convertChronoStratFromXLS(final GeologicTimePeriodTreeDef treeDef)
+    {
+        String fileName = "ChronoStrat.xls";
+        
+        Hashtable<String, GeologicTimePeriod> chronoHash = new Hashtable<String, GeologicTimePeriod>();
+        
+        chronoHash.clear();
+
+        File file = new File("demo_files/"+fileName);
+        if (!file.exists())
+        {
+            log.error("Couldn't file[" + file.getAbsolutePath() + "] checking the config dir");
+            file = XMLHelper.getConfigDir(fileName);
+            if (!file.exists())
+            {
+                file = new File("Specify/demo_files/"+fileName);
+            }
+        }
+
+        if (file == null || !file.exists())
+        {
+            log.error("Couldn't file[" + file.getAbsolutePath() + "]");
+            return null;
+        }
+        
+        // setup the root ChronoStrat record (planet Earth)
+        GeologicTimePeriod rootNode = new GeologicTimePeriod();
+        rootNode.initialize();
+        rootNode.setName("Root");
+        rootNode.setRankId(0);
+        rootNode.setDefinition(treeDef);
+        GeologicTimePeriodTreeDefItem defItem = treeDef.getDefItemByRank(0);
+        rootNode.setDefinitionItem(defItem);
+
+        int counter = 0;
+        
+        try
+        {
+            startTx();
+            
+            persist(rootNode);
+            
+            String[]        cells    = new String[4];
+            InputStream     input    = new FileInputStream(file);
+            POIFSFileSystem fs       = new POIFSFileSystem(input);
+            HSSFWorkbook    workBook = new HSSFWorkbook(fs);
+            HSSFSheet       sheet    = workBook.getSheetAt(0);
+            Iterator<?>     rows     = sheet.rowIterator();
+            while (rows.hasNext())
+            {
+                if (counter == 0)
+                {
+                    counter = 1;
+                    continue;
+                }
+                if (counter % 100 == 0)
+                {
+                    if (frame != null) frame.setProcess(counter);
+                    log.info("Converted " + counter + " ChronoStrat records");
+                }
+                
+                HSSFRow row = (HSSFRow) rows.next();
+                Iterator<?> cellsIter = row.cellIterator();
+                int i = 0;
+                while (cellsIter.hasNext() && i < 4)
+                {
+                    HSSFCell cell = (HSSFCell)cellsIter.next();
+                    if (cell != null)
+                    {
+                        cells[i] = StringUtils.trim(cell.getRichStringCellValue().getString());
+                        i++;
+                    }
+                }
+                for (int j=i;j<4;j++)
+                {
+                    cells[j] = null;
+                }
+                //System.out.println();
+                @SuppressWarnings("unused")
+                GeologicTimePeriod newGeo = convertChronoStratRecord(cells[0], cells[1], cells[2], cells[3], rootNode);
+    
+                counter++;
+            }
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+
+        if (frame != null) frame.setProcess(counter);
+        
+        log.info("Converted " + counter + " ChronoStrat records");
+
+        TreeHelper.fixFullnameForNodeAndDescendants(rootNode);
+        rootNode.setNodeNumber(1);
+        fixNodeNumbersFromRoot(rootNode);
+        
+        commitTx();
+        
+        log.info("Converted " + counter + " Stratigraphy records");
+
+        // set up ChronoStrat foreign key mapping for locality
+        chronoHash.clear();
+
+        return rootNode;
+    }
+    
+    
+    /**
+     * @param continent
+     * @param country
+     * @param state
+     * @param county
+     * @param geoRoot
+     * @return
+     */
+    protected GeologicTimePeriod convertChronoStratRecord(final String    continent,
+                                               final String    country,
+                                               final String    state,
+                                               final String    county,
+                                               final GeologicTimePeriod geoRoot)
+    {
+        String levelNames[] = { continent, country, state, county };
+        int levelsToBuild = 0;
+        for (int i = levelNames.length; i > 0; --i)
+        {
+            if (StringUtils.isNotEmpty(levelNames[i - 1]))
+            {
+                levelsToBuild = i;
+                break;
+            }
+        }
+
+        for (int i = 0; i < levelsToBuild; i++)
+        {
+            if (StringUtils.isEmpty(levelNames[i]))
+            {
+                levelNames[i] = "(Empty)";
+            }
+        }
+
+        GeologicTimePeriod prevLevelGeo = geoRoot;
+        for (int i = 0; i < levelsToBuild; ++i)
+        {
+            GeologicTimePeriod newLevelGeo = buildChronoStratLevel(levelNames[i], prevLevelGeo);
+            prevLevelGeo = newLevelGeo;
+        }
+
+        return prevLevelGeo;
+    }
+
+    /**
+     * @param nameArg
+     * @param parentArg
+     * @return
+     */
+    protected GeologicTimePeriod buildChronoStratLevel(final String    nameArg,
+                                                       final GeologicTimePeriod parentArg)
+    {
+        String name = nameArg;
+        if (name == null)
+        {
+            name = "N/A";
+        }
+
+        // search through all of parent's children to see if one already exists with the same name
+        Set<GeologicTimePeriod> children = parentArg.getChildren();
+        for (GeologicTimePeriod child : children)
+        {
+            if (name.equalsIgnoreCase(child.getName()))
+            {
+                // this parent already has a child by the given name
+                // don't create a new one, just return this one
+                return child;
+            }
+        }
+
+        // we didn't find a child by the given name
+        // we need to create a new GeologicTimePeriod record
+        GeologicTimePeriod newGeo = new GeologicTimePeriod();
+        newGeo.initialize();
+        newGeo.setName(name);
+        newGeo.setParent(parentArg);
+        parentArg.addChild(newGeo);
+        newGeo.setDefinition(parentArg.getDefinition());
+        int newGeoRank = parentArg.getRankId() + 100;
+        
+        GeologicTimePeriodTreeDefItem defItem = parentArg.getDefinition().getDefItemByRank(newGeoRank);
+        newGeo.setDefinitionItem(defItem);
+        newGeo.setRankId(newGeoRank);
+
+        persist(newGeo);
+        
+        return newGeo;
+    }
+
 }

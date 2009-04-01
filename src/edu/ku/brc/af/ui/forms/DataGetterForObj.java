@@ -15,6 +15,7 @@
 package edu.ku.brc.af.ui.forms;
 
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Iterator;
@@ -41,7 +42,8 @@ public class DataGetterForObj implements DataObjectGettable
     // Static Data Members
     private static final Logger log = Logger.getLogger(DataGetterForObj.class);
 
-
+    private boolean showErrors = true;
+    
     /**
      * Default constructor (needed for factory)
      */
@@ -50,12 +52,10 @@ public class DataGetterForObj implements DataObjectGettable
         // do nothing
     }
 
-    /**
-     * Generic helper method needed for getting data
-     * @param dataObj the source of the value
-     * @param fieldName the fieldname of the desired value
-     * @return the value of the field in the data object
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.DataObjectGettable#getFieldValue(java.lang.Object, java.lang.String)
      */
+    @Override
     public Object getFieldValue(Object dataObj, String fieldName)
     {
         //System.out.println("["+fieldName+"]["+(dataObj != null ? dataObj.getClass().toString() : "N/A")+"]");
@@ -131,21 +131,21 @@ public class DataGetterForObj implements DataObjectGettable
 
                     } catch (NoSuchMethodException ex)
                     {
+                        ex.printStackTrace();
                         edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                         edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataGetterForObj.class, ex);
-                        ex.printStackTrace();
 
                     } catch (IllegalAccessException ex)
                     {
+                        ex.printStackTrace();
                         edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                         edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataGetterForObj.class, ex);
-                        ex.printStackTrace();
 
                     } catch (InvocationTargetException ex)
                     {
+                        ex.printStackTrace();
                         edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                         edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataGetterForObj.class, ex);
-                        ex.printStackTrace();
                     }
 
                 } else
@@ -159,7 +159,7 @@ public class DataGetterForObj implements DataObjectGettable
                         {
                             value = getter.invoke(dataObj, (Object[])null);
                         }
-                    } else
+                    } else if (showErrors)
                     {
                         log.error("We could not find a field named["+fieldName.trim()+"] in data object ["+dataObj.getClass().toString()+"]");
                     }
@@ -180,8 +180,33 @@ public class DataGetterForObj implements DataObjectGettable
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.DataObjectGettable#usesDotNotation()
      */
+    @Override
     public boolean usesDotNotation()
     {
         return true;
+    }
+    
+    
+    /**
+     * @param obj
+     * @return
+     */
+    public String makeToString(final Object obj)
+    {
+        showErrors = false;
+        
+        StringBuilder sb    = new StringBuilder();
+        Class<?>      clazz = obj.getClass();
+        
+        for (Field field : clazz.getDeclaredFields())
+        {
+            Object val = getFieldValue(obj, field.getName());
+            sb.append(field.getName());
+            sb.append("=");
+            sb.append(val);
+            sb.append("\n");
+        }
+        
+        return sb.toString();
     }
 }

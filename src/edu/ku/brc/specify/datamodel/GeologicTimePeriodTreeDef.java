@@ -51,11 +51,11 @@ import org.hibernate.annotations.CascadeType;
 @Table(name = "geologictimeperiodtreedef")
 public class GeologicTimePeriodTreeDef extends BaseTreeDef<GeologicTimePeriod, GeologicTimePeriodTreeDef, GeologicTimePeriodTreeDefItem> implements java.io.Serializable
 {
-	protected Integer                               geologicTimePeriodTreeDefId;
+	protected Integer                            geologicTimePeriodTreeDefId;
     protected String                             name;
     protected String                             remarks;
     protected Integer                            fullNameDirection;
-    protected Set<Discipline>                disciplines;
+    protected Set<Discipline>                    disciplines;
     protected Set<GeologicTimePeriod>            treeEntries;
     protected Set<GeologicTimePeriodTreeDefItem> treeDefItems;
 

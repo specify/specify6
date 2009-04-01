@@ -2,7 +2,7 @@
 <tree>
 
 	<treedef>
-        <level name="Life" enforced="false" infullname="false" rank="0"/>
+        <level name="Life" enforced="true" infullname="false" rank="0"/>
         <level name="Kingdom" enforced="true" infullname="false" rank="10"/>
         <level name="Phylum" enforced="true" infullname="false" rank="30"/>
         <level name="Class" enforced="true" infullname="false" rank="60"/>

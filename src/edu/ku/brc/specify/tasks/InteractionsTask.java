@@ -266,13 +266,11 @@ public class InteractionsTask extends BaseTask
 
                     if (entry.isOnLeft())
                     {
-                        if (entry.isOnLeft())
-                        {
-                            NavBoxButton navBtn = addCommand(actionsNavBox, tableInfo, entry);
-                            navBtn.setToolTip(entry.getI18NTooltip());
-                        }
-                        
-                    } else if (StringUtils.isNotEmpty(entry.getViewName()) && entry.isSearchService())
+                        NavBoxButton navBtn = addCommand(actionsNavBox, tableInfo, entry);
+                        navBtn.setToolTip(entry.getI18NTooltip());
+                    }
+                    
+                    if (StringUtils.isNotEmpty(entry.getViewName()) && entry.isSearchService())
                     {
                         CommandAction cmdAction = createCmdActionFromEntry(entry, tableInfo);
                         ContextMgr.registerService(10, entry.getViewName(), tableInfo.getTableId(), cmdAction, this, "Data_Entry", tableInfo.getTitle(), true); // the Name gets Hashed

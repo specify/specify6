@@ -180,6 +180,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
     protected DataProviderSessionIFace globalSession    = null;
     protected int                      openSessionCount = 0;
     
+    protected Boolean         isSecurityOn         = null;
+    
     /**
      * Singleton Constructor.
      */
@@ -2960,7 +2962,18 @@ public class SpecifyAppContextMgr extends AppContextMgr
      */
     public boolean isSecurity()
     {
-        return BasicSQLUtils.getCount("SELECT COUNT(IsSecurityOn) FROM institution WHERE IsSecurityOn = 0") == 0;
+        if (isSecurityOn == null)
+        {
+            String sql = "SELECT COUNT(IsSecurityOn) FROM institution WHERE IsSecurityOn = 0";
+            
+            Integer count = BasicSQLUtils.getCount(sql);
+            if (count == null)
+            {
+                count = BasicSQLUtils.getCount(sql);
+            }
+            isSecurityOn = count == null || count == 0;
+        }
+        return isSecurityOn;
     }
     
     /**

@@ -220,8 +220,15 @@ public class ContextMgr implements CommandListener
         return registerService(serviceInfo);
     }
     
+    /**
+     * Registers a service into the Manager.
+     * @param serviceInfo the service 
+     * @return the same service or null if it wasn't registered.
+     */
     public static ServiceInfo registerService(final ServiceInfo serviceInfo)
     {
+        //log.debug("registerService:\n"+serviceInfo.toString());
+        
         String hashName = ServiceInfo.getHashKey(serviceInfo.getName(), serviceInfo.getTask(), serviceInfo.getTableId());
         if (serviceInfo.getTableId() == -1)
         {
@@ -379,11 +386,16 @@ public class ContextMgr implements CommandListener
             serviceList = new ArrayList<ServiceInfo>();
         }
         
-        for (ServiceInfo srvInfo : new ArrayList<ServiceInfo>(serviceList))
+        boolean isSecurityOn = AppContextMgr.isSecurityOn();
+        if (isSecurityOn)
         {
-            if (AppContextMgr.isSecurityOn() && !srvInfo.isPermissionOK())
+            for (ServiceInfo srvInfo : new ArrayList<ServiceInfo>(serviceList))
             {
-                serviceList.remove(srvInfo);
+                if (!srvInfo.isPermissionOK())
+                {
+                    log.debug("Removing Service: "+srvInfo.getName()+"  "+srvInfo.getTableId());
+                    serviceList.remove(srvInfo);
+                }
             }
         }
         
@@ -391,8 +403,9 @@ public class ContextMgr implements CommandListener
         {
             if (!serviceList.contains(srvInfo))
             {
-                if (AppContextMgr.isSecurityOn() && !srvInfo.isPermissionOK())
+                if (isSecurityOn && !srvInfo.isPermissionOK())
                 {
+                    log.debug("Skipping Service: "+srvInfo.getName()+"  "+srvInfo.getTableId());
                     continue;
                 }
                 if (!srvInfo.isAvailable(tableId))
@@ -412,14 +425,11 @@ public class ContextMgr implements CommandListener
     @Override
     public void doCommand(CommandAction cmdAction)
     {
-        if (cmdAction.isAction(APP_RESTART_ACT))
+        if (cmdAction.isAction(APP_RESTART_ACT) && AppContextMgr.isSecurityOn())
         {
             for (ServiceInfo srvInfo : instance.genericService)
             {
-                if (AppContextMgr.isSecurityOn())
-                {
-                    srvInfo.resetPermissions();
-                }
+                srvInfo.resetPermissions();
             }
         }
     }

@@ -22,6 +22,7 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.ui.forms.DataGetterForObj;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.IconManager;
 
@@ -260,6 +261,14 @@ public class ServiceInfo implements Comparable<ServiceInfo>, Cloneable
         ServiceInfo result = (ServiceInfo )super.clone();
         result.command = (CommandAction )command.clone();
         return result;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    public String toString()
+    {
+        return (new DataGetterForObj()).makeToString(this);
     }
 
 }

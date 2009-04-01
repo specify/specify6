@@ -21,9 +21,9 @@ package edu.ku.brc.af.ui.forms;
  * <li>The data object may be a resultset (list of objects) and each row may be a field.</li>
  * <li>The data object may be a XML document and the field name may be a XPath to the data.</li></ul>
  * <br>
- 
+ * 
  * @code_status Beta
- **
+ *
  * @author rods
  *
  */
@@ -35,7 +35,7 @@ public interface DataObjectGettable
      * @param fieldName the fields name
      * @return the value of the field
      */
-    public Object getFieldValue(Object dataObj, String fieldName);
+    public abstract Object getFieldValue(Object dataObj, String fieldName);
     
     /**
      * Returns true if dots (".") should be used to walk an object tree when getting the value, or
@@ -43,6 +43,6 @@ public interface DataObjectGettable
      * @return true if dots (".") should be used to walk an object tree when getting the value, or
      * false when "." in the name are meaningless.
      */
-    public boolean usesDotNotation();
+    public abstract boolean usesDotNotation();
 
 }

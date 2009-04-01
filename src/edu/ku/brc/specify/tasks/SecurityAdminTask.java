@@ -348,6 +348,7 @@ public class SecurityAdminTask extends BaseTask
         // XXX RELEASE
         if (!UIRegistry.isRelease())
         {
+            String  userName       = System.getProperty("user.name");
             boolean addSecurityBtn = false;
             try {
                 InetAddress addr = InetAddress.getLocalHost();
@@ -355,7 +356,7 @@ public class SecurityAdminTask extends BaseTask
                 
             } catch (UnknownHostException e) {}
             
-            if (addSecurityBtn)
+            if (addSecurityBtn || userName.startsWith("rod"))
             {
                 toolbarItems = new Vector<ToolBarItemDesc>();
                 toolbarItems.add(new ToolBarItemDesc(createToolbarButton("Security", iconName, "")));

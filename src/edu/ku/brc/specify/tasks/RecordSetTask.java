@@ -1093,9 +1093,9 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
                 
             } catch (Exception ex)
             {
+                ex.printStackTrace();
                 edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RecordSetTask.class, ex);
-                ex.printStackTrace();
                 //log.error(ex);
                 
             } finally
