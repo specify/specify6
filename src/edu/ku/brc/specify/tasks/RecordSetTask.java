@@ -1066,6 +1066,10 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
                 UIRegistry.displayStatusBarText("");
                 return null;
             }
+            
+            rsName = StringUtils.replace(rsName, "'", "`");
+            rsName = StringUtils.replace(rsName, "\"", "`");
+            
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
             try
             {
