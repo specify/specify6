@@ -1175,17 +1175,16 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
 
         public void componentShown(ComponentEvent e)
         {
-            if (focusable != null)
-            {
-                
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run()
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run()
+                {
+                    if (focusable != null)
                     {
                         focusable.requestFocusInWindow();
                         focusable = null;
                     }
-                });
-            }
+                }
+            });
         }
 
         public void componentHidden(ComponentEvent e)

@@ -598,8 +598,8 @@ public class DataEntryTask extends BaseTask
             
         } else
         {
-            formPane = subPane instanceof FormPane ? (FormPane) subPane : null;
-            //throw new RuntimeException("Ask Rod about getting here!");
+            SubPaneMgr.getInstance().showPane(subPane);
+            return null;
         }
         
         return formPane;
