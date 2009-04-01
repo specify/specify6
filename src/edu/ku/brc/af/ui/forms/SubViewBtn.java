@@ -308,7 +308,7 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
     {
         ensurePermissions(dataObj);
         
-        boolean isSecurityEnableOK = perm == null || (perm != null && ((isEditing && !perm.isViewOnly()) || (!isEditing && !perm.canView())));
+        boolean isSecurityEnableOK = perm == null || (perm != null && ((isEditing && !perm.isViewOnly()) || (!isEditing && perm.canView())));
         
         subViewBtn.setEnabled(enabled && isSecurityEnableOK);
         label.setEnabled(enabled && isSecurityEnableOK);
