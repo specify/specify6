@@ -446,7 +446,7 @@ public class DeterminationBusRules extends BaseBusRules
         // set the tree def for the object being edited by using the parent node's tree def
         if (taxon != null)
         {
-        	if (!taxon.getIsAccepted() && AppPreferences.getRemote().getBoolean("Determination.PromptToReplaceSynonym", true))
+        	if (!taxon.getIsAccepted() && AppPreferences.getRemote().getBoolean("Determination.PromptToReplaceSynonym", false))
             {
                 PanelBuilder pb = new PanelBuilder(new FormLayout("5dlu, f:p:g, 5dlu", "7dlu, c:p, 5dlu, c:p, 10dlu"));
                 String msg1 = String.format(UIRegistry.getResourceString("DeterminationBusRule.SynChoiceMsg1"), 
