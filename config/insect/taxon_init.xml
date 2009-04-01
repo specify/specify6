@@ -2,21 +2,25 @@
 <tree>
 
 	<treedef>
-		<level name="Life" enforced="true" infullname="false" rank="0"/>
-		<level name="Kingdom" enforced="true" infullname="false" rank="10"/>
-		<level name="Phylum" enforced="true" infullname="false" rank="30"/>
-		<level name="Class" enforced="true" infullname="false" rank="60"/>
-		<level name="Subclass" enforced="false" infullname="false" rank="70" /> 
-		<level name="Infraclass" enforced="false" infullname="false" rank="80" /> 		
-		<level name="Order" enforced="true" infullname="false" rank="100"/>
-		<level name="Suborder" enforced="false" infullname="false" rank="110" /> 
-		<level name="Infraorder" enforced="false" infullname="false" rank="120" /> 
-		<level name="Superfamily" enforced="false" infullname="false" rank="130" /> 		
-		<level name="Family" enforced="true" infullname="false" rank="140"/>
-		<level name="Genus"  enforced="true" infullname="true" rank="180"/>
-		<level name="Species" enforced="true" infullname="true" rank="220"/>
-		<level name="Subspecies" enforced="false" infullname="true" rank="230" /> 
-		
+        <level name="Life" enforced="true" infullname="false" rank="0"/>
+        <level name="Kingdom" enforced="true" infullname="false" rank="10"/>
+        <level name="Phylum" enforced="true" infullname="false" rank="30"/>
+        <level name="Subphylum" enforced="false" infullname="false" rank="40" /> 
+        <level name="Class" enforced="true" infullname="false" rank="60"/>
+        <level name="Subclass" enforced="false" infullname="false" rank="70" /> 
+        <level name="Infraclass" enforced="false" infullname="false" rank="80" />       
+        <level name="Order" enforced="true" infullname="false" rank="100"/>
+        <level name="Suborder" enforced="false" infullname="false" rank="110" /> 
+        <level name="Infraorder" enforced="false" infullname="false" rank="120" /> 
+        <level name="Superfamily" enforced="false" infullname="false" rank="130" />         
+        <level name="Family" enforced="true" infullname="false" rank="140"/>
+        <level name="Subfamily" enforced="false" infullname="false" rank="150" /> 
+        <level name="Tribe" enforced="false" infullname="false" rank="160" /> 
+        <level name="Subtribe" enforced="false" infullname="false" rank="170" /> 
+        <level name="Genus"  enforced="true" infullname="true" rank="180"/>
+        <level name="Subgenus" enforced="false" infullname="false" rank="190" /> 
+        <level name="Species" enforced="true" infullname="true" rank="220"/>
+        <level name="Subspecies" enforced="false" infullname="true" rank="230" /> 
     </treedef>
 	
 	<nodes>

@@ -291,7 +291,7 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
                 taxonTreeDef.setDiscipline(discipline);
                 taxa.add(taxonTreeDef);
                 
-                BuildSampleDatabase.createTaxonDefFromXML(taxa, taxonTreeDef, props.getProperty("TaxonTreeDef.treedefs"));
+                BuildSampleDatabase.createTaxonDefFromXML(taxa, null, taxonTreeDef, props.getProperty("TaxonTreeDef.treedefs"));
                 
                 BuildSampleDatabase.createGeographyDefFromXML(geos, geoTreeDef, props.getProperty("GeographyTreeDef.treedefs"));
                 

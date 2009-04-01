@@ -671,11 +671,11 @@ public class BuildSampleDatabase
         List<Object> storages    = new Vector<Object>();
         createStorageDefFromXML(storages, stgTreeDef, props.getProperty("StorageTreeDef.treedefs"));
         
-        createTaxonDefFromXML(taxa, taxonTreeDef, props.getProperty("TaxonTreeDef.treedefs"));
+        boolean preLoadTaxon = (Boolean)props.get("preloadtaxon");
         
-        if ((Boolean)props.get("preloadtaxon"))
+        String fileName = null;
+        if (preLoadTaxon)
         {
-            String fileName = null;
             switch (DisciplineType.getByName(discipline.getType()).getDisciplineType())
             {
                 case fish         : fileName = "col2008_fishes.xls"; break;
@@ -686,14 +686,19 @@ public class BuildSampleDatabase
                 case vertpaleo    : break;
                 case bird         : fileName = "col2008_aves.xls"; break;
                 case mammal       : fileName = "col2008_mammalia.xls"; break;
-                case insect       : break;
+                case insect       : fileName = "col2008_hymenoptera.xls"; break;
                 case botany       : break;
                 case invertebrate : fileName = "col2008_inverts.xls"; break;
             }
-            if (fileName != null)
-            {
-                convertTaxonFromXLS(taxonTreeDef, fileName);
-            }
+        }
+        
+        Hashtable<String, Boolean> colNameHash = getColumnNamesFromXLS(fileName);
+        
+        createTaxonDefFromXML(taxa, colNameHash, taxonTreeDef, props.getProperty("TaxonTreeDef.treedefs"));
+        
+        if (preLoadTaxon && fileName != null)
+        {
+            convertTaxonFromXLS(taxonTreeDef, fileName);
         }
         
         createGeographyDefFromXML(geos, geoTreeDef, props.getProperty("GeographyTreeDef.treedefs"));
@@ -747,6 +752,11 @@ public class BuildSampleDatabase
         return dataObjects;
     }
     
+    /**
+     * @param discipline
+     * @param props
+     * @return
+     */
     public Triple<String, AutoNumberingScheme, AutoNumberingScheme> 
                 localizeDisciplineSchema(final Discipline discipline, 
                                          final Properties props)
@@ -868,6 +878,7 @@ public class BuildSampleDatabase
      */
     @SuppressWarnings("unchecked")
     public static  void createTaxonDefFromXML(final List<Object> taxonList, 
+                                              final Hashtable<String, Boolean> colNameHash,
                                               final TaxonTreeDef taxonTreeDef, 
                                               final String       taxonXML)
     {
@@ -881,7 +892,7 @@ public class BuildSampleDatabase
             int                cnt         = 0;
             for (TreeDefRow row : treeDefList)
             {
-                if (row.isIncluded())
+                if (row.isIncluded() || colNameHash.get(row.getDefName().toLowerCase()) != null)
                 {
                     TaxonTreeDefItem ttdi = new TaxonTreeDefItem();
                     ttdi.initialize();
@@ -7855,6 +7866,68 @@ public class BuildSampleDatabase
         });
     }
     
+    /**
+     * @param fileName
+     * @return
+     */
+    public Hashtable<String, Boolean> getColumnNamesFromXLS(final String fileName)
+    {
+        
+        File file = new File("demo_files/taxonomy/"+fileName);
+        if (!file.exists())
+        {
+            log.error("Couldn't file[" + file.getAbsolutePath() + "] checking the config dir");
+            file = XMLHelper.getConfigDir(fileName);
+            if (!file.exists())
+            {
+                file = new File("Specify/demo_files/"+fileName);
+            }
+        }
+
+        if (file == null || !file.exists())
+        {
+            log.error("Couldn't file[" + file.getAbsolutePath() + "]");
+            return null;
+        }
+        
+        Hashtable<String, Boolean> nameHash = new Hashtable<String, Boolean>();
+        try
+        {
+            String[]        cells    = new String[35];
+            InputStream     input    = new FileInputStream(file);
+            POIFSFileSystem fs       = new POIFSFileSystem(input);
+            HSSFWorkbook    workBook = new HSSFWorkbook(fs);
+            HSSFSheet       sheet    = workBook.getSheetAt(0);
+            Iterator<?>     rows     = sheet.rowIterator();
+            
+            rows = sheet.rowIterator();
+            if (rows.hasNext())
+            {
+                for (int i=0;i<cells.length;i++)
+                {
+                    cells[i] = null;
+                }
+                
+                HSSFRow row = (HSSFRow) rows.next();
+                Iterator<?> cellsIter = row.cellIterator();
+                int i = 0;
+                while (cellsIter.hasNext())
+                {
+                    HSSFCell cell = (HSSFCell)cellsIter.next();
+                    if (cell != null)
+                    {
+                        nameHash.put(StringUtils.trim(cell.getRichStringCellValue().getString()), true);
+                    }
+                }
+            }
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return nameHash;
+    }
+    
 
     /**
      * @param treeDef
@@ -7924,18 +7997,10 @@ public class BuildSampleDatabase
             HSSFSheet       sheet    = workBook.getSheetAt(0);
             Iterator<?>     rows     = sheet.rowIterator();
             
-            int firstRowNum = sheet.getFirstRowNum();
             int lastRowNum  = sheet.getLastRowNum();
-            int maxCnt = 0;
-            while (rows.hasNext())
-            {
-                rows.next();
-                maxCnt++;
-            }
-            
             if (frame != null)
             {
-                final int mx = maxCnt;
+                final int mx = lastRowNum;
                 SwingUtilities.invokeLater(new Runnable()
                 {
                     public void run()
@@ -7976,7 +8041,11 @@ public class BuildSampleDatabase
                             numDataCols = i+1;
                         } else
                         {
-                            System.out.println("Not Found: "+cells[i].toLowerCase());
+                            for (String key : colNames.keySet())
+                            {
+                                System.err.println("key["+key+"]");
+                            }
+                            System.err.println("Not Found: ["+cells[i].toLowerCase()+"]");
                             break;
                         }
                     }
@@ -7988,7 +8057,7 @@ public class BuildSampleDatabase
                 if (counter % 100 == 0)
                 {
                     if (frame != null) frame.setProcess(counter);
-                    log.info("Converted " + counter + " Taxon records");
+                    log.info("Converted " + counter + " of "+lastRowNum+" Taxon records");
                 }
                 
                 HSSFRow row = (HSSFRow) rows.next();
@@ -8056,7 +8125,7 @@ public class BuildSampleDatabase
                 if (cells[inx].equals(TaxonIndexNames[i]))
                 {
                     System.out.println("** "+TaxonIndexNames[i]+" -> "+inx);
-                    taxonIndexes.put(TaxonIndexNames[i], inx);
+                    taxonIndexes.put(TaxonIndexNames[i].toLowerCase(), inx);
                     break;
                 }
             }
@@ -8184,7 +8253,7 @@ public class BuildSampleDatabase
         {
             if (TaxonIndexNames[inx] != null)
             {
-                int index = taxonIndexes.get(TaxonIndexNames[inx]);
+                int index = taxonIndexes.get(TaxonIndexNames[inx].toLowerCase());
                 String data = cells[index];
                 if (StringUtils.isNotEmpty(data))
                 {

@@ -183,6 +183,7 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
                     
                 } else if (rv == ASK_TYPE.Cancel)
                 {
+                    viewable.setNewObject(null);
                     return;
                 }
             }
@@ -304,6 +305,10 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
         
         if (loanSelectPrepsDlg.isCancelled())
         {
+            if (viewable != null)
+            {
+                viewable.setNewObject(null);
+            }
             return;
         }
 

@@ -1836,27 +1836,6 @@ public class FormViewObj implements Viewable,
         }
         
         doSetIntoAndValidate = doSetIntoAndValidateArg;
-        oldDataObj           = dataObj;
-        dataObj              = null;
-    
-        UIValidator.setIgnoreAllValidation(this, true);
-        for (FVOFieldInfo fieldInfo : controlsById.values())
-        {
-            Component comp = fieldInfo.getComp();
-            if (comp != null && comp instanceof UIValidatable)
-            {
-                ((UIValidatable)comp).reset();
-            }
-        }
-        UIValidator.setIgnoreAllValidation(this, false);
-        
-        for (FVOFieldInfo fi : controlsByName.values())
-        {
-            if (fi.getComp() instanceof EditViewCompSwitcherPanel)
-            {
-                ((EditViewCompSwitcherPanel)fi.getComp()).putIntoEditMode();
-            }
-        }
         
         // Check to see if the business rules will be creating the object
         // if so the BR will then call setNewObject
@@ -1887,6 +1866,33 @@ public class FormViewObj implements Viewable,
      */
     public void setNewObject(final FormDataObjIFace obj)
     {
+        if (obj == null)
+        {
+            return;
+        }
+        
+        oldDataObj = dataObj;
+        dataObj = obj;
+        
+        UIValidator.setIgnoreAllValidation(this, true);
+        for (FVOFieldInfo fieldInfo : controlsById.values())
+        {
+            Component comp = fieldInfo.getComp();
+            if (comp != null && comp instanceof UIValidatable)
+            {
+                ((UIValidatable)comp).reset();
+            }
+        }
+        UIValidator.setIgnoreAllValidation(this, false);
+        
+        for (FVOFieldInfo fi : controlsByName.values())
+        {
+            if (fi.getComp() instanceof EditViewCompSwitcherPanel)
+            {
+                ((EditViewCompSwitcherPanel)fi.getComp()).putIntoEditMode();
+            }
+        }
+        
         boolean shouldDoCarryForward = doCarryForward && carryFwdDataObj != null && carryFwdInfo != null;
         
         // The order needs to be set here because some Sets are TreSets which
