@@ -41,7 +41,7 @@ public class GeoLocateRecordSetProcessor extends GeoRefRecordSetProcessorBase im
     @Override
     public String getGeoRefProviderName()
     {
-        return "BioGeomancer";
+        return "GEOLocate";
     }
 
     /* (non-Javadoc)
