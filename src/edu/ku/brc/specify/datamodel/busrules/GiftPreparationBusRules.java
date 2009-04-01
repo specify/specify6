@@ -18,6 +18,7 @@ import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.TableViewObj;
 import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.validation.ValSpinner;
+import edu.ku.brc.specify.datamodel.Gift;
 import edu.ku.brc.specify.datamodel.GiftPreparation;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -138,13 +139,14 @@ public class GiftPreparationBusRules extends BaseBusRules implements CommandList
         {
             if (formViewObj != null)
             {
-                MultiView loanMV = formViewObj.getMVParent().getMultiViewParent();
-                if (loanMV != null)
+                MultiView giftMV = formViewObj.getMVParent().getMultiViewParent();
+                if (giftMV != null)
                 {
                     if (formViewObj.getValidator() != null)
                     {
+                        Gift gift = (Gift)giftMV.getData();
+                        formViewObj.setDataObj(gift.getGiftPreparations());
                         formViewObj.getValidator().setHasChanged(true);
-                        formViewObj.setDataIntoUI();
                         formViewObj.getValidator().validateRoot();
                     }
                 }
@@ -152,6 +154,12 @@ public class GiftPreparationBusRules extends BaseBusRules implements CommandList
             } else if (viewable instanceof TableViewObj)
             {
                 TableViewObj tvo = (TableViewObj)viewable;
+                // Make sure the Loan form knows there is a change
+                MultiView giftMV = tvo.getMVParent().getMultiViewParent();
+                giftMV.getCurrentValidator().setHasChanged(true);
+                giftMV.getCurrentValidator().validateRoot();
+                
+                // Refresh list in the grid
                 tvo.refreshDataList();
             }
         }

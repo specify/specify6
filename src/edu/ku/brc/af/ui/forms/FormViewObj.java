@@ -773,7 +773,8 @@ public class FormViewObj implements Viewable,
     protected void addSaveBtn()
     {
         JButton saveBtn;
-        if (false)
+        boolean doDebug = false;
+        if (!doDebug)
         {
             saveBtn= createButton(UIRegistry.getResourceString("SAVE"));
         } else
@@ -781,7 +782,7 @@ public class FormViewObj implements Viewable,
             saveBtn = new JButton(UIRegistry.getResourceString("SAVE")) {
                 public void setEnabled(boolean enabled)
                 {
-                    //log.debug("******* "+formValidator.getName()+"  Save: "+enabled);
+                    //if (enabled) log.debug("******* "+formValidator.getName()+"  Save: "+enabled);
                     super.setEnabled(enabled);
                 }
             };

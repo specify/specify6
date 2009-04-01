@@ -2213,15 +2213,9 @@
                 <row>
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="giftNumber" uitype="formattedtext"/>
-                    <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="giftagents" uitype="querycbx" initialize="name=Agent;title=Agent"/>
-                </row>
-                <row>
                     <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="giftDate" uitype="formattedtext" uifieldformatter="Date"  default="today"/>
-                    <cell type="label" labelfor="4"/>
-                    <cell type="field" id="4" name="GiftAgents" uitype="querycbx" initialize="name=Agent;title=Agent"/>
-                </row>
+                 </row>
                 <row>
                     <cell type="label" labelfor="5"/>
                     <cell type="field" id="5" name="remarks" uitype="textareabrief" rows="2" colspan="6"/>
