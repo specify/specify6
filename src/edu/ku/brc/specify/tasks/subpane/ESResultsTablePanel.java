@@ -165,7 +165,6 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         this.isEditable    = results.isEditingEnabled();
         
         table = new JTable();
-        //table.setUI(new MyTableUI());
         
         table.setShowVerticalLines(false);
         table.setRowSelectionAllowed(true);
@@ -292,7 +291,7 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         
         moveToRSCmd = new DragSelectedRowsBtn(IconManager.getIcon("Record_Set", IconManager.IconSize.Std16));
         
-        if (installServices && isEditable)
+        if (installServices)
         {
             PanelBuilder bottomBar = new PanelBuilder(new FormLayout("4px,p,4px,p,4px,p,"+(delRSItems != null ? "4px,p," : "")+"f:p:g", "p"));
             bottomBar.add(moveToRSCmd,    cc.xy(2,1));
