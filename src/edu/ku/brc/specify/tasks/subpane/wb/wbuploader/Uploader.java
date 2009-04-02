@@ -4344,7 +4344,7 @@ public class Uploader implements ActionListener, KeyListener
     		{
     			UploadTableTree utt = ttp.getFirst();
     			//XXX do something if unlock fails.
-    			TaskSemaphoreMgr.unlock(utt.getTable().getTableInfo().getTitle(), utt.getTblClass().getSimpleName(), 
+    			TaskSemaphoreMgr.unlock(utt.getTable().getTableInfo().getTitle(), utt.getTblClass().getSimpleName() + "TreeDef", 
     				TaskSemaphoreMgr.SCOPE.Discipline);
     		}
     	}
