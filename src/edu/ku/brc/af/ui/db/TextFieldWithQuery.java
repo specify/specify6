@@ -550,6 +550,8 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             {
                 text = uiFieldFormatter.formatFromUI(text).toString();
             }
+            text = StringUtils.replace(text, "'", "\'");
+            text = StringUtils.replace(text, "\"", "\\\"");
             doQuery(text);
         }
     }
