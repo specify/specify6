@@ -31,24 +31,6 @@
     <isHidden>false</isHidden>
     <isSystem>false</isSystem>
     <items>
-      <item name="description" type="java.lang.String" isUIFormatter="false" isRequired="false">
-        <version>0</version>
-        <isHidden>false</isHidden>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en" country="" variant="">
-            <version>0</version>
-            <text>Specimen\nDescription</text>
-          </str>
-        </names>
-        <descs>
-          <str language="en" country="" variant="">
-            <version>0</version>
-            <text>Image, Sound, Preparation, Container(Container Label?).</text>
-          </str>
-        </descs>
-        <spExportSchemaItems/>
-      </item>
       <item name="text1" type="java.lang.String" isUIFormatter="false" pickListName="Phenology" isRequired="false">
         <version>0</version>
         <isHidden>false</isHidden>
@@ -67,15 +49,25 @@
         </descs>
         <spExportSchemaItems/>
       </item>
+      <item name="description" type="java.lang.String" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <isHidden>false</isHidden>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en" country="" variant="">
+            <version>0</version>
+            <text>Specimen\nDescription</text>
+          </str>
+        </names>
+        <descs>
+          <str language="en" country="" variant="">
+            <version>0</version>
+            <text>Image, Sound, Preparation, Container(Container Label?).</text>
+          </str>
+        </descs>
+        <spExportSchemaItems/>
+      </item>
     </items>
-    <names/>
-    <descs/>
-  </container>
-  <container name="collectionobjectattribute">
-    <version>0</version>
-    <isHidden>false</isHidden>
-    <isSystem>false</isSystem>
-    <items/>
     <names/>
     <descs/>
   </container>
