@@ -1,0 +1,233 @@
+<vector>
+  <container name="address" type="">
+    <version>0</version>
+    <isHidden>false</isHidden>
+    <isSystem>false</isSystem>
+    <items/>
+    <names/>
+    <descs/>
+  </container>
+  <container name="agent" type="">
+    <version>0</version>
+    <isHidden>false</isHidden>
+    <isSystem>false</isSystem>
+    <items/>
+    <names/>
+    <descs/>
+  </container>
+  <container name="collectingevent" type="">
+    <version>0</version>
+    <isHidden>false</isHidden>
+    <isSystem>false</isSystem>
+    <items>
+      <item name="method" type="java.lang.String" isUIFormatter="false" pickListName="Method" isRequired="false">
+        <version>0</version>
+        <isHidden>false</isHidden>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en" country="" variant="">
+            <version>0</version>
+            <text>Method</text>
+          </str>
+        </names>
+        <descs>
+          <str language="en" country="" variant="">
+            <version>0</version>
+            <text>A method, such as net or trap, which is used to obtain the specimen.</text>
+          </str>
+        </descs>
+        <spExportSchemaItems/>
+      </item>
+    </items>
+    <names/>
+    <descs/>
+  </container>
+  <container name="collectionobject" type="">
+    <version>0</version>
+    <isHidden>false</isHidden>
+    <isSystem>false</isSystem>
+    <items/>
+    <names/>
+    <descs/>
+  </container>
+  <container name="collectionobjectattr" type="">
+    <version>0</version>
+    <isHidden>false</isHidden>
+    <isSystem>false</isSystem>
+    <items/>
+    <names/>
+    <descs/>
+  </container>
+  <container name="determination" type="">
+    <version>0</version>
+    <isHidden>false</isHidden>
+    <isSystem>false</isSystem>
+    <items>
+      <item name="typeStatusName" type="java.lang.String" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <isHidden>false</isHidden>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en" country="" variant="">
+            <version>0</version>
+            <text>Type Status</text>
+          </str>
+        </names>
+        <descs>
+          <str language="en" country="" variant="">
+            <version>0</version>
+            <text>A pick list of all available type designations; Holotype, Paratype, Neotype. Specify ships with predetermined values which are editable for users.</text>
+          </str>
+        </descs>
+        <spExportSchemaItems/>
+      </item>
+    </items>
+    <names/>
+    <descs/>
+  </container>
+  <container name="geography" type="">
+    <version>0</version>
+    <isHidden>false</isHidden>
+    <isSystem>false</isSystem>
+    <items/>
+    <names/>
+    <descs/>
+  </container>
+  <container name="shipment" type="">
+    <version>0</version>
+    <isHidden>false</isHidden>
+    <isSystem>false</isSystem>
+    <items/>
+    <names/>
+    <descs/>
+  </container>
+  <container name="treatmentevent">
+    <version>0</version>
+    <isHidden>false</isHidden>
+    <isSystem>false</isSystem>
+    <items/>
+    <names/>
+    <descs/>
+  </container>
+  <container name="giftpreparation">
+    <version>0</version>
+    <isHidden>false</isHidden>
+    <isSystem>false</isSystem>
+    <items/>
+    <names/>
+    <descs/>
+  </container>
+  <container name="collectionobjectattribute">
+    <version>0</version>
+    <isHidden>false</isHidden>
+    <isSystem>false</isSystem>
+    <items>
+      <item name="text3" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <isHidden>false</isHidden>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>ReproCondition</text>
+          </str>
+        </names>
+        <descs/>
+        <spExportSchemaItems/>
+      </item>
+      <item name="text5" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <isHidden>false</isHidden>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Stomach</text>
+          </str>
+        </names>
+        <descs/>
+        <spExportSchemaItems/>
+      </item>
+      <item name="text8" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <isHidden>false</isHidden>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Weight</text>
+          </str>
+        </names>
+        <descs/>
+        <spExportSchemaItems/>
+      </item>
+      <item name="text1" isUIFormatter="false" pickListName="Age" isRequired="false">
+        <version>0</version>
+        <isHidden>false</isHidden>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Age</text>
+          </str>
+        </names>
+        <descs/>
+        <spExportSchemaItems/>
+      </item>
+      <item name="text6" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <isHidden>false</isHidden>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Gonads</text>
+          </str>
+        </names>
+        <descs/>
+        <spExportSchemaItems/>
+      </item>
+      <item name="text7" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <isHidden>false</isHidden>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Molt</text>
+          </str>
+        </names>
+        <descs/>
+        <spExportSchemaItems/>
+      </item>
+      <item name="text2" isUIFormatter="false" pickListName="BiologicalSex" isRequired="false">
+        <version>0</version>
+        <isHidden>false</isHidden>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Sex</text>
+          </str>
+        </names>
+        <descs/>
+        <spExportSchemaItems/>
+      </item>
+      <item name="text4" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <isHidden>false</isHidden>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Body</text>
+          </str>
+        </names>
+        <descs/>
+        <spExportSchemaItems/>
+      </item>
+    </items>
+    <names/>
+    <descs/>
+  </container>
+</vector>
