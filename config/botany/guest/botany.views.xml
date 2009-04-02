@@ -103,11 +103,11 @@
                     <cell type="separator" label="" colspan="13"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="20" label="Phenology"/>
-                    <cell type="field" id="20" name="text1" uitype="combobox" picklist="Phenology" colspan="4"/>
+                    <cell type="label" labelfor="20"/>
+                    <cell type="field" id="20" name="text1" uitype="combobox" colspan="4"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="18" label="Specimen\nDescription"/>
+                    <cell type="label" labelfor="18"/>
                     <cell type="field" id="18" name="description" uitype="textareabrief" rows="2" colspan="10"/>
                 </row>
                 <row>
@@ -163,11 +163,14 @@
                     <cell type="field" id="4" name="locality" uitype="querycbx" initialize="name=Locality;title=Locality" colspan="10"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="6" label="Locality and\n Habitat Notes"/>
+                    <cell type="label" labelfor="6"/>
                     <cell type="field" id="6" name="remarks" uitype="textarea" colspan="10" cols="50"/>
                 </row>
                 <row>
                     <cell type="subview" viewname="Collectors" id="5" name="collectors" colspan="13" rows="3"/>
+                </row>
+                <row>
+                    <cell type="subview" viewname="CollectionObjectSub" id="11" colspan="12" name="collectionObjects" initialize="addsearch=true"/>
                 </row>
                 <row>
                     <cell type="separator" label="Attachments" colspan="13"/>
@@ -211,7 +214,7 @@
                     <cell type="field" id="4" name="locality" uitype="querycbx" initialize="name=Locality;title=Locality" colspan="12"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="6" label="Locality and\n Habitat Notes"/>
+                    <cell type="label" labelfor="6"/>
                     <cell type="field" id="6" name="remarks" uitype="textarea" colspan="12"/>
                 </row>
                 <row>
@@ -265,7 +268,7 @@
                     <cell type="label" labelfor="10"/>
                     <cell type="field" id="10" name="alternateName" uitype="text" colspan = "5"/>              
                     <cell type="label" labelfor="11"/>
-                    <cell type="field" id="11" name="nameUsage" uitype="combobox" picklist="NameUsages"/>
+                    <cell type="field" id="11" name="nameUsage" uitype="combobox"/>
                     
                 </row>
                 <row>
@@ -274,7 +277,7 @@
                     <cell type="label" labelfor="5"/>
                     <cell type="field" id="5" name="determiner" uitype="querycbx" initialize="name=Agent"  />
                     <cell type="label" labelfor="6"/>
-                    <cell type="field" id="6" name="typeStatusName" uitype="combobox" picklist="TypeStatus"/>
+                    <cell type="field" id="6" name="typeStatusName" uitype="combobox"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="12"/>
