@@ -4,53 +4,14 @@
     <isHidden>false</isHidden>
     <isSystem>false</isSystem>
     <items>
-      <item name="text7" isUIFormatter="false" isRequired="false">
+      <item name="text8" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <isHidden>false</isHidden>
         <isSystem>false</isSystem>
         <names>
           <str language="en">
             <version>0</version>
-            <text>Total Length</text>
-          </str>
-        </names>
-        <descs/>
-        <spExportSchemaItems/>
-      </item>
-      <item name="text3" isUIFormatter="false" isRequired="false">
-        <version>0</version>
-        <isHidden>false</isHidden>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>ReproCondition</text>
-          </str>
-        </names>
-        <descs/>
-        <spExportSchemaItems/>
-      </item>
-      <item name="text5" isUIFormatter="false" isRequired="false">
-        <version>0</version>
-        <isHidden>false</isHidden>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>SVL</text>
-          </str>
-        </names>
-        <descs/>
-        <spExportSchemaItems/>
-      </item>
-      <item name="text4" isUIFormatter="false" pickListName="Stage" isRequired="false">
-        <version>0</version>
-        <isHidden>false</isHidden>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>Stage</text>
+            <text>Color in Life</text>
           </str>
         </names>
         <descs/>
@@ -69,14 +30,40 @@
         <descs/>
         <spExportSchemaItems/>
       </item>
-      <item name="text8" isUIFormatter="false" isRequired="false">
+      <item name="text7" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <isHidden>false</isHidden>
         <isSystem>false</isSystem>
         <names>
           <str language="en">
             <version>0</version>
-            <text>Color in Life</text>
+            <text>Total Length</text>
+          </str>
+        </names>
+        <descs/>
+        <spExportSchemaItems/>
+      </item>
+      <item name="text4" isUIFormatter="false" pickListName="Stage" isRequired="false">
+        <version>0</version>
+        <isHidden>false</isHidden>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Stage</text>
+          </str>
+        </names>
+        <descs/>
+        <spExportSchemaItems/>
+      </item>
+      <item name="text1" isUIFormatter="false" pickListName="Sex" isRequired="false">
+        <version>0</version>
+        <isHidden>false</isHidden>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Sex</text>
           </str>
         </names>
         <descs/>
@@ -95,14 +82,27 @@
         <descs/>
         <spExportSchemaItems/>
       </item>
-      <item name="text1" isUIFormatter="false" pickListName="Sex" isRequired="false">
+      <item name="text5" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <isHidden>false</isHidden>
         <isSystem>false</isSystem>
         <names>
           <str language="en">
             <version>0</version>
-            <text>Sex</text>
+            <text>SVL</text>
+          </str>
+        </names>
+        <descs/>
+        <spExportSchemaItems/>
+      </item>
+      <item name="text3" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <isHidden>false</isHidden>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>ReproCondition</text>
           </str>
         </names>
         <descs/>
