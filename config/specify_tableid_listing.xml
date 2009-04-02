@@ -195,7 +195,9 @@
         	<display view="Gift"/>
             <businessrule>edu.ku.brc.specify.datamodel.busrules.GiftBusRules</businessrule>          
         </table>
-        <table name="edu.ku.brc.specify.datamodel.GiftAgent" abbrev="gfp" id="133" searchable="true"/>
+        <table name="edu.ku.brc.specify.datamodel.GiftAgent" abbrev="gfp" id="133" searchable="true"/
+            <display view="LoanAgent" newobjdlg="GiftAgentDisplay"/>
+        </table>
         <table name="edu.ku.brc.specify.datamodel.GiftPreparation" abbrev="gfa" id="132" searchable="true">
             <display view="GiftItems" dataobjformatter="GiftPreparation" newobjdlg="GiftItemsDisplay"/>  
         </table>

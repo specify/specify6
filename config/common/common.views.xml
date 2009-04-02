@@ -424,6 +424,20 @@
             </altviews>
         </view>
         
+        <view name="GiftAgent"
+            objtitle="Gift Agent"
+            class="edu.ku.brc.specify.datamodel.GiftAgent"
+            resourcelabels="false">
+            <desc><![CDATA[Subform within the Accession form.]]></desc>
+            <altviews>
+                <altview name="GiftAgent Table View" viewdef="GiftAgent Table" mode="view"/>
+                <altview name="GiftAgent Table Edit" viewdef="GiftAgent Table" mode="edit"/>
+                <altview name="GiftAgent View" viewdef="GiftAgent" mode="view"/>
+                <altview name="GiftAgent Edit" viewdef="GiftAgent" mode="edit" default="true"/>
+            </altviews>
+        </view>
+        
+        
         <view name="GiftItems"
             class="edu.ku.brc.specify.datamodel.GiftPreparation"
             busrules="edu.ku.brc.specify.datamodel.busrules.GiftPreparationBusRules"
@@ -2221,6 +2235,10 @@
                     <cell type="field" id="5" name="remarks" uitype="textareabrief" rows="2" colspan="6"/>
                 </row>
                 <row>
+                    <cell type="subview" viewname="GiftAgent" id="8" name="giftAgents" desc="Agents" colspan="15" rows="4"/>
+                </row>
+                
+                <row>
                     <cell type="subview" viewname="Shipment" id="11" name="shipments" colspan="10"/>
                 </row>
                 <row>
@@ -2228,6 +2246,43 @@
                 </row>
             </rows>
         </viewdef>
+        
+        <viewdef
+            type="formtable"
+            name="GiftAgent Table"
+            class="edu.ku.brc.specify.datamodel.GiftAgent"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Preparation subform table for Collection Object form.]]></desc>
+            <definition>GiftAgent</definition>
+        </viewdef>
+        
+        <viewdef
+            type="form"
+            name="GiftAgent"
+            class="edu.ku.brc.specify.datamodel.GiftAgent"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The loan form.]]></desc>
+            <enableRules/>
+            
+            <columnDef>105px,2px,200px,5px,233px,2px,176px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,215px,5px,231px,2px,155px,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="agent" uitype="querycbx" initialize="name=Agent;title=Agent"/>
+                    
+                    <cell type="label" labelfor="2"/>
+                    <cell type="field" id="2" name="role" uitype="combobox" />
+                </row>
+            </rows>
+        </viewdef>
+        
+        
         
         <viewdef
             type="formtable"
