@@ -134,9 +134,9 @@ public class PickListBusRules extends BaseBusRules implements FormPaneAdjusterIF
      */
     protected void adjustSizeSpinner()
     {
-        final ValSpinner  sizeLimitSp = (ValSpinner)formViewObj.getControlByName("sizeLimit");
         if (formViewObj != null)
         {
+            final ValSpinner  sizeLimitSp = (ValSpinner)formViewObj.getControlByName("sizeLimit");
             PickListIFace pl = (PickListIFace)formViewObj.getDataObj();
             int min = Math.max(pl.getNumItems(), 0);
             
