@@ -24,6 +24,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -37,7 +38,9 @@ import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -63,6 +66,8 @@ import edu.ku.brc.stats.StatGroupTableFromCustomQuery;
 import edu.ku.brc.stats.StatGroupTableFromQuery;
 import edu.ku.brc.stats.StatsMgr;
 import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * A class that loads a page of statistics from an XML description
@@ -125,7 +130,17 @@ public class StatsPane extends BaseSubPane
             this.bgColor = Color.WHITE;
         }
         setBackground(this.bgColor);
+        setOpaque(true);
+        
         setLayout(new BorderLayout());
+        
+        if (upperDisplayComp == null)
+        {
+            JLabel lbl = UIHelper.createI18NLabel("COLL_STATS", SwingConstants.CENTER);
+            int pntSize = lbl.getFont().getSize();
+            lbl.setFont(lbl.getFont().deriveFont((float)pntSize+2).deriveFont(Font.BOLD));
+            add(lbl, BorderLayout.NORTH);
+        }
 
         init();
         
@@ -452,9 +467,10 @@ public class StatsPane extends BaseSubPane
      */
     protected void init()
     {
+        JComponent parentComp = upperDisplayComp != null ? upperDisplayComp : this;
         for (Component c : comps)
         {
-            upperDisplayComp.remove(c);
+            parentComp.remove(c);
         }
         comps.clear();
         
@@ -598,7 +614,7 @@ public class StatsPane extends BaseSubPane
             {
                 PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g,p,4px", "4px,p,4px"));
                 //pb.setOpaque(false);
-                updateBtn = new FadeBtn("Update");
+                updateBtn = new FadeBtn(UIRegistry.getResourceString("STS_UPDATE"));
                 pb.add(updateBtn, cc.xy(2, 2));
                 pb.getPanel().setBackground(bgColor);
                 add(pb.getPanel(), BorderLayout.SOUTH);

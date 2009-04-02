@@ -686,7 +686,7 @@ public class BuildSampleDatabase
                 case vertpaleo    : break;
                 case bird         : fileName = "col2008_aves.xls"; break;
                 case mammal       : fileName = "col2008_mammalia.xls"; break;
-                case insect       : fileName = "col2008_hymenoptera.xls"; break;
+                case insect       : fileName = "col2008_orthoptera.xls"; break;
                 case botany       : break;
                 case invertebrate : fileName = "col2008_inverts.xls"; break;
             }
@@ -696,10 +696,14 @@ public class BuildSampleDatabase
         
         createTaxonDefFromXML(taxa, colNameHash, taxonTreeDef, props.getProperty("TaxonTreeDef.treedefs"));
         
+        commitTx();
+        
         if (preLoadTaxon && fileName != null)
         {
             convertTaxonFromXLS(taxonTreeDef, fileName);
         }
+        
+        startTx();
         
         createGeographyDefFromXML(geos, geoTreeDef, props.getProperty("GeographyTreeDef.treedefs"));
         
@@ -3265,7 +3269,8 @@ public class BuildSampleDatabase
     @SuppressWarnings("unchecked")
     public Geography convertGeographyFromXLS(final GeographyTreeDef treeDef)
     {
-        //String fileName = "Geography.csv";
+        frame.setDesc("Building Geography Tree...");
+
         String fileName = "Geography.xls";
         
         Hashtable<String, Geography> geoHash = new Hashtable<String, Geography>();
@@ -3356,6 +3361,9 @@ public class BuildSampleDatabase
         if (frame != null) frame.setProcess(counter);
         
         log.info("Converted " + counter + " Geography records");
+        
+        frame.setDesc("Saving Geography Tree...");
+
 
         TreeHelper.fixFullnameForNodeAndDescendants(earth);
         earth.setNodeNumber(1);
@@ -7910,7 +7918,6 @@ public class BuildSampleDatabase
                 
                 HSSFRow row = (HSSFRow) rows.next();
                 Iterator<?> cellsIter = row.cellIterator();
-                int i = 0;
                 while (cellsIter.hasNext())
                 {
                     HSSFCell cell = (HSSFCell)cellsIter.next();
@@ -8084,16 +8091,10 @@ public class BuildSampleDatabase
             ex.printStackTrace();
         }
 
-        if (frame != null && (counter % 100 == 0))
+        if (frame != null && (counter % 200 == 0))
         {
-            final int c = counter;
-            SwingUtilities.invokeLater(new Runnable()
-            {
-                public void run()
-                {
-                    frame.setProcess(c);
-                }
-            });
+            frame.setDesc("Saving Taxon Tree...");
+            frame.getProcessProgress().setIndeterminate(true);
         }
         
         TreeHelper.fixFullnameForNodeAndDescendants(root);
@@ -8270,6 +8271,8 @@ public class BuildSampleDatabase
     @SuppressWarnings("unchecked")
     public GeologicTimePeriod convertChronoStratFromXLS(final GeologicTimePeriodTreeDef treeDef)
     {
+        
+        frame.setDesc("Building ChronoStratigraphy Tree...");
         String fileName = "ChronoStrat.xls";
         
         Hashtable<String, GeologicTimePeriod> chronoHash = new Hashtable<String, GeologicTimePeriod>();
