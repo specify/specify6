@@ -615,9 +615,6 @@ Good: <cell type="field" name="FieldNum" ...>
                     <cell type="label" labelfor="3" label="Type"/>
                     <cell type="field" id="3" name="Type" uitype="combobox" picklist="AccessionType"/>
                     
-                    <cell type="label" labelfor="4" label="Division"/>
-                    <cell type="field" id="4" name="division" uitype="combobox" picklist="Division" isrequired="true"/>
-                    
                 </row>
                 <row>
                     <cell type="label" labelfor="5" label="Accessioned"/>
