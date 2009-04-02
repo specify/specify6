@@ -34,6 +34,7 @@ import java.util.Vector;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
+import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -224,7 +225,6 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                 SubPaneMgr.getInstance().addPane(starterPane);
             }
             TaskMgr.disableAllEnabledTasks();
-            TaskMgr.getTask("Startup").requestContext();
         }
     }
     
@@ -745,6 +745,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             boolean ok = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).displayAgentsLoggedInDlg("SystemSetupTask.SCHEMA_CFG");
             if (!ok)
             {
+                TaskMgr.getTask("Startup").requestContext();
                 return;
             }
             
@@ -771,6 +772,8 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                     
                     SchemaToolsDlg dlg = new SchemaToolsDlg((Frame)UIRegistry.getTopWindow(), schemaType, tableMgr);
                     dlg.setVisible(true);
+                    
+                    TaskMgr.getTask("Startup").requestContext();
                 }
             };
             
@@ -837,7 +840,19 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
         super.subPaneRemoved(subPane);
         if (subPane instanceof SimpleDescPane || subPanes.size() == 0)
         {
-            TaskMgr.reenableAllDisabledTasks();
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run()
+                {
+                    if (subPanes.size() == 0)
+                    {
+                        TaskMgr.reenableAllDisabledTasks();
+                        TaskMgr.getTask("Startup").requestContext();
+                    }
+                }
+                
+            });
+            
         }
     }
     
