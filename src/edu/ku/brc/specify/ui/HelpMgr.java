@@ -357,6 +357,9 @@ public class HelpMgr
         }
     }
 
+    /**
+     * @param id the help mapping to display in the help window
+     */
     protected static void displayHelp(final Map.ID id)
     {
         if (id == null)
