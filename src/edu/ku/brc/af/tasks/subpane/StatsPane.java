@@ -19,9 +19,19 @@ import static edu.ku.brc.helpers.XMLHelper.getAttr;
 import static edu.ku.brc.ui.UIHelper.createDuplicateJGoodiesDef;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
+import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.geom.RoundRectangle2D;
+import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.Vector;
 
@@ -70,13 +80,20 @@ public class StatsPane extends BaseSubPane
     // Static Data Members
     private static final Logger log = Logger.getLogger(StatsPane.class);
 
+    protected static BasicStroke   lineStroke = new BasicStroke(1.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+
     // Data Members
     protected String  resourceName       = null;
     protected Color   bgColor            = Color.WHITE;
     protected boolean useSeparatorTitles = false;
+    protected FadeBtn updateBtn          = null;
 
     protected int     PREFERREDWIDTH     = 300;
     protected int     SPACING            = 35;
+    
+    protected JComponent upperDisplayComp = null;
+    protected JPanel     centerPanel      = null;
+    protected Vector<Component> comps     = new Vector<Component>();
 
     /**
      * Creates a StatsPane.
@@ -96,9 +113,10 @@ public class StatsPane extends BaseSubPane
     {
         super(name, task);
 
-        this.resourceName = resourceName;
+        this.resourceName       = resourceName;
         this.useSeparatorTitles = useSeparatorTitles;
-
+        this.upperDisplayComp   = upperDisplayComp;
+        
         if (bgColor != null)
         {
             this.bgColor = bgColor;
@@ -109,7 +127,7 @@ public class StatsPane extends BaseSubPane
         setBackground(this.bgColor);
         setLayout(new BorderLayout());
 
-        init(upperDisplayComp);
+        init();
         
         registerPrintContextMenu();
     }
@@ -124,6 +142,7 @@ public class StatsPane extends BaseSubPane
         try
         {
             return QueryType.valueOf(type.toUpperCase());
+            
         } catch (Exception ex)
         {
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
@@ -429,11 +448,21 @@ public class StatsPane extends BaseSubPane
     }
     
     /**
-     * Loads all the panels
-     * @param upperDisplayComp upper half display component
+     * Loads all the panels.
      */
-    protected void init(final JComponent upperDisplayComp)
+    protected void init()
     {
+        for (Component c : comps)
+        {
+            upperDisplayComp.remove(c);
+        }
+        comps.clear();
+        
+        if (centerPanel != null)
+        {
+            remove(centerPanel);
+        }
+        
         Element rootElement = null;
         try
         {
@@ -512,6 +541,8 @@ public class StatsPane extends BaseSubPane
 
                     if (comp != null)
                     {
+                        comps.add(comp);
+                        
                         if (colSpan == 1)
                         {
                             builder.add(comp, cc.xy(x, y));
@@ -533,7 +564,7 @@ public class StatsPane extends BaseSubPane
             
             boolean hasUpper = upperDisplayComp != null;
 
-            builder    = new PanelBuilder(new FormLayout("C:P:G", hasUpper ? "50px,p,20px,p" : "p")); //$NON-NLS-1$ //$NON-NLS-2$
+            builder = new PanelBuilder(new FormLayout("C:P:G", hasUpper ? "50px,p,20px,p" : "p")); //$NON-NLS-1$ //$NON-NLS-2$
             
             if (hasUpper)
             {
@@ -545,8 +576,9 @@ public class StatsPane extends BaseSubPane
             {
                 y = 1;
             }
+            
             builder.add(statPanel, cc.xy(1, y));
-            JPanel centerPanel = builder.getPanel();
+            centerPanel = builder.getPanel();
 
             centerPanel.setBackground(Color.WHITE);
             
@@ -561,7 +593,25 @@ public class StatsPane extends BaseSubPane
             centerPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
             add(centerPanel, BorderLayout.CENTER);
-
+           
+            if (updateBtn == null)
+            {
+                PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g,p,4px", "4px,p,4px"));
+                //pb.setOpaque(false);
+                updateBtn = new FadeBtn("Update");
+                pb.add(updateBtn, cc.xy(2, 2));
+                pb.getPanel().setBackground(bgColor);
+                add(pb.getPanel(), BorderLayout.SOUTH);
+                
+                updateBtn.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e)
+                    {
+                        init();
+                    }
+                });
+            }
+            
             centerPanel.validate();
             validate();
             doLayout();
@@ -624,4 +674,103 @@ public class StatsPane extends BaseSubPane
         return isOK;
     }
 
+    class FadeBtn extends JComponent
+    {
+        protected String    text;
+        protected Dimension size       = null;
+        protected boolean   isHover    = false;
+        protected boolean   isActivate = false;
+        
+        public FadeBtn(final String text)
+        {
+            this.text = text;
+            
+            addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseEntered(MouseEvent e)
+                {
+                    isHover = true;
+                    repaint();
+                }
+                @Override
+                public void mouseExited(MouseEvent e)
+                {
+                    isHover = false;
+                    repaint();
+                }
+                @Override
+                public void mousePressed(MouseEvent e)
+                {
+                    isActivate = true;
+                    repaint();
+                }
+                @Override
+                public void mouseReleased(MouseEvent e)
+                {
+                    isActivate = false;
+                    repaint();
+                }
+            });
+        }
+        
+        /* (non-Javadoc)
+         * @see edu.ku.brc.ui.JTiledPanel#paintComponent(java.awt.Graphics)
+         */
+        @Override
+        protected void paintComponent(final Graphics g)
+        {
+            super.paintComponent(g);
+            
+            Dimension sz = getSize();
+            
+            int x = 0;
+            int y = 0;
+            
+            Graphics2D g2d = (Graphics2D)g;
+            
+            Color color;
+            if (isActivate)
+            { 
+                color = new Color(64, 64, 255, 192);
+            } else if (isHover)
+            {
+                color = new Color(32, 32, 32, 192);
+            } else
+            {
+                color = new Color(128, 128, 128, 128);
+            }
+            g.setColor(color);
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            int arc = sz.height;
+            RoundRectangle2D.Double rr = new RoundRectangle2D.Double(x, y, sz.width-1, sz.height-1, arc, arc);
+            g2d.setStroke(lineStroke);
+            g2d.draw(rr);
+            
+            FontMetrics fm = g2d.getFontMetrics();
+            int hgt = fm.getHeight();
+            int wdh = fm.stringWidth(text);
+            g2d.drawString(text, ((size.width - wdh) / 2), size.height - ((size.height - hgt) / 2) - fm.getDescent()-1);
+            
+        }
+        
+        /* (non-Javadoc)
+         * @see javax.swing.JComponent#getPreferredSize()
+         */
+        @Override
+        public Dimension getPreferredSize()
+        {
+            if (size == null)
+            {
+                // This is lame, but practical
+                BufferedImage bufferedImage = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB); 
+                Graphics2D g2d = bufferedImage.createGraphics();
+                FontMetrics fm = g2d.getFontMetrics();
+                int h = fm.getHeight() + 4;
+                int w = fm.stringWidth(text) + h;
+                size = new Dimension(w, h);
+            }
+            
+            return size;
+        }
+    }
 }

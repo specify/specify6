@@ -43,6 +43,7 @@ import edu.ku.brc.af.auth.specify.permission.BasicSpPermission;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.SubPaneIFace;
+import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.prefs.AppPreferences;
@@ -100,11 +101,14 @@ public class SecurityAdminTask extends BaseTask
     {
         if (starterPane == null)
         {
-        	SecurityAdminPane userGroupAdminPane = new SecurityAdminPane(title, this);
-        	userGroupAdminPane.createMainControlUI();
-            starterPane = userGroupAdminPane;
-            
-            TaskMgr.disableAllEnabledTasks();
+            if (SubPaneMgr.getInstance().aboutToShutdown())
+            {
+            	SecurityAdminPane userGroupAdminPane = new SecurityAdminPane(title, this);
+            	userGroupAdminPane.createMainControlUI();
+                starterPane = userGroupAdminPane;
+                
+                TaskMgr.disableAllEnabledTasks();
+            }
         }
         return starterPane;
     }
@@ -122,6 +126,7 @@ public class SecurityAdminTask extends BaseTask
             starterPane.shutdown();
             starterPane = null;
             TaskMgr.reenableAllDisabledTasks();
+            TaskMgr.getTask("Startup").requestContext();
         }
     }
     
@@ -232,8 +237,6 @@ public class SecurityAdminTask extends BaseTask
         }
     }
     
-    
-    
     /* (non-Javadoc)
      * @see edu.ku.brc.af.tasks.BaseTask#requestContext()
      */
@@ -293,7 +296,10 @@ public class SecurityAdminTask extends BaseTask
             {
                 public void actionPerformed(ActionEvent ae)
                 {
-                    SecurityAdminTask.this.requestContext();
+                    if (SubPaneMgr.getInstance().aboutToShutdown())
+                    {
+                        SecurityAdminTask.this.requestContext();
+                    }
                 }
             });
             MenuItemDesc mid = new MenuItemDesc(mi, menuDesc);

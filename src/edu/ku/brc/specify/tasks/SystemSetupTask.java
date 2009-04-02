@@ -224,6 +224,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                 SubPaneMgr.getInstance().addPane(starterPane);
             }
             TaskMgr.disableAllEnabledTasks();
+            TaskMgr.getTask("Startup").requestContext();
         }
     }
     
@@ -662,15 +663,6 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
     }
 
     /**
-     * Save a PickList.
-     * @param pickList the pickList to be saved
-      */
-    public void savePickList(final PickList pickList)
-    {
-
-    }
-
-    /**
      * Delete a PickList.
      * @param pickList the pickList to be deleted
      */
@@ -726,7 +718,6 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
      */
     protected void deletePickListFromUI(final NavBoxItemIFace boxItem, final PickList pickList)
     {
-
         NavBoxItemIFace nb = boxItem != null ? boxItem : getBoxByName(getTitle(pickList));
         if (nb != null)
         {
@@ -821,6 +812,9 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             if (dlg.hasChanged())
             {
                 CommandDispatcher.dispatch(new CommandAction(APP_CMD_TYPE, APP_REQ_EXIT));
+            } else
+            {
+                TaskMgr.getTask("Startup").requestContext();
             }
         }
     }
