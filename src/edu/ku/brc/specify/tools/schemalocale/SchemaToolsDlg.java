@@ -162,7 +162,7 @@ public class SchemaToolsDlg extends CustomDialog
 
             public void actionPerformed(ActionEvent arg0)
             {
-                JOptionPane.showConfirmDialog(UIRegistry.getTopWindow(), "Currently no implemented");
+                JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), getResourceString("SL_NOT_IMPLEMENTED"));
             }
         });
         
