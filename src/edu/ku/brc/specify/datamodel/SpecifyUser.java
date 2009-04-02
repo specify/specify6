@@ -688,15 +688,15 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
 
     /**
      * @param group
-     * @return true if currentUser is member of group.
+     * @return true if current user is of type userType. 
      */
     @Transient
-    public static boolean isCurrentUserInGroup(final SpecifyUserTypes.UserType group)
+    public static boolean isCurrentUserType(final SpecifyUserTypes.UserType userType)
     {
     	SpecifyUser currentUser = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);  
     	if (currentUser != null)
     	{
-    		return currentUser.getUserType().equals(group.toString());
+    		return currentUser.getUserType().equals(userType.toString());
     	}
     	//else (this is probably impossible)
     	return false; 

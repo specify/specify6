@@ -4135,7 +4135,7 @@ public class Uploader implements ActionListener, KeyListener
      */
     protected static boolean canOverrideLock()
     {
-        return SpecifyUser.isCurrentUserInGroup(SpecifyUserTypes.UserType.Manager); 
+        return SpecifyUser.isCurrentUserType(SpecifyUserTypes.UserType.Manager); 
     }
     
     /**

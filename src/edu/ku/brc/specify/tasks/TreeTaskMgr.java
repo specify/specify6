@@ -135,7 +135,7 @@ public class TreeTaskMgr implements CommandListener
                 PermissionSettings treePerms    = treeTI.getPermissions();
                 
                 Action edtTreeAction    = treePerms != null && treePerms.canView() ? treeTask.getTreeEditAction() : null;
-                Action edtTreeDefAction = SpecifyUser.isCurrentUserInGroup(SpecifyUserTypes.UserType.Manager) 
+                Action edtTreeDefAction = SpecifyUser.isCurrentUserType(SpecifyUserTypes.UserType.Manager) 
                 	? treeTask.getTreeDefEditAction() : null;
                 Action unlockTreeAction = treeTask.getTreeUnlockAction();
                 
