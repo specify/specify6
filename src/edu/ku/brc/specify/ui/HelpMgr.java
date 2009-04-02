@@ -11,6 +11,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.KeyboardFocusManager;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -18,7 +19,6 @@ import java.net.URL;
 import java.util.Hashtable;
 
 import javax.help.BadIDException;
-import javax.help.CSH;
 import javax.help.DefaultHelpBroker;
 import javax.help.HelpBroker;
 import javax.help.HelpSet;
@@ -26,7 +26,6 @@ import javax.help.InvalidHelpSetContextException;
 import javax.help.Map;
 import javax.help.WindowPresentation;
 import javax.swing.AbstractButton;
-import javax.swing.FocusManager;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -170,19 +169,32 @@ public class HelpMgr
     {
         if (HelpMgr.helpAvailable())
         {
-            for (ActionListener l : component.getActionListeners())
+            //XXX this loop seems a little extreme and strange
+        	//Not sure if it is necessary.
+        	//Maybe it was added to remove previous help listeners?
+        	for (ActionListener l : component.getActionListeners())
             {
                 component.removeActionListener(l);    
+                log.warn("removing action listener from help component: " + component.getName());
             }
-            component.addActionListener(new CSH.DisplayHelpFromSource(hb));
             if (isGoodID(idString))
             {
-                CSH.setHelpIDString(component, idString);
+            	component.addActionListener( new ActionListener(){
+
+    				/* (non-Javadoc)
+    				 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+    				 */
+    				@Override
+    				public void actionPerformed(ActionEvent arg0)
+    				{
+    					HelpMgr.displayHelp(HelpMgr.getMapID(idString));
+    					
+    				}
+            		
+            	});
             } else
             {
                 log.warn("No mapping for '" + idString + "'. Defaulting to '" + getDefaultID() + "'");
-            	
-                CSH.setHelpIDString(component, getDefaultID());                
             }
             if (!isGoodID(idString))
             {
@@ -216,7 +228,7 @@ public class HelpMgr
 
     public static void setHelpID(final Component component, final String idString)
     {
-        CSH.setHelpIDString(component, idString);
+     	compHelpHash.put(component, idString);
     }
 
     /**
@@ -229,10 +241,6 @@ public class HelpMgr
     {
         if (HelpMgr.helpAvailable())
         {
-            if (focusListener)
-            {
-                component.addActionListener(new CSH.DisplayHelpFromFocus(hb));
-            }
             component.addActionListener(new ActionListener()
             {
                 public void actionPerformed(ActionEvent e)
@@ -317,7 +325,7 @@ public class HelpMgr
     {
         String       helpTarget = null;
         
-        Component focusComp = FocusManager.getCurrentManager().getFocusOwner();
+        Component focusComp = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner();
         if (focusComp != null)
         {
         	helpTarget = compHelpHash.get(focusComp);
@@ -342,33 +350,41 @@ public class HelpMgr
         
         if (helpTarget != null)
         {
-            Map.ID id = getMapID(helpTarget);
-            if (id == null)
-            {
-                helpless();
-            } else
-            {
-                try
-                {
-                    hb.setCurrentID(id);
-                    ((DefaultHelpBroker )hb).setActivationObject(FocusManager.getCurrentManager().getFocusOwner());
-                    if (!hb.isDisplayed())
-                    {
-                        hb.setDisplayed(true);
-                    }
-                } catch (InvalidHelpSetContextException e)
-                {
-                	edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                	edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(HelpMgr.class, e);
-                    helpless();
-                }
-            }
+            displayHelp(getMapID(helpTarget));
         } else
         {
             helpless();
         }
     }
 
+    protected static void displayHelp(final Map.ID id)
+    {
+        if (id == null)
+        {
+            helpless();
+        } else
+        {
+            try
+            {
+                if (hb.isDisplayed())
+                {
+                	hb.setDisplayed(false);
+                }
+                hb.setCurrentID(id);
+                Window fWin = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusedWindow();
+                ((DefaultHelpBroker )hb).setActivationWindow(fWin);
+                if (!hb.isDisplayed())
+                {
+                    hb.setDisplayed(true);
+                }
+            } catch (InvalidHelpSetContextException e)
+            {
+            	edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            	edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(HelpMgr.class, e);
+                helpless();
+            }
+        }    	
+    }
 
     /**
      * @return the hb
