@@ -878,6 +878,14 @@ public class ViewLoader
                                     
                                 case combobox:
                                     dspUITypeStr = getAttr(cellElement, "dspuitype", "textpl");
+                                    if (tableinfo != null)
+                                    {
+                                        DBFieldInfo fieldInfo = tableinfo.getFieldByName(cellName);
+                                        if (fieldInfo != null)
+                                        {
+                                            pickListName = fieldInfo.getPickListName();
+                                        }
+                                    }
                                     break;
                                     
                                 default:

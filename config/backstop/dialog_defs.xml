@@ -51,6 +51,7 @@
     <dialog type="display" view="Journal"            name="JournalDisplay"           class="edu.ku.brc.specify.datamodel.Journal" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="LithoStrat"         name="LithoStratDisplay"        class="edu.ku.brc.specify.datamodel.LithoStrat" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="LoanItems"          name="LoanItemsDisplay"         class="edu.ku.brc.specify.datamodel.LoanPreparation" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="LoanAgent"          name="LoanAgentDisplay"         class="edu.ku.brc.specify.datamodel.LoanAgent" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="Locality"           name="LocalityDisplay"          class="edu.ku.brc.specify.datamodel.Locality" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="Permit"             name="PermitDisplay"            class="edu.ku.brc.specify.datamodel.Permit"  helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="Preparation"        name="PreparationDisplay"       class="edu.ku.brc.specify.datamodel.Preparation" helpcontext="CBXQViewEdit"/>

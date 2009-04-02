@@ -226,7 +226,9 @@
         	<display view="Loan"/>
             <businessrule>edu.ku.brc.specify.datamodel.busrules.LoanBusRules</businessrule>          
         </table>
-        <table name="edu.ku.brc.specify.datamodel.LoanAgent" abbrev="lna" id="53" searchable="true"/>
+        <table name="edu.ku.brc.specify.datamodel.LoanAgent" abbrev="lna" id="53" searchable="true">
+            <display view="LoanAgent" newobjdlg="LoanAgentDisplay"/>
+        </table>
         <table name="edu.ku.brc.specify.datamodel.LoanAttachment" abbrev="lnat" id="114" searchable="true">
         	<display view="ObjectAttachment" newobjdlg="LoanAttachmentDisplay"/>
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>

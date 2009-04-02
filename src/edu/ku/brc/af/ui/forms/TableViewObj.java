@@ -970,7 +970,7 @@ public class TableViewObj implements Viewable,
         // get state from.
         if (parentDataObj != null && isEditing && isNew)
         {
-            parentDataObj.addReference((FormDataObjIFace)dObj, dataSetFieldName);
+            parentDataObj.addReference(dObj, dataSetFieldName);
         }
         
         final ViewBasedDisplayIFace dialog = FormHelper.createDataObjectDialog(altView, mainComp, dObj, isEditing, isNew);
@@ -1098,7 +1098,7 @@ public class TableViewObj implements Viewable,
                     // since it was added in before the dlg was shown we now need to remove.
                     if (parentDataObj != null && isEditing && isNew)
                     {
-                        parentDataObj.removeReference((FormDataObjIFace)dObj, dataSetFieldName);
+                        parentDataObj.removeReference(dObj, dataSetFieldName);
                     }
                     
                     if (mvParent.getMultiViewParent() != null && mvParent.getMultiViewParent().getCurrentValidator() != null)
@@ -1112,7 +1112,7 @@ public class TableViewObj implements Viewable,
             
         } else if (parentDataObj != null)
         {
-            parentDataObj.removeReference((FormDataObjIFace)dObj, dataSetFieldName);
+            parentDataObj.removeReference(dObj, dataSetFieldName);
         }
 
     }
@@ -2623,7 +2623,7 @@ public class TableViewObj implements Viewable,
          */
         protected Object getPickListValue(final PickListDBAdapterIFace adapter, final Object value)
         {
-            if (value != null)
+            if (value != null && adapter != null)
             {
                 if (adapter.isTabledBased())
                 {
