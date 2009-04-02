@@ -1333,6 +1333,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 }
             }
             
+            DisciplineType disciplineType = DisciplineType.getDiscipline(discipline.getType());
+            String         folderName     = disciplineType.getFolder();
             
             //---------------------------------------------------------
             // This is the Full Path User / Discipline / Collection / UserType / isPersonal
@@ -1350,7 +1352,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             //---------------------------------------------------------
             title     = getResourceString("SpecifyAppContextMgr."+USERTYPEDIR);
             appResDir = getAppResDir(session, user, discipline, collection, userType, false, title, true);
-            File dir  = XMLHelper.getConfigDir(disciplineStr + File.separator + userType);
+            File dir  = XMLHelper.getConfigDir(folderName + File.separator + userType);
             if (dir.exists())
             {
                 mergeAppResourceDirFromDiskDir(USERTYPEDIR, appResDir, disciplineStr+" "+userType, dir); //$NON-NLS-1$
@@ -1374,7 +1376,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             //---------------------------------------------------------
             title     = getResourceString("SpecifyAppContextMgr."+DISCPLINEDIR);
             appResDir = getAppResDir(session, user, discipline, null, null, false, title, true);
-            dir       = XMLHelper.getConfigDir(disciplineStr);
+            dir       = XMLHelper.getConfigDir(folderName);
             if (dir.exists())
             {
                 mergeAppResourceDirFromDiskDir(DISCPLINEDIR, appResDir, disciplineStr, dir);

@@ -58,6 +58,7 @@ public class DisciplineType implements Comparable<DisciplineType>
     protected String  title;
     protected int     type;
     protected String  abbrev;
+    protected String  folder;
     protected boolean isEmbeddedCollecingEvent;
     
     protected STD_DISCIPLINES disciplineType;
@@ -65,6 +66,7 @@ public class DisciplineType implements Comparable<DisciplineType>
     public DisciplineType(final String name, 
                           final String title, 
                           final String abbrev,
+                          final String folder,
                           final int type,
                           final boolean isEmbeddedCollecingEvent)
     {
@@ -72,6 +74,7 @@ public class DisciplineType implements Comparable<DisciplineType>
         this.title = title;
         this.type  = type;
         this.abbrev = abbrev;
+        this.folder = folder;
         this.isEmbeddedCollecingEvent = isEmbeddedCollecingEvent;
         this.disciplineType = STD_DISCIPLINES.valueOf(name);
     }
@@ -97,6 +100,14 @@ public class DisciplineType implements Comparable<DisciplineType>
     public String getAbbrev()
     {
         return abbrev;
+    }
+
+    /**
+     * @return the folder
+     */
+    public String getFolder()
+    {
+        return folder;
     }
 
     /**
@@ -239,9 +250,10 @@ public class DisciplineType implements Comparable<DisciplineType>
                     String  name      = getAttr(disciplineNode, "name", null);
                     String  title     = getAttr(disciplineNode, "title", null);
                     String  abbrev    = getAttr(disciplineNode, "abbrev", "");
+                    String  folder    = getAttr(disciplineNode, "folder", name);
                     int     type      = getAttr(disciplineNode, "type", 0);
                     boolean isEmbedCE = getAttr(disciplineNode, "isembedce", true);
-                    DisciplineType disciplineType = new DisciplineType(name, title, abbrev, type, isEmbedCE);
+                    DisciplineType disciplineType = new DisciplineType(name, title, abbrev, folder, type, isEmbedCE);
                     list.add(disciplineType);
                 }
             } else
