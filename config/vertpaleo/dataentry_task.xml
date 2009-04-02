@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <views>
 	<std>
-        <view sidebar="true"  title="Agent"              view="Agent"              iconname="Agent"              tooltip=""/>    
+ 
 	    <view sidebar="true"  title="Collection Object"  view="CollectionObject"   iconname="CollectionObject"   tooltip=""/>    
 	    <view sidebar="true"  title="Collecting Event"   view="CollectingEvent"    iconname="CollectingEvent"    tooltip=""/>    
+		<view sidebar="true"  title="Agent"              view="Agent"              iconname="Agent"              tooltip=""/>    
 	    <view sidebar="true"  title="Geography"          view="Geography"          iconname="Geography"          tooltip=""/> 
 	    <view sidebar="true"  title="LithoStrat"         view="LithoStrat"         iconname="LithoStrat"         tooltip=""/> 
 	    <view sidebar="true"  title="GeologicTimePeriod" view="GeologicTimePeriod" iconname="GeologicTimePeriod" tooltip=""/> 
