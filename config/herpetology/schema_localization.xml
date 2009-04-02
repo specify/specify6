@@ -17,14 +17,14 @@
         <descs/>
         <spExportSchemaItems/>
       </item>
-      <item name="text6" isUIFormatter="false" isRequired="false">
+      <item name="text4" isUIFormatter="false" pickListName="Stage" isRequired="false">
         <version>0</version>
         <isHidden>false</isHidden>
         <isSystem>false</isSystem>
         <names>
           <str language="en">
             <version>0</version>
-            <text>Tail Length</text>
+            <text>Stage</text>
           </str>
         </names>
         <descs/>
@@ -43,27 +43,14 @@
         <descs/>
         <spExportSchemaItems/>
       </item>
-      <item name="text4" isUIFormatter="false" pickListName="Stage" isRequired="false">
+      <item name="text3" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <isHidden>false</isHidden>
         <isSystem>false</isSystem>
         <names>
           <str language="en">
             <version>0</version>
-            <text>Stage</text>
-          </str>
-        </names>
-        <descs/>
-        <spExportSchemaItems/>
-      </item>
-      <item name="text1" isUIFormatter="false" pickListName="Sex" isRequired="false">
-        <version>0</version>
-        <isHidden>false</isHidden>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>Sex</text>
+            <text>ReproCondition</text>
           </str>
         </names>
         <descs/>
@@ -82,6 +69,19 @@
         <descs/>
         <spExportSchemaItems/>
       </item>
+      <item name="text1" isUIFormatter="false" pickListName="Sex" isRequired="false">
+        <version>0</version>
+        <isHidden>false</isHidden>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Sex</text>
+          </str>
+        </names>
+        <descs/>
+        <spExportSchemaItems/>
+      </item>
       <item name="text5" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <isHidden>false</isHidden>
@@ -95,14 +95,14 @@
         <descs/>
         <spExportSchemaItems/>
       </item>
-      <item name="text3" isUIFormatter="false" isRequired="false">
+      <item name="text6" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <isHidden>false</isHidden>
         <isSystem>false</isSystem>
         <names>
           <str language="en">
             <version>0</version>
-            <text>ReproCondition</text>
+            <text>Tail Length</text>
           </str>
         </names>
         <descs/>

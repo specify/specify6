@@ -180,7 +180,7 @@
                     <cell type="label" labelfor="5"/>
                     <cell type="field" id="5" name="determiner" uitype="querycbx" initialize="name=Agent"  />
                     <cell type="label" labelfor="6"/>
-                    <cell type="field" id="6" name="typeStatusName" uitype="combobox" picklist="TypeStatus" colspan="3"/>
+                    <cell type="field" id="6" name="typeStatusName" uitype="combobox" colspan="3"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="12"/>
@@ -213,7 +213,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="method" uitype="combobox" picklist="Method"/>
+                    <cell type="field" id="3" name="method" uitype="combobox"/>
                     <cell type="label" labelfor="10"/>
                     <cell type="field" id="10" uitype="plugin" name="this" initialize="name=PartialDateUI;df=endDate;tp=endDatePrecision" uifieldformatter="Date"/>
                     <cell type="label" labelfor="7"/>
@@ -229,10 +229,13 @@
                     <cell type="field" id="6" name="remarks" uitype="textareabrief" rows="2" colspan="10"/>
                 </row>
                 <row>
-                    <cell type="separator" label="Attachments" colspan="12"/>
+                    <cell type="subview" viewname="Collectors" id="5" name="collectors" colspan="12" rows="3"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="Collectors" id="5" name="collectors" colspan="12" rows="3"/>
+                    <cell type="subview" viewname="CollectionObjectSub" id="11" colspan="12" name="collectionObjects" initialize="addsearch=true"/>
+                </row>
+                <row>
+                    <cell type="separator" label="Attachments" colspan="12"/>
                 </row>
                 <row>
                     <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectingEventAttachments" colspan="12" initialize="btn=true;icon=CollectingEventAttachment"/>
@@ -257,7 +260,7 @@
                     <cell type="label" labelfor="5"/>
                     <cell type="field" id="5" name="stationFieldNumber" uitype="text"/>
                     <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="method" uitype="combobox" picklist="Method"/>
+                    <cell type="field" id="3" name="method" uitype="combobox"/>
                     <cell type="label" label="" colspan="2"/>
                     <cell type="subview" id="1" viewname="ObjectAttachment" name="collectingEventAttachments" initialize="btn=true;icon=CollectingEventAttachment"/>
                 </row>
@@ -302,28 +305,28 @@
             <rowDef auto="true" sep="2px" cell="p"/>
             <rows>
                 <row>
-                    <cell type="label" labelfor="1" label="Sex"/>
-                    <cell type="field" id="1" name="text1" uitype="combobox" picklist="Sex"/>
-                    <cell type="label" labelfor="4" label="Weight"/>
-                    <cell type="field" id="4" name="text8" uitype="text"/>
-                    <cell type="label" labelfor="3" label="ReproCondition"/>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="text1" uitype="combobox"/>
+                    <cell type="label" labelfor="4"/>
+                    <cell type="field" id="4" name="text2" uitype="text"/>
+                    <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="text3" uitype="text"/>
-                    <cell type="label" labelfor="2" label="Stage"/>
-                    <cell type="field" id="2" name="text2" uitype="combobox" picklist="Stage"/>
+                    <cell type="label" labelfor="2"/>
+                    <cell type="field" id="2" name="text4" uitype="combobox"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="20" label="Head Width"/>
-                    <cell type="field" id="20" name="text6" uitype="text"/>
-                    <cell type="label" labelfor="21" label="Body Width"/>
-                    <cell type="field" id="21" name="text4" uitype="text"/>
-                    <cell type="label" labelfor="5" label="Total Length"/>
+                    <cell type="label" labelfor="20"/>
+                    <cell type="field" id="20" name="text5" uitype="text"/>
+                    <cell type="label" labelfor="21"/>
+                    <cell type="field" id="21" name="text6" uitype="text"/>
+                    <cell type="label" labelfor="5"/>
                     <cell type="field" id="5" name="text7" uitype="text"/>
-                    <cell type="label" labelfor="6" label="Range of Size"/>
-                    <cell type="field" id="6" name="text5" uitype="text"/>
+                    <cell type="label" labelfor="6"/>
+                    <cell type="field" id="6" name="text8" uitype="text"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="22" label="Remarks"/>
-                    <cell type="field" id="22" name="text14" uitype="textareabrief" rows="2" colspan="14"/>
+                    <cell type="label" labelfor="22"/>
+                    <cell type="field" id="22" name="remarks" uitype="textareabrief" rows="2" colspan="14"/>
                 </row> 
             </rows>
         </viewdef>
