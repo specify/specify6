@@ -29,6 +29,8 @@ import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.tasks.BaseTask;
+import edu.ku.brc.specify.SpecifyUserTypes;
+import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
 import edu.ku.brc.ui.CommandAction;
@@ -129,13 +131,12 @@ public class TreeTaskMgr implements CommandListener
             if (treeTask.isTreeOnByDefault())
             {
                 DBTableInfo        treeTI    = DBTableIdMgr.getInstance().getByClassName(treeTask.getTreeClass().getName());
-                DBTableInfo        treeDefTI = DBTableIdMgr.getInstance().getByClassName(treeTask.getTreeDefClass().getName());
                 
                 PermissionSettings treePerms    = treeTI.getPermissions();
-                PermissionSettings treeDefPerms = treeDefTI.getPermissions();
                 
                 Action edtTreeAction    = treePerms != null && treePerms.canView() ? treeTask.getTreeEditAction() : null;
-                Action edtTreeDefAction = treeDefPerms != null && treeDefPerms.canModify() ? treeTask.getTreeDefEditAction() : null;
+                Action edtTreeDefAction = SpecifyUser.isCurrentUserInGroup(SpecifyUserTypes.UserType.Manager) 
+                	? treeTask.getTreeDefEditAction() : null;
                 Action unlockTreeAction = treeTask.getTreeUnlockAction();
                 
                 Vector<RolloverCommand> rocs = null;

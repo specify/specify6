@@ -4135,8 +4135,7 @@ public class Uploader implements ActionListener, KeyListener
      */
     protected static boolean canOverrideLock()
     {
-        //XXX Probably a better way to do this...
-        return AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getUserType().equals(SpecifyUserTypes.UserType.Manager.toString());
+        return SpecifyUser.isCurrentUserInGroup(SpecifyUserTypes.UserType.Manager); 
     }
     
     /**

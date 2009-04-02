@@ -43,7 +43,6 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import javax.security.auth.Subject;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Cascade;
@@ -51,6 +50,8 @@ import org.hibernate.annotations.Cascade;
 import edu.ku.brc.af.auth.specify.principal.AdminPrincipal;
 import edu.ku.brc.af.auth.specify.principal.GroupPrincipal;
 import edu.ku.brc.af.auth.specify.principal.UserPrincipal;
+import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.specify.SpecifyUserTypes;
 
 /**
  * 
@@ -62,8 +63,6 @@ import edu.ku.brc.af.auth.specify.principal.UserPrincipal;
 @Table(name = "specifyuser")
 public class SpecifyUser extends DataModelObjBase implements java.io.Serializable, Comparable<SpecifyUser>
 {
-    protected static SpecifyUser      currentUser = null;
-    protected static Subject          currentSubject = null;
 
     // Fields
     protected Integer                   specifyUserId;
@@ -686,7 +685,23 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
         // because every user must have its own UserPrincipal
         return null;
     }
-    
+
+    /**
+     * @param group
+     * @return true if currentUser is member of group.
+     */
+    @Transient
+    public static boolean isCurrentUserInGroup(final SpecifyUserTypes.UserType group)
+    {
+    	SpecifyUser currentUser = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);  
+    	if (currentUser != null)
+    	{
+    		return currentUser.getUserType().equals(group.toString());
+    	}
+    	//else (this is probably impossible)
+    	return false; 
+    }
+        
     //----------------------------------------------------------------------
     //-- Comparable Interface
     //----------------------------------------------------------------------
