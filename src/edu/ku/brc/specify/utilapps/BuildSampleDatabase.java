@@ -300,6 +300,7 @@ public class BuildSampleDatabase
     
     protected DataType            dataType;
     protected StorageTreeDef      stgTreeDef = null;
+    protected int                 createStep = 0;
     
     
     /**
@@ -413,30 +414,23 @@ public class BuildSampleDatabase
      * @return the entire list of DB object to be persisted
      */
     @SuppressWarnings("unchecked")
-    public List<Object> createEmptyDiscipline(final Properties props)
+    public void createEmptyDatabase(final Properties props)
     {
         AppContextMgr.getInstance().setHasContext(true);
         
-        Vector<Object> dataObjects = new Vector<Object>();
-        
-        int createStep = 0;    
+        createStep = 0;    
         
         frame.setProcess(0, 10);
         
         frame.setProcess(++createStep);
         
-        DisciplineType disciplineType = (DisciplineType)props.get("disciplineType");   
-        Discipline  discipline  = null;
-        Division    division    = null;
         Institution institution = null;
         
         ////////////////////////////////
         // Create the really high-level stuff
         ////////////////////////////////
-        String           username         = props.getProperty("usrUsername");
-        String           email            = props.getProperty("email");
-        String           userType         = props.getProperty("userType");
-        String           password         = props.getProperty("usrUsername");
+        String username = props.getProperty("usrUsername");
+        String password = props.getProperty("usrUsername");
         
         startTx();
         
@@ -461,84 +455,78 @@ public class BuildSampleDatabase
         
         institution.setIsSecurityOn((Boolean)props.get("security_on"));
         
-        Session     dataBuilderSession = switchDataBuilderSession();
-        SpecifyUser specifyAdminUser   = DataBuilder.createAdminGroupAndUser(institution, username, email, password, userType);
-        
-        DataBuilder.setSession(dataBuilderSession);
-        
-        dataType = createDataType("Biota");
-        
-
-        persist(institution);        
-        persist(specifyAdminUser); 
-        persist(dataType);
-        commitTx();
-        
-        frame.setProcess(++createStep);
-        
-        startTx();
-
-        division = createDivision(institution, 
-                                 disciplineType.getName(), 
-                                 props.getProperty("divName"), 
-                                 props.getProperty("divAbbrev"), 
-                                 null); //props.getProperty("divTitle");
-        
-        division.setIsAccessionBound((Boolean)props.get("accglobal"));
-        
-        // create tree defs (later we will make the def items and nodes)
-        TaxonTreeDef              taxonTreeDef      = createTaxonTreeDef("Taxon");
-        GeographyTreeDef          geoTreeDef        = createGeographyTreeDef("Geography");
-        GeologicTimePeriodTreeDef gtpTreeDef        = createGeologicTimePeriodTreeDef("Chronos Stratigraphy");
-        LithoStratTreeDef         lithoStratTreeDef = createLithoStratTreeDef("LithoStrat");
-        
         if (stgTreeDef == null)
         {
             stgTreeDef = createStorageTreeDef("Storage");
             institution.setStorageTreeDef(stgTreeDef);
         }
         
-        String dispName = props.getProperty("dispName");
-        if (StringUtils.isEmpty(dispName))
-        {
-            dispName = disciplineType.getTitle();
-        }
+        String       storXML  = props.getProperty("StorageTreeDef.treedefs");
+        List<Object> storages = new Vector<Object>();
+        createStorageDefFromXML(storages, stgTreeDef, storXML );
+        persist(storages);
         
-        discipline = createDiscipline(division, 
-                                      disciplineType.getName(), 
-                                      dispName, 
-                                      dataType, 
-                                      taxonTreeDef, 
-                                      geoTreeDef, 
-                                      gtpTreeDef, 
-                                      lithoStratTreeDef);
-        
-        AppContextMgr.getInstance().setClassObject(Discipline.class,  discipline);
-        AppContextMgr.getInstance().setClassObject(Institution.class, institution);
-        AppContextMgr.getInstance().setClassObject(Division.class,    division);
-        
-        persist(institution);
-        persist(division);
-        persist(discipline);
+        String email    = props.getProperty("email");
+        String userType = props.getProperty("userType");
 
-        commitTx(); // here
-        
-        frame.setProcess(++createStep);
-        frame.setDesc("Loading Schema...");
-        
-        Triple<String, AutoNumberingScheme, AutoNumberingScheme> triple = localizeDisciplineSchema(discipline, props);
-        
-        frame.setProcess(++createStep);
+        Session     dataBuilderSession = switchDataBuilderSession();
+        SpecifyUser specifyAdminUser   = DataBuilder.createAdminGroupAndUser(institution, username, email, password, userType);
         
         ////////////////////////////////
         // Create the really high-level stuff
         ////////////////////////////////
-        String           title            = props.getProperty("title",     "");
-        String           firstName        = props.getProperty("firstName", "Test");
-        String           lastName         = props.getProperty("lastName",  "User");
-        String           midInit          = props.getProperty("middleInitial", "A");
-        String           abbrev           = props.getProperty("abbrev",     "");
         
+        DataBuilder.setSession(dataBuilderSession);
+        
+        dataType = createDataType("Biota");
+
+        persist(institution);        
+        persist(specifyAdminUser); 
+        persist(dataType);
+        
+        commitTx();
+        
+        AppContextMgr.getInstance().setClassObject(SpecifyUser.class, specifyAdminUser);
+        
+        frame.setProcess(++createStep);
+        
+        DisciplineType disciplineType = (DisciplineType)props.get("disciplineType");   
+        createEmptyDivision(institution, disciplineType, specifyAdminUser, props);
+        
+    }
+    
+    /**
+     * @param institution
+     * @param disciplineType
+     * @param props
+     * @return
+     */
+    public Division createEmptyDivision(final Institution institution, 
+                                        final DisciplineType disciplineType,
+                                        final SpecifyUser    specifyAdminUser, 
+                                        final Properties props)
+    {
+        
+        startTx();
+
+        Division division = createDivision(institution, 
+                                          disciplineType.getName(), 
+                                          props.getProperty("divName"), 
+                                          props.getProperty("divAbbrev"), 
+                                          null); //props.getProperty("divTitle");
+        
+        division.setIsAccessionBound((Boolean)props.get("accglobal"));
+        
+        //AppContextMgr.getInstance().setClassObject(Division.class, division);   // Needed for creating an Agent
+        
+        String title     = props.getProperty("title",     "");
+        String firstName = props.getProperty("firstName", "Test");
+        String lastName  = props.getProperty("lastName",  "User");
+        String midInit   = props.getProperty("middleInitial", "A");
+        String abbrev    = props.getProperty("abbrev",     "");
+        String email     = props.getProperty("email");
+        String userType  = props.getProperty("userType");
+
         System.out.println("----- User Agent -----");
         System.out.println("Title:     "+title);
         System.out.println("FirstName: "+firstName);
@@ -548,90 +536,144 @@ public class BuildSampleDatabase
         System.out.println("Email:     "+email);
         System.out.println("UserType:  "+userType);
         
-        startTx();
         
-        Agent userAgent = createAgent(title, firstName, midInit, lastName, abbrev, email);
+        Agent userAgent = createAgent(title, firstName, midInit, lastName, abbrev, email, division, null);
         
-        discipline.addReference(userAgent, "agents");
         specifyAdminUser.addReference(userAgent, "agents");
-        
-        persist(discipline);
-        persist(userAgent);
+        persist(specifyAdminUser);
         
         commitTx();
+        
+        createEmptyDisciplineAndCollection(division, props, disciplineType, userAgent, specifyAdminUser, true);
+        
+        return division;
+    }
+    
+    /**
+     * @param division
+     * @param props
+     * @param disciplineType
+     * @param userAgent
+     * @param specifyAdminUser
+     * @param doCollection
+     * @return
+     */
+    public Pair<Discipline, Collection> createEmptyDisciplineAndCollection(final Division       division, 
+                                                                           final Properties     props, 
+                                                                           final DisciplineType disciplineType,
+                                                                           final Agent          userAgent,
+                                                                           final SpecifyUser    specifyAdminUser,
+                                                                           final boolean        doCollection)
+    {
+        log.debug("In createEmptyDisciplineAndCollection - createStep: "+createStep);
+
+        String dispName = props.getProperty("dispName");
+        if (StringUtils.isEmpty(dispName))
+        {
+            dispName = disciplineType.getTitle();
+        }
+        
+        boolean preLoadTaxon = (Boolean)props.get("preloadtaxon");
+        
+        String taxonXML = props.getProperty("TaxonTreeDef.treedefs");
+        String geoXML   = props.getProperty("GeographyTreeDef.treedefs");
+        
+        Discipline discipline = createEmptyDiscipline(division,
+                                                      dispName, 
+                                                      disciplineType, 
+                                                      userAgent,
+                                                      preLoadTaxon, 
+                                                      taxonXML,
+                                                      geoXML);
         
         frame.setProcess(++createStep);
+        frame.setDesc("Loading Schema...");
         
-        startTx();
-
-        ////////////////////////////////
-        // Create Collection
-        ////////////////////////////////
-        log.info("Creating a Collection");
-        frame.setDesc("Creating a Collection");
-        
-        Collection collection = createCollection(props.getProperty("collPrefix"), 
-                                                 props.getProperty("collName"), 
-                                                 triple.first,  // Catalog Format Name
-                                                 triple.second, // Catalog Number Schema
-                                                 discipline, 
-                                                 disciplineType.isEmbeddedCollecingEvent());
-        
-        collection.getTechnicalContacts().add(userAgent);
-        collection.getContentContacts().add(userAgent);
-        
-        persist(collection);
-        
-        ///////////////////////////////////////
-        // Default user groups and test user
-        ///////////////////////////////////////
-
-        // create the standard user groups for this collection
-        dataBuilderSession = switchDataBuilderSession();
-        Map<String, SpPrincipal> groupMap = DataBuilder.createStandardGroups(collection);
-
-        // add the administrator as a Collections Manager in this group
-        specifyAdminUser.addUserToSpPrincipalGroup(groupMap.get(SpecifyUserTypes.UserType.Manager.toString()));
-
-        // add tester
-        //String dspAbbrev = disciplineType.getAbbrev();
-        //createAndAddTesterToCollection(dspAbbrev+"Tester", dspAbbrev+"tester@brc.ku.edu", dspAbbrev+"Tester", 
-        //        "", dspAbbrev, "", "Tester", "", discipline, division, groupMap, SpecifyUserTypes.UserType.Manager.toString());
-        
-        DataBuilder.setSession(dataBuilderSession);
-
-        AppContextMgr.getInstance().setClassObject(Collection.class, collection);
-        
-        AutoNumberingScheme accANS = triple.third;
-        if (accANS != null)
-        {
-            division.addReference(accANS, "numberingSchemes");
-            persist(division);
-        }
-
-        commitTx();
+        Triple<String, AutoNumberingScheme, AutoNumberingScheme> triple = localizeDisciplineSchema(discipline, props);
         
         makeFieldVisible(null, discipline);
         makeFieldVisible(disciplineType.getName(), discipline);
-
+        
         frame.setProcess(++createStep);
+
+        Collection collection = null;
+        if (doCollection)
+        {
+            createEmptyCollection(discipline, 
+                                  props.getProperty("collPrefix").toString(), 
+                                  props.getProperty("collName").toString(),
+                                  userAgent,
+                                  specifyAdminUser,
+                                  triple.first,
+                                  triple.second,
+                                  triple.third,
+                                  disciplineType.isEmbeddedCollecingEvent());
+        }
         
         startTx();
         
-        //createTaxonTreeDefFromXML(taxonTreeDef, disciplineType);
-        //persist(taxonTreeDef);
+        if (triple.third != null)
+        {
+            division.addReference(triple.third, "numberingSchemes");
+            persist(division);
+        }
         
-        //DBTableIdMgr schema = new DBTableIdMgr(false);
-        //schema.initialize(new File(XMLHelper.getConfigDirPath("specify_datamodel.xml")));
-        //loadSchemaLocalization(discipline, SpLocaleContainer, schema);
-        //buildDarwinCoreSchema(discipline);
-
-        AppContextMgr.getInstance().setClassObject(SpecifyUser.class, specifyAdminUser);
-        specifyAdminUser.addReference(userAgent, "agents");
         
-        persist(specifyAdminUser);
+        commitTx();
+        
+        buildDarwinCoreSchema(discipline); // creates own DataProviderSessionIFace
+        
+        log.debug("Out createEmptyDisciplineAndCollection - createStep: "+createStep);
+        
+        return new Pair<Discipline, Collection>(discipline, collection);
 
-        //Journal journal = createJournalsAndReferenceWork();
+    }
+    
+    /**
+     * @param division
+     * @param dispTitle
+     * @param disciplineType
+     * @param userAgent
+     * @param preLoadTaxon
+     * @param taxonXML
+     * @param geoXML
+     * @return
+     */
+    public Discipline createEmptyDiscipline(final Division       division,
+                                            final String         dispTitle,
+                                            final DisciplineType disciplineType,
+                                            final Agent          userAgent,
+                                            final boolean        preLoadTaxon, 
+                                            final String         taxonXML, 
+                                            final String         geoXML)
+    {
+        log.debug("In createEmptyDiscipline - createStep: "+createStep);
+
+        startTx();
+        
+        // create tree defs (later we will make the definition items and nodes)
+        TaxonTreeDef              taxonTreeDef      = createTaxonTreeDef("Taxon");
+        GeographyTreeDef          geoTreeDef        = createGeographyTreeDef("Geography");
+        GeologicTimePeriodTreeDef gtpTreeDef        = createGeologicTimePeriodTreeDef("Chronos Stratigraphy");
+        LithoStratTreeDef         lithoStratTreeDef = createLithoStratTreeDef("LithoStrat");
+        
+        Discipline discipline = createDiscipline(division, 
+                                                 disciplineType.getName(), 
+                                                 dispTitle, 
+                                                 dataType, 
+                                                 taxonTreeDef, 
+                                                 geoTreeDef, 
+                                                 gtpTreeDef, 
+                                                 lithoStratTreeDef);
+        
+        userAgent.getDisciplines().add(discipline);
+        discipline.getAgents().add(userAgent);
+
+        persist(division);
+        persist(discipline);
+        persist(userAgent);
+
+        frame.setProcess(++createStep);
         
         ////////////////////////////////
         // build the tree def items and nodes
@@ -643,7 +685,8 @@ public class BuildSampleDatabase
         taxonTreeDef.setDiscipline(discipline);
         taxa.add(taxonTreeDef);
 
-         
+        frame.setProcess(++createStep);
+
         boolean isPaleo = disciplineType.getDisciplineType() == DisciplineType.STD_DISCIPLINES.paleobotany ||
                           disciplineType.getDisciplineType() == DisciplineType.STD_DISCIPLINES.vertpaleo ||
                           disciplineType.getDisciplineType() == DisciplineType.STD_DISCIPLINES.invertpaleo;
@@ -668,49 +711,49 @@ public class BuildSampleDatabase
         taxonTreeDef.setDiscipline(discipline);
         taxa.add(taxonTreeDef);
         
-        List<Object> storages    = new Vector<Object>();
-        createStorageDefFromXML(storages, stgTreeDef, props.getProperty("StorageTreeDef.treedefs"));
-        
-        boolean preLoadTaxon = (Boolean)props.get("preloadtaxon");
-        
         String fileName = null;
-        if (preLoadTaxon)
+        switch (DisciplineType.getByName(discipline.getType()).getDisciplineType())
         {
-            switch (DisciplineType.getByName(discipline.getType()).getDisciplineType())
-            {
-                case fish         : fileName = "col2008_fishes.xls"; break;
-                case herpetology  : fileName = "col2008_herps.xls"; break;
-                case reptile      : fileName = "col2008_reptilia.xls"; break;
-                case paleobotany  : break;
-                case invertpaleo  : break;
-                case vertpaleo    : break;
-                case bird         : fileName = "col2008_aves.xls"; break;
-                case mammal       : fileName = "col2008_mammalia.xls"; break;
-                case insect       : fileName = "col2008_orthoptera.xls"; break;
-                case botany       : break;
-                case invertebrate : fileName = "col2008_inverts.xls"; break;
-            }
+            case fish         : fileName = "col2008_fishes.xls"; break;
+            case herpetology  : fileName = "col2008_herps.xls"; break;
+            case reptile      : fileName = "col2008_reptilia.xls"; break;
+            case paleobotany  : break;
+            case invertpaleo  : break;
+            case vertpaleo    : break;
+            case bird         : fileName = "col2008_aves.xls"; break;
+            case mammal       : fileName = "col2008_mammalia.xls"; break;
+            case insect       : fileName = "col2008_orthoptera.xls"; break;
+            case botany       : break;
+            case invertebrate : fileName = "col2008_inverts.xls"; break;
+            default: break;
         }
         
         Hashtable<String, Boolean> colNameHash = getColumnNamesFromXLS(fileName);
         
-        createTaxonDefFromXML(taxa, colNameHash, taxonTreeDef, props.getProperty("TaxonTreeDef.treedefs"));
+        createTaxonDefFromXML(taxa, colNameHash, taxonTreeDef, taxonXML);
         
-        commitTx();
+        frame.setProcess(++createStep);
         
-        if (preLoadTaxon && fileName != null)
-        {
-            convertTaxonFromXLS(taxonTreeDef, fileName);
-        }
+        createGeographyDefFromXML(geos, geoTreeDef, geoXML);
         
-        startTx();
+        frame.setProcess(++createStep);
         
-        createGeographyDefFromXML(geos, geoTreeDef, props.getProperty("GeographyTreeDef.treedefs"));
-        
-        persist(storages);
         persist(taxa);
         persist(geos);
         persist(gtps);
+        
+        commitTx();
+        
+        frame.setProcess(++createStep);
+        
+        if (preLoadTaxon && fileName != null)
+        {
+            convertTaxonFromXLS(taxonTreeDef, fileName); // this does a startTx() / commitTx()
+        }
+        
+        frame.setProcess(++createStep);
+
+        startTx();
         
         if (lithoStrats != null)
         {
@@ -721,13 +764,88 @@ public class BuildSampleDatabase
             lithoStrats = createSimpleLithoStrat(lithoStratTreeDef, false);
             persist(lithoStrats);
         }
+        
         commitTx();
         
-        convertGeographyFromXLS(geoTreeDef);
+        frame.setProcess(++createStep);
+        
+        convertGeographyFromXLS(geoTreeDef);  // this does a startTx() / commitTx()
+        
+        frame.setProcess(++createStep);
+        
+        log.debug("Out createEmptyDiscipline - createStep: "+createStep);
+        
+        return discipline;
+    }
+    
+    /**
+     * @param discipline
+     * @param collPrefix
+     * @param collName
+     * @param userAgent
+     * @param specifyAdminUser
+     * @param catFormatName
+     * @param catNumScheme
+     * @param accANS
+     * @param isEmbeddedCE
+     * @return
+     */
+    public Collection createEmptyCollection(final Discipline         discipline, 
+                                            final String             collPrefix, 
+                                            final String             collName,
+                                            final Agent              userAgent,
+                                            final SpecifyUser        specifyAdminUser,
+                                            final String             catFormatName,
+                                            final AutoNumberingScheme catNumScheme,
+                                            final AutoNumberingScheme accANS,
+                                            final boolean             isEmbeddedCE)
+    {
+        log.debug("In createEmptyCollection - createStep: "+createStep);
         
         frame.setProcess(++createStep);
         
         startTx();
+
+        ////////////////////////////////
+        // Create Collection
+        ////////////////////////////////
+        log.info("Creating a Collection");
+        frame.setDesc("Creating a Collection");
+        
+        Collection collection = createCollection(collPrefix, 
+                                                 collName, 
+                                                 catFormatName,  // Catalog Format Name
+                                                 catNumScheme,   // Catalog Number Schema
+                                                 discipline, 
+                                                 isEmbeddedCE);
+        
+        collection.setDiscipline(discipline);
+        
+        collection.getTechnicalContacts().add(userAgent);
+        collection.getContentContacts().add(userAgent);
+        
+        persist(collection);
+        
+        frame.setProcess(++createStep);
+        
+        persist(loadPrepTypes(discipline.getType(), collection, userAgent));
+        
+        ///////////////////////////////////////
+        // Default user groups and test user
+        ///////////////////////////////////////
+
+        // create the standard user groups for this collection
+        Map<String, SpPrincipal> groupMap = DataBuilder.createStandardGroups(collection);
+
+        // add the administrator as a Collections Manager in this group
+        specifyAdminUser.addUserToSpPrincipalGroup(groupMap.get(SpecifyUserTypes.UserType.Manager.toString()));
+
+        // add tester
+        //String dspAbbrev = disciplineType.getAbbrev();
+        //createAndAddTesterToCollection(dspAbbrev+"Tester", dspAbbrev+"tester@brc.ku.edu", dspAbbrev+"Tester", 
+        //        "", dspAbbrev, "", "Tester", "", discipline, division, groupMap, SpecifyUserTypes.UserType.Manager.toString());
+        
+        commitTx();
         
         ////////////////////////////////
         // picklists
@@ -738,22 +856,18 @@ public class BuildSampleDatabase
         
         frame.setProcess(++createStep);
         
-        createPickLists(session, null);
-        
+        createPickLists(session, null, false, collection);
+         
         frame.setProcess(++createStep);
-        
+         
         frame.setDesc("Creating PickLists...");
-        createPickLists(session, discipline);
-        
+        createPickLists(session, discipline, false, collection);
+         
         frame.setProcess(++createStep);
-        
-        dataObjects.clear();
-                
-        frame.setProcess(++createStep);
-        
-        buildDarwinCoreSchema(discipline);
 
-        return dataObjects;
+        log.debug("Out createEmptyCollection - createStep: "+createStep);
+
+        return collection;
     }
     
     /**
@@ -761,9 +875,8 @@ public class BuildSampleDatabase
      * @param props
      * @return
      */
-    public Triple<String, AutoNumberingScheme, AutoNumberingScheme> 
-                localizeDisciplineSchema(final Discipline discipline, 
-                                         final Properties props)
+    public Triple<String, AutoNumberingScheme, AutoNumberingScheme> localizeDisciplineSchema(final Discipline discipline, 
+                                                                                             final Properties props)
     {
         Object catNumFmtObj = props.get("catnumfmt");
         Object accNumFmtObj = props.get("accnumfmt");
@@ -808,11 +921,17 @@ public class BuildSampleDatabase
         }
         
         startTx();
+
+        //Discipline discipline = (Discipline)session.merge(disciplineArg);
+        
         loadSchemaLocalization(discipline, 
-                                SpLocaleContainer.CORE_SCHEMA, 
-                                DBTableIdMgr.getInstance(),
-                                catNumFmtName,
-                                accNumFmtName);
+                               SpLocaleContainer.CORE_SCHEMA, 
+                               DBTableIdMgr.getInstance(),
+                               catNumFmtName,
+                               accNumFmtName);
+        
+        frame.setProcess(++createStep);
+        
         persist(discipline);
         
         AutoNumberingScheme catANS = createAutoNumberingScheme("Catalog Numbering Scheme", "", 
@@ -823,9 +942,11 @@ public class BuildSampleDatabase
         if (accNumFmt != null)
         {
             accANS = createAutoNumberingScheme("Accession Numbering Scheme", "",  
-                                                  accNumFmtName, isAccNumFmtNumeric,Accession.getClassTableId());
+                                                  accNumFmtName, isAccNumFmtNumeric, Accession.getClassTableId());
             persist(accANS);
         }
+        
+        frame.setProcess(++createStep);
 
         commitTx();
         
@@ -1404,7 +1525,7 @@ public class BuildSampleDatabase
         frame.setProcess(0, 16);
         frame.setDesc("Creating Botany...");
         
-        int createStep = 0;
+        createStep = 0;
         
         startTx();
 
@@ -1443,10 +1564,10 @@ public class BuildSampleDatabase
         AppContextMgr.getInstance().setClassObject(Institution.class, institution);
 
         loadSchemaLocalization(discipline, 
-                SpLocaleContainer.CORE_SCHEMA, 
-                DBTableIdMgr.getInstance(),
-                choice.getCatalogNumberingFmtName(),
-                choice.getAccessionNumberingFmtName());
+                                SpLocaleContainer.CORE_SCHEMA, 
+                                DBTableIdMgr.getInstance(),
+                                choice.getCatalogNumberingFmtName(),
+                                choice.getAccessionNumberingFmtName());
 
         ////////////////////////////////
         // Create the really high-level stuff
@@ -1929,7 +2050,7 @@ public class BuildSampleDatabase
         ////////////////////////////////
         log.info("Creating preparations");
         
-        Vector<PrepType> prepTypesForSaving = loadPrepTypes();
+        Vector<PrepType> prepTypesForSaving = loadPrepTypes(discipline.getType());
         PrepType pressed = prepTypesForSaving.get(0);
         
         List<Preparation> preps = new Vector<Preparation>();
@@ -2049,7 +2170,7 @@ public class BuildSampleDatabase
         frame.setProcess(0, 16);
         frame.setDesc("Creating Botany...");
         
-        int createStep = 0;
+        createStep = 0;
         
         startTx();
 
@@ -2403,7 +2524,7 @@ public class BuildSampleDatabase
             catDates[i].set(year, 01, 12 + i);
         }
         
-        Vector<PrepType> prepTypesForSaving = loadPrepTypes();
+        Vector<PrepType> prepTypesForSaving = loadPrepTypes(discipline.getType());
         dataObjects.addAll(prepTypesForSaving);
         
         persist(dataObjects);
@@ -2502,7 +2623,7 @@ public class BuildSampleDatabase
         frame.setProcess(0, 16);
         frame.setDesc("Creating "+disciplineType.getTitle()+"...");
         
-        int createStep = 0;
+        createStep = 0;
         
         startTx();
 
@@ -3032,7 +3153,7 @@ public class BuildSampleDatabase
         ////////////////////////////////
         log.info("Creating preparations");
         
-        Vector<PrepType> prepTypesForSaving = loadPrepTypes();
+        Vector<PrepType> prepTypesForSaving = loadPrepTypes(discipline.getType());
         PrepType pressed = prepTypesForSaving.get(0);
         
         List<Preparation> preps = new Vector<Preparation>();
@@ -3612,7 +3733,7 @@ public class BuildSampleDatabase
         frame.setProcess(0, 16);
         frame.setDesc("Creating "+disciplineType.getTitle()+"...");
         
-        int createStep = 0;
+        createStep = 0;
         
         startTx();
 
@@ -4173,7 +4294,7 @@ public class BuildSampleDatabase
         log.info("Creating preparations");
         frame.setDesc("Creating preparations...");
 
-        Vector<PrepType> prepTypesForSaving = loadPrepTypes();
+        Vector<PrepType> prepTypesForSaving = loadPrepTypes(discipline.getType());
         PrepType pressed = prepTypesForSaving.get(0);
         
         List<Preparation> preps = new Vector<Preparation>();
@@ -4697,7 +4818,18 @@ public class BuildSampleDatabase
      * @return returns a list of preptypes read in from preptype.xml
      */
     @SuppressWarnings("unchecked")
-    protected Vector<PrepType> loadPrepTypes()
+    protected Vector<PrepType> loadPrepTypes(final String discipline)
+    {
+        return loadPrepTypes(discipline, null, null);
+    }
+    
+    /**
+     * @return returns a list of preptypes read in from preptype.xml
+     */
+    @SuppressWarnings("unchecked")
+    protected Vector<PrepType> loadPrepTypes(final String discipline, 
+                                             final Collection collection, 
+                                             final Agent      createdByAgent)
     {
         Vector<PrepType> prepTypes = new Vector<PrepType>();
         
@@ -4718,8 +4850,10 @@ public class BuildSampleDatabase
         xstream.omitField(DataModelObjBase.class,  "timestampModified");
         xstream.omitField(DataModelObjBase.class,  "lastEditedBy");
         
-        String discipline = AppContextMgr.getInstance().getClassObject(Discipline.class).getType();
-        File   file       = XMLHelper.getConfigDir(discipline + File.separator + "preptypes.xml");
+        Collection colltn = collection     != null ? collection     : AppContextMgr.getInstance().getClassObject(Collection.class);
+        Agent      agent  = createdByAgent != null ? createdByAgent : Agent.getUserAgent();
+        
+        File file = XMLHelper.getConfigDir(discipline + File.separator + "preptypes.xml");
         if (file.exists())
         {
             try
@@ -4734,9 +4868,9 @@ public class BuildSampleDatabase
             Timestamp now = new Timestamp(System.currentTimeMillis());
             for (PrepType pt : prepTypes)
             {
-                pt.setCreatedByAgent(Agent.getUserAgent());
+                pt.setCreatedByAgent(agent);
                 pt.setTimestampCreated(now);
-                pt.setCollection(AppContextMgr.getInstance().getClassObject(Collection.class));
+                pt.setCollection(colltn);
                 pt.setAttributeDefs(new HashSet<AttributeDef>());
             }
             return prepTypes;
@@ -4894,7 +5028,7 @@ public class BuildSampleDatabase
                                            final boolean                   doTissues,
                                            final CollectionChoice          choice)
     {
-        int createStep = 0;
+        createStep = 0;
         frame.setProcess(0, 15);
         
         frame.setDesc("Creating Collection "+  colName);
@@ -5244,7 +5378,7 @@ public class BuildSampleDatabase
                 default:
                     collector = collectorRod;break;
             }
-            Locality        loc = (Locality)globalLocalities.get(rand.nextInt(globalLocalities.size()));
+            Locality        loc = globalLocalities.get(rand.nextInt(globalLocalities.size()));
             CollectingEvent ce  = createCollectingEvent(loc, calendar, stationFieldNumber, new Collector[]{collector});
             //ce1.setStartDateVerbatim("19 Mar 1993, 11:56 AM");
             ceList.add(ce);
@@ -5465,7 +5599,7 @@ public class BuildSampleDatabase
         ////////////////////////////////
         log.info("Creating preparations");
         
-        Vector<PrepType> prepTypesForSaving = loadPrepTypes();
+        Vector<PrepType> prepTypesForSaving = loadPrepTypes(discipline.getType());
         Vector<PrepType> pt                 = new Vector<PrepType>();
         
         if (doTissues)
@@ -5931,7 +6065,7 @@ public class BuildSampleDatabase
     public void createDisciplines(final String usernameArg,
                                   final String passwordArg)
     {
-        int createStep = 0;
+        createStep = 0;
         
         frame.setProcess(0, 4);
         
@@ -7201,7 +7335,7 @@ public class BuildSampleDatabase
             
             if (hideFrame) System.out.println("Creating Empty Database");
             
-            createEmptyDiscipline(props);
+            createEmptyDatabase(props);
 
             SwingUtilities.invokeLater(new Runnable()
             {
@@ -7616,7 +7750,7 @@ public class BuildSampleDatabase
         boolean isColObj    = memoryContainer.getName().equals("collectionobject");
         boolean isAccession = memoryContainer.getName().equals("accession");
         
-        debugOn = false;//memoryContainer.getName().equals("collectionobject");
+        //debugOn = false;
        
         for (SpLocaleItemStr nm : memoryContainer.getNames())
         {
@@ -7692,13 +7826,12 @@ public class BuildSampleDatabase
      * @param catFmtName
      * @param accFmtName
      */
-    public static void loadSchemaLocalization(final Discipline   discipline, 
-                                              final Byte         schemaType, 
-                                              final DBTableIdMgr tableMgr,
-                                              final String       catFmtName,
-                                              final String       accFmtName)
+    public void loadSchemaLocalization(final Discipline   discipline, 
+                                       final Byte         schemaType, 
+                                       final DBTableIdMgr tableMgr,
+                                       final String       catFmtName,
+                                       final String       accFmtName)
     {
-        
         HiddenTableMgr hiddenTableMgr = new HiddenTableMgr();
 
         SchemaLocalizerXMLHelper schemaLocalizer = new SchemaLocalizerXMLHelper(schemaType, tableMgr);
@@ -7726,7 +7859,33 @@ public class BuildSampleDatabase
     }
     
     /**
+     * @param discipline
+     * @param collection
+     * @param userAgent
+     * @param schemaType
+     * @param tableMgr
+     */
+    public void createPickLists(final Discipline   discipline, 
+                                final Collection   collection,
+                                final Agent        userAgent,
+                                final Byte         schemaType, 
+                                final DBTableIdMgr tableMgr)
+    {
+        SchemaLocalizerXMLHelper schemaLocalizer = new SchemaLocalizerXMLHelper(schemaType, tableMgr);
+        
+        // Loads and Merges the PickLists from Common and from the Discipline
+        for (PickList pl : schemaLocalizer.getPickLists(discipline.getType()))
+        {
+            pl.setCreatedByAgent(userAgent);
+            pl.setCollection(collection);
+            persist(pl);
+        }
+    }
+    
+    /**
      * Make specific fields visible.
+     * @param disciplineDirName the name of the directory for the Discipline
+     * @param discipline the Discipline itself
      */
     public static void makeFieldVisible(final String disciplineDirName,
                                         final Discipline discipline)

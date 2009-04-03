@@ -844,7 +844,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                 @Override
                 public void run()
                 {
-                    if (subPanes.size() == 0)
+                    if (SubPaneMgr.getInstance().getSubPanes().size() == 0)
                     {
                         TaskMgr.reenableAllDisabledTasks();
                         TaskMgr.getTask("Startup").requestContext();

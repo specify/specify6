@@ -182,6 +182,7 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
             public void cancelled()
             {
                 isOKToCont = false;
+                dlg.setVisible(false);
             }
             @Override
             public void finished()
@@ -233,7 +234,7 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
                 
                 Properties props = wizardPanel.getProps();
                 
-                DisciplineType            disciplineType = wizardPanel.getDisciplineType();
+                DisciplineType            disciplineType    = wizardPanel.getDisciplineType();
                 
                 TaxonTreeDef              taxonTreeDef      = createTaxonTreeDef("Taxon");
                 GeographyTreeDef          geoTreeDef        = createGeographyTreeDef("Geography");
@@ -267,8 +268,8 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
                 discipline.setLithoStratTreeDef(lithoStratTreeDef);
                 
                 boolean isPaleo = disciplineType.getDisciplineType() == DisciplineType.STD_DISCIPLINES.paleobotany ||
-                disciplineType.getDisciplineType() == DisciplineType.STD_DISCIPLINES.vertpaleo ||
-                disciplineType.getDisciplineType() == DisciplineType.STD_DISCIPLINES.invertpaleo;
+                                  disciplineType.getDisciplineType() == DisciplineType.STD_DISCIPLINES.vertpaleo ||
+                                  disciplineType.getDisciplineType() == DisciplineType.STD_DISCIPLINES.invertpaleo;
 
                 if (isPaleo)
                 {

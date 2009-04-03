@@ -1789,11 +1789,14 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             
             discipline = (Discipline)disciplineeList.get(0);
 
-            BuildSampleDatabase.loadSchemaLocalization(discipline, 
-                                                       SpLocaleContainer.CORE_SCHEMA, 
-                                                       DBTableIdMgr.getInstance(),
-                                                       "CatalogNumberNumeric",
-                                                       null);
+            BuildSampleDatabase bsd = new BuildSampleDatabase();
+            bsd.setSession(localSession);
+            
+            bsd.loadSchemaLocalization(discipline, 
+                                       SpLocaleContainer.CORE_SCHEMA, 
+                                       DBTableIdMgr.getInstance(),
+                                       "CatalogNumberNumeric",
+                                       null);
             localSession.save(discipline);
             trans.commit();
 

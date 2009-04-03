@@ -106,6 +106,8 @@ public class SpecifyDBSetupWizard extends JPanel
     protected String                 setupXMLPath;
     protected JProgressBar           progressBar;
     
+    protected String                 finishTextKey = "FINISHED";
+    
     /**
      * @param specify
      */
@@ -146,11 +148,8 @@ public class SpecifyDBSetupWizard extends JPanel
         bbpb.add(helpBtn,   cc.xy(2,1));
         bbpb.add(backBtn,   cc.xy(4,1));
         bbpb.add(nextBtn,   cc.xy(6,1));
+        bbpb.add(cancelBtn, cc.xy(8,1));
         
-        if (wizardType == WizardType.Full)
-        {
-            bbpb.add(cancelBtn, cc.xy(8,1));
-        }
         btnBar = bbpb.getPanel();
 
         boolean doTesting = true;
@@ -374,7 +373,13 @@ public class SpecifyDBSetupWizard extends JPanel
             {
                 if (SpecifyDBSetupWizard.this.listener != null)
                 {
-                    SpecifyDBSetupWizard.this.listener.finished();
+                    if (step == lastStep)
+                    {
+                        SpecifyDBSetupWizard.this.listener.finished();
+                    } else
+                    {
+                        SpecifyDBSetupWizard.this.listener.cancelled();
+                    }
                 }
             }
          });
@@ -437,7 +442,7 @@ public class SpecifyDBSetupWizard extends JPanel
         if (step == lastStep-1)
         {
             nextBtn.setEnabled(panels.get(step).isUIValid());
-            nextBtn.setText(getResourceString("FINISHED"));
+            nextBtn.setText(getResourceString(finishTextKey));
             
         } else
         {
@@ -447,6 +452,14 @@ public class SpecifyDBSetupWizard extends JPanel
         backBtn.setEnabled(step > 0); 
     }
     
+    /**
+     * @param finishKey the finishKey to set
+     */
+    public void setFinishTextKey(String finishTextKey)
+    {
+        this.finishTextKey = finishTextKey;
+    }
+
     /**
      * @param path
      * @return
@@ -542,7 +555,7 @@ public class SpecifyDBSetupWizard extends JPanel
     public void createDBAndMaster()
     {
         final ProgressFrame frame = new ProgressFrame("Creating master user ...", "SpecifyLargeIcon");
-        frame.getCloseBtn().setVisible(false);
+        //frame.getCloseBtn().setVisible(false);
         frame.pack();
         Dimension size = frame.getSize();
         size.width = Math.max(size.width, 500);

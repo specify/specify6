@@ -228,12 +228,44 @@ public class DataBuilder
         return groupPerson;
     }
     
+    /**
+     * @param title
+     * @param firstName
+     * @param middleInit
+     * @param lastName
+     * @param abbreviation
+     * @param email
+     * @return
+     */
     public static Agent createAgent(final String title,
                                     final String firstName,
                                     final String middleInit,
                                     final String lastName,
                                     final String abbreviation,
                                     final String email)
+    {
+        return createAgent(title, firstName, middleInit, lastName, abbreviation, email, null, null);
+    }
+    
+    /**
+     * @param title
+     * @param firstName
+     * @param middleInit
+     * @param lastName
+     * @param abbreviation
+     * @param email
+     * @param division
+     * @param discipline
+     * @return
+     */
+    public static Agent createAgent(final String title,
+                                    final String firstName,
+                                    final String middleInit,
+                                    final String lastName,
+                                    final String abbreviation,
+                                    final String email,
+                                    final Division division,
+                                    final Discipline discipline)
     {
         // Create Discipline
         Agent agent = new Agent();
@@ -246,29 +278,42 @@ public class DataBuilder
         agent.setTitle(title);
         agent.setEmail(email);
         
-        Discipline discipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
-        if (discipline != null)
-        {   
-            agent.getDisciplines().add(discipline);
-            discipline.getAgents().add(agent);
-            //persist(dsp);
-            
+        if (discipline == null)
+        {
+            Discipline disp = AppContextMgr.getInstance().getClassObject(Discipline.class);
+            if (disp != null)
+            {   
+                agent.getDisciplines().add(disp);
+                disp.getAgents().add(agent);
+            }
         } else
         {
-            //throw new RuntimeException("Discipline is NULL!");
+            agent.getDisciplines().add(discipline);
+            discipline.getAgents().add(agent);
         }
         
-        Division division = AppContextMgr.getInstance().getClassObject(Division.class);
         if (division == null)
         {
-            throw new RuntimeException("Division is NULL!");
+            Division div = AppContextMgr.getInstance().getClassObject(Division.class);
+            if (div == null)
+            {
+                throw new RuntimeException("Division is NULL!");
+            }
+            agent.setDivision(div);
+        } else
+        {
+            agent.setDivision(division);
         }
-        agent.setDivision(division);
         
         persist(agent);
         return agent;
     }
     
+    /**
+     * @param filename
+     * @param mimeType
+     * @return
+     */
     public static Attachment createAttachment(final String filename,
                                               final String mimeType)
     {

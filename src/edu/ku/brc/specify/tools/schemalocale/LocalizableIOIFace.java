@@ -84,7 +84,7 @@ public interface LocalizableIOIFace
     public abstract void copyLocale(Locale src, Locale dst);
     
     /**
-     * @return
+     * @return true on save, false on failure
      */
     public abstract boolean save();
     
@@ -100,7 +100,8 @@ public interface LocalizableIOIFace
     public abstract boolean createResourceFiles();
     
     /**
-     * The implementor MUST return all the 'common' and all the discipline specific picklists.
+     * The implementor MUST return all the 'common' and all the discipline specific PickLists merged
+     * where the Discipline PickLists override the common.
      * @param disciplineName the name of the discipline
      * @return
      */

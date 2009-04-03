@@ -114,6 +114,10 @@ public class CustomDialog extends JDialog
     protected String            helpContext      = null;
     protected Component         contentPanel     = null;
     
+    // Custom Titlebar
+    protected GradiantLabel     titleBarLabel    = null;
+    protected Color             borderColor      = null;
+    
     /**
      * Constructor.
      * 
@@ -267,6 +271,12 @@ public class CustomDialog extends JDialog
 
         mainPanel = createMainPanel();
         mainPanel.setBorder(BorderFactory.createEmptyBorder(0, 2, 5, 2));
+        
+        if (titleBarLabel != null)
+        {
+            mainPanel.add(titleBarLabel, BorderLayout.NORTH);
+            mainPanel.setBorder(BorderFactory.createLineBorder(borderColor));
+        }
 
         if (contentPanel != null)
         {
@@ -402,12 +412,10 @@ public class CustomDialog extends JDialog
     {
         setUndecorated(true);
         
-        getMainPanel().setBorder(null);//BorderFactory.createLineBorder(Color.BLACK));
-
-        GradiantLabel titleBarLabel = new GradiantLabel(title, SwingConstants.CENTER);
+        titleBarLabel = new GradiantLabel(title, SwingConstants.CENTER);
         
-        Color borderColor = SystemColor.windowBorder;
-        Color textColor   = SystemColor.activeCaptionText;
+         borderColor    = SystemColor.windowBorder;
+        Color textColor = SystemColor.activeCaptionText;
         
         if (UIHelper.isLinux())
         {
@@ -418,21 +426,17 @@ public class CustomDialog extends JDialog
                 borderColor = new Color(132, 170, 216);
                 textColor   = Color.WHITE;
             }
-            getMainPanel().setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
             
         } else if (UIHelper.isWindows())
         {
             borderColor = (Color)Toolkit.getDefaultToolkit().getDesktopProperty("win.frame.activeCaptionColor");
             textColor   = (Color)Toolkit.getDefaultToolkit().getDesktopProperty("win.frame.captionTextColor");
-            getMainPanel().setBorder(BorderFactory.createLineBorder(borderColor));
         }
         
         titleBarLabel.setTextColor(textColor);
         titleBarLabel.setBGBaseColor(borderColor);
         titleBarLabel.setGradiants(UIHelper.makeLighter(borderColor, 0.2),
                                    UIHelper.makeDarker(borderColor, 0.2));
-        
-        getMainPanel().add(titleBarLabel, BorderLayout.NORTH);
     }
     
     /**

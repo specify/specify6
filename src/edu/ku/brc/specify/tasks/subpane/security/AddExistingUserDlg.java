@@ -56,8 +56,8 @@ public class AddExistingUserDlg extends CustomDialog
                               final SpPrincipal  group,
                               final Set<SpecifyUser> spUsers) 
     {
-        super(parentDlg, getResourceString("SecuritySummaryDlg.DLG_TITLE"), true, OKCANCELHELP, null);
-        helpContext = "SECURITY_SUMMARY";
+        super(parentDlg, getResourceString("AddExistingUserDlg.TITLE"), true, OKCANCELHELP, null);
+        helpContext = "SECURITY_EXIST_USR";
         
         this.group = group;
         this.spUsers = spUsers;
