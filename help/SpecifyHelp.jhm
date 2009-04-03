@@ -215,6 +215,7 @@
 	
 	<!-- Uploader -->
 	<mapID target="uploading"               url="SpecifyHelp/Uploading/wb_uploader.html" />
+	<mapID target="validate"               url="SpecifyHelp/Uploading/wb_uploader.htm#uploader_validate" />
 	
 	<!-- Reports/Labels -->
     <mapID target="RepRunSettings"          url="SpecifyHelp/ReportsLabels/reports.html#report_sidebar" />

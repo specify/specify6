@@ -65,7 +65,7 @@
 
   <br />
   <br />
-  <li>Click the <em>Validate</em> button to validate the data. This checks the data set mapping against the Specify schema to ensure that all required fields and field formats are included. It also ensures that the necessary related fields are present between multiple tables. When validation errors are present the Uploader will split the <em>Messages</em> window showing validation errors in the top portion and general messages below as well as  a <em>View Report</em> button. Click the button to view and print a report of the validation errors. The Upload button will remain inactive until all validation errors have been corrected.
+  <li><a name="uploader_validate" id="uploader_validate"></a>Click the <em>Validate</em> button to validate the data. This checks the data set mapping against the Specify schema to ensure that all required fields and field formats are included. It also ensures that the necessary related fields are present between multiple tables. When validation errors are present the Uploader will split the <em>Messages</em> window showing validation errors in the top portion and general messages below as well as  a <em>View Report</em> button. Click the button to view and print a report of the validation errors. The Upload button will remain inactive until all validation errors have been corrected.
     Some errors may need to be fixed within the data set and require the user to exit the Uploader tool by clicking the <em>Close</em> button.<br />
     <br />
     Examples of data set mapping requirements:<br />
@@ -74,18 +74,16 @@
       <tr>
         <td><blockquote>
           <p><u>Catalog Number</u><br />
-          Taxon and Collecting Event data must be associated with a Catalog Number. 
-          </p>
+          Taxon and Collecting Event data must be associated with a Catalog Number.          </p>
           <p><u>Accession</u><br />
-            The format of the accession number in the data set must match the field format for Accession Number in Specify.
-          </p>
+            The format of the accession number in the Data Set must match the field format for Accession Number in Specify.          </p>
           <p><u>Locality</u><br />
             The Latitude and Longitude must be in one of the accepted formats (Decimal Degrees, Degrees:Decimal Minutes or Degrees:Minutes:Seconds). Formats can be changed using the <a href="LatLongConvert.html"> Lat/Long Converter</a>.</p>
           <p><u>Taxon, Geography, Lithostratigraphy, Chronostratigraphy and Storage </u><br />
               All required ranks must be present and contain data.<br />
-            Tree definition levels (ranks) must be present in the Tree Definition.</p>
+            Tree levels (ranks) being uploaded must be present in the <a href="../../Trees/editing_tree_def.html">Tree Definition</a> in Specify.</p>
             <p>When uploading Taxon data  use the mapping fields from the  Taxon Only data types.</p>
-            <p>When uploading Taxon data along with other data the Genus, Species, Subspecies and Variety fields need to come from the Determinations data type.<br />
+            <p>When uploading Taxon data along with other data the Genus, Species, Subspecies and Variety fields need to come from the Determinations data type (mapping).<br />
             </p>
             <p><u>Collection Objects, Accessions, Loan</u><br />
             Any formats used in the Data Set must match the format specified for the mapped field in Specify. </p>
