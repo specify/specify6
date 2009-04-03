@@ -1798,6 +1798,13 @@ public class Uploader implements ActionListener, KeyListener
         	String msg = String.format(UIRegistry.getResourceString("WB_UPLOAD_NO_ATTACHABLES"), getAttachableStr());
         	errors.add(new BaseUploadMessage(msg));
         }
+        
+        //if tables are missing return now, because spurious errors may be generated.
+        if (errors.size() != 0)
+        {
+        	return errors;
+        }
+        
         // now find out what data is not available in the dataset and not available in the database
         // Considering such issues 'structural' for now.
         missingRequiredClasses.clear();
