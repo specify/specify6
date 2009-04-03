@@ -39,6 +39,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.db.DBFieldInfo;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
@@ -1174,6 +1176,11 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
         }
     }
 
+    /**
+     * @param parentDataObj
+     * @param dataObj
+     * @return
+     */
     @SuppressWarnings("unchecked")
     protected boolean parentHasChildWithSameName(final Object parentDataObj, final Object dataObj)
     {
@@ -1205,6 +1212,12 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
     	return false;
     }
     
+    /**
+     * @param parentDataObj
+     * @param dataObj
+     * @param isExistingObject
+     * @return
+     */
     @SuppressWarnings("unchecked")
     public STATUS checkForSiblingWithSameName(final Object parentDataObj, final Object dataObj,
     		final boolean isExistingObject)
@@ -1242,7 +1255,39 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
 		return result;
     }
 
+    /**
+     * @param dataObj
+     * @return OK if required data is present.
+     * 
+     * Checks for requirements that can't be defined in the database schema.
+     */
+    protected STATUS checkForRequiredFields(Object dataObj)
+    {
+		if (dataObj instanceof Treeable)
+		{
+			STATUS result = STATUS.OK;
+			Treeable<?,?,?> obj = (Treeable<?,?,?> )dataObj;
+			if (obj.getParent() == null )
+			{
+				if (obj.getRankId() != null && obj.getRankId().intValue() == 0)
+				{
+					//its the root, null parent is OK.
+					return result;
+				}
+				result = STATUS.Error;
+				DBTableInfo info = DBTableIdMgr.getInstance().getInfoById(obj.getTableId());
+				DBFieldInfo fld = info.getFieldByColumnName("Parent");
+				String fldTitle = fld != null ? fld.getTitle() : UIRegistry.getResourceString("PARENT");
+				reasonList.add(String.format(UIRegistry.getResourceString("GENERIC_FIELD_MISSING"), fldTitle));
+			}
+	    	return result;
+		}
+		return STATUS.None; //???
+    }
     
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.af.ui.forms.BaseBusRules#processBusinessRules(java.lang.Object, java.lang.Object, boolean)
+	 */
 	@Override
 	public STATUS processBusinessRules(Object parentDataObj, Object dataObj,
 			boolean isExistingObject) {
@@ -1250,6 +1295,10 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
 		if (!processedRules && dataObj instanceof Treeable)
 		{	
 			STATUS result = checkForSiblingWithSameName(parentDataObj, dataObj, isExistingObject);
+			if (result == STATUS.OK)
+			{
+				result = checkForRequiredFields(dataObj);
+			}
 			if (result == STATUS.OK)
 			{
 				processedRules = true;
@@ -1262,6 +1311,9 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.af.ui.forms.BaseBusRules#processBusinessRules(java.lang.Object)
+	 */
 	@Override
 	public STATUS processBusinessRules(Object dataObj) {
 		STATUS result = STATUS.OK;
@@ -1271,6 +1323,10 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
 			if (result == STATUS.OK)
 			{
 				result = checkForSiblingWithSameName(null, dataObj, false);
+			}
+			if (result == STATUS.OK)
+			{
+				result = checkForRequiredFields(dataObj);
 			}
 		}
 		else
