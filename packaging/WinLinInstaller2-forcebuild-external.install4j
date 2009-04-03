@@ -805,8 +805,11 @@
                 <serializedBean>
                   <java class="java.beans.XMLDecoder">
                     <object class="com.install4j.runtime.beans.screens.FormScreen">
-                      <void property="title">
+                      <void property="subTitle">
                         <string>New Version Available</string>
+                      </void>
+                      <void property="title">
+                        <string>Update</string>
                       </void>
                     </object>
                   </java>
@@ -930,9 +933,17 @@ component.setVisible(hasComment);</initScript>
                       <java class="java.beans.XMLDecoder">
                         <object class="com.install4j.runtime.beans.formcomponents.MultilineLabelComponent">
                           <void property="labelText">
-                            <string>${i18n:updater.DownloadLocationLabel}</string>
+                            <string>Click the Next button to download the Specify update installer.  If you do not wish to download the update, click Cancel.</string>
                           </void>
                         </object>
+                      </java>
+                    </serializedBean>
+                    <initScript />
+                  </formComponent>
+                  <formComponent name="" id="1171" beanClass="com.install4j.runtime.beans.formcomponents.SpacerComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
+                    <serializedBean>
+                      <java class="java.beans.XMLDecoder">
+                        <object class="com.install4j.runtime.beans.formcomponents.SpacerComponent" />
                       </java>
                     </serializedBean>
                     <initScript />

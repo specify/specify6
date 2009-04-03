@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="4.2.1" transformSequenceNumber="2">
   <directoryPresets config="../InstallerFiles/images" />
-  <application name="Specify" distributionSourceDir="" applicationId="5397-6897-2502-8965" mediaDir="../MediaUpdate" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}_Beta_update" compression="6" lzmaCompression="false" pack200Compression="false" excludeSignedFromPacking="true" keepModificationTimes="false" missingFilesStrategy="warn" shortName="Specify" publisher="Biodiversity Research Center, University of Kansas" publisherWeb="http://www.specifysoftware.org" version="6.2.27" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="true" macSignature="????" installerName="" javaMinVersion="1.6" javaMaxVersion="1.6" allowBetaVM="false" jdkMode="runtimeJre" jdkName="">
+  <application name="Specify" distributionSourceDir="" applicationId="5397-6897-2502-8965" mediaDir="../MediaUpdate" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}_Beta_update" compression="6" lzmaCompression="false" pack200Compression="false" excludeSignedFromPacking="true" keepModificationTimes="false" missingFilesStrategy="warn" shortName="Specify" publisher="Biodiversity Research Center, University of Kansas" publisherWeb="http://www.specifysoftware.org" version="6.2.37" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="true" macSignature="????" installerName="" javaMinVersion="1.6" javaMaxVersion="1.6" allowBetaVM="false" jdkMode="runtimeJre" jdkName="">
     <languages skipLanguageSelection="false" languageSelectionInPrincipalLanguage="false">
       <principalLanguage id="en" customLocalizationFile="" />
       <additionalLanguages />
@@ -925,8 +925,11 @@
                 <serializedBean>
                   <java class="java.beans.XMLDecoder">
                     <object class="com.install4j.runtime.beans.screens.FormScreen">
-                      <void property="title">
+                      <void property="subTitle">
                         <string>New Version Available</string>
+                      </void>
+                      <void property="title">
+                        <string>Update</string>
                       </void>
                     </object>
                   </java>
@@ -1050,9 +1053,17 @@ component.setVisible(hasComment);</initScript>
                       <java class="java.beans.XMLDecoder">
                         <object class="com.install4j.runtime.beans.formcomponents.MultilineLabelComponent">
                           <void property="labelText">
-                            <string>${i18n:updater.DownloadLocationLabel}</string>
+                            <string>Click the Next button to download the Specify update installer.  If you do not wish to download the update, click Cancel.</string>
                           </void>
                         </object>
+                      </java>
+                    </serializedBean>
+                    <initScript />
+                  </formComponent>
+                  <formComponent name="" id="1171" beanClass="com.install4j.runtime.beans.formcomponents.SpacerComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
+                    <serializedBean>
+                      <java class="java.beans.XMLDecoder">
+                        <object class="com.install4j.runtime.beans.formcomponents.SpacerComponent" />
                       </java>
                     </serializedBean>
                     <initScript />
