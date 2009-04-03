@@ -40,6 +40,7 @@ import edu.ku.brc.stats.StatsMgr;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
+import edu.ku.brc.ui.UIRegistry;
 /**
  * The StatsTask is responsible gettiong and displaying all various different kinds of stats
  * (needs better comments)
@@ -105,7 +106,7 @@ public class StatsTask extends BaseTask
             for ( Iterator<?> iter = boxes.iterator(); iter.hasNext(); )
             {
                 Element box = (Element) iter.next();
-                NavBox navBox = new NavBox(box.attributeValue("title")); //$NON-NLS-1$
+                NavBox navBox = new NavBox(UIRegistry.getResourceString(box.attributeValue("title"))); //$NON-NLS-1$
     
                 List<?> items = box.selectNodes("item"); //$NON-NLS-1$
                 for ( Iterator<?> iter2 = items.iterator(); iter2.hasNext(); )
@@ -184,7 +185,7 @@ public class StatsTask extends BaseTask
     public List<ToolBarItemDesc> getToolBarItems()
     {
         toolbarItems = new Vector<ToolBarItemDesc>();
-        String label = getResourceString("STS_CHART");
+        String label = getResourceString(STATISTICS);
         String hint  = getResourceString("stats_hint"); //$NON-NLS-1$
         ToolBarDropDownBtn      btn  = createToolbarButton(label, iconName, hint);
 

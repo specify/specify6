@@ -349,7 +349,8 @@
         
         <view name="ExchangeIn"
             class="edu.ku.brc.specify.datamodel.ExchangeIn"
-            resourcelabels="false">
+            resourcelabels="false"
+              busrules="edu.ku.brc.specify.datamodel.busrules.ExchangeInBusRules">
             <desc><![CDATA[Exchange In display form]]></desc>
             <altviews>
                 <altview name="ExchangeIn View" viewdef="ExchangeIn" mode="view" default="true"/>
@@ -359,7 +360,8 @@
         
         <view name="ExchangeOut"
             class="edu.ku.brc.specify.datamodel.ExchangeOut"
-            resourcelabels="false">
+            resourcelabels="false"
+              busrules="edu.ku.brc.specify.datamodel.busrules.ExchangeOutBusRules">
             <desc><![CDATA[Exchange Out display form]]></desc>
             <altviews>
                 <altview name="ExchangeOut View" viewdef="ExchangeOut" mode="view" default="true"/>

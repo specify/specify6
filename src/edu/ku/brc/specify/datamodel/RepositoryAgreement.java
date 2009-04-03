@@ -415,6 +415,7 @@ public class RepositoryAgreement extends DataModelObjBase implements AttachmentO
     {
         this.addressOfRecord = addressOfRecord;
     }
+    
     /**
      * @return the division
      */

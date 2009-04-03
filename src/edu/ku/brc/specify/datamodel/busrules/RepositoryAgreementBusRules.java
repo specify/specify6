@@ -28,13 +28,10 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.ui.forms.DraggableRecordIdentifier;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.FormViewObj;
-import edu.ku.brc.dbsupport.DataProviderFactory;
-import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.AccessionAgent;
 import edu.ku.brc.specify.datamodel.Agent;
-import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.RepositoryAgreement;
@@ -68,38 +65,7 @@ public class RepositoryAgreementBusRules extends AttachmentOwnerBaseBusRules
     {
         super.addChildrenToNewDataObjects(newDataObj);
         
-        Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
-        if (collection != null)
-        {
-            DataProviderSessionIFace session = null;
-            try
-            {
-                session = DataProviderFactory.getInstance().createSession();
-                session.attach(collection);
-                
-                Division division = collection.getDiscipline().getDivision();
-                if (division != null)
-                {
-                    RepositoryAgreement repositoryAgreement = (RepositoryAgreement) newDataObj;
-                    repositoryAgreement.setDivision(division);
-                }
-                
-            } catch (final Exception e1)
-            {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RepositoryAgreementBusRules.class, e1);
-                e1.printStackTrace();
-                
-            } finally
-            {
-                if (session != null)
-                {
-                    session.close();
-                }
-            }
-            
-
-        }
+        ((RepositoryAgreement)newDataObj).setDivision(AppContextMgr.getInstance().getClassObject(Division.class));
     }
 
     /* (non-Javadoc)

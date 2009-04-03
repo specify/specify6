@@ -78,12 +78,6 @@ public class Division extends UserGroupScope implements java.io.Serializable, Co
      protected Set<Discipline>          disciplines;
      
      protected Set<Agent>               members;
-     //protected Set<ConservDescription>  conservDescriptions;
-     //protected Set<Loan>                loans;
-     //protected Set<Gift>                gifts;
-     //protected Set<TreatmentEvent>      treatmentEvents;
-     //protected Set<Accession>           accessions;
-     //protected Set<RepositoryAgreement> repositoryAgreements;
      protected Set<AutoNumberingScheme> numberingSchemes;
 
      

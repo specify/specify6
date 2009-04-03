@@ -20,6 +20,8 @@ import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.datamodel.ExchangeIn;
+import edu.ku.brc.specify.datamodel.ExchangeOut;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
@@ -28,6 +30,7 @@ import edu.ku.brc.specify.datamodel.LithoStrat;
 import edu.ku.brc.specify.datamodel.LithoStratTreeDef;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.PrepType;
+import edu.ku.brc.specify.datamodel.RepositoryAgreement;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Storage;
 import edu.ku.brc.specify.datamodel.StorageTreeDef;
@@ -83,7 +86,10 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
                 criterion = COLMEMID;
                 
 
-            } else if (tableInfo.getTableId() == Accession.getClassTableId())
+            } else if (tableInfo.getTableId() == Accession.getClassTableId() ||
+                       tableInfo.getTableId() == RepositoryAgreement.getClassTableId() ||
+                       tableInfo.getTableId() == ExchangeIn.getClassTableId() ||
+                       tableInfo.getTableId() == ExchangeOut.getClassTableId())
             {
                 if (prefix.equals(""))
                 {
@@ -148,6 +154,11 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
             {
                 fld = isHQL ? "definition" : "TaxonTreeDefID"; 
                 criterion = TAXTREEDEFID;
+                
+            } else if (tableInfo.getTableId() == Locality.getClassTableId())
+            {
+                fld = isHQL ? "discipline" : "DisciplineID";
+                criterion = DSPLNID;
                 
             } else if (tableInfo.getTableId() == Locality.getClassTableId())
             {
@@ -260,7 +271,10 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
             }
             return join + "agent_discipline ON "+(aliasArg == null ? "" : alias)+".AgentID = agent_discipline.AgentID";
             
-        } else if (tableInfo.getTableId() == Accession.getClassTableId())
+        } else if (tableInfo.getTableId() == Accession.getClassTableId() ||
+                    tableInfo.getTableId() == RepositoryAgreement.getClassTableId() ||
+                    tableInfo.getTableId() == ExchangeIn.getClassTableId() ||
+                    tableInfo.getTableId() == ExchangeOut.getClassTableId())
         {
             if (isHQL)
             {

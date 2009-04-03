@@ -62,7 +62,7 @@ import org.hibernate.annotations.Index;
 		@Index (name="DescriptionOfMaterialIDX", columnNames={"DescriptionOfMaterial"})
 		
     })
-public class ExchangeOut extends CollectionMember implements java.io.Serializable {
+public class ExchangeOut extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
 
@@ -86,6 +86,7 @@ public class ExchangeOut extends CollectionMember implements java.io.Serializabl
     protected Agent           agentSentTo;
     protected Agent           agentCatalogedBy;
     protected Set<Shipment>   shipments;
+    protected Division        division;
 
 
     // Constructors
@@ -126,6 +127,7 @@ public class ExchangeOut extends CollectionMember implements java.io.Serializabl
         agentSentTo      = null;
         agentCatalogedBy = null;
         shipments        = new HashSet<Shipment>();
+        division         = null;
     }
     // End Initializer
 
@@ -407,6 +409,25 @@ public class ExchangeOut extends CollectionMember implements java.io.Serializabl
     {
         this.addressOfRecord = addressOfRecord;
     }
+    
+    /**
+     * @return the division
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "DivisionID", unique = false, nullable = false, insertable = true, updatable = true)
+    public Division getDivision()
+    {
+        return division;
+    }
+
+    /**
+     * @param division the division to set
+     */
+    public void setDivision(Division division)
+    {
+        this.division = division;
+    }
+
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
