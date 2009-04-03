@@ -202,7 +202,7 @@
           <versionLine x="20" y="40" text="Version ${compiler:sys.version}" font="Arial" fontSize="8" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
-      <java mainClass="edu.ku.brc.specify.config.init.SpecifyDBSetupWizardFrame" vmParameters="-Xmx512m" arguments="-Dappdir=.." allowVMPassthroughParameters="true" preferredVM="">
+      <java mainClass="edu.ku.brc.specify.config.init.SpecifyDBSetupWizardFrame" vmParameters="-Xmx1024m" arguments="-Dappdir=.." allowVMPassthroughParameters="true" preferredVM="">
         <classPath>
           <archive location="specify.jar" failOnError="true" />
           <scanDirectory location="libs" failOnError="true" />
