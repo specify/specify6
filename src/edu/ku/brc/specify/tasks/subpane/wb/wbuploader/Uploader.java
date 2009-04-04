@@ -79,6 +79,8 @@ import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchRowImage;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgrCallerIFace;
+import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr.SCOPE;
+import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr.USER_ACTION;
 import edu.ku.brc.specify.tasks.DataEntryTask;
 import edu.ku.brc.specify.tasks.RecordSetTask;
 import edu.ku.brc.specify.tasks.ReportsBaseTask;
@@ -4185,11 +4187,16 @@ public class Uploader implements ActionListener, KeyListener
      */
     public static boolean lockUpload(final Taskable caller)
     {
-        
-    	return TaskSemaphoreMgr.lock(getLockTitle(), 
+        USER_ACTION result = TaskSemaphoreMgr.lock(getLockTitle(), 
                 "WORKBENCHUPLOAD", null,
-                TaskSemaphoreMgr.SCOPE.Discipline, false, 
-                new UploadLocker(false/*canOverrideLock()*/, false/*canRemoveLock()*/, caller)) == TaskSemaphoreMgr.USER_ACTION.OK;
+                SCOPE.Discipline, false, 
+                new UploadLocker(canOverrideLock(), canRemoveLock(), caller)); 
+        if (result == USER_ACTION.Override)
+        {
+        	return TaskSemaphoreMgr.unlock(getLockTitle(), "WORKBENCHUPLOAD", SCOPE.Discipline);
+        }
+        		
+       return result == USER_ACTION.OK;
     }
     
     /**
@@ -4297,27 +4304,26 @@ public class Uploader implements ActionListener, KeyListener
     		//nothing to lock
     		return true;
     	}
-    	
-    	TaskSemaphoreMgrCallerIFace lockCallback = new TaskSemaphoreMgrCallerIFace(){
-    		public String title;
-    		
-    	    @Override
-    		public TaskSemaphoreMgr.USER_ACTION resolveConflict(SpTaskSemaphore semaphore, 
-                    boolean previouslyLocked,
-                    String prevLockBy)
-    	    {
-    	    	UIRegistry.showLocalizedMsg("Uploader.AdditionalLockFailTitle", "Uploader.AdditionalLockFail", 
-    	    			title, prevLockBy, title);
-    	    	return TaskSemaphoreMgr.USER_ACTION.Error;
-    	    }
-    		
-    	};
-    	
+    	    	
     	boolean result = true;
     	for (Pair<UploadTableTree, Boolean> ttp : trees)
     	{
     		UploadTableTree utt = ttp.getFirst();
-    		TaskSemaphoreMgr.USER_ACTION action = TaskSemaphoreMgr.lock(utt.getTable().getTableInfo().getTitle(), 
+    		final String title = utt.getTable().getTableInfo().getTitle();
+        	TaskSemaphoreMgrCallerIFace lockCallback = new TaskSemaphoreMgrCallerIFace(){
+        	    @Override
+        		public TaskSemaphoreMgr.USER_ACTION resolveConflict(SpTaskSemaphore semaphore, 
+                        boolean previouslyLocked,
+                        String prevLockBy)
+        	    {
+        	    	UIRegistry.showLocalizedMsg("Uploader.AdditionalLockFailTitle", "Uploader.AdditionalLockFail", 
+        	    			title, prevLockBy, title);
+        	    	return TaskSemaphoreMgr.USER_ACTION.Error;
+        	    }
+        		
+        	};
+    		
+    		TaskSemaphoreMgr.USER_ACTION action = TaskSemaphoreMgr.lock(title, 
     				utt.getTblClass().getSimpleName() + "TreeDef", null, TaskSemaphoreMgr.SCOPE.Discipline, false, lockCallback);
     		if (action == TaskSemaphoreMgr.USER_ACTION.OK)
     		{

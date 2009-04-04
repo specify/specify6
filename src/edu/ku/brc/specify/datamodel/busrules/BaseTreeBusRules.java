@@ -1269,9 +1269,9 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
 			Treeable<?,?,?> obj = (Treeable<?,?,?> )dataObj;
 			if (obj.getParent() == null )
 			{
-				if (obj.getRankId() != null && obj.getRankId().intValue() == 0)
+				if (obj.getDefinitionItem() != null && obj.getDefinitionItem().getParent() == null)
 				{
-					//its the root, null parent is OK.
+					//it's the root, null parent is OK.
 					return result;
 				}
 				result = STATUS.Error;

@@ -133,13 +133,15 @@ public class UploadLocker implements TaskSemaphoreMgrCallerIFace
             }
             if (userChoice == JOptionPane.NO_OPTION)
             {
-                return USER_ACTION.OK;
+                UIRegistry.displayInfoMsgDlgLocalized("WB_UPLOADER.UPLOAD_LOCK_OVERRIDE_INFO");
+            	return USER_ACTION.OK;
             }
             if (userChoice == JOptionPane.CANCEL_OPTION)
             {
                 //unlock ---
-                UIRegistry.showError("Unlocking is under construction");
-                return USER_ACTION.Cancel;
+                //UIRegistry.showError("Unlocking is under construction");
+                //return USER_ACTION.Cancel;
+            	return USER_ACTION.Override;
             }
             return USER_ACTION.Error;
         }
