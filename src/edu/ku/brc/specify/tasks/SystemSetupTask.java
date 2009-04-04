@@ -840,11 +840,13 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
         super.subPaneRemoved(subPane);
         if (subPane instanceof SimpleDescPane || subPanes.size() == 0)
         {
+            final boolean isGlobalShutdown = SubPaneMgr.getInstance().isGlobalShutdown(); 
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run()
                 {
-                    if (SubPaneMgr.getInstance().getSubPanes().size() == 0)
+                    if (SubPaneMgr.getInstance().getSubPanes().size() == 0 &&
+                        !isGlobalShutdown)
                     {
                         TaskMgr.reenableAllDisabledTasks();
                         TaskMgr.getTask("Startup").requestContext();
