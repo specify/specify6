@@ -268,7 +268,7 @@ public class TreeDefSetupPanel extends BaseSetupPanel implements SetupPanelIFace
      * @see edu.ku.brc.specify.config.init.SetupPanelIFace#getValues(java.util.Properties)
      */
     @Override
-    public void getValues(Properties props)
+    public void getValues(final Properties props)
     {
         XStream xstream = new XStream();
         TreeDefRow.configXStream(xstream);

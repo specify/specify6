@@ -44,7 +44,7 @@ public class SimpleGlassPane extends JPanel
     private String text;
     private int    pointSize;
     private Color  textColor    = null;
-    private Color  fillColor    = new Color(0, 0, 0, 96);
+    private Color  fillColor    = new Color(0, 0, 0, 50);
     private Insets margin       = new Insets(0,0,0,0);
     
     private  boolean          useBGImage       = false;
@@ -74,7 +74,7 @@ public class SimpleGlassPane extends JPanel
         this.text      = text;
         this.pointSize = pointSize;
         
-        setBackground(new Color(0, 0, 0, 96));
+        setBackground(fillColor);
         setOpaque(false);
         
         /*if (doBlockMouseEvents)

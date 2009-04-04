@@ -99,7 +99,7 @@ public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFa
         
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-        SpecifyDBSetupWizard wizPanel = new SpecifyDBSetupWizard(SpecifyDBSetupWizard.WizardType.Full, 
+        SpecifyDBSetupWizard wizPanel = new SpecifyDBSetupWizard(SpecifyDBSetupWizard.WizardType.Institution, 
                 new SpecifyDBSetupWizard.WizardListener() {
                     @Override
                     public void cancelled()

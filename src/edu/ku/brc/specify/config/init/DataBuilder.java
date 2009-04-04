@@ -128,12 +128,22 @@ public class DataBuilder
 {
     protected static Calendar startCal = Calendar.getInstance();
     protected static Session  session  = null;
+    
+    /** Maps usertype strings to the name of the default groups */
+    protected static Map<String, Pair<String, Byte>> usertypeToDefaultGroup;
+    
 
+    /**
+     * @return
+     */
     public static Session getSession()
     {
         return session;
     }
 
+    /**
+     * @param session
+     */
     public static void setSession(Session session)
     {
         DataBuilder.session = session;
@@ -436,6 +446,7 @@ public class DataBuilder
         division.addReference(discipline, "disciplines");
 
         persist(discipline);
+        
         return discipline;
     }
 
@@ -2327,19 +2338,19 @@ public class DataBuilder
         return specifyuser;
     }
 
-    public static void createAndAddTesterToCollection(
-            final String             name,
-            final String             email,
-            final String             pwd,
-            final String             title,
-            final String             first,
-            final String             middle,
-            final String             last,
-            final String             abbrev,
-            Discipline               discipline, 
-            Division                 division, 
-            Map<String, SpPrincipal> groupMap, 
-            String                   userType) 
+    public static SpecifyUser createAndAddTesterToCollection(
+                                final String             name,
+                                final String             email,
+                                final String             pwd,
+                                final String             title,
+                                final String             first,
+                                final String             middle,
+                                final String             last,
+                                final String             abbrev,
+                                Discipline               discipline, 
+                                Division                 division, 
+                                Map<String, SpPrincipal> groupMap, 
+                                String                   userType) 
     {
         // Tester
         Agent       testerAgent = createAgent(title, first, middle, last, abbrev, email);
@@ -2353,6 +2364,8 @@ public class DataBuilder
 
         persist(testerUser);
         persist(testerAgent);
+        
+        return testerUser;
     }
 
 //    public static UserPermission createUserPermission(SpecifyUser owner, 
@@ -2452,26 +2465,19 @@ public class DataBuilder
     	return perm;
     }
 
-    // TODO: move this property up where it belongs
-    /** Maps usertype strings to the name of the default groups */
-    static Map<String, Pair<String, Byte>> usertypeToDefaultGroup;
-    
     /**
      * Load definition of default groups
      */
     private static void loadDefaultGroupDefinitions()
     {
-        if (usertypeToDefaultGroup != null)
+        if (usertypeToDefaultGroup == null)
         {
-            // already loaded
-            return;
+            usertypeToDefaultGroup = new HashMap<String, Pair<String, Byte>>();
+            usertypeToDefaultGroup.put(SpecifyUserTypes.UserType.Manager.toString(),       new Pair<String, Byte>("Managers", (byte)10));
+            usertypeToDefaultGroup.put(SpecifyUserTypes.UserType.FullAccess.toString(),    new Pair<String, Byte>("Full Access Users", (byte)20));
+            usertypeToDefaultGroup.put(SpecifyUserTypes.UserType.LimitedAccess.toString(), new Pair<String, Byte>("Limited Access Users", (byte)30));
+            usertypeToDefaultGroup.put(SpecifyUserTypes.UserType.Guest.toString(),         new Pair<String, Byte>("Guests", (byte)40));
         }
-        
-        usertypeToDefaultGroup = new HashMap<String, Pair<String, Byte>>();
-        usertypeToDefaultGroup.put(SpecifyUserTypes.UserType.Manager.toString(),       new Pair<String, Byte>("Managers", (byte)10));
-        usertypeToDefaultGroup.put(SpecifyUserTypes.UserType.FullAccess.toString(),    new Pair<String, Byte>("Full Access Users", (byte)20));
-        usertypeToDefaultGroup.put(SpecifyUserTypes.UserType.LimitedAccess.toString(), new Pair<String, Byte>("Limited Access Users", (byte)30));
-        usertypeToDefaultGroup.put(SpecifyUserTypes.UserType.Guest.toString(),         new Pair<String, Byte>("Guests", (byte)40));
     }
 
     /**

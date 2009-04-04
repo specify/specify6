@@ -1521,7 +1521,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
     /**
      * Check for additional Formatters to be added from the Wizard.
      */
-    protected void checkForInitialFormats()
+    public void checkForInitialFormats()
     {
         if (addFormatFromFile("catnumfmt.xml") || addFormatFromFile("accsnumfmt.xml"))
         {

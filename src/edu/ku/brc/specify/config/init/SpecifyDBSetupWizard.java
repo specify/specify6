@@ -71,9 +71,9 @@ public class SpecifyDBSetupWizard extends JPanel
 {
     private static final Logger log = Logger.getLogger(SpecifyDBSetupWizard.class);
     
-    public enum WizardType {Full, Brief}
+    public enum WizardType {Institution, Division, Discipline, Collection}
     
-    protected WizardType             wizardType  = WizardType.Full;
+    protected WizardType             wizardType  = WizardType.Institution;
     protected WizardListener         listener;
     
     protected boolean                assumeDerby = false;
@@ -195,14 +195,11 @@ public class SpecifyDBSetupWizard extends JPanel
         
         UIFieldFormatterMgr.setDoingLocal(true);
         
-        if (wizardType == WizardType.Full)
+        if (wizardType == WizardType.Institution)
         {
             dbPanel = new DatabasePanel(nextBtn, true);
             panels.add(dbPanel);
-        }
-        
-        if (wizardType == WizardType.Full)
-        {
+            
             panels.add(new GenericFormPanel("SA", 
                     "ENTER_SA_INFO", 
                     new String[] { "SA_USERNAME", "SA_PASSWORD"}, 
@@ -247,50 +244,59 @@ public class SpecifyDBSetupWizard extends JPanel
                     null);
             panels.add(storageTDPanel);
             
-            panels.add(new GenericFormPanel("DIV", 
-                    "ENTER_DIV_INFO",
-                    new String[] { "NAME",    "ABBREV"}, 
-                    new String[] { "divName", "divAbbrev"}, 
-                    nextBtn, true));
         }
-        
-        disciplinePanel = new DisciplinePanel(nextBtn);
-        panels.add(disciplinePanel);
-        
-        taxonTDPanel = new TreeDefSetupPanel(TaxonTreeDef.class, 
-                                             getResourceString("Taxon"), 
-                                             "Taxon", 
-                                             "CONFIG_TREEDEF", 
-                                             nextBtn, 
-                                             disciplinePanel);
-        panels.add(taxonTDPanel);
-        
-        panels.add(new GenericFormPanel("PRELOADTXN", 
-                "PRELOADTXN_INFO",
-                new String[] { "LOAD_TAXON"}, 
-                new String[] { "preloadtaxon"},
-                new String[] { "checkbox"},
-                nextBtn, true));
-        
 
-         
-        geoTDPanel = new TreeDefSetupPanel(GeographyTreeDef.class, 
-                                           getResourceString("Geography"), 
-                                           "Geography", 
-                                           "CONFIG_TREEDEF", 
-                                           nextBtn, 
-                                           disciplinePanel);
-        panels.add(geoTDPanel);
-
-        if (wizardType == WizardType.Full)
+        
+        if (wizardType == WizardType.Institution ||
+            wizardType == WizardType.Division)
         {
-            panels.add(new GenericFormPanel("COLLECTION", 
+            panels.add(new GenericFormPanel("DIV", 
+                "ENTER_DIV_INFO",
+                new String[] { "NAME",    "ABBREV"}, 
+                new String[] { "divName", "divAbbrev"}, 
+                nextBtn, true));
+        }
+
+        if (wizardType == WizardType.Institution || 
+            wizardType == WizardType.Division || 
+            wizardType == WizardType.Discipline)
+        {
+            disciplinePanel = new DisciplinePanel(nextBtn);
+            panels.add(disciplinePanel);
+
+            taxonTDPanel = new TreeDefSetupPanel(TaxonTreeDef.class, 
+                                                 getResourceString("Taxon"), 
+                                                 "Taxon", 
+                                                 "CONFIG_TREEDEF", 
+                                                 nextBtn, 
+                                                 disciplinePanel);
+            panels.add(taxonTDPanel);
+            
+            panels.add(new GenericFormPanel("PRELOADTXN", 
+                    "PRELOADTXN_INFO",
+                    new String[] { "LOAD_TAXON"}, 
+                    new String[] { "preloadtaxon"},
+                    new String[] { "checkbox"},
+                    nextBtn, true));
+            
+    
+             
+            geoTDPanel = new TreeDefSetupPanel(GeographyTreeDef.class, 
+                                               getResourceString("Geography"), 
+                                               "Geography", 
+                                               "CONFIG_TREEDEF", 
+                                               nextBtn, 
+                                               disciplinePanel);
+            panels.add(geoTDPanel);
+        }
+
+        panels.add(new GenericFormPanel("COLLECTION", 
                     "ENTER_COL_INFO",
                     new String[] { "NAME",     "PREFIX", }, 
                     new String[] { "collName", "collPrefix", }, 
                     nextBtn, true));
-        }  
         panels.add(new FormatterPickerPanel("CATNOFMT", nextBtn, true));
+        
         panels.add(new FormatterPickerPanel("ACCNOFMT", nextBtn, false));
         
         panels.add(new SummaryPanel("SUMMARY", nextBtn, panels));
@@ -355,7 +361,7 @@ public class SpecifyDBSetupWizard extends JPanel
                 } else
                 {
                     configSetup();
-                    if (wizardType == WizardType.Full)
+                    if (wizardType == WizardType.Institution)
                     {
                         createDBAndMaster();
                         
@@ -523,7 +529,7 @@ public class SpecifyDBSetupWizard extends JPanel
             
         }
         
-        if (wizardType == WizardType.Full)
+        if (wizardType == WizardType.Institution)
         {
             // Clear and Reset Everything!
             //AppPreferences.shutdownLocalPrefs();
@@ -687,6 +693,32 @@ public class SpecifyDBSetupWizard extends JPanel
     {
         return props;
     }
+    
+    public void processDataForNonBuild()
+    {
+        saveFormatters(); 
+    }
+    
+    /**
+     * 
+     */
+    protected void saveFormatters()
+    {
+        Object catNumFmtObj = props.get("catnumfmt");
+        Object accNumFmtObj = props.get("accnumfmt");
+        
+        UIFieldFormatterIFace catNumFmt = catNumFmtObj instanceof UIFieldFormatterIFace ? (UIFieldFormatterIFace)catNumFmtObj : null;
+        UIFieldFormatterIFace accNumFmt = accNumFmtObj instanceof UIFieldFormatterIFace ? (UIFieldFormatterIFace)accNumFmtObj : null;
+        
+        if (catNumFmt != null)
+        {
+            saveFormatters(catNumFmt, "catnumfmt.xml");
+        }
+        if (accNumFmt != null)
+        {
+            saveFormatters(accNumFmt, "accnumfmt.xml");
+        }
+    }
 
     /**
      * 
@@ -718,8 +750,6 @@ public class SpecifyDBSetupWizard extends JPanel
                         
                         //builder.getFrame().setIconImage(IconManager.getImage("Specify16", IconManager.IconSize.Std16).getImage());
                         
-                        props.put("disciplineType", disciplinePanel.getDisciplineType());
-                        
                         boolean proceed = true;
                         if (checkForDatabase(props))
                         {
@@ -742,20 +772,7 @@ public class SpecifyDBSetupWizard extends JPanel
                             
                             if (isOK)
                             {
-                                Object catNumFmtObj = props.get("catnumfmt");
-                                Object accNumFmtObj = props.get("accnumfmt");
-                                
-                                UIFieldFormatterIFace catNumFmt = catNumFmtObj instanceof UIFieldFormatterIFace ? (UIFieldFormatterIFace)catNumFmtObj : null;
-                                UIFieldFormatterIFace accNumFmt = accNumFmtObj instanceof UIFieldFormatterIFace ? (UIFieldFormatterIFace)accNumFmtObj : null;
-                                
-                                if (catNumFmt != null)
-                                {
-                                    saveFormatters(catNumFmt, "catnumfmt.xml");
-                                }
-                                if (accNumFmt != null)
-                                {
-                                    saveFormatters(accNumFmt, "accnumfmt.xml");
-                                }
+                                saveFormatters();
                             }
 
                             JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 

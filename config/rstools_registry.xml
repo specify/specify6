@@ -2,6 +2,6 @@
 <tools>
 	<tool class="edu.ku.brc.specify.rstools.GoogleEarthExporter" addui="true"/>
 	<tool class="edu.ku.brc.specify.rstools.ExportToFile" addui="false"/>
-	<tool class="edu.ku.brc.specify.rstools.BGMRecordSetProcessor" addui="true"/>
+	<!-- <tool class="edu.ku.brc.specify.rstools.BGMRecordSetProcessor" addui="true"/>  -->
     <tool class="edu.ku.brc.specify.rstools.GeoLocateRecordSetProcessor" addui="true"/>
 </tools>

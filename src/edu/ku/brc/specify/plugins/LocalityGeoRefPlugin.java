@@ -199,7 +199,7 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
                 
             } else
             {
-                UIRegistry.displayErrorDlgLocalized("BGM_GEO_REQUIRED");
+                UIRegistry.displayErrorDlgLocalized(doGeoLocate ? "GEOLOC_REQUIRED" : "BGM_GEO_REQUIRED");
             }
         }
     }

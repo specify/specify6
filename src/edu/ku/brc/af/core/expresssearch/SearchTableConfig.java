@@ -499,7 +499,7 @@ public class SearchTableConfig implements DisplayOrderingIFace,
     /* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
-    //@Override
+    @Override
     public int compareTo(final SearchTableConfig obj)
     {
         String str1 = tableInfo.getTitle() ;
@@ -527,7 +527,7 @@ public class SearchTableConfig implements DisplayOrderingIFace,
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.TableNameRendererIFace#getIconName()
      */
-    //@Override
+    @Override
     public String getIconName()
     {
         return tableInfo.getClassObj().getSimpleName();
@@ -536,7 +536,7 @@ public class SearchTableConfig implements DisplayOrderingIFace,
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.TableNameRendererIFace#getTitle()
      */
-    //@Override
+    @Override
     public String getTitle()
     {
         return toString();

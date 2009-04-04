@@ -1,4 +1,3 @@
-
 /**
  * Copyright (C) 2006 The University of Kansas
  * 
@@ -301,6 +300,7 @@ public class BuildSampleDatabase
     protected DataType            dataType;
     protected StorageTreeDef      stgTreeDef = null;
     protected int                 createStep = 0;
+    protected Transaction         trans      = null;
     
     
     /**
@@ -459,6 +459,7 @@ public class BuildSampleDatabase
         {
             stgTreeDef = createStorageTreeDef("Storage");
             institution.setStorageTreeDef(stgTreeDef);
+            persist(stgTreeDef);
         }
         
         String       storXML  = props.getProperty("StorageTreeDef.treedefs");
@@ -469,14 +470,11 @@ public class BuildSampleDatabase
         String email    = props.getProperty("email");
         String userType = props.getProperty("userType");
 
-        Session     dataBuilderSession = switchDataBuilderSession();
-        SpecifyUser specifyAdminUser   = DataBuilder.createAdminGroupAndUser(institution, username, email, password, userType);
+        SpecifyUser specifyAdminUser = DataBuilder.createAdminGroupAndUser(institution, username, email, password, userType);
         
         ////////////////////////////////
         // Create the really high-level stuff
         ////////////////////////////////
-        
-        DataBuilder.setSession(dataBuilderSession);
         
         dataType = createDataType("Biota");
 
@@ -496,15 +494,23 @@ public class BuildSampleDatabase
     }
     
     /**
+     * @param dataType the dataType to set
+     */
+    public void setDataType(DataType dataType)
+    {
+        this.dataType = dataType;
+    }
+
+    /**
      * @param institution
      * @param disciplineType
      * @param props
      * @return
      */
-    public Division createEmptyDivision(final Institution institution, 
+    public Division createEmptyDivision(final Institution    institution, 
                                         final DisciplineType disciplineType,
                                         final SpecifyUser    specifyAdminUser, 
-                                        final Properties props)
+                                        final Properties     props)
     {
         
         startTx();
@@ -578,13 +584,8 @@ public class BuildSampleDatabase
         String taxonXML = props.getProperty("TaxonTreeDef.treedefs");
         String geoXML   = props.getProperty("GeographyTreeDef.treedefs");
         
-        Discipline discipline = createEmptyDiscipline(division,
-                                                      dispName, 
-                                                      disciplineType, 
-                                                      userAgent,
-                                                      preLoadTaxon, 
-                                                      taxonXML,
-                                                      geoXML);
+        Discipline discipline = createEmptyDiscipline(division, dispName, disciplineType, userAgent,
+                                                      preLoadTaxon, taxonXML, geoXML);
         
         frame.setProcess(++createStep);
         frame.setDesc("Loading Schema...");
@@ -599,15 +600,15 @@ public class BuildSampleDatabase
         Collection collection = null;
         if (doCollection)
         {
-            createEmptyCollection(discipline, 
-                                  props.getProperty("collPrefix").toString(), 
-                                  props.getProperty("collName").toString(),
-                                  userAgent,
-                                  specifyAdminUser,
-                                  triple.first,
-                                  triple.second,
-                                  triple.third,
-                                  disciplineType.isEmbeddedCollecingEvent());
+            collection = createEmptyCollection(discipline, 
+                                               props.getProperty("collPrefix").toString(), 
+                                               props.getProperty("collName").toString(),
+                                               userAgent,
+                                               specifyAdminUser,
+                                               triple.first,
+                                               triple.second,
+                                               triple.third,
+                                               disciplineType.isEmbeddedCollecingEvent());
         }
         
         startTx();
@@ -672,6 +673,10 @@ public class BuildSampleDatabase
         persist(division);
         persist(discipline);
         persist(userAgent);
+        
+        commitTx();
+        
+        startTx();
 
         frame.setProcess(++createStep);
         
@@ -1155,10 +1160,7 @@ public class BuildSampleDatabase
         
         desc.addReference(conservEvent, "events");
         
-        startTx();
         persist(desc);
-        commitTx();
-        
     }
     
     /**
@@ -1618,7 +1620,6 @@ public class BuildSampleDatabase
         Collection collection = createCollection("KUBOT", "Botany", choice.getCatalogNumberingFmtName(), cns, discipline);
         persist(collection);
         
-        Session dataBuilderSession = switchDataBuilderSession();
         // create the standard user groups for this collection
         Map<String, SpPrincipal> groupMap = DataBuilder.createStandardGroups(collection);
 
@@ -1626,10 +1627,9 @@ public class BuildSampleDatabase
         user.addUserToSpPrincipalGroup(groupMap.get(SpecifyUserTypes.UserType.Manager.toString()));
 
         // Tester
-        createAndAddTesterToCollection("botanyuser", "botanyuser@ku.edu", "botanyuser", "mr", "Bob", "", "Botony", "",  
-                discipline, division, groupMap, "Guest");
+        persist(createAndAddTesterToCollection("botanyuser", "botanyuser@ku.edu", "botanyuser", "mr", "Bob", "", "Botony", "",  
+                                        discipline, division, groupMap, "Guest"));
 
-        DataBuilder.setSession(dataBuilderSession);
         persist(discipline);
 
         AppContextMgr.getInstance().setClassObject(Collection.class, collection);
@@ -1685,7 +1685,6 @@ public class BuildSampleDatabase
         AppContextMgr.getInstance().setClassObject(Institution.class, institution);
 
         
-        startTx();
         frame.setProcess(++createStep);
         
         ////////////////////////////////
@@ -1701,6 +1700,7 @@ public class BuildSampleDatabase
         
         Vector<Object> dataObjects = new Vector<Object>();
         
+        startTx();
         standardQueries(dataObjects, userAgent);
         persist(dataObjects);
         dataObjects.clear();
@@ -2307,7 +2307,6 @@ public class BuildSampleDatabase
         persist(lithoStrats);
         commitTx();
         
-        startTx();
         frame.setProcess(++createStep);
         
         ////////////////////////////////
@@ -2323,6 +2322,7 @@ public class BuildSampleDatabase
         
         Vector<Object> dataObjects = new Vector<Object>();
         
+        startTx();
         standardQueries(dataObjects, userAgent);
         persist(dataObjects);
         dataObjects.clear();
@@ -2723,7 +2723,6 @@ public class BuildSampleDatabase
         Collection collection = createCollection("KUIVP", disciplineType.getTitle(), choice.getCatalogNumberingFmtName(), cns, discipline);
         persist(collection);
         
-        Session dataBuilderSession = switchDataBuilderSession();
         // create the standard user groups for this collection
         Map<String, SpPrincipal> groupMap = DataBuilder.createStandardGroups(collection);
 
@@ -2731,10 +2730,8 @@ public class BuildSampleDatabase
         user.addUserToSpPrincipalGroup(groupMap.get(SpecifyUserTypes.UserType.Manager.toString()));
 
         // Tester
-        createAndAddTesterToCollection("ivpuser", "InvertPaleo@ku.edu", "ivpuser", "mr", "Joe", "", "InvertPaleo", "",
-                discipline, division, groupMap, "Guest");
-
-        DataBuilder.setSession(dataBuilderSession);
+        persist(createAndAddTesterToCollection("ivpuser", "InvertPaleo@ku.edu", "ivpuser", "mr", "Joe", "", "InvertPaleo", "",
+                                       discipline, division, groupMap, "Guest"));
 
         AppContextMgr.getInstance().setClassObject(Collection.class, collection);
 
@@ -2791,7 +2788,6 @@ public class BuildSampleDatabase
         }
 
         
-        startTx();
         frame.setProcess(++createStep);
         
         ////////////////////////////////
@@ -2809,6 +2805,8 @@ public class BuildSampleDatabase
         
         Vector<Object> dataObjects = new Vector<Object>();
         
+        startTx();
+
         frame.setDesc("Creating Queries...");
         standardQueries(dataObjects, userAgent);
         persist(dataObjects);
@@ -3829,7 +3827,6 @@ public class BuildSampleDatabase
                                                  cns, discipline, disciplineType.isEmbeddedCollecingEvent());
         persist(collection);
         
-        Session dataBuilderSession = switchDataBuilderSession();
         // create the standard user groups for this collection
         Map<String, SpPrincipal> groupMap = DataBuilder.createStandardGroups(collection);
 
@@ -3838,13 +3835,10 @@ public class BuildSampleDatabase
 
         // Tester
         String dspAbbrev = disciplineType.getAbbrev();
-        createAndAddTesterToCollection(dspAbbrev+"Tester", dspAbbrev+"tester@brc.ku.edu", dspAbbrev+"Tester", 
-                "", dspAbbrev, "", "Tester", "", discipline, division, groupMap, "Guest");
+        persist(createAndAddTesterToCollection(dspAbbrev+"Tester", dspAbbrev+"tester@brc.ku.edu", dspAbbrev+"Tester", 
+                "", dspAbbrev, "", "Tester", "", discipline, division, groupMap, "Guest"));
 
-        DataBuilder.setSession(dataBuilderSession);
-        
         AppContextMgr.getInstance().setClassObject(Collection.class, collection);
-
         
         division.addReference(accessionNS, "numberingSchemes");
         persist(division);
@@ -3923,7 +3917,6 @@ public class BuildSampleDatabase
         }
         commitTx();
         
-        startTx();
         frame.setProcess(++createStep);
         
         ////////////////////////////////
@@ -3939,6 +3932,7 @@ public class BuildSampleDatabase
         frame.setDesc("Creating PickLists...");
         createPickLists(session, discipline);
         
+        startTx();
         Vector<Object> dataObjects = new Vector<Object>();
         
         frame.setDesc("Creating Queries...");
@@ -4652,7 +4646,7 @@ public class BuildSampleDatabase
         boolean buildStorageTree = false;
         if (stgTreeDef == null)
         {
-            stgTreeDef        = createStorageTreeDef("Storage");
+            stgTreeDef = createStorageTreeDef("Storage");
             institution.setStorageTreeDef(stgTreeDef);
             buildStorageTree = true;
         }
@@ -4994,12 +4988,12 @@ public class BuildSampleDatabase
      * return old DataBuilder session so it can be later restored.
      * @return
      */
-    private Session switchDataBuilderSession() 
+    /*private Session switchDataBuilderSession() 
     {
         Session oldSession = DataBuilder.getSession();
         DataBuilder.setSession(session);
         return oldSession;
-    }
+    }*/
     
     /**
      * Creates a single disciplineType collection.
@@ -5052,7 +5046,6 @@ public class BuildSampleDatabase
         log.info("Creating a Collection");
         Collection collection = createCollection(colPrefix, colName, choice.getCatalogNumberingFmtName(), cns, discipline, false);
         persist(collection);
-        
 
         AppContextMgr.getInstance().setClassObject(Collection.class, collection);
         
@@ -5062,22 +5055,19 @@ public class BuildSampleDatabase
         ////////////////////////////////
         // Default user groups and test user
         ////////////////////////////////
-        Session dataBuilderSession = switchDataBuilderSession();
         Map<String, SpPrincipal> groupMap = DataBuilder.createStandardGroups(collection);
         
         // add the administrator as a Collections Manager in this group
         user.addUserToSpPrincipalGroup(groupMap.get(SpecifyUserTypes.UserType.Manager.toString()));
-
+        persist(user);
+        
         // Tester
         String userPrefix = (isVoucherCol)? "" : "Tis";
-        createAndAddTesterToCollection(userPrefix + "FishTester", "fishtester@brc.ku.edu", userPrefix + "FishTester", 
-                "", "Fish", "", "Tester", "", discipline, division, groupMap, "Guest");
+        persist(createAndAddTesterToCollection(userPrefix + "FishTester", "fishtester@brc.ku.edu", userPrefix + "FishTester", 
+                "", "Fish", "", "Tester", "", discipline, division, groupMap, "Guest"));
         
-        DataBuilder.setSession(dataBuilderSession);
         commitTx();
         
-        startTx();
-
         ////////////////////////////////
         // picklists
         ////////////////////////////////
@@ -5085,8 +5075,6 @@ public class BuildSampleDatabase
         
         createPickLists(session, null);
         BldrPickList colMethods = createPickLists(session, discipline);
-        
-        commitTx();
         
         frame.setProcess(++createStep);
         
@@ -5917,6 +5905,7 @@ public class BuildSampleDatabase
         ////////////////////////////////
         // attachments (attachment metadata)
         ////////////////////////////////
+        startTx();
         
             log.info("Creating attachments and attachment metadata");
             try
@@ -6082,21 +6071,20 @@ public class BuildSampleDatabase
         System.out.println("----- User Agent -----");
         System.out.println("Userame:   "+username);
         
-        Institution institution = createInstitution("Natural History Museum");        
+        Institution institution = createInstitution("Natural History Museum");
         
-        Session dataBuilderSession = switchDataBuilderSession();
+        startTx();
+        
         SpecifyUser specifyAdminUser = DataBuilder.createAdminGroupAndUser(institution,  username, email, password, userType);
-        DataBuilder.setSession(dataBuilderSession);
         
         dataType = createDataType("Biota");
         
-        startTx();
         persist(institution);        
         persist(dataType);
+        persist(specifyAdminUser);
         commitTx();
         
         frame.setProcess(++createStep);
-        
         
         //boolean done = false;
         if (isChoosen(DisciplineType.STD_DISCIPLINES.fish, false) ||
@@ -6553,8 +6541,7 @@ public class BuildSampleDatabase
             }
         }
 
-
-        Taxon life            = createTaxon(taxonTreeDef, null, "Life", TaxonTreeDef.TAXONOMY_ROOT);
+        Taxon life = createTaxon(taxonTreeDef, null, "Life", TaxonTreeDef.TAXONOMY_ROOT);
         
         Taxon animalia        = null;
         Taxon chordata        = null;
@@ -6844,7 +6831,7 @@ public class BuildSampleDatabase
 
     public void startTx()
     {
-        HibernateUtil.beginTransaction();
+        trans = session.beginTransaction();
     }
 
 
@@ -6853,10 +6840,20 @@ public class BuildSampleDatabase
         try
         {
             
-            HibernateUtil.commitTransaction();
+            if (trans != null)
+            {
+                trans.commit();
+            } else
+            {
+                throw new RuntimeException("Transaction is null");
+            }
+            trans = null;
             
         } catch (Exception ex)
         {
+            rollbackTx();
+            
+            trans = null;
             UIRegistry.showError(ex.toString());
             ex.printStackTrace();
             throw new RuntimeException(ex);
@@ -6866,7 +6863,13 @@ public class BuildSampleDatabase
 
     public void rollbackTx()
     {
-        HibernateUtil.rollbackTransaction();
+        if (trans != null)
+        {
+            trans.rollback();
+        } else
+        {
+            throw new RuntimeException("Transaction is null");
+        }
     }
     
 
@@ -6970,11 +6973,11 @@ public class BuildSampleDatabase
         }
     }
     
-    protected ProgressFrame createProgressFrame()
+    public ProgressFrame createProgressFrame(final String title)
     {
         if (frame == null)
         {
-            frame = new ProgressFrame("Building Specify Database", "SpecifyLargeIcon");
+            frame = new ProgressFrame(title, "SpecifyLargeIcon");
             frame.pack();
         } 
         return frame;
@@ -7046,7 +7049,7 @@ public class BuildSampleDatabase
         IconManager.aliasImages("SpBuilder", // Source //$NON-NLS-1$
                                 "AppIcon");  // Dest //$NON-NLS-1$
         
-        createProgressFrame();
+        createProgressFrame("Building Specify Database");
         
         System.setProperty(AppPreferences.factoryName,          "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");         // Needed by AppReferences
         System.setProperty("edu.ku.brc.dbsupport.DataProvider", "edu.ku.brc.specify.dbsupport.HibernateDataProvider");  // Needed By the Form System and any Data Get/Set
@@ -7198,7 +7201,7 @@ public class BuildSampleDatabase
      */
     public boolean buildEmptyDatabase(final Properties props)
     {
-        createProgressFrame();
+        createProgressFrame("Building Specify Database");
 
         final String dbName = props.getProperty("dbName");
         
@@ -7307,7 +7310,7 @@ public class BuildSampleDatabase
             
             
             setSession(HibernateUtil.getCurrentSession());
-            DataBuilder.setSession(session);
+            //DataBuilder.setSession(session);
             
             SwingUtilities.invokeLater(new Runnable()
             {
@@ -7525,7 +7528,8 @@ public class BuildSampleDatabase
                     
                     // save it all to the DB
                     setSession(HibernateUtil.getCurrentSession());
-
+                    //DataBuilder.setSession(session);
+                    
                     createDisciplines(cmUser.first, cmUser.second);
 
                     attachMgr.cleanup();
@@ -7841,6 +7845,8 @@ public class BuildSampleDatabase
         
         //loadFieldsToHideHash();
         
+        String dispName = discipline.getType().toString();
+        
         for (SpLocaleContainer table : schemaLocalizer.getSpLocaleContainers())
         {
             SpLocaleContainer container = new SpLocaleContainer();
@@ -7848,10 +7854,11 @@ public class BuildSampleDatabase
             container.setName(table.getName());
             container.setType(table.getType());
             container.setSchemaType(schemaType);
+            container.setDiscipline(discipline);
             
             container.setIsHidden(hiddenTableMgr.isHidden(discipline.getType(), table.getName()));
             
-            loadLocalization(discipline.getType().toString(), table, container, hideGenericFields, catFmtName, accFmtName);
+            loadLocalization(dispName, table, container, hideGenericFields, catFmtName, accFmtName);
             
             discipline.getSpLocaleContainers().add(container);
             container.setDiscipline(discipline);
@@ -7890,62 +7897,58 @@ public class BuildSampleDatabase
     public static void makeFieldVisible(final String disciplineDirName,
                                         final Discipline discipline)
     {
-        //setFieldVisible("collectionobject", "timestampModified");
-        //setFieldVisible("determination",    "yesNo1");
+        String dirName        = disciplineDirName != null ? disciplineDirName + File.separator : "";
+        String filePath       = XMLHelper.getConfigDirPath(dirName + "show_fields.xml");
+        File   showFieldsFile = new File(filePath);
         
-        try
+        if (showFieldsFile.exists())
         {
-            String dirName  = disciplineDirName != null ? disciplineDirName + File.separator : "";
-            String filePath = XMLHelper.getConfigDirPath(dirName + "show_fields.xml");
-            File showFieldsFile = new File(filePath);
-            if (showFieldsFile.exists())
+            /*try
             {
                 System.out.println(FileUtils.readFileToString(showFieldsFile));
-                
-                Element root = XMLHelper.readDOMFromConfigDir(dirName + "show_fields.xml");
-                if (root != null)
+            } catch (IOException ex)
+            {
+                ex.printStackTrace();
+            }*/
+            
+            Element root = XMLHelper.readDOMFromConfigDir(dirName + "show_fields.xml");
+            if (root != null)
+            {
+                List<?> tables = root.selectNodes("/tables/table");
+                for (Iterator<?> iter = tables.iterator(); iter.hasNext(); )
                 {
-                    List<?> tables = root.selectNodes("/tables/table");
-                    for (Iterator<?> iter = tables.iterator(); iter.hasNext(); )
+                    Element table = (Element)iter.next();
+                    String  tName = XMLHelper.getAttr(table, "name", null);
+                    if (StringUtils.isNotEmpty(tName))
                     {
-                        Element table = (Element)iter.next();
-                        String  tName = XMLHelper.getAttr(table, "name", null);
-                        if (StringUtils.isNotEmpty(tName))
+                        DBTableInfo tbl = DBTableIdMgr.getInstance().getInfoByTableName(tName.toLowerCase());
+                        if (tbl != null)
                         {
-                            DBTableInfo tbl = DBTableIdMgr.getInstance().getInfoByTableName(tName.toLowerCase());
-                            if (tbl != null)
+                            List<?> fields = table.selectNodes("field");
+                            for (Iterator<?> fIter = fields.iterator(); fIter.hasNext(); )
                             {
-                                List<?> fields = table.selectNodes("field");
-                                for (Iterator<?> fIter = fields.iterator(); fIter.hasNext(); )
+                                Element fieldEl = (Element)fIter.next();
+                                String  fName   = XMLHelper.getAttr(fieldEl, "name", null);
+                                if (StringUtils.isNotEmpty(fName))
                                 {
-                                    Element fieldEl = (Element)fIter.next();
-                                    String  fName   = XMLHelper.getAttr(fieldEl, "name", null);
-                                    if (StringUtils.isNotEmpty(fName))
+                                    DBFieldInfo fld = tbl.getFieldByName(fName);
+                                    if (fld != null)
                                     {
-                                        DBFieldInfo fld = tbl.getFieldByName(fName);
-                                        if (fld != null)
-                                        {
-                                            setFieldVisible(tbl.getName(), fld.getName(), discipline);
-                                        } else
-                                        {
-                                            UIRegistry.showError("show_list.xml in ["+disciplineDirName+"] for table name ["+tName+"] has bad field name["+fName+"]");
-                                        }
+                                        setFieldVisible(tbl.getName(), fld.getName(), discipline);
+                                    } else
+                                    {
+                                        UIRegistry.showError("show_list.xml in ["+disciplineDirName+"] for table name ["+tName+"] has bad field name["+fName+"]");
                                     }
                                 }
-                            } else
-                            {
-                                UIRegistry.showError("show_list.xml in ["+disciplineDirName+"] has bad table name ["+tName+"]");
                             }
+                        } else
+                        {
+                            UIRegistry.showError("show_list.xml in ["+disciplineDirName+"] has bad table name ["+tName+"]");
                         }
-                    }   
-                }
+                    }
+                }   
             }
-            
-        } catch (IOException ex)
-        {
-            ex.printStackTrace();
         }
-        
     }
     
     /**
@@ -7953,21 +7956,23 @@ public class BuildSampleDatabase
      * @param tableName the table name
      * @param fieldName the field name
      */
-    protected static void setFieldVisible(final String tableName, 
-                                          final String fieldName,
+    protected static void setFieldVisible(final String     tableName, 
+                                          final String     fieldName,
                                           final Discipline discipline)
     {
         DataProviderSessionIFace localSession = null;
         try
         {
             localSession = DataProviderFactory.getInstance().createSession();
-            Object[] cols = (Object[])localSession.getData("FROM SpLocaleContainer as sp INNER JOIN sp.discipline as d WHERE sp.name = '" + tableName + "' AND d.id = "+discipline.getId());
+            String sql = "FROM SpLocaleContainer as sp INNER JOIN sp.discipline as d WHERE sp.name = '" + tableName + "' AND d.id = "+discipline.getId();
+            System.err.println(sql);
+            Object[] cols = (Object[])localSession.getData(sql);
             SpLocaleContainer container = (SpLocaleContainer)cols[0];
             if (container != null)
             {
                 for (SpLocaleContainerItem item : container.getItems())
                 {
-                    System.out.println(fieldName+" "+ item.getName());
+                    //System.out.println(fieldName+" "+ item.getName());
                     if (item.getName().equals(fieldName))
                     {
                         item.setIsHidden(false);
@@ -7981,8 +7986,8 @@ public class BuildSampleDatabase
             }
         } catch (Exception ex)
         {
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BuildSampleDatabase.class, ex);
             ex.printStackTrace();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BuildSampleDatabase.class, ex);
             
         } finally 
         {

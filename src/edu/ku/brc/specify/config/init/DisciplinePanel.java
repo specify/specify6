@@ -106,6 +106,7 @@ public class DisciplinePanel extends BaseSetupPanel
     public void getValues(final Properties props)
     {
         props.put("dispName", disciplineName.getText());
+        props.put("disciplineType", getDisciplineType());
     }
 
     /* (non-Javadoc)

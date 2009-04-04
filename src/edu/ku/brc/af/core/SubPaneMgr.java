@@ -754,6 +754,14 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         globalShutdown = false;
         return true;
     }
+    
+    /**
+     * @return whether there is a global shutdown.
+     */
+    public boolean isGlobalShutdown()
+    {
+        return globalShutdown;
+    }
 
     /**
      * Show (makes visible) the pane by name.
