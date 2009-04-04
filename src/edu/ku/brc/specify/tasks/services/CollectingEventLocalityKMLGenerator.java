@@ -490,7 +490,7 @@ public class CollectingEventLocalityKMLGenerator
                 sb.append("</center></td>\n");
                 
     			// simple name text
-    			String taxonomicName = tax.first + " " + tax.second;
+    			String taxonomicName = (tax.first != null ? tax.first : "") + " " + (tax.second != null ? tax.second : "");
     			sb.append("<td><i>");
     			sb.append(taxonomicName);
     			sb.append("</i></td>\n");
