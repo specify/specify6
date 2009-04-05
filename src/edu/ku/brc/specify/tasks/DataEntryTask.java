@@ -1297,15 +1297,11 @@ public class DataEntryTask extends BaseTask
                     colObj.setCollection(catSeries); 
                 }
                 
-                if (colObj.getCollectingEvent() == null)
+                Agent agent = Agent.getUserAgent();
+                if (agent != null)
                 {
-                    Agent agent = Agent.getUserAgent();
-                    if (agent != null)
-                    {
-                        colObj.setCataloger(agent);
-                    }
+                    colObj.setCataloger(agent);
                 }
-
             } 
             // Commenting out for now because we have no way to manage the default.
             /*
