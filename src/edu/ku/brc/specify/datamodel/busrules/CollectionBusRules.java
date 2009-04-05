@@ -48,7 +48,6 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class CollectionBusRules extends BaseBusRules
 {
-
     /**
      * Constructor.
      */
@@ -103,9 +102,9 @@ public class CollectionBusRules extends BaseBusRules
                 
             } catch (Exception ex)
             {
+                ex.printStackTrace();
                 edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(CollectionBusRules.class, ex);
-                ex.printStackTrace();
             }
         }
     }
@@ -127,7 +126,7 @@ public class CollectionBusRules extends BaseBusRules
     {
         super.afterFillForm(dataObj);
         
-        Collection   collection = (Collection)dataObj;
+        Collection  collection = (Collection)dataObj;
         JTextField txt        = (JTextField)formViewObj.getControlById("4");
         if (txt != null && collection != null)
         {
@@ -175,31 +174,32 @@ public class CollectionBusRules extends BaseBusRules
         dlg.setVisible(true);
         if (!dlg.isCancelled())
         {
-            AutoNumberingScheme ns = dlg.getNumScheme();
-            ns.setTableNumber(CollectionObject.getClassTableId());
+            AutoNumberingScheme autoNumScheme = dlg.getNumScheme();
+            autoNumScheme.setTableNumber(CollectionObject.getClassTableId());
             
             DataProviderSessionIFace session = null;
             try
             {
                 session = DataProviderFactory.getInstance().createSession();
-                if (ns.getId() != null)
+                if (autoNumScheme.getId() != null)
                 {
-                    session.attach(ns);
+                    session.attach(autoNumScheme);
                 } else
                 {
                     session.beginTransaction();
-                    session.saveOrUpdate(ns);
+                    session.saveOrUpdate(autoNumScheme);
                     session.commit();
                 }
                 
-                collection.getNumberingSchemes().add(ns);
-                ns.getCollections().add(collection);
+                collection.setCatalogNumFormatName(autoNumScheme.getFormatName());
+                collection.getNumberingSchemes().add(autoNumScheme);
+                autoNumScheme.getCollections().add(collection);
                 
             } catch (Exception ex)
             {
+                ex.printStackTrace();
                 edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(CollectionBusRules.class, ex);
-                ex.printStackTrace();
                 
             } finally
             {

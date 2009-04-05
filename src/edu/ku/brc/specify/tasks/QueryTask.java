@@ -1311,7 +1311,7 @@ public class QueryTask extends BaseTask
 						.writeTimedSimpleGlassPaneMsg(
 								UIRegistry
 										.getResourceString("QB_NO_REPORTS_WHILE_LOADING_RESULTS"),
-								5000, null, null);
+								5000, null, null, true);
 			} else
 			{
 				ChooseFromListDlg<SearchResultReportServiceInfo> dlg = new ChooseFromListDlg<SearchResultReportServiceInfo>(

@@ -219,6 +219,8 @@ public class SchemaToolsDlg extends CustomDialog
                     dlg.setVisible(true);
                     SchemaI18NService.setCurrentLocale(currLocale);
                     
+                    isCancelled = true; // We need to do this here so we don't get a StatsPane we don't want
+
                     if (dlg.wasSaved())
                     {
                         CommandDispatcher.dispatch(new CommandAction(BaseTask.APP_CMD_TYPE, BaseTask.APP_REQ_EXIT));
@@ -226,7 +228,6 @@ public class SchemaToolsDlg extends CustomDialog
                     {
                         ContextMgr.getTaskByName("Startup").requestContext();
                     }
-
                 }
             }
         });

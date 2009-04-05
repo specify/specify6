@@ -1164,11 +1164,12 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
     
     /**
      * Displays "No Results Message
+     * @param msgKey the localized string key
      */
     protected void displayNoResults(final String msgKey)
     {
         String fullMsg = UIRegistry.getLocalizedMessage(StringUtils.isNotEmpty(msgKey) ? msgKey : "NoExpressSearchResults", searchText.getText());
-        UIRegistry.writeTimedSimpleGlassPaneMsg(fullMsg, null, null, 24);
+        UIRegistry.writeTimedSimpleGlassPaneMsg(fullMsg, null, null, 24, true);
     }
     
     //-------------------------------------------------------------------------

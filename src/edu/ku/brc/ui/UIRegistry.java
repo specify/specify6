@@ -1496,7 +1496,7 @@ public class UIRegistry
      */
     public static void writeTimedSimpleGlassPaneMsg(final String  localizedMsg)
     {
-        writeTimedSimpleGlassPaneMsg(localizedMsg, null, null, null);
+        writeTimedSimpleGlassPaneMsg(localizedMsg, null, null, null, false);
     }
     
     /**
@@ -1507,7 +1507,7 @@ public class UIRegistry
     public static void writeTimedSimpleGlassPaneMsg(final String  localizedMsg,
                                                     final Color   textColor)
     {
-        writeTimedSimpleGlassPaneMsg(localizedMsg, null, textColor, null);
+        writeTimedSimpleGlassPaneMsg(localizedMsg, null, textColor, null, false);
     }
     
     /**
@@ -1518,14 +1518,16 @@ public class UIRegistry
      * @param pointSize the point size to draw the text
      */
     public static void writeTimedSimpleGlassPaneMsg(final String  localizedMsg,
-                                                                 final Integer milliseconds, 
-                                                                 final Color   textColor,
-                                                                 final Integer pointSize)
+                                                    final Integer milliseconds, 
+                                                    final Color   textColor,
+                                                    final Integer pointSize,
+                                                    final boolean doHideOnClick)
     {
         final SimpleGlassPane sgp = UIRegistry.writeSimpleGlassPaneMsg(localizedMsg, pointSize == null ? STD_FONT_SIZE : pointSize);
         if (sgp != null)
         {
             sgp.setTextColor(textColor);
+            sgp.setHideOnClick(doHideOnClick);
         }
 
         SwingWorker<Integer, Integer> msgWorker = new SwingWorker<Integer, Integer>()
@@ -1810,7 +1812,6 @@ public class UIRegistry
         } catch (ClassCastException e)
         {
             System.err.println("actionClass argument " + actionClass + " does not implement Action");
-            //System.exit(-1);
             
         } catch (Exception e)
         {

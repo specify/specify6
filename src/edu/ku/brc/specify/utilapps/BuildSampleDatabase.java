@@ -127,8 +127,6 @@ import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
-import edu.ku.brc.af.ui.forms.DataSetterForObj;
-import edu.ku.brc.af.ui.forms.FormHelper;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.dbsupport.AttributeIFace;
@@ -236,7 +234,6 @@ import edu.ku.brc.util.AttachmentManagerIface;
 import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.FileStoreAttachmentManager;
 import edu.ku.brc.util.Pair;
-import edu.ku.brc.util.Triple;
 import edu.ku.brc.util.thumbnails.Thumbnailer;
 
 /**
@@ -264,7 +261,6 @@ public class BuildSampleDatabase
     private static int SUBSPECIES_COMMON_NAME = 8;
     
     protected Hashtable<String, Integer> taxonIndexes = new Hashtable<String, Integer>();
-    private DataSetterForObj setter = new DataSetterForObj();
 
     protected static boolean     debugOn        = false;
     protected static final int   TIME_THRESHOLD = 3000;
@@ -499,7 +495,7 @@ public class BuildSampleDatabase
         frame.setProcess(++createStep);
         
         DisciplineType disciplineType = (DisciplineType)props.get("disciplineType");   
-        createEmptyDivision(institution, disciplineType, specifyAdminUser, props);
+        createEmptyDivision(institution, disciplineType, specifyAdminUser, props, false);
         
     }
     
@@ -520,8 +516,13 @@ public class BuildSampleDatabase
     public Division createEmptyDivision(final Institution    institution, 
                                         final DisciplineType disciplineType,
                                         final SpecifyUser    specifyAdminUser, 
-                                        final Properties     props)
+                                        final Properties     props,
+                                        final boolean        doSetProgressRange)
     {
+        if (doSetProgressRange)
+        {
+            frame.setProcess(0, 19);
+        }
         
         startTx();
 
@@ -560,7 +561,7 @@ public class BuildSampleDatabase
         
         commitTx();
         
-        createEmptyDisciplineAndCollection(division, props, disciplineType, userAgent, specifyAdminUser, true);
+        createEmptyDisciplineAndCollection(division, props, disciplineType, userAgent, specifyAdminUser, true, false);
         
         return division;
     }
@@ -579,9 +580,15 @@ public class BuildSampleDatabase
                                                                            final DisciplineType disciplineType,
                                                                            final Agent          userAgent,
                                                                            final SpecifyUser    specifyAdminUser,
-                                                                           final boolean        doCollection)
+                                                                           final boolean        doCollection,
+                                                                           final boolean        doSetProgressRange)
     {
         log.debug("In createEmptyDisciplineAndCollection - createStep: "+createStep);
+        
+        if (doSetProgressRange)
+        {
+           frame.setProcess(0, 17);
+        }
 
         String dispName = props.getProperty("dispName");
         if (StringUtils.isEmpty(dispName))
@@ -600,7 +607,7 @@ public class BuildSampleDatabase
         frame.setProcess(++createStep);
         frame.setDesc("Loading Schema...");
         
-        Triple<String, AutoNumberingScheme, AutoNumberingScheme> triple = localizeDisciplineSchema(discipline, props);
+        Pair<AutoNumberingScheme, AutoNumberingScheme> pair = localizeDisciplineSchema(discipline, props);
         
         makeFieldVisible(null, discipline);
         makeFieldVisible(disciplineType.getName(), discipline);
@@ -615,20 +622,18 @@ public class BuildSampleDatabase
                                                props.getProperty("collName").toString(),
                                                userAgent,
                                                specifyAdminUser,
-                                               triple.first,
-                                               triple.second,
-                                               triple.third,
+                                               pair.first,
+                                               pair.second,
                                                disciplineType.isEmbeddedCollecingEvent());
         }
         
         startTx();
         
-        if (triple.third != null)
+        if (pair.second != null)
         {
-            division.addReference(triple.third, "numberingSchemes");
+            division.addReference(pair.second, "numberingSchemes");
             persist(division);
         }
-        
         
         commitTx();
         
@@ -810,7 +815,6 @@ public class BuildSampleDatabase
                                             final String             collName,
                                             final Agent              userAgent,
                                             final SpecifyUser        specifyAdminUser,
-                                            final String             catFormatName,
                                             final AutoNumberingScheme catNumScheme,
                                             final AutoNumberingScheme accANS,
                                             final boolean             isEmbeddedCE)
@@ -829,8 +833,8 @@ public class BuildSampleDatabase
         
         Collection collection = createCollection(collPrefix, 
                                                  collName, 
-                                                 catFormatName,  // Catalog Format Name
-                                                 catNumScheme,   // Catalog Number Schema
+                                                 catNumScheme.getFormatName(),  // Catalog Format Name
+                                                 catNumScheme,                  // Catalog Number Schema
                                                  discipline, 
                                                  isEmbeddedCE);
         
@@ -886,55 +890,55 @@ public class BuildSampleDatabase
     }
     
     /**
+     * @param props
+     * @param propName
+     * @return
+     */
+    public AutoNumberingScheme createAutoNumScheme(final Properties props, 
+                                                   final String propName,
+                                                   final String schemeName,
+                                                   final int    tableId)
+    {
+        Object                numFmtObj       = props.get(propName);
+        UIFieldFormatterIFace numFormat       = numFmtObj instanceof UIFieldFormatterIFace ? (UIFieldFormatterIFace)numFmtObj : null;
+        boolean               isNumFmtNumeric = false;
+        String                numFmtName      = numFormat != null ? numFormat.getName() : numFmtObj.toString();
+        
+        if (numFormat != null)
+        {
+            isNumFmtNumeric = numFormat.isNumeric();
+            
+        } else if (StringUtils.isNotEmpty(numFmtName))
+        {
+            numFormat = UIFieldFormatterMgr.getInstance().getFormatter(numFmtName);
+            if (numFormat != null)
+            {
+                isNumFmtNumeric = numFormat.isNumeric(); 
+            }
+        }
+        
+        AutoNumberingScheme autoNumScheme = null;
+        if (numFormat != null)
+        {
+            autoNumScheme = createAutoNumberingScheme(schemeName, "", numFmtName, isNumFmtNumeric, tableId);
+            persist(autoNumScheme);
+        }
+
+        return autoNumScheme;
+    }
+    
+    /**
      * @param discipline
      * @param props
      * @return
      */
-    public Triple<String, AutoNumberingScheme, AutoNumberingScheme> localizeDisciplineSchema(final Discipline discipline, 
-                                                                                             final Properties props)
+    public Pair<AutoNumberingScheme, AutoNumberingScheme> localizeDisciplineSchema(final Discipline discipline, 
+                                                                                   final Properties props)
     {
-        Object catNumFmtObj = props.get("catnumfmt");
-        Object accNumFmtObj = props.get("accnumfmt");
-        
-        UIFieldFormatterIFace catNumFmt = catNumFmtObj instanceof UIFieldFormatterIFace ? (UIFieldFormatterIFace)catNumFmtObj : null;
-        UIFieldFormatterIFace accNumFmt = accNumFmtObj instanceof UIFieldFormatterIFace ? (UIFieldFormatterIFace)accNumFmtObj : null;
-        String catNumFmtName = catNumFmt != null ? catNumFmt.getName() : catNumFmtObj.toString();
-        
-        String accNumFmtName = "";
-        if (accNumFmtObj != null)
-        {
-            accNumFmtName = accNumFmt != null ? accNumFmt.getName() : accNumFmtObj.toString();
-        }
-        
-        boolean isCatNumFmtNumeric = false;
-        boolean isAccNumFmtNumeric = false;
-        
-        if (catNumFmt != null)
-        {
-            isCatNumFmtNumeric = catNumFmt.isNumeric();
-            
-        } else if (StringUtils.isNotEmpty(catNumFmtName))
-        {
-            catNumFmt = UIFieldFormatterMgr.getInstance().getFormatter(catNumFmtName);
-            if (catNumFmt != null)
-            {
-                isCatNumFmtNumeric = catNumFmt.isNumeric(); 
-            }
-        }
 
-        if (accNumFmt != null)
-        {
-            isAccNumFmtNumeric = accNumFmt.isNumeric();
-            
-        } else if (StringUtils.isNotEmpty(accNumFmtName))
-        {
-            accNumFmt = UIFieldFormatterMgr.getInstance().getFormatter(accNumFmtName);
-            if (accNumFmt != null)
-            {
-                isAccNumFmtNumeric = accNumFmt.isNumeric(); 
-            }
-        }
-        
+        AutoNumberingScheme catNumScheme = createAutoNumScheme(props, "catnumfmt", "Catalog Numbering Scheme",   CollectionObject.getClassTableId());
+        AutoNumberingScheme accNumScheme = createAutoNumScheme(props, "accnumfmt", "Accession Numbering Scheme", Accession.getClassTableId());
+
         startTx();
 
         //Discipline discipline = (Discipline)session.merge(disciplineArg);
@@ -942,30 +946,18 @@ public class BuildSampleDatabase
         loadSchemaLocalization(discipline, 
                                SpLocaleContainer.CORE_SCHEMA, 
                                DBTableIdMgr.getInstance(),
-                               catNumFmtName,
-                               accNumFmtName);
+                               catNumScheme.getFormatName(),
+                               accNumScheme != null ? accNumScheme.getFormatName() : null);
         
         frame.setProcess(++createStep);
         
         persist(discipline);
         
-        AutoNumberingScheme catANS = createAutoNumberingScheme("Catalog Numbering Scheme", "", 
-                                         catNumFmtName, isCatNumFmtNumeric, CollectionObject.getClassTableId());
-        persist(catANS);
-        
-        AutoNumberingScheme accANS = null;
-        if (accNumFmt != null)
-        {
-            accANS = createAutoNumberingScheme("Accession Numbering Scheme", "",  
-                                                  accNumFmtName, isAccNumFmtNumeric, Accession.getClassTableId());
-            persist(accANS);
-        }
-        
         frame.setProcess(++createStep);
 
         commitTx();
         
-        return new Triple<String, AutoNumberingScheme, AutoNumberingScheme>(catNumFmtName, catANS, accANS);
+        return new Pair<AutoNumberingScheme, AutoNumberingScheme>(catNumScheme, accNumScheme);
     }
     
     /**
@@ -3445,7 +3437,21 @@ public class BuildSampleDatabase
             POIFSFileSystem fs       = new POIFSFileSystem(input);
             HSSFWorkbook    workBook = new HSSFWorkbook(fs);
             HSSFSheet       sheet    = workBook.getSheetAt(0);
-            Iterator<?> rows = sheet.rowIterator();
+            Iterator<?>     rows     = sheet.rowIterator();
+            
+            int lastRowNum  = sheet.getLastRowNum();
+            if (frame != null)
+            {
+                final int mx = lastRowNum;
+                SwingUtilities.invokeLater(new Runnable()
+                {
+                    public void run()
+                    {
+                        frame.setProcess(0, mx);
+                    }
+                });
+            }
+            
             while (rows.hasNext())
             {
                 if (counter == 0)
@@ -7208,6 +7214,18 @@ public class BuildSampleDatabase
         return isOK;
     }
     
+    /**
+     * Pack and then sets the width to 500px.
+     */
+    public void adjustProgressFrame()
+    {
+        frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        frame.pack();
+        Dimension size = frame.getSize();
+        size.width = Math.max(size.width, 500);
+        frame.setSize(size);
+    }
+    
     /** 
      * Drops, Creates and Builds the Database.
      * 
@@ -7220,11 +7238,8 @@ public class BuildSampleDatabase
 
         final String dbName = props.getProperty("dbName");
         
-        frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        frame.pack();
-        Dimension size = frame.getSize();
-        size.width = Math.max(size.width, 500);
-        frame.setSize(size);
+        adjustProgressFrame();
+        
         frame.setTitle("Building Specify Database");
         if (!hideFrame)
         {
@@ -8117,6 +8132,7 @@ public class BuildSampleDatabase
 
     /**
      * @param treeDef
+     * @param fileName
      * @return
      */
     @SuppressWarnings("unchecked")
@@ -8269,10 +8285,7 @@ public class BuildSampleDatabase
                     }
                 }
 
-                //@SuppressWarnings("unused")
-                //Taxon newTaxon = convertTaxonRecord(cells, numDataCols, root, rankedItems);
-                
-                convertTaxonNodes(conn, stmt, cells, 0, numDataCols, rootNode, nodeList, rankedItems, root.getDefinition().getId());
+                convertTaxonNodes(conn, stmt, cells, numDataCols, rootNode, nodeList, rankedItems, root.getDefinition().getId());
     
                 counter++;
             }
@@ -8330,10 +8343,21 @@ public class BuildSampleDatabase
         }
     }
     
+    /**
+     * @param conn
+     * @param stmt
+     * @param levelNames
+     * @param startIndex
+     * @param numColumns
+     * @param parent
+     * @param nodeList
+     * @param rankedItems
+     * @param txTreeDefId
+     * @throws SQLException
+     */
     public void convertTaxonNodes(final Connection            conn,
                                   final Statement             stmt,
                                   final String[]              levelNames,
-                                  final int                   startIndex,
                                   final int                   numColumns,
                                   final Pair<String, Integer> parent,
                                   final Vector<Pair<String, Integer>> nodeList,
@@ -8342,7 +8366,7 @@ public class BuildSampleDatabase
     {
         String fullName = "";
         
-        for (int i = startIndex; i < numColumns; i++)
+        for (int i = 0; i < numColumns; i++)
         {
             int inx = i + 1;
             if (StringUtils.isEmpty(levelNames[i]))
@@ -8378,6 +8402,18 @@ public class BuildSampleDatabase
         }
     }
     
+    /**
+     * @param conn
+     * @param stmt
+     * @param name
+     * @param txTreeDefId
+     * @param tdi
+     * @param parentId
+     * @param fullName
+     * @param levelNames
+     * @return
+     * @throws SQLException
+     */
     protected Pair<String, Integer> createTaxonNode(final Connection conn,
                                                     final Statement  stmt,
                                                     final String     name,
@@ -8418,7 +8454,7 @@ public class BuildSampleDatabase
         sb.append(")");
 
         
-        System.out.println(sb.toString());
+        //System.out.println(sb.toString());
         stmt.executeUpdate(sb.toString());
         Integer newId = BasicSQLUtils.getInsertedId(stmt);
         if (newId == null)
@@ -8488,136 +8524,6 @@ public class BuildSampleDatabase
         }
     }
 
-    /**
-     * @param continent
-     * @param country
-     * @param state
-     * @param county
-     * @param taxonRoot
-     * @return
-     */
-    protected Taxon convertTaxonRecord(final String[]  levelNames,
-                                       final int       numColumns,
-                                       final Taxon     taxonRoot,
-                                       final Vector<TaxonTreeDefItem> rankedItems)
-    {
-        int levelsToBuild = numColumns;
-
-        for (int i = 0; i < levelsToBuild; i++)
-        {
-            if (StringUtils.isEmpty(levelNames[i]))
-            {
-                levelNames[i] = "(Empty)";
-            }
-        }
-
-        Taxon prevLevelTaxon = taxonRoot;
-        for (int i = 0; i < levelsToBuild; ++i)
-        {
-            Taxon newLevelTaxon = buildTaxonLevel(levelNames[i], prevLevelTaxon, levelNames, rankedItems);
-            if (newLevelTaxon != null)
-            {
-                prevLevelTaxon = newLevelTaxon;
-            } else 
-            {
-                break;
-            }
-        }
-
-        return prevLevelTaxon;
-    }
-
-    /**
-     * @param nameArg
-     * @param parentArg
-     * @return
-     */
-    protected Taxon buildTaxonLevel(final String nameArg,
-                                    final Taxon  parentArg,
-                                    final String[] cells,
-                                    final Vector<TaxonTreeDefItem> rankedItems)
-    {
-        if (StringUtils.isEmpty(nameArg))
-        {
-            return null;
-        }
-        
-        String name = nameArg;
-        if (name == null)
-        {
-            name = "N/A";
-        }
-
-        // search through all of parent's children to see if one already exists with the same name
-        Set<Taxon> children = parentArg.getChildren();
-        for (Taxon child : children)
-        {
-            if (name.equalsIgnoreCase(child.getName()))
-            {
-                // this parent already has a child by the given name
-                // don't create a new one, just return this one
-                return child;
-            }
-        }
-
-        // we didn't find a child by the given name
-        // we need to create a new Taxon record
-        Taxon newTaxon = new Taxon();
-        newTaxon.initialize();
-        newTaxon.setName(name);
-        newTaxon.setParent(parentArg);
-        parentArg.addChild(newTaxon);
-        newTaxon.setDefinition(parentArg.getDefinition());
-        
-        int inx = rankedItems.indexOf(parentArg.getDefinitionItem());
-        
-        TaxonTreeDefItem ttdi = rankedItems.elementAt(inx+1);
-        newTaxon.setDefinitionItem(ttdi);
-        newTaxon.setRankId(ttdi.getRankId());
-        
-        switch (ttdi.getRankId())
-        {
-            case 140: // family
-                loadTaxonFields(newTaxon, new int[] {FAMILY_COMMON_NAME}, cells);
-                break;
-                
-            case 220: // Species
-                loadTaxonFields(newTaxon, new int[] {SPECIES_AUTHOR, SPECIES_SOURCE, SPECIES_LSID, SPECIES_COMMON_NAME}, cells);
-                break;
-                
-            case 230: // SubSpecies
-                loadTaxonFields(newTaxon, new int[] {SUBSPECIES_AUTHOR, SUBSPECIES_SOURCE, SUBSPECIES_LSID, SUBSPECIES_COMMON_NAME}, cells);
-                break;
-                
-            default:
-                break;
-        }
-
-        persist(newTaxon);
-        
-        return newTaxon;
-    }
-    
-    /**
-     * @param taxon
-     * @param indexes
-     * @param cells
-     */
-    private void loadTaxonFields(final Taxon taxon, final int[] indexes, final String[] cells)
-    {
-        for (int inx : indexes)
-        {
-            if (TaxonIndexNames[inx] != null)
-            {
-                int index = taxonIndexes.get(TaxonIndexNames[inx].toLowerCase());
-                String data = cells[index];
-                if (StringUtils.isNotEmpty(data))
-                {
-                    FormHelper.setFieldValue(TaxonFieldNames[inx], taxon, data, null, setter);
-                }
-            }
-        }
-    }
     
     /**
      * @param treeDef
@@ -8674,6 +8580,20 @@ public class BuildSampleDatabase
             HSSFWorkbook    workBook = new HSSFWorkbook(fs);
             HSSFSheet       sheet    = workBook.getSheetAt(0);
             Iterator<?>     rows     = sheet.rowIterator();
+            
+            int lastRowNum  = sheet.getLastRowNum();
+            if (frame != null)
+            {
+                final int mx = lastRowNum;
+                SwingUtilities.invokeLater(new Runnable()
+                {
+                    public void run()
+                    {
+                        frame.setProcess(0, mx);
+                    }
+                });
+            }
+            
             while (rows.hasNext())
             {
                 if (counter == 0)

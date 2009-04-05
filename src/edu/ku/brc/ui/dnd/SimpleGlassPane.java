@@ -8,8 +8,10 @@ package edu.ku.brc.ui.dnd;
 
 import static edu.ku.brc.ui.UIHelper.isMacOS;
 
+import java.awt.AWTEvent;
 import java.awt.AlphaComposite;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -20,9 +22,14 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Transparency;
+import java.awt.event.AWTEventListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 import java.awt.image.BufferedImage;
 
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -39,7 +46,7 @@ import org.apache.commons.lang.StringUtils;
  * Created Date: Sep 2, 2008
  *
  */
-public class SimpleGlassPane extends JPanel
+public class SimpleGlassPane extends JPanel implements AWTEventListener
 {
     private String text;
     private int    pointSize;
@@ -51,6 +58,8 @@ public class SimpleGlassPane extends JPanel
     private  boolean          hideOnClick      = false;
     private  BufferedImage    img              = null;
     private  DelegateRenderer delegateRenderer = null;
+    
+    private JFrame frame = null; 
 
     
     /**
@@ -77,20 +86,122 @@ public class SimpleGlassPane extends JPanel
         setBackground(fillColor);
         setOpaque(false);
         
-        /*if (doBlockMouseEvents)
+        addMouseListener(new MouseAdapter() {
+            @Override public void mouseClicked(MouseEvent e)   { checkMouseEvent(e);   super.mouseClicked(e);}
+            @Override public void mouseDragged(MouseEvent e)   { checkMouseEvent(e);   super.mouseDragged(e);}
+            @Override public void mouseEntered(MouseEvent e)   { checkMouseEvent(e);   super.mouseEntered(e);}
+            @Override public void mouseExited(MouseEvent e)    { checkMouseEvent(e);   super.mouseExited(e);}
+            @Override public void mouseMoved(MouseEvent e)     { checkMouseEvent(e);   super.mouseMoved(e);}
+            @Override public void mousePressed(MouseEvent e)   { checkMouseEvent(e);   super.mousePressed(e);}
+            @Override public void mouseReleased(MouseEvent e)  { checkMouseEvent(e);   super.mouseReleased(e);}
+            @Override public void mouseWheelMoved(MouseWheelEvent e) { checkMouseEvent(e); }
+        });
+        
+        /*addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e)
+            {
+                e.consume();
+            }
+            @Override
+            public void keyReleased(KeyEvent e)
+            {
+                e.consume();
+            }
+            @Override
+            public void keyTyped(KeyEvent e)
+            {
+                e.consume();
+            }
+        });*/
+    }
+    
+    /**
+     * Receives all key events in the AWT and processes the ones that originated from the current
+     * window with the glass pane.
+     *
+     * @param event the AWTEvent that was fired
+     */
+    public void eventDispatched(AWTEvent event)
+    {
+        //Object source = event.getSource();
+
+        boolean srcIsComp = (event.getSource() instanceof Component);
+
+        if ((event instanceof KeyEvent) && srcIsComp)
         {
-            addMouseListener(new MouseAdapter() {
-                @Override public void mouseClicked(MouseEvent e)   { checkMouseEvent(e);   super.mouseClicked(e);}
-                @Override public void mouseDragged(MouseEvent e)   { checkMouseEvent(e);   super.mouseDragged(e);}
-                @Override public void mouseEntered(MouseEvent e)   { checkMouseEvent(e);   super.mouseEntered(e);}
-                @Override public void mouseExited(MouseEvent e)    { checkMouseEvent(e);   super.mouseExited(e);}
-                @Override public void mouseMoved(MouseEvent e)     { checkMouseEvent(e);   super.mouseMoved(e);}
-                @Override public void mousePressed(MouseEvent e)   { checkMouseEvent(e);   super.mousePressed(e);}
-                @Override public void mouseReleased(MouseEvent e)  { checkMouseEvent(e);   super.mouseReleased(e);}
-                @Override public void mouseWheelMoved(MouseWheelEvent e) { checkMouseEvent(e); }
-            });
+            if (frame == null)
+            {
+                Component p = getParent();
+                while (frame == null && p != null)
+                {
+                    if (p instanceof JFrame)
+                    {
+                        frame = (JFrame)p;
+                    }
+                    p = p.getParent();
+                }
+            }
+            
+            // If the event originated from the window w/glass pane, consume the event
+            //if ((SwingUtilities.windowForComponent((Component) source) == frame))
+            {
+                ((KeyEvent) event).consume();
+                //Toolkit.getDefaultToolkit().beep();
+            }
+        }
+    }
+
+    public void setVisible(boolean value)
+    {
+        super.setVisible(value);
+        
+        /*if (value)
+        {
+            // keep track of the visible window associated w/the component
+            // useful during event filtering
+            if (frame == null)
+            {
+                Component p = getParent();
+                while (frame == null && p != null)
+                {
+                    if (p instanceof JFrame)
+                    {
+                        frame = (JFrame)p;
+                    }
+                    p = p.getParent();
+                }
+            }
+
+            // Sets the mouse cursor to hourglass mode
+            getTopLevelAncestor().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+
+            //activeComponent = frame.getFocusOwner();
+
+            // Start receiving all events and consume them if necessary
+            Toolkit.getDefaultToolkit().addAWTEventListener(this, AWTEvent.KEY_EVENT_MASK);
+
+            this.requestFocus();
+
+            // Activate the glass pane capabilities
+            super.setVisible(value);
+            
+        } else
+        {
+            // Stop receiving all events
+            Toolkit.getDefaultToolkit().removeAWTEventListener(this);
+
+            // Deactivate the glass pane capabilities
+            super.setVisible(value);
+
+            // Sets the mouse cursor back to the regular pointer
+            if (getTopLevelAncestor() != null)
+            {
+                getTopLevelAncestor().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            }
         }*/
     }
+
     
     /**
      * @return
@@ -105,6 +216,9 @@ public class SimpleGlassPane extends JPanel
         return r;
     }
 
+    /**
+     * @param e
+     */
     protected void checkMouseEvent(MouseEvent e)
     {
         Rectangle r = getInternalBounds();
@@ -175,8 +289,7 @@ public class SimpleGlassPane extends JPanel
     @Override
     public boolean contains(final int x, final int y)
     {
-        Rectangle r = getInternalBounds();
-        return !r.contains(x, y);
+        return true;
     }
     
     /* (non-Javadoc)
@@ -262,7 +375,7 @@ public class SimpleGlassPane extends JPanel
     @Override
     protected void processMouseEvent(MouseEvent e)
     {
-        if (hideOnClick)
+        if (hideOnClick && e.getClickCount() == 1)
         {
             hideOnClick = false;
             SwingUtilities.invokeLater(new Runnable() {
@@ -272,6 +385,9 @@ public class SimpleGlassPane extends JPanel
                     SimpleGlassPane.this.setVisible(false);
                 }
             });
+        } else
+        {
+            e.consume();
         }
         super.processMouseEvent(e);
     }

@@ -489,13 +489,13 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
                     boolean previouslyLocked,
                     String prevLockBy)
     	    {
-    	    	boolean ok = UIRegistry.displayConfirm(UIRegistry.getResourceString("BaseTreeDef.TreeLockMsgTitle"), 
+    	    	boolean okay = UIRegistry.displayConfirm(UIRegistry.getResourceString("BaseTreeDef.TreeLockMsgTitle"), 
     	    				String.format(UIRegistry.getResourceString("BaseTreeDef.TreeLockMsg"), 
     	    						DBTableIdMgr.getInstance().getByClassName(getNodeClass().getName()).getTitle(),
     	    						prevLockBy), 
     	    				UIRegistry.getResourceString("BaseTreeDef.RemoveLock"), 
     	    				UIRegistry.getResourceString("CANCEL"), JOptionPane.WARNING_MESSAGE);
-    	    	if (ok)
+    	    	if (okay)
     	    	{
     	    		return USER_ACTION.Override;
     	    	}

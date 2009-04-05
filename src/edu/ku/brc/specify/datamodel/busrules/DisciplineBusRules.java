@@ -31,7 +31,6 @@ import java.util.Properties;
 import java.util.Vector;
 
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.SwingWorker;
 
 import org.hibernate.Session;
@@ -217,7 +216,7 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
         progressFrame.setProcess(0, 17);
         progressFrame.getCloseBtn().setVisible(false);
         progressFrame.setAlwaysOnTop(true);
-        progressFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        bldSampleDB.adjustProgressFrame();
         UIHelper.centerAndShow(progressFrame);
         
         SwingWorker<Integer, Integer> bldWorker = new SwingWorker<Integer, Integer>()
@@ -252,7 +251,8 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
                     
                     bldSampleDB.setSession(session);
                     
-                    pair = bldSampleDB.createEmptyDisciplineAndCollection(division, props, dispType, userAgent, specifyAdminUser, true);
+                    pair = bldSampleDB.createEmptyDisciplineAndCollection(division, props, dispType, userAgent, 
+                                                                          specifyAdminUser, true, true);
                     
                     if (pair != null && pair.first != null && pair.second != null)
                     {

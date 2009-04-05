@@ -772,13 +772,18 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                     
                     SchemaToolsDlg dlg = new SchemaToolsDlg((Frame)UIRegistry.getTopWindow(), schemaType, tableMgr);
                     dlg.setVisible(true);
-                    
-                    TaskMgr.getTask("Startup").requestContext();
+                    if (!dlg.isCancelled())
+                    {
+                        TaskMgr.getTask("Startup").requestContext();
+                    }
                 }
             };
             
             // start the background task
             workerThread.start();
+        } else
+        {
+            TaskMgr.getTask("Startup").requestContext();
         }
     }
     

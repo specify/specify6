@@ -644,7 +644,6 @@ public class SpecifyAppContextMgr extends AppContextMgr
             }
         }
         
-        //System.exit(0);
         return null;
         
     }
