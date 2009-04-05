@@ -15,6 +15,8 @@
 package edu.ku.brc.specify.datamodel.busrules;
 
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.showLocalizedMsg;
 
 import java.util.List;
 
@@ -42,7 +44,6 @@ import edu.ku.brc.specify.datamodel.LoanPreparation;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.Project;
-import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author rods
@@ -91,10 +92,10 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
         
                 } catch (Exception ex)
                 {
+                    ex.printStackTrace();
                     edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                     edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(CollectionObjectBusRules.class, ex);
                     log.error(ex);
-                    ex.printStackTrace();
                     
                 } finally
                 {
@@ -197,13 +198,11 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                 }
                 if (currents == 0)
                 {
-                    reasonList.add(UIRegistry
-                            .getResourceString("CollectionObjectBusRules.CURRENT_DET_REQUIRED"));
+                    reasonList.add(getResourceString("CollectionObjectBusRules.CURRENT_DET_REQUIRED"));
                 }
                 else
                 {
-                    reasonList.add(UIRegistry
-                            .getResourceString("CollectionObjectBusRules.ONLY_ONE_CURRENT_DET"));
+                    reasonList.add(getResourceString("CollectionObjectBusRules.ONLY_ONE_CURRENT_DET"));
                 }
             }
         }
@@ -292,7 +291,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
             Integer count = BasicSQLUtils.getCount("SELECT COUNT(*) FROM CollectionObject WHERE CollectionObjectID = " + ((FormDataObjIFace)dataObjArg).getId());
             if (count != null && count == 0)
             {
-                UIRegistry.showLocalizedMsg("NO_RECORD_FOUND_TITLE", "NO_RECORD_FOUND");
+                showLocalizedMsg("NO_RECORD_FOUND_TITLE", "NO_RECORD_FOUND");
                 return;
             }
             

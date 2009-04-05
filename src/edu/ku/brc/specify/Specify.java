@@ -90,7 +90,6 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.ExperienceBlue;
-import com.pagosoft.plaf.PlafOptions;
 
 import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.auth.UserAndMasterPasswordMgr;

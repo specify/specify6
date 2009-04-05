@@ -360,6 +360,8 @@ public class SpecifyDBSetupWizard extends JPanel
                     
                 } else
                 {
+                    nextBtn.setEnabled(false);
+                    
                     configSetup();
                     if (wizardType == WizardType.Institution)
                     {

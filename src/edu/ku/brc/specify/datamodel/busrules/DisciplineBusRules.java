@@ -22,7 +22,6 @@ import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 
 import java.awt.Component;
 import java.awt.Frame;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -240,24 +239,23 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
                 try
                 {
                     session = HibernateUtil.getNewSession();
+                    DataProviderSessionIFace hSession = new HibernateDataProviderSession(session);
                     
                     Division       division         = (Division)formViewObj.getMVParent().getMultiViewParent().getData();
                     SpecifyUser    specifyAdminUser = (SpecifyUser)acm.getClassObject(SpecifyUser.class);
-                    Agent          userAgent        = (Agent)session.createCriteria("FROM Agent WHERE id = "+Agent.getUserAgent().getId()).list().get(0);
+                    Agent          userAgent        = (Agent)hSession.getData("FROM Agent WHERE id = "+Agent.getUserAgent().getId());
                     Properties     props            = wizardPanel.getProps();
                     DisciplineType dispType         = (DisciplineType)props.get("disciplineType");
                     
                     division         = (Division)session.merge(division);
-                    specifyAdminUser = (SpecifyUser)session.createCriteria("FROM SpecifyUser WHERE id = "+specifyAdminUser.getId()).list().get(0);
+                    specifyAdminUser = (SpecifyUser)hSession.getData("FROM SpecifyUser WHERE id = "+specifyAdminUser.getId());
                     
                     bldSampleDB.setSession(session);
                     
                     pair = bldSampleDB.createEmptyDisciplineAndCollection(division, props, dispType, userAgent, specifyAdminUser, true);
+                    
                     if (pair != null && pair.first != null && pair.second != null)
                     {
-                        division = (Division)session.createCriteria("FROM Division WHERE id = "+division.getId()).list().get(0);
-                        formViewObj.getMVParent().getMultiViewParent().setData(division);
-                        acm.setClassObject(Division.class, division);
                         acm.setClassObject(SpecifyUser.class, specifyAdminUser);
                         Agent.setUserAgent(userAgent);
                     }
@@ -295,15 +293,16 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
                {
                    List<?> dataItems = null;
                    
-                   FormViewObj divFVO = formViewObj.getMVParent().getMultiViewParent().getCurrentViewAsFormViewObj();
-                   Division div = (Division)divFVO.getDataObj();
-                   
+                   FormViewObj divFVO   = formViewObj.getMVParent().getMultiViewParent().getCurrentViewAsFormViewObj();
+                   Division    division = (Division)divFVO.getDataObj();
                    DataProviderSessionIFace pSession = null;
                    try
                    {
                        pSession = DataProviderFactory.getInstance().createSession();
                        
-                       div = (Division)pSession.getData("FROM Division WHERE id = "+div.getId());
+                       division = (Division)pSession.getData("FROM Division WHERE id = "+division.getId());
+                       //formViewObj.getMVParent().getMultiViewParent().setData(division);
+                       acm.setClassObject(Division.class, division);
                        
                        dataItems = pSession.getDataList("FROM Division");
                        if (dataItems.get(0) instanceof Object[])
