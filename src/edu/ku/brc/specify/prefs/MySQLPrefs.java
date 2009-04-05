@@ -83,7 +83,7 @@ public class MySQLPrefs extends JPanel implements PrefsSavable, PrefsPanelIFace
     protected PrefsPanelMgrIFace mgr = null;
     protected String             name;
     protected String             title;
-    protected String             hContext  = null;
+    protected String             hContext  = "PrefsMySQL";
     protected Color              shadeColor = null;
 
     // Security
