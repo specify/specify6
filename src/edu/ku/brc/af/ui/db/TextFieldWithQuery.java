@@ -22,7 +22,6 @@ import java.awt.Graphics2D;
 import java.awt.HeadlessException;
 import java.awt.Point;
 import java.awt.RenderingHints;
-import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -1271,14 +1270,8 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             }
         } else
         {
-            String errMsg = UIRegistry.getLocalizedMessage(StringUtils.isNotEmpty(newEntryStr) ? "TFWQ_INPUT_IN_ERROR" : "TFWQ_INPUT_EMPTY", newEntryStr);
-            Toolkit.getDefaultToolkit().beep();
-            
-            if (UIRegistry.getStatusBar() != null)
-            {
-                UIRegistry.getStatusBar().setErrorMessage(errMsg);
-            }
-            UIRegistry.writeTimedSimpleGlassPaneMsg(errMsg, Color.RED);
+            popupFromBtn = true;
+            showPopup(); // add only
         }
     }
     
