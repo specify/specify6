@@ -107,4 +107,21 @@ public class TreeDefStatusMgr
 		getStatus(treeDef).setUploadInProgress(uploadInProgress);
 	}
 
+	/**
+	 * @param treeDef
+	 * @return true if lock succeeds, else return false.
+	 */
+	public static boolean lockTree(TreeDefIface<?,?,?> treeDef, TaskSemaphoreMgrCallerIFace lockCallback)
+	{
+		return getStatus(treeDef).lockTree(lockCallback);
+	}
+	
+	/**
+	 * @param treeDef
+	 * @return true if unlock succeeds, else return false.
+	 */
+	public static boolean unlockTree(TreeDefIface<?,?,?> treeDef)
+	{
+		return getStatus(treeDef).unlockTree();
+	}
 }

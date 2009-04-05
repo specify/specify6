@@ -4,6 +4,7 @@
 package edu.ku.brc.specify.dbsupport;
 
 import edu.ku.brc.specify.datamodel.TreeDefIface;
+import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr.USER_ACTION;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -120,11 +121,18 @@ public class TreeDefStatus
 		this.uploadInProgress = uploadInProgress;
 	}
     /**
-     * @return title for nodenumbering lock.
+     * @return title for tree lock.
+     */
+    protected String getTreeLockTitle()
+    {
+        return treeDef.getClass().getSimpleName();
+    }
+    /**
+     * @return title for tree lock.
      */
     protected String getNodeNumberingLockTitle()
     {
-        return String.format(UIRegistry.getResourceString("BaseTreeDef.numberingNodes"), getClass().getSimpleName());
+        return String.format(UIRegistry.getResourceString("BaseTreeDef.numberingNodes"), treeDef.getNodeClass().getSimpleName());
     }
        
     /**
@@ -132,7 +140,7 @@ public class TreeDefStatus
      */
     protected String getNodeNumberUptoDateLockTitle()
     {
-        return String.format(UIRegistry.getResourceString("BaseTreeDef.nodeNumbersInvalid"), getClass().getSimpleName());
+        return String.format(UIRegistry.getResourceString("BaseTreeDef.nodeNumbersInvalid"), treeDef.getNodeClass().getSimpleName());
     }
     
     /**
@@ -149,5 +157,36 @@ public class TreeDefStatus
     protected String getNodeNumberUptoDateLockName()
     {
         return nodeNumbersInvalid + treeDef.getNodeClass().getSimpleName();
+    }
+
+    /**
+     * @return name for tree lock.
+     */
+    protected String getTreeLockName()
+    {
+        return treeDef.getClass().getSimpleName();
+    }
+    
+    /**
+     * @return true if lock succeeds, else return false.
+     */
+    public boolean lockTree(TaskSemaphoreMgrCallerIFace lockCallback)
+    {
+		TaskSemaphoreMgr.USER_ACTION action = TaskSemaphoreMgr.lock(getTreeLockTitle(), 
+				getTreeLockName(), null, TaskSemaphoreMgr.SCOPE.Discipline, false, lockCallback);
+		if (action == USER_ACTION.Override)
+		{
+			return TaskSemaphoreMgr.unlock(getTreeLockTitle(), getTreeLockName(), TaskSemaphoreMgr.SCOPE.Discipline);
+		}
+    	return action == USER_ACTION.OK;
+    }
+    
+    /**
+     * @return true if unlock succeeds, else return false.
+     */
+    public boolean unlockTree()
+    {
+		return TaskSemaphoreMgr.unlock(getTreeLockTitle(), getTreeLockName(), 
+				TaskSemaphoreMgr.SCOPE.Discipline);
     }
 }
