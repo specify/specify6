@@ -71,9 +71,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -129,6 +132,7 @@ import edu.ku.brc.af.ui.forms.FormHelper;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.dbsupport.AttributeIFace;
+import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DBMSUserMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -144,6 +148,7 @@ import edu.ku.brc.specify.config.init.BldrPickListItem;
 import edu.ku.brc.specify.config.init.DataBuilder;
 import edu.ku.brc.specify.config.init.HiddenTableMgr;
 import edu.ku.brc.specify.config.init.TreeDefRow;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.AccessionAgent;
 import edu.ku.brc.specify.datamodel.Address;
@@ -220,6 +225,7 @@ import edu.ku.brc.specify.dbsupport.SpecifyDeleteHelper;
 import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
 import edu.ku.brc.specify.tools.schemalocale.DisciplineBasedContainer;
 import edu.ku.brc.specify.tools.schemalocale.SchemaLocalizerXMLHelper;
+import edu.ku.brc.specify.treeutils.NodeNumberer;
 import edu.ku.brc.specify.treeutils.TreeFactory;
 import edu.ku.brc.specify.treeutils.TreeHelper;
 import edu.ku.brc.ui.IconManager;
@@ -245,7 +251,7 @@ public class BuildSampleDatabase
     
     //                                                  0                   1                  2                 3                   4                     5                   6                   7                     8
     private static String[] TaxonIndexNames = {"family common name", "species author", "species source", "species lsid", "species common name", "subspecies author", "subspecies source", "subspecies lsid", "subspecies common name"};
-    private static String[] TaxonFieldNames = {"commonName",         "author",         "source",         "guid",         "commonName",          "author",            "source",            "guid",            "commonName"};
+    private static String[] TaxonFieldNames = {"CommonName",         "Author",         "Source",         "GUID",         "CommonName",          "Author",            "Source",            "GUID",            "CommonName"};
     
     private static int FAMILY_COMMON_NAME     = 0;
     private static int SPECIES_AUTHOR         = 1;
@@ -301,7 +307,11 @@ public class BuildSampleDatabase
     protected StorageTreeDef      stgTreeDef = null;
     protected int                 createStep = 0;
     protected Transaction         trans      = null;
-    
+    protected static SimpleDateFormat                       dateTimeFormatter      = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+    protected static SimpleDateFormat                       dateFormatter          = new SimpleDateFormat("yyyy-MM-dd");
+    protected static Timestamp                              now                    = new Timestamp(System .currentTimeMillis());
+    protected static String                                 nowStr                 = "'" + dateTimeFormatter.format(now) + "'";
+
     
     /**
      * 
@@ -3906,16 +3916,21 @@ public class BuildSampleDatabase
         {
             persist(lithoStrats);
             
-        } else if (isPaleo)
-        {
-            LithoStrat earthLithoStrat = convertLithoStratFromCSV(lithoStratTreeDef);
-            if (earthLithoStrat == null)
-            {
-                lithoStrats = createSimpleLithoStrat(lithoStratTreeDef, true);
-                persist(lithoStrats);
-            }  
         }
         commitTx();
+
+        if (isPaleo)
+        {
+            LithoStrat earthLithoStrat = convertLithoStratFromCSV(lithoStratTreeDef);// does startTx() / commitTx
+            if (earthLithoStrat == null)
+            {
+                startTx();
+                lithoStrats = createSimpleLithoStrat(lithoStratTreeDef, true); 
+                persist(lithoStrats);
+                commitTx();
+            }  
+        }
+        
         
         frame.setProcess(++createStep);
         
@@ -4859,11 +4874,11 @@ public class BuildSampleDatabase
                 log.error(ex);
             }
     
-            Timestamp now = new Timestamp(System.currentTimeMillis());
+            Timestamp nowTm = new Timestamp(System.currentTimeMillis());
             for (PrepType pt : prepTypes)
             {
                 pt.setCreatedByAgent(agent);
-                pt.setTimestampCreated(now);
+                pt.setTimestampCreated(nowTm);
                 pt.setCollection(colltn);
                 pt.setAttributeDefs(new HashSet<AttributeDef>());
             }
@@ -8146,7 +8161,11 @@ public class BuildSampleDatabase
         
         TaxonTreeDefItem rootTreeDefItem = rankedItems.get(0);
         Set<Taxon>       rootKids        = rootTreeDefItem.getTreeEntries();
-        Taxon root = rootKids.iterator().next();
+        Taxon            root            = rootKids.iterator().next();
+        
+        Vector<Pair<String, Integer>> nodeList = new Vector<Pair<String,Integer>>();
+        Pair<String, Integer>         rootNode = new Pair<String, Integer>(root.getName(), root.getId());
+        nodeList.add(rootNode);
 
         int counter     = 0;
         int numDataCols = 0; 
@@ -8160,6 +8179,8 @@ public class BuildSampleDatabase
             }
             
             persist(root);
+            
+            commitTx();
             
             String[]        cells    = new String[35];
             InputStream     input    = new FileInputStream(file);
@@ -8180,7 +8201,11 @@ public class BuildSampleDatabase
                     }
                 });
             }
-             
+            
+            Connection conn = DBConnection.getInstance().createConnection();
+            //conn.setAutoCommit(false);
+            Statement stmt = conn.createStatement();
+            
             rows = sheet.rowIterator();
             while (rows.hasNext())
             {
@@ -8244,11 +8269,16 @@ public class BuildSampleDatabase
                     }
                 }
 
-                @SuppressWarnings("unused")
-                Taxon newTaxon = convertTaxonRecord(cells, numDataCols, root, rankedItems);
+                //@SuppressWarnings("unused")
+                //Taxon newTaxon = convertTaxonRecord(cells, numDataCols, root, rankedItems);
+                
+                convertTaxonNodes(conn, stmt, cells, 0, numDataCols, rootNode, nodeList, rankedItems, root.getDefinition().getId());
     
                 counter++;
             }
+            conn.close();
+            
+            root = (Taxon)session.createQuery("FROM Taxon WHERE id = "+root.getId()).list().get(0);
             
         } catch (Exception ex)
         {
@@ -8261,11 +8291,14 @@ public class BuildSampleDatabase
             frame.getProcessProgress().setIndeterminate(true);
         }
         
-        TreeHelper.fixFullnameForNodeAndDescendants(root);
-        root.setNodeNumber(1);
-        fixNodeNumbersFromRoot(root);
+        NodeNumberer<Taxon,TaxonTreeDef,TaxonTreeDefItem> nodeNumberer = new NodeNumberer<Taxon,TaxonTreeDef,TaxonTreeDefItem>(root.getDefinition());
+        nodeNumberer.doInBackground();
         
-        commitTx();
+        //startTx();
+        //TreeHelper.fixFullnameForNodeAndDescendants(root);
+        //root.setNodeNumber(1);
+        //fixNodeNumbersFromRoot(root);
+        //commitTx();
         
         log.info("Converted " + counter + " Taxon records");
 
@@ -8286,12 +8319,170 @@ public class BuildSampleDatabase
             {
                 if (cells[inx] == null) break;
 
-                System.out.println(cells[inx]+"  "+TaxonIndexNames[i]);
+                //System.out.println(cells[inx]+"  "+TaxonIndexNames[i]);
                 if (cells[inx].equals(TaxonIndexNames[i]))
                 {
-                    System.out.println("** "+TaxonIndexNames[i]+" -> "+inx);
+                    //System.out.println("** "+TaxonIndexNames[i]+" -> "+inx);
                     taxonIndexes.put(TaxonIndexNames[i].toLowerCase(), inx);
                     break;
+                }
+            }
+        }
+    }
+    
+    public void convertTaxonNodes(final Connection            conn,
+                                  final Statement             stmt,
+                                  final String[]              levelNames,
+                                  final int                   startIndex,
+                                  final int                   numColumns,
+                                  final Pair<String, Integer> parent,
+                                  final Vector<Pair<String, Integer>> nodeList,
+                                  final Vector<TaxonTreeDefItem>      rankedItems,
+                                  final int                   txTreeDefId) throws SQLException
+    {
+        String fullName = "";
+        
+        for (int i = startIndex; i < numColumns; i++)
+        {
+            int inx = i + 1;
+            if (StringUtils.isEmpty(levelNames[i]))
+            {
+                break;
+            }
+            
+            TaxonTreeDefItem ttdi = rankedItems.get(inx);
+            if (ttdi.getIsInFullName())
+            {
+                if (StringUtils.isNotEmpty(ttdi.getTextBefore()))
+                {
+                    fullName += ttdi.getTextBefore();
+                }
+                fullName += levelNames[i];
+                if (StringUtils.isNotEmpty(ttdi.getTextAfter()))
+                {
+                    fullName += ttdi.getTextAfter();
+                }
+                if (StringUtils.isNotEmpty(ttdi.getFullNameSeparator()))
+                {
+                    fullName += ttdi.getFullNameSeparator();
+                }
+            }
+            
+            if (inx == nodeList.size() || !levelNames[i].equals(nodeList.get(inx).first))
+            {
+                nodeList.setSize(inx);
+                Pair<String, Integer> node = createTaxonNode(conn, stmt, levelNames[i], txTreeDefId, ttdi, 
+                                                             nodeList.get(i).second, fullName.trim(), levelNames);
+                nodeList.add(node);
+            }
+        }
+    }
+    
+    protected Pair<String, Integer> createTaxonNode(final Connection conn,
+                                                    final Statement  stmt,
+                                                    final String     name,
+                                                    final int        txTreeDefId,
+                                                    final TaxonTreeDefItem tdi,
+                                                    final Integer    parentId,
+                                                    final String     fullName,
+                                                    final String[]   levelNames) throws SQLException
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append("INSERT INTO taxon (Name, TaxonTreeDefID, FullName, TaxonTreeDefItemID, RankID, ParentID, TimestampCreated, Version");
+        addExtraColumns(sb, tdi.getRankId(), levelNames, true);
+        sb.append(") VALUES (");
+        sb.append("'");
+        sb.append(name);
+        sb.append("',");
+        sb.append(txTreeDefId);
+        sb.append(",");
+        if (StringUtils.isNotEmpty(fullName))
+        {
+            sb.append('\'');
+            sb.append(fullName);
+            sb.append('\'');
+        } else
+        {
+            sb.append("null");
+        }
+        sb.append(",");
+        sb.append(tdi.getId());
+        sb.append(',');
+        sb.append(tdi.getRankId());
+        sb.append(',');
+        sb.append(parentId);
+        sb.append(',');
+        sb.append(nowStr);
+        sb.append(",1");
+        addExtraColumns(sb, tdi.getRankId(), levelNames, false);
+        sb.append(")");
+
+        
+        System.out.println(sb.toString());
+        stmt.executeUpdate(sb.toString());
+        Integer newId = BasicSQLUtils.getInsertedId(stmt);
+        if (newId == null)
+        {
+            throw new RuntimeException("Couldn't get the Taxon's inserted ID");
+        }
+        
+        return new Pair<String, Integer>(name, newId);
+    }
+    
+    /**
+     * @param sb
+     * @param rankId
+     * @param cells
+     * @param doFieldNames
+     */
+    protected void addExtraColumns(final StringBuilder sb, 
+                                   final int           rankId,
+                                   final String[]      cells,
+                                   final boolean       doFieldNames)
+    {
+        switch (rankId)
+        {
+            case 140: // family
+                loadTaxonFields(sb, new int[] {FAMILY_COMMON_NAME}, cells, doFieldNames);
+                break;
+                
+            case 220: // Species
+                loadTaxonFields(sb, new int[] {SPECIES_AUTHOR, SPECIES_SOURCE, SPECIES_LSID, SPECIES_COMMON_NAME}, cells, doFieldNames);
+                break;
+                
+            case 230: // SubSpecies
+                loadTaxonFields(sb, new int[] {SUBSPECIES_AUTHOR, SUBSPECIES_SOURCE, SUBSPECIES_LSID, SUBSPECIES_COMMON_NAME}, cells, doFieldNames);
+                break;
+                
+            default:
+                break;
+        }
+
+    }
+    /**
+     * @param taxon
+     * @param indexes
+     * @param cells
+     */
+    private void loadTaxonFields(final StringBuilder sb, final int[] indexes, final String[] cells, final boolean doFieldNames)
+    {
+        for (int inx : indexes)
+        {
+            if (TaxonIndexNames[inx] != null)
+            {
+                int index = taxonIndexes.get(TaxonIndexNames[inx].toLowerCase());
+                String data = cells[index];
+                if (StringUtils.isNotEmpty(data))
+                {
+                    sb.append(",");
+                    if (doFieldNames)
+                    {
+                        sb.append(TaxonFieldNames[inx]);
+                    } else
+                    {
+                        data = StringUtils.replace(data, "'", "\\\'");
+                        sb.append("'" + data + "'");    
+                    }
                 }
             }
         }
