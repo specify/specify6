@@ -291,7 +291,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
             final boolean isViewMode = action == TaskSemaphoreMgr.USER_ACTION.ViewMode;
             
             if ((isViewable && (action == TaskSemaphoreMgr.USER_ACTION.ViewMode || action == TaskSemaphoreMgr.USER_ACTION.OK)) || 
-                (isEditable && action == TaskSemaphoreMgr.USER_ACTION.OK)) 
+                (isEditable && (action == TaskSemaphoreMgr.USER_ACTION.OK || action == TaskSemaphoreMgr.USER_ACTION.ViewMode))) 
             {
         		isOpeningTree = true;
     	        SwingWorker bgWorker = new SwingWorker()

@@ -149,7 +149,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	/** Cell renderer for displaying individual nodes in the tree. */
 	protected TreeViewerNodeRenderer listCellRenderer;
 	/** A header for the tree, displaying the names of the visible levels. */
-	@SuppressWarnings("unchecked")
     protected TreeViewerListHeader[] listHeaders;
 	
 	protected JPanel[] treeListPanels;
@@ -339,7 +338,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 					UIRegistry.writeGlassPaneMsg(getResourceString(isEditMode ? "TTV_OpeningTreeEditor" : "TTV_OpeningTreeViewer"), 24);
 		            SwingWorker bgThread = new SwingWorker()
 		            {
-		                @SuppressWarnings({ "unchecked", "synthetic-access" })
+		                @SuppressWarnings("synthetic-access")
 		                @Override
 		                public Object construct()
 		                {
@@ -445,7 +444,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		listCellRenderer = new TreeViewerNodeRenderer(this, listModel, bgs, lineColor, synonomyColor);
 		ListSelectionListener listSelListener = new ListSelectionListener()
 		{
-			@SuppressWarnings("unchecked")
             public void valueChanged(ListSelectionEvent e)
 			{
                 if (e.getValueIsAdjusting())
@@ -1108,7 +1106,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         statusBar.setText(null);
 		// display a form for filling in child data
         
-		showEditDialog(newT, "New Node Form", true, null);
+		showEditDialog(newT, true, null);
 	}
 
 	public void unSynSelectedNode(final JList list)
@@ -1237,7 +1235,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	/**
 	 * Display a form for editing the data in the currently selected node.
 	 */
-	@SuppressWarnings("unchecked")
 	public void editSelectedNode(final JList list)
 	{
 		TreeNode selection = (TreeNode )list.getSelectedValue();
@@ -1247,14 +1244,13 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		}
 		
         T nodeRecord = getRecordForNode(selection);
-		showEditDialog(nodeRecord, "Edit Node Values", false, selection);
+		showEditDialog(nodeRecord, false, selection);
 	}
 
 	/**
 	 * Sets the visibleRoot property of the tree to the currently selected node.  This provides
 	 * the ability to "zoom in" to a lower level of the tree.
 	 */
-	@SuppressWarnings("unchecked")
 	public synchronized void showSubtreeOfSelection(final JList list)
 	{
         TreeNode selectedNode = (TreeNode)list.getSelectedValue();
@@ -1459,8 +1455,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		}
 	}
     
-	protected void scrollToShowNode(@SuppressWarnings("unused") final TreeNode node, 
-	                                @SuppressWarnings("unused") final int listIndex)
+	protected void scrollToShowNode(final TreeNode node, final int listIndex)
 	{
 //	    int nodeIndex = listModel.indexOf(node);
 //	    if (nodeIndex != -1)
@@ -1831,7 +1826,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	 * @param title the title of the dialog window
      * @param isNewObject indicates that the object is new
      */
-    protected void showEditDialog(final T node, final String title, final boolean isNewObject, final TreeNode treeNode)
+    protected void showEditDialog(final T node, final boolean isNewObject, final TreeNode treeNode)
 	{
 	    // TODO: double check these choices
 	    // gather all the info needed to create a form in a dialog
@@ -1839,6 +1834,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		Frame       parentFrame   = (Frame)UIRegistry.get(UIRegistry.FRAME);
 		String      displayName   = "NODE_EDIT_DISPLAY_NAME";
         boolean     isEdit        = isEditMode;
+        String      title         = isNewObject ? getResourceString("TTV_NEW_NODE_TITLE") :
+        	isEdit ? getResourceString("TTV_EDIT_NODE_TITLE") : getResourceString("TTV_VIEW_NODE_TITLE");
 		String      closeBtnText  = (isEdit) ? getResourceString("SAVE") : getResourceString("CLOSE");
 		String      className     = node.getClass().getName();
         DBTableInfo nodeTableInfo = DBTableIdMgr.getInstance().getInfoById(node.getTableId());
@@ -2144,7 +2141,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	 *
 	 * @param t the newly selected TreeNode
 	 */
-	@SuppressWarnings("unchecked")
 	protected void newNodeSelected(final JList sourceList, final TreeNode selectedNode)
 	{
         //log.debug("newNodeSelected()  selectedNode: " + selectedNode);
@@ -2459,7 +2455,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	 * @param dragged the dragged tree node
 	 * @param droppedOn the node the dragged node was dropped onto
 	 */
-	@SuppressWarnings("unchecked")
 	public boolean dropOccurred(final Object dragged, final Object droppedOn, final int dropAction )
 	{
         setStatusBarText(null);
@@ -2669,7 +2664,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
     /* (non-Javadoc)
 	 * @see edu.ku.brc.ui.DragDropCallback#dropAcceptable(java.lang.Object, java.lang.Object, int)
 	 */
-	@SuppressWarnings("unchecked")
 	public boolean dropAcceptable(final Object dragged, final Object droppedOn, final int dropAction )
 	{
 		if (dragged == droppedOn)
@@ -2753,7 +2747,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
     /**
      * @param e
      */
-    @SuppressWarnings("unchecked")
 	public void showPopup(MouseEvent e)
 	{
 		if (clickIsOnText(e))
@@ -2781,7 +2774,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	 * @param e
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	protected boolean clickIsOnText(MouseEvent e)
 	{
 		final TreeDataGhostDropJList list = (TreeDataGhostDropJList)e.getSource();
@@ -2806,7 +2798,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	 * @param e
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	protected boolean clickIsOnExpansionIcon(MouseEvent e)
 	{
 		TreeDataGhostDropJList list = (TreeDataGhostDropJList)e.getSource();
@@ -2860,7 +2851,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	/**
 	 * @param e
 	 */
-	@SuppressWarnings("unchecked")
 	public void mouseButtonClicked(MouseEvent e)
 	{
 		if (e.isPopupTrigger())
