@@ -1030,7 +1030,7 @@ public class BuildSampleDatabase
             int                cnt         = 0;
             for (TreeDefRow row : treeDefList)
             {
-                if (row.isIncluded() || colNameHash.get(row.getDefName().toLowerCase()) != null)
+                if (row.isIncluded() || (row.getDefName() != null && colNameHash.get(row.getDefName().toLowerCase()) != null))
                 {
                     TaxonTreeDefItem ttdi = new TaxonTreeDefItem();
                     ttdi.initialize();
