@@ -3307,6 +3307,15 @@ public class FormViewObj implements Viewable,
                     if (formValidator != null)
                     {
                         formValidator.processFormRules();
+                        // 4/6/09 rods - Bug 6886 The first and prev btns were getting enabled and shouldn't been. 
+                        if (rsController != null)
+                        {
+                            rsController.setUIEnabled(false);
+                            if (rsController.getRecDisp() != null)
+                            {
+                                rsController.getRecDisp().setEnabled(true);
+                            }
+                        }
                     }
                     UIValidator.setIgnoreAllValidation(this, false);
                     //focusFirstFormControl();

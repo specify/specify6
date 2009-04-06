@@ -630,7 +630,7 @@ public class ResultSetController implements ValidationListener
         {
             isNewAndValid = !isNewObj || (isNewObj && formValidator.isFormValid());
         }*/
-        //System.err.println("isNewObj "+isNewObj+" isNewAndValid "+isNewAndValid);
+        //System.err.println("isNewObj "+isNewObj+" isNewAndValid "+isNewAndValid+" currentInx "+currentInx);
         
         
         firstBtn.setEnabled(currentInx > 0 && isNewAndValid);
@@ -660,6 +660,14 @@ public class ResultSetController implements ValidationListener
         panel.validate();
     }
     
+    /**
+     * @return the recDisp
+     */
+    public JLabel getRecDisp()
+    {
+        return recDisp;
+    }
+
     /**
      * Returns the JButton that is used to create new records.
      * @return the JButton that is used to create new records
