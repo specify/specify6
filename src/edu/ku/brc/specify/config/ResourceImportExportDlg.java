@@ -95,6 +95,7 @@ import edu.ku.brc.ui.UIRegistry;
  * Dec 1, 2007
  *
  */
+@SuppressWarnings("serial")
 public class ResourceImportExportDlg extends CustomDialog
 {
     protected static final Logger  log = Logger.getLogger(ResourceImportExportDlg.class);
@@ -284,6 +285,7 @@ public class ResourceImportExportDlg extends CustomDialog
                 	{
                 		repList.setSelectedIndex(-1);
                 	}
+                	revertBtn.setVisible(selectedComp != repPanel);
                 }
                 enableUI();
             }
