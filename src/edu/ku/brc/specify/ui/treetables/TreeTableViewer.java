@@ -1245,6 +1245,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		
         T nodeRecord = getRecordForNode(selection);
 		showEditDialog(nodeRecord, false, selection);
+		
 	}
 
 	/**
@@ -2079,6 +2080,15 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                             }
                             if (nameChanged)
                             {
+                                T parent = mergedNode.getParent();
+                                if (parent != null)
+                                {
+                                    TreeNode parentNode = listModel.getNodeById(parent.getTreeId());
+                                    parentNode.setHasChildren(true);
+                                    hideChildren(parentNode);
+                                    List<TreeNode> childNodes = showChildren(parent);
+                                    showCounts(parent, childNodes);
+                                }
                             	updateSynonymNames(treeNode);
                             }
                         }

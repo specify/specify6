@@ -900,26 +900,27 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
         JMenuItem mi;
         String    menuDesc = getResourceString(COLSETUP_MENU);
         
-        if (!AppContextMgr.isSecurityOn() || 
-            (secMgr.getPermission(WBSCHEMACONFIG_SECURITY) != null && 
-             secMgr.getPermission(WBSCHEMACONFIG_SECURITY).canAdd()))
-        {
-            titleArg = getI18NKey("WBSCHEMA_CONFIG_MENU"); //$NON-NLS-1$
-            mneu     = getI18NKey("WBSCHEMA_CONFIG_MNU");  //$NON-NLS-1$
-            mi       = UIHelper.createLocalizedMenuItem(titleArg, mneu, titleArg, true, null); 
-            mi.addActionListener(new ActionListener()
-                    {
-                        public void actionPerformed(ActionEvent ae)
-                        {
-                            DBTableIdMgr schema = new DBTableIdMgr(false);
-                            schema.initialize(new File(XMLHelper.getConfigDirPath("specify_workbench_datamodel.xml"))); //$NON-NLS-1$
-                            doSchemaConfig(SpLocaleContainer.WORKBENCH_SCHEMA, schema);
-                        }
-                    });
-            mid = new MenuItemDesc(mi, SYSTEM_MENU);
-            mid.setPosition(MenuItemDesc.Position.After, menuDesc);
-            menuItems.add(mid);
-        }
+//      Implementing wb schema config in next release  
+//        if (!AppContextMgr.isSecurityOn() || 
+//            (secMgr.getPermission(WBSCHEMACONFIG_SECURITY) != null && 
+//             secMgr.getPermission(WBSCHEMACONFIG_SECURITY).canAdd()))
+//        {
+//            titleArg = getI18NKey("WBSCHEMA_CONFIG_MENU"); //$NON-NLS-1$
+//            mneu     = getI18NKey("WBSCHEMA_CONFIG_MNU");  //$NON-NLS-1$
+//            mi       = UIHelper.createLocalizedMenuItem(titleArg, mneu, titleArg, true, null); 
+//            mi.addActionListener(new ActionListener()
+//                    {
+//                        public void actionPerformed(ActionEvent ae)
+//                        {
+//                            DBTableIdMgr schema = new DBTableIdMgr(false);
+//                            schema.initialize(new File(XMLHelper.getConfigDirPath("specify_workbench_datamodel.xml"))); //$NON-NLS-1$
+//                            doSchemaConfig(SpLocaleContainer.WORKBENCH_SCHEMA, schema);
+//                        }
+//                    });
+//            mid = new MenuItemDesc(mi, SYSTEM_MENU);
+//            mid.setPosition(MenuItemDesc.Position.After, menuDesc);
+//            menuItems.add(mid);
+//        }
         
         if (!AppContextMgr.isSecurityOn() || 
             (secMgr.getPermission(RESIMPORTEXPORT_SECURITY) != null && 

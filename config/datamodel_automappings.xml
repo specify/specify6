@@ -25,7 +25,7 @@
 	<mapping>
 		<regex>.*?[Aa]ccession.*</regex>
 		<class>edu.ku.brc.specify.datamodel.Accession</class>
-		<field>dateAccessioned</field>
+		<field>number</field>
 	</mapping>
 	
 	<!-- Locality table -->
