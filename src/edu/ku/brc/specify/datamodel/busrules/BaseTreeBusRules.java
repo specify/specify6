@@ -529,8 +529,8 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
     @Override
     public void afterFillForm(final Object dataObj)
     {
-        // This is a little weak and chessey, but it gets the job done.
-        // Becase both the Tree and Definition want/need to share Business Rules.
+        // This is a little weak and cheesey, but it gets the job done.
+        // Because both the Tree and Definition want/need to share Business Rules.
         String viewName = formViewObj.getView().getName();
         if (StringUtils.contains(viewName, "TreeDef"))
         {
@@ -540,15 +540,42 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
                 //log.debug("form is not in edit mode: no special listeners will be attached");
                 return;
             }
-
-            if (!viewName.equals("TaxonTreeDefItem"))
+            
+            if (!StringUtils.contains(viewName, "TreeDefItem"))
             {
-                return;
+            	return;
             }
-            //disabling editing of name and rank for standard levels.
+            
             final I nodeInForm = (I)formViewObj.getDataObj();
+            //disable FullName -related fields if TreeDefItem is used by nodes in the tree
             if (nodeInForm != null && nodeInForm.getTreeDef() != null)
             {
+            	boolean canEditFullNameFlds = nodeInForm.getTreeEntries().size() != 0;
+            	if (canEditFullNameFlds)
+            	{
+            		ValTextField ftCtrl = (ValTextField )formViewObj.getControlByName("textAfter");
+            		if (ftCtrl != null)
+            		{
+            			ftCtrl.setEnabled(false);
+            		}
+            		ftCtrl = (ValTextField )formViewObj.getControlByName("textBefore");
+            		if (ftCtrl != null)
+            		{
+            			ftCtrl.setEnabled(false);
+            		}
+            		ftCtrl = (ValTextField )formViewObj.getControlByName("fullNameSeparator");
+            		if (ftCtrl != null)
+            		{
+            			ftCtrl.setEnabled(false);
+            		}
+            	}
+            
+            	if (!viewName.equals("TaxonTreeDefItem"))
+            	{
+            		return;
+            	}
+            	
+            	//disabling editing of name and rank for standard levels.
                 List<TreeDefItemStandardEntry> stds = nodeInForm.getTreeDef().getStandardLevels();
                 TreeDefItemStandardEntry stdLevel = null;
                 for (TreeDefItemStandardEntry std : stds)
