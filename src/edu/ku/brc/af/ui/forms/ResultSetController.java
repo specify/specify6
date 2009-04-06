@@ -21,11 +21,14 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Frame;
 import java.awt.Insets;
 import java.awt.KeyboardFocusManager;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -33,11 +36,16 @@ import java.util.Hashtable;
 import java.util.List;
 
 import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
+import javax.swing.InputMap;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
@@ -51,9 +59,11 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.af.ui.forms.validation.FormValidator;
 import edu.ku.brc.af.ui.forms.validation.UIValidator;
 import edu.ku.brc.af.ui.forms.validation.ValidationListener;
+import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.UIHelper.CommandType;
 
 /*
  * Creates a ResultSetController with First, Last, Previous, Next, New and Delete buttons.
@@ -96,7 +106,6 @@ public class ResultSetController implements ValidationListener
     protected boolean doLayoutBtns;
     
     // Global Key Actions
-    private enum CommandType { First, Previous, Next, Last, Save, NewItem, DelItem}
     private Hashtable<CommandType, JButton> btnsHash = new Hashtable<CommandType, JButton>();
     
     // Static Members
@@ -198,6 +207,48 @@ public class ResultSetController implements ValidationListener
         recDisp.setBackground(Color.WHITE);
         recDisp.setBorder(enabledBorder);
         recDisp.setFont(recDisp.getFont().deriveFont(recDisp.getFont().getSize2D()-2));
+        
+        MouseListener mouseListener = new MouseAdapter() 
+        {
+              private boolean showIfPopupTrigger(MouseEvent mouseEvent) 
+              {
+                  if (mouseEvent.isPopupTrigger())
+                  {
+                      JPopupMenu popupMenu = createPopupMenu();
+                      if (popupMenu != null && popupMenu.getComponentCount() > 0) 
+                      {
+                          popupMenu.show(mouseEvent.getComponent(),
+                                  mouseEvent.getX(),
+                                  mouseEvent.getY());
+                          return true;
+                      }
+                  }
+                  return false;
+              }
+              @Override
+              public void mousePressed(MouseEvent mouseEvent) 
+              {
+                  showIfPopupTrigger(mouseEvent);
+              }
+              @Override
+              public void mouseReleased(MouseEvent mouseEvent) 
+              {
+                  showIfPopupTrigger(mouseEvent);
+              }
+            /* (non-Javadoc)
+             * @see java.awt.event.MouseAdapter#mouseClicked(java.awt.event.MouseEvent)
+             */
+            @Override
+            public void mouseClicked(MouseEvent e)
+            {
+                if (e.getClickCount() == 2)
+                {
+                    showGotoRecDlg();
+                }
+            }
+              
+        };
+        recDisp.addMouseListener(mouseListener);
 
         
         nextBtn  = UIHelper.createIconBtn("NextRec", null, null);
@@ -398,6 +449,57 @@ public class ResultSetController implements ValidationListener
         outerCenteredPanel.add(rowBuilder.getPanel(), cc.xy(1,1));
         panel = outerCenteredPanel.getPanel();    
         panel.setOpaque(false);
+    }
+    
+    /**
+     * 
+     */
+    protected JPopupMenu createPopupMenu()
+    {
+        JPopupMenu popupMenu = new JPopupMenu();
+        JMenuItem  mi = UIHelper.createLocalizedMenuItem("Go to Record", null, null, true, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                showGotoRecDlg();
+            }
+        });
+        popupMenu.add(mi);
+        return popupMenu;
+    }
+    
+    /**
+     * 
+     */
+    protected void showGotoRecDlg()
+    {
+        JTextField tf = UIHelper.createTextField(5);
+        
+        CellConstraints    cc = new CellConstraints();
+        DefaultFormBuilder p  = new DefaultFormBuilder(new FormLayout("p,2px,f:p:g", "p"));
+        p.add(UIHelper.createI18NLabel("RS_NUM_LBL"), cc.xy(1,1));
+        p.add(tf, cc.xy(3,1));
+        p.setDefaultDialogBorder();
+        
+        CustomDialog dlg = new CustomDialog((Frame)null, "", true, CustomDialog.OKCANCEL, p.getPanel());
+        dlg.setCustomTitleBar(getResourceString("RS_JUMP_TITLE"));
+        
+        UIHelper.centerAndShow(dlg);
+        if (!dlg.isCancelled())
+        {
+            String recNumStr = tf.getText();
+            if (!recNumStr.isEmpty() && StringUtils.isNumeric(recNumStr))
+            {
+                try
+                {
+                    int recNum = Integer.parseInt(recNumStr);
+                    if (recNum > 0 && recNum <= lastInx)
+                    {
+                        setIndex(recNum-1);
+                    }
+                } catch (Exception ex) {}
+            }
+        }
     }
     
     /**
@@ -699,7 +801,22 @@ public class ResultSetController implements ValidationListener
             
             if (rsc != null)
             {
-                rsca.setBtn(rsc.btnsHash.get(rsca.getType()));
+                JButton btn = rsc.btnsHash.get(rsca.getType());
+                if (btn != null)
+                {
+                    KeyStroke ks         = UIHelper.getKeyStroke(rsca.getType());
+                    //System.err.println("ks["+ks+"]");
+                    String    ACTION_KEY = rsca.getType().toString();
+                    InputMap  inputMap   = btn.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+                    ActionMap actionMap  = btn.getActionMap();
+                    
+                    inputMap.put(ks, ACTION_KEY);
+                    actionMap.put(ACTION_KEY, rsca);
+                    rsca.setBtn(btn);
+                } else
+                {
+                    //System.err.println("Btn for ["+rsca.getType()+"] is null");
+                }
             }
         }
     }
@@ -776,16 +893,15 @@ public class ResultSetController implements ValidationListener
      * @param menuKey the I18N key for the mneumonic 
      * @param cmdType the command
      */
-    protected static void createMenuItem(final JMenuItem menuItem,
-                                         final String titleKey, 
-                                         final String menuKey, 
+    protected static void createMenuItem(final JMenuItem   menuItem,
+                                         final String      titleKey, 
                                          final CommandType cmdType)
     {
-        Integer menuInt = getMneuInt(menuKey);
+        KeyStroke ks = UIHelper.getKeyStroke(cmdType);
         JMenuItem mi = new JMenuItem(UIRegistry.getInstance().makeAction(commandsHash.get(cmdType), 
-                getResourceString(titleKey), null, "", 
-                menuInt,
-                KeyStroke.getKeyStroke(menuInt, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())));
+                                            getResourceString(titleKey), null, "", 
+                                            ks.getKeyCode(),
+                                            ks));
         menuItem.add(mi);
     }
     
@@ -798,10 +914,10 @@ public class ResultSetController implements ValidationListener
         ResultSetController rsc = new ResultSetController();
         rsc.createRSActions();
         
-        createMenuItem(mi, "DATA_FIRST",    "DATA_FIRST_MNEU",    CommandType.First);
-        createMenuItem(mi, "DATA_PREVIOUS", "DATA_PREVIOUS_MNEU", CommandType.Previous);
-        createMenuItem(mi, "DATA_NEXT",     "DATA_NEXT_MNEU",     CommandType.Next);
-        createMenuItem(mi, "DATA_LAST",     "DATA_LAST_MNEU",     CommandType.Last);
+        createMenuItem(mi, "DATA_FIRST",    CommandType.First);
+        createMenuItem(mi, "DATA_PREVIOUS", CommandType.Previous);
+        createMenuItem(mi, "DATA_NEXT",     CommandType.Next);
+        createMenuItem(mi, "DATA_LAST",     CommandType.Last);
     }        
 
     /**
@@ -818,7 +934,7 @@ public class ResultSetController implements ValidationListener
     //----------------------------------------------------------------------------
     class RSAction<T> extends AbstractAction implements PropertyChangeListener
     {
-        protected CommandType        type;
+        protected CommandType         type;
         protected ResultSetController rs  = null;
         protected JButton             btn = null;
         

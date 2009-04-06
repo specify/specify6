@@ -15,6 +15,22 @@
 package edu.ku.brc.ui;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
+import static java.awt.event.InputEvent.ALT_DOWN_MASK;
+import static java.awt.event.KeyEvent.*;
+import static java.awt.event.KeyEvent.VK_BRACERIGHT;
+import static java.awt.event.KeyEvent.VK_C;
+import static java.awt.event.KeyEvent.VK_D;
+import static java.awt.event.KeyEvent.*;
+import static java.awt.event.KeyEvent.VK_ENTER;
+import static java.awt.event.KeyEvent.VK_LEFT;
+import static java.awt.event.KeyEvent.VK_LEFT_PARENTHESIS;
+import static java.awt.event.KeyEvent.VK_N;
+import static java.awt.event.KeyEvent.VK_RIGHT;
+import static java.awt.event.KeyEvent.VK_RIGHT_PARENTHESIS;
+import static java.awt.event.KeyEvent.VK_S;
+import static java.awt.event.KeyEvent.VK_TAB;
+import static java.awt.event.KeyEvent.VK_UP;
+import static java.awt.event.KeyEvent.VK_V;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.awt.AlphaComposite;
@@ -36,6 +52,7 @@ import java.awt.Window;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -160,6 +177,7 @@ public final class UIHelper
 {
     public enum OSTYPE {Unknown, Windows, MacOSX, Linux}
     public enum CONTROLSIZE {regular, small, mini}
+    public enum CommandType { First, Previous, Next, Last, Save, NewItem, DelItem}
     
     
     // Static Data Members
@@ -168,6 +186,8 @@ public final class UIHelper
     protected static OSTYPE         oSType;
     protected static boolean        isMacOS_10_5_X   = false;
     protected static BasicStroke    stdLineStroke    = new BasicStroke(1.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+    
+    protected static Hashtable<CommandType, KeyStroke> cmdTypeKSHash = new Hashtable<CommandType, KeyStroke>();
 
 
     protected static Object[]       values           = new Object[2];
@@ -225,6 +245,14 @@ public final class UIHelper
             UIDefaults defaults = UIManager.getDefaults( );
             defaults.put( "TabbedPane.useSmallLayout", Boolean.TRUE );
         }*/
+        
+        if (isMacOS())
+        {
+            buildKeyStrokeForCommandTypesMac();
+        } else
+        {
+            buildKeyStrokeForCommandTypes();
+        }
 
     }
     
@@ -944,8 +972,8 @@ public final class UIHelper
         	mneu = "EditMneu";
             JMenu editMenu = createLocalizedMenu(menuBar, title, mneu);
             editMenu.add(createMenu(getResourceString("CutMenu"), getResourceString("CutAccl").charAt(0), getResourceString("CutMneu")));
-            editMenu.add(createMenu(getResourceString("CopyMenu"), KeyEvent.VK_C, getResourceString("CopyMneu")));
-            editMenu.add(createMenu(getResourceString("PasteMenu"), KeyEvent.VK_V, getResourceString("PasteMneu")));
+            editMenu.add(createMenu(getResourceString("CopyMenu"), VK_C, getResourceString("CopyMneu")));
+            editMenu.add(createMenu(getResourceString("PasteMenu"), VK_V, getResourceString("PasteMneu")));
         }
 
 
@@ -2712,7 +2740,7 @@ public final class UIHelper
                 {
                     super.keyPressed(e);
                     
-                    if (e.getKeyCode() == KeyEvent.VK_ENTER)
+                    if (e.getKeyCode() == VK_ENTER)
                     {
                         for (int i=0;i<popupMenu.getComponentCount();i++)
                         {
@@ -3016,7 +3044,7 @@ public final class UIHelper
     	text.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent event) {
-                if (event.getKeyCode() == KeyEvent.VK_TAB )
+                if (event.getKeyCode() == VK_TAB )
                 {
                     if (event.isShiftDown())
                     {
@@ -3259,6 +3287,62 @@ public final class UIHelper
         UIHelper.hoverColor = hoverColor;
     }
     
+    private static void buildKeyStrokeForCommandTypes(final int[] keys, final int[] mods)
+    {
+        int i = 0;
+        for (CommandType cmdType : CommandType.values())
+        {
+            cmdTypeKSHash.put(cmdType, KeyStroke.getKeyStroke(keys[i], mods[i]));
+            i++;
+        }
+    }
+    
+    /**
+     * 
+     */
+    private static void buildKeyStrokeForCommandTypesMac()
+    {
+        int sc   = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
+        //int alt  = ALT_DOWN_MASK;
+        //int salt  = InputEvent.ALT_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK;
+        //int ctrl = InputEvent.CTRL_DOWN_MASK;
+        
+        //           First, Previous, Next,    Last,    Save, NewItem, DelItem
+        //int[] keys = {VK_UP, VK_LEFT, VK_RIGHT, VK_DOWN, VK_S, VK_N,    VK_D};
+        //int[] mods = {sc,  sc,    sc,     sc,    sc,   sc,      sc};
+        
+        //            First,         Previous,             Next,                 Last,          Save, NewItem, DelItem
+        int[] keys = {VK_HOME, VK_PAGE_DOWN,  VK_PAGE_UP, VK_END, VK_S, VK_N,     VK_D, };
+        int[] mods = {sc,      sc,            sc,         sc,     sc,   sc,       sc, };
+
+        buildKeyStrokeForCommandTypes(keys, mods);
+    }
+    
+    /**
+     * 
+     */
+    private static void buildKeyStrokeForCommandTypes()
+    {
+        //int sc = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(); // on Windows this is <ctrl>
+        int alt = ALT_DOWN_MASK;
+        
+        //           First,         Previous,             Next,                 Last,          Save, NewItem, DelItem
+        int[] keys = {VK_BRACELEFT, VK_LESS,  VK_GREATER, VK_BRACERIGHT, VK_S, VK_N,     VK_D, };
+        int[] mods = {alt,          alt,                  alt,                  alt,           alt,  alt,      alt, };
+        
+        buildKeyStrokeForCommandTypes(keys, mods);
+    }
+    
+    /**
+     * Returns the KeyStroke for a CommandType
+     * @param cmdType the command type
+     * @return the KeyStroke
+     */
+    public static KeyStroke getKeyStroke(final CommandType cmdType)
+    {
+        return cmdTypeKSHash.get(cmdType);
+    }
+    
     /**
      * @param helpContext
      * @return
@@ -3287,7 +3371,7 @@ public final class UIHelper
      */
     public static boolean isValidNameForDB(final String name)
     {
-        return name.matches("[a-zA-Z0-9\\-. '\"`]*");
+        return name.matches("[a-zA-Z0-9\\-. '`]*");
     }
     
     /**
@@ -3296,7 +3380,7 @@ public final class UIHelper
      */
     public static String escapeName(final String name)
     {
-        String str = StringUtils.replace(name, "'", "\\'");
-        return StringUtils.replace(str, "\"", "\\\"");
+        return StringUtils.replace(name, "'", "`");
     }
+    
 }
