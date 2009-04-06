@@ -534,10 +534,10 @@ public class TaskMgr implements CommandListener
     
                     } catch (Exception ex)
                     {
-                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TaskMgr.class, ex);
                         log.error(ex);
                         ex.printStackTrace();
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TaskMgr.class, ex);
                         
                         // go to the next plugin
                         continue;
@@ -599,10 +599,10 @@ public class TaskMgr implements CommandListener
         
                         } catch (Exception ex)
                         {
-                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TaskMgr.class, ex);
                             log.error(ex);
                             ex.printStackTrace();
+                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TaskMgr.class, ex);
                             
                             // go to the next plugin
                             continue;

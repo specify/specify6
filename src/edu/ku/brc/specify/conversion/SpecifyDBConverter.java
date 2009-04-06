@@ -1,5 +1,11 @@
 package edu.ku.brc.specify.conversion;
 
+import static edu.ku.brc.specify.config.init.DataBuilder.createAdminGroupAndUser;
+import static edu.ku.brc.specify.config.init.DataBuilder.createAgent;
+import static edu.ku.brc.specify.config.init.DataBuilder.createStandardGroups;
+import static edu.ku.brc.specify.config.init.DataBuilder.getSession;
+import static edu.ku.brc.specify.config.init.DataBuilder.setSession;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -53,7 +59,6 @@ import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.dbsupport.ResultsPager;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.SpecifyUserTypes;
-import edu.ku.brc.specify.config.init.DataBuilder;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
@@ -489,7 +494,7 @@ public class SpecifyDBConverter
         }
         
         //MEG WHY IS THIS COMMENTED OUT???
-        //DataBuilder.setSession(HibernateUtil.getNewSession());
+        //setSession(HibernateUtil.getNewSession());
         
         log.debug("Preparing new database");
         
@@ -515,7 +520,7 @@ public class SpecifyDBConverter
         {
             throw new RuntimeException("Couldn't login into ["+databaseNameDest+"] "+DBConnection.getInstance().getErrorMsg());
         }
-        DataBuilder.setSession(HibernateUtil.getNewSession());
+        setSession(HibernateUtil.getNewSession());
         IdMapperMgr idMapperMgr = null;
         SpecifyUser specifyUser = null;
 
@@ -581,10 +586,10 @@ public class SpecifyDBConverter
                     BasicSQLUtils.deleteAllRecordsFromTable("picklist", BasicSQLUtils.myDestinationServerType);
                     BasicSQLUtils.deleteAllRecordsFromTable("picklistitem", BasicSQLUtils.myDestinationServerType);
 
-                    if (DataBuilder.getSession() != null)
+                    if (getSession() != null)
                     {
-                        DataBuilder.getSession().close();
-                        DataBuilder.setSession(null);
+                        getSession().close();
+                        setSession(null);
                     }
                     
                     Collection collection   = null;
@@ -709,13 +714,13 @@ public class SpecifyDBConverter
                     
                     if (startfromScratch)
                     {
-                        Transaction trans = DataBuilder.getSession().beginTransaction();
+                        Transaction trans = getSession().beginTransaction();
                         
                         //BasicSQLUtils.deleteAllRecordsFromTable(newConn, "usergroup", BasicSQLUtils.myDestinationServerType);
                         BasicSQLUtils.deleteAllRecordsFromTable(newConn, "specifyuser", BasicSQLUtils.myDestinationServerType);
-                        //SpPrincipal userGroup = DataBuilder.createUserGroup("admin2");
+                        //SpPrincipal userGroup = createUserGroup("admin2");
                         
-                        Criteria criteria = DataBuilder.getSession().createCriteria(Agent.class);
+                        Criteria criteria = getSession().createCriteria(Agent.class);
                         criteria.add(Restrictions.eq("lastName", lastName));
                         criteria.add(Restrictions.eq("firstName", firstName));
                         
@@ -726,26 +731,26 @@ public class SpecifyDBConverter
                             userAgent = (Agent)list.get(0);
                         } else
                         {
-                            userAgent = DataBuilder.createAgent(title, firstName, midInit, lastName, abbrev, email);
+                            userAgent = createAgent(title, firstName, midInit, lastName, abbrev, email);
                         }
                         
-                        //specifyUser = DataBuilder.createSpecifyUser(username, email, password, userType);
-                        Institution institution = (Institution)DataBuilder.getSession().createQuery("FROM Institution").list().get(0);
-                        specifyUser = DataBuilder.createAdminGroupAndUser(institution,  username, email, password, userType);
+                        //specifyUser = createSpecifyUser(username, email, password, userType);
+                        Institution institution = (Institution)getSession().createQuery("FROM Institution").list().get(0);
+                        specifyUser = createAdminGroupAndUser(getSession(), institution,  username, email, password, userType);
                         specifyUser.addReference(userAgent, "agents");
                         
-                        DataBuilder.getSession().saveOrUpdate(institution);
+                        getSession().saveOrUpdate(institution);
                         
                         userAgent.setDivision(AppContextMgr.getInstance().getClassObject(Division.class));
-                        DataBuilder.getSession().saveOrUpdate(userAgent);
+                        getSession().saveOrUpdate(userAgent);
                         
                         trans.commit();
-                        DataBuilder.getSession().flush();
+                        getSession().flush();
                         
                     } else
                     {
                         // XXX Works for a Single Convert
-                        specifyUser = (SpecifyUser)DataBuilder.getSession().createCriteria(SpecifyUser.class).list().get(0);
+                        specifyUser = (SpecifyUser)getSession().createCriteria(SpecifyUser.class).list().get(0);
                         userAgent   = specifyUser.getAgents().iterator().next();
                     }
                     
@@ -758,7 +763,7 @@ public class SpecifyDBConverter
                     {
                         AppContextMgr.getInstance().setClassObject(SpecifyUser.class, specifyUser);
                         // XXX Works for a Single Convert
-                        Collection collection = (Collection)DataBuilder.getSession().createCriteria(Collection.class).list().get(0);
+                        Collection collection = (Collection)getSession().createCriteria(Collection.class).list().get(0);
                         AppContextMgr.getInstance().setClassObject(Collection.class, collection);
                     }
 
@@ -1008,10 +1013,10 @@ public class SpecifyDBConverter
                 
                 frame.incOverall();
                 
-                if (DataBuilder.getSession() != null)
+                if (getSession() != null)
                 {
-                    DataBuilder.getSession().close();
-                    DataBuilder.setSession(null);
+                    getSession().close();
+                    setSession(null);
                 }
 
                 boolean     status       = false;
@@ -1020,8 +1025,8 @@ public class SpecifyDBConverter
                 Collection  collection   = null;
                 Discipline  dscp         = null;
                 Session     localSession = HibernateUtil.getNewSession();
-                Session     cachedCurrentSession = DataBuilder.getSession();
-                DataBuilder.setSession(null);
+                Session     cachedCurrentSession = getSession();
+                setSession(null);
                 try
                 {
                     if (conversion.getCurDisciplineID() == null)
@@ -1066,14 +1071,14 @@ public class SpecifyDBConverter
                     AppContextMgr.getInstance().setClassObject(Division.class, division);
                     AppContextMgr.getInstance().setClassObject(Institution.class, institution);
                     
-                    DataBuilder.setSession(localSession);
+                    setSession(localSession);
                     
                     if (true)
                     {
                         try
                         {
                             // create the standard user groups for this collection
-                            Map<String, SpPrincipal> groupMap = DataBuilder.createStandardGroups(collection);
+                            Map<String, SpPrincipal> groupMap = createStandardGroups(localSession, collection);
 
                             // add the administrator as a Collections Manager in this group
                             specifyUser.addUserToSpPrincipalGroup(groupMap.get(SpecifyUserTypes.UserType.Manager.toString()));
@@ -1121,7 +1126,7 @@ public class SpecifyDBConverter
                     ex.printStackTrace();
                 }
                 
-                DataBuilder.setSession(cachedCurrentSession);
+                setSession(cachedCurrentSession);
                 
                 frame.setDesc("Converting USYS Tables.");
                 log.info("Converting USYS Tables.");
@@ -1293,9 +1298,9 @@ public class SpecifyDBConverter
             
         } finally
         {
-            if (DataBuilder.getSession() != null)
+            if (getSession() != null)
             {
-                DataBuilder.getSession().close();
+                getSession().close();
             }
         }
     }

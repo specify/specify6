@@ -476,7 +476,7 @@ public class BuildSampleDatabase
         String email    = props.getProperty("email");
         String userType = props.getProperty("userType");
 
-        SpecifyUser specifyAdminUser = DataBuilder.createAdminGroupAndUser(institution, username, email, password, userType);
+        SpecifyUser specifyAdminUser = DataBuilder.createAdminGroupAndUser(session, institution, username, email, password, userType);
         
         ////////////////////////////////
         // Create the really high-level stuff
@@ -854,7 +854,7 @@ public class BuildSampleDatabase
         ///////////////////////////////////////
 
         // create the standard user groups for this collection
-        Map<String, SpPrincipal> groupMap = DataBuilder.createStandardGroups(collection);
+        Map<String, SpPrincipal> groupMap = DataBuilder.createStandardGroups(session, collection);
 
         // add the administrator as a Collections Manager in this group
         specifyAdminUser.addUserToSpPrincipalGroup(groupMap.get(SpecifyUserTypes.UserType.Manager.toString()));
@@ -895,14 +895,14 @@ public class BuildSampleDatabase
      * @return
      */
     public AutoNumberingScheme createAutoNumScheme(final Properties props, 
-                                                   final String propName,
-                                                   final String schemeName,
-                                                   final int    tableId)
+                                                   final String     propName,
+                                                   final String     schemeName,
+                                                   final int        tableId)
     {
         Object                numFmtObj       = props.get(propName);
         UIFieldFormatterIFace numFormat       = numFmtObj instanceof UIFieldFormatterIFace ? (UIFieldFormatterIFace)numFmtObj : null;
         boolean               isNumFmtNumeric = false;
-        String                numFmtName      = numFormat != null ? numFormat.getName() : numFmtObj.toString();
+        String                numFmtName      = numFormat != null ? numFormat.getName() : (numFmtObj != null ? numFmtObj.toString() : null);
         
         if (numFormat != null)
         {
@@ -1623,14 +1623,14 @@ public class BuildSampleDatabase
         persist(collection);
         
         // create the standard user groups for this collection
-        Map<String, SpPrincipal> groupMap = DataBuilder.createStandardGroups(collection);
+        Map<String, SpPrincipal> groupMap = DataBuilder.createStandardGroups(session, collection);
 
         // add the administrator as a Collections Manager in this group
         user.addUserToSpPrincipalGroup(groupMap.get(SpecifyUserTypes.UserType.Manager.toString()));
 
         // Tester
-        persist(createAndAddTesterToCollection("botanyuser", "botanyuser@ku.edu", "botanyuser", "mr", "Bob", "", "Botony", "",  
-                                        discipline, division, groupMap, "Guest"));
+        createAndAddTesterToCollection(session, "botanyuser", "botanyuser@ku.edu", "botanyuser", "mr", "Bob", "", "Botony", "",  
+                                        discipline, division, groupMap, "Guest");
 
         persist(discipline);
 
@@ -2726,14 +2726,14 @@ public class BuildSampleDatabase
         persist(collection);
         
         // create the standard user groups for this collection
-        Map<String, SpPrincipal> groupMap = DataBuilder.createStandardGroups(collection);
+        Map<String, SpPrincipal> groupMap = DataBuilder.createStandardGroups(session, collection);
 
         // add the administrator as a Collections Manager in this group
         user.addUserToSpPrincipalGroup(groupMap.get(SpecifyUserTypes.UserType.Manager.toString()));
 
         // Tester
-        persist(createAndAddTesterToCollection("ivpuser", "InvertPaleo@ku.edu", "ivpuser", "mr", "Joe", "", "InvertPaleo", "",
-                                       discipline, division, groupMap, "Guest"));
+        createAndAddTesterToCollection(session, "ivpuser", "InvertPaleo@ku.edu", "ivpuser", "mr", "Joe", "", "InvertPaleo", "",
+                                       discipline, division, groupMap, "Guest");
 
         AppContextMgr.getInstance().setClassObject(Collection.class, collection);
 
@@ -3844,15 +3844,15 @@ public class BuildSampleDatabase
         persist(collection);
         
         // create the standard user groups for this collection
-        Map<String, SpPrincipal> groupMap = DataBuilder.createStandardGroups(collection);
+        Map<String, SpPrincipal> groupMap = DataBuilder.createStandardGroups(session, collection);
 
         // add the administrator as a Collections Manager in this group
         user.addUserToSpPrincipalGroup(groupMap.get(SpecifyUserTypes.UserType.Manager.toString()));
 
         // Tester
         String dspAbbrev = disciplineType.getAbbrev();
-        persist(createAndAddTesterToCollection(dspAbbrev+"Tester", dspAbbrev+"tester@brc.ku.edu", dspAbbrev+"Tester", 
-                "", dspAbbrev, "", "Tester", "", discipline, division, groupMap, "Guest"));
+        createAndAddTesterToCollection(session, dspAbbrev+"Tester", dspAbbrev+"tester@brc.ku.edu", dspAbbrev+"Tester", 
+                "", dspAbbrev, "", "Tester", "", discipline, division, groupMap, "Guest");
 
         AppContextMgr.getInstance().setClassObject(Collection.class, collection);
         
@@ -5076,7 +5076,7 @@ public class BuildSampleDatabase
         ////////////////////////////////
         // Default user groups and test user
         ////////////////////////////////
-        Map<String, SpPrincipal> groupMap = DataBuilder.createStandardGroups(collection);
+        Map<String, SpPrincipal> groupMap = DataBuilder.createStandardGroups(session, collection);
         
         // add the administrator as a Collections Manager in this group
         user.addUserToSpPrincipalGroup(groupMap.get(SpecifyUserTypes.UserType.Manager.toString()));
@@ -5084,8 +5084,8 @@ public class BuildSampleDatabase
         
         // Tester
         String userPrefix = (isVoucherCol)? "" : "Tis";
-        persist(createAndAddTesterToCollection(userPrefix + "FishTester", "fishtester@brc.ku.edu", userPrefix + "FishTester", 
-                "", "Fish", "", "Tester", "", discipline, division, groupMap, "Guest"));
+        createAndAddTesterToCollection(session, userPrefix + "FishTester", "fishtester@brc.ku.edu", userPrefix + "FishTester", 
+                "", "Fish", "", "Tester", "", discipline, division, groupMap, "Guest");
         
         commitTx();
         
@@ -6096,7 +6096,7 @@ public class BuildSampleDatabase
         
         startTx();
         
-        SpecifyUser specifyAdminUser = DataBuilder.createAdminGroupAndUser(institution,  username, email, password, userType);
+        SpecifyUser specifyAdminUser = DataBuilder.createAdminGroupAndUser(session, institution,  username, email, password, userType);
         
         dataType = createDataType("Biota");
         
@@ -7995,7 +7995,7 @@ public class BuildSampleDatabase
         {
             localSession = DataProviderFactory.getInstance().createSession();
             String sql = "FROM SpLocaleContainer as sp INNER JOIN sp.discipline as d WHERE sp.name = '" + tableName + "' AND d.id = "+discipline.getId();
-            System.err.println(sql);
+            //System.err.println(sql);
             Object[] cols = (Object[])localSession.getData(sql);
             SpLocaleContainer container = (SpLocaleContainer)cols[0];
             if (container != null)

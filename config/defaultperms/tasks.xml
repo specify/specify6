@@ -4,7 +4,7 @@
     <hashtable>
       <entry>
         <string>Manager</string>
-        <tp name="Record_Set" type="Manager" view="false" modify="false" del="false" add="false"/>
+        <tp name="Record_Set" type="Manager" view="true" modify="true" del="true" add="true"/>
       </entry>
       <entry>
         <string>Guest</string>
@@ -12,11 +12,11 @@
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="Record_Set" type="LimitedAccess" view="false" modify="false" del="false" add="false"/>
+        <tp name="Record_Set" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
       <entry>
         <string>FullAccess</string>
-        <tp name="Record_Set" type="FullAccess" view="false" modify="false" del="false" add="false"/>
+        <tp name="Record_Set" type="FullAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
     </hashtable>
   </entry>
@@ -25,7 +25,7 @@
     <hashtable>
       <entry>
         <string>Manager</string>
-        <tp name="InfoRequest" type="Manager" view="false" modify="false" del="false" add="false"/>
+        <tp name="InfoRequest" type="Manager" view="true" modify="true" del="true" add="true"/>
       </entry>
       <entry>
         <string>Guest</string>
@@ -33,11 +33,11 @@
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="InfoRequest" type="LimitedAccess" view="false" modify="false" del="false" add="false"/>
+        <tp name="InfoRequest" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
       <entry>
         <string>FullAccess</string>
-        <tp name="InfoRequest" type="FullAccess" view="false" modify="false" del="false" add="false"/>
+        <tp name="InfoRequest" type="FullAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
     </hashtable>
   </entry>
@@ -46,7 +46,7 @@
     <hashtable>
       <entry>
         <string>Manager</string>
-        <tp name="SystemSetup" type="Manager" view="false" modify="false" del="false" add="false"/>
+        <tp name="SystemSetup" type="Manager" view="true" modify="true" del="true" add="true"/>
       </entry>
       <entry>
         <string>Guest</string>
@@ -54,11 +54,11 @@
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="SystemSetup" type="LimitedAccess" view="false" modify="false" del="false" add="false"/>
+        <tp name="SystemSetup" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
       <entry>
         <string>FullAccess</string>
-        <tp name="SystemSetup" type="FullAccess" view="false" modify="false" del="false" add="false"/>
+        <tp name="SystemSetup" type="FullAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
     </hashtable>
   </entry>
@@ -88,7 +88,7 @@
     <hashtable>
       <entry>
         <string>Manager</string>
-        <tp name="Plugins" type="Manager" view="false" modify="false" del="false" add="false"/>
+        <tp name="Plugins" type="Manager" view="true" modify="true" del="true" add="true"/>
       </entry>
       <entry>
         <string>Guest</string>
@@ -96,11 +96,11 @@
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="Plugins" type="LimitedAccess" view="false" modify="false" del="false" add="false"/>
+        <tp name="Plugins" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
       <entry>
         <string>FullAccess</string>
-        <tp name="Plugins" type="FullAccess" view="false" modify="false" del="false" add="false"/>
+        <tp name="Plugins" type="FullAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
     </hashtable>
   </entry>
@@ -109,7 +109,7 @@
     <hashtable>
       <entry>
         <string>Manager</string>
-        <tp name="BackupTask" type="Manager" view="false" modify="false" del="false" add="false"/>
+        <tp name="BackupTask" type="Manager" view="true" modify="true" del="true" add="true"/>
       </entry>
       <entry>
         <string>Guest</string>
@@ -117,11 +117,11 @@
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="BackupTask" type="LimitedAccess" view="false" modify="false" del="false" add="false"/>
+        <tp name="BackupTask" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
       <entry>
         <string>FullAccess</string>
-        <tp name="BackupTask" type="FullAccess" view="false" modify="false" del="false" add="false"/>
+        <tp name="BackupTask" type="FullAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
     </hashtable>
   </entry>
@@ -130,7 +130,7 @@
     <hashtable>
       <entry>
         <string>Manager</string>
-        <tp name="Express_Search" type="Manager" view="false" modify="false" del="false" add="false"/>
+        <tp name="Express_Search" type="Manager" view="true" modify="true" del="true" add="true"/>
       </entry>
       <entry>
         <string>Guest</string>
@@ -138,11 +138,11 @@
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="Express_Search" type="LimitedAccess" view="false" modify="false" del="false" add="false"/>
+        <tp name="Express_Search" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
       <entry>
         <string>FullAccess</string>
-        <tp name="Express_Search" type="FullAccess" view="false" modify="false" del="false" add="false"/>
+        <tp name="Express_Search" type="FullAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
     </hashtable>
   </entry>
@@ -151,7 +151,7 @@
     <hashtable>
       <entry>
         <string>Manager</string>
-        <tp name="LithoStratTree" type="Manager" view="false" modify="false" del="false" add="false"/>
+        <tp name="LithoStratTree" type="Manager" view="true" modify="true" del="true" add="true"/>
       </entry>
       <entry>
         <string>Guest</string>
@@ -159,11 +159,11 @@
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="LithoStratTree" type="LimitedAccess" view="false" modify="false" del="false" add="false"/>
+        <tp name="LithoStratTree" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
       <entry>
         <string>FullAccess</string>
-        <tp name="LithoStratTree" type="FullAccess" view="false" modify="false" del="false" add="false"/>
+        <tp name="LithoStratTree" type="FullAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
     </hashtable>
   </entry>
@@ -193,7 +193,7 @@
     <hashtable>
       <entry>
         <string>Manager</string>
-        <tp name="SecurityAdmin" type="Manager" view="false" modify="false" del="false" add="false"/>
+        <tp name="SecurityAdmin" type="Manager" view="true" modify="true" del="true" add="true"/>
       </entry>
       <entry>
         <string>Guest</string>
@@ -201,11 +201,11 @@
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="SecurityAdmin" type="LimitedAccess" view="false" modify="false" del="false" add="false"/>
+        <tp name="SecurityAdmin" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
       <entry>
         <string>FullAccess</string>
-        <tp name="SecurityAdmin" type="FullAccess" view="false" modify="false" del="false" add="false"/>
+        <tp name="SecurityAdmin" type="FullAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
     </hashtable>
   </entry>
@@ -214,7 +214,7 @@
     <hashtable>
       <entry>
         <string>Manager</string>
-        <tp name="Query" type="Manager" view="false" modify="false" del="false" add="false"/>
+        <tp name="Query" type="Manager" view="true" modify="true" del="true" add="true"/>
       </entry>
       <entry>
         <string>Guest</string>
@@ -222,11 +222,11 @@
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="Query" type="LimitedAccess" view="false" modify="false" del="false" add="false"/>
+        <tp name="Query" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
       <entry>
         <string>FullAccess</string>
-        <tp name="Query" type="FullAccess" view="false" modify="false" del="false" add="false"/>
+        <tp name="Query" type="FullAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
     </hashtable>
   </entry>
@@ -235,7 +235,7 @@
     <hashtable>
       <entry>
         <string>Manager</string>
-        <tp name="Data_Entry" type="Manager" view="false" modify="false" del="false" add="false"/>
+        <tp name="Data_Entry" type="Manager" view="true" modify="true" del="true" add="true"/>
       </entry>
       <entry>
         <string>Guest</string>
@@ -243,11 +243,11 @@
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="Data_Entry" type="LimitedAccess" view="false" modify="false" del="false" add="false"/>
+        <tp name="Data_Entry" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
       <entry>
         <string>FullAccess</string>
-        <tp name="Data_Entry" type="FullAccess" view="false" modify="false" del="false" add="false"/>
+        <tp name="Data_Entry" type="FullAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
     </hashtable>
   </entry>
@@ -256,7 +256,7 @@
     <hashtable>
       <entry>
         <string>Manager</string>
-        <tp name="GeographyTree" type="Manager" view="false" modify="false" del="false" add="false"/>
+        <tp name="GeographyTree" type="Manager" view="true" modify="true" del="true" add="true"/>
       </entry>
       <entry>
         <string>Guest</string>
@@ -264,11 +264,11 @@
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="GeographyTree" type="LimitedAccess" view="false" modify="false" del="false" add="false"/>
+        <tp name="GeographyTree" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
       <entry>
         <string>FullAccess</string>
-        <tp name="GeographyTree" type="FullAccess" view="false" modify="false" del="false" add="false"/>
+        <tp name="GeographyTree" type="FullAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
     </hashtable>
   </entry>
@@ -277,7 +277,7 @@
     <hashtable>
       <entry>
         <string>Manager</string>
-        <tp name="Interactions" type="Manager" view="false" modify="false" del="false" add="false"/>
+        <tp name="Interactions" type="Manager" view="true" modify="true" del="true" add="true"/>
       </entry>
       <entry>
         <string>Guest</string>
@@ -285,11 +285,11 @@
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="Interactions" type="LimitedAccess" view="false" modify="false" del="false" add="false"/>
+        <tp name="Interactions" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
       <entry>
         <string>FullAccess</string>
-        <tp name="Interactions" type="FullAccess" view="false" modify="false" del="false" add="false"/>
+        <tp name="Interactions" type="FullAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
     </hashtable>
   </entry>
@@ -319,7 +319,7 @@
     <hashtable>
       <entry>
         <string>Manager</string>
-        <tp name="Labels" type="Manager" view="false" modify="false" del="false" add="false"/>
+        <tp name="Labels" type="Manager" view="true" modify="true" del="true" add="true"/>
       </entry>
       <entry>
         <string>Guest</string>
@@ -327,11 +327,11 @@
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="Labels" type="LimitedAccess" view="false" modify="false" del="false" add="false"/>
+        <tp name="Labels" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
       <entry>
         <string>FullAccess</string>
-        <tp name="Labels" type="FullAccess" view="false" modify="false" del="false" add="false"/>
+        <tp name="Labels" type="FullAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
     </hashtable>
   </entry>
@@ -340,7 +340,7 @@
     <hashtable>
       <entry>
         <string>Manager</string>
-        <tp name="Reports" type="Manager" view="false" modify="false" del="false" add="false"/>
+        <tp name="Reports" type="Manager" view="true" modify="true" del="true" add="true"/>
       </entry>
       <entry>
         <string>Guest</string>
@@ -348,11 +348,11 @@
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="Reports" type="LimitedAccess" view="false" modify="false" del="false" add="false"/>
+        <tp name="Reports" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
       <entry>
         <string>FullAccess</string>
-        <tp name="Reports" type="FullAccess" view="false" modify="false" del="false" add="false"/>
+        <tp name="Reports" type="FullAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
     </hashtable>
   </entry>
@@ -361,7 +361,7 @@
     <hashtable>
       <entry>
         <string>Manager</string>
-        <tp name="GeoTimePeriodTree" type="Manager" view="false" modify="false" del="false" add="false"/>
+        <tp name="GeoTimePeriodTree" type="Manager" view="true" modify="true" del="true" add="true"/>
       </entry>
       <entry>
         <string>Guest</string>
@@ -369,11 +369,11 @@
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="GeoTimePeriodTree" type="LimitedAccess" view="false" modify="false" del="false" add="false"/>
+        <tp name="GeoTimePeriodTree" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
       <entry>
         <string>FullAccess</string>
-        <tp name="GeoTimePeriodTree" type="FullAccess" view="false" modify="false" del="false" add="false"/>
+        <tp name="GeoTimePeriodTree" type="FullAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
     </hashtable>
   </entry>
@@ -390,11 +390,11 @@
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="Workbench" type="LimitedAccess" view="false" modify="false" del="false" add="false"/>
+        <tp name="Workbench" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
       <entry>
         <string>FullAccess</string>
-        <tp name="Workbench" type="FullAccess" view="false" modify="false" del="false" add="false"/>
+        <tp name="Workbench" type="FullAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
     </hashtable>
   </entry>
@@ -403,7 +403,7 @@
     <hashtable>
       <entry>
         <string>Manager</string>
-        <tp name="TaxonTree" type="Manager" view="false" modify="false" del="false" add="false"/>
+        <tp name="TaxonTree" type="Manager" view="true" modify="true" del="true" add="true"/>
       </entry>
       <entry>
         <string>Guest</string>
@@ -411,11 +411,11 @@
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="TaxonTree" type="LimitedAccess" view="false" modify="false" del="false" add="false"/>
+        <tp name="TaxonTree" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
       <entry>
         <string>FullAccess</string>
-        <tp name="TaxonTree" type="FullAccess" view="false" modify="false" del="false" add="false"/>
+        <tp name="TaxonTree" type="FullAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
     </hashtable>
   </entry>
@@ -424,7 +424,7 @@
     <hashtable>
       <entry>
         <string>Manager</string>
-        <tp name="StorageTree" type="Manager" view="false" modify="false" del="false" add="false"/>
+        <tp name="StorageTree" type="Manager" view="true" modify="true" del="true" add="true"/>
       </entry>
       <entry>
         <string>Guest</string>
@@ -432,11 +432,11 @@
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="StorageTree" type="LimitedAccess" view="false" modify="false" del="false" add="false"/>
+        <tp name="StorageTree" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
       <entry>
         <string>FullAccess</string>
-        <tp name="StorageTree" type="FullAccess" view="false" modify="false" del="false" add="false"/>
+        <tp name="StorageTree" type="FullAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
     </hashtable>
   </entry>

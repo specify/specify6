@@ -2338,33 +2338,35 @@ public class DataBuilder
         return specifyuser;
     }
 
-    public static SpecifyUser createAndAddTesterToCollection(
-                                final String             name,
-                                final String             email,
-                                final String             pwd,
-                                final String             title,
-                                final String             first,
-                                final String             middle,
-                                final String             last,
-                                final String             abbrev,
-                                Discipline               discipline, 
-                                Division                 division, 
-                                Map<String, SpPrincipal> groupMap, 
-                                String                   userType) 
+    public static SpecifyUser createAndAddTesterToCollection(final Session            sessionArg,
+                                                             final String             name,
+                                                             final String             email,
+                                                             final String             pwd,
+                                                             final String             title,
+                                                             final String             first,
+                                                             final String             middle,
+                                                             final String             last,
+                                                             final String             abbrev,
+                                                             final Discipline         discipline, 
+                                                             final Division           division, 
+                                                             final Map<String, SpPrincipal> groupMap, 
+                                                             final String             userType) 
     {
         // Tester
-        Agent       testerAgent = createAgent(title, first, middle, last, abbrev, email);
+        Agent testerAgent = createAgent(title, first, middle, last, abbrev, email);
+        sessionArg.saveOrUpdate(testerAgent);
+        
         testerAgent.setDivision(division);
         SpecifyUser testerUser = createSpecifyUser(name, email, pwd, groupMap, userType);
-
+        sessionArg.saveOrUpdate(testerUser);
+        
         SpPrincipal testerUserPrincipal = DataBuilder.createUserPrincipal(testerUser);
+        sessionArg.saveOrUpdate(testerUserPrincipal);
+        
         testerUser.addUserToSpPrincipalGroup(testerUserPrincipal);
         discipline.addReference(testerAgent, "agents");
         testerUser.addReference(testerAgent, "agents");
 
-        persist(testerUser);
-        persist(testerAgent);
-        
         return testerUser;
     }
 
@@ -2405,7 +2407,6 @@ public class DataBuilder
         usergroup.setGroupType(type);
         usergroup.setGroupSubClass(GroupPrincipal.class.getCanonicalName());
         usergroup.setScope(scope);
-        persist(usergroup);
         return usergroup;    
     }
     
@@ -2417,7 +2418,6 @@ public class DataBuilder
         groupPrincipal.setPriority(0);
         groupPrincipal.setScope(scope);
         groupPrincipal.setGroupSubClass(AdminPrincipal.class.getCanonicalName());
-        persist(groupPrincipal);
         return groupPrincipal;
     }
     
@@ -2429,7 +2429,6 @@ public class DataBuilder
         userPrincipal.setPriority(80);
         userPrincipal.setGroupSubClass(UserPrincipal.class.getCanonicalName());
         user.getSpPrincipals().add(userPrincipal);
-        persist(userPrincipal);
         return userPrincipal;   
     }
     
@@ -2484,7 +2483,8 @@ public class DataBuilder
      * Create default groups under the given scope.
      *
      */
-    public static Map<String, SpPrincipal> createStandardGroups(final UserGroupScope scope)
+    public static Map<String, SpPrincipal> createStandardGroups(final Session     sessionArg,
+                                                                final UserGroupScope scope)
     {
         loadDefaultGroupDefinitions();
         
@@ -2494,9 +2494,10 @@ public class DataBuilder
         {
             Pair<String, Byte> grpInfo = usertypeToDefaultGroup.get(usertype);
             SpPrincipal group = createGroup(grpInfo.first, usertype, grpInfo.second, scope);
+            sessionArg.saveOrUpdate(group);
             groupMap.put(usertype, group);
         }
-        createDefaultPermissions(groupMap);
+        createDefaultPermissions(sessionArg, groupMap);
 
         return groupMap;
     }
@@ -2504,13 +2505,17 @@ public class DataBuilder
     /**
      * @param groupMap
      */
-    public static void createDefaultPermissions(final Map<String, SpPrincipal> groupMap)
+    public static void createDefaultPermissions(final Session sessionArg, final Map<String, SpPrincipal> groupMap)
     {
-        createDefaultPermissions("dataobjs.xml",   "DO.",    groupMap);
-        createDefaultPermissions("prefsperms.xml", "Prefs.", groupMap);
-        createDefaultPermissions("tasks.xml",      "Task.",  groupMap);
+        createDefaultPermissions(sessionArg, "dataobjs.xml",   "DO.",    groupMap);
+        createDefaultPermissions(sessionArg, "prefsperms.xml", "Prefs.", groupMap);
+        createDefaultPermissions(sessionArg, "tasks.xml",      "Task.",  groupMap);
     }
     
+    /**
+     * @param hash
+     * @param fileName
+     */
     public static void writePerms(final Hashtable<String, Hashtable<String, PermissionOptionPersist>> hash,
                                   final String fileName)
     {
@@ -2531,7 +2536,8 @@ public class DataBuilder
      * @param prefix
      * @param groupMap
      */
-    public static void createDefaultPermissions(final String      filename,
+    public static void createDefaultPermissions(final Session     sessionArg,
+                                                final String      filename,
                                                 final String      prefix,
                                                 final Map<String, SpPrincipal> groupMap)
     {
@@ -2544,7 +2550,16 @@ public class DataBuilder
                 Hashtable<String, PermissionOptionPersist> hash = mainHash.get(permName);
                 if (hash.get(userType) == null)
                 {
-                    PermissionOptionPersist permOpts = hash.get("FullAccess");
+                    PermissionOptionPersist permOpts = hash.get("Manager");
+                    PermissionOptionPersist newPermOpts = new PermissionOptionPersist(permOpts.getTaskName(), userType, permOpts.isCanView(), permOpts.isCanModify(), permOpts.isCanDel(), permOpts.isCanAdd());
+                    hash.put(userType, newPermOpts);
+                }
+                
+                userType = "FullAccess";
+                hash = mainHash.get(permName);
+                if (hash.get(userType) == null)
+                {
+                    PermissionOptionPersist permOpts = hash.get("Manager");
                     PermissionOptionPersist newPermOpts = new PermissionOptionPersist(permOpts.getTaskName(), userType, permOpts.isCanView(), permOpts.isCanModify(), permOpts.isCanDel(), permOpts.isCanAdd());
                     hash.put(userType, newPermOpts);
                 }
@@ -2562,9 +2577,10 @@ public class DataBuilder
             Hashtable<String, PermissionOptionPersist> hash = mainHash.get(permName);
             for (String userType : hash.keySet()) 
             {
-                PermissionOptionPersist tp = hash.get(userType);
-                SpPermission perm = tp.getSpPermission();
-                persist(perm);
+                PermissionOptionPersist tp   = hash.get(userType);
+                SpPermission            perm = tp.getSpPermission();
+                sessionArg.saveOrUpdate(perm);
+                
                 Set<SpPrincipal> groupSet = new HashSet<SpPrincipal>();
                 groupSet.add(groupMap.get(userType));
                 perm.setPrincipals(groupSet);
@@ -3106,7 +3122,8 @@ public class DataBuilder
      * @param userType
      * @return
      */
-    public static SpecifyUser createAdminGroupAndUser(final Institution institution, 
+    public static SpecifyUser createAdminGroupAndUser(final Session     sessionArg,
+                                                      final Institution institution, 
                                                       final String      username,
                                                       final String      email, 
                                                       final String      password, 
@@ -3114,8 +3131,10 @@ public class DataBuilder
     {
         
         SpecifyUser specifyAdminUser = createSpecifyUser(username, email, password, userType);
-        
-        return createAdminGroupWithSpUser(institution, specifyAdminUser);
+        sessionArg.saveOrUpdate(specifyAdminUser);
+        SpecifyUser spUser = createAdminGroupWithSpUser(sessionArg, institution, specifyAdminUser);
+        sessionArg.saveOrUpdate(spUser);
+        return spUser;
     }
     
     /**
@@ -3123,12 +3142,17 @@ public class DataBuilder
      * @param specifyAdminUser
      * @return
      */
-    public static SpecifyUser createAdminGroupWithSpUser(final Institution institution, 
+    public static SpecifyUser createAdminGroupWithSpUser(final Session sessionArg,
+                                                         final Institution institution, 
                                                          final SpecifyUser specifyAdminUser) 
     {
         SpPrincipal adminGroup = createAdminGroup("Administrator", institution);
+        sessionArg.saveOrUpdate(adminGroup);
         specifyAdminUser.addUserToSpPrincipalGroup(adminGroup);
-        createUserPrincipal(specifyAdminUser);
+        
+        SpPrincipal spPrin = createUserPrincipal(specifyAdminUser);
+        sessionArg.saveOrUpdate(spPrin);
+        
         return specifyAdminUser;
     }
 }
