@@ -43,10 +43,12 @@
 
 		  
 		  
-		  <tocitem text="Starting Specify" target="staring">
+		  <tocitem text="Starting Specify" target="staring"/>
+<!--
 		  	 <tocitem text="Login to Specify" target="Login"/>
 		  	 <tocitem text="Update Specify" target="Update"/>
-		  </tocitem>
+-->
+
 		  
 		  <tocitem text="Specify Setup" target="Config_Overview">
 		  	 <tocitem text="Adding Institutional Levels" target="Inst_Hier">
@@ -58,11 +60,10 @@
 			 	<tocitem text="Adding Users" target="Add_User"/>
 				<tocitem text="Setting User Permissions" target="Set_Permissions"/>
 			  </tocitem>
-			 <tocitem text="Creating Field Formats" target="Number_Formats" />
-			 <tocitem text="Using Backup and Restore" target="Backup_Restore" />
+			 <tocitem text="Editing the Schema Configuration" target="Schema_Config" />
 			 <tocitem text="Editing System Pick Lists" target="System_Picklist" />
 			 <tocitem text="Editing Preparation Type" target="Prep_Type" />
-			 <tocitem text="Editing the Schema Configuration" target="Schema_Config" />
+			 <tocitem text="Using Backup and Restore" target="Backup_Restore" />
 		  </tocitem>
 	
 	
@@ -83,8 +84,7 @@
 			<tocitem text="MySQL" target="PrefsMySQL"/>
 	      </tocitem>
 	      
-	      <tocitem text="Form System" target="Using_Forms">
-		    	<tocitem text="Form System Overview" target="Using_Forms">
+	      <tocitem text="Using Forms in Specify" target="Using_Forms">
 					<tocitem text="Related Information" target="Forms_Related_Information"/>
 					<tocitem text="Form Controls" target="Forms_Controls"/>
 					<tocitem text="Unique Field Boxes" target="Forms_Unique_Boxes"/>
@@ -94,7 +94,6 @@
 					<tocitem text="Auto Numbering" target="Auto_Numbering"/>
 					<tocitem text="Using Bar Codes" target="Barcodes"/>
 					<tocitem text="How Editing Affects Related Records" target="Editing_Related_Records"/>
-				</tocitem>
 		      <tocitem text="Data Entry Forms" target="Data_Entry">
 			    <tocitem text="Side Bar Configuration" target="Data_Entry_Sidebar"/>
 				<tocitem text="Working with Forms and Trees" target="Data_Entry_Trees"/>
@@ -145,7 +144,7 @@
 				<tocitem text="Configuring Related Searches" target="ESConfigRelatedTables"/>
 				<tocitem text="Configuring the Order of Results" target="ESConfigResultsOrdering"/>
 			  </tocitem>
-			  <tocitem text="Query" target="Query">
+			  <tocitem text="Query Builder" target="Query">
 			    <tocitem text="Configure Query Side Bar" target="QBNewQueryConfig"/>
 				<tocitem text="Choose Fields" target="Q_Fields"/>
 				<tocitem text="Choose Tables" target="Q_Tables"/>

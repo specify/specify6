@@ -23,7 +23,9 @@
 <p>The WorkBench is both a stand alone tool and an integrate part of the Specify platform. The Upload function is only available in the Specify WorkBench, not the stand alone WorkBench. Data Sets created using the stand alone version will need to be exported and reimported into the Specify 6 WorkBench  for uploading. The current version of the stand alone WorkBench is not able to export Data Sets along with their mapping information, but a future release of the WorkBench will have this capability.</p>
 <p>Data Sets in the WorkBench can be uploaded into Specify 6 with the Uploader tool. This makes the uploader a fast and easy way to transfer data from an MS Excel or CSV file into Specify by first <a href="../Workbench/ImportData.html">importing</a> the data into the WorkBench. Before uploading the Data Set please note the following:</p>
 <ul>
-  <li>The Data Set mapping must be correct for data to be accurately uploaded into Specify 6.</li></br>
+  <li>Check  Data Set mapping and verify that Data Set fields are being mapped to the correct fields in Specify 6.</li></br>
+  <li>Check existing data in Specify to verify that data being uploaded will not add a duplicate record because of a typo or abbreviation. One example is Geography. If you have run the Wizard and uploaded the Geography data the United States exists within the Geography table (and tree) as 'United States'. If your Data Set includes the United States as anything other than 'United States' (for example, 'US' or 'USA') the Upload function will create a new Geography record (and node on the Geography tree). </li>
+  </br>
   <li>Columns in imported files that do not map to a specific Specify  field should be mapped to a Text or Number field. These fields will then need to be renamed accordingly within Specify to display correctly on forms and become searchable in queries. This can be accomplished by changing the field caption in the <a href="../../SchemaConfig/schema_config.html#change_caption">Schema Configuration tool</a>. </li>
   <br />
   <li>Fields that are required in Specify 6 must include data in the Data Set. For example; if a Data Set column is mapped to a Taxon field in Specify,  all required Taxon fields, including enforced ranks, must be mapped and include data in the Data Set.</li><br />
@@ -77,8 +79,16 @@
           Taxon and Collecting Event data must be associated with a Catalog Number.          </p>
           <p><u>Accession</u><br />
             The format of the accession number in the Data Set must match the field format for Accession Number in Specify.          </p>
-          <p><u>Locality</u><br />
-            The Latitude and Longitude must be in one of the accepted formats (Decimal Degrees, Degrees:Decimal Minutes or Degrees:Minutes:Seconds). Formats can be changed using the <a href="LatLongConvert.html"> Lat/Long Converter</a>.</p>
+          <p><u><a name="lat_long_formats" id="lat_long_formats"></a>Locality</u><br />
+            The Latitude and Longitude must be in one of the accepted formats:</p>
+          <p>DD.DDDD (32.7619)<br />
+             DD MMMM (32. 45.714)<br />           
+             DD MM SS.SS (32 45 42.84)<br />
+             DD.DDDD N/S/E/W (32.7619 N)<br />
+             DD MM.MM N/S/E/W (32 45.714 N)<br />
+             DD MM SS.SS N/S/E/W (32 45 42.84 N) 
+          </p>
+          <p> Formats can be changed using the <a href="LatLongConvert.html"> Lat/Long Converter</a>.</p>
           <p><u>Taxon, Geography, Lithostratigraphy, Chronostratigraphy and Storage </u><br />
               All required ranks must be present and contain data.<br />
             Tree levels (ranks) being uploaded must be present in the <a href="../../Trees/editing_tree_def.html">Tree Definition</a> in Specify.</p>
@@ -141,7 +151,7 @@
   <br />
   <li>Once the upload is complete the data is still not committed to the database. Both Query and Simple Searches can be used to examine the uploaded data before committing it. Records opened in a form from  the results window are only available to view  and can not be edited. Records in the results window can not be saved as Record Sets. The following buttons will be enabled on the Uploader:<br />
     <br />
-    <strong>View</strong> displays the uploaded records in a custom results page, indicating each table that is affected. These results can be printed viewed in a form or exported as an MS Excel file.<br />
+    <strong>View</strong> displays the uploaded records in a custom results page, indicating each table that is affected. These results can be printed, viewed in a form or exported as an MS Excel file.<br />
     <br />
     <strong>Undo</strong> removes all uploaded data from the database.<br />
     <br />

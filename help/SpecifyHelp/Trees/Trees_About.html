@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <link href="../../main.css" rel="stylesheet" type="text/css" media="screen"></link>
-<title>Trees About</title>
+<title>Trees in Specify</title>
 </head>
 
 <body bgcolor="#ffffff">
@@ -16,9 +16,10 @@
 <td><h2>Trees in Specify</h2></td></tr>
 </table>
 
-<p>Specify 6 displays various table data in heirarchical tree format. These include Taxon, Geography, Storage, Chronostratigraphy and Lithostratigraphy. These tables are also included in the form system, but the tree offers a more broad, visual glimpse of the data. Data can be viewed, added and edited using both the form and tree system.</p>
+<p>Specify 6 displays various table data in hierarchical tree format. These include Taxon, Geography, Storage, Chronostratigraphy and Lithostratigraphy. These tables are also included in the form system, but the tree offers a more broad, visual glimpse of the data. Data can be viewed, added and edited using both the form and tree system.</p>
 <p>The Taxon, Geography,  Chronostratigraphy and Lithostratigraphy trees (and tables) are scoped at the Discipline level, meaning that all collections within a discipline share the same tree. Collections Objects that are associated with the nodes on the tree are only available for the collection (these are accessed from the tree by right-clicking the node and choosing <em>Associated Collection Objects </em>from the ensuing context menu.)</p>
 <p>The Storage tree is scoped at the institution level, but as with the other trees only collection objects for the current collection will be shown when right-clicking on the node and choosing Associated Collection Objects from the context menu.</p>
+<p>Taxon trees can be viewed by all user types, but can only be edited and modified by  users in a Full Access, Manager and Administrator group and deleted by Manger and Administrators.</p>
 <p>&nbsp;</p>
 <h4><a name="trees_terms" id="trees_terms"></a>Specify Tree Terminology</h4>
 <p>The various Trees show  relationships in a hierarchical structure. All hierarchies are referred to as <strong>ranks</strong>. All nodes immediately under a rank are referred to as <strong>children</strong>. Any node with a child is referred to as a <strong>parent</strong>.</p>
@@ -49,10 +50,10 @@
 <p>Click <em><img src="../../images/Tree-32x32.png" width="20" height="20" /> Trees </em>on the Taskbar,  to open the tree tool. Trees are grouped by their task on the Sidebar.</p>
 <p><strong>Edit Trees</strong> lists the Trees available for the collection. Click a tree to open it in the Workspace. </p>
 <p><strong>Edit Tree Definitions</strong> lists the Definitions for each tree. This tool defines the ranks available in a  tree as well as with how these ranks are enforced in data entry and used in aggregating the full name. <em> </em>Before adding nodes to an empty tree, the tree Definition must be completed. Please refer to <a href="../Trees/editing_tree_def.html">Tree Definitions.</a></p>
-<p><strong>Unlock a Tree</strong> is only available to users with appropriate permssion. </p>
+<p><strong>Unlock a Tree</strong> is only available to users with appropriate permission. </p>
 <p>Only one user may edit  a tree, tree Definition or the related data entry form at the same time. Simultaneous editing of a tree, tree definition or data form is also not permitted by a single user. Trees and forms will still be available for viewing, searching or querying. In order for a second user to use the tree or form, the first user must close the affected tab. </p>
 <p>When a tree is being edited by a user (A) and another user (B) opens the tree,  a prompt will notify user (B) that the tree is in use by user (A) and will open in View mode. Then the tree will open to view.</p>
-<p>When a tree Definition is open and the same user opens the corresponding tree, the tree Definition does not need to be closed, the tree will display in the  tree tab. The Definition is not available to View and those without editing priviledges may not access it.</p>
+<p>When a tree Definition is open and the same user opens the corresponding tree, the tree Definition does not need to be closed, the tree will display in the  tree tab. The Definition is not available to View and those without editing privileges may not access it.</p>
 <p>In the event that a tree becomes locked and the user of that tree can not be located, (which may occur due to improper shutdowns of the application), the tree can be unlocked by clicking it under the Unlock A Tree heading<em></em>.</p>
 <p>&nbsp;</p>
 <h3> <u><a name="trees_tools" id="trees_tools"></a>Tree Tools</u></h3>
@@ -172,9 +173,10 @@
 <p><em><strong>Note:</strong></em> Any edits/additions to large trees may take several minutes to save. </p>
 <p>&nbsp;</p>
 <h3><a name="drag_drop">Dragging and Dropping</a></h3>
-<p>Nodes can be dragged and dropped within a tree.  When the screen is split, nodes can be dragged and dropped within the same screen or into the opposite screen. A highlight box will appear around any nodes that can accept the node being dragged. Once the node is dropped onto the accepting node a dialog will appear allowing the user to reparent, synonymize (when applicable) or cancel.</p>
-<p><strong>Reparent</strong>, or move a node (and its children) to a new parent. Reparenting a node is useful when a data entry error has occurred, or a new node has been introduced while uploading from the WorkBench. Nodes may be moved between ranks, but enforced ranks may not be skipped. </p>
-<p><strong>Synonymize</strong> the node (in the Geography and Taxon trees only). The node that is dragged  and dropped becomes a synonym of the  accepting, or target node. The target node is then the Preferred node. Changes in taxon are refelected in fields in the Determinations table. Collection object determinations are captured in the Taxon and Preferred Taxon fields. When a taxon is not a synonymy these fields will both refer to the same taxon (A). If  taxon (A) becomes a synonymy of taxon (B) the Taxon field will still reflect Taxon (A) but the Preferred Taxon will change to Taxon (B). </p>
+<p>Nodes can be dragged and dropped within a tree.  When the screen is split, nodes can be dragged and dropped within the same screen or into the opposite screen. A highlight box will appear around any nodes that can accept the node being dragged. Dragging and dropping is used to:</p>
+<p><strong>Move </strong> a node (and its child nodes) to a new parent. This is useful when a data entry error has occurred, or a new node has been introduced while uploading from the WorkBench. Nodes may be moved between ranks, but enforced ranks may not be skipped. </p>
+<p><strong>Synonymize</strong> the node (in the Geography and Taxon trees only). The node that is dragged  and dropped becomes a synonym of the  accepting, or target node. The target node is then the Preferred node. Changes in taxon are reelected in fields in the Determinations table. Collection object determinations are captured in the Taxon and Preferred Taxon fields. When a taxon is not a synonymy these fields will both refer to the same taxon (A). If  taxon (A) becomes a synonymy of taxon (B) the Taxon field will still reflect Taxon (A) but the Preferred Taxon will change to Taxon (B). </p>
+<p>Once the node is dropped onto the accepting node a dialog will appear asking if the user would like to synonymize the node (when applicable), or move the node (when applicable).</p>
 <p>Child nodes can not be added to a synonymized node and, in the same instance, parent nodes can not be synonymized unless their child nodes are first  synonymized.</p>
 <p>In the Taxon tree, nodes at the species level and below can be synonymized within and between ranks, but any node higher than species can only be synonymized within the same rank. In other words, a family level node may only be synonymized to another family level node. </p>
 <p>Synonyms are differentiated from non-synonyms by their text color. Synonym text color can be set in <em><a href="trees.html">Preferences</a></em>. Synonyms  also show as a tool tip on the node. Tool tips are displayed by holding the mouse over a rank. </p>
@@ -252,7 +254,7 @@
   </tr>
 </table>
 <p>If only one screen is open, it is best to choose <img src="../../images/up.png" alt="up" width="16" height="16" />(top view). </p>
-<p>Find and select a node by typing a few letters in a single term, or a sigle term, into the Find text box and clicking the <em>Find</em> button. Full taxon names are not accepted, so enter a name from a single rank, such as genus.</p>
+<p>Find and select a node by typing a few letters in a single term, or a single term, into the Find text box and clicking the <em>Find</em> button. Full taxon names are not accepted, so enter a name from a single rank, such as genus.</p>
 <p>Click the Next button to find the next usage of the term in the tree. For instance; if Johnson is the name of a county in different states, typing the term in the find text box and clicking the<em> Find</em> button will find the first instance of Johnson in the tree. Clicking the <em>Find</em> button a second time will find the next instance of 'Johnson' in the Geography tree.</p>
 </body>
 </html>

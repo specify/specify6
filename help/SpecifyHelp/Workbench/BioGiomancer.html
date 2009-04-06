@@ -15,14 +15,14 @@ table.box td { border-bottom: 1px solid gray; border-right: 1px solid gray }
     <td>&nbsp;</td>
   </tr>
 </table>
-<h2>BioGeomancer and GEOLocate</h2>
-<p>The WorkBench uses both the BioGeomancer and GEOLocate web services to calculate the latitude and longitude positions from a textual locality description and three geography fields. 
+<h2>GEOLocate</h2>
+<p>The WorkBench uses the GEOLocate web service to calculate the latitude and longitude positions from a textual locality description and three geography fields. 
 The WorkBench processes all the selected rows and caches the information, enabling the results to be stepped through  and the appropriate Latitude / Longitude 
 to be either selected or skipped. </p>
 <p><em><strong>Notes: </strong></em></p>
 <ul>
-  <li>If BioGeomancer results are accepted, they will overwrite any existing  data in the corresponding Data Set columns.</li>
-  <li>The WorkBench is not responsible for any of the results returned by BioGeomancer, the WorkBench is integrated with the BioGeomancer web service. </li>
+  <li>If GEOLocate results are accepted, they will overwrite any existing  data in the corresponding Data Set columns.</li>
+  <li>The WorkBench is not responsible for any of the results returned by GEOLocate, the WorkBench is integrated with the GEOLocate web service. </li>
 </ul>
 <h4>Requirements:</h4>
 <table class="box" border="1" cellspacing="0" cellpadding="4">
@@ -51,15 +51,15 @@ to be either selected or skipped. </p>
     (this is a results column)</div></td>
 </tr>
 </table>
-<p>The BioGeomancer tool uses the data present in the Locality Name, Country, State and County colunns to query the BioGeomancer service.&nbsp;The service will not work without data in all of the columns.&nbsp; The Latitude 1 and Longitude 1 columns are needed to accept the data returned by the BioGeomancer service.&nbsp; If BioGeomancer is able to obtain results for any of the records, the BioGeomancer Results Chooser dialog will display results for each Data Set record.&nbsp;</p>
+<p>The GEOLocate tool uses the data present in the Locality Name, Country, State and County colunns to query the GEOLocate service.&nbsp;The service will not work without data in all of the columns.&nbsp; The Latitude 1 and Longitude 1 columns are needed to accept the data returned by the GEOLocate service.&nbsp; If GEOLocate is able to obtain results for any of the records, the GEOLocate Results Chooser dialog will display results for each Data Set record.&nbsp;</p>
 <p align="center"><img src="../images/biogeomancerresults.png" alt="Biogeo"></p>
-<p align="center" class="imgcaption">BioGeomancer Results Chooser </p>
+<p align="center" class="imgcaption">GEOLocate Results Chooser </p>
 <p>&nbsp;</p>
 
-<p>The number of records with results displays in the dialog title bar. The dialog itself displays results,  through the BioGeomancer web service, and and allows them to be selected.&nbsp; </p>
-<p>The upper left portion of the dialog (ID, Country, Adm 1 or State, Adm 2 or County and Locality) displays the details about the query sent to BioGeomancer from the Data Set.&nbsp; </p>
+<p>The number of records with results displays in the dialog title bar. The dialog itself displays results,  through the GEOLocate web service, and and allows them to be selected.&nbsp; </p>
+<p>The upper left portion of the dialog (ID, Country, Adm 1 or State, Adm 2 or County and Locality) displays the details about the query sent to GEOLocate from the Data Set.&nbsp; </p>
 <p>The map displays a graphical representation of the result(s) using  a pair of map servers, one hosted by NASA and one hosted at the University of Kansas.&nbsp; </p>
-<p>The lower portion of the dialog displays the resulting matches returned by BioGeomancer.&nbsp; Often, if the locality description is specific enough, BioGeomancer will provide only one result.&nbsp; At times, the service provides numerous results.&nbsp; </p>
+<p>The lower portion of the dialog displays the resulting matches returned by GEOLocate.&nbsp; Often, if the locality description is specific enough, GEOLocate will provide only one result.&nbsp; At times, the service provides numerous results.&nbsp; </p>
 <p>To choose a result,  select  the row that corresponds with the correct coordinates of the Data Set record from the lower table.&nbsp; </p>
 <p>To deselect a row, either select a different row or hold the Control key while clicking on the currently selected row. </p>
 <p>The buttons at the bottom of the dialog offer the following functionality:</p>
@@ -82,7 +82,7 @@ to be either selected or skipped. </p>
   </tr>
   <tr>
     <td><div align="left"><strong>Done</strong></div></td>
-    <td>Accepts the currently selected row and closes the BioGeomancer Results Chooser dialog.</td>
+    <td>Accepts the currently selected row and closes the GEOLocate Results Chooser dialog.</td>
   </tr>
 </table>
 <p>&nbsp;</p>

@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <link href="../../main.css" rel="stylesheet" type="text/css" media="screen"></link>
-<title>Email</title>
+<title>Using Backup and Restore</title>
 </head>
 
 <BODY BGCOLOR=#ffffff>
@@ -15,8 +15,9 @@
 <tr><td width="32"><img src="../../images/backup.png" width="32" height="32" /></td>
 <td width="522"><h2>Using Backup and Restore</h2></td></tr></a>
 </table>
-<p>The Backup and Restore tool that ships with Specify  as a separate application allows IT personnel to backup and restore the database to the MySQL location on a server, or local disk. BackupAndRestore is located in the Specify application directory, in the <strong><em>bin</em></strong> file, which stores the executable files for Specify. Double click<em> BackupAndRestore</em> to launch the tool. Users are required to <a href="../Dialogs/Login.html">login</a> using the same login process as Specify and should use their unique Username and Password. </p>
-<p>Backups can also be created in <em>Specify &gt; Preferences &gt; MySQL</em> on the Mac, or <em>Edit &gt; Preferences &gt; MySQL</em> on Windows, but the Restore function in only possible in the Backup and Restore tool.</p>
+<p>The Backup and Restore tool that ships with Specify  as a separate application allows IT personnel to backup and restore the database to the MySQL location on a server, or local disk. BackupAndRestore is located in the Specify application directory, in the <strong><em>bin</em></strong> file, which stores the executable files for Specify. Double click<em> BackupAndRestore</em> to launch the tool. Users are required to login using their  MySQL Username and Password. </p>
+<p>Although BackupAndRestore is a separate tool the permissions for the tool are set in the Specify application and access is only given to users in a Manager or Administrator group.</p>
+<p>Backups can also be created in <em>Specify &gt; Preferences &gt; MySQL</em> on the Mac, or <em>Edit &gt; Preferences &gt; MySQL</em> on Windows, but the Restore function is only possible in the Backup and Restore tool.</p>
 <p>First, set MySQL information for the backup and restore function. These paths should only be edited by the MySQL administrator, or a designated person with the necessary privileges.</p>
 <table width="100%" border="1" cellspacing="2" cellpadding="6">
   <tr>
@@ -28,14 +29,14 @@
     <td><div align="center" class="MichaelsChanges">
       <div align="left"><strong>mysqldump</strong></div>
     </div></td>
-    <td>Points Specify to the needed mysqldump.exe file for backup purposes. This path will point to a server when accessing Specify from a server, and be local when Specify is run locally.</td>
+    <td>Points Specify to the needed mysqldump (mysqldump.exe on Windows) file for backup purposes. This path will point to a server when accessing Specify from a server, and be local when Specify is run locally.</td>
     <td>Click on the browse button and find the path to the command-line tools for MySQL.</td>
   </tr>
   <tr>
     <td><div align="center" class="MichaelsChanges">
       <div align="left"><strong>mysql</strong></div>
     </div></td>
-    <td>Points Specify to the needed mysqldump.exe file for backup purposes. This path will point to a server when accessing Specify from a server, and be local when Specify is run locally.</td>
+    <td>Points Specify to the needed mysql (mysql.exe on Windows) file for backup purposes.This path will point to a server when accessing Specify from a server, and be local when Specify is run locally.</td>
     <td>Click on the browse button and find the path to the command-line tools for MySQL.</td>
   </tr>
   <tr>
@@ -52,11 +53,6 @@
     <td><div align="left"><strong>Restore</strong> (button)</div></td>
     <td>The entire database will be restored to the specified location.</td>
     <td>Click the <em>Restore</em> button.</td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
   </tr>
 </table>
 <p>The Backup and Restore functions are NOT limited to single collections, but  backup and restore the entire database. </p>

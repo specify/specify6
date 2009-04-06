@@ -12,7 +12,7 @@
   </tr>
 </table>
 <table border="0"><tr><td width="39"><img src="../../images/query2_32x32.png"/></td>
-<td valign="bottom"><h2>Query Builder</h2></td></tr></table>
+<td width="341" valign="bottom"><h2>Query Builder</h2></td></tr></table>
 <p><a name="query_overview" id="query_overview"></a>One of the benefits and goals of  entering data into the Specify database is to be able to retrieve the data in an organized manner. Specify's Query builder offers a flexible interface for defining and running searches. Queries are a precise request for information retrieval and can restrict the type of returned records based on the contents of almost any of Specify's  data fields. </p>
 <p>These queries can then be used to create <a href="../RecordSet/record_set.html">Record Sets</a> or <a href="../ReportsLabels/reports.html">Reports</a>. </p>
 <p>Open the query builder by clicking the <img src="../../images/query20x20.png" width="20" height="20" /> (Query button) on the Taskbar.</p>
@@ -41,7 +41,7 @@
 <p>A list of fields available in the chosen table, as well as other related  tables, appears in a list box at the top of the query work space. </p>
 <p>To display fields in other tables, simply click  a table in the list box. Fields and other related tables  display in a new list box.</p>
 <p>Choose fields and/or tables for the query from within the appropriate list boxes by either selecting the field/table and clicking the <img src="../../images/add.png" alt="add" width="16" height="16" />(add) button or double clicking on the table/field.</p>
-<p>By seleceting fields to include in the search users can restrict the type of returned records based on the contents of almost any of Specify's 2500 data fields.</p>
+<p>By selecting fields to include in the search users can restrict the type of returned records based on the contents of almost any of Specify's 2500 data fields.</p>
 <p>There is no limit on the number of fields added to a query, but larger, more complex queries will take a longer amount of time to run. </p>
 <p>Specify 6 does not include default fields in a query as was found in Specify 5. For a column to appear in the results it must first be represented by a field in the query. Users that wish to always see a particular set of columns in their query results are encouraged to create a query with those fields and save the query. When creating a future query simply click on the saved query first, then add to it to create the new query.</p>
 <p>Specify 6 offers a grid view of results only. </p>
@@ -261,15 +261,17 @@
   <tr>
     <td><strong>Distinct</strong> (checkbox)</td>
     <td><p>Returns unique results only (no duplicates).</p>
-    <p>When the <em>Distinct</em> button is used in a query the query may not be used to create recordsets, view results in data entry forms, or run reports. </p></td>
+    <p>When the <em>Distinct</em> button is used in a query the query can not be used to create record sets, view results in data entry forms, or run reports. </p>
+    <p>When both Distinct and Sort are used in a Query the database may need to create its own Sort priorities due to the way that MySQL retrieves data. </p></td>
   </tr>
   <tr>
     <td><strong>Count</strong> (checkbox)</td>
-    <td>Gives a count of the results in a pop up dialog in the query work space only. No results will display when the <em>Count</em> feature is in use.</td>
+    <td><p>Gives a count of the results in a pop up dialog in the query work space only. No results will display when the <em>Count</em> feature is in use.</p>
+    </td>
   </tr>
   <tr>
     <td><strong>Search</strong> (button)</td>
-    <td>Engages the query.</td>
+    <td>Engages the query. Pressing the <em>Enter</em> key will also engage the query.</td>
   </tr>
   <tr>
     <td><strong>Save / Save As</strong> <br />
@@ -314,7 +316,7 @@
   </tr>
   <tr>
     <td><div align="left"><img src="../../images/Reports20x20.png" width="20" height="20" /></div></td>
-    <td>Display a report from the returned records. This button only displays if reports are availabe for the type of query that was searched. Clicking the button will result in a dialog listing all available reports for the query type. Choose a report from the list for the report to display in Specify.</td>
+    <td>Display a report from the returned records. This button only displays if reports are available for the type of query that was searched. Clicking the button will result in a dialog listing all available reports for the query type. Choose a report from the list for the report to display in Specify.</td>
   </tr>
 </table>
 </span>

@@ -53,36 +53,34 @@
   </tr>
 </table>
 <p>Allowable separators include a space, / (slash), .(period), or - (dash).</p>
+<p>Partial Dates are allowed for Collecting Event Start, Collecting Event End, Cataloged Date, Determination Date and Preparation Date in both the uploader and in the Specify database. Dates are uploaded in the US format (month, day, year) and allow zeros or dashes for unknown month or day. Any dashes or zeros for month or day are stored as '01' in the Specify database, which is used for search results. </p>
+<p>00 --- 1968 (= 1968 in the form but 01 01 1968 in the database)<br />
+  00-----1968 (= 1968 in the form but 01/01/1968 in the database)<br />
+  00 00 1999  (= 1999 in the form but 01/01/1999 in the database)<br />
+  11.00.1989 (= 11/1999 in the form but 11/01/1989 in the database)<br />
+  00 11 1989 (this is invalid)<br />
+  11 12 1989 (= 11/12/1989 on the form and in the database)<br />
+  00/---/2000 (= 2000 in the form but 01/01/2000 in the database)<br />
+  00 00 04 (= 2004 in the form but 01/01/2004 in the database)<br />
+  00-00-04 (= 2004 in the form but 01/01/1968 in the database)<br />
+  04 00 04 (= 04/2004 in the form but 04/01/1968 in the database)<br />
+  04-00-04 (= 04/2004 in the form but 04/01/1968 in the database)<br />
+  1989/00/00 (= 1989 in the form but 01/01/1989 in the database)<br />
+  1999/01/00 (= 1999 in the form but 01/01/1999 in the database)<br />
+  1999 00 00 (= 1999 in the form but 01/01/1999 in the database)<br />
+  1999 02 00 (= 02/1999 in the form but 01/01/1989 in the database)</p>
+<p>Valid separators are '.' (period), '/' (forward slash), ' ' (space),and '-' (dash).</p>
 <p>&nbsp;</p>
 <h3>Latitude and Longitude</h3>
-<p>+/- and N, S, E, W formats are both accepted as hemisphere information.</p>
+<p> N, S, E, W formats are both accepted as hemisphere information.</p>
 <p>Both d and &deg; are accepted for degrees, while ' and &quot; are accepted for minutes and seconds.&nbsp; A space is also accepted in place of or together with all of these.</p>
 <p>Decimal places for decimal degrees, minutes and seconds are unlimited.&nbsp; However, when using the Lat Long Converter, these will be truncated to 4 decimals for decimal degrees and two decimals for minutes and seconds.&nbsp; Therefore make sure that you have included the LatText1 and LongText1 fields to preserve your original input values.</p>
 <p>Some examples of accepted formats follow:</p>
-<p><u>Degrees Minutes Seconds</u></p>
-<p>32 45 16.8232<br>
-  32d 45' 16.8232&quot;<br>
-  32d45'16.8232&quot;<br>
-  32&deg;45'16.8232&quot;<br>
-  32&deg; 45' 16.82&quot;<br>
-  32 45 16.8232 N<br>
-  32d 45' 16.8232&quot; N<br>
-  32d45'16.8232&quot; N<br>
-  32&deg;45'16.8232&quot; N<br>
-  32&deg; 45' 16.82&quot; N</p>
-<p><u>Degrees decimal minutes</u></p>
-<p>32 16.8232<br>
-  32&deg; 16.82'<br>
-  32&deg;16.82<br>
-  32d 16.82<br>
-  32 16.8232 N<br>
-  32&deg; 16.82' N<br>
-  32&deg;16.82 N<br>
-  32d 16.82 N</p>
-<p><u>Decimal Degrees</u></p>
-<p>16.8232<br>
-  16.8232&deg;<br>
-  16.8232 N<br>
-  16.8232&deg; N</p>
+<p>DD.DDDD (32.7619)</p>
+<p>DD MMMM (32. 45.714</p>
+<p>DD MM SS.SS (32 45 42.84)</p>
+<p>DD.DDDD N/S/E/W (32.7619 N)</p>
+<p>DD MM.MM N/S/E/W (32 45.714 N)</p>
+<p>DD MM SS.SS N/S/E/W (32 45 42.84 N)</p>
 </body>
 </html>

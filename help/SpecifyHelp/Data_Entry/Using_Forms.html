@@ -2,7 +2,7 @@
 <html>
 <head>
 <link href="../../main.css" rel="stylesheet" type="text/css" media="screen"/></link>
-<title>Carry Forward</title>
+<title>Using Forms in Specify</title>
 </head>
 
 <body bgcolor="#ffffff">
@@ -11,11 +11,18 @@
     <td>&nbsp;</td>
   </tr>
 </table>
-<h2><a name="form_overview">Using Forms</a></h2>
-<p>A form is a window in which data can be viewed, entered, or edited. Specify categorizes forms as Data Entry, which are used to enter collection data, and Interactions, which are used to record transactions of either data or collection objects. Each discipline has access to a set of forms for both data entry and interactions, specific to their discipline. The following sections describe basic concepts for using the form system.</p>
-<p><em><strong>Note:</strong></em> At this time, Specify 6 does not include a Form Editor, as was found in Specify 5. It is important to note that the forms have been created programmatically to be extremely flexible and can be exported as xml and either edited by on-site staff or emailed to the Specify staff. The original forms should not be edited from the hard drive, they must be exported and then reimported! Forms are  exported via the <a href="../../Import/import_export.html">Importing/Exporting</a></strong> tool, which exports an entire form set. These form sets can then be reimported at a different institution level. For instance, the default form set for a discipline could be exported, edited, and reimported at a collection level, allowing all users in that collection to use the new set of forms.  If you wish to have a member of the Specify team edit the form,  and have an ISA with Specify, please contact them at <a href="mailto:specify@ku.edu">specify@ku.edu</a>.</p>
-<p>The names of tables and fields used for display within Specify, (labels), can be edited using the <a href="../../SchemaConfig/schema_config.html">Schema Configuration tool.</a></p>
+<h2><a name="form_overview">Using Forms</a> in Specify</h2>
+<p>A form is a window in which data can be viewed, entered, or edited. Specify categorizes forms as Data forms, which are used to enter collection data, and Interactions, which are used to record transactions of either data or collection objects. Each discipline has access to a set of forms for both data  and interactions, specific to their discipline. The following sections describe basic concepts for using the form system. A separate section of help exists for both <a href="../Data_Entry/Data_Entry.html">Data</a> and <a href="../Interactions/Interactions.html">Interactions</a> forms.</p>
+<p><em><strong>Note:</strong></em> At this time, Specify 6 does not include a Form Editor, as was found in Specify 5. It is important to note that the forms have been created programmatically to be extremely flexible and can be exported as xml and either edited by on-site staff or emailed to the Specify staff. The original forms should not be edited from the hard drive, they must be exported and then reimported! Forms are  exported via the <a href="../Import/import_export.html">Importing/Exporting</a></strong> tool, which exports an entire form set. These form sets can then be reimported at a different institution level. For instance, the default form set for a discipline could be exported, edited, and reimported at a collection level, allowing all users in that collection to use the new set of forms.  If you wish to have a member of the Specify team edit the form,  and have an ISA with Specify, please contact them at <a href="mailto:specify@ku.edu">specify@ku.edu</a>.</p>
+<p>The names of tables and fields used for display within Specify, (labels), can be edited using the <a href="../SchemaConfig/schema_config.html">Schema Configuration</a> tool.</p>
 <p>&nbsp;</p>
+<h3>Permissions</h3>
+<p>Specify includes  extensive controls for limiting access to data for each user. When starting up, Specify reads the permissions for the user based on their login information, then loads the correct tables and tools based on these permissions. For this reason, some of the controls and/or data may not be available. For example, users that belong to the Guest group and only have permission to view tables and forms will not have access to data through the Data module. They must first Query to find records, then view the data in a form. </p>
+<p>Also, if a user has permission to view forms, but does not have permission to view a particular table or tables included within the form, they will be advised that the data is restricted. For instance, the user below does not have permission to view any Preparations data, but they do have View permission for both the form system and Collection Object table.</p>
+<p align="center"><img src="../../images/restricted.png" width="720" height="86"></p>
+<p align="center" class="imgcaption">Restricted Data</p>
+<p align="left">Guests have access to view Data forms, but not Interactions forms. Limited Access users have access to View, Add and Modify Data forms, but only view Interactions forms. Full Access users can View, Add and Modify all Data and Interactions forms and Manager and Administrator users have full access to all forms.</p>
+<p align="left" class="imgcaption">&nbsp;</p>
 <h3><u><a name="forms_related_information"></a>Related Information</u></h3>
 <p>Forms are categorized for  the data that resides in each table (Collection Object, Taxon, Geography, etc.); however, much of the data within the tables is also linked to related tables. This prevents users from needing to retype the same information and assures that information is entered only one way (for example John Smith is not also entered as J. Smith or John Smyth). Separating data into fields within tables with relationships also allows data to be searched in a more precise way.</p>
 <h4>Many-to-One</h4>
@@ -24,7 +31,7 @@
 <h4>One-to-Many</h4>
 <p>A relationship involving a primary and related table in which a single primary record links to many related records  in the related table is referred to as a one-to-many relationship. For example, several Collection Object records would be linked to a single record in the Collection Event table because all the specimens were collected during the same event.</p>
 <p><strong><a name="sub_form"></a>Sub Forms</strong></p>
-<p>Related tables with a many-to-one relationship display on a form as a Query Combo Box. Control buttons next to the Query Combo Box (<img src="../../images/Edit-2-16x16.png" alt="a" width="16" height="16"> (edit), <img src="../../images/add.png" alt="a" width="16" height="16"> (add), and <img src="../../images/Search-16x16.png" alt="a" width="16" height="16"> (search) allow single records to be searched, added or edited in a pop-up sub form.</p>
+<p>Related tables with a many-to-one relationship display on a form as a Query Combo Box. Control buttons next to the Query Combo Box; <img src="../../images/Edit-2-16x16.png" alt="a" width="16" height="16"> (edit), <img src="../../images/add.png" alt="a" width="16" height="16"> (add), and <img src="../../images/Search-16x16.png" alt="a" width="16" height="16"> (search), allow single records to be searched, added or edited in a pop-up sub form.</p>
 <p>Related tables with a one-to-many relationship to the primary table are included on the form as a sub form with navigation controls.</p>
 <p>Data is added and edited in sub forms the same way that it is added and edited to forms. Boxes are used in the same way and required fields have a bold label.</p>
 <p>&nbsp;</p>
@@ -132,7 +139,7 @@
 <p>&nbsp;</p>
 <p><u>Query Combo Box</u></p>
 <p><img src="../../images/text_from_field.png" alt="image" width="573" height="32"></p>
-<p>A Query Combo Box represents a many-to-one relationship with another record in another table. Data for each record in the table is formatted to display enough fields within the table for the desired record to be recognized within a list of records. A Query Comby Box used to represent the Taxon (shown above), Geography, Storage, Lithostratigraphy and Chronostratigraphy tables will use the format for the Full Name, which is configured in the <a href="../../Trees/editing_tree_def.html#tree_ranks">Taxon Tree Definition</a>. All other tables are formatted using the <a href="../../SchemaConfig/schema_config.html#display_format">Schema Configuration tool</a>. </p>
+<p>A Query Combo Box represents a many-to-one relationship with another record in another table. Data for each record in the table is formatted to display enough fields within the table for the desired record to be recognized within a list of records. A Query Combo Box used to represent the Taxon (shown above), Geography, Storage, Lithostratigraphy and Chronostratigraphy tables will use the format for the Full Name, which is configured in the <a href="../../Trees/editing_tree_def.html#tree_ranks">Taxon Tree Definition</a>. All other tables are formatted using the <a href="../../SchemaConfig/schema_config.html#display_format">Schema Configuration tool</a>. </p>
 <p>The Query Combo Box allows data to be searched and chosen from a related table, not typed directly into the box. Data chosen from the list links the current record with a record in a related table. This eliminates the need to retype data. It is possible to type data directly into the box, but the box will not accept the data; the data must first be added to the table by clicking the <img src="../../images/add.png" alt="add" width="16" height="16"> (add) button and creating a new record.</p>
 <p>Choose data from a list:</p>
 <ul>
@@ -167,9 +174,9 @@
 </ul>
 <p><em><strong>Note: </strong></em>Edit/add options to these lists in the Pick List Editor at <em>System &gt; Collection Setup &gt; Configuration</em>. Then click on the <img src="../../images/pick_list_20.png" width="20" height="20"> <em>Pick List Editor</em> button on the side bar and refer to the directions for the <a href="../../pick_list/pick_list.html">Pick List Editor</a>. Preparation Type can be edited by clicking the <em>Preparation Type</em> icon on the same side bar. </p>
 <p>&nbsp;</p>
-<p><u>Typeable Combo Box</u></p>
+<p><u>Text Combo Box</u></p>
 <p><img src="../../images/on_fly_pick_list.png" width="179" height="32"></p>
-<p>Typeable combo boxes are used to display Pick Lists which are created from entered data. </p>
+<p>Text combo boxes are used to display Pick Lists which are created from entered data. </p>
 <ul>
   <li>Type a new term into the box and press the return or tab key. </li>
 </ul>
@@ -178,7 +185,7 @@
   <li>Click the <img src="../../images/combo_box_arrow.png" width="16" height="21"> button, or activate the box and press the down-arrow(<img src="../../images/Down16x16.png" alt="down" width="16" height="16">) key to open the list.</li>
   <li>Click on data to select it or press the enter key when the desired data is in focus.</li>
 </ul>
-<p><em><strong>Note:</strong></em> A Pick List can be changed from a Combo Box to a Typeable Combo Box or vice versa in the Pick List Editor at <em>System &gt; Collection Setup &gt; Configuration</em>.</p>
+<p><em><strong>Note:</strong></em> A Pick List can be changed from a Combo Box to a Text Combo Box or vice versa in the Pick List Editor at <em>System &gt; Collection Setup &gt; Configuration</em>.</p>
 <p>&nbsp;</p>
 <p><u>Date Field</u></p>
 <p><img src="../../images/date_field.png" width="207" height="32"></p>
@@ -194,7 +201,7 @@
 <p><em>Date Type/Partial Dates</em></p>
 <p><img src="../../images/date_dropdown.png" alt="date" width="124" height="34"></p>
 <p>Click the combo box for date type options.</p>
-<p>Collecting Event Start, Collecting Event End, Cataloged Date, Determination Date and Preparation Date can be entered as partial dates by clicking on the Date combo box and choosing one of the parial date types from the list. </p>
+<p>Collecting Event Start, Collecting Event End, Cataloged Date, Determination Date and Preparation Date can be entered as partial dates by clicking on the Date combo box and choosing one of the partial date types from the list. </p>
 <p><img src="../../images/date_type.png" alt="date" width="123" height="79"></p>
 <ul>
   <li>Choose <em>Date</em> for complete dates.</li>
@@ -247,7 +254,7 @@
 <p>To use Carry Forward</p>
 <ol>
   <li>Enter data into a form and click Save.</li>
-  <li>Configure Carry Forward (<em>Data &gt; Config. Carry Forward</em>).</li>
+  <li>Configure Carry Forward (<em>Data &gt; Configure Carry Forward</em>).</li>
 </ol>
 <p>Carry Forward automatically turns on after being Configured.</p>
 <p>When  Carry Forward is already configured it can be turned on by choosing <em>Data &gt; Carry Forward</em> or right-button clicking within the form and choosing <em>Carry Forward </em>in the context menu. A checkmark will appear next to the name <em>Carry Forward</em> in both the drop-down and context menu. </p>
@@ -256,10 +263,10 @@
 <p>&nbsp;</p>
 <h4><a name="configure_carry_forward"></a>Configure Carry Forward</h4>
 <ol>
-  <li>Choose <em>Data &gt; Config. Carry Forward</em> or right-button click within the form and choose <em>Configure Carry Forward</em> in the context menu. </li>
+  <li>Choose <em>Data &gt; Configure Carry Forward</em> or right-button click within the form and choose <em>Configure Carry Forward</em> in the context menu. </li>
   <li>Choose individual fields or click the <em>Select All</em> button and then the <em>OK</em> button in the resulting dialog.</li>
 </ol>
-<p>Sub forms that represent a one-to-many relationship to the primary table do not carry forward EXCEPT the Determinations table for Colletion Objects, Collectors for Collecting Events and Citations for Collection Objects. These three will carry forward all the associated records. For example: if a Collection Object has 6 Determinations associated with it and Carry Forward is enabled <strong>all</strong> 6 of the Determinations will carry forward into the new record. </p>
+<p>Sub forms that represent a one-to-many relationship to the primary table do not carry forward EXCEPT the Determinations table for Collection Objects, Collectors for Collecting Events and Citations for Collection Objects. These three will carry forward all the associated records. For example: if a Collection Object has 6 Determinations associated with it and Carry Forward is enabled <strong>all</strong> 6 of the Determinations will carry forward into the new record. </p>
 <p><em><strong>Note:</strong></em> fields that are check boxes, or use an auto-formatter <strong>will not</strong> carry forward. However, auto-formatted fields will still update using Auto Numbering. For instance,  Catalog Number is a field that is always formatted for a numbering scheme. If the Catalog Number (C#)is 1234  and Carry Forward is turned on but Auto Numbering is turned off then the the next record will not include a C# (one will need to be entered manually). If the C# is 1234 and Carry Forward and Auto Numbering are both turned on then the next record added will include a C# of 1235.</p>
 <p>&nbsp;</p>
 <h4><a name="auto_numbering"></a>Auto Numbering</h4>
@@ -289,6 +296,6 @@
 <h3><u><a name="editing_related_records"></a>How Editing Affects Related Records</u></h3>
 <p>Records that are related, or linked, to other records can not be deleted. For example, a Preparation that is linked to specific Collection Objects can not be deleted while the link and/or Collection Object exists. To delete the Preparation, first edit each Collection Object record and remove the Preparation. </p>
 <p>When related records are edited, the data changes in each record that references that data. For example, if the spelling of a name in the Last Name field is changed in the Agent record, the spelling will also change in the Deaccession Agents, Loan Agents, Authors and other records. </p>
-<p><em><strong>Note:</strong></em> Only users with add and edit priviledges will be offered the add and edit button on their form.</p>
+<p><em><strong>Note:</strong></em> Only users with add and edit privileges will be offered the add and edit button on their form.</p>
 </body>
 </html>
