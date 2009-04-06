@@ -18,6 +18,7 @@ import it.businesslogic.ireport.gui.ReportPropertiesFrame;
 
 import java.awt.Component;
 import java.awt.Frame;
+import java.awt.Toolkit;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -90,6 +91,7 @@ import edu.ku.brc.util.Pair;
  * report saving is not complete - issues such as where to save, duplicate name issues etc still
  * need to be handled.
  */
+@SuppressWarnings("serial")
 public class MainFrameSpecify extends MainFrame
 {    
     private static final Logger   log                         = Logger
@@ -667,6 +669,11 @@ public class MainFrameSpecify extends MainFrame
             if (StringUtils.isEmpty(propPanel.getNameTxt().getText().trim()))
             {
                 JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), String.format(UIRegistry.getResourceString("REP_NAME_MUST_NOT_BE_BLANK"), propPanel.getNameTxt().getText()));
+            }
+            else if (!UIHelper.isValidNameForDB(propPanel.getNameTxt().getText().trim()))
+            {
+                Toolkit.getDefaultToolkit().beep();
+            	JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), UIRegistry.getResourceString("INVALID_CHARS_NAME"));
             }
             else 
             {
