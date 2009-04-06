@@ -162,7 +162,7 @@ public class TreeDefSetupPanel extends BaseSetupPanel implements SetupPanelIFace
                                     @Override
                                     public void run()
                                     {
-                                        showLocalizedMsg(table.getSelectedColumn() == 1 ? "NO_CHANGE_REQ" : "NO_CHANGE_INCL");
+                                        showLocalizedMsg(table.getSelectedColumn() == 1 ? "NO_CHANGE_INCL" : "NO_CHANGE_REQ");
                                     }
                                 });
                             }
@@ -454,14 +454,16 @@ public class TreeDefSetupPanel extends BaseSetupPanel implements SetupPanelIFace
                     return false;
                     
                 case 1:
-                case 3: 
                     return !trd.isRequired();
+                    
+                case 3: 
+                    return !trd.isRequired() && trd.isIncluded();
                     
                 case 4: 
                     return trd.isIncluded();
                     
                 case 5:
-                    return true;
+                    return trd.isIncluded();
             }
             return false;
         }
@@ -476,8 +478,19 @@ public class TreeDefSetupPanel extends BaseSetupPanel implements SetupPanelIFace
             switch (column)
             {
                 case 1: 
-                    trd.setIncluded((Boolean)value);
+                {
+                    Boolean isOn = (Boolean)value;
+                    trd.setIncluded(isOn);
+                    if (!isOn)
+                    {
+                        trd.setEnforced(false);
+                        fireTableCellUpdated(row, 3);
+
+                        trd.setInFullName(false);
+                        fireTableCellUpdated(row, 4);
+                    }
                     break;
+                }
                     
                 case 0: 
                 case 2:
