@@ -165,7 +165,7 @@ public class RepResourcePropsPanel extends JPanel
         typeCombo.addItem(UIRegistry.getResourceString("REP_REPORT"));
         typeCombo.addItem(UIRegistry.getResourceString("REP_LABEL"));
         typeCombo.addItem(UIRegistry.getResourceString("REP_INVOICE"));
-        typeCombo.addItem(UIRegistry.getResourceString("REP_SUBREPORT"));
+        //typeCombo.addItem(UIRegistry.getResourceString("REP_SUBREPORT"));
         if (reportType != null && reportType.equals("Label"))
         {
             typeCombo.setSelectedIndex(1);
