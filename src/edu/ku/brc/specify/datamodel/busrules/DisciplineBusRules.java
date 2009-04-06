@@ -171,6 +171,7 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
      */
     private void addNewDiscipline()
     {
+        UIRegistry.writeSimpleGlassPaneMsg("Building Discipline...", 20);
         isOKToCont = true;
         final AppContextMgr acm = AppContextMgr.getInstance();
         
@@ -212,6 +213,7 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
         
         final BuildSampleDatabase bldSampleDB   = new BuildSampleDatabase();
         final ProgressFrame       progressFrame = bldSampleDB.createProgressFrame("Creating Disicipline");
+        progressFrame.turnOffOverAll();
         
         progressFrame.setProcess(0, 17);
         progressFrame.getCloseBtn().setVisible(false);
@@ -337,7 +339,7 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
                {
                    // error creating
                }
-                
+               UIRegistry.clearSimpleGlassPaneMsg();
             }
         };
         

@@ -29,9 +29,11 @@ import java.awt.Dialog;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Insets;
+import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
@@ -51,11 +53,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
+import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JCheckBoxMenuItem;
@@ -71,6 +77,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.ListModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
@@ -497,6 +504,8 @@ public class FormViewObj implements Viewable,
                 };*/
                 saveControl.setOpaque(false);
                 comps.add(saveControl);
+                
+                addSaveActionMap(saveControl);
             }
 
         }
@@ -589,6 +598,30 @@ public class FormViewObj implements Viewable,
         }
         
         isBuildValid = true;
+    }
+    
+    /**
+     * Register the KeyBinding short cut for the Save control
+     * @param saveComp the save control
+     */
+    private void addSaveActionMap(final JComponent saveComp)
+    {
+        
+        Action saveAction = new AbstractAction()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                doSave();
+            }
+        };
+        String    ACTION_KEY = "SAVE";
+        KeyStroke ctrlS      = KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
+        InputMap  inputMap   = saveComp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        
+        inputMap.put(ctrlS, ACTION_KEY);
+        ActionMap actionMap = saveComp.getActionMap();
+        actionMap.put(ACTION_KEY, saveAction);
     }
     
     /**
@@ -800,6 +833,7 @@ public class FormViewObj implements Viewable,
             }
         });
         saveControl = saveBtn;
+        addSaveActionMap(saveControl);
         
         if (formValidator != null)
         {

@@ -77,25 +77,7 @@ public class FormatterPickerPanel extends BaseSetupPanel
         
         this.doingCatNums = doingCatNums;
         
-        formatterCBX.addActionListener(new ActionListener() {
-            
-            /* (non-Javadoc)
-             * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
-             */
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                int index = formatterCBX.getSelectedIndex();
-                if (index > 0)
-                {
-                    UIFieldFormatterIFace fmt = fmtList.get(index-1);
-                    if (fmt != null)
-                    {
-                        isNumericLbl.setText(getResourceString(fmt.isNumeric() ? "YES" : "NO"));
-                    }
-                }
-            }
-        });
+        formatterCBX.addActionListener(createFrmCBXAL());
         
         loadFormatCbx(null);
 
@@ -166,6 +148,16 @@ public class FormatterPickerPanel extends BaseSetupPanel
             @Override
             public void actionPerformed(ActionEvent e)
             {
+                int index = formatterCBX.getSelectedIndex();
+                if (index > (doingCatNums ? 0 : 1))
+                {
+                    UIFieldFormatterIFace fmt = fmtList.get(index - (doingCatNums ? 1 : 2));
+                    if (fmt != null)
+                    {
+                        isNumericLbl.setText(getResourceString(fmt.isNumeric() ? "YES" : "NO"));
+                    }
+                }
+                
                 if (formatterCBX.getSelectedIndex() == newFmtInx)
                 {
                     SwingUtilities.invokeLater(new Runnable() {
@@ -188,6 +180,11 @@ public class FormatterPickerPanel extends BaseSetupPanel
     protected void loadFormatCbx(final UIFieldFormatterIFace selectedFmt)
     {
         ((DefaultComboBoxModel)formatterCBX.getModel()).removeAllElements();
+        
+        //Vector<ActionListener> alList = new Vector<ActionListener>();
+        //alList.addAll(formatterCBX.getActionListeners());
+        
+        //Collections.addAll(alList, formatterCBX.getActionListeners());
         
         for (ActionListener al : formatterCBX.getActionListeners())
         {
@@ -275,10 +272,7 @@ public class FormatterPickerPanel extends BaseSetupPanel
     @Override
     public void updateBtnUI()
     {
-        if (doingCatNums)
-        {
-            nextBtn.setEnabled(formatterCBX.getSelectedIndex() > 0);
-        }
+        nextBtn.setEnabled(formatterCBX.getSelectedIndex() > (doingCatNums ? 0 : 1));
     }
 
     /* (non-Javadoc)

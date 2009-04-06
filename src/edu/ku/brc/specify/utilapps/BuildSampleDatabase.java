@@ -85,6 +85,7 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -307,6 +308,9 @@ public class BuildSampleDatabase
     protected static SimpleDateFormat                       dateFormatter          = new SimpleDateFormat("yyyy-MM-dd");
     protected static Timestamp                              now                    = new Timestamp(System .currentTimeMillis());
     protected static String                                 nowStr                 = "'" + dateTimeFormatter.format(now) + "'";
+    
+    protected LinkedList<Pair<String, Integer>> recycler = new LinkedList<Pair<String, Integer>>();
+    protected StringBuilder gSQLStr = new StringBuilder();
 
     
     /**
@@ -604,6 +608,7 @@ public class BuildSampleDatabase
         Discipline discipline = createEmptyDiscipline(division, dispName, disciplineType, userAgent,
                                                       preLoadTaxon, taxonXML, geoXML);
         
+        frame.setProcess(0, 17);
         frame.setProcess(++createStep);
         frame.setDesc("Loading Schema...");
         
@@ -612,6 +617,7 @@ public class BuildSampleDatabase
         makeFieldVisible(null, discipline);
         makeFieldVisible(disciplineType.getName(), discipline);
         
+        frame.setProcess(0, 17);
         frame.setProcess(++createStep);
 
         Collection collection = null;
@@ -3498,7 +3504,7 @@ public class BuildSampleDatabase
         log.info("Converted " + counter + " Geography records");
         
         frame.setDesc("Saving Geography Tree...");
-
+        frame.getProcessProgress().setIndeterminate(true);
 
         TreeHelper.fixFullnameForNodeAndDescendants(earth);
         earth.setNodeNumber(1);
@@ -8269,7 +8275,7 @@ public class BuildSampleDatabase
                 if (counter % 100 == 0)
                 {
                     if (frame != null) frame.setProcess(counter);
-                    log.info("Converted " + counter + " of "+lastRowNum+" Taxon records");
+                    //log.info("Converted " + counter + " of "+lastRowNum+" Taxon records");
                 }
                 
                 HSSFRow row = (HSSFRow) rows.next();
@@ -8291,6 +8297,10 @@ public class BuildSampleDatabase
             }
             conn.close();
             
+            input.close();
+            
+            if (frame != null) frame.setProcess(lastRowNum);
+            
             root = (Taxon)session.createQuery("FROM Taxon WHERE id = "+root.getId()).list().get(0);
             
         } catch (Exception ex)
@@ -8298,7 +8308,7 @@ public class BuildSampleDatabase
             ex.printStackTrace();
         }
 
-        if (frame != null && (counter % 200 == 0))
+        if (frame != null)
         {
             frame.setDesc("Saving Taxon Tree...");
             frame.getProcessProgress().setIndeterminate(true);
@@ -8394,6 +8404,10 @@ public class BuildSampleDatabase
             
             if (inx == nodeList.size() || !levelNames[i].equals(nodeList.get(inx).first))
             {
+                for (int j=inx;j<nodeList.size();j++)
+                {
+                    recycler.push(nodeList.get(j));
+                }
                 nodeList.setSize(inx);
                 Pair<String, Integer> node = createTaxonNode(conn, stmt, levelNames[i], txTreeDefId, ttdi, 
                                                              nodeList.get(i).second, fullName.trim(), levelNames);
@@ -8423,43 +8437,52 @@ public class BuildSampleDatabase
                                                     final String     fullName,
                                                     final String[]   levelNames) throws SQLException
     {
-        StringBuilder sb = new StringBuilder();
-        sb.append("INSERT INTO taxon (Name, TaxonTreeDefID, FullName, TaxonTreeDefItemID, RankID, ParentID, TimestampCreated, Version");
-        addExtraColumns(sb, tdi.getRankId(), levelNames, true);
-        sb.append(") VALUES (");
-        sb.append("'");
-        sb.append(name);
-        sb.append("',");
-        sb.append(txTreeDefId);
-        sb.append(",");
+        gSQLStr.setLength(0);
+        gSQLStr.append("INSERT INTO taxon (Name, TaxonTreeDefID, FullName, TaxonTreeDefItemID, RankID, ParentID, TimestampCreated, Version");
+        addExtraColumns(gSQLStr, tdi.getRankId(), levelNames, true);
+        gSQLStr.append(") VALUES (");
+        gSQLStr.append("'");
+        gSQLStr.append(name);
+        gSQLStr.append("',");
+        gSQLStr.append(txTreeDefId);
+        gSQLStr.append(",");
         if (StringUtils.isNotEmpty(fullName))
         {
-            sb.append('\'');
-            sb.append(fullName);
-            sb.append('\'');
+            gSQLStr.append('\'');
+            gSQLStr.append(fullName);
+            gSQLStr.append('\'');
         } else
         {
-            sb.append("null");
+            gSQLStr.append("null");
         }
-        sb.append(",");
-        sb.append(tdi.getId());
-        sb.append(',');
-        sb.append(tdi.getRankId());
-        sb.append(',');
-        sb.append(parentId);
-        sb.append(',');
-        sb.append(nowStr);
-        sb.append(",1");
-        addExtraColumns(sb, tdi.getRankId(), levelNames, false);
-        sb.append(")");
+        gSQLStr.append(",");
+        gSQLStr.append(tdi.getId());
+        gSQLStr.append(',');
+        gSQLStr.append(tdi.getRankId());
+        gSQLStr.append(',');
+        gSQLStr.append(parentId);
+        gSQLStr.append(',');
+        gSQLStr.append(nowStr);
+        gSQLStr.append(",1");
+        addExtraColumns(gSQLStr, tdi.getRankId(), levelNames, false);
+        gSQLStr.append(")");
 
         
         //System.out.println(sb.toString());
-        stmt.executeUpdate(sb.toString());
+        stmt.executeUpdate(gSQLStr.toString());
+        
         Integer newId = BasicSQLUtils.getInsertedId(stmt);
         if (newId == null)
         {
             throw new RuntimeException("Couldn't get the Taxon's inserted ID");
+        }
+        
+        if (recycler.size() > 0)
+        {
+            Pair<String, Integer> p = recycler.pop();
+            p.first = name;
+            p.second = newId;
+            return p;
         }
         
         return new Pair<String, Integer>(name, newId);
@@ -8629,6 +8652,8 @@ public class BuildSampleDatabase
     
                 counter++;
             }
+            
+            input.close();
             
         } catch (Exception ex)
         {
