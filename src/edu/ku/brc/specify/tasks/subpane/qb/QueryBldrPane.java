@@ -25,6 +25,7 @@ import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.ParseException;
@@ -284,15 +285,16 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 java.util.Arrays.asList(itemSample));
         saveBtn.addActionListener(saveActionListener);
         String ACTION_KEY = "SAVE";
-        KeyStroke ctrlS = KeyStroke.getKeyStroke("ctrl S");
+        KeyStroke ctrlS = KeyStroke.getKeyStroke(KeyEvent.VK_S,
+        		Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());        
         InputMap inputMap = saveBtn.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
         inputMap.put(ctrlS, ACTION_KEY);
         ActionMap actionMap = saveBtn.getActionMap();
         actionMap.put(ACTION_KEY, saveActionListener);
         ACTION_KEY = "SAVE_AS";
-        KeyStroke ctrlA = KeyStroke.getKeyStroke("ctrl shift S");
+        KeyStroke ctrlA = KeyStroke.getKeyStroke(KeyEvent.VK_A,
+        		Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());        
         inputMap.put(ctrlA, ACTION_KEY);
-        actionMap = saveBtn.getActionMap();
         actionMap.put(ACTION_KEY, saveAsActionListener);
         saveBtn.setActionMap(actionMap);
         
