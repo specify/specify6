@@ -3,12 +3,16 @@
 	<!-- accession -->
     <field table="Accession" name="authAgentFirstName1" onetomanysequence="0" actualtable="accessionagent" relationshipname="agent" relatedfieldname="firstName"/>
     <field table="Accession" name="authAgentLastName1" onetomanysequence="0" actualtable="accessionagent" relationshipname="agent" relatedfieldname="lastName"/>
+    <field table="Accession" name="authRole1" onetomanysequence="0" actualtable="accessionagent" actualname="Role" relationshipname="accession"/>
     <field table="Accession" name="authAgentFirstName2" onetomanysequence="1" actualtable="accessionagent" relationshipname="agent" relatedfieldname="firstName"/>
     <field table="Accession" name="authAgentLastName2" onetomanysequence="1" actualtable="accessionagent" relationshipname="agent" relatedfieldname="lastName"/>
+    <field table="Accession" name="authRole2" onetomanysequence="1" actualtable="accessionagent" actualname="Role" relationshipname="accession"/>
     <field table="Accession" name="authAgentFirstName3" onetomanysequence="2" actualtable="accessionagent" relationshipname="agent" relatedfieldname="firstName"/>
     <field table="Accession" name="authAgentLastName3" onetomanysequence="2" actualtable="accessionagent" relationshipname="agent" relatedfieldname="lastName"/>
+    <field table="Accession" name="authRole3" onetomanysequence="2" actualtable="accessionagent" actualname="Role" relationshipname="accession"/>
     <field table="Accession" name="authAgentFirstName4" onetomanysequence="3" actualtable="accessionagent" relationshipname="agent" relatedfieldname="firstName"/>
     <field table="Accession" name="authAgentLastName4" onetomanysequence="3" actualtable="accessionagent" relationshipname="agent" relatedfieldname="lastName"/>
+    <field table="Accession" name="authRole4" onetomanysequence="3" actualtable="accessionagent" actualname="Role" relationshipname="accession"/>
     <field table="Accession" name="Permit" onetomanysequence="0" actualtable="accessionauthorization" relationshipname="permit" relatedfieldname="permitNumber"/>
     <field table="Accession" name="number" actualname="accessionNumber"/>
     <field table="Accession" name="accessionText1" actualname="Text1"/>

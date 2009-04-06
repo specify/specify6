@@ -16,12 +16,16 @@
     <field column="YesNo 2 (Accession)" name="accessionYesNo2" type="boolean"/>
     <field column="Auth. Agent First Name 1" name="authAgentFirstName1" type="java.lang.String" length="50"/>
     <field column="Auth. Agent Last Name 1" name="authAgentLastName1" type="java.lang.String" length="50"/>
+    <field column="Auth. Role 1" name="authRole1" type="java.lang.String" length="50" />
     <field column="Auth. Agent First Name 2" name="authAgentFirstName2" type="java.lang.String" length="50"/>
     <field column="Auth. Agent Last Name 2" name="authAgentLastName2" type="java.lang.String" length="50"/>
+    <field column="Auth. Role 2" name="authRole2" type="java.lang.String" length="50" />
     <field column="Auth. Agent First Name 3" name="authAgentFirstName3" type="java.lang.String" length="50"/>
     <field column="Auth. Agent Last Name 3" name="authAgentLastName3" type="java.lang.String" length="50"/>
+    <field column="Auth. Role 3" name="authRole3" type="java.lang.String" length="50" />
     <field column="Auth. Agent First Name 4" name="authAgentFirstName4" type="java.lang.String" length="50"/>
     <field column="Auth. Agent Last Name 4" name="authAgentLastName4" type="java.lang.String" length="50"/>
+    <field column="Auth. Role 4" name="authRole4" type="java.lang.String" length="50" />
     <field column="Permit" name="Permit" type="java.lang.String" length="64"/>
   </table>
   <table classname="edu.ku.brc.specify.datamodel.CollectingEvent" table="collectingevent" tableid="10" lazy="true" >
