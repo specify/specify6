@@ -1347,12 +1347,12 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
                 DBRelationshipInfo.RelationshipType relType = relInfo != null ? relInfo.getType() : null;
                 
                 String  typeStr  = fieldInfo != null ? fieldInfo.getType() : null;
-                boolean isString = typeStr != null && (typeStr.equals("java.lang.String") || typeStr.equals("string"));
+                boolean isTypeOK = typeStr != null && (typeStr.equals("java.lang.String") || typeStr.equals("java.lang.Byte") || typeStr.equals("string"));
                 
                 int selectedIndex = 0;
                 DefaultComboBoxModel plCbxModel = (DefaultComboBoxModel)pickListCBX.getModel();
                 
-                if (isString)
+                if (isTypeOK)
                 {
                     plCbxModel.removeAllElements();
                     plCbxModel.addElement(pickListNone);
@@ -1396,7 +1396,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
                         }
                     }
                 }
-                pickListCBX.setEnabled(isString || relType != null);
+                pickListCBX.setEnabled(isTypeOK || relType != null);
                 pickListCBX.setSelectedIndex(pickListCBX.getModel().getSize() > 0 ? selectedIndex : -1);
                 
             } else
