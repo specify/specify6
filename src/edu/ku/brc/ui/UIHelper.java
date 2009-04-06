@@ -3281,4 +3281,22 @@ public final class UIHelper
         return helpBtn;
     }
     
+    /**
+     * @param name
+     * @return
+     */
+    public static boolean isValidNameForDB(final String name)
+    {
+        return name.matches("[a-zA-Z0-9\\-. '\"`]*");
+    }
+    
+    /**
+     * @param name
+     * @return
+     */
+    public static String escapeName(final String name)
+    {
+        String str = StringUtils.replace(name, "'", "\\'");
+        return StringUtils.replace(str, "\"", "\\\"");
+    }
 }

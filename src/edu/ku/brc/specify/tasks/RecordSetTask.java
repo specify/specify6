@@ -82,6 +82,7 @@ import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.DataFlavorTableExt;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.RolloverCommand;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.DataActionEvent;
 import edu.ku.brc.ui.dnd.Trash;
@@ -178,9 +179,9 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
                 
             } catch (Exception ex)
             {
+                ex.printStackTrace();
                 edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RecordSetTask.class, ex);
-                ex.printStackTrace();
                 
             } finally
             {
@@ -200,9 +201,9 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
                     }
                 } catch (Exception e)
                 {
+                    e.printStackTrace();
                     edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                     edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(RecordSetTask.class, e);
-                    e.printStackTrace();
                 }
             }
 
@@ -1067,7 +1068,15 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
                 return null;
             }
             
-            rsName = StringUtils.replace(rsName, "'", "`");
+            if (!UIHelper.isValidNameForDB(rsName))
+            {
+                UIRegistry.displayLocalizedStatusBarError("INVALID_CHARS_NAME");
+                Toolkit.getDefaultToolkit().beep();
+                continue;
+            }
+            
+            rsName = UIHelper.escapeName(rsName);
+            
             rsName = StringUtils.replace(rsName, "\"", "`");
             
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
