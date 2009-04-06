@@ -3,5 +3,5 @@
 	<preptype name="EtOH" isloanable="true"/>
 	<preptype name="skeleton" isloanable="true"/>
 	<preptype name="C&amp;S" isloanable="true"/>
-	<preptype name="x-ray" isloanable="false"/>
+	<preptype name="x-ray" isloanable="true"/>
 </vector>
