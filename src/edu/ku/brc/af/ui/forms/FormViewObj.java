@@ -3370,6 +3370,10 @@ public class FormViewObj implements Viewable,
                                                    0,                                  // current length
                                                    !mvHasSeparator);                    // don't layout the btns
             rsController.getPanel().setBackground(bgColor);
+            if (mvParent.isTopLevel())
+            {
+                rsController.setupGotoListener();
+            }
             
             rsController.addListener(this);
             controlPanel.addController(rsController.getPanel());
