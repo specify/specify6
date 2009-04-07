@@ -819,7 +819,9 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             dlg.setVisible(true);
             if (dlg.hasChanged())
             {
+                UIRegistry.showLocalizedMsg("Specify.ABT_EXIT");
                 CommandDispatcher.dispatch(new CommandAction(APP_CMD_TYPE, APP_REQ_EXIT));
+                
             } else
             {
                 TaskMgr.getTask("Startup").requestContext();

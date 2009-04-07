@@ -238,6 +238,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
                 @Override
                 public void focusGained(FocusEvent e)
                 {
+                    log.debug("["+getText()+"]");
                     ((JTextField)e.getSource()).selectAll();
                     //System.err.println(e);
                     repaint();
@@ -401,7 +402,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
 
         String text = getText();
 
-        //System.err.println("isViewOnly "+isViewOnly+"  isEnabled() "+isEnabled()+ "  "+text+"  "+(text.length() < bgStr.length()));
+        //System.err.println("isViewOnly "+isViewOnly+"  isEnabled() "+isEnabled()+ "  ["+text+"]  "+(text.length() < bgStr.length()));
         if (!isViewOnly && needsUpdating && isEnabled() && text != null && text.length() < bgStr.length() )
         {
             FontMetrics fm   = g.getFontMetrics();
@@ -663,7 +664,11 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
     public void reset()
     {
         origValue = null;
-        setText( StringUtils.isNotEmpty(defaultValue) ? defaultValue : "");
+        // rods - 04/06/09 - add 'true' so the notifications get sent 
+        // the textfield was getting into a very off state otherwise.
+        // I think what really needs to be done: Is the document listeners
+        // should be removed and then added.
+        setText( StringUtils.isNotEmpty(defaultValue) ? defaultValue : "", true);
         validateState();
         repaint();
     }
@@ -943,6 +948,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
             //
             data = isEnabled() && StringUtils.isNotEmpty(defaultValue) && formatter.getAutoNumber() == null && isNew ? defaultValue : "";
             needsUpdating = true;
+            
         }
         
         if (origValue == null)

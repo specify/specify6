@@ -117,6 +117,7 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
      */
     public void createOrAdd()
     {
+        this.viewable = null;
         createOrAdd(null, null, null);
     }
     
@@ -127,7 +128,7 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
     public void createOrAdd(final Viewable viewableArg)
     {
         this.viewable = viewableArg;
-        
+
         createOrAdd(null, null, null);
     }
     
@@ -136,6 +137,7 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
      */
     public void createOrAdd(final RecordSetIFace recordSetArg)
     {
+        this.viewable = null;
         createOrAdd(null, null, recordSetArg);
     }
     
@@ -144,6 +146,7 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
      */
     public void createOrAdd(final T currPrepProvider)
     {
+        this.viewable = null;
         createOrAdd(currPrepProvider, null, null);
     }
     

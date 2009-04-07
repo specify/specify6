@@ -223,7 +223,9 @@ public class SchemaToolsDlg extends CustomDialog
 
                     if (dlg.wasSaved())
                     {
+                        UIRegistry.showLocalizedMsg("Specify.ABT_EXIT");
                         CommandDispatcher.dispatch(new CommandAction(BaseTask.APP_CMD_TYPE, BaseTask.APP_REQ_EXIT));
+                        
                     } else
                     {
                         ContextMgr.getTaskByName("Startup").requestContext();

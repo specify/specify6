@@ -1052,7 +1052,7 @@ public class BuildSampleDatabase
                         tx.setDefinition(taxonTreeDef);
                         tx.setDefinitionItem(ttdi);
                         ttdi.getTreeEntries().add(tx);
-                        tx.setName("Life");
+                        tx.setName("Life"); // I18N
                     }
                    
                     if (parent != null)

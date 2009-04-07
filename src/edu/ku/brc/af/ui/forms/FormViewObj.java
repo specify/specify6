@@ -4930,7 +4930,7 @@ public class FormViewObj implements Viewable,
                     
                     String id = fieldInfo.getFormCell().getIdent();
                     
-                    //log.debug(fieldInfo.getName()+"\t"+fieldInfo.getFormCell().getName()+"\t   hasChanged: "+(!isReadOnly && hasFormControlChanged(id)));
+                    log.debug(fieldInfo.getName()+"\t"+fieldInfo.getFormCell().getName()+"\t   hasChanged: "+(!isReadOnly && hasFormControlChanged(id)));
                     
                      if (!isReadOnly && !isInoreGetSet && hasFormControlChanged(id))
                     {
@@ -4942,13 +4942,29 @@ public class FormViewObj implements Viewable,
                             continue;
                         }
                             
-                       //log.debug(fieldInfo.getName()+"  "+fieldInfo.getFormCell().getName() +"  HAS CHANGED!");
+                        boolean isSubView = fieldInfo.getFormCell() instanceof FormCellSubViewIFace;
+                        if (isSubView && fieldInfo.getComp() instanceof MultiView)
+                        {
+                            MultiView mv = (MultiView)fieldInfo.getComp();
+                            mv.getDataFromUI();
+                        }
+                        log.debug(fieldInfo.getName()+"  "+fieldInfo.getFormCell().getName() +"  HAS CHANGED!");
                         Object uiData = getDataFromUIComp(id); // if ID is null then we have huge problems
                         // if (uiData != null && dataObj != null) Changed for Bug 4994
-                        if (dataObj != null && (uiData != null || !(fieldInfo.getFormCell() instanceof FormCellSubViewIFace)))
+                        if (dataObj != null)
                         {
-                            //log.info(fieldInfo.getFormCell().getName()+" "+(dataObj != null ? dataObj.getClass().getSimpleName() : "dataObj was null"));
-                            FormHelper.setFieldValue(fieldInfo.getFormCell().getName(), dataObj, uiData, dg, ds);
+                            if (isSubView)
+                            {
+                                log.debug(fieldInfo.getFormCell().getName());
+                                if (uiData != null)
+                                {
+                                    FormHelper.setFieldValue(fieldInfo.getFormCell().getName(), dataObj, uiData, dg, ds);
+                                }
+                            } else
+                            {                                
+                                //log.info(fieldInfo.getFormCell().getName()+" "+(dataObj != null ? dataObj.getClass().getSimpleName() : "dataObj was null"));
+                                FormHelper.setFieldValue(fieldInfo.getFormCell().getName(), dataObj, uiData, dg, ds);
+                            }
                         }
                     }
                 }

@@ -65,6 +65,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.core.db.AutoNumberGeneric;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterField.FieldType;
 import edu.ku.brc.ui.CustomDialog;
@@ -797,6 +798,17 @@ public class UIFormatterEditorDlg extends CustomDialog
                 selectedFormat.setIncrementer(true);
                 break;
             }
+        }
+        
+        if (selectedFormat.isIncrementer())
+        {
+            if (selectedFormat.getAutoNumber() == null)
+            {
+                selectedFormat.setAutoNumber(new AutoNumberGeneric());
+            }
+        } else
+        {
+            selectedFormat.setAutoNumber(null);
         }
         
         if (fields.size() == 1 && fields.get(0).getType() == FieldType.numeric)
