@@ -509,7 +509,7 @@
             <desc><![CDATA[The AgentVariant form.]]></desc>
             <enableRules/>
             
-            <columnDef>100px,2px,130px,5px,50px,2px,391px,p,p:g</columnDef>
+            <columnDef>100px,2px,190px,5px,50px,2px,478px,p,p:g</columnDef>
             <columnDef os="mac">130px,2px,150px,5px,80px,2px,471px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
@@ -541,12 +541,11 @@
             class="edu.ku.brc.specify.datamodel.Agent"
             gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
-
             <desc><![CDATA[Agent subform for Acessions.]]></desc>
-            <columnDef>100px,2px,140px,5px,85px,2px,110px,5px,80px,2px,109px,2px,35px,15px,p:g</columnDef>
-            <columnDef os="mac">130px,2px,155px,5px,100px,2px,155px,5px,100px,2px,144px,2px,38px,15px,p:g</columnDef>
-           <!-- <columnDef>100px,2px,p,2px,p,2px,198px,15px,p:g</columnDef> -->
-            <!--  <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,10px,p:g,5dlu,p:g</rowDef> -->
+
+            <columnDef>100px,2px,190px,5px:g,p,2px,190px,5px:g,p,2px,89px,2px,p,p,p:g</columnDef>
+            <!--<columnDef>100px,2px,190px,5px,100px,2px,190px,5px,105px,2px,89px,2px,35px,15px,p:g</columnDef>-->
+            <columnDef os="mac">130px,2px,230px,5px,120px,2px,230px,5px,139px,2px,125px,2px,38px,15px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
 
             <rows>
@@ -556,6 +555,14 @@
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="title" uitype="combobox" picklist="AgentTitles"/>
                 </row>
+                <row>
+                    <cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="lastName" uitype="text" cols="20"/>
+                    <cell type="label" labelfor="5"/>
+                    <cell type="field" id="5" name="firstName" uitype="text" cols="20"/>
+                    <cell type="label" labelfor="4"/>
+                    <cell type="field" id="4" name="middleInitial" uitype="text" colspan="3"/>
+                </row>
                 <!-- "GUID:" <row>
                 	<cell type="label" labelfor="11" />
                 	<cell type="field" id="11" name="guid" uitype="text" cols="20" />
@@ -564,14 +571,6 @@
                 	<cell type="label" labelfor="14" />
                 	<cell type="field" id="14" name="jobTitle" uitype="text" cols="20" />
                 </row>-->
-                <row>
-                    <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="lastName" uitype="text" cols="20"  />
-                    <cell type="label" labelfor="4"/>
-                    <cell type="field" id="4" name="middleInitial" uitype="text" cols="3"/>
-                    <cell type="label" labelfor="5"/>
-                    <cell type="field" id="5" name="firstName" uitype="text" cols="20" colspan="3" />
-                </row>
                 <!-- "Initials:" <row>
                 	<cell type="label" labelfor="12" />
                 	<cell type="field" id="12" name="initials" uitype="text" cols="20" />
@@ -747,10 +746,11 @@
             class="edu.ku.brc.specify.datamodel.Address"
             gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
-            
             <desc><![CDATA[Address subform for Acessions.]]></desc>
-            <columnDef>100px,2px,124px,5px,110px,2px,123px,5px,80px,2px,124px,p:g</columnDef>
-            <columnDef os="mac">130px,2px,157px,5px,130px,2px,157px,5px,100px,2px,150px,p:g</columnDef>
+            
+            <columnDef>100px,2px,113px,5px:g,p,2px,113px,5px:g,p,2px,113px,5px:g,p,2px,113px,p:g</columnDef>
+            <!--<columnDef>100px,2px,113px,5px,80px,2px,113px,5px,90px,2px,113px,5px,80px,2px,113px,0px,p:g</columnDef>-->
+            <columnDef os="mac">130px,2px,130px,5px,115px,2px,130px,5px,127px,2px,130px,5px,115px,2px,130px,0px,p:g</columnDef>
             <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
             
             <rows>
@@ -760,11 +760,11 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="address" uitype="text" cols="50" colspan="9" />
+                    <cell type="field" id="2" name="address" uitype="text" cols="50" colspan="14" />
                 </row>
                 <row>
                     <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="address2" uitype="text" cols="50" colspan="9"/>
+                    <cell type="field" id="3" name="address2" uitype="text" cols="50" colspan="14"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="4" />
@@ -773,14 +773,12 @@
                     <cell type="field" id="5" name="state" uitype="text" cols="15"/>
                     <cell type="label" labelfor="6"/>
                     <cell type="field" id="6" name="postalCode" uitype="text" cols="11" />
-                </row>
-                <row>
                     <cell type="label" labelfor="7"/>
                     <cell type="field" id="7" name="country" uitype="text" cols="20" />
-                    <cell type="label" labelfor="11"/>
-                    <cell type="field" id="11" name="roomOrBuilding" uitype="text" cols="30"/>
                 </row>
                 <row>
+                    <cell type="label" labelfor="11"/>
+                    <cell type="field" id="11" name="roomOrBuilding" uitype="text" cols="30"/>
                     <cell type="label" labelfor="8"/>
                     <cell type="field" id="8" name="phone1" uitype="text" cols="15"/>
                     <cell type="label" labelfor="9"/>
@@ -823,7 +821,7 @@
             <rowDef>t:p</rowDef>
             <rows>
                 <row>
-                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="name" uitype="text" cols="50"/>
                 </row>
             </rows>
@@ -870,6 +868,7 @@
             <desc><![CDATA[Author subform for Reference Work]]></desc>
             
             <columnDef>100px,2px,102px,10px,86px,2px,102px,10px,86px,2px,150px,3px,p,p:g</columnDef>
+            <!--<columnDef>100px,2px,102px,10px,86px,2px,102px,10px,86px,2px,150px,3px,p,p:g</columnDef>-->
             <columnDef os="mac">130px,2px,102px,10px,p,2px,102px,10px,p,2px,150px,3px,p,p:g</columnDef>
             <rowDef auto="true" sep="2px" cell="p"/>
             <rows>
@@ -893,8 +892,9 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[Author subform for Reference Work]]></desc>
             
-            <columnDef>100px,2px,200px,375px,p:g</columnDef>
-            <columnDef os="mac">130px,2px,215px,493px,p:g</columnDef>
+            <columnDef>100px,2px,240px,p:g</columnDef>
+           <!-- <columnDef>100px,2px,240px,485px,p:g</columnDef>-->
+            <columnDef os="mac">130px,2px,250px,650px,p:g</columnDef>
             <rowDef auto="true" sep="2px" cell="p"/>
             <rows>
                 <row>
@@ -915,8 +915,10 @@
             gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The Journal form]]></desc>
-            <columnDef>100px,2px,348px,5px,120px,2px,100px,15px,p:g</columnDef>
-            <columnDef os="mac">130px,2px,417px,5px,140px,2px,144px,15px,p:g</columnDef>
+
+            <columnDef>100px,2px,473px,5px:g,p,2px,125px,p,p:g</columnDef>
+            <!--<columnDef>100px,2px,473px,5px,120px,2px,125px,15px,p:g</columnDef>-->
+            <columnDef os="mac">130px,2px,518px,5px,180px,2px,195px,15px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             <rows>
                 <row>
@@ -937,7 +939,7 @@
             class="edu.ku.brc.specify.datamodel.Journal"
             gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
-            <desc><![CDATA[The Journal form]]></desc>
+            <desc><![CDATA[The Journal form - unknown use in schema]]></desc>
             <columnDef>p,2px,p:g,5px,p,2px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             <rows>
@@ -957,8 +959,10 @@
             gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The ReferenceWork form]]></desc>
-            <columnDef>100px,2px,125px,5px,65px,2px,110px,5px,120px,2px,141px,15px,p:g</columnDef>
-            <columnDef os="mac">130px,2px,175px,5px,90px,2px,150px,5px,135px,2px,144px,15px,p:g</columnDef>
+
+            <columnDef>100px,2px,160px,5px:g,p,2px,150px,5px:g,p,2px,151px,p,p:g</columnDef>
+            <!--<columnDef>100px,2px,160px,5px,100px,2px,150px,5px,150px,2px,151px,15px,p:g</columnDef>-->
+            <columnDef os="mac">130px,2px,203px,5px,100px,2px,203px,5px,185px,2px,195px,15px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             <rows>
                 <row>
@@ -1002,8 +1006,10 @@
             gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The ReferenceWork form]]></desc>
-            <columnDef>100px,2px,125px,5px,85px,2px,121px,5px,120px,2px,110px,p:g</columnDef>
-            <columnDef os="mac">130px,2px,170px,5px,90px,2px,150px,5px,140px,2px,144px,p:g</columnDef>
+
+            <columnDef>100px,2px,160px,5px:g,p,2px,150px,5px:g,p,2px,151px:g</columnDef>
+            <!--<columnDef>100px,2px,160px,5px,100px,2px,150px,5px,150px,2px,151px,p:g</columnDef>-->
+            <columnDef os="mac">130px,2px,203px,5px,100px,2px,203px,5px,185px,2px,195px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             <rows>
                 <row>
@@ -1100,15 +1106,15 @@
 			
 			<rows>
 				<row>
-					<cell type="label" name="title" labelfor="title" label="TITLE"/>
+					<cell type="label" name="title" labelfor="title"/>
 					<cell type="field" uitype="text" cols="40" id="title" name="reportProperties.title" isrequired="true"/>
 				</row>
 				<row>
-					<cell type="label" name="subTitle" labelfor="subTitle" label="SUBTITLE"/>
+					<cell type="label" name="subTitle" labelfor="subTitle"/>
 					<cell type="field" uitype="text" cols="40" id="subTitle" name="reportProperties.subTitle" isrequired="true"/>
 				</row>
 				<row>
-					<cell type="label" name="footer" labelfor="footer" label="FOOTER"/>
+					<cell type="label" name="footer" labelfor="footer"/>
 					<cell type="field" uitype="text" cols="40" id="footer" name="reportProperties.footer" isrequired="true"/>
 				</row>
 			</rows>
@@ -1143,8 +1149,10 @@
             gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The ReferenceWork form]]></desc>
-            <columnDef>100px,2px,575px,p:g</columnDef>
-            <columnDef os="mac">130px,2px,708px,p:g</columnDef>
+
+            <columnDef>100px,2px,300px,p:g</columnDef>
+            <!--<columnDef>100px,2px,390px,335px,p:g</columnDef>-->
+            <columnDef os="mac">130px,2px,492px,408px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             <rows>
                 <row>
@@ -1153,7 +1161,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="remarks"/>
-                    <cell type="field" id="remarks" name="remarks" uitype="textareabrief" rows="2" />
+                    <cell type="field" id="remarks" name="remarks" uitype="textareabrief" rows="2" colspan="2"/>
                 </row>
             </rows>
         </viewdef>
@@ -1165,16 +1173,17 @@
             gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj"
             useresourcelabels="true">
-            
             <desc><![CDATA[New Taxon Node Form]]></desc>
-            <enableRules>
-                <!-- <rule id="acceptedParent"><![CDATA[!isAccepted.isSelected()]]></rule> -->
+           <enableRules>
+               <!--    <rule id="acceptedParent"><![CDATA[!isAccepted.isSelected()]]></rule> -->
                 <rule id="hybridParent1"><![CDATA[isHybrid.isSelected()]]></rule>
                 <rule id="hybridParent2"><![CDATA[isHybrid.isSelected()]]></rule>
                 <rule id="definitionItem"><![CDATA[parent.getValue() != null]]></rule>
-            </enableRules>
-            <columnDef>100px,2px,285px,5px,103px,2px,90px,5px,85px,15px,p,p:g</columnDef>
-            <columnDef os="mac">130px,2px,350px,5px,121px,2px,120px,5px,105px,15px,p:g</columnDef>
+            </enableRules> 
+            
+            <columnDef>100px,2px,390px,5px:g,p,2px,95px,10px,p,p,p:g</columnDef>
+            <!--<columnDef>100px,2px,390px,5px,133px,2px,95px,10px,95px,15px,p:g</columnDef>-->
+            <columnDef os="mac">130px,2px,492px,5px,141px,2px,150px,5px,105px,15px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
@@ -1187,8 +1196,8 @@
                     <!-- Put in remote prefs: URL_Prefix.GBIF_Canada = http://www.cbif.gc.ca/pls/itisca/taxastep -->
                 </row>
                 <row>
-                    <cell type="label" labelfor="parent" label="PARENT"/>
-                	<cell type="field" id="parent"  uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=false;editoncreate=true" name="parent" />
+                    <cell type="label" labelfor="parent"/>
+                	<cell type="field" id="parent"  uitype="querycbx" isrequired="true" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=false;editoncreate=true" name="parent" />
                     <cell type="label" labelfor="definitionItem"/>
                 	<cell type="field" id="definitionItem"  uitype="combobox" name="definitionItem" colspan="3"/>
                 </row>
@@ -1198,16 +1207,16 @@
                 	<cell type="field" id="isAccepted" uitype="checkbox" name="isAccepted" default="true" />
                 </row>
                 <row>
-                	<cell type="label" labelfor="acceptedParent" label="ACCEPTEDPARENT"/>
+                	<cell type="label" labelfor="acceptedParent"/>
                 	<cell type="field" id="acceptedParent"  uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=false" name="acceptedParent" colspan="5"/>
                 	<cell type="field" id="isHybrid" uitype="checkbox" name="isHybrid" default="false" />
                 </row>
                 <row>
-                	<cell type="label" labelfor="hybridParent1" label="HYBRIDPARENT1"/>
+                	<cell type="label" labelfor="hybridParent1"/>
                 	<cell type="field" id="hybridParent1"  uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=false" name="hybridParent1" colspan="7"/>
                 </row>
                 <row>
-                	<cell type="label" labelfor="hybridParent2" label="HYBRIDPARENT2"/>
+                	<cell type="label" labelfor="hybridParent2"/>
                 	<cell type="field" id="hybridParent2"  uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=false" name="hybridParent2" colspan="7"/>
                 </row>
                 <row>
@@ -1216,6 +1225,10 @@
                     <cell type="label" labelfor="author"/>
                     <cell type="field" id="author" uitype="text" name="author" colspan="3"/>
                 </row>      
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" uitype="text" name="guid" colspan="7"/>
+                </row>
                 <row>
                     <cell type="subview" viewname="TaxonSubform" id="acceptedChildren" name="acceptedChildren" colspan="10"/>
                 </row>
@@ -1280,29 +1293,31 @@
             useresourcelabels="true">
             
             <desc><![CDATA[New Geography Node Form]]></desc>
-            <enableRules>
-                <rule id="acceptedParent"><![CDATA[!isAccepted.isSelected()]]></rule>
+           <enableRules>
+               <!--   <rule id="acceptedParent"><![CDATA[!isAccepted.isSelected()]]></rule> -->
                 <rule id="definitionItem"><![CDATA[parent.getValue() != null]]></rule>
             </enableRules>
-            <columnDef>100px,2px,230px,5px,105px,2px,123px,25px,85px,0px,15px,p,p:g</columnDef>
-            <columnDef os="mac">130px,2px,296px,5px,140px,2px,150px,10px,105px,0px,15px,p:g</columnDef>
+
+            <columnDef>100px,2px,323px,5px:g,p,2px,150px,25px,p,0px,p,p:g</columnDef>
+            <!--<columnDef>100px,2px,323px,5px,135px,2px,150px,25px,85px,0px,15px,p,p:g</columnDef>-->
+            <columnDef os="mac">130px,2px,488px,5px,140px,2px,150px,10px,105px,0px,15px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
 
             <rows>
                 <row>
                     <cell type="label" labelfor="name"/>
-                    <cell type="field" id="name" uitype="text" cols="6" name="name" isrequired="true" colspan="7"/> 
+                    <cell type="field" id="name" uitype="text" cols="6" name="name" colspan="7"/> 
                 </row>
                 <row>
-                    <cell type="label" labelfor="parent" label="PARENT"/>
-                	<cell type="field" id="parent" isrequired="true" uitype="querycbx" initialize="name=Geography;title=Geography;editbtn=false;newbtn=false;editoncreate=true" name="parent"/>
+                    <cell type="label" labelfor="parent"/>
+                	<cell type="field" id="parent" uitype="querycbx" initialize="name=Geography;title=Geography;editbtn=false;newbtn=false;editoncreate=true" name="parent"/>
                     <cell type="label" labelfor="definitionItem"/>
-                	<cell type="field" id="definitionItem" isrequired="true" uitype="combobox" name="definitionItem"/>
+                	<cell type="field" id="definitionItem" uitype="combobox" name="definitionItem"/>
                 	<cell type="field" id="isAccepted" uitype="checkbox" name="isAccepted" default="true" isrequired="true"/>
                 </row>
                 <row>
-                	<cell type="label" labelfor="acceptedParent" label="ACCEPTEDPARENT"/>
-                	<cell type="field" id="acceptedParent" isrequired="true" uitype="querycbx" initialize="name=Geography;title=Geography;editbtn=false;newbtn=false" name="acceptedParent" colspan="8"/>
+                	<cell type="label" labelfor="acceptedParent"/>
+                	<cell type="field" id="acceptedParent" uitype="querycbx" initialize="name=Geography;title=Geography;editbtn=false;newbtn=false" name="acceptedParent" colspan="8"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="remarks"/>
@@ -1325,18 +1340,20 @@
             <desc><![CDATA[New Storage Node Form]]></desc>
             <enableRules>
                 <rule id="definitionItem"><![CDATA[parent.getValue() != null]]></rule>
-                <rule id="acceptedParent"><![CDATA[!isAccepted.isSelected()]]></rule>
+             <!--   <rule id="acceptedParent"><![CDATA[!isAccepted.isSelected()]]></rule> -->
             </enableRules>
-            <columnDef>100px,2px,295px,5px,60px,2px,213px,0px,15px,p:g</columnDef>
-            <columnDef os="mac">130px,2px,400px,5px,60px,2px,241px,0px,15px,p:g</columnDef>
+
+            <columnDef>100px,2px,445px,5px:g,p,2px,213px,0px,p,p:g</columnDef>
+            <!--<columnDef>100px,2px,445px,5px,60px,2px,213px,0px,15px,p:g</columnDef>-->
+            <columnDef os="mac">130px,2px,568px,5px,75px,2px,250px,0px,15px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
 
             <rows>
                 <row>
                     <cell type="label" labelfor="name"/>
                     <cell type="field" id="name" uitype="text" cols="10" name="name" isrequired="true"/> 
-                    <cell type="label" labelfor="parent" label="PARENT"/>
-                	<cell type="field" id="parent" isrequired="true" uitype="querycbx" initialize="name=Storage;title=Storage;editbtn=false;newbtn=false;editoncreate=true" name="parent"/>
+                    <cell type="label" labelfor="parent"/>
+                	<cell type="field" id="parent" uitype="querycbx" initialize="name=Storage;title=Storage;editbtn=false;newbtn=false;editoncreate=true" name="parent"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="remarks"/>
@@ -1344,7 +1361,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="definitionItem"/>
-                	<cell type="field" id="definitionItem" isrequired="true" uitype="combobox" name="definitionItem" colspan="6"/>
+                	<cell type="field" id="definitionItem" uitype="combobox" name="definitionItem" colspan="6"/>
                 </row>
                 <row>
                     <cell type="subview" viewname="StorageSubform" id="children" name="children" colspan="9"/>
@@ -1365,8 +1382,8 @@
                 <rule id="definitionItem"><![CDATA[parent.getValue() != null]]></rule>
                 <rule id="acceptedGeologicTimePeriod"><![CDATA[!isAccepted.isSelected()]]></rule>
             </enableRules>
-            <columnDef>100px,2px,225px,5px,120px,2px,56px,2px,165px,0px,15px,p:g</columnDef>
-            <columnDef os="mac">130px,2px,291px,5px,130px,2px,38px,2px,240px,0px,15px,p:g</columnDef>
+            <columnDef>100px,2px,299px,5px,120px,2px,56px,2px,243px,0px,15px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,391px,5px,130px,2px,60px,2px,310px,0px,15px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
 
             <rows>
@@ -1375,10 +1392,10 @@
                     <cell type="field" id="name" uitype="text" cols="16" name="name"  colspan="7" isrequired="true"/> 
                 </row>
                 <row>
-                    <cell type="label" labelfor="parent" label="PARENT"/>
-                	<cell type="field" id="parent" isrequired="true" uitype="querycbx" initialize="name=GeologicTimePeriod;title=GeologicTimePeriod;editbtn=false;newbtn=false;editoncreate=true" name="parent"  colspan="3"/>
+                    <cell type="label" labelfor="parent"/>
+                	<cell type="field" id="parent" uitype="querycbx" initialize="name=GeologicTimePeriod;title=GeologicTimePeriod;editbtn=false;newbtn=false;editoncreate=true" name="parent"  colspan="3"/>
                     <cell type="label" labelfor="definitionItem"/>
-                	<cell type="field" id="definitionItem" isrequired="true" uitype="combobox" name="definitionItem"/>
+                	<cell type="field" id="definitionItem" uitype="combobox" name="definitionItem"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="startPeriod"/>
@@ -1432,12 +1449,12 @@
                     <cell type="field" id="remarks" uitype="textareabrief" rows="2" name="remarks" colspan="5"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="parent" label="PARENT"/>
-                    <cell type="field" id="parent" isrequired="true" uitype="querycbx" initialize="name=GeologicTimePeriod;title=GeologicTimePeriod;editbtn=false;newbtn=false;editoncreate=true" name="parent" colspan="5"/>
+                    <cell type="label" labelfor="parent"/>
+                    <cell type="field" id="parent"  uitype="querycbx" initialize="name=GeologicTimePeriod;title=GeologicTimePeriod;editbtn=false;newbtn=false;editoncreate=true" name="parent" colspan="5"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="definitionItem"/>
-                    <cell type="field" id="definitionItem" isrequired="true" uitype="combobox" name="definitionItem" colspan="5"/>
+                    <cell type="field" id="definitionItem"  uitype="combobox" name="definitionItem" colspan="5"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="startPeriod"/>
@@ -1474,20 +1491,20 @@
                 <rule id="definitionItem"><![CDATA[parent.getValue() != null]]></rule>
                 <rule id="acceptedLithoStrat"><![CDATA[!isAccepted.isSelected()]]></rule>
             </enableRules>
-            <columnDef>100px,2px,265px,5px,50px,2px,253px,0px,15px,p:g</columnDef>
-            <columnDef os="mac">130px,2px,351px,5px,80px,2px,270px,0px,15px,p:g</columnDef>
+            <columnDef>100px,2px,445px,5px,60px,2px,213px,0px,15px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,568px,5px,75px,2px,250px,0px,15px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
 
             <rows>
                 <row>
                     <cell type="label" labelfor="name"/>
-                    <cell type="field" id="name" uitype="text" cols="16" name="name" isrequired="true" colspan="6"/> 
+                    <cell type="field" id="name" uitype="text" cols="16" name="name"  colspan="6"/> 
                 </row>
                 <row>
-                    <cell type="label" labelfor="parent" label="PARENT"/>
-                	<cell type="field" id="parent" isrequired="true" uitype="querycbx" initialize="name=LithoStrat;title=LithoStrat;editbtn=false;newbtn=false;editoncreate=true" name="parent"/>
+                    <cell type="label" labelfor="parent"/>
+                	<cell type="field" id="parent"  uitype="querycbx" initialize="name=LithoStrat;title=LithoStrat;editbtn=false;newbtn=false;editoncreate=true" name="parent"/>
                    <cell type="label" labelfor="definitionItem"/>
-                	<cell type="field" id="definitionItem" isrequired="true" uitype="combobox" name="definitionItem"/>
+                	<cell type="field" id="definitionItem"  uitype="combobox" name="definitionItem"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="remarks"/>
@@ -1505,12 +1522,13 @@
             class="edu.ku.brc.specify.datamodel.Taxon"
             gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
-            
             <desc><![CDATA[New Taxon Node Form]]></desc>
             <enableRules>
             </enableRules>
-            <columnDef>100px,2px,303px,5px,100px,2px,165px,p:g</columnDef>
-            <columnDef os="mac">130px,2px,291px,5px,120px,2px,290px,p:g</columnDef>
+            
+            <columnDef>100px,2px,390px,5px:g,p,2px,190px:g</columnDef>
+            <!--<columnDef>100px,2px,390px,5px,118px,2px,190px,p:g</columnDef>-->
+            <columnDef os="mac">130px,2px,492px,5px,140px,2px,268px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
@@ -1529,18 +1547,19 @@
             class="edu.ku.brc.specify.datamodel.Geography"
             gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
-            
             <desc><![CDATA[New Geography Node Form]]></desc>
             <enableRules>
             </enableRules>
-            <columnDef>100px,2px,575px,p:g</columnDef>
-            <columnDef os="mac">130px,2px,708px,p:g</columnDef>
+            
+            <columnDef>100px,2px,725px,p:g</columnDef>
+            <!--<columnDef>100px,2px,725px,0px,p:g</columnDef>-->
+            <columnDef os="mac">130px,2px,900px,0px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
                 <row>
                     <cell type="label" labelfor="fullName"/>
-                    <cell type="field" id="fullName" uitype="text" cols="16" name="fullName"/> 
+                    <cell type="field" id="fullName" uitype="text" cols="16" name="fullName" colspan="2"/> 
                 </row>
             </rows>
         </viewdef>
@@ -1551,18 +1570,19 @@
             class="edu.ku.brc.specify.datamodel.Storage"
             gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
-            
             <desc><![CDATA[New Storage Node Form]]></desc>
             <enableRules>
             </enableRules>
-            <columnDef>100px,2px,575px,p:g</columnDef>
-            <columnDef os="mac">130px,2px,708px,p:g</columnDef>
+            
+            <columnDef>100px,2px,725px,p:g</columnDef>
+            <!--<columnDef>100px,2px,725px,0px,p:g</columnDef>-->
+            <columnDef os="mac">130px,2px,900px,0px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
                 <row>
                     <cell type="label" labelfor="fullName"/>
-                    <cell type="field" id="fullName" uitype="text" cols="16" name="fullName"/> 
+                    <cell type="field" id="fullName" uitype="text" cols="16" name="fullName" colspan="2"/> 
                 </row>
             </rows>
         </viewdef>
@@ -1573,18 +1593,19 @@
             class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
             gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
-            
             <desc><![CDATA[New Taxon Node Form]]></desc>
             <enableRules>
             </enableRules>
-            <columnDef>100px,2px,575px,p:g</columnDef>
-            <columnDef os="mac">130px,2px,708px,p:g</columnDef>
+
+            <columnDef>100px,2px,725px,p:g</columnDef>
+            <!--<columnDef>100px,2px,725px,0px,p:g</columnDef>-->
+            <columnDef os="mac">130px,2px,900px,0px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
                 <row>
                     <cell type="label" labelfor="fullName"/>
-                    <cell type="field" id="fullName" uitype="text" cols="16" name="fullName"/> 
+                    <cell type="field" id="fullName" uitype="text" cols="16" name="fullName" colspan="2"/> 
                 </row>
             </rows>
         </viewdef>
@@ -1595,18 +1616,19 @@
             class="edu.ku.brc.specify.datamodel.LithoStrat"
             gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
-            
             <desc><![CDATA[New LithoStrat Node Form]]></desc>
             <enableRules>
             </enableRules>
-            <columnDef>100px,2px,575px,p:g</columnDef>
-            <columnDef os="mac">130px,2px,708px,p:g</columnDef>
+            
+            <columnDef>100px,2px,725px,p:g</columnDef>
+            <!--<columnDef>100px,2px,725px,0px,p:g</columnDef>-->
+            <columnDef os="mac">130px,2px,900px,0px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
                 <row>
                     <cell type="label" labelfor="fullName"/>
-                    <cell type="field" id="fullName" uitype="text" cols="16" name="fullName"/> 
+                    <cell type="field" id="fullName" uitype="text" cols="16" name="fullName" colspan="2"/> 
                 </row>
             </rows>
         </viewdef>
@@ -1639,7 +1661,6 @@
                     <cell type="label" label=" "/>
                     <cell type="field" id="4" uitype="checkbox" name="isEnforced"/>
                 </row>
-                <!--
                 <row>
                     <cell type="label" labelfor="5"/>
                     <cell type="field" id="5" name="textBefore"/>
@@ -1652,7 +1673,6 @@
                     <cell type="label" labelfor="7"/>
                     <cell type="field" id="7" name="fullNameSeparator"/>
                 </row>
-                -->
             </rows>
         </viewdef>
 
@@ -1711,7 +1731,6 @@
                     <cell type="label" label=" "/>
                     <cell type="field" id="4" uitype="checkbox" name="isEnforced"/>
                 </row>
-                <!--
                 <row>
                     <cell type="label" labelfor="5"/>
                     <cell type="field" id="5" name="textBefore"/>
@@ -1724,7 +1743,6 @@
                     <cell type="label" labelfor="7"/>
                     <cell type="field" id="7" name="fullNameSeparator"/>
                 </row>
-                -->
             </rows>
         </viewdef>
 
@@ -1783,7 +1801,6 @@
                     <cell type="label" label=" "/>
                     <cell type="field" id="4" uitype="checkbox" name="isEnforced"/>
                 </row>
-                <!--
                 <row>
                     <cell type="label" labelfor="5"/>
                     <cell type="field" id="5" name="textBefore"/>
@@ -1796,7 +1813,6 @@
                     <cell type="label" labelfor="7"/>
                     <cell type="field" id="7" name="fullNameSeparator"/>
                 </row>
-                -->
             </rows>
         </viewdef>
 
@@ -1855,7 +1871,6 @@
                     <cell type="label" label=" "/>
                     <cell type="field" id="4" uitype="checkbox" name="isEnforced"/>
                 </row>
-                <!--
                 <row>
                     <cell type="label" labelfor="5"/>
                     <cell type="field" id="5" name="textBefore"/>
@@ -1868,7 +1883,6 @@
                     <cell type="label" labelfor="7"/>
                     <cell type="field" id="7" name="fullNameSeparator"/>
                 </row>
-                -->
             </rows>
         </viewdef>
 
@@ -1927,7 +1941,6 @@
                     <cell type="label" label=" "/>
                     <cell type="field" id="4" uitype="checkbox" name="isEnforced"/>
                 </row>
-                <!--
                 <row>
                     <cell type="label" labelfor="5"/>
                     <cell type="field" id="5" name="textBefore"/>
@@ -1940,7 +1953,6 @@
                     <cell type="label" labelfor="7"/>
                     <cell type="field" id="7" name="fullNameSeparator"/>
                 </row>
-                -->
             </rows>
         </viewdef>
 
@@ -2039,7 +2051,7 @@
                     <cell type="field" id="origFilename" name="attachment.origFilename" initialize="editoncreate=true" cols="30" uitype="browse" />
                 </row>
                 <row>
-                	<cell type="label" labelfor="title" label="TITLE"/>
+                	<cell type="label" labelfor="title"/>
                 	<cell type="field" id="title" name="attachment.title" cols="30"/>
                 </row>
     		 <!--   <row>
@@ -2125,7 +2137,7 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Stratigraphy subform within Collection Object form.]]></desc>
-            <enableRules/>
+            <!-- <enableRules/> -->
             <columnDef>90px,2px,p,2px,100px,2px,p,2px,60px,2px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
