@@ -21,21 +21,22 @@
 <td><h2>WorkBench Uploader</h2></td></tr>
 </table>
 <p>The WorkBench is both a stand alone tool and an integrate part of the Specify platform. The Upload function is only available in the Specify WorkBench, not the stand alone WorkBench. Data Sets created using the stand alone version will need to be exported and reimported into the Specify 6 WorkBench  for uploading. The current version of the stand alone WorkBench is not able to export Data Sets along with their mapping information, but a future release of the WorkBench will have this capability.</p>
-<p>Data Sets in the WorkBench can be uploaded into Specify 6 with the Uploader tool. This makes the uploader a fast and easy way to transfer data from an MS Excel or CSV file into Specify by first <a href="../Workbench/ImportData.html">importing</a> the data into the WorkBench. Before uploading the Data Set please note the following:</p>
+<p>Data Sets in the Specify WorkBench can be uploaded into Specify 6 with the Uploader tool. This makes the uploader a fast and easy way to transfer data from an MS Excel or CSV file into Specify by first <a href="../Workbench/ImportData.html">importing</a> the data into the WorkBench. Before uploading the Data Set please note the following:</p>
 <ul>
   <li>Check  Data Set mapping and verify that Data Set fields are being mapped to the correct fields in Specify 6.</li></br>
   <li>Check existing data in Specify to verify that data being uploaded will not add a duplicate record because of a typo or abbreviation. One example is Geography. If you have run the Wizard and uploaded the Geography data the United States exists within the Geography table (and tree) as 'United States'. If your Data Set includes the United States as anything other than 'United States' (for example, 'US' or 'USA') the Upload function will create a new Geography record (and node on the Geography tree). </li>
   </br>
   <li>Columns in imported files that do not map to a specific Specify  field should be mapped to a Text or Number field. These fields will then need to be renamed accordingly within Specify to display correctly on forms and become searchable in queries. This can be accomplished by changing the field caption in the <a href="../../SchemaConfig/schema_config.html#change_caption">Schema Configuration tool</a>. </li>
   <br />
-  <li>Fields that are required in Specify 6 must include data in the Data Set. For example; if a Data Set column is mapped to a Taxon field in Specify,  all required Taxon fields, including enforced ranks, must be mapped and include data in the Data Set.</li><br />
-  <li>At this time the Uploader does not update or change data, it only adds new records. </li><br />
-  <li>Any Specify tabs that allow data to be written to the database must be closed when uploading from the WorkBench. In other words, while uploading no user in a Collection can edit Forms, Trees, Tree Definitions, System Configuration or the Schema Configuration. Specify will automatically close any open tabs after prompting the user.</li><br />
-  <li>In a multi-collection database the WorkBench is unable to verify Data Sets and their appropriate collections. It is up to the user to ensure that the Data Set is being uploaded to the correct Collection.</li><br />
+  <li>The Data Set must have data in field sthat are required by Specify 6. For example; if a Data Set column is mapped to a Taxon field in Specify,  all required Taxon fields, including enforced ranks, must be mapped and include data in the Data Set.</li>
+  <br />
+  <li>At this time the Uploader does not update or change data in existing records, it only adds new records. </li><br />
+  <li>Any Specify tabs that allow data to be written to the database must be closed when uploading from the WorkBench. In other words, while uploading no user in the Collection can edit Forms, Trees, Tree Definitions, System Configuration or the Schema Configuration. Specify will automatically close any open tabs after prompting the users.</li><br />
+  <li>In a multi-collection database the WorkBench is unable to verify the Data Sets for an appropriate collection. It is up to the user to ensure that the Data Set is being uploaded to the correct Collection.</li><br />
  <li> When uploading Data Sets with attachments only the Collection Object, Accession, Taxon, Locality and Collecting Event tables can accept attachments in the uploader. If one of these tables is not present in the mapping file for the data set an error message will display informing the user that the attachments can not be uploaded. Also, the uploaded attachment will be attached to the 'main' table that is present in the data set mapping. The uploader will look for main tables in this order; Collection Object, Accession, Taxon, Collecting Event and then Locality. </li>
 </ul>
 <p>&nbsp;</p>
-<p>Uploading is a complex process, that requires user input at each vital step. Each step  is explained in detail below.</p>
+<p>Uploading is a complex process, requiring user input at each vital step. Each step  is explained in detail below.</p>
 <p><strong>Upload a Data Set</strong></p>
 <ol>
   <li>Open a Data Set in the Specify 6 WorkBench. </li>
@@ -67,7 +68,7 @@
 
   <br />
   <br />
-  <li><a name="uploader_validate" id="uploader_validate"></a>Click the <em>Validate</em> button to validate the data. This checks the data set mapping against the Specify schema to ensure that all required fields and field formats are included. It also ensures that the necessary related fields are present between multiple tables. When validation errors are present the Uploader will split the <em>Messages</em> window showing validation errors in the top portion and general messages below as well as  a <em>View Report</em> button. Click the button to view and print a report of the validation errors. The Upload button will remain inactive until all validation errors have been corrected.
+  <li><a name="uploader_validate" id="uploader_validate"></a>Click the <em>Validate</em> button, this allows the Uploader to check for required fields and field formats within the Data Set to match them in the Specify schema.  It also ensures that the necessary related fields are present to link multiple tables. When validation errors are present the Uploader will split the <em>Messages</em> window showing validation errors in the top portion and general messages below as well as  a <em>View Report</em> button. Click the button to view and print a report of the validation errors. The Upload button will remain inactive until all validation errors have been corrected.
     Some errors may need to be fixed within the data set and require the user to exit the Uploader tool by clicking the <em>Close</em> button.<br />
     <br />
     Examples of data set mapping requirements:<br />
@@ -120,22 +121,22 @@
         </blockquote></td>
       </tr>
       </table>
-    <br />
+    <em><strong>Note:</strong></em> This function will not clean up or detect bad data. For example, it will upload any entry for 'genus' even if the data includes both genus and species information,  or is not a valid name. The user is responsible for establishing that the data is clean and correct.<br />
     <br />
   </li>
-  <li>Click the <em>Settings</em> button to configure the upload for processing matching records between the Data Set  and the Specify database. It is important to note that when only one matching record is found the Uploader does not create a new record, but will use the matched record for any related information. For example; when uploading a Collection Object with Collecting Event data the Collecting Event may already exist in Specify. The Uploader matches the Collecting Event data in the Data Set to the existing record in Specify, and does not add a new Collecting Event in Specify, but does create a link between the  Collection Object being uploaded and the existing Collecting Event in Specify.</li>
+  <li>Click the <em>Settings</em> button to configure the upload for processing matching records between the Data Set  and the Specify database. It is important to note that when only one record is found in the Data Set that matches a record in the Specify database, the Uploader does not create a new record, but will use the matched record for any related information. For example; when uploading a Collection Object with Collecting Event data the Collecting Event may already exist in Specify. The Uploader matches the Collecting Event data in the Data Set to the existing record in Specify, and does not add a new Collecting Event in Specify, but does create a link between the  Collection Object being uploaded and the existing Collecting Event in Specify.</li>
   <br />
   <br /><strong>Tables</strong> lists the tables that are included in the upload.<br />
     <br />
     <strong>Messages</strong> is used by the Uploader to present progress and other information to the user.<br />
     <br />
-    <strong>Match Action </strong>configures the Uploader response when more than one matching records are found.<br />
+    <strong>Match Action </strong>configures the Uploader response when more than one matching record is found.<br />
     <br /><ul>
       <li>
     <u>Prompt</u> will display the matching records in a dialog and require the user to choose which of the matching records to use. A choice to add a new record is also provided.</li>
     <br />
     <br />
-    <li><u>Prompt and Remember</u> will treat the first record with matches exactly as an 'Prompt' above, but will remember the choice and automatically use it again when identical values are found for succeeding records.</li>
+    <li><u>Prompt and Remember</u> will treat the first record with matches exactly as a 'Prompt' above, but will remember the choice and automatically use it again when identical values are found for succeeding records.</li>
     <br />
     <br />
     <li><u>Add New Record</u> will simply add a new record and not search for matches. This may cause duplicate records in the database.</li>
@@ -147,11 +148,11 @@
     </li></ul><br />
     <strong>Match Empty Cells</strong> will search empty fields as part of the search criteria and require a match when set to <em>True</em> and disregard empty fields when set to <em>False</em>.<br />
     <br /><br />
-  <li>Click Upload.  While the upload is processing each Table in the Affected Tables window keeps a tally of the number of records updated. The individual records that are updated are listed in the Messages window. The Upload can be paused at any time by clicking the <em>Pause</em> button on the status bar, or stopped by clicking the <em>Pause</em> button and then the <em>Close</em> button. Click the <em>Upload</em> button to start the upload process again. Any uploaded records can be discarded by clicking the <em>Undo</em> button on the Workspace.  </li>
+  <li>Click Upload.  While the upload is processing, each Table in the Affected Tables window keeps a tally of the number of records updated. The individual records that are updated are listed in the Messages window. The Upload can be paused at any time by clicking the <em>Pause</em> button on the status bar, or stopped by clicking the <em>Pause</em> button and then the <em>Close</em> button. Click the <em>Upload</em> button to start the upload process again. Any uploaded records can be discarded by clicking the <em>Undo</em> button on the Workspace.  </li>
   <br />
   <li>Once the upload is complete the data is still not committed to the database. Both Query and Simple Searches can be used to examine the uploaded data before committing it. Records opened in a form from  the results window are only available to view  and can not be edited. Records in the results window can not be saved as Record Sets. The following buttons will be enabled on the Uploader:<br />
     <br />
-    <strong>View</strong> displays the uploaded records in a custom results page, indicating each table that is affected. These results can be printed, viewed in a form or exported as an MS Excel file.<br />
+    <strong>View</strong> displays the uploaded records in a custom results page, indicating each table that is affected. These results can be printed, viewed in a form, or exported as an MS Excel file.<br />
     <br />
     <strong>Undo</strong> removes all uploaded data from the database.<br />
     <br />
@@ -164,7 +165,7 @@
 </ol>
 <br />
 <p><strong><em>Note:</em></strong> If a  tree rank is included in an upload that has not been included in the Tree Definition, Specify will use the name of the file to label the undefined node. </p>
-<p><em><strong>Note:</strong></em> When latitude and longitude values are entered into the WorkBench,  the original value is captured into a hidden field to assist with format conversions. When  data is uploaded into Specify data from these fields is copied into the Specify (Source) field and will display on the Locality form.</p>
+<p><em><strong>Note:</strong></em> When latitude and longitude values are entered into the WorkBench,  the original value is captured into a hidden field to assist with format conversions. When  data is uploaded into Specify, data from these fields is copied into the Specify (Source) field and will display on the Locality form.</p>
 <p>&nbsp;</p>
 </body>
 </html>

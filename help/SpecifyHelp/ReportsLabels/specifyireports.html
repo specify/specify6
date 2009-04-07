@@ -17,8 +17,8 @@
   </tr>
 </table><br />
 <table border="0">
-<tr><td valign="bottom"><img src="../../images/spireport.png" width="47" height="32" /></td>
-<td valign="bottom"><h2>SpecifyiReport</h2></td></tr>
+<tr><td valign="middle"><img src="../../images/spireport.png" width="47" height="32" /></td>
+<td valign="middle"><h2>SpecifyiReport</h2></td></tr>
 </table>
 <a name="ireport_overview" id="ireport_overview"></a>A report is used to  present the results of a Query  in an attractive and reader-friendly arrangement, either on paper or on screen as a report preview. 
 <p>Specify harnesses the power of iReport 3.0, an open source report writing software package, by modifying the original iReport version to  interact with Queries created in Specify 6 and data supplied from the Specify 6 database. &nbsp;Once within SpecifyiReport, the interface is identical to that of iReport.</p>
@@ -61,36 +61,36 @@
     <td><div align="left"><u><strong>Description</strong></u></div></td>
   </tr>
   <tr>
-    <td><div align="left"><strong>title</strong></div></td>
-    <td>Only created once in the report and can be its own page.</td>
+    <td align="left" valign="top"><div align="left"><strong>title</strong></div></td>
+    <td align="left" valign="top">Only created once in the report and can be its own page.</td>
   </tr>
   <tr>
-    <td><div align="left"><strong>page header</strong></div></td>
-    <td>Appears on all pages (except title and summary pages that are included as their own page) in the same position.</td>
+    <td align="left" valign="top"><div align="left"><strong>page header</strong></div></td>
+    <td align="left" valign="top">Appears on all pages (except title and summary pages that are included as their own page) in the same position.</td>
   </tr>
   <tr>
-    <td><div align="left"><strong>column header</strong></div></td>
-    <td>Printed at the beginning of each detail column.</td>
+    <td align="left" valign="top"><div align="left"><strong>column header</strong></div></td>
+    <td align="left" valign="top">Printed at the beginning of each detail column.</td>
   </tr>
   <tr>
-    <td><div align="left"><strong>detail</strong></div></td>
-    <td>Corresponds to every record that feeds the report.</td>
+    <td align="left" valign="top"><div align="left"><strong>detail</strong></div></td>
+    <td align="left" valign="top">Corresponds to every record that feeds the report.</td>
   </tr>
   <tr>
-    <td><div align="left"><strong>column footer</strong></div></td>
-    <td>Appears at the end of every column.</td>
+    <td align="left" valign="top"><div align="left"><strong>column footer</strong></div></td>
+    <td align="left" valign="top">Appears at the end of every column.</td>
   </tr>
   <tr>
-    <td><div align="left"><strong>page footer</strong></div></td>
-    <td>Appears on every page that includes a page header.</td>
+    <td align="left" valign="top"><div align="left"><strong>page footer</strong></div></td>
+    <td align="left" valign="top">Appears on every page that includes a page header.</td>
   </tr>
   <tr>
-    <td><div align="left"><strong>last page footer</strong></div></td>
-    <td>Creates a unique footer for the last page.</td>
+    <td align="left" valign="top"><div align="left"><strong>last page footer</strong></div></td>
+    <td align="left" valign="top">Creates a unique footer for the last page.</td>
   </tr>
   <tr>
-    <td><div align="left"><strong>summary</strong></div></td>
-    <td>Allows  fields to be inserted for ending statements such as total calculations or means.</td>
+    <td align="left" valign="top"><div align="left"><strong>summary</strong></div></td>
+    <td align="left" valign="top">Allows  fields to be inserted for ending statements such as total calculations or means.</td>
   </tr>
 </table>
 <p>&nbsp;</p>
@@ -110,7 +110,7 @@
   <br /> 
   The size of the field can be changed by clicking on the field to produce an outline, then grabbing one of the boxes on the outline and dragging it.<br /><br />
   Change the font or font size for the field data in the Properties pane, or by clicking on it to select it and using the font list box and font size list box in the Tool Bar located at the top of SpecifyiReport.<br /><br />
- SpecifyiReports are created from Queries and limited to the fields included in the query. Although it is possible to click the <img src="../../images/ireport_text_field.png" width="19" height="17" /> (text field) button and add a text field with an expression it will not be recognized when running the report in Specify.<br /><br />
+ SpecifyiReports are created from Queries and limited to the fields included in the query. Although it is possible to click the <img src="../../images/report_text_field.png" width="19" height="17" /> (text field) button and add a text field with an expression it will not be recognized when running the report in Specify.<br /><br />
 
   <li><strong>Variables</strong> lists the elements included in each band along with their horizontal and vertical position on the page.  
  <br />
@@ -245,8 +245,7 @@ The properties pane also includes some useful pre-programmed expressions for tex
 
 <ul>
   <li><strong>Once</strong> will create one report/label.</li>
-  <li><strong>Constant</strong> duplicates the report/label and will give a number field for selecting the number of times for the repeat. </li>
-  <li><strong>By Field</strong> duplicates the report/label by the number of times specified in a field. </li>
+  <li><strong>Constant</strong> duplicates each record in the report/label and offers a number field for selecting the number of times for the repeat. </li>
 </ul></ol>
 <p>Saved reports can be opened from within SpecifyiReport to view and edit by choosing <em>File &gt; Open</em> and selecting either the label or report from the list. It is important to remember when editing a report that reports are created from Queries; therefore, new fields may not be added to a report that are not present in the query. Fields may be removed. </p>
 <p>&nbsp;</p>

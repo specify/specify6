@@ -17,7 +17,7 @@
 <p>The tools in the Schema Configuration provide the following functions:</p>
 <ul>
   <li>Hide unused tables or fields.</li>
-  <li>Change the caption, or display names, of tables and fields in Specify. These are displayed on forms and in searches. The names in the database  are not editable, but the  captions can be edited</li>
+  <li>Change the caption, or display names, of tables and fields in Specify. These are displayed on forms and in searches. The names in the database  are not editable, but the  captions can be edited.</li>
   <li>Edit descriptions (usage notes) for tables and fields. These can be viewed from within a form by double-clicking on the caption.</li>
   <li>Create a format for a table. This allows one or more fields to represent a table on a form (Query Combo Box) or in a search result. For example, an Agent is usually represented by the Last Name and First Name fields.</li>
   <li>Create or edit an aggregatation for a table. A related table with a one-to-many relationship to the primary table combines records into one record typically separated by a semi colon.</li>
@@ -31,20 +31,20 @@
   <li>Next,  click the <em>Edit a Schema</em> button in the Tasks section of the dialog. Future releases of Specify will allow schemas to be both imported and exported. This can be a very powerful tool for collecting communities to share information. A Collection Manager that has both the Schema Configuration and the forms changed to manage their discipline could share both with the entire community, allowing all Collection Managers to have the exact same set-up for their collection data.</li>
 </ul>
 <p>&nbsp;</p>
-<p>The Schema Configuration tool opens with the schema listed on the left side and the tools on the right. The top left pane titled <em>Tables</em> lists all the tables in the Specify schema. The bottom left pane titled <em>Fields</em> lists the fields for each table. Click a table to display the available fields. Many of the fields listed are related fields, which belong to other tables. This will be discussed in more detail later. </p>
+<p>The Schema Configuration tool opens with the schema listed on the left side and the tools on the right. The top left pane titled 'Tables' lists all the tables in the Specify schema. The bottom left pane titled 'Fields' lists the fields for each table. Click a table to display the available fields. Many of the fields listed are related fields, which belong to other tables. This will be discussed in more detail later. </p>
 <p>The available tools for the Tables are listed on the top right and the tools for Fields are listed on the bottom right.</p>
-<h4><u>Table and Field Tools</u></h4>
+<h3>Table and Field Tools</h3>
 <p>The following tools within the Schema Configuration are the same for both tables and fields.</p>
 <h4><a name="change_caption" id="change_caption"></a>Change a Caption for a Table or Field</h4>
 <p>The first tool  is  <em>Caption</em> and is available for both Tables and Fields. Simply select a table or field from the appropriate list and type the new name into the <em>Caption</em> field. The new caption will appear on forms, in Query Creators and the Simple Search Configuration tool. </p>
 <h4>&nbsp;</h4>
-<h4>Hide Table</h4>
+<h4><u>Hide Table</u></h4>
 <p>Tables and fields that are not used by a particular discipline can be hidden. This will remove them from the Query Creators list and Simple Search Configuration choices. This will not remove the fields from forms. Data can still be added to the forms in the hidden field and will be saved in the database. This tool is mainly used to clean the lists presented for creating queries and simple searches. The hidden fields will not be removed from previously saved queries or reports. </p>
 <p>&nbsp;</p>
-<p><strong>Description</strong></p>
+<p><strong><u>Description</u></strong></p>
 <p>Both the Tables and Fields have a description. This is useful when describing how fields and tables are used within individual disciplines. This is an editable field. These can be viewed in a form by double clicking on a field caption. </p>
 <p>&nbsp;</p>
-<h4><u>Table Tools</u></h4>
+<h3>Table Tools</h3>
 <p>The following tools are available for tables only.</p>
 <h4><u><a name="display_format" id="display_format"></a>Table Format</u></h4>
 <p>Tables can be formatted, or represented by at least one main field.  These formats are used on forms and in search results as well as reports. Most tables are represented by only one field, (Collection Object shows the Catalog Number), but some are best represented by more than one field (Agent may be formatted to display last name, first name, middle initial). </p>
@@ -122,7 +122,7 @@
 </ul>
 <p>Once the Aggregation has been created the table will need to be selected from the Aggregation pick list next to the Aggregation caption.</p>
 <p align="center"><img src="../../images/table_aggregation_choice.png" width="408" height="38" /></p>
-<p align="center" class="imgcaption"><u>Choose an Aggregation</u></p>
+<p align="center" class="imgcaption">Choose an Aggregation</p>
 <h4><u>Web Links</u></h4>
 <p>At this time web links that are configured in the Schema Configuration  also need to be added to individual forms by exporting the form set and editing the xml file for the form. Please refer to <a href="System/WebLinks.html">Web Links.</a></p>
 <p>&nbsp;</p>
@@ -136,59 +136,59 @@
 <p>String</p>
 <p><strong>Length</strong> tells the length of the field. This is particularly useful to know when adding text to remarks fields.</p>
 <p><strong>Is Required </strong>refers to the required fields on forms. Any fields that are required by the application can not be edited to not be required, but fields that are not required can be changed to a required field. When entering data into a form with required fields the form changes can not be saved until all the required fields contain data.</p>
-<p><strong><u>Format Type</u></strong> offers choices for formatting string fields into either a Format (described below), <a href="PickList/Pick_List.html">Pick List</a> or <a href="System/Web_Link.html">Web Link</a>.</p>
+<p><strong>Format Type</strong> offers choices for formatting string fields into either a Format (described below), <a href="PickList/Pick_List.html">Pick List</a> or <a href="System/Web_Link.html">Web Link</a>.</p>
 <p>Creating a Format and editing an existing System Pick List will immediately be reflected within other Specify modules, such as forms and queries.</p>
 <p>New, or User Defined Pick Lists and Web Links will not be automatically reflected within the forms in Specify. The User Defined Pick List and Web Links must be configured in the editor Forms will need to be exported, edited in XML to include the Pick List and Web Link, then imported back into Specify. Please refer to <a href="../../Import/import_export.html">Import/Export Forms</a> for more details.</p>
 <p>&nbsp;</p>
 <h4><u>Creating a Field Format</u></h4>
+<h2>Creating Field Formats</h2>
 <h4>Overview</h4>
-<p>Accession and Catalog Number formats are configured during the institution setup but there may be other fields that require either a number scheme or a format. A format allows a field to include sections for different data, such as static text, a date or in incremented number. Gift Number, Loan Number often have a unique format within collections. These can be formatted in the Schema Configuration tool, which will change the format for the entire discipline. In other words, if a Gift Number  is formatted in the schema configuration all the collections within the discipline will be required to use the new format, which will display on the Gift form.</p>
-<p>&nbsp;</p>
+<p>Accession and Catalog Number formats are configured during the institution setup but there may be other fields that require either a number scheme or a format. A format allows a field to include sections for different data, such as static text, a date or in incremented number. Gift Number and Loan Number often have a unique format within collections. These can be formatted in the Schema Configuration tool, which will change the format for the entire discipline. In other words, if a Gift Number  is formatted in the schema configuration all the collections within the discipline will be required to use the new format, which will display on the Gift form.</p>
+<p>Field Formats can not be changed if data exists within the database in the format. In other words, before changing a field format all data using the old format must first be deleted.</p>
 <p>Create and choose a format for a field in the Field Formatting Editor, which is available in the Schema Configuration tool (<em>System &gt; Schema Configuration</em>). The Schema Configuration tool is only available to users in a Manager or Administrator group.</p>
-<p>Once in the Schema Configuration tool choose a table and field from the Table and Field lists (on the left side of the tool) respectively.</p>
+<p>Once in the Schema Configuration tool, choose a table and field from the Table and Field lists (on the left side of the tool) respectively.</p>
 <p>Field formatting functions are configured using the Format Type section at the bottom of the Schema Configuration tool.</p>
 <p>Choose <em>Formatting</em> from the pick list next to the Format Type caption.</p>
-<p><img src="../../images/field_format.png" alt="format" width="327" height="19" /></p>
+<p align="center"><img src="../../images/field_format.png" alt="field_format" width="327" height="19" /></p>
+<p align="center" class="imgcaption">Format Type</p>
 <p>&nbsp;</p>
-<h4>&nbsp;</h4>
+<h4>Creating a Field Format</h4>
 <p>Click the <em>...</em> button to open the Field Formatting Editor.</p>
-<p><img src="../../images/number_format_1.png" alt="format" width="360" height="184" /></p>
+<p align="center"><img src="../../images/number_format_1.png" alt="number" width="360" height="184" /></p>
+<p align="center" class="imgcaption">Field Formatting Editor</p>
 <p>The table, field and field length information is located on the top left.</p>
-<p><strong>Name</strong> is used within the application files. It should be text only and and will not be displayed to the user anywhere else in the application.</p>
+<p><strong>Name</strong> is used within the application files. It should be text only and will not be displayed to the user anywhere else in the application.</p>
 <p><strong>Title</strong> will be displayed in any application format lists that are presented to the user. </p>
-<p><strong>Reset Counter Every Year</strong> will become enable when a Numeric section that Is Incremented is added to the format (this is explained in more detain in the following text). Checking this box will start a new count each year.</p>
-<p>A format can be made up of one or many sections. Begin creating a format by clicking the <img src="../../images/add.png" alt="add" width="16" height="16" />(add) button on the right side of the editor to add a section. </p>
+<p><strong>Reset Counter Every Year</strong> will become enabled when a Numeric section that 'Is Incrementer' is added to the format (this is explained in more detail in the following text). Checking this box will start a new count each year.</p>
+<p>A format can be made up of one or many sections. Begin creating a format by clicking the<img src="../../images/add.png" alt="add" width="16" height="16" />(add) button on the right side of the editor to add a section. </p>
 <p>Next, choose the type of section to add.</p>
-<p><img src="../../images/number_format_2.png" alt="format" width="360" height="184" /></p>
+<p align="center"><img src="../../images/number_format_2.png" alt="number" width="360" height="184" /></p>
+<p align="center" class="imgcaption">Choose a Type</p>
 <p><strong>Numeric</strong> may only be numbers and can be auto incremented by checking the 'Is Incrementer' box and using Auto Numbering when entering data. When auto numbering Specify will start incrementing from the highest number present for the section within the database. A numeric section can be set between 1 and 10 characters in length. To start a new count for each year check the <em>Restart counter every year</em> box.</p>
 <p>It is important to remember that   field formats are implemented at a Discipline level and that formats that include a section that is incremented will  include a numbering scheme that is shared by all Collections within the Discipline. </p>
-<p><strong>Alphanumeric</strong> may use both alphabet characters a through z and numbers. A length field will appear which allows the section to be  set between 1 and 10 characters in length.</p>
-<p><strong>Alpha</strong> may only be alphabet characters a through z. A length field will appear which allows the section to be  set between 1 and 10 characters in length.</p>
+<p><strong>Alphanumeric</strong> may use both alphabetical characters <em>a</em> through <em>z</em> and numbers. A length field will appear which allows the section to be  set between 1 and 10 characters in length.</p>
+<p><strong>Alpha</strong> may only be alphabetical characters <em>a</em> through <em>z</em>. A length field will appear which allows the section to be  set between 1 and 10 characters in length.</p>
 <p><strong>Separator</strong> refers to a character that separates the various sections. Separator choices include - . / ' ' _ and are one character in length.</p>
 <p><strong>Year</strong> will automatically add the current year on a form, but can be edited. </p>
-<p><strong>Any char(acter)</strong> allows any alphabet characters a through z, any number or any other keyboard character. A length field will appear which allows the section to be  set between 1 and 10 characters in length.</p>
+<p><strong>Any char(acter)</strong> allows any alphabetical characters <em>a</em> through <em>z</em>, any number or any other keyboard character. A length field will appear which allows the section to be  set between 1 and 10 characters in length.</p>
 <p><strong>Constant</strong> refers to  any section that will remain constant and is not editable on a form. This type of section is useful when  an institution code is part of a format. Type the characters for the constant in the text field labeled <em>Text</em> located under the <em>Type</em> box. The length of the Constant section limited to the number of characters remaining in the 50 character field length.</p>
-<p>Once the section information is configured correctly add it to the format by clicking the <img src="../../images/green_up_arrow.png" alt="up" width="16" height="16" /> button. </p>
+<p>Once the section information is configured correctly add it to the format by clicking the <img src="../../images/green_up_arrow.png" alt="green" width="16" height="16" /> button. </p>
 <p>The section will appear in the window with the appropriate information in each of the columns.</p>
 <p> <strong>Type</strong> refers to the Type of section that was chosen from the pick list. </p>
-<p><strong>Value</strong> is much like a </p>
+<p><strong>Value</strong> shows the character used to represent the segment in the Sample at the bottom of the window.</p>
 <p><strong>Size</strong> refers to the number of characters chosen for the section. This is not applicable to the Separator or Year section types.</p>
-<p><strong>Is By Year</strong> refers only the the Year section type.</p>
+<p><strong>Is By Year</strong> refers only the Year section type.</p>
 <p><strong>Is Incrementer</strong> refers only to the Numeric section type that is incremented.</p>
 <p>&nbsp;</p>
-<p>Reorder sections by clicking the <img src="../../images/ReorderUp16x16.png" alt="down" width="16" height="16" /> (reorder up) and <img src="../../images/ReorderDown16x16.png" alt="down" width="16" height="16" /> (reorder down) buttons on the right side of the editor. </p>
+<p>Reorder sections by clicking the <img src="../../images/ReorderUp16x16.png" alt="up" width="16" height="16" /> (reorder up) and <img src="../../images/ReorderDown16x16.png" alt="down" width="16" height="16" /> (reorder down) buttons on the right side of the editor. </p>
 <p>Delete unwanted sections by clicking the <img src="../../images/delete.png" alt="delete" width="16" height="16" /> (delete) button.</p>
 <p>Continue adding sections until the format is complete and displays correctly in the <em>Sample</em> window at the bottom of the editor.</p>
 <p><em><strong>Note: </strong></em>When manually entering a formatted number field, it is paramount that numbers be padded with 0's. For example, if 3 numbers are available in a numbering scheme (###) and the desired number is 1, then 001 must be entered. If only 1 is entered, then Specify will read this as 100. This will produce incorrect results in searches, queries and reports. </p>
 <p>&nbsp;</p>
 <h4>Choose a Field Format</h4>
 <p>Once a field format has been configured it will need to be selected from the center pick list on the main Schema Configuration window. </p>
-<p><img src="../../images/field_format_center.png" alt="format" width="327" height="19" /></p>
-<p></p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
+<p align="center"><img src="../../images/field_format_center.png" alt="field_format" width="327" height="19" /></p>
+<p align="center" class="imgcaption">Choose a Format</p>
+<h4>&nbsp;</h4>
 </body>
 </html>

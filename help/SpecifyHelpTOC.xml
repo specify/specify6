@@ -51,18 +51,20 @@
 
 		  
 		  <tocitem text="Specify Setup" target="Config_Overview">
-		  	 <tocitem text="Adding Institutional Levels" target="Inst_Hier">
-			 	<tocitem text="Add Divisions" target="Add_Division"/>
-				<tocitem text="Add Disciplines" target="Add_Discipline"/>
-				<tocitem text="Add Collections" target="Add_Collection"/>
+	         <tocitem text="Configuration Overview" target="Config_Overview">	  
+		  	    <tocitem text="Adding Institutional Levels" target="Inst_Hier">
+			 	   <tocitem text="Add Divisions" target="Add_Division"/>
+				   <tocitem text="Add Disciplines" target="Add_Discipline"/>
+				   <tocitem text="Add Collections" target="Add_Collection"/>
+			     </tocitem>
+			     <tocitem text="Editing System Pick Lists" target="System_Picklist" />
+			     <tocitem text="Editing Preparation Type" target="Prep_Type" />
 			  </tocitem>
 			  <tocitem text="Adding Users and Setting Permissions" target="Permissions">
 			 	<tocitem text="Adding Users" target="Add_User"/>
 				<tocitem text="Setting User Permissions" target="Set_Permissions"/>
 			  </tocitem>
 			 <tocitem text="Editing the Schema Configuration" target="Schema_Config" />
-			 <tocitem text="Editing System Pick Lists" target="System_Picklist" />
-			 <tocitem text="Editing Preparation Type" target="Prep_Type" />
 			 <tocitem text="Using Backup and Restore" target="Backup_Restore" />
 		  </tocitem>
 	

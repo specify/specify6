@@ -24,7 +24,7 @@
 <p>&nbsp;</p>
 <h3><a name="user_defined_pick_lists" id="user_defined_pick_lists"></a>Creating and Editing User Defined Pick Lists</h3>
 <p>Any string field can be configured as a Pick List.</p>
-<p>Add, delete and edit the Pick Lists in the Pick List Editor found in <em>System &gt; Schema Configuration.</em></p>
+<p>Add, delete and edit the Pick Lists in the Pick List Editor found in <em>System &gt; Schema Configuration.</em> The Schema Configuration tool is only available to users in a Manager or Administrator group.</p>
 <ul>
   <li>Choose English as the language.</li><br>
   <li>Click the <em>Edit a Schema</em> button.</li>
@@ -46,8 +46,8 @@
 </ul>
 <p>A second dialog will open to configure the Pick List. There are three types of Pick Lists, all with different configurations. </p>
 <p><u>User Defined Items</u> is a predefined list. Items in this type of Pick List are either created by the user (controlled vocabulary) or created as values are typed into a field. </p>
-<p>A predefined Pick List is very useful to control the exact data entered into a field. A good example of this is Type Status Name in the Determinations form. Anyone entering Determinations is limited to the same set of data choices. </p>
-<p>To create a predefined list of items: </p>
+<p>A Predefined Pick List is very useful to control the exact data entered into a field. A good example of this is Type Status Name in the Determinations form. Anyone entering Determinations is limited to the same set of data choices. </p>
+<p>To create a <strong>predefined list of items</strong>: </p>
 <ul>
   <li>choose <em>User Defined Items</em> from the Type drop down menu.</li><br>
   <li>Type a name in the Name box.</li><br>
@@ -58,14 +58,14 @@
   <li>Type a Value; this is how the entry will be stored in the data base. It is a good practice not to use spaces. The Value exists so that at a later date the Title can be edited without needing to change the value in the data base.</li>
   <br>
 </ul>
-<p>A Pick List that is created as values are typed into the Pick List field is useful when  needing to create a controlled list of values for a particular field, but still  entering values as well. </p>
-<p>To create a Pick List that is created from entered data: </p>
+<p>A Pick List that is created as values are typed into the Pick List field is useful when  needing to create a controlled list of values for a particular field, but allowing new values to be entered by all users. </p>
+<p>To create a <strong>Pick List that is created from entered data</strong>: </p>
 <ul>
   <li>Use the steps above, but <strong>Do Not</strong> check the <strong>Read Only</strong> box.</li><br>
   <li>Choose a size limit for the Size Limit field; this refers to how many values will be included in the list. Once the list has reached this number of items the oldest value will be dropped from the list. </li><br>
 </ul>
 <p><u>Entire Table</u> allows all values in a formatted table to be listed. This is a useful tool when the field needs to link to an entire record but the list of values is small and a Query Combo box is not necessary. </p>
-<p>To create an Entire Table list:</p>
+<p>To create an <strong>Entire Table</strong> list:</p>
 <ul>
   <li>Choose <em>Entire Table</em> from the Type combo box.</li><br>
   <li>Type a name for the Pick List in the Name box.</li><br>
@@ -74,7 +74,7 @@
 >
 <p>&nbsp;</p>
 <p><u>Field From Table</u> uses the values from a field within a table. Creating a Pick List from a field is only feasible when there will be a small number of values. If the number exceeds 12 it is suggested that the field be linked to a Query Combo Box within the form rather than a Pick List.</p>
-<p>To create a Field From Table list:</p>
+<p>To create a <strong>Field From Table</strong> list:</p>
 <ul>
   <li>Choose <em>Field From Table</em> from the Type combo box.</li><br>
   <li>Type a name for the Pick List in the Name box.</li><br>

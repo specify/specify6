@@ -47,11 +47,12 @@
   <li><strong>Manager</strong> can add users and give permissions as well as access and edit all tables and tools.</li>
 </ul>
 <p>Users can be added to more than one group within different Disciplines, but should not be added to both a Discipline and Collection within the same Discipline.</p>
+<p>An Administrator group also exists outside the Institutional Hierarchy. An Administrator is automatically given full access to all data and tools inside Specify. At this time an Administrator must also belong to a Collection inside the Institutional Hierarchy for the purpose of opening Specify to a Collection. If Specify was originally configured by running the Specify Setup Wizard the original user was placed in both the Administrator group and Manager group in the Collection that was created by the Wizard.</p>
 <p>&nbsp;</p>
  <h4><a name="add_user" id="add_user"></a>Adding Users</h4>
 <p>Right-click on the  appropriate Group name within the applicable Institution level to add a user to a group. A dialog will appear to either add a new user or existing user. </p>
  <p><u>Existing User</u></p>
- <p>This is the beauty of the implementing the Institution Heirarchy at the Security level; users can be given unique permissions to different collections without needing more than one password. Simply choose a User from the ensueing dialog to add them.</p>
+ <p>This is the beauty of implementing the Institutional Heirarchy at the Security level; users can be given unique permissions to different collections without needing more than one password. Simply choose a User from the ensueing dialog to add them.</p>
 <p><u>New User</u></p>
  <p>Users are added in the Specify User dialog. </p>
  <ul>
@@ -67,6 +68,13 @@
 <p>Specify 6.0 grants default permissions to each User Group within Specify. These permissions are then passed down to each User within the Group. The permissions for the individual user can either be left unchanged and therefore remain exactly like the Group, or be edited for that user. When editing permissions for individual users permissions for tables and tools can be added, but not removed. </p>
 <h4>Group Permissions</h4>
 <p>Permissions can be removed and added at the Group level, but keep in mind that Specify will update all the Users in the group with the changed permissions. Changing permissions for a Group will only affect that Group's Collection. </p>
+<p>Groups also limit access to data and tools by default in the following way:</p>
+<ul>
+  <li><strong>Guest</strong> users are limited to view only priviledges for all Data tables and Data tools such as searches, forms and trees.</li>
+  <li><strong>Limited Access</strong> users can view Interactions tables and tools and view, add and modify Data tables and tools.</li>
+  <li><strong>Full Access</strong> users can view, add and modify Interactions tables and tools and  view, add, modify and delete Data tables and tools.</li>
+  <li><strong>Mangers</strong> have full priviledges to all tools and all tables within Specify, including Security.</li>
+</ul>
 <h4>Setting Permissions</h4>
 <p>Click on a User or Group to view both their User information and Permissions in the work space. The Permissions open in the bottom half of the work space and include a tab with three permission categories:</p>
 <ul>
