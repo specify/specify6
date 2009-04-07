@@ -920,6 +920,28 @@ public final class UIHelper
     {
         return oSType;
     }
+    
+    /**
+     * @return
+     */
+    public static  String getOSTypeAsStr()
+    {
+        switch (UIHelper.getOSType())
+        {
+            case Windows:
+                return "win";
+                
+            case MacOSX:
+                return "mac";
+                
+            case Linux:
+                return "lnx";
+                
+            default:
+                break;
+        } // switch
+        return "exp";
+    }
 
     //-----------------------------------------------------------------------------------------
     // Menu Helpers

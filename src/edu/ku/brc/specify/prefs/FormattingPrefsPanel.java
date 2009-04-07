@@ -73,10 +73,11 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
     
     protected final int BASE_FONT_SIZE = 6;
 
-    protected JComboBox    fontNames = null;
-    protected JComboBox    fontSizes = null;
+    protected JComboBox    fontNames    = null;
+    protected JComboBox    fontSizes    = null;
     protected JComboBox    controlSizes = null;
-    protected JTextField   testField = null;
+    protected ValComboBox  formTypesCBX = null;
+    protected JTextField   testField    = null;
     protected ValComboBox  disciplineCBX;
     protected ValComboBox  appIconCBX;
     protected String       newAppIconName = null;
@@ -85,6 +86,7 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
     protected ValComboBox  bnrIconSizeCBX;
     
     protected Hashtable<String, UIHelper.CONTROLSIZE> controlSizesHash = new Hashtable<String, UIHelper.CONTROLSIZE>();
+    protected Hashtable<String, String> formTypeHash = new Hashtable<String, String>();
     
     /**
      * Constructor.
@@ -168,6 +170,41 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
             dateFieldCBX.getComboBox().setSelectedIndex(selectedInx);
         }
     }
+    
+    /**
+     * 
+     */
+    protected void fillFormTypes()
+    {
+        String[] formTypeArray = {"win", "lnx", "mac", "exp"};
+        String[] formTypeDesc = {"Small Font (ideal form Windows)", "Medium Font (ideal form Linux)", "Large Font (ideal form Mac)", "Expandable Layout"};
+        
+        String curFormType = AppPreferences.getLocalPrefs().get("ui.formatting.formtype", UIHelper.getOSTypeAsStr());
+        
+        int selectedInx = 0;
+        int inx        = 0;
+        DefaultComboBoxModel model = (DefaultComboBoxModel)formTypesCBX.getModel();
+        for (String type : formTypeArray)
+        {
+            model.addElement(formTypeDesc[inx]);
+            formTypeHash.put(formTypeDesc[inx], type);
+            if (curFormType != null && curFormType.equals(type))
+            {
+                selectedInx = inx;
+            }
+            inx++;
+        }
+        formTypesCBX.getComboBox().setSelectedIndex(selectedInx);
+        
+        formTypesCBX.getComboBox().addActionListener(new ActionListener() {
+            @SuppressWarnings("unchecked") //$NON-NLS-1$
+            public void actionPerformed(ActionEvent e)
+            {
+                form.getValidator().dataChanged(null, null, null);
+            }
+        });
+    }
+
 
     /**
      * Create the UI for the panel
@@ -186,6 +223,8 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
         
         JLabel      controlSizesLabel = form.getLabelFor("controlSizes"); //$NON-NLS-1$
         ValComboBox controlSizesVCB   = form.getCompById("controlSizes"); //$NON-NLS-1$
+        
+        formTypesCBX = form.getCompById("formtype"); //$NON-NLS-1$
         
         fontNames    = fontNamesVCB.getComboBox();
         fontSizes    = fontSizesVCB.getComboBox();
@@ -347,6 +386,11 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
         //-----------------------------------
         dateFieldCBX = form.getCompById("scrdateformat"); //$NON-NLS-1$
         fillDateFormat();
+        
+        //-----------------------------------
+        // FormType
+        //-----------------------------------
+        fillFormTypes();
         
         //-----------------------------------
         // Do App Icon
@@ -617,15 +661,15 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
                 AppPreferences.getLocalPrefs().putInt(BNR_ICON_SIZE, pixelSizes[inx]);    
             }
             
+            AppPreferences local = AppPreferences.getLocalPrefs();
             
             if (!(UIHelper.isMacOS_10_5_X()))
             {
-                
                 String key = "ui.formatting.controlSizes"; //$NON-NLS-1$
                 if (clearFontSettings)
                 {
-                    AppPreferences.getLocalPrefs().remove(key+".FN");
-                    AppPreferences.getLocalPrefs().remove(key+".SZ");
+                    local.remove(key+".FN");
+                    local.remove(key+".SZ");
                     
                     UIRegistry.setBaseFont(UIRegistry.getDefaultFont());
                     BaseTask.setToolbarBtnFont(UIRegistry.getBaseFont()); // For ToolbarButtons
@@ -643,8 +687,8 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
                         BaseTask.setToolbarBtnFont(newBaseFont); // For ToolbarButtons
                         RolloverCommand.setDefaultFont(newBaseFont);
     
-                        AppPreferences.getLocalPrefs().put(key+".FN", (String)fontNames.getSelectedItem());
-                        AppPreferences.getLocalPrefs().putInt(key+".SZ", fontSizes.getSelectedIndex()+BASE_FONT_SIZE);
+                        local.put(key+".FN", (String)fontNames.getSelectedItem());
+                        local.putInt(key+".SZ", fontSizes.getSelectedIndex()+BASE_FONT_SIZE);
                     }
                 }
                 
@@ -652,8 +696,11 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
             {
                 String key = "ui.formatting.controlSizes"; //$NON-NLS-1$
                 UIHelper.setControlSize(controlSizesHash.get(controlSizes.getSelectedItem()));
-                AppPreferences.getLocalPrefs().put(key, controlSizesHash.get(controlSizes.getSelectedItem()).toString());
+                local.put(key, controlSizesHash.get(controlSizes.getSelectedItem()).toString());
             }
+            
+            String fType =  formTypeHash.get(formTypesCBX.getComboBox().getSelectedItem()).toString();
+            local.put("ui.formatting.formtype", fType);
         }
     }
 

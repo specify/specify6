@@ -95,6 +95,7 @@ public class ViewLoader
     protected static boolean               isTreeClass         = false;
     protected static DBTableInfo           fldVerTableInfo     = null;
     protected static FormViewDef           fldVerFormViewDef   = null;
+    protected static String                colDefType          = null;
     
     protected FieldVerifyTableModel        fldVerTableModel    = null;
     
@@ -388,6 +389,8 @@ public class ViewLoader
                                      @SuppressWarnings("unused") final Hashtable<String, ViewIFace>    views,
                                      final boolean doMapDefinitions) throws Exception
     {
+        colDefType = AppPreferences.getLocalPrefs().get("ui.formatting.formtype", UIHelper.getOSTypeAsStr());
+        
         instance.viewSetName = doc.attributeValue(NAME);
         
         Element viewDefsElement = (Element)doc.selectSingleNode("viewdefs");
@@ -516,7 +519,11 @@ public class ViewLoader
                 cellDef = (Element)list.get(0); // pick the first one if there is only one.
             } else
             {
-                Element defCD = null;
+                String osTypeStr = UIHelper.getOSTypeAsStr();
+                
+                Element defCD   = null;
+                Element defOSCD = null;
+                Element ovrOSCD = null;
                 for (Object obj : list)
                 {
                     Element ce     = (Element)obj;
@@ -524,44 +531,43 @@ public class ViewLoader
                     if (osType == null)
                     {
                         defCD = ce; // ok we found the default one
-                        
-                    } else 
+                    } else
                     {
-                        // Look for the Platform specific one
-                        switch (UIHelper.getOSType())
+                        if (osType.equals(osTypeStr))
                         {
-                            case Windows:
-                                if (osType.equals("win"))
-                                {
-                                    cellDef = ce;
-                                }
-                                break;
-                                
-                            case MacOSX:
-                                if (osType.equals("mac"))
-                                {
-                                    cellDef = ce;
-                                }
-                                break;
-                                
-                            case Linux:
-                                if (osType.equals("lnx"))
-                                {
-                                    cellDef = ce;
-                                }
-                                break;
-                                
-                            default:
-                                break;
-                        } // switch
+                            defOSCD = ce; // we found the matching our OS
+                        }
+                        
+                        if (colDefType != null && osType.equals(colDefType))
+                        {
+                            ovrOSCD = ce; // we found the one matching prefs
+                        }
                     }
                 }
+
+                if (ovrOSCD != null)
+                {
+                    cellDef = ovrOSCD;
+                    
+                } else if (defOSCD != null)
+                {
+                    cellDef = defOSCD;
+                    
+                } else if (defCD != null)
+                {
+                    cellDef = defCD;
+                    
+                } else
+                {
+                    // ok, we couldn't find one for our platform, so use the default
+                    // or pick the first one.
+                    cellDef = (Element)list.get(0);
+                }
                 
-                // ok, we couldn't find one for our platform, so use the default
-                // or pick the first one.
                 if (cellDef == null)
                 {
-                    cellDef = defCD != null ? defCD : (Element)list.get(0);
+                    int x = 0;
+                    x++;
                 }
             }
         } else

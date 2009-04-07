@@ -245,6 +245,16 @@
                     <cell type="field" uitype="combobox" id="controlSizes" name="ui.formatting.controlSizes" readonly="true" changesonly="true" colspan="3"/>
                 </row>
                 <row>
+                    <cell type="label" name="formtype" labelfor="formtype" label="SCRN_DATE_FORMAT"/>
+                    <cell type="panel" id="formtypep" name="formtypep" coldef="p,f:p:g" rowdef="p" colspan="5">
+                        <rows>
+                            <row>
+                                <cell type="field" uitype="combobox" id="formtype" name="ui.formatting.formtype" isrequired="true" colspan="1"/>
+                            </row>
+                        </rows>
+                    </cell>
+                </row>
+                <row>
                     <cell type="separator" label="CO_ICON" colspan="7"/>
                 </row>
                 <row>
