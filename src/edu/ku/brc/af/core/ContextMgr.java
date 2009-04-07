@@ -308,7 +308,9 @@ public class ContextMgr implements CommandListener
         {
             if (service.getTask() == task)
             {
-                instance.services.remove(service.getName());
+                System.out.println(instance.services.size());
+            	instance.services.remove(ServiceInfo.getHashKey(service.getName(), service.getTask(), service.getTableId()));
+            	System.out.println(instance.services.size());
             }
         }
         

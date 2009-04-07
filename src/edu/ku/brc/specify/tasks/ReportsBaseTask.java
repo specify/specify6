@@ -176,9 +176,6 @@ public class ReportsBaseTask extends BaseTask
         CommandDispatcher.register(REPORTS, this);
         CommandDispatcher.register(RecordSetTask.RECORD_SET, this);
         
-        CommandAction cmdAction = new CommandAction(REPORTS, PRINT_GRID);
-        ContextMgr.registerService(20, PRINT_GRID, -1, cmdAction, this, "Print", getResourceString("PRINT_GRID_TT"));
-        
         //RecordSetTask.addDroppableDataFlavor(defaultFlavor);
         
         // Create and add the Actions NavBox first so it is at the top at the top
@@ -196,6 +193,9 @@ public class ReportsBaseTask extends BaseTask
         {
             super.initialize(); // sets isInitialized to false
             
+            CommandAction cmdAction = new CommandAction(REPORTS, PRINT_GRID);
+            ContextMgr.registerService(20, PRINT_GRID, -1, cmdAction, this, "Print", getResourceString("PRINT_GRID_TT"));
+            
             extendedNavBoxes.clear();
             reportsList.clear();
             
@@ -204,7 +204,6 @@ public class ReportsBaseTask extends BaseTask
             if (isVisible)
             {
                 addROCs();
-                ContextMgr.registerService(new ReportServiceInfo());
             }
         }
     }
@@ -1484,6 +1483,7 @@ public class ReportsBaseTask extends BaseTask
             
         }
     }
+    
     
     /**
      * Returns the boolean value of "reqrs" from the metaData and true if it doesn't exist.
