@@ -228,9 +228,12 @@ public class CustomStatQueries implements CustomQueryIFace
         endDate.set(Calendar.MONTH,        today.get(Calendar.MONTH));
         endDate.set(Calendar.DAY_OF_MONTH, today.get(Calendar.DAY_OF_MONTH));
         
+        endDate.add(Calendar.MONTH, 6);
+        System.out.println(endDate);
+        
         Criteria criteria = session.createCriteria(Loan.class);
         criteria.add(Restrictions.isNotNull("currentDueDate"));
-        criteria.add(Restrictions.ge("currentDueDate", endDate));
+        criteria.add(Restrictions.lt("currentDueDate", endDate));
         
         Criteria dsp = criteria.createCriteria("discipline");
         dsp.add(Restrictions.eq("disciplineId", AppContextMgr.getInstance().getClassObject(Discipline.class).getDisciplineId()));
@@ -238,10 +241,10 @@ public class CustomStatQueries implements CustomQueryIFace
         criteria.setProjection(Projections.rowCount());
         resultsList = criteria.list();
         
-        //for (Object data : resultsList)
-        //{
-        //    System.out.println("overdueLoans "+data);
-        //}
+        /*for (Object data : resultsList)
+        {
+            System.out.println("overdueLoans "+data);
+        }*/
         session.close();
         
         return true;
