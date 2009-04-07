@@ -616,11 +616,11 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     Agent.setUserAgent(spUser, discipline.getAgents());
                     
                     AppContextMgr am = AppContextMgr.getInstance();
-                	am.setClassObject(TaxonTreeDef.class, discipline.getTaxonTreeDef());
+                	am.setClassObject(TaxonTreeDef.class,              discipline.getTaxonTreeDef());
                     am.setClassObject(GeologicTimePeriodTreeDef.class, discipline.getGeologicTimePeriodTreeDef());
-                    am.setClassObject(StorageTreeDef.class, institution.getStorageTreeDef());
-                    am.setClassObject(LithoStratTreeDef.class, discipline.getLithoStratTreeDef());
-                    am.setClassObject(GeographyTreeDef.class, discipline.getGeographyTreeDef());
+                    am.setClassObject(StorageTreeDef.class,            institution.getStorageTreeDef());
+                    am.setClassObject(LithoStratTreeDef.class,         discipline.getLithoStratTreeDef());
+                    am.setClassObject(GeographyTreeDef.class,          discipline.getGeographyTreeDef());
                 }
             } else
             {

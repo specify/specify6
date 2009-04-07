@@ -711,6 +711,8 @@ public class BuildSampleDatabase
         taxonTreeDef.setDiscipline(discipline);
         taxa.add(taxonTreeDef);
 
+        commitTx();
+        
         frame.setProcess(++createStep);
 
         boolean isPaleo = disciplineType.getDisciplineType() == DisciplineType.STD_DISCIPLINES.paleobotany ||
@@ -719,6 +721,8 @@ public class BuildSampleDatabase
         
         if (isPaleo)
         {
+            startTx();
+            
             LithoStratTreeDefItem earth     = createLithoStratTreeDefItem(lithoStratTreeDef, "Earth", 0, false);
             LithoStratTreeDefItem superGrp  = createLithoStratTreeDefItem(earth,     "Super Group", 100, false);
             LithoStratTreeDefItem lithoGrp  = createLithoStratTreeDefItem(superGrp,  "Litho Group", 200, false);
@@ -727,15 +731,15 @@ public class BuildSampleDatabase
             @SuppressWarnings("unused")
             LithoStratTreeDefItem bed       = createLithoStratTreeDefItem(member,    "Bed",         500, true);
             persist(earth);
+            
+            commitTx();
+            
+            convertChronoStratFromXLS(gtpTreeDef);
+            
         }
         
         List<Object> geos        = new Vector<Object>();
-        List<Object> gtps        = createSimpleGeologicTimePeriod(gtpTreeDef, false);
         List<Object> lithoStrats = isPaleo ? createSimpleLithoStrat(lithoStratTreeDef, false) : null;
-        
-        // Create Tree Definition
-        taxonTreeDef.setDiscipline(discipline);
-        taxa.add(taxonTreeDef);
         
         String fileName = null;
         switch (DisciplineType.getByName(discipline.getType()).getDisciplineType())
@@ -754,9 +758,16 @@ public class BuildSampleDatabase
             default: break;
         }
         
-        Hashtable<String, Boolean> colNameHash = getColumnNamesFromXLS(fileName);
+        startTx();
         
-        createTaxonDefFromXML(taxa, colNameHash, taxonTreeDef, taxonXML);
+        if (!isPaleo)
+        {
+            Hashtable<String, Boolean> colNameHash = getColumnNamesFromXLS(fileName);
+            if (colNameHash != null)
+            {
+                createTaxonDefFromXML(taxa, colNameHash, taxonTreeDef, taxonXML);
+            }
+        }
         
         frame.setProcess(++createStep);
         
@@ -766,7 +777,6 @@ public class BuildSampleDatabase
         
         persist(taxa);
         persist(geos);
-        persist(gtps);
         
         commitTx();
         
@@ -1030,7 +1040,8 @@ public class BuildSampleDatabase
             int                cnt         = 0;
             for (TreeDefRow row : treeDefList)
             {
-                if (row.isIncluded() || (row.getDefName() != null && colNameHash.get(row.getDefName().toLowerCase()) != null))
+                if (row.isIncluded() || 
+                    (row.getDefName() != null && colNameHash != null && colNameHash.get(row.getDefName().toLowerCase()) != null))
                 {
                     TaxonTreeDefItem ttdi = new TaxonTreeDefItem();
                     ttdi.initialize();
@@ -3398,13 +3409,12 @@ public class BuildSampleDatabase
     {
         frame.setDesc("Building Geography Tree...");
 
-        String fileName = "Geography.xls";
-        
         Hashtable<String, Geography> geoHash = new Hashtable<String, Geography>();
         
         geoHash.clear();
 
-        File file = new File("demo_files/"+fileName);
+        String fileName = "Geography.xls";
+        File file = XMLHelper.getConfigDir("../demo_files/"+fileName);
         if (!file.exists())
         {
             log.error("Couldn't file[" + file.getAbsolutePath() + "] checking the config dir");
@@ -8081,7 +8091,7 @@ public class BuildSampleDatabase
     public Hashtable<String, Boolean> getColumnNamesFromXLS(final String fileName)
     {
         
-        File file = new File("demo_files/taxonomy/"+fileName);
+        File file = XMLHelper.getConfigDir("../demo_files/taxonomy/"+fileName);
         if (!file.exists())
         {
             log.error("Couldn't file[" + file.getAbsolutePath() + "] checking the config dir");
@@ -8148,7 +8158,7 @@ public class BuildSampleDatabase
         
         taxonHash.clear();
 
-        File file = new File("demo_files/taxonomy/"+fileName);
+        File file = XMLHelper.getConfigDir("../demo_files/taxonomy/"+fileName);
         if (!file.exists())
         {
             log.error("Couldn't file[" + file.getAbsolutePath() + "] checking the config dir");
@@ -8555,15 +8565,25 @@ public class BuildSampleDatabase
     @SuppressWarnings("unchecked")
     public GeologicTimePeriod convertChronoStratFromXLS(final GeologicTimePeriodTreeDef treeDef)
     {
-        
+        startTx();
+
+        GeologicTimePeriodTreeDefItem root   = createGeologicTimePeriodTreeDefItem(null, treeDef,   "Root", 0);
+        GeologicTimePeriodTreeDefItem era    = createGeologicTimePeriodTreeDefItem(root, treeDef,   "Erathem/Era", 100);
+        GeologicTimePeriodTreeDefItem period = createGeologicTimePeriodTreeDefItem(era, treeDef,    "System/Period", 200);
+        GeologicTimePeriodTreeDefItem series = createGeologicTimePeriodTreeDefItem(period, treeDef, "Series/Epoch",   300);
+        @SuppressWarnings("unused")
+        GeologicTimePeriodTreeDefItem member = createGeologicTimePeriodTreeDefItem(series, treeDef, "Stage/Age",      400);
+        persist(root);
+        commitTx();
+
         frame.setDesc("Building ChronoStratigraphy Tree...");
-        String fileName = "ChronoStrat.xls";
         
         Hashtable<String, GeologicTimePeriod> chronoHash = new Hashtable<String, GeologicTimePeriod>();
         
         chronoHash.clear();
 
-        File file = new File("demo_files/"+fileName);
+        String fileName = "chronostrat_tree.xls";
+        File file = XMLHelper.getConfigDir("../demo_files/"+fileName);
         if (!file.exists())
         {
             log.error("Couldn't file[" + file.getAbsolutePath() + "] checking the config dir");
@@ -8579,6 +8599,7 @@ public class BuildSampleDatabase
             log.error("Couldn't file[" + file.getAbsolutePath() + "]");
             return null;
         }
+
         
         // setup the root ChronoStrat record (planet Earth)
         GeologicTimePeriod rootNode = new GeologicTimePeriod();
@@ -8586,8 +8607,7 @@ public class BuildSampleDatabase
         rootNode.setName("Root");
         rootNode.setRankId(0);
         rootNode.setDefinition(treeDef);
-        GeologicTimePeriodTreeDefItem defItem = treeDef.getDefItemByRank(0);
-        rootNode.setDefinitionItem(defItem);
+        rootNode.setDefinitionItem(root);
 
         int counter = 0;
         
@@ -8688,10 +8708,10 @@ public class BuildSampleDatabase
      * @return
      */
     protected GeologicTimePeriod convertChronoStratRecord(final String    continent,
-                                               final String    country,
-                                               final String    state,
-                                               final String    county,
-                                               final GeologicTimePeriod geoRoot)
+                                                          final String    country,
+                                                          final String    state,
+                                                          final String    county,
+                                                          final GeologicTimePeriod geoRoot)
     {
         String levelNames[] = { continent, country, state, county };
         int levelsToBuild = 0;

@@ -588,7 +588,12 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
      */
     public static String getDisciplineImageName()
     {
-        return iconImageDiscipPrefName + "." + AppContextMgr.getInstance().getClassObject(Collection.class).getCollectionName(); //$NON-NLS-1$
+        Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
+        if (collection != null)
+        {
+            return iconImageDiscipPrefName + "." + collection.getCollectionName(); //$NON-NLS-1$
+        }
+        return null;
     }
 
     /* (non-Javadoc)

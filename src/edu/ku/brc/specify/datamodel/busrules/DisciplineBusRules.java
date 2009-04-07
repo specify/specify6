@@ -171,7 +171,7 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
      */
     private void addNewDiscipline()
     {
-        UIRegistry.writeSimpleGlassPaneMsg("Building Discipline...", 20);
+        UIRegistry.writeSimpleGlassPaneMsg("Building Discipline...", 20); // I18N
         isOKToCont = true;
         final AppContextMgr acm = AppContextMgr.getInstance();
         
@@ -206,6 +206,7 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
         
         if (!isOKToCont)
         {
+            UIRegistry.clearSimpleGlassPaneMsg();
             return;
         }
         

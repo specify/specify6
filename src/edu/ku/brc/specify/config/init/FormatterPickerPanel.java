@@ -240,7 +240,7 @@ public class FormatterPickerPanel extends BaseSetupPanel
         {
             props.put("catnumfmt", newFormatter != null ? newFormatter : formatterCBX.getSelectedItem());
             
-        } else if (formatterCBX.getSelectedIndex() > 0)
+        } else if (formatterCBX.getSelectedIndex() > 1)
         {
             props.put("accnumfmt", newFormatter != null ? newFormatter : formatterCBX.getSelectedItem());
         } else
@@ -272,7 +272,16 @@ public class FormatterPickerPanel extends BaseSetupPanel
     @Override
     public void updateBtnUI()
     {
-        nextBtn.setEnabled(formatterCBX.getSelectedIndex() > (doingCatNums ? 0 : 1));
+        int     inx     = formatterCBX.getSelectedIndex();
+        boolean enable;
+        if (doingCatNums)
+        {
+            enable = inx > 0;
+        } else
+        {
+            enable = inx != 1;
+        }
+        nextBtn.setEnabled(enable);
     }
 
     /* (non-Javadoc)
