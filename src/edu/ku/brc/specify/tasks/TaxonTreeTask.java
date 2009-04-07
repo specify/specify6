@@ -58,7 +58,12 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
     @Override
     protected TaxonTreeDef getCurrentTreeDef()
     {
-        return AppContextMgr.getInstance().getClassObject(Discipline.class).getTaxonTreeDef();
+        Discipline discipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
+        if (discipline != null)
+        {
+            return discipline.getTaxonTreeDef();
+        }
+        return null;
     }
     
     /**
