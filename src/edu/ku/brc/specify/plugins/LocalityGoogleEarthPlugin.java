@@ -49,6 +49,7 @@ import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -421,32 +422,52 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
         }
 
         /* (non-Javadoc)
-         * @see edu.ku.brc.specify.exporters.GoogleEarthPlacemarkIFace#getHtmlContent()
+         * @see edu.ku.brc.specify.rstools.GoogleEarthPlacemarkIFace#getHtmlContent(java.lang.String)
          */
-        public String getHtmlContent()
+        public String getHtmlContent(final String textColorArg)
         {
+            String textColor = UIHelper.fixColorForHTML(textColorArg);
+            
             DBTableInfo localityTI = DBTableIdMgr.getInstance().getInfoById(Locality.getClassTableId());
             
             StringBuilder sb = new StringBuilder("<table>");
-            sb.append("<tr><td align=\"right\" nowrap=\"true\">");
+            sb.append("<tr><td align=\"right\" nowrap=\"true\"><font color=\"");
+            sb.append(textColor);
+            sb.append("\">");
+            
             sb.append(localityTI.getFieldByColumnName("localityName").getTitle());
-            sb.append(":</td><td align=\"left\">");
+            sb.append(":</font></td><td align=\"left\"><font color=\"");
+            sb.append(textColor);
+            sb.append("\">");
             
             sb.append(localityCEP.getLocalityName() == null ? "" : localityCEP.getLocalityName());
-            sb.append("</td></tr>\n");
+            sb.append("</font></td></tr>\n");
             
-            sb.append("<tr><td align=\"right\">");
+            sb.append("<tr><td align=\"right\"><font color=\"");
+            sb.append(textColor);
+            sb.append("\">");
+            
             sb.append(localityTI.getFieldByColumnName("latitude1").getTitle());
-            sb.append(":</td><td align=\"left\">");
-            sb.append(localityCEP.getLat1());
-            sb.append("</td></tr>\n");
+            sb.append(":</td><td align=\"left\"><font color=\"");
+            sb.append(textColor);
+            sb.append("\">");
             
-            sb.append("<tr><td align=\"right\">");
+            sb.append(localityCEP.getLat1());
+            sb.append("</font></td></tr>\n");
+            
+            sb.append("<tr><td align=\"right\"><font color=\"");
+            sb.append(textColor);
+            sb.append("\">");
+            
             sb.append(localityTI.getFieldByColumnName("longitude1").getTitle());
-            sb.append(":</td><td align=\"left\">");
+            sb.append(":</font></td><td align=\"left\"><font color=\"");
+            sb.append(textColor);
+            sb.append("\">");
+            
             sb.append(localityCEP.getLong1());
-            sb.append("</td></tr>\n");
+            sb.append("</font></td></tr>\n");
             sb.append("</table>\n");
+            
             return sb.toString();
         }
 

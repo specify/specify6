@@ -3382,4 +3382,30 @@ public final class UIHelper
         return StringUtils.replace(name, "'", "`");
     }
     
+    
+    /**
+     * Fixes a potential 8 char color to 6 where the first 2 chars are alpha
+     * @param textColorArg the color string hex only
+     * @return a 6 hex string with a pre-pended "#"
+     */
+    public static String fixColorForHTML(final String textColorArg)
+    {
+        String textColor = textColorArg;
+        if (textColorArg != null && !textColor.isEmpty())
+        {
+            if (textColorArg.length() == 8)
+            {
+                textColor = "#" + textColorArg.substring(2);
+            }
+            if (textColor.charAt(0) != '#')
+            {
+                textColor = "#" + textColor;
+            }
+        } else
+        {
+            textColor = "#000000";
+        }
+        return textColor;
+    }
+    
 }

@@ -752,15 +752,62 @@ public class DBTableIdMgr
      */
     public void dumpTablesAsCSV()
     {
+        boolean checkMM = true;
         try
         {
             PrintWriter pw = new PrintWriter("TablesAndField.csv");
             for (DBTableInfo ti : getTables())
             {
-                pw.write("\""+ti.getName()+"\",,\""+ti.getTitle()+"\",\""+ti.getDescription()+"\",\n");
+                pw.write("\""+ti.getName()+"\",,\""+ti.getTitle()+"\",\""+ti.getDescription()+"\","+(checkMM ? "Mismatch" : "")+"\n");
                 for (DBFieldInfo fi : ti.getFields())
                 {
-                    pw.write(",\""+fi.getName()+"\",\""+fi.getTitle()+"\",\""+(StringUtils.isNotEmpty(fi.getDescription()) ? fi.getDescription() : "")+"\",\""+fi.getType()+"\"\n");
+                    pw.write(",\""+fi.getName()+"\",\""+fi.getTitle()+"\",\""+(StringUtils.isNotEmpty(fi.getDescription()) ? fi.getDescription() : "")+"\",\""+fi.getType()+"\"");
+                    if (checkMM)
+                    {
+                        if (fi.getColumn().startsWith("Number"))
+                        {
+                            if (StringUtils.contains(fi.getType(), "Byte") ||
+                                    StringUtils.contains(fi.getType(), "Short") ||
+                                    StringUtils.contains(fi.getType(), "Integer") ||
+                                    StringUtils.contains(fi.getType(), "Long") ||
+                                    StringUtils.contains(fi.getType(), "Float") ||
+                                    StringUtils.contains(fi.getType(), "Double"))
+                            {
+                                //pw.write(", OK");
+                            } else
+                            {
+                                pw.write(",*");
+                            }
+                        } else if (fi.getColumn().startsWith("Text"))
+                        {
+                            if (StringUtils.contains(fi.getType(), "String"))
+                            {
+                                //pw.write(", OK");
+                            } else
+                            {
+                                pw.write(",*");
+                            }
+                        } else if (fi.getColumn().startsWith("Yes"))
+                        {
+                            if (StringUtils.contains(fi.getType(), "Boolean"))
+                            {
+                                //pw.write(", OK");
+                            } else
+                            {
+                                pw.write(",*");
+                            }
+                        } else if (fi.getColumn().startsWith("Remark"))
+                        {
+                            if (StringUtils.contains(fi.getType(), "text"))
+                            {
+                                //pw.write(", OK");
+                            } else
+                            {
+                                pw.write(",*");
+                            }
+                        }
+                    }
+                    pw.write("\n");
                 }
                 for (DBRelationshipInfo ri : ti.getRelationships())
                 {

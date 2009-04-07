@@ -29,10 +29,10 @@ public interface GoogleEarthPlacemarkIFace
     
     /**
      * Returns the HTML content to be displayed in the placemark popup bubble.
-     * 
+     * @param textColor the text color for the HTML generation
      * @return the HTML content
      */
-    public abstract String getHtmlContent();
+    public abstract String getHtmlContent(String textColor);
     
     /**
      * Returns the geolocation of the placemark (latitude, longitude).

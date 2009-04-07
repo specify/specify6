@@ -358,7 +358,7 @@ public class SecurityAdminTask extends BaseTask
             boolean addSecurityBtn = false;
             try {
                 InetAddress addr = InetAddress.getLocalHost();
-                addSecurityBtn = addr.getHostAddress().startsWith("129.237.201");
+                addSecurityBtn = addr.getHostAddress().startsWith("129.237");
                 
             } catch (UnknownHostException e) {}
             

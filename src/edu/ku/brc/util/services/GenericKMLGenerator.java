@@ -87,7 +87,9 @@ public class GenericKMLGenerator
      * @param name the name of the placemark
      * @param htmlDescription the text description (as HTML)
      */
-    public void addPlacemark(Pair<Double,Double> point, String name, String htmlDescription)
+    public void addPlacemark(final Pair<Double,Double> point, 
+                             final String name, 
+                             final String htmlDescription)
     {
         //log.debug("Adding point to KML generator: " + point + "   " + htmlDescription);
 
@@ -230,10 +232,11 @@ public class GenericKMLGenerator
                 sb.append("<bgColor>" + balloonStyleBgColor + "</bgColor>\n");
             }
             
-            if (balloonStyleTextColor != null)
+            // GoogleEarth 5.0 on Windows and Linux causes the color to color the entire test area
+            /*if (balloonStyleTextColor != null)
             {
                 sb.append("<textColor>" + balloonStyleTextColor + "</textColor>\n");
-            }
+            }*/
             
             if (balloonStyleText != null)
             {
@@ -294,7 +297,7 @@ public class GenericKMLGenerator
         {
             String name     = pointNameMap.get(point);
             String htmlDesc = pointDescMap.get(point);
-            kmlBuilder.append(buildPlacemark(point, name, htmlDesc, placemarkIconURL));
+            kmlBuilder.append(buildPlacemark(point, name, balloonStyleTextColor, htmlDesc, placemarkIconURL));
         }
         
         kmlBuilder.append("</Document>\n");
@@ -307,10 +310,15 @@ public class GenericKMLGenerator
      * 
      * @param point the geolocation of the placemark
      * @param name the string label of the placemark
+     * @param textColor the 6 digit color string of the label of the placemark (for HTML)
      * @param htmlDesc the HTML content of the placemark popup balloon
      * @return the XML string
      */
-    public static String buildPlacemark(final Pair<Double, Double> point, final String name, final String htmlDesc, final String iconURL)
+    public static String buildPlacemark(final Pair<Double, Double> point, 
+                                        final String name, 
+                                        final String textColor,
+                                        final String htmlDesc, 
+                                        final String iconURL)
     {
         StringBuilder sb = new StringBuilder();
         sb.append(generateXmlStartTag("Placemark"));

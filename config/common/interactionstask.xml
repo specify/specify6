@@ -136,7 +136,7 @@
     </droppableFlavors>
   </entry>
   <entry name="repositoryagreement" table="repositoryagreement" view="RepositoryAgreement" type="Interactions" action="OpenNewView" icon="RepositoryAgreement" 
-         issrchsrv="true" isonleft="false" order="0" enabled="true" tooltip="">
+         issrchsrv="true" isonleft="true" order="0" enabled="true" tooltip="">
     <draggableFlavors/>
     <droppableFlavors>
       <flavor isdrag="false" classname="edu.ku.brc.specify.tasks.RecordSetTask" humanreadable="Record_Set">

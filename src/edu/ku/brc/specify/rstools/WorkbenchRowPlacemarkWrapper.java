@@ -13,6 +13,7 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.util.GeoRefConverter;
 import edu.ku.brc.util.Pair;
 import edu.ku.brc.util.GeoRefConverter.GeoRefFormat;
@@ -93,10 +94,11 @@ public class WorkbenchRowPlacemarkWrapper implements GoogleEarthPlacemarkIFace
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.exporters.GoogleEarthPlacemarkIFace#getHtmlContent()
+     * @see edu.ku.brc.specify.rstools.GoogleEarthPlacemarkIFace#getHtmlContent(java.lang.String)
      */
-    public String getHtmlContent()
+    public String getHtmlContent(final String textColorArg)
     {
+        String textColor = UIHelper.fixColorForHTML(textColorArg);
         
         boolean useCaptions = AppPreferences.getRemote().getBoolean("google.earth.useorigheaders", true);
         
@@ -111,11 +113,17 @@ public class WorkbenchRowPlacemarkWrapper implements GoogleEarthPlacemarkIFace
             WorkbenchTemplateMappingItem wbtmi = mappings.get(wbdi.getColumnNumber());
             if (visibleMap.get(wbtmi) != null && wbtmi.getIsExportableToContent())
             {
-                sb.append("<tr><td align=\"right\">");
+                sb.append("<tr><td align=\"right\"><font color=\"");
+                sb.append(textColor);
+                sb.append("\">");
+            
                 sb.append(useCaptions ? wbtmi.getCaption() : wbtmi.getTitle());
-                sb.append(":</td><td align=\"left\" valign=\"middle\">");
+                sb.append(":</font></td><td align=\"left\" valign=\"middle\"><font color=\"");
+                sb.append(textColor);
+                sb.append("\">");
+            
                 sb.append(wbdi.getCellData());
-                sb.append("</td></tr>\n");
+                sb.append("</font></td></tr>\n");
             }
         } 
         sb.append("</table>\n");

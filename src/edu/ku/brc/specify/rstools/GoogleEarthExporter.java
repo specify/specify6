@@ -364,12 +364,14 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
      * @param textColor
      * @return
      */
-    protected String getBalloonText(final String textColor)
+    protected String getBalloonText(final String textColorArg)
     {
-        return "<b><font size=\"+3\"><center>$[name]</center></font></b>"
-        + "<br/><hr><br/>"
-        + "$[description]<br/><br/>"
-        + "<center><b><a style=\"color: #" + textColor + "\" href=\"http://www.specifysoftware.org/\">http://www.specifysoftware.org</a></b></center>";
+        String textColor = UIHelper.fixColorForHTML(textColorArg);
+        
+        return "<b><font color=\""+textColor+"\" size=\"+3\"><center>$[name]</center></font></b>"
+                + "<br/><hr><br/>"
+                + "$[description]<br/><br/>"
+                + "<center><a href=\"http://www.specifysoftware.org/\"><font color=\""+textColor+"\">http://www.specifysoftware.org</font></a></center>";
     }
     
     /**
@@ -465,7 +467,7 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
             if (geoRef != null)
             {
                 mappedPlacemarks.add(pm);
-                String htmlDesc = pm.getHtmlContent();
+                String htmlDesc = pm.getHtmlContent(kmlGenerator.getBalloonStyleTextColor());
                 kmlGenerator.addPlacemark(geoRef, name, htmlDesc);
             }
             else

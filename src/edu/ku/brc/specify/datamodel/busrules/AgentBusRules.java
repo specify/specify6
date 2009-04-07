@@ -157,15 +157,21 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
             {
                 String title = "";
                 PickListDBAdapterIFace adaptor = ((TextFieldFromPickListTable)field).getPickListAdapter();
-                for (PickListItemIFace pli : adaptor.getList())
+                if (adaptor != null)
                 {
-                    if (pli.getValue().equals(value))
+                    for (PickListItemIFace pli : adaptor.getList())
                     {
-                        title = pli.getTitle();
-                        break;                                
+                        if (pli.getValue().equals(value))
+                        {
+                            title = pli.getTitle();
+                            break;                                
+                        }
                     }
+                    ((TextFieldFromPickListTable)field).setText(title);
+                } else
+                {
+                    log.error("Adapter was null for id ["+id+"] on the Agent Form.");
                 }
-                ((TextFieldFromPickListTable)field).setText(title);
                 return;
             }
             
