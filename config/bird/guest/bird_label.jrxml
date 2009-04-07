@@ -38,11 +38,11 @@
 FROM collectionobject INNER JOIN determination dt ON collectionobject.CollectionObjectID = dt.CollectionObjectID
 	 INNER JOIN collectingevent ON collectionobject.CollectingEventID = collectingevent.CollectingEventID
 	 INNER JOIN preparation ON collectionobject.CollectionObjectID = preparation.CollectionObjectID
-	 INNER JOIN agent ON collectionobject.CatalogerID = agent.AgentID
+	 LEFT JOIN agent ON collectionobject.CatalogerID = agent.AgentID
 	 INNER JOIN preptype ON preparation.PrepTypeID = preptype.PrepTypeID
-	 INNER JOIN locality ON collectingevent.LocalityID = locality.LocalityID
-	 INNER JOIN taxon ON dt.TaxonID = taxon.TaxonID
-WHERE preptype.Name = 'Egg' AND dt.IsCurrent <> 0 AND collectionobject.CollectionObjectID $P!{itemnum}]]></queryString>
+	 LEFT JOIN locality ON collectingevent.LocalityID = locality.LocalityID
+	 LEFT JOIN taxon ON dt.TaxonID = taxon.TaxonID
+WHERE dt.IsCurrent <> 0 AND collectionobject.CollectionObjectID $P!{itemnum}]]></queryString>
 
 	<field name="cat_no" class="java.lang.String"/>
 	<field name="catalogedBy" class="java.lang.String"/>
