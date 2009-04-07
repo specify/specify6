@@ -1,0 +1,193 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<link href="../../main.css" rel="stylesheet" type="text/css" media="screen"></link>
+<title>Specify Setup Wizard</title>
+<style type="text/css">
+<!--
+.style1 {color: #990066}
+.style2 {color: #000000; }
+.style3 {
+	color: #990033
+}
+-->
+</style>
+</head>
+
+<body bgcolor="#ffffff">
+<table width="100%" border="0" background="../../images/topbar.png">
+  <tr>
+    <td>&nbsp;</td>
+  </tr>
+</table>
+<table border="0">
+<tr><td width="32"><img src="../../images/spwizard32.png" width="32" height="32" /></td>
+<td width="296"><h2>Setup Wizard</h2>  </td></tr>
+</table>
+<p>The setup Wizard is used to create a new, empty database within Specify. It will walk you through the creation of some very important structural elements within Specify. Before running the Setup Wizard it is highly recommended that you familiarize yourself with these elements by reading these documents <strong>...</strong></p>
+<p>It is also necessary to have installed  Java and MySQL and acquired a login account within MySQL which includes all permissions.</p>
+<p>The Setup Wizard should NOT be run if data already resides in Specify. It creates a new, blank database and will wipe out any existing data. The Wizard should only be run one time, then can be deleted from your computer.</p>
+<p align="center"><img src="../../images/window 1.jpg" width="639" height="528" /></p>
+<p align="center"><span class="imgcaption">Window 1</span></p>
+<p>The IT user is an account with administrator privileges in the MySQL database manager. This account does not exist within the Specify application. It should already exist by the time you reach this screen. The IT user account is used to create a &ldquo;Master&rdquo; Specify user in the MySQL database manager(in the next screen). If you do not know the IT username and password or other information for your MySQL installation, exit now. You can not go further without it.</p>
+<p align="center"><img src="../../images/window 2.jpg" width="639" height="529" /></p>
+<p align="center"><span class="imgcaption">Window 2</span></p>
+<p>The security for Specify 6 uses both a Master Username and Password, which accesses  the MySQL Database, as well as a User Username and Password, which in return gains access to the Specify application. Specify uses only one Master Username and Password for all users, but encrypts the Master password with the User information, creating an encrypted string. This allows the Master information to become unique for each user. </p>
+<p>This window creates the Master Username and Password for your Specify system. This Master Username and Password should NOT be used for a Specify user or used to log in to Specify. </p>
+<p>For a more in-depth look at Security please refer to <strong>(Security Document)</strong>.</p>
+<p align="center"><img src="../../images/wizard_security.png" width="664" height="535" /></p>
+<p align="left">Specify includes a highly flexible Security module that allows a system administrator to add users, then limit their operations within and access to the various tables and tools within Specify. These are essentially the User Permissions. If you are a single user or will have only a few users and will not be setting permissions for any of your users you can turn off the Security feature. You will still be able to add users. This will create a setting within your database that will assure that Specify will launch without Security. If you wish to turn Security on at a later date you may do so from within Specify.</p>
+<p align="center">&nbsp;</p>
+<p align="center"><img src="../../images/window 3.jpg" width="640" height="530" /></p>
+<p align="center"><span class="imgcaption">Window 3</span></p>
+<p>This account is the first Specify user account for your database, and is  created at the level of Manager, the highest  rank in the  Specify permission model. The account usually represents the primary user, or administrator, of your collection database.    It is this username and password that will be used to log in to Specify for the first time, once this setup Wizard is finished. At that time additional users can be added within Specify. Protect the username and make the password strong. This Specify manager level information will  also be used to create a record in the Specify database for an &lsquo;Agent&rsquo; representing the same person.</p>
+<p>&nbsp;</p>
+<p align="center"><img src="../../images/window 4.png" width="640" height="528" /></p>
+<p align="center"><span class="imgcaption">Window 4</span></p>
+<p align="left">The Specify data management levels mimic  the common levels of hierarchy within institutions. Access to information and Specify tools are then set at the various levels both within the application itself and through the User Permissions. For more information about the Specify data management levels refer to<strong> Administrative Model of Institution Organization found ?</strong>.</p>
+<p align="left">The Setup Wizard creates a single entry for each level of the hierarchy (Institution, Division, Discipline and Collection).  This is the first step in that process.  </p>
+<p align="left">The <strong>Name</strong> should be the formal name for your institution. It is a field within the Specify database and is displayed on the Institution form. It and can be queried and used in reports. </p>
+<p align="left">The <strong>Code</strong> is (Rod is looking into this, off hand he thinks it is used for the ABCD?)If a Code is not currently used at your institution it can be added within Specify at a later date.</p>
+<p align="left">The <strong>Institution Address</strong> information is also added to fields within the Specify database and displayed on the Institution form and can be queried and used in reports.</p>
+<p align="center"><img src="../../images/wizard_global_accession.png" width="665" height="536" /></p>
+<p align="left">Accessioning is the formal process by which a specimen or object is legally accepted and recorded as a museum item and differs from cataloging.  This usually entails proof of ownership (in the form of a signed deed of gift) and legal collection (in the form of all associated permits - collecting, import and export).  Accessioning and its numbering system is usually a policy adopted as a museum wide policy but is not used by all museums.  An accession usually covers an entire field trip and multiple catalog items could be included within a single accession. </p>
+<p align="left">Institutions that do not use Accessions can simply click the <em>Next</em> button to proceed to the next window.</p>
+<p align="left">Accessions Numbers can either be kept at an Institution or Division level. This decision is based on whether your institution foresees having a person that would need to access all the Accessions for your institution, much like a registrar, or if the Accessions will only be accessed within the Division. </p>
+<div align="left" class="style3">(Jim, we need to get all the Accession information together -- it may be with the new release, but I will talk to Rod about moving the Accessions Number window up)</div>
+<p align="center">&nbsp;</p>
+<p align="center"><img src="../../images/window 6.jpg" alt="Storage Tree" width="639" height="530" /></p>
+<p align="center" class="imgcaption">Window 6</p>
+<p align="left">Specify 6 visually displays various table data  in a hierarchical tree format. These include the Taxon, Geography, Storage, Chronostratigraphy and Lithostratigraphy tables. There are two distinctions for trees; the first is the tree definition, or list of all the Ranks (levels) included in each tree,  the second is the nodes which reside on the tree at each of these levels.  The ranks must first be defined, then nodes can be added to each. The Wizard offers this type of table  for each of the trees (Chronostratigraphy and Lithostratigraphy only when appropriate) for creating  tree definitions. </p>
+<p align="left">Nodes for the Storage tree can be added within the Specify application. The storage tree operates at the Institution level and is available to all Collections. </p>
+<ul>
+  <li>The <strong>Rank</strong> is the tree level. This name can be edited from within Specify. Click the Include box to place the rank in the tree. </li>
+  <li>Include will include the rankin the </li>
+  <li><strong align="left">Is Required</strong> is not editable, but an indication of the tree ranks that are required by the Specify system. These are automatically added to the tree and can not be deleted.</li>
+  <li><strong align="left">Is Enforced</strong> ensures that the rank can not be skipped when placing lower nodes on the tree.</li>
+  <li><strong align="left">Is in Full Name</strong> will use the rank when displaying the full name for any associated Collection Objects (which appears in the Taxon Full Name field of the taxon table). The Full Name is also displayed in the Preferred Taxon field on the Determinations form and is useful when  running queries and reports when a full name is desired.<br />
+      <br />
+    At least one rank for Full Name must be checked before the <em>Next</em> button will become enabled.<br />
+    <br />
+    Once the full name is configured and data is added in the tree the full name configuration is not editable.<br />
+    <br />
+  </li>
+  </li>
+  <li><strong align="left">Separator</strong> refers to the symbol used to separate the ranks when displaying the full name. </li>
+  <li><strong align="left">Full Name Order</strong> will reverse the full name as shown in the <strong>Full Name Example</strong>. </li>
+</ul>
+<p align="left">&nbsp;</p>
+<p align="center"><img src="../../images/window 7.jpg" width="639" height="529" /></p>
+<p align="center" class="imgcaption">Window 5</p>
+<p align="left">This window is used to create one Division within your institution hierarchy. Additional divisions can be added from within Specify.</p>
+<p align="left"><strong><u>Division</u></strong></p>
+<p align="left">The <strong>Name</strong> will appear on the Division form and  can be queried and used in reports. Example names of Divisions are Botany, Invertebrate Zoology, Entomology, etc. The Name is a field within the Specify database and is displayed on the Institution form. It and can be queried and used in reports. </p>
+<p align="left">The <strong>Code</strong> is (Rod is looking into this, off hand he thinks it is used for the ABCD?)If a Code is not currently used at your institution it can be added within Specify at a later date.</p>
+<p align="left" class="style1">(Jim, I was talking with Rod about the idea of putting the Division, Discipline and Collection together on one screen this morning. It is complicated! It absolutely makes sense to him BUT to finish the engineering task of adding collection, division and discipline within Specify he utilized the pieces of the Wizard that he had already written -- he believes this saved him time and bugs; but it now makes it impossible to put the institution hierarchy information together on one screen.</p>
+<p align="left" class="style1">I think that we could make these screens smaller. It would not make sense to have each screen a different size, which they would be since the Wizard jumps around, but I really don't think that the information on the very last screen should dictate the size for all the screens. These screens could be much smaller (defined by the size of the Taxon screen) and then the very last screen with all its data could be large. We could also add elements to the last screen to make it easier to read without worrying about it getting too large.)</p>
+<p align="center" class="style1"><img src="../../images/window 8.jpg" width="640" height="529" /></p>
+<p align="center" class="imgcaption">Window 6</p>
+<p align="left"><strong><u>Discipline</u></strong></p>
+<p align="left">Choose a <strong>Discipline Type</strong> from the drop-down menu. Specify uses this information to load the correct Forms, Trees and schema (tables and fields) within Specify. </p>
+<p align="left">The <strong>Name</strong> will display within Specify and can be anything you wish. It can be queried and used in reports. It can also be edited from within Specify.</p>
+<p align="center">&nbsp;</p>
+<p align="left">&nbsp;</p>
+<p align="center"><img src="../../images/window 9.jpg" width="640" height="530" /></p>
+<p align="center" class="imgcaption">Window 7</p>
+<p align="left">This table will create the tree definition for the Taxon tree. The Taxon tree operates at the Discipline level and can be used by all Collections within the Discipline you created in the last window. </p>
+<ul>
+  <li>The <strong>Rank</strong> is the tree level. This name can be edited from within Specify. Click the Include box to place the rank in the tree. </li>
+  <li><strong align="left">Is Required</strong> is not editable, but an indication of the tree ranks that are required by the Specify system. These are automatically added to the tree and can not be deleted.</li>
+  <li><strong align="left">Is Enforced</strong> ensures that the rank can not be skipped when placing lower nodes on the tree.</li>
+  <li><strong align="left">Is in Full Name</strong> will use the rank when displaying the full name for any associated Collection Objects (which appears in the Taxon Full Name field of the taxon table). The Full Name is also displayed in the Preferred Taxon field on the Determinations form and is useful when  running queries and reports when the full name is desired. <br />
+      <br />
+  At least one rank for Full Name must be checked before the <em>Next</em> button will become enabled.<br />
+  <br />
+ Once the full name is configured and data is added in the tree the full name configuration is not editable.<br />
+  </li>
+  <li><strong align="left">Separator</strong> refers to the symbol used to separate the ranks when displaying the full name. </li>
+  <li><strong align="left">Full Name Order</strong> will reverse the full name as shown in the <strong>Full Name Example</strong>. </li>
+</ul>
+<p>&nbsp;</p>
+<p align="center"><img src="../../images/wizard_taxon_preload.png" width="666" height="537" /></p>
+<p>The Specify Wizard not only defines the Taxon tree but also loads an authority file for your Discipline. <span class="style2">This authority file was created using data from the </span> Catalog of Life. If you choose to load the data into your tree when you open Specify and choose the <em>Tree</em> tab from the task bar, and Taxon tree from your side bar you will see a Taxon tree  with hundreds of taxon nodes included. Then, when adding Collection Objects into your database you can simply choose a taxa from the Taxon field rather than adding each individually as needed.</p>
+<p>&nbsp;</p>
+<p align="center"><img src="../../images/window 10.jpg" width="639" height="530" /></p>
+<p align="center" class="imgcaption">Window 8</p>
+<p align="left"> The Geography tree operates at the Discipline level and  is used by all Collections within the Discipline. </p>
+<ul>
+  <li>The <strong>Rank</strong> is the tree level. This name can be edited from within Specify. Click the Include box to place the rank in the tree. </li>
+  <li><strong align="left">Is Required</strong> is not editable, but an indication of the tree ranks that are required by the Specify system. These are automatically added to the tree and can not be deleted.</li>
+  <li><strong align="left">Is Enforced</strong> ensures that the rank can not be skipped when placing lower nodes on the tree.</li>
+  <li><strong align="left">Is in Full Name</strong> will use the rank when displaying the full name for any associated Collection Objects (which appears in the Taxon Full Name field of the taxon table). The Full Name is also displayed in the Preferred Taxon field on the Determinations form and is useful when  running queries and reports when the full name is desired. <br />
+      <br />
+      <u>At least one rank for Full Name must be checked before the <em>Next</em> button will become enabled.</u><br />
+  <br />
+    Once the full name is configured and data is added in the tree the full name configuration is not editable.<br />
+    <br />
+  </li>
+  <li><strong align="left">Separator</strong> refers to the symbol used to separate the ranks when displaying the full name. </li>
+  <li><strong align="left">Full Name Order</strong> will reverse the full name as shown in the <strong>Full Name Example</strong>. </li>
+</ul>
+<p class="style1">(Jim, we can point to this text in the window above or repeat it for each window. I have an example of the 'pointer' this for the Accession Number below. -- Also, the Geography tree seems to load without asking me if I want to preload it -- we should probably be consistent and ask like we do with Taxon)</p>
+<p class="style2">The Wizard also loads data for the Geography tree, including Continents, Countries, and States throughout the world as well as Counties within the United States. This authority file was created using data from the Getty Thesaurus of Geographic Names.</p>
+<p align="center" class="style2"><img src="../../images/window 11.jpg" width="639" height="530" /></p>
+<p align="left"><u><strong>Collection</strong></u><strong> </strong></p>
+<p align="left">Enter the <strong>Name</strong> and internationally recognized Collection <strong>Code</strong> to create a Collection within the Discipline.  This is the name that will appear within Specify on the Collection form and can be queried and used in reports. </p>
+<p align="left">If you do not know your Collection Code ???</p>
+<p align="left">&nbsp;</p>
+<p class="style2">&nbsp;</p>
+<p align="left">&nbsp;</p>
+<p align="center"><img src="../../images/window 12.jpg" width="639" height="530" /></p>
+<p align="center" class="imgcaption">Window 9</p>
+<p>Specify requires a unique Catalog Number for each specimen. It does not matter what Catalog Number a collection uses for a specimen as long as the number is unique. Many museums routinely assign these to incoming specimens. These numbers may require a format with specific sections for data such as Institution Code and year or they may simply use an incrementing number.</p>
+<p>Catalog Numbers can either be unique to each Collection, shared by several or be used throughout the Institution. The Catalog Number chosen at this time will not affect where it is used relative to other Collections, this will be configured from within the Specify application.</p>
+<p>Collections that do not use a specific format for their Catalog Number may choose 'None' and the Catalog Number will remain a text field on the forms where it appears. </p>
+<p>Several formats are also available within this drop-down menu list:</p>
+<p>xxx</p>
+<p>xxx</p>
+<p>To create your own format choose 'Create'. This will open the Field Formatting Editor. </p>
+<p><img src="../../images/number_format_1.png" alt="screenshot" width="360" height="184" /></p>
+<p>The table, field and field length information is located on the top left.</p>
+<p><strong>Name</strong> is used within the application files. It should be text only and and will not be displayed to the user anywhere else in the application.</p>
+<p><strong>Title</strong> will be displayed in any application format lists that are presented to the user. </p>
+<p><strong>Reset Counter Every Year</strong> will become enable when a Numeric section that Is Incremented is added to the format (this is explained in more detain in the following text). Checking this box will start a new count each year.</p>
+<p>A format can be made up of one or many sections. Begin creating a format by clicking the <img src="../../images/add.png" alt="add" width="16" height="16" />(add) button on the right side of the editor to add a section. </p>
+<p>Next, choose the type of section to add.</p>
+<p><img src="../../images/number_format_2.png" alt="screenshot" width="360" height="184" /></p>
+<p><strong>Numeric</strong> may only be numbers and can be auto incremented by checking the 'Is Incrementer' box and using Auto Numbering when entering data. When auto numbering Specify will start incrementing from the highest number present for the section within the database. A numeric section can be set between 1 and 10 characters in length. To start a new count for each year check the <em>Restart counter every year</em> box.</p>
+<p>It is important to remember that   field formats are implemented at a Discipline level and that formats that include a section that is incremented will  include a numbering scheme that is shared by all Collections within the Discipline. </p>
+<p><strong>Alphanumeric</strong> may use both alphabet characters a through z and numbers. A length field will appear which allows the section to be  set between 1 and 10 characters in length.</p>
+<p><strong>Alpha</strong> may only be alphabet characters a through z. A length field will appear which allows the section to be  set between 1 and 10 characters in length.</p>
+<p><strong>Separator</strong> refers to a character that separates the various sections. Separator choices include - . / ' ' _ and are one character in length.</p>
+<p><strong>Year</strong> will automatically add the current year on a form, but can be edited. </p>
+<p><strong>Any char(acter)</strong> allows any alphabet characters a through z, any number or any other keyboard character. A length field will appear which allows the section to be  set between 1 and 10 characters in length.</p>
+<p><strong>Constant</strong> refers to  any section that will remain constant and is not editable on a form. This type of section is useful when  an institution code is part of a format. Type the characters for the constant in the text field labeled <em>Text</em> located under the <em>Type</em> box. The length of the Constant section limited to the number of characters remaining in the 50 character field length.</p>
+<p>Once the section information is configured correctly add it to the format by clicking the <img src="../../images/green_up_arrow.png" alt="up arrow" width="16" height="16" /> button. </p>
+<p>The section will appear in the window with the appropriate information in each of the columns.</p>
+<p> <strong>Type</strong> refers to the Type of section that was chosen from the pick list. </p>
+<p><strong>Value</strong> is much like a </p>
+<p><strong>Size</strong> refers to the number of characters chosen for the section. This is not applicable to the Separator or Year section types.</p>
+<p><strong>Is By Year</strong> refers only the the Year section type.</p>
+<p><strong>Is Incrementer</strong> refers only to the Numeric section type that is incremented. On the Wizard's Collection Number window it will display in the <strong><em>Is Numeric</em></strong> section.</p>
+<p>&nbsp;</p>
+<p>Reorder sections by clicking the <img src="../../images/ReorderUp16x16.png" alt="reorder up" width="16" height="16" /> (reorder up) and <img src="../../images/ReorderDown16x16.png" alt="reorder down" width="16" height="16" /> (reorder down) buttons on the right side of the editor. </p>
+<p>Delete unwanted sections by clicking the <img src="../../images/delete.png" alt="delete" width="16" height="16" /> (delete) button.</p>
+<p>Continue adding sections until the format is complete and displays correctly in the <em>Sample</em> window at the bottom of the editor.</p>
+<p><em><strong>Note: </strong></em>When manually entering a formatted number field, it is paramount that numbers be padded with 0's. For example, if 3 numbers are available in a numbering scheme (###) and the desired number is 1, then 001 must be entered. If only 1 is entered, then Specify will read this as 100. This will produce incorrect results in searches, queries and reports. </p>
+<p align="center"><img src="../../images/window 13.jpg" width="639" height="528" /></p>
+<p align="center" class="imgcaption">Window 10</p>
+<p align="left">Accessioning is the formal process by which a specimen or object is legally accepted and recorded as a museum item and differs from cataloging.  This usually entails proof of ownership (in the form of a signed deed of gift) and legal collection (in the form of all associated permits - collecting, import and export).  Accessioning and its numbering system is usually a policy adopted as a museum wide policy but is not used by all museums.  An accession usually covers an entire field trip and multiple catalog items could be included within a single accession. </p>
+<p align="left">Institutions that do not use Accessions can simply click the <em>Next</em> button to proceed to the next window.</p>
+<p align="left">Accessions Numbers can either be kept at an Institution or Division level. This decision is based on whether your institution foresees having a person that would need to access all the Accessions for your institution, much like a registrar, or if the Accessions will only be accessed within the Division. </p>
+<p align="left">Accession Numbers may require a format or may simply use a number. Choose None to leave the Accession Number as a text field on the Accession form. </p>
+<p align="left">Several formats are offered in the drop-down menu list:</p>
+<p align="left">xxx</p>
+<p align="left">xxx</p>
+<p align="left">To create a unique format choose <em>Create</em> from the list. The Field Formatting Editor will open, this is explained above in Window 9. </p>
+<p align="center"><img src="../../images/widow 14.jpg" width="640" height="528" /></p>
+<p align="center" class="imgcaption">Window 11</p>
+<p align="left">Congratulations! You have finished the Specify Setup Wizard. This last screen displays all the data that has been created using the information provided in the preceding windows. If  edits are required simply click the <em>Back</em> button until the desired window displays and re-enter the information.</p>
+<p align="left">&nbsp;</p>
+<p align="center" class="imgcaption">&nbsp;</p>
+</body>
+</html>
