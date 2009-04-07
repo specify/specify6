@@ -73,28 +73,31 @@ public class LoanBusRules extends AttachmentOwnerBaseBusRules
         
         formViewObj.setSkippingAttach(true);
 
-        Component closedComp = formViewObj.getControlByName("isClosed");
-        if (closedComp instanceof JCheckBox)
+        if (isEditMode())
         {
-            ((JCheckBox)closedComp).addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e)
-                {
-                    if (((JCheckBox)e.getSource()).isSelected())
+            Component closedComp = formViewObj.getControlByName("isClosed");
+            if (closedComp instanceof JCheckBox)
+            {
+                ((JCheckBox)closedComp).addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e)
                     {
-                        Component dateComp = formViewObj.getControlByName("dateClosed");
-                        if (dateComp != null && dateComp instanceof ValFormattedTextFieldSingle)
+                        if (((JCheckBox)e.getSource()).isSelected())
                         {
-                            ValFormattedTextFieldSingle loanDateComp = (ValFormattedTextFieldSingle)dateComp;
-                            //System.out.println("["+loanDateComp.getText()+"]");
-                            if (StringUtils.isEmpty(loanDateComp.getText()))
+                            Component dateComp = formViewObj.getControlByName("dateClosed");
+                            if (dateComp != null && dateComp instanceof ValFormattedTextFieldSingle)
                             {
-                                DateWrapper scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
-                                loanDateComp.setText(scrDateFormat.format(Calendar.getInstance()));
+                                ValFormattedTextFieldSingle loanDateComp = (ValFormattedTextFieldSingle)dateComp;
+                                //System.out.println("["+loanDateComp.getText()+"]");
+                                if (StringUtils.isEmpty(loanDateComp.getText()))
+                                {
+                                    DateWrapper scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
+                                    loanDateComp.setText(scrDateFormat.format(Calendar.getInstance()));
+                                }
                             }
                         }
                     }
-                }
-            });
+                });
+            }
         }
         
         /*if (formViewObj.getRsController() != null)
