@@ -291,7 +291,7 @@ public class InteractionsTask extends BaseTask
     /**
      * Returns whether a table id if considered to be an Interaction.
      * @param tableId the table ID in question
-     * @return
+     * @return true if it is a table that is handled by Interactions
      */
     public static boolean isInteractionTable(final int tableId)
     {

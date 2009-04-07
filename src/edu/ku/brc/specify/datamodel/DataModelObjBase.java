@@ -114,7 +114,12 @@ public abstract class DataModelObjBase implements FormDataObjIFace,
             String str = DataObjFieldFormatMgr.getInstance().format(this, getDataClass());
             if (StringUtils.isEmpty(str))
             {
-                return DBTableIdMgr.getInstance().getByClassName(getClass().getName()).getTitle();
+                DBTableInfo tableInfo =  DBTableIdMgr.getInstance().getByClassName(getClass().getName());
+                if (tableInfo != null)
+                {
+                    return tableInfo.getTitle();
+                }
+                str = UIRegistry.getResourceString("DATAOBJ_ITEM");
             }
             return str;
         } catch (Exception ex)

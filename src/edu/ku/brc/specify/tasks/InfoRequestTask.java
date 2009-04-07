@@ -548,8 +548,8 @@ public class InfoRequestTask extends BaseTask
         }
     }
     
-    /**
-     * @return the permissions array
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#getPermsArray()
      */
     @Override
     protected boolean[][] getPermsArray()
@@ -558,5 +558,15 @@ public class InfoRequestTask extends BaseTask
                                 {true, true, true, true},
                                 {true, true, false, true},
                                 {false, false, false, false}};
+    }
+    
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.Taskable#isPermissionsSettable()
+     */
+    @Override
+    public boolean isPermissionsSettable()
+    {
+        return false;
     }
 }
