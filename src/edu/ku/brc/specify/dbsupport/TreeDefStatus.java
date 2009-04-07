@@ -176,7 +176,15 @@ public class TreeDefStatus
 				getTreeLockName(), null, TaskSemaphoreMgr.SCOPE.Discipline, false, lockCallback);
 		if (action == USER_ACTION.Override)
 		{
-			return TaskSemaphoreMgr.unlock(getTreeLockTitle(), getTreeLockName(), TaskSemaphoreMgr.SCOPE.Discipline);
+			if (TaskSemaphoreMgr.unlock(getTreeLockTitle(), getTreeLockName(), TaskSemaphoreMgr.SCOPE.Discipline))
+			{
+				action = TaskSemaphoreMgr.lock(getTreeLockTitle(), 
+						getTreeLockName(), null, TaskSemaphoreMgr.SCOPE.Discipline, false);
+			}
+			else
+			{
+				return false;
+			}
 		}
     	return action == USER_ACTION.OK;
     }

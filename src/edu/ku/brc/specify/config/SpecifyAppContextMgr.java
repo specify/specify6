@@ -1226,7 +1226,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
             // Check for locks set on uploader, tree update, ...
             //--------------------------------------------------------------------------------
             
-            boolean noLocks = Uploader.checkUploadLock(null);
+            int uploadLockCheckResult = Uploader.checkUploadLock(null);
+            boolean noLocks = uploadLockCheckResult != Uploader.LOCKED;
             if (noLocks)
             {
             	if (!discipline.getTaxonTreeDef().checkNodeRenumberingLock())

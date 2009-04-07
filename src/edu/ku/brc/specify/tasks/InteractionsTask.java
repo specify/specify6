@@ -2264,7 +2264,7 @@ public class InteractionsTask extends BaseTask
     @Override
     protected boolean canRequestContext()
     {
-        return Uploader.checkUploadLock(this);
+        return Uploader.checkUploadLock(this) == Uploader.NO_LOCK;
     }
     
     /* (non-Javadoc)

@@ -133,6 +133,13 @@ public class Uploader implements ActionListener, KeyListener
     protected final static String                   WB_UPLOAD_ROW_SKIPPED = "WB_UPLOAD_ROW_SKIPPED";
     protected final static String                   WB_UPLOAD_VIEW_RESULTS_TITLE = "WB_UPLOAD_VIEW_RESULTS_TITLE";
     
+    //Upload lock check results
+    public final static int                     NO_LOCK      = 0;
+    public final static int                     LOCK_REMOVED = 1;
+    public final static int                     LOCK_IGNORED = 2;
+    public final static int                     LOCKED       = 3;
+    public final static int						LOCK_FAILED  = 4;
+    
     /**
      * Maximum number of messages (validation errors) to display. Prevents un-responsiveness when a workbench is REALLY messed up.
      */
@@ -4134,7 +4141,7 @@ public class Uploader implements ActionListener, KeyListener
      * True if a lock has been overridden. Prevents multiple complaints about uploader lock.
      */
     //XXX Need to test to be sure lockout of other logins is maintaind if user who overrides opens her own upload session.
-    protected static boolean isLockOverridden = false;
+    protected static boolean isLockIgnored = false;
     
     /**
      * @return true if it is possible (i.e. user has permission, ??) to override an upload lock.
@@ -4161,18 +4168,18 @@ public class Uploader implements ActionListener, KeyListener
      * @return true if no lock is present or lock is overridden. Else return false.
      *  
      */
-    public static boolean checkUploadLock(final Taskable caller)
+    public static int checkUploadLock(final Taskable caller)
     {
-        if (isLockOverridden)
+        if (isLockIgnored)
         {
-            return true;
+            return NO_LOCK;
         }
         if (!TaskSemaphoreMgr.isLocked(getLockTitle(), "WORKBENCHUPLOAD", TaskSemaphoreMgr.SCOPE.Discipline))
         {
-            return true;
+            return NO_LOCK;
         }
-        boolean result = lockUpload(caller);
-        isLockOverridden = result;
+        int result = lockUpload(caller, false);
+        isLockIgnored = result == Uploader.LOCK_IGNORED;
         return result;
     }
     
@@ -4185,19 +4192,61 @@ public class Uploader implements ActionListener, KeyListener
      * 
      * @return true is successful.
      */
-    public static boolean lockUpload(final Taskable caller)
-    {
-        USER_ACTION result = TaskSemaphoreMgr.lock(getLockTitle(), 
-                "WORKBENCHUPLOAD", null,
-                SCOPE.Discipline, false, 
-                new UploadLocker(canOverrideLock(), canRemoveLock(), caller)); 
-        if (result == USER_ACTION.Override)
-        {
-        	return TaskSemaphoreMgr.unlock(getLockTitle(), "WORKBENCHUPLOAD", SCOPE.Discipline);
-        }
-        		
-       return result == USER_ACTION.OK;
-    }
+    public static int lockUpload(final Taskable caller, boolean doLock)
+	{
+		boolean override = false;
+		boolean unlocked = false;
+		boolean isLocked = TaskSemaphoreMgr.isLocked(getLockTitle(),
+				"WORKBENCHUPLOAD", TaskSemaphoreMgr.SCOPE.Discipline);
+		USER_ACTION result = TaskSemaphoreMgr.lock(getLockTitle(),
+				"WORKBENCHUPLOAD", null, SCOPE.Discipline, false,
+				new UploadLocker(canOverrideLock(), canRemoveLock(), caller,
+						doLock));
+		if (result == USER_ACTION.Override)
+		{
+			override = true;
+			unlocked = TaskSemaphoreMgr.unlock(getLockTitle(),
+					"WORKBENCHUPLOAD", SCOPE.Discipline);
+			if (unlocked && doLock)
+			{
+				result = TaskSemaphoreMgr.lock(getLockTitle(),
+						"WORKBENCHUPLOAD", null, SCOPE.Discipline, false);
+			}
+		}
+		if (doLock)
+		{
+			if (result == USER_ACTION.OK)
+			{
+				return LOCKED;
+			}
+			return LOCK_FAILED;
+		}
+		if (!doLock)
+		{
+			if (isLocked)
+			{
+				if (!override)
+				{
+					if (result == USER_ACTION.OK)
+					{
+						return LOCK_IGNORED;
+					}
+					return LOCKED;
+				} else
+				{
+					if (unlocked)
+					{
+						return Uploader.LOCK_REMOVED;
+					}
+					return LOCKED;
+				}
+			} else
+			{
+				return NO_LOCK;
+			}
+		}
+		return NO_LOCK;
+	}
     
     /**
      * Unlocks the upload task.
@@ -4297,52 +4346,55 @@ public class Uploader implements ActionListener, KeyListener
      */
     public boolean setAdditionalLocks()
     {
-    	List<Pair<UploadTableTree, Boolean>> trees = getTreesToLock(false);
+    	//It is actually not necessary to set these locks. 
+    	return true;
     	
-    	if (trees.size() == 0)
-    	{
-    		//nothing to lock
-    		return true;
-    	}
-    	    	
-    	boolean result = true;
-    	for (Pair<UploadTableTree, Boolean> ttp : trees)
-    	{
-    		UploadTableTree utt = ttp.getFirst();
-    		final String title = utt.getTable().getTableInfo().getTitle();
-        	TaskSemaphoreMgrCallerIFace lockCallback = new TaskSemaphoreMgrCallerIFace(){
-        	    @Override
-        		public TaskSemaphoreMgr.USER_ACTION resolveConflict(SpTaskSemaphore semaphore, 
-                        boolean previouslyLocked,
-                        String prevLockBy)
-        	    {
-        	    	UIRegistry.showLocalizedMsg("Uploader.AdditionalLockFailTitle", "Uploader.AdditionalLockFail", 
-        	    			title, prevLockBy, title);
-        	    	return TaskSemaphoreMgr.USER_ACTION.Error;
-        	    }
-        		
-        	};
-    		
-    		TaskSemaphoreMgr.USER_ACTION action = TaskSemaphoreMgr.lock(title, 
-    				utt.getTblClass().getSimpleName() + "TreeDef", null, TaskSemaphoreMgr.SCOPE.Discipline, false, lockCallback);
-    		if (action == TaskSemaphoreMgr.USER_ACTION.OK)
-    		{
-    			ttp.setSecond(true);
-    		}
-    		else
-    		{
-    			result = false;
-    			break;
-    		}
-    	}
-    	
-    	if (!result)
-    	{
-    		unlockTrees(trees);
-    	}
-    	
-    	additionalLocksSet = true;
-    	return result;
+//    	List<Pair<UploadTableTree, Boolean>> trees = getTreesToLock(false);
+//    	
+//    	if (trees.size() == 0)
+//    	{
+//    		//nothing to lock
+//    		return true;
+//    	}
+//    	    	
+//    	boolean result = true;
+//    	for (Pair<UploadTableTree, Boolean> ttp : trees)
+//    	{
+//    		UploadTableTree utt = ttp.getFirst();
+//    		final String title = utt.getTable().getTableInfo().getTitle();
+//        	TaskSemaphoreMgrCallerIFace lockCallback = new TaskSemaphoreMgrCallerIFace(){
+//        	    @Override
+//        		public TaskSemaphoreMgr.USER_ACTION resolveConflict(SpTaskSemaphore semaphore, 
+//                        boolean previouslyLocked,
+//                        String prevLockBy)
+//        	    {
+//        	    	UIRegistry.showLocalizedMsg("Uploader.AdditionalLockFailTitle", "Uploader.AdditionalLockFail", 
+//        	    			title, prevLockBy, title);
+//        	    	return TaskSemaphoreMgr.USER_ACTION.Error;
+//        	    }
+//        		
+//        	};
+//    		
+//    		TaskSemaphoreMgr.USER_ACTION action = TaskSemaphoreMgr.lock(title, 
+//    				utt.getTblClass().getSimpleName() + "TreeDef", null, TaskSemaphoreMgr.SCOPE.Discipline, false, lockCallback);
+//    		if (action == TaskSemaphoreMgr.USER_ACTION.OK)
+//    		{
+//    			ttp.setSecond(true);
+//    		}
+//    		else
+//    		{
+//    			result = false;
+//    			break;
+//    		}
+//    	}
+//    	
+//    	if (!result)
+//    	{
+//    		unlockTrees(trees);
+//    	}
+//    	
+//    	additionalLocksSet = true;
+//    	return result;
     }
     
     /**
@@ -4350,16 +4402,18 @@ public class Uploader implements ActionListener, KeyListener
      */
     protected void unlockTrees(final List<Pair<UploadTableTree, Boolean>> trees)
     {
-    	for (Pair<UploadTableTree, Boolean> ttp : trees)
-    	{
-    		if (ttp.getSecond())
-    		{
-    			UploadTableTree utt = ttp.getFirst();
-    			//XXX do something if unlock fails.
-    			TaskSemaphoreMgr.unlock(utt.getTable().getTableInfo().getTitle(), utt.getTblClass().getSimpleName() + "TreeDef", 
-    				TaskSemaphoreMgr.SCOPE.Discipline);
-    		}
-    	}
+    	//No longer needed
+    	
+//    	for (Pair<UploadTableTree, Boolean> ttp : trees)
+//    	{
+//    		if (ttp.getSecond())
+//    		{
+//    			UploadTableTree utt = ttp.getFirst();
+//    			//XXX do something if unlock fails.
+//    			TaskSemaphoreMgr.unlock(utt.getTable().getTableInfo().getTitle(), utt.getTblClass().getSimpleName() + "TreeDef", 
+//    				TaskSemaphoreMgr.SCOPE.Discipline);
+//    		}
+//    	}
     }
     
     /**
