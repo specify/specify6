@@ -96,7 +96,7 @@
 					<tocitem text="Auto Numbering" target="Auto_Numbering"/>
 					<tocitem text="Using Bar Codes" target="Barcodes"/>
 					<tocitem text="How Editing Affects Related Records" target="Editing_Related_Records"/>
-		      <tocitem text="Data Entry Forms" target="Data_Entry">
+		      <tocitem text="Data Forms" target="Data_Entry">
 			    <tocitem text="Side Bar Configuration" target="Data_Entry_Sidebar"/>
 				<tocitem text="Working with Forms and Trees" target="Data_Entry_Trees"/>
 				<tocitem text="Taxon Form" target="Data_Entry_Taxon"/>

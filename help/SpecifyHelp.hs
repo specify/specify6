@@ -1,59 +1,52 @@
-<?xml version='1.0' encoding='ISO-8859-1' ?>
+<?xml version='1.0' encoding='ISO-8859-1'  ?>
 <!DOCTYPE helpset
   PUBLIC "-//Sun Microsystems Inc.//DTD JavaHelp HelpSet Version 2.0//EN"
          "http://java.sun.com/products/javahelp/helpset_2_0.dtd">
-
-<?TestTarget this is data for the test target ?>
-
 <helpset version="2.0">
 
-  <!-- title -->
-  <title>Specify Help</title>
+<!-- title -->
+<title>Specify Help</title>
 
-  <!-- maps -->
-  <maps>
-     <homeID>main</homeID>
-     <mapref location="SpecifyHelp.jhm"/>
-  </maps>
+<!-- maps -->
+<maps>
+    <homeID>main</homeID>
+    <mapref location="SpecifyHelp.jhm" />
+</maps>
 
-  <!-- views -->
-  <view>
+<!-- views -->
+<view mergetype="javax.help.UniteAppendMerge">
     <name>TOC</name>
-    <label>Specify</label>
+    <label>Table Of Contents</label>
     <type>javax.help.TOCView</type>
     <data>SpecifyHelpTOC.xml</data>
-  </view>
+</view>
 
-
-  <view>
+<view mergetype="javax.help.SortMerge">
     <name>Index</name>
     <label>Index</label>
     <type>javax.help.IndexView</type>
     <data>SpecifyHelpIndex.xml</data>
-  </view>
+</view>
 
-  <view>
+<view>
     <name>Search</name>
     <label>Search</label>
     <type>javax.help.SearchView</type>
     <data engine="com.sun.java.help.search.DefaultSearchEngine">
-      SpecifyHelpSearchIndex
-    </data>
-  </view>
-  
-  <!--  <view>
-  <view>
-    <name>Glossary</name>
+     JavaHelpSearch</data>
+</view>
+
+<view mergetype="javax.help.SortMerge">
+    <name>glossary</name>
     <label>Glossary</label>
     <type>javax.help.GlossaryView</type>
     <data>SpecifyHelpGlossary.xml</data>
-  </view>
--->
-  <view>
-    <name>Favorites</name>
+</view>
+
+<view>
+    <name>favorites</name>
     <label>Favorites</label>
     <type>javax.help.FavoritesView</type>
-    <data></data>
-  </view>
+</view>
 
 </helpset>
