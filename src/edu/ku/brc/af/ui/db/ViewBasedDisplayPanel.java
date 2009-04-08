@@ -301,6 +301,7 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
     /* (non-Javadoc)
      * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
      */
+    @Override
     public void actionPerformed(ActionEvent e)
     {
         // Handle clicks on the OK and Cancel buttons.

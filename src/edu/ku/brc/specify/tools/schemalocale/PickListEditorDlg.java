@@ -16,12 +16,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.SwingConstants;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -30,11 +32,16 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.db.DBFieldInfo;
+import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.af.ui.forms.MultiView;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterField;
+import edu.ku.brc.af.ui.forms.validation.ValPlainTextDocument;
+import edu.ku.brc.af.ui.forms.validation.ValTextField;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Collection;
@@ -71,6 +78,9 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
     // Transient
     protected JList              pickListCache = null; // needed when deleting a PL
     protected boolean            doImportExport;
+    
+    protected DBTableInfo        tableInfo = null;
+    protected DBFieldInfo        fieldInfo = null;
     
     /**
      * @param localizableIO
@@ -122,6 +132,22 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
         pack();
     }
     
+    /**
+     * @param tableInfo the tableInfo to set
+     */
+    public void setTableInfo(DBTableInfo tableInfo)
+    {
+        this.tableInfo = tableInfo;
+    }
+
+    /**
+     * @param fieldInfo the fieldInfo to set
+     */
+    public void setFieldInfo(DBFieldInfo fieldInfo)
+    {
+        this.fieldInfo = fieldInfo;
+    }
+
     /**
      * @param list
      * @param isSystemPL
@@ -227,10 +253,10 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
             
         }  catch (Exception ex)
         {
+            ex.printStackTrace();
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PickListEditorDlg.class, ex);
             //log.error(ex);
-            ex.printStackTrace();
             // XXX error dialog
             
         } finally
@@ -268,7 +294,7 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
         });
         
         list.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            //@Override
+            @Override
             public void valueChanged(ListSelectionEvent e)
             {
                 if (!e.getValueIsAdjusting())
@@ -318,10 +344,10 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
                 
             } catch (Exception ex)
             {
+                ex.printStackTrace();
                 edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PickListEditorDlg.class, ex);
                 //log.error(ex);
-                ex.printStackTrace();
                 pickListCache = null;
             }
         }
@@ -349,6 +375,9 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
      */
     protected boolean editPL(final PickList pickList)
     {
+        plBusRules.setTableInfo(tableInfo);
+        plBusRules.setFieldInfo(fieldInfo);
+        
         ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog((Frame)UIRegistry.getTopWindow(),
                 "SystemSetup",
                 "PickList",
@@ -359,11 +388,35 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
                 null, // idFieldName,
                 true, // isEdit,
                 MultiView.HIDE_SAVE_BTN);
+        
         dlg.setHelpContext("PL_ITEM_EDITOR");
         dlg.setFormAdjuster(plBusRules);
+        
+        MultiView multiView = dlg.getMultiView();
+        ValTextField tf = multiView.getKids().get(0).getCurrentViewAsFormViewObj().getCompById("value");
+        ArrayList<DocumentListener> listeners = new ArrayList<DocumentListener>();
+        for (DocumentListener dl : ((ValPlainTextDocument)tf.getDocument()).getDocumentListeners())
+        {
+            listeners.add(dl);
+        }
+        ValPlainTextDocument doc;
+        if (fieldInfo.getType().equals("java.lang.Byte"))
+        {
+            doc = tf.new JFormattedDoc(tf, UIFieldFormatterField.FieldType.numeric, 3);
+        } else
+        {
+            doc = tf.new JFormattedDoc(tf, UIFieldFormatterField.FieldType.anychar, 64);
+        }
+        tf.setDocument(doc);
+        for (DocumentListener dl : listeners)
+        {
+            doc.addDocumentListener(dl);
+        }
+        
         dlg.setData(pickList);
         dlg.setModal(true);
         dlg.setVisible(true);
+        
         if (dlg.getBtnPressed() == ViewBasedDisplayIFace.OK_BTN)
         {
             dlg.getMultiView().getCurrentViewAsFormViewObj().traverseToGetDataFromForms();
@@ -446,6 +499,7 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesOkDeleteIFace#doDeleteDataObj(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace, boolean)
      */
+    @Override
     public void doDeleteDataObj(final Object dataObj, 
                                 final DataProviderSessionIFace session, 
                                 final boolean doDelete)
@@ -476,10 +530,10 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
                 
             } catch (Exception ex)
             {
+                ex.printStackTrace();
                 edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PickListEditorDlg.class, ex);
                 //log.error(ex);
-                ex.printStackTrace();
                 
             } finally 
             {

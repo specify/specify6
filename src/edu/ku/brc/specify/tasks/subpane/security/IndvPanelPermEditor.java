@@ -34,6 +34,8 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.af.auth.BasicPermisionPanel;
 import edu.ku.brc.af.auth.PermissionEditorIFace;
 import edu.ku.brc.af.auth.PermissionPanelContainerIFace;
+import edu.ku.brc.af.auth.PermissionSettings;
+import edu.ku.brc.af.core.PermissionIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.SpPermission;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
@@ -95,7 +97,8 @@ public class IndvPanelPermEditor extends JPanel implements PermissionPanelContai
     }
 
     /**
-     * @param panelName
+     * @param panelNameKey
+     * @param descKey
      * @param enumerator
      * @param listener
      * @param readOnly
@@ -285,6 +288,7 @@ public class IndvPanelPermEditor extends JPanel implements PermissionPanelContai
                     }
                     newPerm = perm.getId() == null ? perm : session.merge(perm);
                     session.saveOrUpdate(newPerm);
+                    //session.saveOrUpdate(session.merge(principal));
                 }
                 rowData.updatePerm(perm, newPerm);
             }
@@ -377,7 +381,28 @@ public class IndvPanelPermEditor extends JPanel implements PermissionPanelContai
     @Override
     public boolean doesSupportSelectAll()
     {
-        return false;
+        return false;//!UIRegistry.isRelease();
+    }
+    
+    /**
+     * @param options
+     */
+    private void setAllRows(final int options)
+    {
+        for (PermissionEditorRowIFace rowData : rowDataList) 
+        {
+            List<PermissionIFace> permList = rowData.getPermissions();
+            for (PermissionIFace item : permList)
+            {
+                item.setOptions(options);
+            }
+            rowData.setPermissions(permList);
+            if (rowData.getEditorPanel() != null)
+            {
+                rowData.getEditorPanel().setPermissions(permList);
+                rowData.getEditorPanel().setChanged(true);
+            }
+        }
     }
 
     /* (non-Javadoc)
@@ -386,6 +411,7 @@ public class IndvPanelPermEditor extends JPanel implements PermissionPanelContai
     @Override
     public void deselectAll()
     {
+        setAllRows(PermissionSettings.NO_PERM);
     }
 
     /* (non-Javadoc)
@@ -394,6 +420,7 @@ public class IndvPanelPermEditor extends JPanel implements PermissionPanelContai
     @Override
     public void selectAll()
     {
+        setAllRows(PermissionSettings.ALL_PERM);
     }
 
     //---------------------------------------------------------------
@@ -403,12 +430,18 @@ public class IndvPanelPermEditor extends JPanel implements PermissionPanelContai
     {
         protected ImageIcon blankIcon;
         
+        /**
+         * 
+         */
         public PermWrapperRenderer() 
         {
             this.setOpaque(false);
             this.blankIcon = null;
         }
 
+        /* (non-Javadoc)
+         * @see javax.swing.DefaultListCellRenderer#getListCellRendererComponent(javax.swing.JList, java.lang.Object, int, boolean, boolean)
+         */
         public Component getListCellRendererComponent(JList listArg,
                                                       Object value,   // value to display
                                                       int index,      // cell index

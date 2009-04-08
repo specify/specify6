@@ -141,7 +141,7 @@ public class GeneralPermissionTableCellValueWrapper
 
         if (isAdmin()) 
         {
-            customCheckbox.setText("Always (Admin)");
+            customCheckbox.setText("Always (Admin)"); // I18N
             customCheckbox.setEnabled(false);
             customCheckbox.setSelected(true);
         }

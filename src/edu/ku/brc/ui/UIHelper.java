@@ -706,52 +706,59 @@ public final class UIHelper
      */
     public static <T> Object convertDataFromString(final String dataStr, final Class<T> cls)
     {
-        //log.debug("Trying to convertDataFromString dataStr [" + dataStr + "] of class[" + cls + "]");
-        if (cls == Integer.class)
+        try
         {
-            return StringUtils.isNotEmpty(dataStr) ? Integer.parseInt(dataStr) : null;
+            //log.debug("Trying to convertDataFromString dataStr [" + dataStr + "] of class[" + cls + "]");
+            if (cls == Integer.class)
+            {
+                return StringUtils.isNotEmpty(dataStr) ? Integer.parseInt(dataStr) : null;
+                
+            } else if (cls == Float.class)
+            {
+                return StringUtils.isNotEmpty(dataStr) ? Float.parseFloat(dataStr) : null;
+                
+            } else if (cls == Double.class)
+            {
+                return StringUtils.isNotEmpty(dataStr) ? Double.parseDouble(dataStr) : null;
+                
+            } else if (cls == BigDecimal.class)
+            {
+                //System.out.println(BigDecimal.valueOf(Double.parseDouble(dataStr)));
+                return StringUtils.isNotEmpty(dataStr) ? BigDecimal.valueOf(Double.parseDouble(dataStr)) : null;
+                
+            } else if (cls == Long.class)
+            {
+                return StringUtils.isNotEmpty(dataStr) ? Long.parseLong(dataStr) : null;
+                
+            } else if (cls == Short.class)
+            {
+                return StringUtils.isNotEmpty(dataStr) ? Short.parseShort(dataStr) : null;
+                
+            } else if (cls == Byte.class)
+            {
+                return StringUtils.isNotEmpty(dataStr) ? Byte.parseByte(dataStr) : null;
+                
+            } else if (cls == Calendar.class)
+            {
+                return StringUtils.isNotEmpty(dataStr) ? getCalendar(dataStr, scrDateFormat) : null;
+                
+            } else if (cls == Date.class)
+            {
+                return StringUtils.isNotEmpty(dataStr) ? getDate(dataStr, scrDateFormat) : null;
+                
+            } else if (cls == Timestamp.class)
+            {
+                return StringUtils.isNotEmpty(dataStr) ? getDate(dataStr, scrDateFormat) : null;
+                
+            } else
+            {
+                log.error("Unsupported type for conversion["+cls.getSimpleName()+"]");
+            }
+        } catch (Exception ex)
+        {
             
-        } else if (cls == Float.class)
-        {
-            return StringUtils.isNotEmpty(dataStr) ? Float.parseFloat(dataStr) : null;
-            
-        } else if (cls == Double.class)
-        {
-            return StringUtils.isNotEmpty(dataStr) ? Double.parseDouble(dataStr) : null;
-            
-        } else if (cls == BigDecimal.class)
-        {
-            //System.out.println(BigDecimal.valueOf(Double.parseDouble(dataStr)));
-            return StringUtils.isNotEmpty(dataStr) ? BigDecimal.valueOf(Double.parseDouble(dataStr)) : null;
-            
-        } else if (cls == Long.class)
-        {
-            return StringUtils.isNotEmpty(dataStr) ? Long.parseLong(dataStr) : null;
-            
-        } else if (cls == Short.class)
-        {
-            return StringUtils.isNotEmpty(dataStr) ? Short.parseShort(dataStr) : null;
-            
-        } else if (cls == Byte.class)
-        {
-            return StringUtils.isNotEmpty(dataStr) ? Byte.parseByte(dataStr) : null;
-            
-        } else if (cls == Calendar.class)
-        {
-            return StringUtils.isNotEmpty(dataStr) ? getCalendar(dataStr, scrDateFormat) : null;
-            
-        } else if (cls == Date.class)
-        {
-            return StringUtils.isNotEmpty(dataStr) ? getDate(dataStr, scrDateFormat) : null;
-            
-        } else if (cls == Timestamp.class)
-        {
-            return StringUtils.isNotEmpty(dataStr) ? getDate(dataStr, scrDateFormat) : null;
-            
-        } else
-        {
-            throw new RuntimeException("Unsupported type for conversion["+cls.getSimpleName()+"]");
         }
+        return null;
     }
     
     /**

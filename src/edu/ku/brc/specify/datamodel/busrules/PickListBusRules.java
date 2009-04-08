@@ -58,13 +58,31 @@ public class PickListBusRules extends BaseBusRules implements FormPaneAdjusterIF
 {
     private static final Logger log  = Logger.getLogger(PickListBusRules.class);
     
-    //protected static final String noneStr = getResourceString("NONE");
+    protected DBTableInfo        tableInfo = null;
+    protected DBFieldInfo        fieldInfo = null;
     
     public PickListBusRules()
     {
         // no op
     }
     
+    
+    /**
+     * @param tableInfo the tableInfo to set
+     */
+    public void setTableInfo(DBTableInfo tableInfo)
+    {
+        this.tableInfo = tableInfo;
+    }
+
+    /**
+     * @param fieldInfo the fieldInfo to set
+     */
+    public void setFieldInfo(DBFieldInfo fieldInfo)
+    {
+        this.fieldInfo = fieldInfo;
+    }
+
     /**
      * Fixes up the Comboboxes.
      * @param fvo the form
@@ -72,13 +90,13 @@ public class PickListBusRules extends BaseBusRules implements FormPaneAdjusterIF
     public void adjustForm(final FormViewObj fvo)
     {
         final ValComboBox formatterCBX = (ValComboBox)fvo.getControlByName("formatterCBX");
-        final ValComboBox tablesCBX     = (ValComboBox)fvo.getControlByName("tablesCBX");
-        final ValComboBox fieldsCBX     = (ValComboBox)fvo.getControlByName("fieldsCBX");
-        final ValComboBox typesCBX      = (ValComboBox)fvo.getControlByName("typesCBX");
-        final ValCheckBox readOnlyChk    = (ValCheckBox)fvo.getControlByName("readOnly");
-        
+        final ValComboBox tablesCBX    = (ValComboBox)fvo.getControlByName("tablesCBX");
+        final ValComboBox fieldsCBX    = (ValComboBox)fvo.getControlByName("fieldsCBX");
+        final ValComboBox typesCBX     = (ValComboBox)fvo.getControlByName("typesCBX");
+        final ValCheckBox readOnlyChk  = (ValCheckBox)fvo.getControlByName("readOnly");
 
         tablesCBX.getComboBox().addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e)
             {
                 tableSelected(fvo);
@@ -86,6 +104,7 @@ public class PickListBusRules extends BaseBusRules implements FormPaneAdjusterIF
         });
         
         typesCBX.getComboBox().addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e)
             {
                 typeSelected(fvo);
@@ -116,8 +135,6 @@ public class PickListBusRules extends BaseBusRules implements FormPaneAdjusterIF
             model.addElement(title);
         }
     }
-    
-    
     
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.BaseBusRules#initialize(edu.ku.brc.af.ui.forms.Viewable)
@@ -154,7 +171,7 @@ public class PickListBusRules extends BaseBusRules implements FormPaneAdjusterIF
     private static void tableSelected(final FormViewObj fvo)
     {
         //ValComboBox typesCBX      = (ValComboBox)fvo.getControlByName("typesCBX");
-        ValComboBox formatterCBX = (ValComboBox)fvo.getControlByName("formatterCBX");
+        ValComboBox formatterCBX  = (ValComboBox)fvo.getControlByName("formatterCBX");
         ValComboBox tablesCBX     = (ValComboBox)fvo.getControlByName("tablesCBX");
         ValComboBox fieldsCBX     = (ValComboBox)fvo.getControlByName("fieldsCBX");
         //ValSpinner  sizeLimitSp   = (ValSpinner)fvo.getControlByName("sizeLimit");
@@ -235,8 +252,8 @@ public class PickListBusRules extends BaseBusRules implements FormPaneAdjusterIF
         if (tablesCBX.getComboBox().getModel().getSize() == 0)
         {
             DefaultComboBoxModel tblModel = (DefaultComboBoxModel)tablesCBX.getComboBox().getModel();
-            String noneStr = getResourceString("NONE");
-            DBTableInfo none = new DBTableInfo(-1, PickList.class.getName(), "none", "", "");
+            String               noneStr  = getResourceString("NONE");
+            DBTableInfo          none     = new DBTableInfo(-1, PickList.class.getName(), "none", "", "");
             none.setTitle(noneStr);
             
             tblModel.addElement(none);
@@ -303,12 +320,12 @@ public class PickListBusRules extends BaseBusRules implements FormPaneAdjusterIF
      */
     private static void typeSelected(final FormViewObj fvo)
     {
-        ValComboBox formatterCBX = (ValComboBox)fvo.getControlByName("formatterCBX");
+        ValComboBox formatterCBX  = (ValComboBox)fvo.getControlByName("formatterCBX");
         ValComboBox tablesCBX     = (ValComboBox)fvo.getControlByName("tablesCBX");
         ValComboBox fieldsCBX     = (ValComboBox)fvo.getControlByName("fieldsCBX");
         ValComboBox typesCBX      = (ValComboBox)fvo.getControlByName("typesCBX");
         ValSpinner  sizeLimitSp   = (ValSpinner)fvo.getControlByName("sizeLimit");
-        ValCheckBox readOnlyChk    = (ValCheckBox)fvo.getControlByName("readOnly");
+        ValCheckBox readOnlyChk   = (ValCheckBox)fvo.getControlByName("readOnly");
 
         MultiView pickListItemsMV = (MultiView)fvo.getControlByName("pickListItems");
         
@@ -319,7 +336,7 @@ public class PickListBusRules extends BaseBusRules implements FormPaneAdjusterIF
         boolean fullEditIsOK = !isEditing || !pickList.isSystem();
         
         int typeIndex = typesCBX.getComboBox().getSelectedIndex();
-        log.debug("Type: "+typeIndex);
+        //log.debug("Type: "+typeIndex);
         switch (typeIndex) 
         {
             case 0:
@@ -435,7 +452,6 @@ public class PickListBusRules extends BaseBusRules implements FormPaneAdjusterIF
     @Override
     public void formShutdown()
     {
-        // TODO Auto-generated method stub
         super.formShutdown();
     }
 
