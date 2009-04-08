@@ -69,7 +69,6 @@ import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.LocalityAttachment;
 import edu.ku.brc.specify.datamodel.ObjectAttachmentIFace;
 import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.specify.datamodel.SpTaskSemaphore;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonAttachment;
@@ -78,7 +77,6 @@ import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchRowImage;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
-import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgrCallerIFace;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr.SCOPE;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr.USER_ACTION;
 import edu.ku.brc.specify.tasks.DataEntryTask;
@@ -2990,7 +2988,7 @@ public class Uploader implements ActionListener, KeyListener
                    log.error("UI does not exist.");
                    return;
                }
-
+               
                if (op.equals(Uploader.SUCCESS) || op.equals(Uploader.SUCCESS_PARTIAL))
                {
                    if (mainPanel.getUploadTbls().getSelectedIndex() == -1)
@@ -3000,6 +2998,16 @@ public class Uploader implements ActionListener, KeyListener
                    }
                }
 
+               if ((op.equals(Uploader.SUCCESS) || op.equals(Uploader.SUCCESS_PARTIAL)) 
+            		   && getUploadedObjects() > 0)
+               {
+            	   mainPanel.closeBtn.setText(getResourceString("WB_UPLOAD.COMMIT"));
+               }
+               else
+               {
+            	   mainPanel.closeBtn.setText(getResourceString("CLOSE"));
+               }
+               
                if (op.equals(UPLOADING) || op.equals(SUCCESS) || op.equals(Uploader.SUCCESS_PARTIAL))
                {
                    mainPanel.showUploadTblTbl();

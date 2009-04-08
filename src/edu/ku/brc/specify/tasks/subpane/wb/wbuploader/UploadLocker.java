@@ -17,6 +17,7 @@ import javax.swing.JOptionPane;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.Taskable;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.SpTaskSemaphore;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgrCallerIFace;
@@ -78,19 +79,23 @@ public class UploadLocker implements TaskSemaphoreMgrCallerIFace
 			msgType = JOptionPane.INFORMATION_MESSAGE;
 			options = JOptionPane.YES_OPTION;
 			optionLabels = new String[] { getResourceString("OK") };
+			Discipline currDiscipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
             if (sameUser && sameMachine)
 			{
-				msg = String.format(UIRegistry.getResourceString("UploadLocker.LockedByYou"),
-						Uploader.getLockTitle());
-				if (task != null)
+				if (task == null)
 				{
-					msg += String.format(UIRegistry.getResourceString("UploadLocker.TaskUnavailable"),
-							task.getTitle(), Uploader.getLockTitle());
+					msg = String.format(UIRegistry.getResourceString("UploadLocker.LockedByYou"),
+						currDiscipline.getName());
+				}
+				else
+				{
+					msg = String.format(UIRegistry.getResourceString("UploadLocker.TaskUnavailable"),
+							task.getTitle());
 				}
 			} else
 			{
 				msg = String.format(UIRegistry.getResourceString("UploadLocker.LockedByUserMachine"),
-						Uploader.getLockTitle(), lockUser.getIdentityTitle(), lockMachineName);
+						currDiscipline.getName(), lockUser.getIdentityTitle(), lockMachineName);
 				if (task != null)
 				{
 					msg += String.format(UIRegistry.getResourceString("UploadLocker.TaskUnavailable"),
@@ -138,7 +143,7 @@ public class UploadLocker implements TaskSemaphoreMgrCallerIFace
             }
             if (userChoice == JOptionPane.NO_OPTION)
             {
-                UIRegistry.displayInfoMsgDlgLocalized("WB_UPLOADER.UPLOAD_LOCK_OVERRIDE_INFO");
+                UIRegistry.displayInfoMsgDlgLocalized("UploadLocker.LockOverrideInfo");
             	return USER_ACTION.OK;
             }
             if (userChoice == JOptionPane.CANCEL_OPTION)

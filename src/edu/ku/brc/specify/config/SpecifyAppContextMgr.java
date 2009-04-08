@@ -1228,74 +1228,112 @@ public class SpecifyAppContextMgr extends AppContextMgr
             
             int uploadLockCheckResult = Uploader.checkUploadLock(null);
             boolean noLocks = uploadLockCheckResult != Uploader.LOCKED;
-            if (noLocks)
-            {
-            	if (!discipline.getTaxonTreeDef().checkNodeRenumberingLock())
-            	{
-            		noLocks = false;
-            		DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(discipline.getTaxonTreeDef().getTableId());
-            		UIRegistry.showLocalizedError("Specify.TreeUpdateLock", tblInfo.getTitle());
-            	}
-            }
-            if (noLocks)
-            {
-            	if (!discipline.getGeographyTreeDef().checkNodeRenumberingLock())
-            	{
-            		noLocks = false;
-            		DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(discipline.getGeographyTreeDef().getTableId());
-            		UIRegistry.showLocalizedError("Specify.TreeUpdateLock", tblInfo.getTitle());
-            	}
-            }
-            if (noLocks)
-            {
-            	if (!division.getInstitution().getStorageTreeDef().checkNodeRenumberingLock())
-            	{
-            		noLocks = false;
-            		DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(division.getInstitution().getStorageTreeDef().getTableId());
-            		UIRegistry.showLocalizedError("Specify.TreeUpdateLock", tblInfo.getTitle());
-            	}
-            }
-            if (noLocks && discipline.getGeologicTimePeriodTreeDef() != null)
-            {
-            	if (!discipline.getGeologicTimePeriodTreeDef().checkNodeRenumberingLock())
-            	{
-            		noLocks = false;
-            		DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(discipline.getGeologicTimePeriodTreeDef().getTableId());
-            		UIRegistry.showLocalizedError("Specify.TreeUpdateLock", tblInfo.getTitle());
-            	}
-            }
-            if (noLocks && discipline.getLithoStratTreeDef() != null)
-            {
-            	if (!discipline.getLithoStratTreeDef().checkNodeRenumberingLock())
-            	{
-            		noLocks = false;
-            		DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(discipline.getLithoStratTreeDef().getTableId());
-            		UIRegistry.showLocalizedError("Specify.TreeUpdateLock", tblInfo.getTitle());
-            	}
-            }
-            
             boolean goodTrees = true;
-            if (noLocks)
-            {
-                //Now force node number updates for trees that are out-of-date
-                goodTrees = discipline.getTaxonTreeDef().checkNodeNumbersUpToDate();
-                if (goodTrees)
-                {
-                	goodTrees = discipline.getGeographyTreeDef().checkNodeNumbersUpToDate();
-                }
-                if (goodTrees)
-                {
-                	goodTrees  = division.getInstitution().getStorageTreeDef().checkNodeNumbersUpToDate();
-                }
-                if (goodTrees && discipline.getGeologicTimePeriodTreeDef() != null)
-                {
-                    goodTrees = discipline.getGeologicTimePeriodTreeDef().checkNodeNumbersUpToDate();
-                }
-                if (goodTrees && discipline.getLithoStratTreeDef() != null)
-                {
-                    goodTrees = discipline.getLithoStratTreeDef().checkNodeNumbersUpToDate();
-                }
-            }
+            if (uploadLockCheckResult != Uploader.LOCK_IGNORED)
+			{
+				if (noLocks)
+				{
+					if (!discipline.getTaxonTreeDef()
+							.checkNodeRenumberingLock())
+					{
+						noLocks = false;
+						DBTableInfo tblInfo = DBTableIdMgr.getInstance()
+								.getInfoById(
+										discipline.getTaxonTreeDef()
+												.getTableId());
+						UIRegistry.showLocalizedError("Specify.TreeUpdateLock",
+								tblInfo.getTitle());
+					}
+				}
+				if (noLocks)
+				{
+					if (!discipline.getGeographyTreeDef()
+							.checkNodeRenumberingLock())
+					{
+						noLocks = false;
+						DBTableInfo tblInfo = DBTableIdMgr.getInstance()
+								.getInfoById(
+										discipline.getGeographyTreeDef()
+												.getTableId());
+						UIRegistry.showLocalizedError("Specify.TreeUpdateLock",
+								tblInfo.getTitle());
+					}
+				}
+				if (noLocks)
+				{
+					if (!division.getInstitution().getStorageTreeDef()
+							.checkNodeRenumberingLock())
+					{
+						noLocks = false;
+						DBTableInfo tblInfo = DBTableIdMgr.getInstance()
+								.getInfoById(
+										division.getInstitution()
+												.getStorageTreeDef()
+												.getTableId());
+						UIRegistry.showLocalizedError("Specify.TreeUpdateLock",
+								tblInfo.getTitle());
+					}
+				}
+				if (noLocks
+						&& discipline.getGeologicTimePeriodTreeDef() != null)
+				{
+					if (!discipline.getGeologicTimePeriodTreeDef()
+							.checkNodeRenumberingLock())
+					{
+						noLocks = false;
+						DBTableInfo tblInfo = DBTableIdMgr.getInstance()
+								.getInfoById(
+										discipline
+												.getGeologicTimePeriodTreeDef()
+												.getTableId());
+						UIRegistry.showLocalizedError("Specify.TreeUpdateLock",
+								tblInfo.getTitle());
+					}
+				}
+				if (noLocks && discipline.getLithoStratTreeDef() != null)
+				{
+					if (!discipline.getLithoStratTreeDef()
+							.checkNodeRenumberingLock())
+					{
+						noLocks = false;
+						DBTableInfo tblInfo = DBTableIdMgr.getInstance()
+								.getInfoById(
+										discipline.getLithoStratTreeDef()
+												.getTableId());
+						UIRegistry.showLocalizedError("Specify.TreeUpdateLock",
+								tblInfo.getTitle());
+					}
+				}
+
+				if (noLocks)
+				{
+					// Now force node number updates for trees that are
+					// out-of-date
+					goodTrees = discipline.getTaxonTreeDef()
+							.checkNodeNumbersUpToDate();
+					if (goodTrees)
+					{
+						goodTrees = discipline.getGeographyTreeDef()
+								.checkNodeNumbersUpToDate();
+					}
+					if (goodTrees)
+					{
+						goodTrees = division.getInstitution()
+								.getStorageTreeDef().checkNodeNumbersUpToDate();
+					}
+					if (goodTrees
+							&& discipline.getGeologicTimePeriodTreeDef() != null)
+					{
+						goodTrees = discipline.getGeologicTimePeriodTreeDef()
+								.checkNodeNumbersUpToDate();
+					}
+					if (goodTrees && discipline.getLithoStratTreeDef() != null)
+					{
+						goodTrees = discipline.getLithoStratTreeDef()
+								.checkNodeNumbersUpToDate();
+					}
+				}
+			}
             
             if (!noLocks || !goodTrees)
             {
