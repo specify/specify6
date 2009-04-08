@@ -253,5 +253,15 @@
    <mapID target="WorkbenchGridEditingCF" url="SpecifyHelp/Workbench/GridEditing.html#Carry_Forward"/>
    <mapID target="WorkbenchFormEditingCF" url="SpecifyHelp/Workbench/FormEditing.html#Carry_Forward"/>
    <mapID target="WB_LABEL_PROPS" url="SpecifyHelp/Workbench/BasicLabel.html#wb_label_properties"/>
+   <mapID target="intro_components" url="SpecifyHelp/Intro/intro.html#specify_components"/>
+   <mapID target="intro_Change_Collection" url="SpecifyHelp/Intro/intro.html#change_collections"/>
+   <mapID target="intro_menu_bar" url="SpecifyHelp/Intro/intro.html#menu_bar"/>
+   <mapID target="intro_task_bar" url="SpecifyHelp/Intro/intro.html#task_bar"/>
+   <mapID target="intro_side_bar" url="SpecifyHelp/Intro/intro.html#side_bar"/>
+   <mapID target="intro_work_space" url="SpecifyHelp/Intro/intro.html#work_space"/>
+   <mapID target="intro_trash_can" url="SpecifyHelp/Intro/intro.html#trash_can"/>
+   <mapID target="intro_tab_bar" url="SpecifyHelp/Intro/intro.html#tab_bar"/>
+   <mapID target="intro_status_bar" url="SpecifyHelp/Intro/intro.html#status_bar"/>
+   <mapID target="iReport_overview" url="SpecifyHelp/ReportsLabels/specifyireports.html#ireport_overview"/>
 
 </map>
