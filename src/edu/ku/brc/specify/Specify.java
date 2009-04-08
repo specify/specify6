@@ -266,11 +266,12 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
     public Specify()
     {
         // XXX RELEASE
-        boolean isRelease = false;
+        boolean isRelease = true;
         UIRegistry.setRelease(isRelease);
         UIRegistry.setTesting(!isRelease);
 
-        XMLHelper.setUseChecksum(isRelease); 
+        boolean doCheckSum = false;
+        XMLHelper.setUseChecksum(isRelease && doCheckSum); 
     }
     
     /**
@@ -1054,7 +1055,8 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         //-- Debug Menu
         //--------------------------------------------------------------------
 
-        if (!UIRegistry.isRelease())
+        boolean doDebug = AppPreferences.getLocalPrefs().getBoolean("debug.menu", false);
+        if (!UIRegistry.isRelease() || doDebug)
         {
             menu = UIHelper.createLocalizedMenu(mb, "Specify.DEBUG_MENU", "Specify.DEBUG_MNEU"); //$NON-NLS-1$ //$NON-NLS-2$
             String ttle =  "Specify.SHOW_LOC_PREFS";//$NON-NLS-1$ 
