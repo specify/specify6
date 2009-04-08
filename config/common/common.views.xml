@@ -983,17 +983,18 @@
             <desc><![CDATA[Address of Record subform.]]></desc>
             <enableRules/>
             
-            <columnDef>105px,2px,106px,5px,90px,2px,106px,5px,100px,2px,106px,5px,90px,2px,106px,p:g</columnDef>
+            <columnDef>105px,2px,106px,5px:g,p,2px,106px,5px:g,p,2px,106px,5px:g,p,2px,106px,p:g</columnDef>
+            <!--<columnDef>105px,2px,106px,5px,90px,2px,106px,5px,100px,2px,106px,5px,90px,2px,106px,0px,p:g</columnDef>-->
             <columnDef os="mac">130px,2px,250px,5px,101px,2px,250px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             <rows>
                 <row>
                     <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="address" uitype="text" cols="50" colspan="13"/>
+                    <cell type="field" id="2" name="address" uitype="text" cols="50" colspan="14"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="address2" uitype="text" cols="50" colspan="13"/>
+                    <cell type="field" id="3" name="address2" uitype="text" cols="50" colspan="14"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="4"/>
@@ -1996,9 +1997,10 @@
             class="edu.ku.brc.specify.datamodel.ExchangeIn"
             gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
-            
             <desc><![CDATA[ExchangeIn viewing form.]]></desc>
-            <columnDef>105px,2px,125px,5px,130px,2px,136px,5px,100px,2px,220px,0px,15px,p,p:g</columnDef>
+            
+            <columnDef>105px,2px,125px,5px:g,p,2px,136px,5px:g,p,2px,220px,0px,p,p:g</columnDef>
+            <!--<columnDef>105px,2px,125px,5px,130px,2px,136px,5px,100px,2px,220px,0px,15px,p,p:g</columnDef>-->
             <columnDef os="mac">130px,2px,120px,5px,261px,2px,220px,0px,15px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="1dlu"/>
             
@@ -2031,9 +2033,10 @@
             class="edu.ku.brc.specify.datamodel.ExchangeOut"
             gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
-            
             <desc><![CDATA[ExchangeOut viewing form.]]></desc>
-            <columnDef>105px,2px,125px,5px,130px,2px,136px,5px,100px,2px,220px,0px,15px,p,p:g</columnDef>
+            
+            <columnDef>105px,2px,125px,5px:g,p,2px,136px,5px:g,p,2px,220px,0px,p,p:g</columnDef>
+            <!--<columnDef>105px,2px,125px,5px,130px,2px,136px,5px,100px,2px,220px,0px,15px,p,p:g</columnDef>-->
             <columnDef os="mac">130px,2px,120px,5px,261px,2px,220px,0px,15px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="1dlu"/>
             
@@ -3061,7 +3064,8 @@
             <desc><![CDATA[Preparation for Collection Object form.]]></desc>
             <enableRules/>
 
-            <columnDef>100px,2px,120px,5px,100px,2px,223px,5px,70px,2px,151px,2px,70px,p:g</columnDef>
+            <columnDef>100px,2px,120px,5px:g,p,2px,223px,5px:g,p,2px,151px,2px,70px,p:g</columnDef>
+            <!--<columnDef>100px,2px,120px,5px,100px,2px,223px,5px,70px,2px,151px,2px,70px,p:g</columnDef>-->
             <columnDef os="mac">130px,2px,170px,5px,130px,2px,255px,5px,70px,2px,164px,2px,70px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
 
@@ -3095,7 +3099,8 @@
             <desc><![CDATA[The Accession form.]]></desc>
             <enableRules/>
             
-            <columnDef>105px,2px,135px,5px,115px,2px,136px,5px,120px,2px,200px,0px,15px,p:g</columnDef>
+            <columnDef>105px,2px,135px,5px:g,p,2px,136px,5px:g,p,2px,200px,0px,p,p:g</columnDef>
+            <!--<columnDef>105px,2px,135px,5px,115px,2px,136px,5px,120px,2px,200px,0px,15px,p:g</columnDef>-->
             <columnDef os="mac">130px,2px,120px,5px,90px,2px,150px,5px,119px,2px,215px,0px,15px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="1px"/>
             
@@ -3155,7 +3160,8 @@
             <desc><![CDATA[The Accession form.]]></desc>
             <enableRules/>
 
-            <columnDef>105px,2px,200px,5px,48px,2px,136px,334px,p:g</columnDef>
+            <columnDef>105px,2px,200px,5px,48px,2px,136px,p:g</columnDef>
+            <!--<columnDef>105px,2px,200px,5px,48px,2px,136px,334px,p:g</columnDef>-->
             <columnDef os="mac">130px,2px,215px,5px,271px,2px,215px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
 
@@ -3185,7 +3191,8 @@
             <desc><![CDATA[Permit subform for AccessionAuthorization.]]></desc>
             <enableRules/>
 
-            <columnDef>100px,2px,200px,525px,p:g</columnDef>
+            <columnDef>100px,2px,200px,p:g</columnDef>
+            <!--<columnDef>100px,2px,200px,525px,p:g</columnDef>-->
             <columnDef os="mac">130px,2px,215px,493px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             <rows>

@@ -60,8 +60,8 @@
                 <altview name="Address Table Edit" viewdef="Address Table" mode="edit"/>
             </altviews>
         </view>
-        
-        <view name="AddressSingle"
+
+<view name="AddressSingle"
             class="edu.ku.brc.specify.datamodel.Address"
              busrules="edu.ku.brc.specify.datamodel.busrules.AddressBusRules"
             resourcelabels="false">
@@ -520,7 +520,8 @@
             <desc><![CDATA[The AgentVariant form.]]></desc>
             <enableRules/>
             
-            <columnDef>100px,2px,190px,5px,50px,2px,478px,p,p:g</columnDef>
+            <columnDef>100px,2px,190px,5px,100px,2px,p:g</columnDef>
+            <!--<columnDef>100px,2px,190px,5px,50px,2px,478px,p,p:g</columnDef>-->
             <columnDef os="mac">130px,2px,150px,5px,80px,2px,471px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
@@ -528,7 +529,6 @@
   		        <row>
                     <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="varType" uitype="combobox" picklist="AgentVariant" />
-                
                     <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="name" uitype="text"/>
                 </row>
@@ -1393,7 +1393,9 @@
                 <rule id="definitionItem"><![CDATA[parent.getValue() != null]]></rule>
                 <rule id="acceptedGeologicTimePeriod"><![CDATA[!isAccepted.isSelected()]]></rule>
             </enableRules>
-            <columnDef>100px,2px,299px,5px,120px,2px,56px,2px,243px,0px,15px,p:g</columnDef>
+
+            <columnDef>100px,2px,299px,5px:g,p,2px,56px:g,2px,243px,0px,p,p:g</columnDef>
+            <!--<columnDef>100px,2px,299px,5px,120px,2px,56px,2px,243px,0px,15px,p:g</columnDef>-->
             <columnDef os="mac">130px,2px,391px,5px,130px,2px,60px,2px,310px,0px,15px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
 
@@ -1502,7 +1504,9 @@
                 <rule id="definitionItem"><![CDATA[parent.getValue() != null]]></rule>
                 <rule id="acceptedLithoStrat"><![CDATA[!isAccepted.isSelected()]]></rule>
             </enableRules>
-            <columnDef>100px,2px,445px,5px,60px,2px,213px,0px,15px,p:g</columnDef>
+
+            <columnDef>100px,2px,445px,5px:g,p,2px,213px,0px,p,p:g</columnDef>
+            <!--<columnDef>100px,2px,445px,5px,60px,2px,213px,0px,15px,p:g</columnDef>-->
             <columnDef os="mac">130px,2px,568px,5px,75px,2px,250px,0px,15px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
 
