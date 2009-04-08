@@ -44,6 +44,7 @@ import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.FormViewObj;
+import edu.ku.brc.af.ui.forms.ResultSetController;
 import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.validation.ValComboBox;
 import edu.ku.brc.af.ui.forms.validation.ValTextField;
@@ -111,7 +112,7 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
         
         if (formViewObj != null)
         {
-            /*if (formViewObj.getMVParent().isTopLevel())
+            if (formViewObj.getMVParent().isTopLevel())
             {
                 ResultSetController rsc = formViewObj.getRsController();
                 if (rsc != null)
@@ -119,7 +120,7 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
                     if (rsc.getNewRecBtn() != null) rsc.getNewRecBtn().setVisible(false);
                     if (rsc.getDelRecBtn() != null) rsc.getDelRecBtn().setVisible(false);
                 }
-            }*/
+            }
             if (formViewObj.getRsController() != null)
             {
                 JButton newBtn = formViewObj.getRsController().getNewRecBtn();
