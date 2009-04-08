@@ -798,6 +798,52 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             UIRegistry.showLocalizedMsg("Specify.NOTAVAIL");
         }
     }
+    
+    /**
+     * 
+     */
+    private void openLocalPrefs()
+    {
+        String titleStr = UIRegistry.getResourceString("Specify.LOCAL_PREFS"); //$NON-NLS-1$
+        final CustomDialog dialog = new CustomDialog(topFrame, titleStr, true, CustomDialog.OK_BTN, new AppPrefsEditor(false));
+        String okLabel = UIRegistry.getResourceString("Specify.CLOSE"); //$NON-NLS-1$
+        dialog.setOkLabel(okLabel);
+        dialog.pack();
+        UIHelper.centerAndShow(dialog);
+        if (!dialog.isCancelled())
+        {
+            try
+            {
+                AppPreferences.getLocalPrefs().flush();
+            } catch (BackingStoreException ex) { }
+            
+            CommandDispatcher.dispatch(new CommandAction("Preferences", "Changed", AppPreferences.getLocalPrefs()));
+        }
+    }
+
+    /**
+     * 
+     */
+    private void openRemotePrefs()
+    {
+        String titleStr = UIRegistry.getResourceString("Specify.REMOTE_PREFS"); //$NON-NLS-1$
+        final CustomDialog dialog = new CustomDialog(topFrame, titleStr, true, CustomDialog.OK_BTN, new AppPrefsEditor(true));
+        String okLabel = getResourceString("Specify.CLOSE");//$NON-NLS-1$
+        dialog.setOkLabel(okLabel); 
+        dialog.pack();
+        UIHelper.centerAndShow(dialog);
+        if (!dialog.isCancelled())
+        {
+            try
+            {
+                AppPreferences.getRemote().flush();
+            } catch (BackingStoreException ex)
+            {
+                
+            }
+            CommandDispatcher.dispatch(new CommandAction("Preferences", "Changed", AppPreferences.getRemote())); //$NON-NLS-1$ //$NON-NLS-2$
+        }
+    }
 
     /**
      * Create menus
@@ -1068,21 +1114,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                 @SuppressWarnings("synthetic-access")//$NON-NLS-1$ 
                 public void actionPerformed(ActionEvent ae)
                 {
-                    String titleStr = UIRegistry.getResourceString("Specify.LOCAL_PREFS"); //$NON-NLS-1$
-                    final CustomDialog dialog = new CustomDialog(topFrame, titleStr, true, CustomDialog.OK_BTN, new AppPrefsEditor(false));
-                    String okLabel = UIRegistry.getResourceString("Specify.CLOSE"); //$NON-NLS-1$
-                    dialog.setOkLabel(okLabel);
-                    dialog.pack();
-                    UIHelper.centerAndShow(dialog);
-                    if (!dialog.isCancelled())
-                    {
-                        try
-                        {
-                            AppPreferences.getLocalPrefs().flush();
-                        } catch (BackingStoreException ex) { }
-                        
-                        CommandDispatcher.dispatch(new CommandAction("Preferences", "Changed", AppPreferences.getLocalPrefs()));
-                    }
+                    openLocalPrefs();
                 }
             });
                             
@@ -1096,23 +1128,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                         @SuppressWarnings("synthetic-access") //$NON-NLS-1$
                         public void actionPerformed(ActionEvent ae)
                         {
-                            String titleStr = UIRegistry.getResourceString("Specify.REMOTE_PREFS"); //$NON-NLS-1$
-                            final CustomDialog dialog = new CustomDialog(topFrame, titleStr, true, CustomDialog.OK_BTN, new AppPrefsEditor(true));
-                            String okLabel = getResourceString("Specify.CLOSE");//$NON-NLS-1$
-                            dialog.setOkLabel(okLabel); 
-                            dialog.pack();
-                            UIHelper.centerAndShow(dialog);
-                            if (!dialog.isCancelled())
-                            {
-                                try
-                                {
-                                    AppPreferences.getRemote().flush();
-                                } catch (BackingStoreException ex)
-                                {
-                                    
-                                }
-                                CommandDispatcher.dispatch(new CommandAction("Preferences", "Changed", AppPreferences.getRemote())); //$NON-NLS-1$ //$NON-NLS-2$
-                            }
+                            openRemotePrefs();
                         }
                     });
     
@@ -1904,12 +1920,32 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             int y = 1;
             ipb.addSeparator(getResourceString("Specify.SYS_INFO"), cc.xyw(1, y, 3)); y += 2;
             
+            JLabel lbl = UIHelper.createLabel(databaseName);
             ipb.add(UIHelper.createI18NFormLabel("Specify.DB"), cc.xy(1, y));
-            ipb.add(UIHelper.createLabel(databaseName),   cc.xy(3, y)); y += 2;
+            ipb.add(lbl,   cc.xy(3, y)); y += 2;
+            lbl.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e)
+                {
+                    if (e.getClickCount() == 2)
+                    {
+                        openLocalPrefs();
+                    }
+                }
+            });
             
             ipb.add(UIHelper.createFormLabel(tdb.getTitleForId(Institution.getClassTableId())), cc.xy(1, y));
-            ipb.add(UIHelper.createLabel(acm.getClassObject(Institution.class).getName()),      cc.xy(3, y)); y += 2;
-            
+            ipb.add(lbl = UIHelper.createLabel(acm.getClassObject(Institution.class).getName()),      cc.xy(3, y)); y += 2;
+            lbl.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e)
+                {
+                    if (e.getClickCount() == 2)
+                    {
+                        openRemotePrefs();
+                    }
+                }
+            });
             ipb.add(UIHelper.createFormLabel(tdb.getTitleForId(Division.getClassTableId())), cc.xy(1, y));
             ipb.add(UIHelper.createLabel(acm.getClassObject(Division.class).getName()),      cc.xy(3, y)); y += 2;
             

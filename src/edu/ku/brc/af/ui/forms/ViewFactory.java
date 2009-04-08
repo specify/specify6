@@ -1715,7 +1715,7 @@ public class ViewFactory
                         (mode == AltViewIFace.CreationMode.EDIT ? MultiView.IS_EDITTING : MultiView.NO_OPTIONS) |
                         (useNoScrollbars ? MultiView.NO_SCROLLBARS : MultiView.NO_OPTIONS);
                         
-                        MultiView.printCreateOptions("HERE", options);
+                        //MultiView.printCreateOptions("HERE", options);
                         
                         options |= cellSubView.getPropertyAsBoolean("nosep", false) ? MultiView.DONT_USE_EMBEDDED_SEP : 0;
                         options |= cellSubView.getPropertyAsBoolean("nosepmorebtn", false) ? MultiView.NO_MORE_BTN_FOR_SEP : 0;

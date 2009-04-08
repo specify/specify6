@@ -868,7 +868,7 @@ public class MultiView extends JPanel
             }
 
             int tmpCreateOptions = createOptions | (createWithMode == AltViewIFace.CreationMode.EDIT ? (IS_EDITTING) : 0);
-            MultiView.printCreateOptions("createViewable", createOptions);
+            //MultiView.printCreateOptions("createViewable", createOptions);
             Viewable viewable = ViewFactory.createFormView(this, newView, altView.getName(), data, tmpCreateOptions, getBackground());
             if (viewable != null)
             {
