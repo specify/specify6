@@ -177,9 +177,18 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
         Set<Pair<Integer,String>> idsAndNames = node.getSynonymIdsAndNames();
         if (idsAndNames.size() > 0)
         {
-            tooltipBuilder.append("</div><br><div style=\"font-family: sans-serif; font-size: 10pt\">");
-            tooltipBuilder.append(getResourceString("TTV_SYNONYMS"));
-            tooltipBuilder.append("<ul>");
+            tooltipBuilder.append("</div><<div style=\"font-family: sans-serif; font-size: 10pt\">");
+            //tooltipBuilder.append("</div><br><div>");
+        	tooltipBuilder.append("<br>");
+        	if (idsAndNames.size() > 1)
+        	{
+        		tooltipBuilder.append(getResourceString("TTV_SYNONYMS" )+ ":");
+        	}
+        	else
+        	{
+        		tooltipBuilder.append(getResourceString("TTV_SYNONYM" )+ ":");
+        	}
+            //tooltipBuilder.append("<ul>");
             List<String> justNames = new ArrayList<String>();
             for (Pair<Integer,String> idAndName: idsAndNames)
             {
@@ -188,9 +197,10 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
             Collections.sort(justNames);
             for (String name: justNames)
             {
-                tooltipBuilder.append("<li>");
+                tooltipBuilder.append("<br>");
+            	//tooltipBuilder.append("<li>");
                 tooltipBuilder.append(name);
-                tooltipBuilder.append("</li>");
+                //tooltipBuilder.append("</li>");
             }
             tooltipBuilder.append("</ul>");
         }
@@ -390,6 +400,7 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
         }
     }
     
+    @SuppressWarnings("serial")
     public class TreeNodeUI extends JPanel
     {
         protected TreeNode treeNode;
