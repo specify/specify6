@@ -152,8 +152,8 @@ public abstract class BaseTask extends edu.ku.brc.af.tasks.BaseTask
         return !((SpecifyAppContextMgr)AppContextMgr.getInstance()).displayAgentsLoggedInDlg("SystemSetupTask.CFG_SETUP");
     }
 
-
-    //---------------------------------------------------------------------------
+    
+	//---------------------------------------------------------------------------
     //-- edu.ku.brc.af.tasks.BaseTask
     //---------------------------------------------------------------------------
     /* (non-Javadoc)

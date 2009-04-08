@@ -181,4 +181,9 @@ public interface Taskable extends SecurityOptionIFace
      */
     public abstract boolean isPermissionsSettable();
     
+    /**
+     * @return the help context
+     */
+    public abstract String getHelpTarget();
+    
 }

@@ -1566,4 +1566,15 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
             utInx++;
         }
     }
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.af.core.Taskable#getHelpContext()
+	 */
+	@Override
+	public String getHelpTarget()
+	{
+		return name;
+	}
+    
+    
 }

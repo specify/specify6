@@ -394,7 +394,7 @@ public class BaseSubPane extends JTiledPanel implements SubPaneIFace, Printable
      */
     public String getHelpTarget()
     {
-        return task != null ? task.getName() : null;
+        return task != null ? task.getHelpTarget() : null;
     }
 
     /* (non-Javadoc)

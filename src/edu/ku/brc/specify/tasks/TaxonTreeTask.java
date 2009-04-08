@@ -174,4 +174,15 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
         
         return ttv;
     }
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.af.tasks.BaseTask#getHelpTarget()
+	 */
+	@Override
+	public String getHelpTarget()
+	{
+		return "Trees_About"; 
+	}
+    
+    
 }
