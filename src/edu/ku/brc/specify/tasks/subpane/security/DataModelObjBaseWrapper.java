@@ -8,6 +8,7 @@ package edu.ku.brc.specify.tasks.subpane.security;
 
 import javax.swing.ImageIcon;
 
+import edu.ku.brc.af.auth.specify.principal.AdminPrincipal;
 import edu.ku.brc.af.auth.specify.principal.GroupPrincipal;
 import edu.ku.brc.af.auth.specify.principal.UserPrincipal;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
@@ -163,7 +164,8 @@ public class DataModelObjBaseWrapper
 		if (dataObj instanceof SpPrincipal)
 		{
 			SpPrincipal pc = (SpPrincipal) dataObj;
-			return pc.getGroupSubClass().equals(GroupPrincipal.class.getCanonicalName());
+			return GroupPrincipal.class.getCanonicalName().equals(pc.getGroupSubClass()) ||
+			    AdminPrincipal.class.getCanonicalName().equals(pc.getGroupSubClass());
 		}
 		
 		return (dataObj.getClass().equals(GroupPrincipal.class));

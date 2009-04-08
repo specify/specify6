@@ -194,10 +194,15 @@ public class NavigationTreeContextMenuMgr extends MouseAdapter implements TreeSe
      */
     private JPopupMenu getGroupNodeContextMenu(final TreePath clickedElement)
     {
-
         JPopupMenu groupNodeContextMenu = new JPopupMenu("Group Context Menu");
-        groupNodeContextMenu.add(new AddNewUserAction(clickedElement, getTreeMgr()));
+        
+        boolean canAddNewUser = getTreeMgr().canAddNewUser((DefaultMutableTreeNode) clickedElement.getLastPathComponent());
+        AddNewUserAction addNewUserAction = new AddNewUserAction(clickedElement, getTreeMgr());
+        addNewUserAction.setEnabled(canAddNewUser);
+        groupNodeContextMenu.add(addNewUserAction);
+
         groupNodeContextMenu.add(new AddExistingUserAction(clickedElement, getTreeMgr()));
+        
         boolean canDelete = getTreeMgr().canDeleteItem((DefaultMutableTreeNode) clickedElement.getLastPathComponent());
         DeleteUserGroupScopeAction deleteAction = new DeleteUserGroupScopeAction("Group", clickedElement, getTreeMgr());
         deleteAction.setEnabled(canDelete);

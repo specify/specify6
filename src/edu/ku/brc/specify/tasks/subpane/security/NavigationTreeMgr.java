@@ -22,6 +22,7 @@ import javax.swing.tree.TreePath;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.auth.specify.principal.AdminPrincipal;
 import edu.ku.brc.af.auth.specify.principal.GroupPrincipal;
 import edu.ku.brc.af.auth.specify.principal.UserPrincipal;
 import edu.ku.brc.af.core.AppContextMgr;
@@ -297,6 +298,20 @@ public class NavigationTreeMgr
         }
     }
 
+    public boolean canAddNewUser(final DefaultMutableTreeNode node)
+    {
+        DataModelObjBaseWrapper wrapper = (DataModelObjBaseWrapper) node.getUserObject();
+        Object object = wrapper.getDataObj();
+
+        if (object instanceof SpPrincipal)
+        {
+            SpPrincipal principal = (SpPrincipal) object;
+            return !AdminPrincipal.class.getCanonicalName().equals(principal.getGroupSubClass());
+        }
+        
+        return false;
+    }
+    
     /**
      * Indicates whether we can delete this navigation tree item or not.
      * We can only delete an item if it doesn't have any children
