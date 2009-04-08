@@ -173,6 +173,7 @@
    <mapID target="Data_Entry_Agent" url="SpecifyHelp/Data_Entry/Data_Entry.html#data_entry_agent"/>
    <mapID target="Data_Entry_Preparations" url="SpecifyHelp/Data_Entry/Data_Entry.html#data_entry_preparations"/>
    <mapID target="Data_Entry_Attachments" url="SpecifyHelp/Data_Entry/Data_Entry.html#data_entry_attachments"/>
+   <mapID target="Data_Entry_CE" url="SpecifyHelp/Data_Entry/Data_Entry.html#collecting_event"/>
    <mapID target="Int_Accessions" url="SpecifyHelp/Interactions/Interactions.html#int_accession"/>
    <mapID target="Int_Gifts_Loans" url="SpecifyHelp/Interactions/Interactions.html#int_gifts_loans"/>
    <mapID target="Int_Return_Loans" url="SpecifyHelp/Interactions/Interactions.html#int_return_loans"/>

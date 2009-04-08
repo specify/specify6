@@ -102,6 +102,7 @@
 				<tocitem text="Taxon Form" target="Data_Entry_Taxon"/>
 				<tocitem text="Determinations Form" target="Data_Entry_Determinations"/>
 				<tocitem text="Locality Form" target="Data_Entry_Locality"/>
+				<tocitem text="Collecting Event" target="Data_Entry_CE"/>
 				<tocitem text="Agent Form" target="Data_Entry_Agent"/>
 				<tocitem text="Preparations Form" target="Data_Entry_Preparations"/>
 				<tocitem text="Attachments Form" target="Data_Entry_Attachments"/>
