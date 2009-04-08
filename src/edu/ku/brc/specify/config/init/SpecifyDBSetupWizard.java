@@ -106,7 +106,6 @@ public class SpecifyDBSetupWizard extends JPanel
     protected String                 setupXMLPath;
     protected JProgressBar           progressBar;
     
-    protected String                 finishTextKey = "FINISHED";
     
     /**
      * @param specify
@@ -139,7 +138,14 @@ public class SpecifyDBSetupWizard extends JPanel
         
         JPanel btnBar;
         backBtn    = createButton(UIRegistry.getResourceString("BACK"));
-        nextBtn    = createButton(UIRegistry.getResourceString("NEXT"));
+        //nextBtn    = createButton(UIRegistry.getResourceString("NEXT"));
+        nextBtn = new JButton("Next") {
+            @Override
+            public void setEnabled(boolean enable)
+            {
+                super.setEnabled(enable);
+            }
+        };
         
         HelpMgr.registerComponent(helpBtn, "SetupSpecifyDB");
         CellConstraints cc = new CellConstraints();
@@ -152,7 +158,7 @@ public class SpecifyDBSetupWizard extends JPanel
         
         btnBar = bbpb.getPanel();
 
-        boolean doTesting = true;
+        boolean doTesting = AppPreferences.getLocalPrefs().getBoolean("wizard.defaults", false);
         if (doTesting)
         {
             props.put("hostName",   "localhost");
@@ -261,6 +267,7 @@ public class SpecifyDBSetupWizard extends JPanel
             wizardType == WizardType.Division || 
             wizardType == WizardType.Discipline)
         {
+            nextBtn.setEnabled(false);
             disciplinePanel = new DisciplinePanel(nextBtn);
             panels.add(disciplinePanel);
 
@@ -302,6 +309,8 @@ public class SpecifyDBSetupWizard extends JPanel
         panels.add(new SummaryPanel("SUMMARY", nextBtn, panels));
          
         lastStep = panels.size();
+        
+        panels.get(0).updateBtnUI();
         
         if (backBtn != null)
         {
@@ -393,7 +402,7 @@ public class SpecifyDBSetupWizard extends JPanel
          });
 
         for (int i=0;i<panels.size();i++)
-        {
+        {   
             cardPanel.add(Integer.toString(i), panels.get(i));
             panels.get(i).setValues(props);
         }
@@ -450,7 +459,16 @@ public class SpecifyDBSetupWizard extends JPanel
         if (step == lastStep-1)
         {
             nextBtn.setEnabled(panels.get(step).isUIValid());
-            nextBtn.setText(getResourceString(finishTextKey));
+            String key;
+            switch (wizardType)
+            {
+                case Institution : key = "FINISHED"; break;
+                case Division    : key = "FINISHED_DIV"; break;
+                case Discipline  : key = "FINISHED_DISP"; break;
+                case Collection  : key = "FINISHED_COL"; break;
+                default          : key = "FINISHED"; break;
+            }
+            nextBtn.setText(getResourceString(key));
             
         } else
         {
@@ -458,14 +476,6 @@ public class SpecifyDBSetupWizard extends JPanel
             nextBtn.setText(getResourceString("NEXT"));
         }
         backBtn.setEnabled(step > 0); 
-    }
-    
-    /**
-     * @param finishKey the finishKey to set
-     */
-    public void setFinishTextKey(String finishTextKey)
-    {
-        this.finishTextKey = finishTextKey;
     }
 
     /**

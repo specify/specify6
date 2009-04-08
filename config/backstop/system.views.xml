@@ -448,7 +448,7 @@
                     <cell type="field" id="3" name="name" uitype="text" colspan="3" isrequired="true"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="CollectionGrid" id="5" name="collections" colspan="6"/>
+                    <cell type="subview" viewname="Collection" id="5" name="collections" colspan="6"/>
                 </row>
             </rows>
         </viewdef>

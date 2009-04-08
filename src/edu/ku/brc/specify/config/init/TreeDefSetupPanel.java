@@ -153,16 +153,29 @@ public class TreeDefSetupPanel extends BaseSetupPanel implements SetupPanelIFace
                     {
                         updateBtnUI();
 
-                        if (table.getSelectedColumn() == 1 || table.getSelectedColumn() == 3)
+                        int inx = table.getSelectedColumn();
+                        if (inx > -1)
                         {
-                            TreeDefRow row = treeDefList.get(table.getSelectedRow());
-                            if (row.isRequired())
+                            TreeDefRow row    = treeDefList.get(table.getSelectedRow());
+                            String     msgKey = null;
+                            
+                            if (row.isRequired() && (inx == 1 || inx == 3))
                             {
+                                msgKey = inx == 1 ? "NO_CHANGE_INCL" : "NO_CHANGE_REQ";
+                                
+                            } else if (inx == 4 && !row.isIncluded())
+                            {
+                                msgKey = "NO_CHANGE_INFN";
+                            }
+                            
+                            if (msgKey != null)
+                            {
+                                final String mk = msgKey;
                                 SwingUtilities.invokeLater(new Runnable() {
                                     @Override
                                     public void run()
                                     {
-                                        showLocalizedMsg(table.getSelectedColumn() == 1 ? "NO_CHANGE_INCL" : "NO_CHANGE_REQ");
+                                        showLocalizedMsg(mk);
                                     }
                                 });
                             }

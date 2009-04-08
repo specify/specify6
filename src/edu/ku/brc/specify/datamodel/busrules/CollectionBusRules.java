@@ -9,14 +9,20 @@
  */
 package edu.ku.brc.specify.datamodel.busrules;
 
-import java.awt.Dialog;
 import java.awt.Frame;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
 
+import javax.swing.JButton;
 import javax.swing.JTextField;
+import javax.swing.SwingWorker;
 
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.Session;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBFieldInfo;
@@ -25,17 +31,28 @@ import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
-import edu.ku.brc.af.ui.forms.MultiView;
+import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.ResultSetController;
+import edu.ku.brc.af.ui.forms.TableViewObj;
 import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.specify.config.init.NumberingSchemeSetupDlg;
+import edu.ku.brc.dbsupport.HibernateUtil;
+import edu.ku.brc.specify.config.DisciplineType;
+import edu.ku.brc.specify.config.init.SpecifyDBSetupWizard;
+import edu.ku.brc.specify.datamodel.Accession;
+import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.AutoNumberingScheme;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.specify.dbsupport.HibernateDataProviderSession;
 import edu.ku.brc.specify.dbsupport.SpecifyDeleteHelper;
+import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
+import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.ProgressFrame;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -48,6 +65,8 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class CollectionBusRules extends BaseBusRules
 {
+    private boolean       isOKToCont    = false;
+
     /**
      * Constructor.
      */
@@ -64,16 +83,228 @@ public class CollectionBusRules extends BaseBusRules
     {
         super.initialize(viewableArg);
         
-        if (formViewObj != null && formViewObj.getMVParent().isTopLevel())
+        JButton newBtn = null;
+            
+        if (formViewObj != null)
         {
             ResultSetController rsc = formViewObj.getRsController();
             if (rsc != null)
             {
-                if (rsc.getNewRecBtn() != null) rsc.getNewRecBtn().setVisible(false);
-                if (rsc.getDelRecBtn() != null) rsc.getDelRecBtn().setVisible(false);
+                if (formViewObj.getMVParent().isTopLevel())
+                {
+                    if (rsc.getNewRecBtn() != null) rsc.getNewRecBtn().setVisible(false);
+                    if (rsc.getDelRecBtn() != null) rsc.getDelRecBtn().setVisible(false);
+                } else 
+                {
+                    newBtn = rsc.getNewRecBtn();
+                }
             }
+        } else if (viewable instanceof TableViewObj)
+        {
+            newBtn = ((TableViewObj)viewable).getNewButton();
+        }
+        
+        if (newBtn != null)
+        {
+            // Remove all ActionListeners, there should only be one
+            for (ActionListener al : newBtn.getActionListeners())
+            {
+                newBtn.removeActionListener(al);
+            }
+            
+            newBtn.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    addNewCollection();
+                }
+            });
         }
     }
+    
+    /**
+     * 
+     */
+    private void addNewCollection()
+    {
+        UIRegistry.writeSimpleGlassPaneMsg("Building Collection...", 20); // I18N
+        isOKToCont = true;
+        final AppContextMgr acm = AppContextMgr.getInstance();
+        
+        final SpecifyDBSetupWizard wizardPanel = new SpecifyDBSetupWizard(SpecifyDBSetupWizard.WizardType.Collection, null);
+        
+        final CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getMostRecentWindow(), "", true, CustomDialog.NONE_BTN, wizardPanel);
+        dlg.setCustomTitleBar(UIRegistry.getResourceString("CREATEDISP"));
+        wizardPanel.setListener(new SpecifyDBSetupWizard.WizardListener() {
+            @Override
+            public void cancelled()
+            {
+                isOKToCont = false;
+                dlg.setVisible(false);
+            }
+            @Override
+            public void finished()
+            {
+                dlg.setVisible(false);
+            }
+            @Override
+            public void hide()
+            {
+                dlg.setVisible(false);
+            }
+            @Override
+            public void panelChanged(String title)
+            {
+                dlg.setTitle(title);
+            }
+        });
+        dlg.createUI();
+        dlg.pack();
+        UIHelper.centerAndShow(dlg);
+        
+        if (!isOKToCont)
+        {
+            UIRegistry.clearSimpleGlassPaneMsg();
+            return;
+        }
+        
+        wizardPanel.processDataForNonBuild();
+        
+        final BuildSampleDatabase bldSampleDB   = new BuildSampleDatabase();
+        final ProgressFrame       progressFrame = bldSampleDB.createProgressFrame("Creating Disicipline");
+        progressFrame.turnOffOverAll();
+        
+        progressFrame.setProcess(0, 4);
+        progressFrame.getCloseBtn().setVisible(false);
+        progressFrame.setAlwaysOnTop(true);
+        bldSampleDB.adjustProgressFrame();
+        UIHelper.centerAndShow(progressFrame);
+        
+        SwingWorker<Integer, Integer> bldWorker = new SwingWorker<Integer, Integer>()
+        {
+            Collection newCollection = null;
+            
+            /* (non-Javadoc)
+             * @see javax.swing.SwingWorker#doInBackground()
+             */
+            @Override
+            protected Integer doInBackground() throws Exception
+            {
+                Session session = null;
+                try
+                {
+                    session = HibernateUtil.getNewSession();
+                    DataProviderSessionIFace hSession = new HibernateDataProviderSession(session);
+                    
+                    Discipline     discipline       = (Discipline)formViewObj.getMVParent().getMultiViewParent().getData();
+                    SpecifyUser    specifyAdminUser = (SpecifyUser)acm.getClassObject(SpecifyUser.class);
+                    Agent          userAgent        = (Agent)hSession.getData("FROM Agent WHERE id = "+Agent.getUserAgent().getId());
+                    Properties     props            = wizardPanel.getProps();
+                    DisciplineType disciplineType   = DisciplineType.getByName(discipline.getType());
+                    
+                    discipline         = (Discipline)session.merge(discipline);
+                    specifyAdminUser = (SpecifyUser)hSession.getData("FROM SpecifyUser WHERE id = "+specifyAdminUser.getId());
+                    
+                    bldSampleDB.setSession(session);
+                    
+                    AutoNumberingScheme catNumScheme = bldSampleDB.createAutoNumScheme(props, "catnumfmt", "Catalog Numbering Scheme",   CollectionObject.getClassTableId());
+                    AutoNumberingScheme accNumScheme = bldSampleDB.createAutoNumScheme(props, "accnumfmt", "Accession Numbering Scheme", Accession.getClassTableId());
+
+                    
+                    newCollection = bldSampleDB.createEmptyCollection(discipline, 
+                                                                      props.getProperty("collPrefix").toString(), 
+                                                                      props.getProperty("collName").toString(),
+                                                                      userAgent,
+                                                                      specifyAdminUser,
+                                                                      catNumScheme,
+                                                                      accNumScheme,
+                                                                      disciplineType.isEmbeddedCollecingEvent());
+                            
+                    acm.setClassObject(SpecifyUser.class, specifyAdminUser);
+                    Agent.setUserAgent(userAgent);
+                    
+                } catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                    
+                } finally
+                {
+                    if (session != null)
+                    {
+                        session.close();
+                    }
+                }
+                
+                bldSampleDB.setDataType(null);
+                
+                return null;
+            }
+
+            @Override
+            protected void done()
+            {
+                super.done();
+                
+                progressFrame.setVisible(false);
+                progressFrame.dispose();
+                
+               if (newCollection != null)
+               {
+                   List<?> dataItems = null;
+                   
+                   FormViewObj   dispFVO    = formViewObj.getMVParent().getMultiViewParent().getCurrentViewAsFormViewObj();
+                   Discipline    discipline = (Discipline)dispFVO.getDataObj();
+                   DataProviderSessionIFace pSession = null;
+                   try
+                   {
+                       pSession = DataProviderFactory.getInstance().createSession();
+                       
+                       discipline = (Discipline)pSession.getData("FROM Discipline WHERE id = "+discipline.getId());
+                       //formViewObj.getMVParent().getMultiViewParent().setData(division);
+                       acm.setClassObject(Discipline.class, discipline);
+                       
+                       dataItems = pSession.getDataList("FROM Discipline");
+                       if (dataItems.get(0) instanceof Object[])
+                       {
+                           Vector<Object>dataList = new Vector<Object>();
+                           for (Object row : dataItems)
+                           {
+                               Object[] cols = (Object[])row;
+                               dataList.add(cols[0]);
+                           }
+                           dataItems = dataList;
+                       }
+                       
+                   } catch (Exception ex)
+                   {
+                       System.err.println(ex);
+                       ex.printStackTrace();
+                       
+                   } finally
+                   {
+                       if (pSession != null)
+                       {
+                           pSession.close();
+                       }
+                   }
+                   
+                   int curInx = dispFVO.getRsController().getCurrentIndex();
+                   dispFVO.setDataObj(dataItems);
+                   dispFVO.getRsController().setIndex(curInx);
+         
+               } else
+               {
+                   // error creating
+               }
+               UIRegistry.clearSimpleGlassPaneMsg();
+            }
+        };
+        
+        bldWorker.execute();
+
+    }
+    
+
 
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.BaseBusRules#beforeDelete(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
@@ -150,6 +381,7 @@ public class CollectionBusRules extends BaseBusRules
     {
         super.addChildrenToNewDataObjects(newDataObj);
         
+        /*
         Collection collection = (Collection)newDataObj;
         
         MultiView  disciplineMV = formViewObj.getMVParent().getMultiViewParent();
@@ -208,7 +440,7 @@ public class CollectionBusRules extends BaseBusRules
                     session.close();
                 }
             }
-        }
+        }*/
     }
     
     /* (non-Javadoc)
