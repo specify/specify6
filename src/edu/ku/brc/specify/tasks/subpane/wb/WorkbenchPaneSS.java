@@ -2263,7 +2263,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         rowItem.setViewOrder((short)-2);
         list.insertElementAt(rowItem, 0);
 
-        ToggleButtonChooserPanel<WorkbenchTemplateMappingItem> titlePanel = new ToggleButtonChooserPanel<WorkbenchTemplateMappingItem>(list, 
+        final ToggleButtonChooserPanel<WorkbenchTemplateMappingItem> titlePanel = new ToggleButtonChooserPanel<WorkbenchTemplateMappingItem>(list, 
                 "GE_CHOOSE_FIELD_FOR_TITLE_EXPORT", 
                ToggleButtonChooserPanel.Type.RadioButton);
         titlePanel.setUseScrollPane(true);
@@ -2277,7 +2277,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         
         Collections.sort(includeList, wbmtiComp);
         
-        ToggleButtonChooserPanel<WorkbenchTemplateMappingItem> inclPanel = new ToggleButtonChooserPanel<WorkbenchTemplateMappingItem>(includeList, 
+        final ToggleButtonChooserPanel<WorkbenchTemplateMappingItem> inclPanel = new ToggleButtonChooserPanel<WorkbenchTemplateMappingItem>(includeList, 
                 "GE_CHOOSE_FIELDS_EXPORT", 
                ToggleButtonChooserPanel.Type.Checkbox);
         inclPanel.setUseScrollPane(true);
@@ -2289,7 +2289,26 @@ public class WorkbenchPaneSS extends BaseSubPane
         pb.add(titlePanel, cc.xy(1,1));
         pb.add(inclPanel, cc.xy(3,1));
 
-        CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), getResourceString("GE_CHOOSE_FIELD_FOR_EXPORT_TITLE"), true, pb.getPanel());
+        CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), getResourceString("GE_CHOOSE_FIELD_FOR_EXPORT_TITLE"), true, pb.getPanel()){
+
+			/* (non-Javadoc)
+			 * @see edu.ku.brc.ui.CustomDialog#okButtonPressed()
+			 */
+			@Override
+			protected void okButtonPressed()
+			{
+				if (titlePanel.getSelectedObject() != null && inclPanel.getSelectedObjects() != null
+						&& inclPanel.getSelectedObjects().size() > 0)
+				{
+					super.okButtonPressed();
+				}
+				else
+				{
+					UIRegistry.showLocalizedError("WB_GOOGLE_SETTINGS_INCOMPLETE");
+				}
+			}
+        	
+        };
         dlg.setVisible(true);
         if (!dlg.isCancelled())
         {
@@ -2342,8 +2361,9 @@ public class WorkbenchPaneSS extends BaseSubPane
             configPair.second == null || 
             configPair.second.size() == 0)
         {
-            return;
+        	return;
         }
+        
         WorkbenchTemplateMappingItem genus      = null;
         WorkbenchTemplateMappingItem species    = null;
         WorkbenchTemplateMappingItem subspecies = null;
@@ -3605,6 +3625,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             return super.stopCellEditing();
         }
 
+        
         /* (non-Javadoc)
          * @see javax.swing.CellEditor#getCellEditorValue()
          */
