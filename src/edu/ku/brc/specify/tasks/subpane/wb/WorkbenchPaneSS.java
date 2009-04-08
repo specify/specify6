@@ -521,7 +521,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         });
         // enable or disable along with Google Earth and Geo Ref Convert buttons
         
-        if (AppContextMgr.isSecurityOn() && !task.getPermissions().canModify())
+        if (isReadOnly)
         {
             exportKmlBtn = null;
         }
@@ -2216,7 +2216,8 @@ public class WorkbenchPaneSS extends BaseSubPane
         Vector<WorkbenchTemplateMappingItem> list = new Vector<WorkbenchTemplateMappingItem>();
         for (WorkbenchTemplateMappingItem item : workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems())
         {
-            list.add(item);
+            //item.setUseCaptionForText(true);
+        	list.add(item);
             if (item.getFieldName().equals("genus1"))
             {
                 genus = item;
@@ -2310,6 +2311,11 @@ public class WorkbenchPaneSS extends BaseSubPane
         	
         };
         dlg.setVisible(true);
+//        for (WorkbenchTemplateMappingItem item : workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems())
+//        {
+//            item.setUseCaptionForText(false);
+//        }
+        
         if (!dlg.isCancelled())
         {
             return new Pair<WorkbenchTemplateMappingItem, List<WorkbenchTemplateMappingItem>>(
