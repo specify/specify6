@@ -287,8 +287,26 @@ public class InteractionsTask extends BaseTask
         }
         isShowDefault = true;
     }
+
     
-    /**
+    /* (non-Javadoc)
+	 * @see edu.ku.brc.af.tasks.BaseTask#doProcessAppCommands(edu.ku.brc.ui.CommandAction)
+	 */
+	@Override
+	protected void doProcessAppCommands(CommandAction cmdAction)
+	{
+		// TODO Auto-generated method stub
+		super.doProcessAppCommands(cmdAction);
+        
+        if (cmdAction.isAction(APP_RESTART_ACT) ||
+            cmdAction.isAction(APP_START_ACT))
+        {
+            this.isInitialized = false;
+            initialize();
+        }
+	}
+
+	/**
      * Returns whether a table id if considered to be an Interaction.
      * @param tableId the table ID in question
      * @return true if it is a table that is handled by Interactions
