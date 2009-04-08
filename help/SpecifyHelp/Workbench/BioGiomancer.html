@@ -2,7 +2,7 @@
 
 <head>
  <link href="../../main.css" rel="stylesheet" type="text/css" media="screen"></link>
-<title>BioGiomancer</title>
+<title>Geolocate</title>
 <style>
 table.box { border-top: 1px solid gray; border-left: 1px solid gray }
 table.box td { border-bottom: 1px solid gray; border-right: 1px solid gray }
@@ -28,31 +28,31 @@ to be either selected or skipped. </p>
 <table class="box" border="1" cellspacing="0" cellpadding="4">
 
 <tr>
-  <td><div align="left"><u><strong>Column Heading</strong> </u></div></td>
-  <td><div align="left"><u><strong>Data Needed </strong></u></div></td>
+  <td align="left" valign="top"><div align="left"><u><strong>Column Heading</strong> </u></div></td>
+  <td align="left" valign="top"><div align="left"><u><strong>Data Needed </strong></u></div></td>
 </tr>
-<tr><td width="124"><strong>Locality Name</strong></td>
-<td width="197"><div align="left">Yes</div></td>
+<tr><td width="124" align="left" valign="top"><strong>Locality Name</strong></td>
+<td width="197" align="left" valign="top"><div align="left">Yes</div></td>
 </tr>
-<tr><td><strong>Country</strong></td>
-  <td><div align="left">Yes</div></td>
+<tr><td align="left" valign="top"><strong>Country</strong></td>
+  <td align="left" valign="top"><div align="left">Yes</div></td>
 </tr>
-<tr><td><strong>State</strong></td>
-  <td><div align="left">Yes</div></td>
+<tr><td align="left" valign="top"><strong>State</strong></td>
+  <td align="left" valign="top"><div align="left">Yes</div></td>
 </tr>
-<tr><td><strong>County</strong></td>
-  <td><div align="left">Yes, for US data</div></td>
+<tr><td align="left" valign="top"><strong>County</strong></td>
+  <td align="left" valign="top"><div align="left">Yes, for US data</div></td>
 </tr>
-<tr><td><strong>Latitude1</strong></td>
-  <td>    <p align="left">No<br>(this is a results column) </p></td>
+<tr><td align="left" valign="top"><strong>Latitude1</strong></td>
+  <td align="left" valign="top">    <p align="left">No<br>(this is a results column) </p></td>
 </tr>
-<tr><td><strong>Longitude1</strong></td>
-  <td><div align="left">No<br>
+<tr><td align="left" valign="top"><strong>Longitude1</strong></td>
+  <td align="left" valign="top"><div align="left">No<br>
     (this is a results column)</div></td>
 </tr>
 </table>
 <p>The GEOLocate tool uses the data present in the Locality Name, Country, State and County colunns to query the GEOLocate service.&nbsp;The service will not work without data in all of the columns.&nbsp; The Latitude 1 and Longitude 1 columns are needed to accept the data returned by the GEOLocate service.&nbsp; If GEOLocate is able to obtain results for any of the records, the GEOLocate Results Chooser dialog will display results for each Data Set record.&nbsp;</p>
-<p align="center"><img src="../images/biogeomancerresults.png" alt="Biogeo"></p>
+<p align="center"><img src="../images/geolocate_screen.png" alt="GEOLocate"></p>
 <p align="center" class="imgcaption">GEOLocate Results Chooser </p>
 <p>&nbsp;</p>
 
@@ -69,20 +69,20 @@ to be either selected or skipped. </p>
     <td><u><strong>Result</strong></u></td>
   </tr>
   <tr>
-    <td width="11%"><div align="left"><strong>Help</strong></div></td>
-    <td width="89%">Opens the WorkBench Help Window </td>
+    <td width="11%" align="left" valign="top"><div align="left"><strong>Help</strong></div></td>
+    <td width="89%" align="left" valign="top">Opens the WorkBench Help Window </td>
   </tr>
   <tr>
-    <td><div align="left"><strong>Accept</strong></div></td>
-    <td>Stores the latitude and longitude values in the appropriate cells of the Data Set record corresponding to the query.</td>
+    <td align="left" valign="top"><div align="left"><strong>Accept</strong></div></td>
+    <td align="left" valign="top">Stores the latitude and longitude values in the appropriate cells of the Data Set record corresponding to the query.</td>
   </tr>
   <tr>
-    <td><div align="left"><strong>Skip</strong></div></td>
-    <td>Ignores all results obtained for a given record, and displays  the results for the next  record.</td>
+    <td align="left" valign="top"><div align="left"><strong>Skip</strong></div></td>
+    <td align="left" valign="top">Ignores all results obtained for a given record, and displays  the results for the next  record.</td>
   </tr>
   <tr>
-    <td><div align="left"><strong>Done</strong></div></td>
-    <td>Accepts the currently selected row and closes the GEOLocate Results Chooser dialog.</td>
+    <td align="left" valign="top"><div align="left"><strong>Done</strong></div></td>
+    <td align="left" valign="top">Accepts the currently selected row and closes the GEOLocate Results Chooser dialog.</td>
   </tr>
 </table>
 <p>&nbsp;</p>
