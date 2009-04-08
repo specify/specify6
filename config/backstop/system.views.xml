@@ -736,7 +736,7 @@
                     <cell type="field" id="8" name="isAccessionBound" uitype="checkbox"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="Address" id="10" name="address" colspan="12" initialize="btn=true"/>
+                    <cell type="subview" viewname="AddressSingle" id="10" name="address" colspan="12" initialize="btn=true"/>
                 </row>
             </rows>
         </viewdef>
