@@ -154,13 +154,12 @@ public class GeneralPermissionEditorRow implements PermissionEditorRowIFace
     public List<PermissionIFace> getPermissions()
     {
         ArrayList<PermissionIFace> list = new ArrayList<PermissionIFace>(1);
-
-        SpPermission perm = overrulingPermission != null ? overrulingPermission : permission;
+        
         int options = PermissionSettings.NO_PERM;
-        options |= perm.canModify() ? PermissionSettings.CAN_MODIFY : 0;
-        options |= perm.canView() ?   PermissionSettings.CAN_VIEW   : 0;
-        options |= perm.canAdd() ?    PermissionSettings.CAN_ADD    : 0;
-        options |= perm.canDelete() ? PermissionSettings.CAN_DELETE : 0;
+        options |= (modWrap.isOverriden()  ? modWrap.getOverrulingPermissionActionValue()  : modWrap.getPermissionActionValue()) ? PermissionSettings.CAN_MODIFY : 0;
+        options |= (viewWrap.isOverriden() ? viewWrap.getOverrulingPermissionActionValue() : viewWrap.getPermissionActionValue()) ? PermissionSettings.CAN_VIEW   : 0;
+        options |= (addWrap.isOverriden()  ? addWrap.getOverrulingPermissionActionValue()  : addWrap.getPermissionActionValue()) ? PermissionSettings.CAN_ADD    : 0;
+        options |= (delWrap.isOverriden()  ? delWrap.getOverrulingPermissionActionValue()  : delWrap.getPermissionActionValue()) ? PermissionSettings.CAN_DELETE : 0;
         list.add(new PermissionSettings(options));
 
         return list;
