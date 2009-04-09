@@ -2000,13 +2000,13 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         
         String txt = "<html><font face=\"sans-serif\" size=\"11pt\">"+appName+" " + appVersion +  //$NON-NLS-1$ //$NON-NLS-2$
                         "<br><br>Department of Informatics " +
-                        "Biodiversity Research Center University of Kansas<br>Lawrence, KS  USA 66045<br><br>" +  //$NON-NLS-1$
+                        "Biodiversity Research Center University of Kansas<br>1345 Jayhawk Blvd.<br>Lawrence, KS  USA 66045<br><br>" +  //$NON-NLS-1$
                         "<a href=\"http://specify6.specifysoftware.org\">www.specifysoftware.org</a>"+ //$NON-NLS-1$
                         "<br><a href=\"mailto:specify@ku.edu\">specify@ku.edu</a><br>" +  //$NON-NLS-1$
                         "<p>The Specify Software Project is "+ //$NON-NLS-1$
-                        "funded by the Advances in Biological Informatics Program,<br>" + //$NON-NLS-1$
+                        "funded by the Advances in Biological Informatics Program, " + //$NON-NLS-1$
                         "U.S. National Science Foundation  (Award DBI-0446544 and earlier awards).<br><br>" + //$NON-NLS-1$
-                        "Specify 6.0 Copyright (C) 2009 University of Kansas Center for Research.<br>" + 
+                        "Specify 6.0 Copyright \u00A9 2009 University of Kansas Center for Research. " + 
                         "Specify comes with ABSOLUTELY NO WARRANTY.<br><br>" + //$NON-NLS-1$
                         "This is free software licensed under General Public License 2 (GPL2).</P></font></html>"; //$NON-NLS-1$
         JLabel txtLbl = createLabel(txt);
