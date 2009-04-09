@@ -26,6 +26,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
@@ -919,9 +921,10 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
     public List<MenuItemDesc> getMenuItems()
     {
         final String COLSETUP_MENU   = "Specify.COLSETUP_MENU";
+        final String TREES_MENU       = "Specify.TREES_MENU";
         final String SYSTEM_MENU     = "Specify.SYSTEM_MENU";
         final String FULL_SYSTEM_MENU = SYSTEM_MENU + "/" + COLSETUP_MENU;
-
+        final String FULL_TREE_MENU  = SYSTEM_MENU + "/" + TREES_MENU;
         SecurityMgr secMgr = SecurityMgr.getInstance();
         
         menuItems = new Vector<MenuItemDesc>();
@@ -938,7 +941,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
         String    titleArg; 
         String    mneu; 
         JMenuItem mi;
-        String    menuDesc = getResourceString(COLSETUP_MENU);
+        String    menuDesc = getResourceString(TREES_MENU);
         
 //      Implementing wb schema config in next release  
 //        if (!AppContextMgr.isSecurityOn() || 
@@ -965,8 +968,21 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
         if (!AppContextMgr.isSecurityOn()
 				|| SpecifyUser.isCurrentUserType(UserType.Manager))
 		{
-			for (final BaseTreeTask<?, ?, ?> tree : TreeTaskMgr.getInstance()
-					.getTreeTasks())
+			Vector<BaseTreeTask<?,?,?>> trees = new Vector<BaseTreeTask<?,?,?>>(TreeTaskMgr.getInstance().getTreeTasks());
+			Collections.sort(trees, new Comparator<BaseTreeTask<?,?,?>>(){
+
+				/* (non-Javadoc)
+				 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+				 */
+				@Override
+				public int compare(BaseTreeTask<?, ?, ?> arg0,
+						BaseTreeTask<?, ?, ?> arg1)
+				{
+					return arg0.getTitle().compareTo(arg1.getTitle());
+				}
+				
+			});
+        	for (final BaseTreeTask<?, ?, ?> tree : trees)
 			{
 				titleArg = getResourceString(getI18NKey("Tree_MENU")) + " " + tree.getTitle(); //$NON-NLS-1$
 				mneu = getI18NKey("Trees_MNU"); //$NON-NLS-1$
@@ -975,12 +991,23 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
 				mi.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent ae)
 					{
-						doTreeUpdate(tree);
+						SwingUtilities.invokeLater(new Runnable(){
+
+							/* (non-Javadoc)
+							 * @see java.lang.Runnable#run()
+							 */
+							@Override
+							public void run()
+							{
+								doTreeUpdate(tree);							
+							}
+						});
+						
 					}
 				});
 				mi.setVisible(tree.isTreeOnByDefault());
 				treeUpdateMenuItems.add(new Pair<BaseTreeTask<?,?,?>, JMenuItem>(tree, mi));
-				mid = new MenuItemDesc(mi, SYSTEM_MENU);
+				mid = new MenuItemDesc(mi, FULL_TREE_MENU);
 				mid.setPosition(MenuItemDesc.Position.After, menuDesc);
 
 				menuItems.add(mid);

@@ -1065,6 +1065,8 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         // to ask a task for a menu.
         menu = UIHelper.createLocalizedMenu(mb, "Specify.SYSTEM_MENU", "Specify.SYSTEM_MNEU"); //$NON-NLS-1$ //$NON-NLS-2$
         
+        JMenu treesMenu = UIHelper.createLocalizedMenu(mb, "Specify.TREES_MENU", "Specify.TREES_MNEU"); //$NON-NLS-1$ //$NON-NLS-2$
+        menu.insert(treesMenu, 0); 
         JMenu setupMenu = UIHelper.createLocalizedMenu(mb, "Specify.COLSETUP_MENU", "Specify.COLSETUP_MNEU"); //$NON-NLS-1$ //$NON-NLS-2$
         menu.insert(setupMenu, 0); // insert at the top
         
