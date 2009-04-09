@@ -4,24 +4,6 @@
     <isHidden>false</isHidden>
     <isSystem>false</isSystem>
     <items>
-      <item name="remarks" type="text" isUIFormatter="false" isRequired="false">
-        <version>0</version>
-        <isHidden>false</isHidden>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en" country="" variant="">
-            <version>0</version>
-            <text>Locality and\n Habitat Notes</text>
-          </str>
-        </names>
-        <descs>
-          <str language="en" country="" variant="">
-            <version>0</version>
-            <text>Field to record information on locality and habitat where specimen was collected.</text>
-          </str>
-        </descs>
-        <spExportSchemaItems/>
-      </item>
       <item name="stationFieldNumber" type="java.lang.String" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <isHidden>false</isHidden>
@@ -40,6 +22,24 @@
         </descs>
         <spExportSchemaItems/>
       </item>
+      <item name="remarks" type="text" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <isHidden>false</isHidden>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en" country="" variant="">
+            <version>0</version>
+            <text>Locality and\n Habitat Notes</text>
+          </str>
+        </names>
+        <descs>
+          <str language="en" country="" variant="">
+            <version>0</version>
+            <text>Field to record information on locality and habitat where specimen was collected.</text>
+          </str>
+        </descs>
+        <spExportSchemaItems/>
+      </item>
     </items>
     <names/>
     <descs/>
@@ -49,24 +49,6 @@
     <isHidden>false</isHidden>
     <isSystem>false</isSystem>
     <items>
-      <item name="text1" type="java.lang.String" isUIFormatter="false" pickListName="Phenology" isRequired="false">
-        <version>0</version>
-        <isHidden>false</isHidden>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en" country="" variant="">
-            <version>0</version>
-            <text>Phenology</text>
-          </str>
-        </names>
-        <descs>
-          <str language="en" country="" variant="">
-            <version>0</version>
-            <text>User definable.</text>
-          </str>
-        </descs>
-        <spExportSchemaItems/>
-      </item>
       <item name="description" type="java.lang.String" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <isHidden>false</isHidden>
@@ -85,19 +67,29 @@
         </descs>
         <spExportSchemaItems/>
       </item>
+      <item name="text1" type="java.lang.String" isUIFormatter="false" pickListName="Phenology" isRequired="false">
+        <version>0</version>
+        <isHidden>false</isHidden>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en" country="" variant="">
+            <version>0</version>
+            <text>Phenology</text>
+          </str>
+        </names>
+        <descs>
+          <str language="en" country="" variant="">
+            <version>0</version>
+            <text>User definable.</text>
+          </str>
+        </descs>
+        <spExportSchemaItems/>
+      </item>
     </items>
     <names/>
     <descs/>
   </container>
   <container name="dnasequence">
-    <version>0</version>
-    <isHidden>false</isHidden>
-    <isSystem>false</isSystem>
-    <items/>
-    <names/>
-    <descs/>
-  </container>
-  <container name="dnasequencingrun">
     <version>0</version>
     <isHidden>false</isHidden>
     <isSystem>false</isSystem>
