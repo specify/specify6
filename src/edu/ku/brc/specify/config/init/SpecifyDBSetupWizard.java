@@ -217,8 +217,9 @@ public class SpecifyDBSetupWizard extends JPanel
     
             userInfoPanel = new UserInfoPanel("AGENT", 
                     "ENTER_COLMGR_INFO", 
-                    new String[] { "FIRSTNAME", "LASTNAME", "MIDNAME",       "EMAIL", null,  "USERLOGININFO", "USERNAME", "PASSWORD"}, 
-                    new String[] { "firstName", "lastName", "middleInitial", "email",  " ",  "-",             "usrUsername", "usrPassword"}, 
+                    new String[] { "FIRSTNAME", "LASTNAME", "MIDNAME",       "EMAIL",  null,  "USERLOGININFO", "USERNAME",    "PASSWORD"}, 
+                    new String[] { "firstName", "lastName", "middleInitial", "email",  " ",   "-",             "usrUsername",  "usrPassword"}, 
+                    new boolean[] { true,       true,       false,            true,    true,  false,           true,           true},
                     nextBtn);
             panels.add(userInfoPanel);
             

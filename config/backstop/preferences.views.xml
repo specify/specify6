@@ -245,7 +245,7 @@
                     <cell type="field" uitype="combobox" id="controlSizes" name="ui.formatting.controlSizes" readonly="true" changesonly="true" colspan="3"/>
                 </row>
                 <row>
-                    <cell type="label" name="formtype" labelfor="formtype" label="SCRN_DATE_FORMAT"/>
+                    <cell type="label" name="formtype" labelfor="formtype" label="FORM_LAYOUT"/>
                     <cell type="panel" id="formtypep" name="formtypep" coldef="p,f:p:g" rowdef="p" colspan="5">
                         <rows>
                             <row>

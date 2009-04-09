@@ -177,7 +177,7 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
     protected void fillFormTypes()
     {
         String[] formTypeArray = {"win", "lnx", "mac", "exp"};
-        String[] formTypeDesc = {"Small Font (ideal form Windows)", "Medium Font (ideal form Linux)", "Large Font (ideal form Mac)", "Expandable Layout"};
+        String[] formTypeDesc = {"Small Font Format (ideal for Windows)", "Medium Font Format (ideal for Linux)", "Large Font Format (ideal for Mac)", "Elastic Layout"}; // I18N
         
         String curFormType = AppPreferences.getLocalPrefs().get("ui.formatting.formtype", UIHelper.getOSTypeAsStr());
         

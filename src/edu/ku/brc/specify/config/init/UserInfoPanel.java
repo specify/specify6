@@ -45,9 +45,10 @@ public class UserInfoPanel extends GenericFormPanel
                          final String   title, 
                          final String[] labels, 
                          final String[] fields, 
+                         final boolean[] isReq, 
                          final JButton  nextBtn)
     {
-        super(name, title, labels, fields, nextBtn, true);
+        super(name, title, labels, fields, isReq, nextBtn, true);
     }
 
     /* (non-Javadoc)
