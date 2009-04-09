@@ -201,11 +201,11 @@
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="SecurityAdmin" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+        <tp name="SecurityAdmin" type="LimitedAccess" view="false" modify="false" del="false" add="false"/>
       </entry>
       <entry>
         <string>FullAccess</string>
-        <tp name="SecurityAdmin" type="FullAccess" view="true" modify="true" del="true" add="true"/>
+        <tp name="SecurityAdmin" type="FullAccess" view="false" modify="false" del="false" add="false"/>
       </entry>
     </hashtable>
   </entry>
