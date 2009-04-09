@@ -2383,9 +2383,9 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             tab.setEditable(false);
             tab.setLineWrap(true);
             tab.setWrapStyleWord(true);
-            int big = treeDef.getNodeClass().equals(Taxon.class) ? 16 : 2;
-            int small = treeDef.getNodeClass().equals(Taxon.class) ? 12 : 2;
-            tab.setRows(numOptions >= 3 ? big : small);
+            int big = treeDef.getNodeClass().equals(Taxon.class) ? (numOptions > 3 ? 11 : 16) : 2;
+            int small = treeDef.getNodeClass().equals(Taxon.class) ? 5 : 2;
+            tab.setRows(numOptions > 3 ? small : isMoveOK ? big : small);
             tab.setText(descStr);
         	pb.add(tab, cc.xy(3, 1));
             if (numOptions == 4)
