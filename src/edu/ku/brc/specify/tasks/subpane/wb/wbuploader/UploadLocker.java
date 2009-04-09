@@ -17,7 +17,7 @@ import javax.swing.JOptionPane;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.Taskable;
-import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.SpTaskSemaphore;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgrCallerIFace;
@@ -47,7 +47,7 @@ public class UploadLocker implements TaskSemaphoreMgrCallerIFace
 
     public UploadLocker(boolean canOverride, boolean canUnlock, final Taskable task, final boolean doLock)
     {
-        this.canIgnore = canOverride;
+    	this.canIgnore = canOverride; 
         this.canOverride = canUnlock;
         this.doLock = doLock;
         this.task = task;
@@ -79,13 +79,13 @@ public class UploadLocker implements TaskSemaphoreMgrCallerIFace
 			msgType = JOptionPane.INFORMATION_MESSAGE;
 			options = JOptionPane.YES_OPTION;
 			optionLabels = new String[] { getResourceString("OK") };
-			Discipline currDiscipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
+			Collection currCollection = AppContextMgr.getInstance().getClassObject(Collection.class);
             if (sameUser && sameMachine)
 			{
 				if (task == null)
 				{
 					msg = String.format(UIRegistry.getResourceString("UploadLocker.LockedByYou"),
-						currDiscipline.getName());
+						currCollection.getCollectionName());
 				}
 				else
 				{
@@ -95,7 +95,7 @@ public class UploadLocker implements TaskSemaphoreMgrCallerIFace
 			} else
 			{
 				msg = String.format(UIRegistry.getResourceString("UploadLocker.LockedByUserMachine"),
-						currDiscipline.getName(), lockUser.getIdentityTitle(), lockMachineName);
+						currCollection.getCollectionName(), lockUser.getIdentityTitle(), lockMachineName);
 				if (task != null)
 				{
 					msg += String.format(UIRegistry.getResourceString("UploadLocker.TaskUnavailable"),
@@ -108,17 +108,20 @@ public class UploadLocker implements TaskSemaphoreMgrCallerIFace
 			{
 				if (canIgnore && canOverride)
 				{
-					options = JOptionPane.YES_NO_CANCEL_OPTION;
-					optionLabels = new String[] {
-							getResourceString("UploadLocker.Exit"),
-							getResourceString("UploadLocker.Ignore"),
-							getResourceString("UploadLocker.Remove") };
-				} else if (canIgnore)
-				{
+					//options = JOptionPane.YES_NO_CANCEL_OPTION;
 					options = JOptionPane.YES_NO_OPTION;
 					optionLabels = new String[] {
 							getResourceString("UploadLocker.Exit"),
-							getResourceString("UploadLocker.Ignore") };
+							//getResourceString("UploadLocker.Ignore"),
+							getResourceString("UploadLocker.Remove") };
+				} else if (canIgnore)
+				{
+					//options = JOptionPane.YES_NO_OPTION;
+					options = JOptionPane.YES_OPTION;
+					optionLabels = new String[] {
+							getResourceString("UploadLocker.Exit"),
+							//getResourceString("UploadLocker.Ignore") 
+							};
 				}
 			} else if (doLock)
 			{
@@ -143,8 +146,9 @@ public class UploadLocker implements TaskSemaphoreMgrCallerIFace
             }
             if (userChoice == JOptionPane.NO_OPTION)
             {
-                UIRegistry.displayInfoMsgDlgLocalized("UploadLocker.LockOverrideInfo");
-            	return USER_ACTION.OK;
+                //UIRegistry.displayInfoMsgDlgLocalized("UploadLocker.LockOverrideInfo");
+            	//return USER_ACTION.OK;
+            	return USER_ACTION.Override;
             }
             if (userChoice == JOptionPane.CANCEL_OPTION)
             {

@@ -549,7 +549,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
     	    {
     	    	boolean okay = UIRegistry.displayConfirm(UIRegistry.getResourceString("BaseTreeDef.TreeLockMsgTitle"), 
     	    				String.format(UIRegistry.getResourceString("BaseTreeDef.TreeLockMsg"), 
-    	    						DBTableIdMgr.getInstance().getByClassName(getNodeClass().getName()).getTitle(),
+    	    						getName(),
     	    						prevLockBy), 
     	    				UIRegistry.getResourceString("BaseTreeDef.RemoveLock"), 
     	    				UIRegistry.getResourceString("CANCEL"), JOptionPane.WARNING_MESSAGE);
@@ -638,6 +638,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
     }
     
     /**
+     * @param useProgDlg
      * @return true if tree node numbers are up-to date.
      * @throws Exception
      * 
@@ -645,7 +646,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
      * If so, then if user has permission to update the tree, an option is to update or exit specify is presented. If update
      * is selected and succeeds, true is returned. 
      */
-    public boolean checkNodeNumbersUpToDate() throws Exception
+    public boolean checkNodeNumbersUpToDate(boolean useProgDlg) throws Exception
     {
         boolean result;
         if (TreeDefStatusMgr.isNodeNumbersAreUpToDate(this))
@@ -669,7 +670,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
                 UIHelper.centerAndShow(dlg);
                 if (dlg.getBtnPressed() == CustomDialog.OK_BTN)
                 {
-                    updateAllNodeNumbers(null, false);
+                    updateAllNodeNumbers(null, useProgDlg);
                     result = TreeDefStatusMgr.isNodeNumbersAreUpToDate(this);                    
                 }
                 else
@@ -720,7 +721,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
     		{
     			boolean ok = UIRegistry.displayConfirm(UIRegistry.getResourceString("BaseTreeDef.IsNumberingWarnTitle"),	 
     					String.format(UIRegistry.getResourceString("BaseTreeDef.NumberingKillMsg"), 
-	    						DBTableIdMgr.getInstance().getByClassName(getNodeClass().getName()).getTitle()), 
+	    						getName()), 
 	    						UIRegistry.getResourceString("BaseTreeDef.RemoveLock"), 
 	    						UIRegistry.getResourceString("CANCEL"), 
 	    						JOptionPane.WARNING_MESSAGE);
