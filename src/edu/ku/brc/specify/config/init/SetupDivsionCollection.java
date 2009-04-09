@@ -95,17 +95,6 @@ public class SetupDivsionCollection extends JDialog
         JPanel btnBar;
         backBtn    = createButton(UIRegistry.getResourceString("BACK"));
         nextBtn    = createButton(UIRegistry.getResourceString("NEXT"));
-        /*nextBtn    = new JButton("Next") {
-            public void setEnabled(boolean enable)
-        {
-            super.setEnabled(enable);
-            if (enable)
-            {
-                int x = 0;
-                x++;
-            }
-        }
-        };*/
         
         ImageIcon appIcon = IconManager.getIcon("AppIcon"); //$NON-NLS-1$
         if (appIcon != null)

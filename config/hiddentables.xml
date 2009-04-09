@@ -43,12 +43,18 @@
 		<table name="agentvariant"/>
 	</discipline>
 	
-	<discipline name="botany">
-		<table name="paleocontext"/>
-		<table name="lithostrat"/>
-		<table name="geologictimeperiod"/>
-	</discipline>
-	
+    <discipline name="botany">
+        <table name="paleocontext"/>
+        <table name="lithostrat"/>
+        <table name="geologictimeperiod"/>
+    </discipline>
+    
+    <discipline name="fungi">
+        <table name="paleocontext"/>
+        <table name="lithostrat"/>
+        <table name="geologictimeperiod"/>
+    </discipline>
+    
 	<discipline name="invertebrate">
 		<table name="agentvariant"/>
 	</discipline>

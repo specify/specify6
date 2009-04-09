@@ -760,13 +760,38 @@ public class BuildSampleDatabase
         
         startTx();
         
+        boolean taxonWasBuilt = false;
         if (!isPaleo)
         {
             Hashtable<String, Boolean> colNameHash = getColumnNamesFromXLS(fileName);
             if (colNameHash != null)
             {
-                createTaxonDefFromXML(taxa, colNameHash, taxonTreeDef, taxonXML);
+                taxonWasBuilt = createTaxonDefFromXML(taxa, colNameHash, taxonTreeDef, taxonXML);
             }
+        }
+        
+        if (!taxonWasBuilt)
+        {
+            TaxonTreeDefItem ttdi = new TaxonTreeDefItem();
+            ttdi.initialize();
+            ttdi.setTreeDef(taxonTreeDef);
+            taxonTreeDef.getTreeDefItems().add(ttdi);
+            ttdi.setName("Root");
+            ttdi.setRankId(0);
+            ttdi.setParent(null);
+            ttdi.setFullNameSeparator(null);
+            ttdi.setIsEnforced(true);
+            ttdi.setIsInFullName(false);
+            
+            Taxon tx = new Taxon();
+            tx.initialize();
+            tx.setDefinition(taxonTreeDef);
+            tx.setDefinitionItem(ttdi);
+            ttdi.getTreeEntries().add(tx);
+            tx.setName("Life"); // I18N
+            
+            persist(ttdi);
+            persist(tx);
         }
         
         frame.setProcess(++createStep);
@@ -795,11 +820,7 @@ public class BuildSampleDatabase
         {
             persist(lithoStrats);
             
-        } else if (isPaleo)
-        {
-            lithoStrats = createSimpleLithoStrat(lithoStratTreeDef, false);
-            persist(lithoStrats);
-        }
+        } 
         
         commitTx();
         
@@ -1025,10 +1046,10 @@ public class BuildSampleDatabase
      * @param taxonXML
      */
     @SuppressWarnings("unchecked")
-    public static  void createTaxonDefFromXML(final List<Object> taxonList, 
-                                              final Hashtable<String, Boolean> colNameHash,
-                                              final TaxonTreeDef taxonTreeDef, 
-                                              final String       taxonXML)
+    public static boolean createTaxonDefFromXML(final List<Object> taxonList, 
+                                                final Hashtable<String, Boolean> colNameHash,
+                                                final TaxonTreeDef taxonTreeDef, 
+                                                final String       taxonXML)
     {
         if (StringUtils.isNotEmpty(taxonXML))
         {
@@ -1075,6 +1096,7 @@ public class BuildSampleDatabase
                 }
             }
         }
+        return true;
     }
     
     /**
@@ -4858,7 +4880,7 @@ public class BuildSampleDatabase
      * @return returns a list of preptypes read in from preptype.xml
      */
     @SuppressWarnings("unchecked")
-    protected Vector<PrepType> loadPrepTypes(final String discipline, 
+    protected Vector<PrepType> loadPrepTypes(final String     discipline, 
                                              final Collection collection, 
                                              final Agent      createdByAgent)
     {
@@ -4884,7 +4906,9 @@ public class BuildSampleDatabase
         Collection colltn = collection     != null ? collection     : AppContextMgr.getInstance().getClassObject(Collection.class);
         Agent      agent  = createdByAgent != null ? createdByAgent : Agent.getUserAgent();
         
-        File file = XMLHelper.getConfigDir(discipline + File.separator + "preptypes.xml");
+        DisciplineType dType = DisciplineType.getByName(discipline);
+        
+        File file = XMLHelper.getConfigDir(dType.getFolder() + File.separator + "preptypes.xml");
         if (file.exists())
         {
             try
@@ -6189,7 +6213,7 @@ public class BuildSampleDatabase
                 }
                 DisciplineType dType = DisciplineType.getDiscipline(disp);
                 log.debug("Building "+dType.getName());
-                if (XMLHelper.getConfigDir(dType.getName()+ File.separator + "taxon_init.xml").exists())
+                if (XMLHelper.getConfigDir(dType.getFolder()+ File.separator + "taxon_init.xml").exists())
                 {
                     createGenericCollection(dType, institution, specifyAdminUser,  getChoice(disp, false), method);
                 }
@@ -8102,7 +8126,7 @@ public class BuildSampleDatabase
             }
         }
 
-        if (file == null || !file.exists())
+        if (file == null || !file.exists() || file.isDirectory())
         {
             log.error("Couldn't file[" + file.getAbsolutePath() + "]");
             return null;

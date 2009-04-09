@@ -15,6 +15,7 @@ import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
@@ -76,6 +77,9 @@ public class DisciplinePanel extends BaseSetupPanel
                 dispList.add(disciplineType);
             }
         }
+        
+        Collections.sort(dispList);
+        
         disciplines = createComboBox(dispList);
         
         // Select Fish as the default

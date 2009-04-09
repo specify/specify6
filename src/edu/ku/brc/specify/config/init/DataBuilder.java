@@ -2769,10 +2769,6 @@ public class DataBuilder
                     if (pl.getSortType() == null)
                     {
                         pl.setSortType(PickListIFace.PL_TITLE_SORT);
-                    } else
-                    {
-                        int x =  0;
-                        x++;
                     }
                     
                     if (pl.getSortType().equals(PickListIFace.PL_ORDINAL_SORT))

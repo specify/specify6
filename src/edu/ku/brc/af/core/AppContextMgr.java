@@ -25,6 +25,7 @@ import org.dom4j.Element;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.persist.ViewIFace;
 import edu.ku.brc.af.ui.forms.persist.ViewSetIFace;
+import edu.ku.brc.specify.datamodel.Collection;
 
 /**
  * Abstract class for setting application context. It is designed that each application should implement its own.<br>
@@ -256,6 +257,11 @@ public abstract class AppContextMgr
      */
     public void setClassObject(final Class<?> clazz, final Object object)
     {
+        if (clazz == Collection.class)
+        {
+            int x= 0;
+            x++;
+        }
         if (!hasContext)
         {
             throw new RuntimeException("No context has been set.");

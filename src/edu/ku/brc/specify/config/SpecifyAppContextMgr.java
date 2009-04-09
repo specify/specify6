@@ -702,7 +702,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
      * @param createWhenNotFound
      * @return
      */
-    protected SpAppResourceDir getAppResDir(final DataProviderSessionIFace sessionArg,
+    public SpAppResourceDir getAppResDir(final DataProviderSessionIFace sessionArg,
                                             final SpecifyUser    specifyUser,
                                             final Discipline     discipline,
                                             final Collection     collection,
@@ -749,7 +749,6 @@ public class SpecifyAppContextMgr extends AppContextMgr
             sb.append(" AND userType is null"); //$NON-NLS-1$
         }
         
-        
         log.debug(sb.toString());
         
         List<?> list = sessionArg.getDataList(sb.toString());
@@ -782,6 +781,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             appResDir.setDiscipline(discipline);
             appResDir.setIsPersonal(isPersonal);
             appResDir.setTitle(localizedTitle);
+            appResDir.setDisciplineType(discipline != null ? discipline.getName() : null);
             return appResDir;
         }
         
@@ -1093,8 +1093,6 @@ public class SpecifyAppContextMgr extends AppContextMgr
         this.userName     = userName;
         this.hasContext   = true;
         
-        classObjHash.clear();
-        
         DBTableIdMgr.getInstance().clearPermissions();
         
         // This is where we will read it in from the Database
@@ -1104,7 +1102,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         // Then
 
         DataProviderSessionIFace session = null;
-        try
+        try 
         {
             session = openSession();
             
@@ -1177,8 +1175,16 @@ public class SpecifyAppContextMgr extends AppContextMgr
             // work with for this "Context" then we need to go get all the Default View and
             // additional XML Resources.
             
-            int prevCollectionId = AppContextMgr.getInstance().getClassObject(Collection.class) != null ? AppContextMgr.getInstance().getClassObject(Collection.class).getCollectionId() : -1;
+            Collection curColl = AppContextMgr.getInstance().getClassObject(Collection.class);
+            int prevCollectionId =  curColl != null ? curColl.getCollectionId() : -1;
             
+            Discipline curDis = AppContextMgr.getInstance().getClassObject(Discipline.class);
+            int prevDisciplineId = curDis != null ? curDis.getDisciplineId() : -1;
+            
+            classObjHash.clear();
+            
+            AppContextMgr.getInstance().setClassObject(SpecifyUser.class, user);
+
             // Ask the User to choose which Collection they will be working with
             Collection collection = setupCurrentCollection(user, promptForCollection);
             if (collection == null)
@@ -1199,9 +1205,6 @@ public class SpecifyAppContextMgr extends AppContextMgr
             
             spAppResourceList.clear();
             viewSetHash.clear();
-            
-            Discipline curDis = AppContextMgr.getInstance().getClassObject(Discipline.class);
-            int prevDisciplineId = curDis != null ? curDis.getDisciplineId() : -1;
     
             Discipline discipline = session.getData(Discipline.class, "disciplineId", collection.getDiscipline().getId(), DataProviderSessionIFace.CompareType.Equals) ; //$NON-NLS-1$
             discipline.forceLoad();
@@ -1453,6 +1456,9 @@ public class SpecifyAppContextMgr extends AppContextMgr
             
             SpecifyAppPrefs.initialPrefs();
             
+            closeSession();
+            session = null;
+            
             if (prevDisciplineId != -1)
             {
                 CommandDispatcher.dispatch(new CommandAction("Discipline", "Changed")); //$NON-NLS-1$ //$NON-NLS-2$
@@ -1462,9 +1468,6 @@ public class SpecifyAppContextMgr extends AppContextMgr
             {
                 CommandDispatcher.dispatch(new CommandAction("Collection", "Changed")); //$NON-NLS-1$ //$NON-NLS-2$
             }
-            
-            closeSession();
-            session = null;
             
             // We must check here before we load the schema
             checkForInitialFormats();

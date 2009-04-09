@@ -78,6 +78,13 @@ public class DisciplineType implements Comparable<DisciplineType>
         this.isEmbeddedCollecingEvent = isEmbeddedCollecingEvent;
         this.disciplineType = STD_DISCIPLINES.valueOf(name);
     }
+    
+    public boolean isPaleo()
+    {
+        return disciplineType == DisciplineType.STD_DISCIPLINES.paleobotany ||
+                disciplineType == DisciplineType.STD_DISCIPLINES.vertpaleo ||
+                disciplineType == DisciplineType.STD_DISCIPLINES.invertpaleo;
+    }
 
     public String getName()
     {
@@ -129,7 +136,7 @@ public class DisciplineType implements Comparable<DisciplineType>
      */
     public int compareTo(DisciplineType obj)
     {
-        return name.compareTo(obj.name);
+        return title.compareTo(obj.title);
     }
     
     /**

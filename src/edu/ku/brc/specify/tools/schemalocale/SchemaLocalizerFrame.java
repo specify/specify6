@@ -54,11 +54,11 @@ import edu.ku.brc.af.ui.weblink.WebLinkMgr;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.config.SpecifyAppPrefs;
+import edu.ku.brc.specify.config.SpecifyDataObjFieldFormatMgr;
 import edu.ku.brc.specify.config.SpecifyWebLinkMgr;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.datamodel.SpLocaleItemStr;
 import edu.ku.brc.specify.ui.HelpMgr;
-import edu.ku.brc.specify.ui.SpecifyDataObjFieldFormatMgr;
 import edu.ku.brc.specify.ui.SpecifyUIFieldFormatterMgr;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
@@ -495,7 +495,7 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
                 System.setProperty(SchemaI18NService.factoryName,      "edu.ku.brc.specify.config.SpecifySchemaI18NService");  // Needed for Localization and Schema //$NON-NLS-1$
                 System.setProperty(UIFieldFormatterMgr.factoryName,    "edu.ku.brc.specify.ui.SpecifyUIFieldFormatterMgr");    // Needed for CatalogNumbering //$NON-NLS-1$
                 System.setProperty(WebLinkMgr.factoryName,             "edu.ku.brc.specify.config.SpecifyWebLinkMgr");         // Needed for WebLnkButton //$NON-NLS-1$
-                System.setProperty(DataObjFieldFormatMgr.factoryName,  "edu.ku.brc.specify.ui.SpecifyDataObjFieldFormatMgr");  // Needed for WebLnkButton //$NON-NLS-1$
+                System.setProperty(DataObjFieldFormatMgr.factoryName,  "edu.ku.brc.specify.config.SpecifyDataObjFieldFormatMgr");  // Needed for WebLnkButton //$NON-NLS-1$
 
                 SpecifyDataObjFieldFormatMgr.setDoingLocal(true);
                 SpecifyUIFieldFormatterMgr.setDoingLocal(true);

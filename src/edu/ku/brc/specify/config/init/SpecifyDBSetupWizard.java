@@ -138,14 +138,7 @@ public class SpecifyDBSetupWizard extends JPanel
         
         JPanel btnBar;
         backBtn    = createButton(UIRegistry.getResourceString("BACK"));
-        //nextBtn    = createButton(UIRegistry.getResourceString("NEXT"));
-        nextBtn = new JButton("Next") {
-            @Override
-            public void setEnabled(boolean enable)
-            {
-                super.setEnabled(enable);
-            }
-        };
+        nextBtn    = createButton(UIRegistry.getResourceString("NEXT"));
         
         HelpMgr.registerComponent(helpBtn, "SetupSpecifyDB");
         CellConstraints cc = new CellConstraints();
@@ -357,6 +350,14 @@ public class SpecifyDBSetupWizard extends JPanel
 
                 if (step < lastStep-1)
                 {
+                    if (panels.get(step) == disciplinePanel)
+                    {
+                        DisciplineType disciplineType = disciplinePanel.getDisciplineType();
+                        if (disciplineType.isPaleo() || disciplineType.getDisciplineType() == DisciplineType.STD_DISCIPLINES.fungi)
+                        {
+                            step += 2;
+                        }
+                    }
                     step++;
                     panels.get(step).doingNext();
                     cardLayout.show(cardPanel, Integer.toString(step));

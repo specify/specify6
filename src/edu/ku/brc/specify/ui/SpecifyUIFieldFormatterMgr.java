@@ -26,17 +26,19 @@ import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
 import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.af.core.db.AutoNumberIFace;
 import edu.ku.brc.af.ui.forms.formatters.GenericStringUIFieldFormatter;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.AutoNumberingScheme;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.SpAppResource;
 import edu.ku.brc.specify.datamodel.SpAppResourceDir;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
@@ -60,7 +62,7 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr implements C
 {
     private static final Logger  log      = Logger.getLogger(SpecifyUIFieldFormatterMgr.class);
     
-    protected static String         COLLECTION   = "Collection";
+    protected static String         DISCIPLINE   = "Discipline";
     protected static String         BACKSTOPDIR  = "BackStop";
     protected static String         UIFORMATTERS = "UIFormatters";
     
@@ -77,7 +79,7 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr implements C
     {
         super();
         
-        CommandDispatcher.register(COLLECTION, this); //$NON-NLS-1$
+        CommandDispatcher.register(DISCIPLINE, this); //$NON-NLS-1$
     }
     
     /**
@@ -131,13 +133,54 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr implements C
             return pathWasSet ? XMLHelper.readFileToDOM4J(new File(getLocalPath())) : XMLHelper.readDOMFromConfigDir(getLocalPath());
         }
 
-        AppResourceIFace appRes = AppContextMgr.getInstance().getResourceFromDir(COLLECTION, UIFORMATTERS); //$NON-NLS-1$ //$NON-NLS-2$
-        if (appRes != null)
+        return getDisciplineDOMFromResource(UIFORMATTERS, getLocalPath());
+    }
+    
+    /**
+     * MEthod for getting a Resource for a Discipline from the Database or disk.
+     * @param name
+     * @param localPath
+     * @return
+     */
+    public static Element getDisciplineDOMFromResource(final String name, final String localPath)
+    {
+        SpecifyAppContextMgr acMgr = (SpecifyAppContextMgr)AppContextMgr.getInstance();
+        DataProviderSessionIFace session = null;
+        try
         {
-            return AppContextMgr.getInstance().getResourceAsDOM(appRes);
-        } 
+            session = DataProviderFactory.getInstance().createSession();
+            
+            SpecifyUser user       = acMgr.getClassObject(SpecifyUser.class);
+            Discipline  discipline = acMgr.getClassObject(Discipline.class);
+            
+            SpAppResourceDir appResDir = acMgr.getAppResDir(session, user, discipline, null, null, false, name, false);
+            if (appResDir != null)
+            {
+                SpAppResource appRes = appResDir.getResourceByName(name);
+                if (appRes != null)
+                {
+                    session.close();
+                    session = null;
+                    
+                    return AppContextMgr.getInstance().getResourceAsDOM(appRes);
+                }
+            }
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyUIFieldFormatterMgr.class, ex);
+            
+        } finally
+        {
+            if (session != null)
+            {
+                session.close();
+            }
+        }
         
-        return XMLHelper.readDOMFromConfigDir(getLocalPath()); //$NON-NLS-1$
+        return XMLHelper.readDOMFromConfigDir(localPath); //$NON-NLS-1$
     }
     
     /**
@@ -151,13 +194,7 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr implements C
             return XMLHelper.readDOMFromConfigDir("backstop/uistrformatters.xml"); //$NON-NLS-1$
         }
 
-        AppResourceIFace appRes = AppContextMgr.getInstance().getResourceFromDir(COLLECTION, "UIStrFormatters"); //$NON-NLS-1$ //$NON-NLS-2$
-        if (appRes != null)
-        {
-            return AppContextMgr.getInstance().getResourceAsDOM(appRes);
-        } 
-        
-        return XMLHelper.readDOMFromConfigDir("backstop/uistrformatters.xml"); //$NON-NLS-1$
+        return getDisciplineDOMFromResource(UIFORMATTERS+"_STRS", "backstop/uistrformatters.xml");
     }
     
     /**
@@ -245,47 +282,96 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr implements C
             }
         } else
         {
-            AppResourceIFace appRes = AppContextMgr.getInstance().getResourceFromDir(COLLECTION, UIFORMATTERS);
-            if (appRes != null)
+            saveDisciplineResource(UIFORMATTERS, xml);
+        }
+    }
+    
+    /**
+     * Saves an Discipline level XML document to a Database Resource.
+     * @param resName the name of the resource
+     * @param xml the XML to be saved.
+     */
+    public static void saveDisciplineResource(final String resName, final String xml)
+    {
+        SpecifyAppContextMgr acMgr = (SpecifyAppContextMgr)AppContextMgr.getInstance();
+        DataProviderSessionIFace session = null;
+        try
+        {
+            session = DataProviderFactory.getInstance().createSession();
+            
+            SpecifyUser user       = acMgr.getClassObject(SpecifyUser.class);
+            Discipline  discipline = acMgr.getClassObject(Discipline.class);
+            
+            boolean found = false;
+            SpAppResourceDir appResDir = acMgr.getAppResDir(session, user, discipline, null, null, false, resName, false);
+            if (appResDir != null)
             {
-                appRes.setDataAsString(xml);
-                AppContextMgr.getInstance().saveResource(appRes);
-               
-            } else
-            {
-                // Save the UIFieldFormatters into a new Resource in Collections.
-                SpecifyAppContextMgr context = (SpecifyAppContextMgr)AppContextMgr.getInstance();
-                SpAppResourceDir     collDir = context.getSpAppResourceDirByName(COLLECTION);
+                SpAppResource appRes = appResDir.getResourceByName(resName);
                 
-               if (collDir != null)
+                if (appRes != null)
                 {
-                    SpAppResource uifAppRes = context.getSpAppResourceDirByName(BACKSTOPDIR).getResourceByName(UIFORMATTERS);
-                    SpAppResource appResUF  = new SpAppResource();
-                    appResUF.initialize();
-                    if (uifAppRes != null)
+                    session.close();
+                    session = null;
+                    
+                    appRes.setDataAsString(xml);
+                    AppContextMgr.getInstance().saveResource(appRes);
+                    found = true;
+                }
+            }
+            
+            if (!found)
+            {
+                appResDir = acMgr.getAppResDir(session, user, discipline, null, null, false, resName, true);
+                if (appResDir != null)
+                {
+                    SpAppResource diskAppRes = acMgr.getSpAppResourceDirByName(BACKSTOPDIR).getResourceByName(resName);
+                    SpAppResource newAppRes  = new SpAppResource();
+                    newAppRes.initialize();
+                    if (diskAppRes != null)
                     {
-                        appResUF.setMetaData(uifAppRes.getMetaData());
-                        appResUF.setDescription(uifAppRes.getDescription());
-                        appResUF.setFileName(uifAppRes.getFileName());
-                        appResUF.setMimeType(uifAppRes.getMimeType());
-                        appResUF.setName(uifAppRes.getName());
+                        newAppRes.setMetaData(diskAppRes.getMetaData());
+                        newAppRes.setDescription(diskAppRes.getDescription());
+                        newAppRes.setFileName(diskAppRes.getFileName());
+                        newAppRes.setMimeType(diskAppRes.getMimeType());
+                        newAppRes.setName(diskAppRes.getName());
 
-                        SpecifyUser user  = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
-                        Agent       agent = AppContextMgr.getInstance().getClassObject(Agent.class);
-                        appResUF.setCreatedByAgent(agent);
-                        appResUF.setSpecifyUser(user);
-
-                        appResUF.setLevel(uifAppRes.getLevel());
+                        newAppRes.setLevel(diskAppRes.getLevel());
+                    } else
+                    {
+                        newAppRes.setName(resName);
+                        newAppRes.setLevel((short)0);
+                        newAppRes.setMimeType("text/xml");
                     }
-                    appResUF.setSpAppResourceDir(collDir);
-                    collDir.getSpAppResources().add(appResUF);
-                    appResUF.setDataAsString(xml);
-                    ((SpecifyAppContextMgr) AppContextMgr.getInstance()).saveResource(appResUF);
+                    
+                    Agent agent = AppContextMgr.getInstance().getClassObject(Agent.class);
+                    newAppRes.setCreatedByAgent(agent);
+                    newAppRes.setSpecifyUser(user);
+                    
+                    newAppRes.setSpAppResourceDir(appResDir);
+                    appResDir.getSpAppResources().add(newAppRes);
+                    newAppRes.setDataAsString(xml);
+                    
+                    session.close();
+                    session = null;
+                    ((SpecifyAppContextMgr) AppContextMgr.getInstance()).saveResource(newAppRes);
                     
                 } else
                 {
-                    AppContextMgr.getInstance().putResourceAsXML(UIFORMATTERS, xml); //$NON-NLS-1$
+                    AppContextMgr.getInstance().putResourceAsXML(resName, xml); //$NON-NLS-1$
                 }
+            }
+
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyUIFieldFormatterMgr.class, ex);
+            
+        } finally
+        {
+            if (session != null)
+            {
+                session.close();
             }
         }
     }
@@ -417,7 +503,7 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr implements C
      */
     public void doCommand(final CommandAction cmdAction)
     {
-        if (cmdAction.isType(COLLECTION) && cmdAction.isAction("Changed")) //$NON-NLS-1$ //$NON-NLS-2$
+        if (cmdAction.isType(DISCIPLINE) && cmdAction.isAction("Changed")) //$NON-NLS-1$ //$NON-NLS-2$
         {
             load();
         }

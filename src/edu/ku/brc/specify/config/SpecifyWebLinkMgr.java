@@ -13,13 +13,19 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.af.ui.weblink.WebLinkMgr;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.datamodel.SpAppResource;
+import edu.ku.brc.specify.datamodel.SpAppResourceDir;
+import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.specify.ui.SpecifyUIFieldFormatterMgr;
 import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
 
 /**
@@ -32,11 +38,10 @@ import edu.ku.brc.ui.CommandListener;
  */
 public class SpecifyWebLinkMgr extends WebLinkMgr implements CommandListener
 {
-    private static final Logger log = Logger.getLogger(SpecifyWebLinkMgr.class);
+    //private static final Logger log = Logger.getLogger(SpecifyWebLinkMgr.class);
             
+    private static final String DISCIPLINE    = "Discipline";
     private static final String WEBLINKS      = "WebLinks";
-    private static final String DISCPLINEDIR  = "Discipline";
-    private static final String COMMONDIR     = "Common";
     private static final String DISKLOC       = "common/weblinks.xml";
     
     protected static boolean    doingLocal = false;
@@ -55,6 +60,7 @@ public class SpecifyWebLinkMgr extends WebLinkMgr implements CommandListener
     public SpecifyWebLinkMgr(final SpecifyWebLinkMgr specifyWebLinkMgr)
     {
         super(specifyWebLinkMgr);
+        CommandDispatcher.register(DISCIPLINE, this); //$NON-NLS-1$
         read();
     }
     
@@ -75,12 +81,14 @@ public class SpecifyWebLinkMgr extends WebLinkMgr implements CommandListener
     {
         reset();
         
+        String xml = null;
         if (doingLocal)
         {
             File file = XMLHelper.getConfigDir(DISKLOC);
             try
             {
-                loadFromXML(FileUtils.readFileToString(file));
+                xml = FileUtils.readFileToString(file);
+                
             } catch (IOException ex)
             {
                 edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
@@ -89,35 +97,45 @@ public class SpecifyWebLinkMgr extends WebLinkMgr implements CommandListener
             }
         } else
         {
-            AppResourceIFace appRes = AppContextMgr.getInstance().getResourceFromDir(DISCPLINEDIR, WEBLINKS);
-            if (appRes != null)
+            SpecifyAppContextMgr acMgr = (SpecifyAppContextMgr)AppContextMgr.getInstance();
+            DataProviderSessionIFace session = null;
+            try
             {
-                loadFromXML(AppContextMgr.getInstance().getResourceAsXML(appRes));
+                session = DataProviderFactory.getInstance().createSession();
                 
-            } else
-            {
-                appRes = AppContextMgr.getInstance().getResourceFromDir(COMMONDIR, WEBLINKS);
-                if (appRes != null)
+                SpecifyUser user       = acMgr.getClassObject(SpecifyUser.class);
+                Discipline  discipline = acMgr.getClassObject(Discipline.class);
+                
+                SpAppResourceDir appResDir = acMgr.getAppResDir(session, user, discipline, null, null, false, WEBLINKS, false);
+                if (appResDir != null)
                 {
-                    loadFromXML(AppContextMgr.getInstance().getResourceAsXML(appRes));
-                   
-                } else
-                {
-                    log.error("Couldn't get WebLinks");
+                    SpAppResource appRes = appResDir.getResourceByName(WEBLINKS);
+                    if (appRes != null)
+                    {
+                        session.close();
+                        session = null;
+                        
+                        xml = AppContextMgr.getInstance().getResourceAsXML(appRes);
+                    }
                 }
                 
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyUIFieldFormatterMgr.class, ex);
                 
-                /* else
+            } finally
+            {
+                if (session != null)
                 {
-                    // Get the default resource by name and copy it to a new User Area Resource
-                    AppResourceIFace newAppRes = AppContextMgr.getInstance().copyToDirAppRes(DISCPLINEDIR, WEBLINKS);
-                    if (newAppRes != null)
-                    {
-                        // Save it in the User Area
-                        AppContextMgr.getInstance().saveResource(newAppRes);
-                        loadFromXML(AppContextMgr.getInstance().getResourceAsXML(newAppRes));
-                    }
-                }*/
+                    session.close();
+                }
+            }
+            
+            if (xml != null)
+            {
+                loadFromXML(xml);
             }
         }
     }
@@ -147,23 +165,7 @@ public class SpecifyWebLinkMgr extends WebLinkMgr implements CommandListener
                 
             } else
             {
-                AppResourceIFace appRes = AppContextMgr.getInstance().getResourceFromDir(DISCPLINEDIR, WEBLINKS);
-                if (appRes != null)
-                {
-                    appRes.setDataAsString(convertToXML());
-                    AppContextMgr.getInstance().saveResource(appRes);
-                   
-                } else
-                {
-                    String xml = convertToXML();
-                    appRes = AppContextMgr.getInstance().createAppResourceForDir(DISCPLINEDIR);
-                    appRes.setLevel((short)0);
-                    appRes.setName(WEBLINKS);
-                    appRes.setMimeType("text/xml");
-                    appRes.setDataAsString(xml);
-                    
-                    AppContextMgr.getInstance().saveResource(appRes);
-                }
+                SpecifyUIFieldFormatterMgr.saveDisciplineResource(WEBLINKS, convertToXML());
                 hasChanged = false;
             }
         }
@@ -178,7 +180,7 @@ public class SpecifyWebLinkMgr extends WebLinkMgr implements CommandListener
      */
     public void doCommand(final CommandAction cmdAction)
     {
-        if (cmdAction.isType("Collection") && cmdAction.isAction("Changed"))
+        if (cmdAction.isType(DISCIPLINE) && cmdAction.isAction("Changed"))
         {
             read();
         }
