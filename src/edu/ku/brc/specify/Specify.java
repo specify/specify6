@@ -1334,34 +1334,34 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                         }
                     });
 
-        }
         
-        JCheckBoxMenuItem cbMenuItem = new JCheckBoxMenuItem("Security Activated"); //$NON-NLS-1$
-        menu.add(cbMenuItem);
-        cbMenuItem.setSelected(AppContextMgr.isSecurityOn());
-        cbMenuItem.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent ae)
-                    {
-                        boolean isSecurityOn = !SpecifyAppContextMgr.isSecurityOn();                 
-                        AppContextMgr.getInstance().setSecurity(isSecurityOn);
-                        ((JMenuItem)ae.getSource()).setSelected(isSecurityOn);
-                        
-                        JLabel secLbl = statusField.getSectionLabel(3);
-                        if (secLbl != null)
+            cbMenuItem = new JCheckBoxMenuItem("Security Activated"); //$NON-NLS-1$
+            menu.add(cbMenuItem);
+            cbMenuItem.setSelected(AppContextMgr.isSecurityOn());
+            cbMenuItem.addActionListener(new ActionListener() {
+                        public void actionPerformed(ActionEvent ae)
                         {
-                            secLbl.setIcon(IconManager.getImage(isSecurityOn ? "SecurityOn" : "SecurityOff", IconManager.IconSize.Std16));
-                            secLbl.setHorizontalAlignment(SwingConstants.CENTER);
-                            secLbl.setToolTipText(getResourceString("Specify.SEC_" + (isSecurityOn ? "ON" : "OFF")));
-                        }
-                    }});
-        
-        JMenuItem sizeMenuItem = new JMenuItem("Set to "+PREFERRED_WIDTH+"x"+PREFERRED_HEIGHT); //$NON-NLS-1$
-        menu.add(sizeMenuItem);
-        sizeMenuItem.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent ae)
-                    {
-                        topFrame.setSize(PREFERRED_WIDTH, PREFERRED_HEIGHT);
-                    }});
+                            boolean isSecurityOn = !SpecifyAppContextMgr.isSecurityOn();                 
+                            AppContextMgr.getInstance().setSecurity(isSecurityOn);
+                            ((JMenuItem)ae.getSource()).setSelected(isSecurityOn);
+                            
+                            JLabel secLbl = statusField.getSectionLabel(3);
+                            if (secLbl != null)
+                            {
+                                secLbl.setIcon(IconManager.getImage(isSecurityOn ? "SecurityOn" : "SecurityOff", IconManager.IconSize.Std16));
+                                secLbl.setHorizontalAlignment(SwingConstants.CENTER);
+                                secLbl.setToolTipText(getResourceString("Specify.SEC_" + (isSecurityOn ? "ON" : "OFF")));
+                            }
+                        }});
+            
+            JMenuItem sizeMenuItem = new JMenuItem("Set to "+PREFERRED_WIDTH+"x"+PREFERRED_HEIGHT); //$NON-NLS-1$
+            menu.add(sizeMenuItem);
+            sizeMenuItem.addActionListener(new ActionListener() {
+                        public void actionPerformed(ActionEvent ae)
+                        {
+                            topFrame.setSize(PREFERRED_WIDTH, PREFERRED_HEIGHT);
+                        }});
+        }
         
         //----------------------------------------------------
         //-- Helper Menu
