@@ -1058,7 +1058,7 @@
             
             <desc><![CDATA[Borrow viewing form.]]></desc>
             <columnDef os="exp">p,2px,122px,5px:g,p,2px,122px,10px,p,5px:g,p,2px,122px,0px,p,p:g</columnDef> 
-            <columnDef>105px,2px,122px,5px,125px,2px,122px,10px,140px,5px,70px,2px,122px,0px,15px,p:g</columnDef>
+            <columnDef>105px,2px,122px,5px,125px,2px,122px,10px,140px,5px,80px,2px,112px,0px,15px,p:g</columnDef>
             <columnDef os="mac">130px,2px,142px,5px,170px,2px,142px,10px,200px,5px,80px,2px,142px,0px,15px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="1dlu"/>
             
@@ -1145,7 +1145,7 @@
             <desc><![CDATA[BorrowMaterial viewing form.]]></desc>
             
             <columnDef os="exp">p,2px,160px,5px:g,p,2px,90px,5px:g,p,2px,90px,5px:g,p,2px,90px,p:g</columnDef>
-            <columnDef>105px,2px,160px,5px,70px,2px,90px,5px,90px,2px,150px,5px,54px,2px,90px,0px,p:g</columnDef>
+            <columnDef>105px,2px,120px,5px,70px,2px,90px,5px,122px,2px,90px,5px,122px,2px,90px,0px,p:g</columnDef>
             <columnDef os="mac">130px,2px,150px,5px,90px,2px,100px,5px,160px,2px,109px,5px,160px,2px,110px,0px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="1dlu"/>
             
@@ -1761,8 +1761,10 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[DNA Sequenc]]></desc>
             <enableRules/>
-                <columnDef>100px,2px,202px,5px,165px,2px,201px,0px,p:g</columnDef>
-                <columnDef os="mac">130px,2px,300px,5px,200px,2px,201,0px,p:g</columnDef>
+
+                <columnDef os="exp">p,2px,256px,5px:g,p,2px,257px:g,p</columnDef>
+                <columnDef>120px,2px,256px,5px,185px,2px,257px,0px,p:g</columnDef>
+                <columnDef os="mac">130px,2px,331px,5px,231px,2px,331,0px,p:g</columnDef>
                 <rowDef auto="true" cell="t:p" sep="2px"/>
             <rows>
                 <row>
@@ -1817,23 +1819,24 @@
       	<desc><![CDATA[DNA Sequence Form]]></desc>
         <enableRules/>
         
-            <columnDef>100px,2px,80px,5px,90px,2px,95px,5px,100px,2px,196px,15px,p:g</columnDef>
-            <columnDef os="mac">130px,2px,115px,5px,120px,2px,115px,5px,129px,2px,215px,15px,p:g</columnDef>
+            <columnDef os="exp">p,2px,76px,2px,88px,5px,p:g,2px,100px,5px:g,p,2px,200px,p,p:g</columnDef>
+            <columnDef>100px,2px,76px,2px,88px,5px,125px,2px,100px,5px,120px,2px,200px,15px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,76px,2px,115px,5px,165px,2px,135px,5px,158px,2px,235px,15px,p:g</columnDef>
             <!--  <rowDef>p,2px,p,2px,p,2px,t:p:g,2px,p,2px,p,2px,p,2px,p,2px,p,2px,p,2px,p,2px</rowDef> -->
             <rowDef auto="true" cell="t:p" sep="2px"/>
             
 	      <rows>
 	          <row>
 	              <cell type="label" labelfor="11"/>
-	              <cell type="field" id="11" name="boldBarcodeId" uitype="text"/>
-	              <cell type="label" labelfor="2"/>
-	              <cell type="field" id="2" name="moleculeType" uitype="text"/>
+	              <cell type="field" id="11" name="boldBarcodeId" uitype="text" colspan="3"/>
+	              <cell type="label" labelfor="3"/>
+	              <cell type="field" id="3" name="boldLastUpdateDate" uitype="formattedtext" uifieldformatter="Date" default="Today"/>
 	              <cell type="label" labelfor="7"/>
 	              <cell type="field" id="7" name="collectionObject" uitype="querycbx" initialize="name=CollectionObject;editbtn=false;newbtn=false" />
 	          </row>
 	          <row>
-	              <cell type="label" labelfor="3"/>
-	              <cell type="field" id="3" name="boldLastUpdateDate" uitype="formattedtext" uifieldformatter="Date" default="Today"/>
+	              <cell type="label" labelfor="2"/>
+	              <cell type="field" id="2" name="moleculeType" uitype="text" colspan="3"/>
 	              <cell type="label" label="" colspan="3"/>
 	              <cell type="label" labelfor="22"/>
 	              <cell type="field" id="22" name="sequencer" uitype="querycbx" initialize="name=Agent"  />
@@ -1841,10 +1844,10 @@
 	          <row>
 	          </row>
 	          <row>
-	              <cell type="separator" label="Nucleotide Sequence" colspan="12"/>
+	              <cell type="separator" label="Nucleotide Sequence" colspan="14"/>
 	          </row>
 	          <row>
-	              <cell type="panel" id="16" name="outerPanel" coldef="100px,2px,80px" rowdef="p,2px,p,2px,p,2px,p,2px,p,2px,p,2px" colspan="3">
+	              <cell type="panel" id="16" name="outerPanel" coldef="100px,2px,76px" rowdef="p,2px,p,2px,p,2px,p,2px,p,2px,p,2px" colspan="3">
 	                  <rows>
 	                      <row>
 	                          <cell type="label" label="Total Residues:" initialize="align=right"/>
@@ -1873,7 +1876,7 @@
 	                  </rows>
 	              </cell>
 	              <cell type="label" label="Gene Sequence" initialize="align=right"/>
-	              <cell type="field" id="4" name="geneSequence" uitype="textarea" colspan="5" rows="9"/>
+	              <cell type="field" id="4" name="geneSequence" uitype="textarea" colspan="7" rows="9"/>
 	          </row>
 	          <!--
 	              <row>
@@ -1887,7 +1890,7 @@
 	          
 	          
 	          <row>
-	              <cell type="subview" viewname="DNASequenceRun" id="21" name="dnaSequencingRuns" colspan="12" />
+	              <cell type="subview" viewname="DNASequenceRun" id="21" name="dnaSequencingRuns" colspan="14" />
 	          </row>
 	          
 	          <!--              <row>
@@ -2072,8 +2075,9 @@
             class="edu.ku.brc.specify.datamodel.FieldNotebook" 
             gettable="edu.ku.brc.af.ui.forms.DataGetterForObj" 
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
-            
             <desc><![CDATA[Form For FieldNotebook]]></desc>
+            
+            <columnDef os="exp">p,2px,111px,5px:g,p,2px,95px,5px:g,p,2px,95px,5px:g,p,2px,200px,0px,p,p:g</columnDef>
             <columnDef>100px,2px,111px,5px,73px,2px,95px,5px,70px,2px,95px,5px,60px,2px,200px,0px,15px,p:g</columnDef>
             <columnDef os="mac">130px,2px,154px,5px,95px,2px,115px,5px,95px,2px,115px,5px,90px,2px,215px,0px,15px,p:g</columnDef>
             <rowDef auto="true" sep="2px" cell="p"/>
@@ -2112,7 +2116,39 @@
                     </row> -->
             </rows>
         </viewdef>
-
+                
+        <viewdef 
+            type="form" 
+            name="FieldNotebookPageSet" 
+            class="edu.ku.brc.specify.datamodel.FieldNotebookPageSet" 
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj" 
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            <desc><![CDATA[Form For FieldNotebookPage]]></desc>
+            
+            <columnDef os="exp">p,2px,111px,5px,80px,2px,95px,p:g,75px,p:g</columnDef>
+            <columnDef>100px,2px,111px,5px,73px,2px,95px,370px,69px,0px,10px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,154px,5px,95px,2px,115px,454px,75px,0px,10px,p:g</columnDef>
+            <rowDef auto="true" sep="2px" cell="p"/>
+            <rows>
+                <row>
+                    <cell type="label" labelfor="2"/>
+                    <cell type="field" id="2" name="startDate" uitype="formattedtext" uifieldformatter="Date"/>
+                    <cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="endDate" uitype="formattedtext" uifieldformatter="Date"/>
+                    <cell type="subview" id="4" name="attachments" viewname="ObjectAttachment" initialize="btn=true;icon=FieldNotebookPageSetAttachment;addsearch=true"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="description" uitype="textareabrief" rows="2" colspan="8"/>
+                </row>
+                <row>
+                    <cell type="subview" id="6" name="pages" viewname="FieldNotebookPage" defaulttype="table" colspan="10"/>
+                </row>
+                <row>
+                    <cell type="separator" label="" colspan="10"/>
+                </row>
+            </rows>
+        </viewdef>
         
         <viewdef 
             type="form" 
@@ -2120,10 +2156,11 @@
             class="edu.ku.brc.specify.datamodel.FieldNotebookPage" 
             gettable="edu.ku.brc.af.ui.forms.DataGetterForObj" 
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
-            
             <desc><![CDATA[Form For FieldNotebookPage]]></desc>
+            
+            <columnDef os="exp">p,2px,111px,5px,80px,2px,95px,p:g,75px,p:g</columnDef>
             <columnDef>100px,2px,111px,5px,73px,2px,95px,370px,69px,p:g</columnDef>
-            <columnDef os="mac">130px,2px,154px,5px,95px,2px,115px,454px,75px,0px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,154px,5px,95px,2px,115px,450px,75px,0px,p:g</columnDef>
             <rowDef auto="true" sep="2px" cell="p"/>
             <rows>
                 
@@ -2141,7 +2178,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="description" uitype="textareabrief" rows="2" colspan="7"/>
+                    <cell type="field" id="1" name="description" uitype="textareabrief" rows="2" colspan="8"/>
                 </row>
             </rows>
         </viewdef>
@@ -2155,38 +2192,6 @@
             
             <desc><![CDATA[Determination subform table for Collection Object form.]]></desc>
             <definition>FieldNotebookPage</definition>
-        </viewdef>
-                
-        <viewdef 
-            type="form" 
-            name="FieldNotebookPageSet" 
-            class="edu.ku.brc.specify.datamodel.FieldNotebookPageSet" 
-            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj" 
-            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
-            
-            <desc><![CDATA[Form For FieldNotebookPage]]></desc>
-            <columnDef>100px,2px,111px,5px,73px,2px,95px,370px,69px,0px,10px,p:g</columnDef>
-            <columnDef os="mac">130px,2px,154px,5px,95px,2px,115px,454px,75px,0px,10px,p:g</columnDef>
-            <rowDef auto="true" sep="2px" cell="p"/>
-            <rows>
-                <row>
-                    <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="startDate" uitype="formattedtext" uifieldformatter="Date"/>
-                    <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="endDate" uitype="formattedtext" uifieldformatter="Date"/>
-                    <cell type="subview" id="4" name="attachments" viewname="ObjectAttachment" initialize="btn=true;icon=FieldNotebookPageSetAttachment;addsearch=true"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="description" uitype="textareabrief" rows="2" colspan="8"/>
-                </row>
-                <row>
-                    <cell type="subview" id="6" name="pages" viewname="FieldNotebookPage" defaulttype="table" colspan="11"/>
-                </row>
-                <row>
-                    <cell type="separator" label="" colspan="10"/>
-                </row>
-            </rows>
         </viewdef>
         
         <viewdef
