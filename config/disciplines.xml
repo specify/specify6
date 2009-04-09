@@ -10,7 +10,6 @@
     
     <discipline name="fish"         title="Ichthyology"  abbrev="FISH" isembedce="false" type="0"/>
     <discipline name="herpetology"  title="Herpetology"  abbrev="HRP"  isembedce="true" type="0"/>
-    <discipline name="reptile"      title="Reptile"      abbrev="RPTL" folder="herpetology" isembedce="true" type="0"/>
     <discipline name="paleobotany"  title="Paleobotany"  abbrev="PLB"  isembedce="true" type="0"/>
     <discipline name="invertpaleo"  title="Invertebrate Paleontology"  abbrev="IVTP" isembedce="true" type="0"/>
     <discipline name="vertpaleo"    title="Vertebrate Paleontology"    abbrev="VRTP" isembedce="true" type="0"/>

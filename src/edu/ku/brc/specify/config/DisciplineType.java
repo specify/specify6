@@ -45,7 +45,7 @@ public class DisciplineType implements Comparable<DisciplineType>
 {
     private static final Logger  log = Logger.getLogger(DisciplineType.class);
     
-    public enum STD_DISCIPLINES {fish, herpetology, reptile, paleobotany, invertpaleo, vertpaleo, bird, 
+    public enum STD_DISCIPLINES {fish, herpetology, paleobotany, invertpaleo, vertpaleo, bird, 
                                  mammal, insect, botany, invertebrate, vascplant, minerals, fungi, 
                                  anthropology}
             

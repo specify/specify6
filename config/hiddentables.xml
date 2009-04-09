@@ -15,13 +15,6 @@
 		<table name="agentvariant"/>
 	</discipline>
 	
-	<discipline name="reptile">
-		<table name="paleocontext"/>
-		<table name="lithostrat"/>
-		<table name="geologictimeperiod"/>
-		<table name="agentvariant"/>
-	</discipline>
-	
 	<discipline name="bird">
 		<table name="paleocontext"/>
 		<table name="lithostrat"/>

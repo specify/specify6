@@ -754,15 +754,15 @@ public class BuildSampleDatabase
         {
             case fish         : fileName = "col2008_fishes.xls"; break;
             case herpetology  : fileName = "col2008_herps.xls"; break;
-            case reptile      : fileName = "col2008_reptilia.xls"; break;
             case paleobotany  : break;
             case invertpaleo  : break;
             case vertpaleo    : break;
             case bird         : fileName = "col2008_aves.xls"; break;
             case mammal       : fileName = "col2008_mammalia.xls"; break;
             case insect       : fileName = "col2008_orthoptera.xls"; break;
-            case botany       : break;
+            case botany       : fileName = "col2008_poales.xls"; break;
             case invertebrate : fileName = "col2008_inverts.xls"; break;
+            case fungi        : fileName = "col2008_mycology.xls"; break;
             default: break;
         }
         
@@ -778,6 +778,7 @@ public class BuildSampleDatabase
             }
         }
         
+        log.debug(" taxonWasBuilt "+taxonWasBuilt);
         if (!taxonWasBuilt)
         {
             TaxonTreeDefItem ttdi = new TaxonTreeDefItem();
@@ -815,6 +816,8 @@ public class BuildSampleDatabase
         
         frame.setProcess(++createStep);
         
+        log.debug(" preLoadTaxon ["+preLoadTaxon+"]");
+        log.debug(" fileName     ["+fileName+"]");
         if (preLoadTaxon && fileName != null)
         {
             convertTaxonFromXLS(taxonTreeDef, fileName); // this does a startTx() / commitTx()
@@ -6202,8 +6205,6 @@ public class BuildSampleDatabase
                 {
                     case herpetology : method = "trap";
                     break;
-                    case reptile : method = "trap";
-                    break; 
                     case paleobotany : method = "dug";
                     break; 
                     case vertpaleo : method = "dug";
@@ -7741,7 +7742,7 @@ public class BuildSampleDatabase
                 properties.load(new FileInputStream(initFile));
                 return properties;
             } 
-            System.err.println("Couldn't find Init Prefs ["+initFile.getAbsolutePath()+"]");
+            log.debug("Couldn't find Init Prefs ["+initFile.getAbsolutePath()+"]");
             
         } catch (Exception ex)
         {
@@ -8138,10 +8139,12 @@ public class BuildSampleDatabase
     {
         
         File file = XMLHelper.getConfigDir("../demo_files/taxonomy/"+fileName);
+        log.debug(" file "+file.getAbsolutePath() +"  "+file.exists());
         if (!file.exists())
         {
             log.error("Couldn't file[" + file.getAbsolutePath() + "] checking the config dir");
             file = XMLHelper.getConfigDir(fileName);
+            log.debug(" file "+file.getAbsolutePath() +"  "+file.exists());
             if (!file.exists())
             {
                 file = new File("Specify/demo_files/"+fileName);
@@ -8205,10 +8208,12 @@ public class BuildSampleDatabase
         taxonHash.clear();
 
         File file = XMLHelper.getConfigDir("../demo_files/taxonomy/"+fileName);
+        log.debug(" file "+file.getAbsolutePath() +"  "+file.exists());
         if (!file.exists())
         {
             log.error("Couldn't file[" + file.getAbsolutePath() + "] checking the config dir");
             file = XMLHelper.getConfigDir(fileName);
+            log.debug(" file "+file.getAbsolutePath() +"  "+file.exists());
             if (!file.exists())
             {
                 file = new File("Specify/demo_files/"+fileName);

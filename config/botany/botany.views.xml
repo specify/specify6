@@ -102,7 +102,7 @@
                     <cell type="subview" viewname="Determination" id="6" name="determinations" colspan="12" rows="5"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="CollectingEventSub" id="21" label="Collection Information" name="collectingEvent" colspan="12" rows="5"/>
+                    <cell type="subview" viewname="CollectingEventSub" id="21" name="collectingEvent" colspan="12" rows="5"/>
                 </row>
                 <row>
                     <cell type="subview" viewname="Preparation" id="8" name="preparations" defaulttype="table" colspan="12" rows="3"/>

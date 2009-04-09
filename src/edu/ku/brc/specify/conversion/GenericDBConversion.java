@@ -221,13 +221,13 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         oldDBConn = oldDB.createConnection();
         newDBConn = DBConnection.getInstance().createConnection();
         
-        //                      0        1     2     3     4     5    6      7     8     9    10    11   12    13    14
-        int[]     objTypes  = {10,      14,   11,   17,   18,   15,   9,    12,   13,   16,   19,    0,   0,    0,    0,  };
-        boolean[] isEmbdded = {false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, };
+        //                      0        1     2     3     4     5    6      7     8     9    10    11   12    13   
+        int[]     objTypes  = {10,      14,   17,   18,   15,   9,    12,   13,   16,   19,    0,   0,    0,    0,  };
+        boolean[] isEmbdded = {false, true,  true, true, true, true, true, true, true, true, true, true, true, true, };
         
         /*
-            0            1        2            3            4          5     6       7       8       9            10        11     12            13
-         fish, herpetology, reptile, paleobotany, invertpaleo, vertpaleo, bird, mammal, insect, botany, invertebrate, minerals, fungi, anthropology
+            0            1            2            3          4     5       6       7       8       9            10      11       12        
+         fish, herpetology, paleobotany, invertpaleo, vertpaleo, bird, mammal, insect, botany, invertebrate, minerals, fungi, anthropology
          */
         for (DisciplineType.STD_DISCIPLINES dt : DisciplineType.STD_DISCIPLINES.values())
         {
