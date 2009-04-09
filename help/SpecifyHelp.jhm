@@ -263,5 +263,11 @@
    <mapID target="intro_tab_bar" url="SpecifyHelp/Intro/intro.html#tab_bar"/>
    <mapID target="intro_status_bar" url="SpecifyHelp/Intro/intro.html#status_bar"/>
    <mapID target="iReport_overview" url="SpecifyHelp/ReportsLabels/specifyireports.html#ireport_overview"/>
-
+   <mapID target="SC_caption" url="SpecifyHelp/SchemaConfig/schema_config.html#change_caption"/>
+   <mapID target="SC_table_format" url="SpecifyHelp/SchemaConfig/schema_config.html#display_format"/>
+   <mapID target="SC_hide_table" url="SpecifyHelp/SchemaConfig/schema_config.html#hide_table"/>
+   <mapID target="SC_field_description" url="SpecifyHelp/SchemaConfig/schema_config.html#field_description"/>   
+   <mapID target="SC_aggregate" url="SpecifyHelp/SchemaConfig/schema_config.html#aggregation"/>  
+   <mapID target="SC_field_format" url="SpecifyHelp/SchemaConfig/schema_config.html#field_format"/>  
+   
 </map>
