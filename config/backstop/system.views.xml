@@ -542,30 +542,27 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Collection Data Entry Form]]></desc>
-            <columnDef>p,3dlu,p,p:g</columnDef>
+            <columnDef>p,3dlu,p,4px,p,2px,p,f:p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>            
             
             <rows>
                 <row>
                     <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="collectionName" uitype="text" isrequired="true"/> 
-                </row>
-                <row>
+                    <cell type="field" id="1" name="collectionName" uitype="text" isrequired="true" cols="25"/> 
                     <cell type="label" label=" "/>
-                    <cell type="field" id="6" name="isEmbeddedCollectingEvent" label="Add Collecting Event Automatically" uitype="checkbox"/> 
+                    <cell type="field" id="6" name="isEmbeddedCollectingEvent" label="Add Collecting Event Automatically" uitype="checkbox" colspan="5"/> 
                 </row>
                 <row>
                     <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="code" uitype="text" isrequired="false"/>
+                    <cell type="field" id="2" name="code" uitype="text" isrequired="false" colspan="5"/>
                 </row>
-                
                 <row>
                     <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="discipline" uitype="text" readonly="true"/>
+                    <cell type="field" id="3" name="discipline" uitype="text" readonly="true" colspan="5"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="5"/>
-                    <cell type="field" id="5" name="description" uitype="textarea" colspan="2"/>
+                    <cell type="field" id="5" name="description" uitype="textarea" colspan="6"/>
                 </row>
             </rows>
         </viewdef>
@@ -578,72 +575,70 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Collection Data Entry Form]]></desc>
-            <columnDef>p,3dlu,p,p:g</columnDef>
+            <columnDef>p,2px,p,4px,p,2px,p:g,f:p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>            
             
             <rows>
                 <row>
                     <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="discipline" uitype="text" readonly="true"/>
+                    <cell type="field" id="3" name="discipline" uitype="text" readonly="true" colspan="5"/>
                 </row>
                 <row>
                     <cell type="label" label="Numbering Scheme:" initialize="align=right;"/>
-                    <cell type="field" id="4" name="catalogNumberingSchemeLbl" uitype="text" readonly="true" ignore="true"/>
+                    <cell type="field" id="4" name="catalogNumberingSchemeLbl" uitype="text" readonly="true" ignore="true" colspan="5"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="collectionName" uitype="text" isrequired="true"/> 
-                </row>
-                <row>
                     <cell type="label" label=" "/>
                     <cell type="field" id="6" name="isEmbeddedCollectingEvent" label="Add Collecting Event Automatically" uitype="checkbox"/> 
                 </row>
                 <row>
                     <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="code" uitype="text" isrequired="false"/>
+                    <cell type="field" id="2" name="code" uitype="text" isrequired="false" colspan="5"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="5"/>
-                    <cell type="field" id="5" name="description" uitype="textarea" colspan="2"/>
+                    <cell type="field" id="5" name="description" uitype="textarea" colspan="5"/>
                 </row>
                 <row>
-                    <cell type="separator" label="ABCD Schema Fields (Optional)" colspan="3"/>
+                    <cell type="separator" label="ABCD Schema Fields (Optional)" colspan="6"/>
                 </row>
                  <row>
                     <cell type="label" labelfor="8"/>
-                    <cell type="field" id="8" name="kingdomCoverage" uitype="text" isrequired="false"/>
+                    <cell type="field" id="8" name="kingdomCoverage" uitype="text" isrequired="false" colspan="5"/>
                 </row>
                  <row>
                     <cell type="label" labelfor="9"/>
-                    <cell type="field" id="9" name="primaryFocus" uitype="text" isrequired="false"/>
+                    <cell type="field" id="9" name="primaryFocus" uitype="text" isrequired="false" colspan="5"/>
                 </row>
                  <row>
                     <cell type="label" labelfor="10"/>
-                    <cell type="field" id="10" name="collectionType" uitype="text" isrequired="false"/>
+                    <cell type="field" id="10" name="collectionType" uitype="text" isrequired="false" colspan="5"/>
                 </row>
                  <row>
                     <cell type="label" labelfor="11"/>
-                    <cell type="field" id="11" name="primaryPurpose" uitype="text" isrequired="false"/>
+                    <cell type="field" id="11" name="primaryPurpose" uitype="text" isrequired="false" colspan="5"/>
                 </row>
                  <row>
                     <cell type="label" labelfor="12"/>
-                    <cell type="field" id="12" name="preservationMethodType" uitype="text" isrequired="false"/>
+                    <cell type="field" id="12" name="preservationMethodType" uitype="text" isrequired="false" colspan="5"/>
                 </row>
                  <row>
                     <cell type="label" labelfor="13"/>
-                    <cell type="field" id="13" name="developmentStatus" uitype="text" isrequired="false"/>
+                    <cell type="field" id="13" name="developmentStatus" uitype="text" isrequired="false" colspan="5"/>
                 </row>
                  <row>
                     <cell type="label" labelfor="14"/>
-                    <cell type="field" id="14" name="institutionType" uitype="text" isrequired="false"/>
+                    <cell type="field" id="14" name="institutionType" uitype="text" isrequired="false" colspan="5"/>
                 </row>
                  <row>
                     <cell type="label" labelfor="15"/>
-                    <cell type="field" id="15" name="scope" uitype="text" isrequired="false"/>
+                    <cell type="field" id="15" name="scope" uitype="text" isrequired="false" colspan="5"/>
                 </row>
                  <row>
                     <cell type="label" labelfor="16"/>
-                    <cell type="field" id="16" name="dbContentVersion" uitype="text" isrequired="false"/>
+                    <cell type="field" id="16" name="dbContentVersion" uitype="text" isrequired="false" colspan="5"/>
                 </row>                
             </rows>
         </viewdef>
@@ -685,10 +680,6 @@
                     <cell type="label" labelfor="7"/>
                     <cell type="field" id="7" name="remarks" uitype="textarea" colspan="10"/>
                 </row>  -->
-                 <row>
-                    <cell type="label" label="  "/>
-                    <cell type="field" id="8" name="isAccessionBound" uitype="checkbox"/>
-                </row>
                 <row>
                     <cell type="subview" viewname="DisciplineViewOnlyCollections" id="9" name="disciplines" colspan="12"/>
                 </row>
@@ -760,6 +751,10 @@
                 <row>
                     <cell type="label" label="  "/>
                     <cell type="field" id="10" name="isSecurityOn" uitype="checkbox"/> 
+                </row>
+                 <row>
+                    <cell type="label" label="  "/>
+                    <cell type="field" id="11" name="isAccessionsGlobal" uitype="checkbox"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="2"/>

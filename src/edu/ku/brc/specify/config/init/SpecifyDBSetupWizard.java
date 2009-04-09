@@ -39,6 +39,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.auth.UserAndMasterPasswordMgr;
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
@@ -50,6 +51,7 @@ import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.SpecifyUserTypes;
 import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
+import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.specify.datamodel.StorageTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.ui.HelpMgr;
@@ -234,6 +236,10 @@ public class SpecifyDBSetupWizard extends JPanel
                     new String[] { "checkbox"},
                     nextBtn, true));
             
+            if (wizardType == WizardType.Institution)
+            {
+                panels.add(new FormatterPickerPanel("ACCNOFMT", nextBtn, false));
+            }
 
             storageTDPanel = new TreeDefSetupPanel(StorageTreeDef.class, 
                     getResourceString("Storage"), 
@@ -244,7 +250,6 @@ public class SpecifyDBSetupWizard extends JPanel
             panels.add(storageTDPanel);
             
         }
-
         
         if (wizardType == WizardType.Institution ||
             wizardType == WizardType.Division)
@@ -278,8 +283,6 @@ public class SpecifyDBSetupWizard extends JPanel
                     new String[] { "preloadtaxon"},
                     new String[] { "checkbox"},
                     nextBtn, true));
-            
-    
              
             geoTDPanel = new TreeDefSetupPanel(GeographyTreeDef.class, 
                                                getResourceString("Geography"), 
@@ -295,9 +298,17 @@ public class SpecifyDBSetupWizard extends JPanel
                     new String[] { "NAME",     "PREFIX", }, 
                     new String[] { "collName", "collPrefix", }, 
                     nextBtn, true));
+        
         panels.add(new FormatterPickerPanel("CATNOFMT", nextBtn, true));
         
-        panels.add(new FormatterPickerPanel("ACCNOFMT", nextBtn, false));
+        if (wizardType != WizardType.Institution)
+        {
+            Institution inst = AppContextMgr.getInstance().getClassObject(Institution.class);
+            if (inst != null && !inst.getIsAccessionsGlobal())
+            {
+                panels.add(new FormatterPickerPanel("ACCNOFMT", nextBtn, false));
+            }
+        }
         
         panels.add(new SummaryPanel("SUMMARY", nextBtn, panels));
          

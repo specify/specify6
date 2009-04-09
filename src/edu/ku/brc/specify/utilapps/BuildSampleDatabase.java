@@ -424,7 +424,7 @@ public class BuildSampleDatabase
      * @return the entire list of DB object to be persisted
      */
     @SuppressWarnings("unchecked")
-    public void createEmptyDatabase(final Properties props)
+    public void createEmptyInstitution(final Properties props)
     {
         AppContextMgr.getInstance().setHasContext(true);
         
@@ -449,6 +449,7 @@ public class BuildSampleDatabase
         
         institution = createInstitution(props.getProperty("instName"));
         institution.setCode(props.getProperty("instAbbrev"));
+        institution.setIsAccessionsGlobal((Boolean)props.get("accglobal"));
         
         Address instAddress = new Address();
         instAddress.initialize();
@@ -536,8 +537,6 @@ public class BuildSampleDatabase
                                           props.getProperty("divAbbrev"), 
                                           null); //props.getProperty("divTitle");
         
-        division.setIsAccessionBound((Boolean)props.get("accglobal"));
-        
         //AppContextMgr.getInstance().setClassObject(Division.class, division);   // Needed for creating an Agent
         
         String title     = props.getProperty("title",     "");
@@ -556,7 +555,6 @@ public class BuildSampleDatabase
         System.out.println("Abbrev:    "+abbrev);
         System.out.println("Email:     "+email);
         System.out.println("UserType:  "+userType);
-        
         
         Agent userAgent = createAgent(title, firstName, midInit, lastName, abbrev, email, division, null);
         
@@ -7408,7 +7406,7 @@ public class BuildSampleDatabase
             
             if (hideFrame) System.out.println("Creating Empty Database");
             
-            createEmptyDatabase(props);
+            createEmptyInstitution(props);
 
             SwingUtilities.invokeLater(new Runnable()
             {

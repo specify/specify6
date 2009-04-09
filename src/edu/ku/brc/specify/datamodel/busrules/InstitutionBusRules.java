@@ -9,9 +9,11 @@
  */
 package edu.ku.brc.specify.datamodel.busrules;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.ResultSetController;
 import edu.ku.brc.af.ui.forms.Viewable;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Institution;
 
 /**
@@ -60,4 +62,17 @@ public class InstitutionBusRules extends BaseBusRules
     {
         super.afterFillForm(dataObj);
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#afterSaveCommit(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public boolean afterSaveCommit(Object dataObj, DataProviderSessionIFace session)
+    {
+        AppContextMgr.getInstance().setClassObject(Institution.class, dataObj);
+        
+        return super.afterSaveCommit(dataObj, session);
+    }
+    
+    
 }

@@ -69,7 +69,6 @@ public class Division extends UserGroupScope implements java.io.Serializable, Co
      protected String                   discipline;
      protected String                   description;
      protected String                   remarks;
-     protected Boolean                  isAccessionBound;  // Whether the Accession is bound to the Collection
      protected String                   regNumber;
 
      
@@ -111,7 +110,6 @@ public class Division extends UserGroupScope implements java.io.Serializable, Co
         discipline          = null;
         description         = null;
         remarks             = null;
-        isAccessionBound    = true;
         regNumber           = null;
         members             = new HashSet<Agent>();
         /*
@@ -181,23 +179,6 @@ public class Division extends UserGroupScope implements java.io.Serializable, Co
     public String getName()
     {
         return name;
-    }
-
-    /**
-     * @return the isAccessionBound
-     */
-    @Column(name = "IsAccessionBound", unique = false, nullable = false, insertable = true, updatable = true)
-    public Boolean getIsAccessionBound()
-    {
-        return isAccessionBound;
-    }
-
-    /**
-     * @param isAccessionBound the isAccessionBound to set
-     */
-    public void setIsAccessionBound(Boolean isAccessionBound)
-    {
-        this.isAccessionBound = isAccessionBound;
     }
 
     /**

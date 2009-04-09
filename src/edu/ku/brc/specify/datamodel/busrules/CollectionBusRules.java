@@ -28,13 +28,14 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.ResultSetController;
-import edu.ku.brc.af.ui.forms.TableViewObj;
 import edu.ku.brc.af.ui.forms.Viewable;
+import edu.ku.brc.af.ui.forms.validation.ValCheckBox;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
@@ -99,9 +100,10 @@ public class CollectionBusRules extends BaseBusRules
                     newBtn = rsc.getNewRecBtn();
                 }
             }
-        } else if (viewable instanceof TableViewObj)
-        {
-            newBtn = ((TableViewObj)viewable).getNewButton();
+            
+            ValCheckBox chkBox = formViewObj.getCompById("6");
+            boolean showColEventChkbx = AppPreferences.getLocalPrefs().getBoolean("show.cecheckbox", false);
+            chkBox.setVisible(showColEventChkbx);
         }
         
         if (newBtn != null)

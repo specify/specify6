@@ -67,6 +67,7 @@ public class Institution extends UserGroupScope implements java.io.Serializable
      protected Boolean       isAnonymous;
      protected Boolean       hasBeenAsked;
      protected Boolean       isSecurityOn;
+     protected Boolean       isAccessionsGlobal;
      
      protected Address       address;
      protected Set<Agent>    technicalContacts;
@@ -111,6 +112,7 @@ public class Institution extends UserGroupScope implements java.io.Serializable
         hasBeenAsked      = null;
         regNumber         = null;
         isSecurityOn      = true;
+        isAccessionsGlobal = true;
         technicalContacts = new HashSet<Agent>();
         contentContacts   = new HashSet<Agent>();
         divisions         = new HashSet<Division>();
@@ -336,6 +338,15 @@ public class Institution extends UserGroupScope implements java.io.Serializable
     }
 
     /**
+     * @return the isAccessionsGlobal
+     */
+    @Column(name = "IsAccessionsGlobal", unique = false, nullable = false, insertable = true, updatable = true)
+    public Boolean getIsAccessionsGlobal()
+    {
+        return isAccessionsGlobal;
+    }
+
+    /**
      * @param contentContacts the contentContacts to set
      */
     public void setContentContacts(Set<Agent> contentContacts)
@@ -477,6 +488,14 @@ public class Institution extends UserGroupScope implements java.io.Serializable
     public void setIsSecurityOn(Boolean isSecurityOn)
     {
         this.isSecurityOn = isSecurityOn;
+    }
+
+    /**
+     * @param isAccessionsGlobal the isAccessionsGlobal to set
+     */
+    public void setIsAccessionsGlobal(Boolean isAccessionsGlobal)
+    {
+        this.isAccessionsGlobal = isAccessionsGlobal;
     }
 
     /**
