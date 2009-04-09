@@ -89,7 +89,6 @@ import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.busrules.PickListBusRules;
-import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
 import edu.ku.brc.specify.tools.schemalocale.PickListEditorDlg;
 import edu.ku.brc.specify.tools.schemalocale.SchemaToolsDlg;
 import edu.ku.brc.ui.CommandAction;
@@ -100,6 +99,7 @@ import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.Trash;
+import edu.ku.brc.util.Pair;
 
 /**
  *
@@ -122,10 +122,11 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
     public static final DataFlavor SYSTEMSETUPTASK_FLAVOR = new DataFlavor(SystemSetupTask.class, SYSTEMSETUPTASK);
 
     // Data Members
-    protected NavBox           globalNavBox     = null;
-    protected NavBox           navBox           = null;
-    protected PickListBusRules pickListBusRules = new PickListBusRules();
-    protected FormPane         formPane         = null;
+	protected NavBox											globalNavBox				= null;
+	protected NavBox											navBox						= null;
+	protected PickListBusRules									pickListBusRules			= new PickListBusRules();
+	protected FormPane											formPane					= null;
+	protected Vector<Pair<BaseTreeTask<?, ?, ?>, JMenuItem>>	treeUpdateMenuItems			= new Vector<Pair<BaseTreeTask<?, ?, ?>, JMenuItem>>();
 
     /**
      * Default Constructor
@@ -203,11 +204,26 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             })); 
             navBoxes.add(collNavBox);
             
+            
         }
         isShowDefault = true;
     }
     
+    
     /* (non-Javadoc)
+	 * @see edu.ku.brc.af.tasks.BaseTask#doProcessAppCommands(edu.ku.brc.ui.CommandAction)
+	 */
+	@Override
+	protected void doProcessAppCommands(CommandAction cmdAction)
+	{
+		//super.doProcessAppCommands(cmdAction);  
+		for (Pair<BaseTreeTask<?,?,?>, JMenuItem> mi : treeUpdateMenuItems)
+		{
+			mi.getSecond().setVisible(mi.getFirst().isTreeOnByDefault());
+		}
+	}
+
+	/* (non-Javadoc)
      * @see edu.ku.brc.af.core.Taskable#requestContext()
      */
     public void requestContext()
@@ -1002,28 +1018,28 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
         if (!AppContextMgr.isSecurityOn()
 				|| SpecifyUser.isCurrentUserType(UserType.Manager))
 		{
-			for (BaseTreeTask<?,?,?> tree : TreeTaskMgr.getInstance().getTreeTasks())
+			for (final BaseTreeTask<?, ?, ?> tree : TreeTaskMgr.getInstance()
+					.getTreeTasks())
 			{
-				if (tree.isTreeOnByDefault())
-				{
-					final BaseTreeTask<?,?,?> ftree = tree;
-					titleArg = getResourceString(getI18NKey("Tree_MENU")) + " " + ftree.getTitle(); //$NON-NLS-1$
-					mneu = getI18NKey("Trees_MNU"); //$NON-NLS-1$
-					mi = UIHelper.createMenuItemWithAction((JMenu )null, titleArg, mneu, titleArg,
-							true, null);
-					mi.addActionListener(new ActionListener() {
-						public void actionPerformed(ActionEvent ae)
-						{
-							doTreeUpdate(ftree);
-						}
-					});
-					mid = new MenuItemDesc(mi, SYSTEM_MENU);
-					mid.setPosition(MenuItemDesc.Position.After, menuDesc);
+				titleArg = getResourceString(getI18NKey("Tree_MENU")) + " " + tree.getTitle(); //$NON-NLS-1$
+				mneu = getI18NKey("Trees_MNU"); //$NON-NLS-1$
+				mi = UIHelper.createMenuItemWithAction((JMenu) null, titleArg,
+						mneu, titleArg, true, null);
+				mi.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent ae)
+					{
+						doTreeUpdate(tree);
+					}
+				});
+				mi.setVisible(tree.isTreeOnByDefault());
+				treeUpdateMenuItems.add(new Pair<BaseTreeTask<?,?,?>, JMenuItem>(tree, mi));
+				mid = new MenuItemDesc(mi, SYSTEM_MENU);
+				mid.setPosition(MenuItemDesc.Position.After, menuDesc);
 
-					menuItems.add(mid);
-				}
+				menuItems.add(mid);
 			}
 		}
+		
         
         
         if (!AppContextMgr.isSecurityOn() || 
@@ -1283,7 +1299,13 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             {
                 pickListSaved((PickList)data);
             }
+        } else if (cmdAction.isType(APP_CMD_TYPE)) 
+        {
+        	//super.doCommand() not being called here, maybe for good reason?,
+        	//so calling this here.
+            doProcessAppCommands(cmdAction);
         }
+
     }
 
     //-----------------------------------------------------------------------------------
