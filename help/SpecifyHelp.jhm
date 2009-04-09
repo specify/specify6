@@ -18,8 +18,6 @@
    <mapID target="Express_Search" url="SpecifyHelp/Simple_Search/Simple_Search.html"/>
    <mapID target="About" url="SpecifyHelp/Intro/about.html"/>
    <mapID target="Startup" url="SpecifyHelp/Intro/about.html"/>
-   <mapID target="Other" url="SpecifyHelp/Intro/other_info.html"/>
-   <mapID target="Installing" url="SpecifyHelp/Intro/installing.html"/>
    <mapID target="Update" url="SpecifyHelp/Intro/updating.html"/>
    <mapID target="Inst_Hier" url="SpecifyHelp/Configuration/institution_hierarchy.html"/>
    <mapID target="Permissions" url="SpecifyHelp/Security/permissions.html"/>
