@@ -239,7 +239,7 @@
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="lithostrattreedefitem" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+        <tp name="lithostrattreedefitem" type="LimitedAccess" view="true" modify="false" del="false" add="false"/>
       </entry>
       <entry>
         <string>Guest</string>
@@ -260,7 +260,7 @@
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="geographytreedef" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+        <tp name="geographytreedef" type="LimitedAccess" view="true" modify="false" del="false" add="false"/>
       </entry>
       <entry>
         <string>Guest</string>
@@ -365,7 +365,7 @@
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="geologictimeperiodtreedefitem" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+        <tp name="geologictimeperiodtreedefitem" type="LimitedAccess" view="true" modify="false" del="false" add="false"/>
       </entry>
       <entry>
         <string>Guest</string>
@@ -596,7 +596,7 @@
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="lithostrattreedef" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+        <tp name="lithostrattreedef" type="LimitedAccess" view="true" modify="false" del="false" add="false"/>
       </entry>
       <entry>
         <string>Guest</string>
@@ -680,7 +680,7 @@
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="storagetreedefitem" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+        <tp name="storagetreedefitem" type="LimitedAccess" view="true" modify="false" del="false" add="false"/>
       </entry>
       <entry>
         <string>Guest</string>
@@ -1289,7 +1289,7 @@
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="geologictimeperiodtreedef" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+        <tp name="geologictimeperiodtreedef" type="LimitedAccess" view="true" modify="false" del="false" add="false"/>
       </entry>
       <entry>
         <string>Guest</string>
@@ -1394,7 +1394,7 @@
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="taxontreedef" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+        <tp name="taxontreedef" type="LimitedAccess" view="true" modify="false" del="false" add="false"/>
       </entry>
       <entry>
         <string>Guest</string>
@@ -1415,7 +1415,7 @@
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="storagetreedef" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+        <tp name="storagetreedef" type="LimitedAccess" view="true" modify="false" del="false" add="false"/>
       </entry>
       <entry>
         <string>Guest</string>
@@ -1835,7 +1835,7 @@
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="taxontreedefitem" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+        <tp name="taxontreedefitem" type="LimitedAccess" view="true" modify="false" del="false" add="false"/>
       </entry>
       <entry>
         <string>Guest</string>
@@ -2801,7 +2801,7 @@
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="geographytreedefitem" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+        <tp name="geographytreedefitem" type="LimitedAccess" view="true" modify="false" del="false" add="false"/>
       </entry>
       <entry>
         <string>Guest</string>

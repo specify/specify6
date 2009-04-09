@@ -46,7 +46,7 @@
     <hashtable>
       <entry>
         <string>Manager</string>
-        <tp name="SystemSetup" type="Manager" view="true" modify="true" del="true" add="true"/>
+        <tp name="SystemSetup" type="Manager" view="false" modify="false" del="false" add="false"/>
       </entry>
       <entry>
         <string>Guest</string>
@@ -54,11 +54,11 @@
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="SystemSetup" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+        <tp name="SystemSetup" type="LimitedAccess" view="false" modify="false" del="false" add="false"/>
       </entry>
       <entry>
         <string>FullAccess</string>
-        <tp name="SystemSetup" type="FullAccess" view="true" modify="true" del="true" add="true"/>
+        <tp name="SystemSetup" type="FullAccess" view="false" modify="false" del="false" add="false"/>
       </entry>
     </hashtable>
   </entry>
