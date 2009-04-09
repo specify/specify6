@@ -747,7 +747,7 @@ public class BuildSampleDatabase
         }
         
         List<Object> geos        = new Vector<Object>();
-        List<Object> lithoStrats = isPaleo ? createSimpleLithoStrat(lithoStratTreeDef, false) : null;
+        //List<Object> lithoStrats = isPaleo ? createSimpleLithoStrat(lithoStratTreeDef, false) : null;
         
         String fileName = null;
         switch (DisciplineType.getByName(discipline.getType()).getDisciplineType())
@@ -822,15 +822,15 @@ public class BuildSampleDatabase
         
         frame.setProcess(++createStep);
 
-        startTx();
-        
-        if (lithoStrats != null)
-        {
-            persist(lithoStrats);
-            
-        } 
-        
-        commitTx();
+//        startTx();
+//        
+//        if (lithoStrats != null)
+//        {
+//            persist(lithoStrats);
+//            
+//        } 
+//        
+//        commitTx();
         
         frame.setProcess(++createStep);
         
