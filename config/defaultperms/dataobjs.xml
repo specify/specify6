@@ -50,7 +50,7 @@
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="loan" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+        <tp name="loan" type="LimitedAccess" view="true" modify="false" del="false" add="false"/>
       </entry>
       <entry>
         <string>Guest</string>
@@ -58,7 +58,7 @@
       </entry>
       <entry>
         <string>FullAccess</string>
-        <tp name="loan" type="FullAccess" view="false" modify="false" del="false" add="true"/>
+        <tp name="loan" type="FullAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
     </hashtable>
   </entry>
@@ -117,7 +117,7 @@
       </entry>
       <entry>
         <string>Guest</string>
-        <tp name="workbench" type="Guest" view="true" modify="false" del="false" add="false"/>
+        <tp name="workbench" type="Guest" view="true" modify="true" del="true" add="true"/>
       </entry>
       <entry>
         <string>FullAccess</string>
@@ -218,7 +218,7 @@
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="deaccession" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+        <tp name="deaccession" type="LimitedAccess" view="true" modify="false" del="false" add="false"/>
       </entry>
       <entry>
         <string>Guest</string>
@@ -268,7 +268,7 @@
       </entry>
       <entry>
         <string>FullAccess</string>
-        <tp name="geographytreedef" type="FullAccess" view="false" modify="false" del="false" add="true"/>
+        <tp name="geographytreedef" type="FullAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
     </hashtable>
   </entry>
@@ -281,7 +281,7 @@
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="loanagent" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+        <tp name="loanagent" type="LimitedAccess" view="true" modify="false" del="false" add="false"/>
       </entry>
       <entry>
         <string>Guest</string>
@@ -289,7 +289,7 @@
       </entry>
       <entry>
         <string>FullAccess</string>
-        <tp name="loanagent" type="FullAccess" view="false" modify="false" del="false" add="true"/>
+        <tp name="loanagent" type="FullAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
     </hashtable>
   </entry>
@@ -394,7 +394,7 @@
       </entry>
       <entry>
         <string>FullAccess</string>
-        <tp name="institution" type="FullAccess" view="false" modify="false" del="false" add="true"/>
+        <tp name="institution" type="FullAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
     </hashtable>
   </entry>
@@ -428,7 +428,7 @@
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="accessionattachment" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+        <tp name="accessionattachment" type="LimitedAccess" view="true" modify="false" del="false" add="false"/>
       </entry>
       <entry>
         <string>Guest</string>
@@ -449,7 +449,7 @@
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="borrow" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+        <tp name="borrow" type="LimitedAccess" view="true" modify="false" del="false" add="false"/>
       </entry>
       <entry>
         <string>Guest</string>
@@ -491,7 +491,7 @@
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="deaccessionagent" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+        <tp name="deaccessionagent" type="LimitedAccess" view="true" modify="false" del="false" add="false"/>
       </entry>
       <entry>
         <string>Guest</string>
@@ -512,7 +512,7 @@
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="accession" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+        <tp name="accession" type="LimitedAccess" view="true" modify="false" del="false" add="false"/>
       </entry>
       <entry>
         <string>Guest</string>
@@ -520,7 +520,7 @@
       </entry>
       <entry>
         <string>FullAccess</string>
-        <tp name="accession" type="FullAccess" view="false" modify="false" del="false" add="true"/>
+        <tp name="accession" type="FullAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
     </hashtable>
   </entry>
@@ -537,7 +537,7 @@
       </entry>
       <entry>
         <string>Guest</string>
-        <tp name="workbenchrowimage" type="Guest" view="true" modify="false" del="false" add="false"/>
+        <tp name="workbenchrowimage" type="Guest" view="true" modify="true" del="true" add="true"/>
       </entry>
       <entry>
         <string>FullAccess</string>
@@ -554,7 +554,7 @@
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="accessionagent" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+        <tp name="accessionagent" type="LimitedAccess" view="true" modify="false" del="false" add="false"/>
       </entry>
       <entry>
         <string>Guest</string>
@@ -562,7 +562,7 @@
       </entry>
       <entry>
         <string>FullAccess</string>
-        <tp name="accessionagent" type="FullAccess" view="false" modify="false" del="false" add="true"/>
+        <tp name="accessionagent" type="FullAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
     </hashtable>
   </entry>
@@ -575,7 +575,7 @@
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="repositoryagreementattachment" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+        <tp name="repositoryagreementattachment" type="LimitedAccess" view="true" modify="false" del="false" add="false"/>
       </entry>
       <entry>
         <string>Guest</string>
@@ -743,7 +743,7 @@
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="gift" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+        <tp name="gift" type="LimitedAccess" view="true" modify="false" del="false" add="false"/>
       </entry>
       <entry>
         <string>Guest</string>
@@ -751,7 +751,7 @@
       </entry>
       <entry>
         <string>FullAccess</string>
-        <tp name="gift" type="FullAccess" view="false" modify="false" del="false" add="true"/>
+        <tp name="gift" type="FullAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
     </hashtable>
   </entry>
@@ -764,7 +764,7 @@
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="exchangeout" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+        <tp name="exchangeout" type="LimitedAccess" view="true" modify="false" del="false" add="false"/>
       </entry>
       <entry>
         <string>Guest</string>
@@ -772,7 +772,7 @@
       </entry>
       <entry>
         <string>FullAccess</string>
-        <tp name="exchangeout" type="FullAccess" view="false" modify="false" del="false" add="true"/>
+        <tp name="exchangeout" type="FullAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
     </hashtable>
   </entry>
@@ -877,7 +877,7 @@
       </entry>
       <entry>
         <string>FullAccess</string>
-        <tp name="borrowmaterial" type="FullAccess" view="true" modify="true" del="true" add="true"/>
+        <tp name="borrowmaterial" type="FullAccess" view="true" modify="false" del="false" add="false"/>
       </entry>
     </hashtable>
   </entry>
@@ -953,7 +953,7 @@
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="accessionauthorization" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+        <tp name="accessionauthorization" type="LimitedAccess" view="true" modify="false" del="false" add="false"/>
       </entry>
       <entry>
         <string>Guest</string>
@@ -961,7 +961,7 @@
       </entry>
       <entry>
         <string>FullAccess</string>
-        <tp name="accessionauthorization" type="FullAccess" view="false" modify="false" del="false" add="true"/>
+        <tp name="accessionauthorization" type="FullAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
     </hashtable>
   </entry>
@@ -999,7 +999,7 @@
       </entry>
       <entry>
         <string>Guest</string>
-        <tp name="workbenchtemplatemappingitem" type="Guest" view="true" modify="false" del="false" add="false"/>
+        <tp name="workbenchtemplatemappingitem" type="Guest" view="true" modify="true" del="true" add="true"/>
       </entry>
       <entry>
         <string>FullAccess</string>
@@ -1079,7 +1079,7 @@
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="deaccessionpreparation" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+        <tp name="deaccessionpreparation" type="LimitedAccess" view="true" modify="false" del="false" add="false"/>
       </entry>
       <entry>
         <string>Guest</string>
@@ -1163,7 +1163,7 @@
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="giftpreparation" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+        <tp name="giftpreparation" type="LimitedAccess" view="true" modify="false" del="false" add="false"/>
       </entry>
       <entry>
         <string>Guest</string>
@@ -1171,7 +1171,7 @@
       </entry>
       <entry>
         <string>FullAccess</string>
-        <tp name="giftpreparation" type="FullAccess" view="false" modify="false" del="false" add="true"/>
+        <tp name="giftpreparation" type="FullAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
     </hashtable>
   </entry>
@@ -1184,7 +1184,7 @@
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="permit" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+        <tp name="permit" type="LimitedAccess" view="true" modify="false" del="false" add="false"/>
       </entry>
       <entry>
         <string>Guest</string>
@@ -1247,7 +1247,7 @@
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="permitattachment" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+        <tp name="permitattachment" type="LimitedAccess" view="true" modify="false" del="false" add="false"/>
       </entry>
       <entry>
         <string>Guest</string>
@@ -1268,7 +1268,7 @@
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="loanpreparation" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+        <tp name="loanpreparation" type="LimitedAccess" view="true" modify="false" del="false" add="false"/>
       </entry>
       <entry>
         <string>Guest</string>
@@ -1276,7 +1276,7 @@
       </entry>
       <entry>
         <string>FullAccess</string>
-        <tp name="loanpreparation" type="FullAccess" view="false" modify="false" del="false" add="true"/>
+        <tp name="loanpreparation" type="FullAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
     </hashtable>
   </entry>
@@ -1297,7 +1297,7 @@
       </entry>
       <entry>
         <string>FullAccess</string>
-        <tp name="geologictimeperiodtreedef" type="FullAccess" view="false" modify="false" del="false" add="true"/>
+        <tp name="geologictimeperiodtreedef" type="FullAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
     </hashtable>
   </entry>
@@ -1377,7 +1377,7 @@
       </entry>
       <entry>
         <string>Guest</string>
-        <tp name="workbenchrow" type="Guest" view="true" modify="false" del="false" add="false"/>
+        <tp name="workbenchrow" type="Guest" view="true" modify="true" del="true" add="true"/>
       </entry>
       <entry>
         <string>FullAccess</string>
@@ -1402,7 +1402,7 @@
       </entry>
       <entry>
         <string>FullAccess</string>
-        <tp name="taxontreedef" type="FullAccess" view="false" modify="false" del="false" add="true"/>
+        <tp name="taxontreedef" type="FullAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
     </hashtable>
   </entry>
@@ -1423,7 +1423,7 @@
       </entry>
       <entry>
         <string>FullAccess</string>
-        <tp name="storagetreedef" type="FullAccess" view="false" modify="false" del="false" add="true"/>
+        <tp name="storagetreedef" type="FullAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
     </hashtable>
   </entry>
@@ -1444,7 +1444,7 @@
       </entry>
       <entry>
         <string>FullAccess</string>
-        <tp name="discipline" type="FullAccess" view="false" modify="false" del="false" add="true"/>
+        <tp name="discipline" type="FullAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
     </hashtable>
   </entry>
@@ -1667,7 +1667,7 @@
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="exchangein" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+        <tp name="exchangein" type="LimitedAccess" view="true" modify="false" del="false" add="false"/>
       </entry>
       <entry>
         <string>Guest</string>
@@ -1675,7 +1675,7 @@
       </entry>
       <entry>
         <string>FullAccess</string>
-        <tp name="exchangein" type="FullAccess" view="false" modify="false" del="false" add="true"/>
+        <tp name="exchangein" type="FullAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
     </hashtable>
   </entry>
@@ -1688,7 +1688,7 @@
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="borrowagent" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+        <tp name="borrowagent" type="LimitedAccess" view="true" modify="false" del="false" add="false"/>
       </entry>
       <entry>
         <string>Guest</string>
@@ -1759,7 +1759,7 @@
       </entry>
       <entry>
         <string>FullAccess</string>
-        <tp name="division" type="FullAccess" view="false" modify="false" del="false" add="true"/>
+        <tp name="division" type="FullAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
     </hashtable>
   </entry>
@@ -1801,7 +1801,7 @@
       </entry>
       <entry>
         <string>FullAccess</string>
-        <tp name="shipment" type="FullAccess" view="false" modify="false" del="false" add="true"/>
+        <tp name="shipment" type="FullAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
     </hashtable>
   </entry>
@@ -1877,7 +1877,7 @@
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="borrowreturnmaterial" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+        <tp name="borrowreturnmaterial" type="LimitedAccess" view="true" modify="false" del="false" add="false"/>
       </entry>
       <entry>
         <string>Guest</string>
@@ -1948,7 +1948,7 @@
       </entry>
       <entry>
         <string>FullAccess</string>
-        <tp name="collection" type="FullAccess" view="false" modify="false" del="false" add="true"/>
+        <tp name="collection" type="FullAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
     </hashtable>
   </entry>
@@ -1965,7 +1965,7 @@
       </entry>
       <entry>
         <string>Guest</string>
-        <tp name="workbenchdataitem" type="Guest" view="true" modify="false" del="false" add="false"/>
+        <tp name="workbenchdataitem" type="Guest" view="true" modify="true" del="true" add="true"/>
       </entry>
       <entry>
         <string>FullAccess</string>
@@ -2171,7 +2171,7 @@
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="loanreturnpreparation" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+        <tp name="loanreturnpreparation" type="LimitedAccess" view="true" modify="false" del="false" add="false"/>
       </entry>
       <entry>
         <string>Guest</string>
@@ -2179,7 +2179,7 @@
       </entry>
       <entry>
         <string>FullAccess</string>
-        <tp name="loanreturnpreparation" type="FullAccess" view="false" modify="false" del="false" add="true"/>
+        <tp name="loanreturnpreparation" type="FullAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
     </hashtable>
   </entry>
@@ -2339,7 +2339,7 @@
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="repositoryagreement" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+        <tp name="repositoryagreement" type="LimitedAccess" view="true" modify="false" del="false" add="false"/>
       </entry>
       <entry>
         <string>Guest</string>
@@ -2347,7 +2347,7 @@
       </entry>
       <entry>
         <string>FullAccess</string>
-        <tp name="repositoryagreement" type="FullAccess" view="false" modify="false" del="false" add="true"/>
+        <tp name="repositoryagreement" type="FullAccess" view="true" modify="true" del="true" add="true"/>
       </entry>
     </hashtable>
   </entry>
@@ -2679,7 +2679,7 @@
       </entry>
       <entry>
         <string>Guest</string>
-        <tp name="workbenchtemplate" type="Guest" view="true" modify="false" del="false" add="false"/>
+        <tp name="workbenchtemplate" type="Guest" view="true" modify="true" del="true" add="true"/>
       </entry>
       <entry>
         <string>FullAccess</string>
@@ -2696,7 +2696,7 @@
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="giftagent" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+        <tp name="giftagent" type="LimitedAccess" view="true" modify="false" del="false" add="false"/>
       </entry>
       <entry>
         <string>Guest</string>
@@ -2822,7 +2822,7 @@
       </entry>
       <entry>
         <string>LimitedAccess</string>
-        <tp name="loanattachment" type="LimitedAccess" view="true" modify="true" del="true" add="true"/>
+        <tp name="loanattachment" type="LimitedAccess" view="true" modify="false" del="false" add="false"/>
       </entry>
       <entry>
         <string>Guest</string>
