@@ -90,6 +90,7 @@ import edu.ku.brc.util.Pair;
  * Oct 18, 2007
  *
  */
+@SuppressWarnings("serial")
 public class QueryFieldPanel extends JPanel implements ActionListener 
 {
     protected static final Logger log = Logger.getLogger(QueryFieldPanel.class);
@@ -140,6 +141,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
      * Deals with pairs of criteria entries.
      *
      */
+
     private class CriteriaPair extends JPanel
     {
         protected JTextField text1;
@@ -534,8 +536,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
             return new SpQueryField.OperatorType[] {
                 SpQueryField.OperatorType.EQUALS,
                 SpQueryField.OperatorType.LIKE,
-                SpQueryField.OperatorType.IN,
-                SpQueryField.OperatorType.EMPTY};
+                SpQueryField.OperatorType.IN};
         }
         //CatalogNumber needs special treatment - works better as a number.
         //And other fields? Not sure how to tell. Maybe the formatter?????
