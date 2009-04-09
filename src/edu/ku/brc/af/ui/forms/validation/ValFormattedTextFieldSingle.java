@@ -825,7 +825,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
                 Number maxVal = formatter.getMaxValue();
                 Number minVal = formatter.getMinValue();
 
-                BigDecimal fooAmount = bdValidator.validate(value, Locale.getDefault());  // XXX RELEASE
+                BigDecimal fooAmount = bdValidator.validate(value, Locale.getDefault());  // XXX FINAL RELEASE
                 if (fooAmount == null) 
                 {
                     // error...not a valid currency amount

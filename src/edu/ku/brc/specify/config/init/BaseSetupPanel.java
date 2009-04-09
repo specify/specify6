@@ -43,7 +43,7 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public abstract class BaseSetupPanel extends JPanel implements SetupPanelIFace
 {
-    protected static final boolean DO_DEBUG = true;
+    protected static final boolean DO_DEBUG = false;
     
     protected String             panelName;
     protected KeyAdapter         keyAdapter;

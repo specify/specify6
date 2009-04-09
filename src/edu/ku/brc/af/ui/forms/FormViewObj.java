@@ -2421,7 +2421,7 @@ public class FormViewObj implements Viewable,
                 this.getDataFromUI();
                 traverseToGetDataFromForms(mvParent);
                 
-                // XXX RELEASE - Need to walk the form tree and set them manually
+                // XXX FINAL RELEASE - Need to walk the form tree and set them manually
                 //FormHelper.updateLastEdittedInfo(dataObjArg);
                 traverseToSetModified(getMVParent());
                 

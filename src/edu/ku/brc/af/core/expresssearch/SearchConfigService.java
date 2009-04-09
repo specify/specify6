@@ -221,6 +221,7 @@ public class SearchConfigService
         SearchConfig.configXStream(xstream);
         
         // This is for testing only RELEASE
+        /*
         try
         {
             FileUtils.writeStringToFile(new File("config.xml"), xstream.toXML(searchConfig)); //$NON-NLS-1$
@@ -230,7 +231,7 @@ public class SearchConfigService
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SearchConfigService.class, ex);
             ex.printStackTrace();
-        }
+        }*/
         
         AppResourceIFace escAppRes = AppContextMgr.getInstance().getResourceFromDir("Personal", resourceName); //$NON-NLS-1$
         if (escAppRes != null)

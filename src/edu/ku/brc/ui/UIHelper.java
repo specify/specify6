@@ -60,8 +60,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.io.File;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
@@ -138,7 +136,6 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 
-import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.prefs.AppPrefsCache;
@@ -153,9 +150,7 @@ import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.persist.FormCellIFace;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.exceptions.ConfigurationException;
-import edu.ku.brc.helpers.EMailHelper;
 import edu.ku.brc.helpers.MenuItemPropertyChangeListener;
-import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.conversion.CustomDBConverter;
 import edu.ku.brc.specify.conversion.CustomDBConverterDlg;
@@ -1807,75 +1802,6 @@ public final class UIHelper
      */
     protected static void mailUnhandledException(final Throwable throwable)
     {
-        String userStr = System.getProperty("user.name");
-        if (userStr.equals("rods") || userStr.equals("rod")) // XXX RELEASE
-        {
-            return;
-        }
-        
-        try
-        {
-            final StringBuilder sb = new StringBuilder();
-            
-            try
-            {
-                sb.append(System.getProperty("os.name")+"\n");
-                sb.append(System.getProperty("os.arch")+"\n");
-                sb.append(userStr+"\n");
-                sb.append(System.getProperty("java.version")+"\n");
-                
-                String desc = AppContextMgr.getInstance().getCurrentContextDescription();
-                sb.append(desc);
-                
-            } catch (Exception ex)
-            {
-                sb.append("No application context.");
-            }
-             
-            StringWriter strWriter = new StringWriter();
-            PrintWriter  pw        = new PrintWriter(strWriter);
-
-            throwable.printStackTrace(pw);
-            
-            if (throwable.getCause() != null)
-            {
-                throwable.getCause().printStackTrace(pw);    
-            }
-            sb.append(strWriter.getBuffer().toString().replace("\t", "    "));
-            
-            SwingWorker workerThread = new SwingWorker()
-            {
-                @Override
-                public Object construct()
-                {
-                    EMailHelper.sendMsgAsGMail("smtp.gmail.com", 
-                            "specifysoftware", 
-                            "ukanbrc606*", 
-                            "specifysoftware@gmail.com", 
-                            "specifysoftware@gmail.com", 
-                            "UnhandledException", 
-                            sb.toString(), 
-                            EMailHelper.PLAIN_TEXT, 
-                            "", // port 
-                            "", // SSL
-                            (File)null);
-                    return null;
-                }
-                
-                @Override
-                public void finished()
-                {
-                }
-            };
-            
-            // start the background task
-            workerThread.start();
-            
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
-        
     }
     
     /**

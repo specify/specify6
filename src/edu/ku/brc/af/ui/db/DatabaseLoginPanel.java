@@ -74,6 +74,7 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.JTiledPanel;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.skin.SkinItem;
 import edu.ku.brc.ui.skin.SkinsMgr;
 import edu.ku.brc.util.Pair;
@@ -465,8 +466,10 @@ public class DatabaseLoginPanel extends JTiledPanel
             });
         }
         
-        // XXX RELEASE (MUST CHANGE)
-        password.setText(Encryption.decrypt(AppPreferences.getLocalPrefs().get("login.password", ""))); //$NON-NLS-1$ //$NON-NLS-2$
+        if (!UIRegistry.isRelease())
+        {
+            password.setText(Encryption.decrypt(AppPreferences.getLocalPrefs().get("login.password", ""))); //$NON-NLS-1$ //$NON-NLS-2$
+        }
 
         cancelBtn.addActionListener(new ActionListener()
         {
@@ -741,8 +744,10 @@ public class DatabaseLoginPanel extends JTiledPanel
 
         AppPreferences.getLocalPrefs().put("login.dbdriver_selected", dbDrivers.get(dbDriverCBX.getSelectedIndex()).getName()); //$NON-NLS-1$
 
-        // XXX RELEASE (MUST CHANGE)
-        AppPreferences.getLocalPrefs().put("login.password", Encryption.encrypt(new String(password.getPassword()))); //$NON-NLS-1$
+        if (!UIRegistry.isRelease())
+        {
+            AppPreferences.getLocalPrefs().put("login.password", Encryption.encrypt(new String(password.getPassword()))); //$NON-NLS-1$
+        }
 
     }
 
