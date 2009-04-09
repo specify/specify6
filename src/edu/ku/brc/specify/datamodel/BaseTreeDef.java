@@ -353,7 +353,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
      */
     @Override
     @SuppressWarnings("unchecked")
-	public void updateAllFullNames(DataModelObjBase rootObj, DataProviderSessionIFace session,
+	public boolean updateAllFullNames(DataModelObjBase rootObj, DataProviderSessionIFace session,
 			int minRank) throws Exception 
 	{
         final FullNameRebuilder<N,D,I> renamer = new FullNameRebuilder<N,D,I>((D )this, session, minRank);
@@ -379,7 +379,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
         boolean ok = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).displayAgentsLoggedInDlg("BaseTreeDef.TREE_UPDATE_DENIED_TITLE", "BaseTreeDef.OTHER_USERS");
         if (!ok)
         {
-            return;
+            return false;
         }
             
         //useGlassPane avoids issues when simpleglasspane is already displayed. no help for normal glass pane yet.
@@ -396,6 +396,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
             }
             renamer.execute();
             renamer.get();
+            return true;
         }
         catch (Exception ex)
         {
@@ -403,7 +404,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BaseTreeDef.class, ex);
             log.error(ex);
             UIRegistry.showLocalizedError("BaseTreeDef.UnableToRename");
-            return;
+            return false;
         }
         finally
         {
@@ -422,12 +423,69 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
         }
 	}
 
+    protected boolean checkForOtherLoginsBeforeNodeNumberUpdate()
+    {
+    	List<String> logins = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getAgentListLoggedIn(AppContextMgr.getInstance().getClassObject(Discipline.class));
+        if (logins.size() > 0)
+        {
+            String loginStr = "";
+            for (int l = 0; l < logins.size(); l++)
+            {
+                if (l > 0)
+                {
+                    loginStr += ", ";
+                }
+                loginStr += "'" + logins.get(l) + "'";
+            }
+            PanelBuilder pb = new PanelBuilder(new FormLayout("5dlu, f:p:g, 5dlu", "5dlu, f:p:g, 2dlu, f:p:g, 2dlu, f:p:g, 5dlu"));
+            pb.add(new JLabel(UIRegistry.getResourceString("BaseTreeDef.OTHER_USERS")), new CellConstraints().xy(2, 2));
+            pb.add(new JLabel(loginStr), new CellConstraints().xy(2, 4));
+            pb.add(new JLabel(UIRegistry.getResourceString("BaseTreeDef.OTHER_USERS2")), new CellConstraints().xy(2, 6));
+            
+            CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(),
+                    UIRegistry.getResourceString("BaseTreeDef.DENIED_DLG"),
+                    true,
+                    CustomDialog.OKCANCELAPPLYHELP,
+                    pb.getPanel());
+            dlg.setApplyLabel(UIRegistry.getResourceString("BaseTreeDef.OVERRIDE"));
+            dlg.setCloseOnApplyClk(true);
+            dlg.createUI();
+            
+            //Stoopid x-box...
+            dlg.getOkBtn().setVisible(false); 
+            dlg.setCancelLabel(dlg.getOkBtn().getText());
+            //...Stoopid x-box
+            
+            UIHelper.centerAndShow(dlg);
+            dlg.dispose();
+            if (dlg.isCancelled())
+            {
+                return false;
+            }
+            PanelBuilder pb2 = new PanelBuilder(new FormLayout("5dlu, f:p:g, 5dlu", "5dlu, f:p:g, 5dlu"));
+            pb2.add(new JLabel(UIRegistry.getResourceString("BaseTreeDef.CONFIRM_ANNIHILATION")), new CellConstraints().xy(2, 2));
+            CustomDialog dlg2 = new CustomDialog((Frame)UIRegistry.getTopWindow(),
+                    UIRegistry.getResourceString("BaseTreeDef.DANGER"),
+                    true,
+                    CustomDialog.OKCANCELHELP,
+                    pb2.getPanel());
+            dlg2.setOkLabel(UIRegistry.getResourceString("YES"));
+            UIHelper.centerAndShow(dlg2);
+            dlg2.dispose();
+            if (dlg2.isCancelled())
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+    
 	/* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.TreeDefIface#updateAllNodes(edu.ku.brc.specify.datamodel.DataModelObjBase)
      */
     @Override
     @SuppressWarnings("unchecked")
-    public void updateAllNodeNumbers(final DataModelObjBase rootObj, final boolean useProgDlg) throws Exception
+    public boolean updateAllNodeNumbers(final DataModelObjBase rootObj, final boolean useProgDlg) throws Exception
     {    	
     	final NodeNumberer<N,D,I> nodeNumberer = new NodeNumberer<N,D,I>((D )this);
         final JStatusBar nStatusBar = useProgDlg ? null : UIRegistry.getStatusBar();        
@@ -463,10 +521,10 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
                     }
                 });
 
-        boolean ok = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).displayAgentsLoggedInDlg("BaseTreeDef.TREE_UPDATE_DENIED_TITLE", "BaseTreeDef.OTHER_USERS");
+        boolean ok = checkForOtherLoginsBeforeNodeNumberUpdate();
         if (!ok)
         {
-            return;
+            return false;
         }
 
         setRenumberingNodes(true);
@@ -477,7 +535,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
             //locking issues will hopefully have been made apparent to user during the preceding setXXX calls. 
             UIRegistry.showLocalizedError("BaseTreeDef.UnableToUpdate");
             setRenumberingNodes(false);
-            return;
+            return false;
         }
             
         //useGlassPane avoids issues when simpleglasspane is already displayed. no help for normal glass pane yet.
@@ -505,7 +563,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
     	}))
     	{
     		//hopefully lock problems will already have been reported 
-    		return; 
+    		return false; 
     	}
         try
         {
@@ -523,6 +581,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
                 UIHelper.centerAndShow(progDlg);
             }
             setNodeNumbersAreUpToDate(nodeNumberer.get());
+            return true;
         }
         catch (Exception ex)
         {
@@ -530,7 +589,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BaseTreeDef.class, ex);
             log.error(ex);
             UIRegistry.showLocalizedError("BaseTreeDef.UnableToUpdate");
-            return;
+            return false;
         }
         finally
         {
