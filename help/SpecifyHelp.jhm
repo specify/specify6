@@ -276,4 +276,5 @@
    <mapID target="DataObjFmtEditor" url="SpecifyHelp/SchemaConfig/schema_config.html#display_format"/>
    <mapID target="DataObjAggListEditor" url="SpecifyHelp/SchemaConfig/schema_config.html#aggregation"/>
    <mapID target="DataObjAggEditor" url="SpecifyHelp/SchemaConfig/schema_config.html#aggregation"/>
+   <mapID target="Security_On" url="SpecifyHelp/Security/permissions.html#security_on"/>
 </map>

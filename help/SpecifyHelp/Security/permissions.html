@@ -13,7 +13,7 @@
 </table>
 <h2>Adding Users and Setting Permissions</h2>
 <p>Specify includes a highly flexible Security module that allows a system administrator to add users, then limit their operations within and access to the various tables and tools within Specify. These are essentially the User Permissions.</p>
-<p>To access the Security tool click <em>System &gt; Collection Setup &gt; Security Tools</em>. Security tools are only available to Administrators.</p>
+<p>To access the Security tool click <em>System &gt; Collection Setup &gt; Security Tools</em>. Security tools are only available to users in a Manager or Administrators group.</p>
 <p>Users are added to Specify based on their Institution Level and User Group.</p>
 <h4>Institution Levels</h4>
 <p>Specify mirrors the common levels of heirarchy within institutions. This hierarchy is viewed in an Institution Tree on the left side of the Security window.</p>
@@ -40,11 +40,12 @@
 <p>&nbsp;</p>
  <h4><strong>User Groups</strong></h4>
  <p>Specify adds users within  an existing user group. The groups are editable and can be established according to their access to data and tools within Specify per institution. Each group has a set of  default  priviledges. Users entered into the group acquire the default priviledges. The user  priviledges can then be edited based on the exact priviledges the individual user will require.</p>
+ <p>The default permissions in Specify include:</p>
 <ul>
-   <li><strong>Guest</strong> users can  view the data within a Collection or Discipline only.</li>
-   <li><strong>Limited Access</strong> have default priviledges which include full access to all data and tools except Backup and Restore, Schema Configuration, Resource Import/Export, Configuration, WorkBench Schema Configuration and Security.</li>
-   <li><strong>Full Access </strong>have default priviledges which include full access to all data and tools except Backup and Restore, Schema Configuration, Resource Import/Export, Configuration, WorkBench Schema Configuration and Security.</li>
-  <li><strong>Manager</strong> have default priviledges which include full access to all data and tools except Backup and Restore, Schema Configuration, Resource Import/Export, Configuration, WorkBench Schema Configuration and Security.</li>
+   <li><strong>Guest</strong> users can  view the data within a Collection  and use the WorkBench, but may not Upload data from the WorkBench into the Specify database.</li>
+  <li><strong>Limited Access</strong> are granted full access to all data and tools except Backup and Restore, Schema Configuration, Resource Import/Export, Configuration, WorkBench Schema Configuration and Security.</li>
+   <li><strong>Full Access </strong>are granted full access to all data and tools except Backup and Restore, Schema Configuration, Resource Import/Export, Configuration, WorkBench Schema Configuration and Security.</li>
+  <li><strong>Manager</strong> have full permissions to all data and tools within Specify.</li>
 </ul>
 <p>Users can be added to more than one group within different Disciplines, but should not be added to both a Discipline and Collection within the same Discipline.</p>
 <p>An Administrator group also exists outside the Institutional Hierarchy. An Administrator is automatically given full access to all data and tools inside Specify. Administrators are the only users with access to the Backup and Restore, Schema Configuration, Resource Import/Export, Configuration, WorkBench Schema Configuration and Security tools. At this time an Administrator must also belong to a Collection inside the Institutional Hierarchy for the purpose of opening Specify to a Collection. If Specify was originally configured by running the Specify Setup Wizard the original user was placed in both the Administrator group and Manager group in the Collection that was created by the Wizard.</p>
