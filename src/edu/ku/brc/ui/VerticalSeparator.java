@@ -1,14 +1,12 @@
 /*
-     * Copyright (C) 2007  The University of Kansas
-     *
-     * [INSERT KU-APPROVED LICENSE TEXT HERE]
-     *
-     */
-/**
- * 
+ * Copyright (C) 2007  The University of Kansas
+ *
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
+ *
  */
 package edu.ku.brc.ui;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -29,6 +27,9 @@ public class VerticalSeparator extends JComponent
     protected Color bgColor;
     protected Color fgColor;
     protected int   preferredWidth = 10;
+    
+    protected static BasicStroke lineStroke = new BasicStroke(1.5f, BasicStroke.CAP_SQUARE, BasicStroke.CAP_SQUARE);
+
     
     /**
      * @param bgColor
@@ -59,7 +60,10 @@ public class VerticalSeparator extends JComponent
     {
         super.paintComponent(g);
         
-        ((Graphics2D)g).setRenderingHints(UIHelper.createTextRenderingHints());
+        Graphics2D g2d = (Graphics2D)g;
+        
+        g2d.setRenderingHints(UIHelper.createTextRenderingHints());
+        g2d.setStroke(lineStroke);
         
         Dimension size = getSize();
         
@@ -81,6 +85,7 @@ public class VerticalSeparator extends JComponent
     public Dimension getPreferredSize()
     {
         Dimension size = super.getPreferredSize();
+        size.width = Math.max(size.width, 4);
         size.width = preferredWidth;
         return size;
     }

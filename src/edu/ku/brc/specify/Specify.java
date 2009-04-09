@@ -15,7 +15,7 @@
 
 package edu.ku.brc.specify;
 
-import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIHelper.*;
 import static edu.ku.brc.ui.UIRegistry.getAction;
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
@@ -58,6 +58,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -75,6 +76,8 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
@@ -1915,23 +1918,23 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             baseNumRows++;
         }
         
-        CellConstraints cc  = new CellConstraints();
-        PanelBuilder    pb  = new PanelBuilder(new FormLayout("p,20px,p,10px,p,10px,p", "f:p:g"));
-        PanelBuilder    ipb = new PanelBuilder(new FormLayout("p,6px,f:p:g", "p,4px,p,4px," + UIHelper.createDuplicateJGoodiesDef("p", "2px", baseNumRows)));
+        CellConstraints cc     = new CellConstraints();
+        PanelBuilder    infoPB = new PanelBuilder(new FormLayout("p,6px,f:p:g", "p,4px,p,4px," + UIHelper.createDuplicateJGoodiesDef("p", "2px", baseNumRows)));
         
-        JLabel iconLabel = new JLabel(IconManager.getIcon("SpecifyLargeIcon"), SwingConstants.CENTER); //$NON-NLS-1$
-        //iconLabel.setBorder(BorderFactory.createEmptyBorder(2, 0, 2, 8));
+        JLabel       iconLabel = new JLabel(IconManager.getIcon("SpecifyLargeIcon"), SwingConstants.CENTER); //$NON-NLS-1$
+        PanelBuilder iconPB    = new PanelBuilder(new FormLayout("p", "20px,t:p,f:p:g"));
+        iconPB.add(iconLabel, cc.xy(1, 2));
         
         if (hasContext)
         {
             DBTableIdMgr  tdb = DBTableIdMgr.getInstance();
             
             int y = 1;
-            ipb.addSeparator(getResourceString("Specify.SYS_INFO"), cc.xyw(1, y, 3)); y += 2;
+            infoPB.addSeparator(getResourceString("Specify.SYS_INFO"), cc.xyw(1, y, 3)); y += 2;
             
             JLabel lbl = UIHelper.createLabel(databaseName);
-            ipb.add(UIHelper.createI18NFormLabel("Specify.DB"), cc.xy(1, y));
-            ipb.add(lbl,   cc.xy(3, y)); y += 2;
+            infoPB.add(UIHelper.createI18NFormLabel("Specify.DB"), cc.xy(1, y));
+            infoPB.add(lbl,   cc.xy(3, y)); y += 2;
             lbl.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e)
@@ -1943,8 +1946,8 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                 }
             });
             
-            ipb.add(UIHelper.createFormLabel(tdb.getTitleForId(Institution.getClassTableId())), cc.xy(1, y));
-            ipb.add(lbl = UIHelper.createLabel(acm.getClassObject(Institution.class).getName()),      cc.xy(3, y)); y += 2;
+            infoPB.add(UIHelper.createFormLabel(tdb.getTitleForId(Institution.getClassTableId())),  cc.xy(1, y));
+            infoPB.add(lbl = UIHelper.createLabel(acm.getClassObject(Institution.class).getName()), cc.xy(3, y)); y += 2;
             lbl.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e)
@@ -1955,29 +1958,29 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                     }
                 }
             });
-            ipb.add(UIHelper.createFormLabel(tdb.getTitleForId(Division.getClassTableId())), cc.xy(1, y));
-            ipb.add(UIHelper.createLabel(acm.getClassObject(Division.class).getName()),      cc.xy(3, y)); y += 2;
+            infoPB.add(UIHelper.createFormLabel(tdb.getTitleForId(Division.getClassTableId())), cc.xy(1, y));
+            infoPB.add(UIHelper.createLabel(acm.getClassObject(Division.class).getName()),      cc.xy(3, y)); y += 2;
             
-            ipb.add(UIHelper.createFormLabel(tdb.getTitleForId(Discipline.getClassTableId())), cc.xy(1, y));
-            ipb.add(UIHelper.createLabel(acm.getClassObject(Discipline.class).getName()),      cc.xy(3, y)); y += 2;
+            infoPB.add(UIHelper.createFormLabel(tdb.getTitleForId(Discipline.getClassTableId())), cc.xy(1, y));
+            infoPB.add(UIHelper.createLabel(acm.getClassObject(Discipline.class).getName()),      cc.xy(3, y)); y += 2;
             
-            ipb.add(UIHelper.createFormLabel(tdb.getTitleForId(Collection.getClassTableId())), cc.xy(1, y));
-            ipb.add(UIHelper.createLabel(acm.getClassObject(Collection.class).getCollectionName()),cc.xy(3, y)); y += 2;
+            infoPB.add(UIHelper.createFormLabel(tdb.getTitleForId(Collection.getClassTableId())), cc.xy(1, y));
+            infoPB.add(UIHelper.createLabel(acm.getClassObject(Collection.class).getCollectionName()),cc.xy(3, y)); y += 2;
             
-            ipb.add(UIHelper.createI18NFormLabel("Specify.BLD"), cc.xy(1, y));
-            ipb.add(UIHelper.createLabel(appBuildVersion),cc.xy(3, y)); y += 2;
+            infoPB.add(UIHelper.createI18NFormLabel("Specify.BLD"), cc.xy(1, y));
+            infoPB.add(UIHelper.createLabel(appBuildVersion),cc.xy(3, y)); y += 2;
             
-            ipb.add(UIHelper.createI18NFormLabel("Specify.REG"), cc.xy(1, y));
-            ipb.add(UIHelper.createI18NLabel(RegisterSpecify.hasInstitutionRegistered() ? "Specify.HASREG" : "Specify.NOTREG"),cc.xy(3, y)); y += 2;
+            infoPB.add(UIHelper.createI18NFormLabel("Specify.REG"), cc.xy(1, y));
+            infoPB.add(UIHelper.createI18NLabel(RegisterSpecify.hasInstitutionRegistered() ? "Specify.HASREG" : "Specify.NOTREG"),cc.xy(3, y)); y += 2;
             
             String isaNumber = RegisterSpecify.getISANumber();
-            ipb.add(UIHelper.createI18NFormLabel("Specify.ISANUM"), cc.xy(1, y));
-            ipb.add(UIHelper.createLabel(StringUtils.isNotEmpty(isaNumber) ? isaNumber : ""),cc.xy(3, y)); y += 2;
+            infoPB.add(UIHelper.createI18NFormLabel("Specify.ISANUM"), cc.xy(1, y));
+            infoPB.add(UIHelper.createLabel(StringUtils.isNotEmpty(isaNumber) ? isaNumber : ""),cc.xy(3, y)); y += 2;
             
             if (serverName != null)
             {
-                ipb.add(UIHelper.createI18NFormLabel("Specify.SERVER"), cc.xy(1, y));
-                ipb.add(UIHelper.createLabel(StringUtils.isNotEmpty(serverName) ? serverName : ""),cc.xy(3, y)); y += 2;
+                infoPB.add(UIHelper.createI18NFormLabel("Specify.SERVER"), cc.xy(1, y));
+                infoPB.add(UIHelper.createLabel(StringUtils.isNotEmpty(serverName) ? serverName : ""),cc.xy(3, y)); y += 2;
             }
             
             if (StringUtils.contains(DBConnection.getInstance().getConnectionStr(), "mysql"))
@@ -1985,37 +1988,79 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                 Vector<Object[]> list = BasicSQLUtils.query("select version() as ve");
                 if (list != null && list.size() > 0)
                 {
-                    ipb.add(UIHelper.createFormLabel("MySQL Version"), cc.xy(1, y));
-                    ipb.add(UIHelper.createLabel(list.get(0)[0].toString()),cc.xy(3, y)); y += 2;
+                    infoPB.add(UIHelper.createFormLabel("MySQL Version"), cc.xy(1, y));
+                    infoPB.add(UIHelper.createLabel(list.get(0)[0].toString()),cc.xy(3, y)); y += 2;
                 }
             }
     
             
-            ipb.add(UIHelper.createFormLabel("Java Version"), cc.xy(1, y));
-            ipb.add(UIHelper.createLabel(System.getProperty("java.version")),cc.xy(3, y)); y += 2;
+            infoPB.add(UIHelper.createFormLabel("Java Version"), cc.xy(1, y));
+            infoPB.add(UIHelper.createLabel(System.getProperty("java.version")),cc.xy(3, y)); y += 2;
         }
         
-        pb.add(iconLabel,      cc.xy(1, 1));
-        pb.add(createLabel("<html>"+appName+" " + appVersion +  //$NON-NLS-1$ //$NON-NLS-2$
-                "<br><br>Department of Informatics<br>" +
-                "Biodiversity Research Center<br>University of Kansas<br>Lawrence, KS  USA 66045<br><br>" +  //$NON-NLS-1$
-                "www.specifysoftware.org<br>specify@ku.edu<br><br>" +  //$NON-NLS-1$
-                "<p>The Specify Software Project is<br>"+ //$NON-NLS-1$
-                "funded by the Advances in <br>Biological Informatics Program,<br>"+ //$NON-NLS-1$
-                "U.S. National Science Foundation <br>(Award DBI-0446544 and earlier awards).</P></html>"), cc.xy(3, 1)); //$NON-NLS-1$
+        String txt = "<html><font face=\"sans-serif\" size=\"11pt\">"+appName+" " + appVersion +  //$NON-NLS-1$ //$NON-NLS-2$
+                        "<br><br>Department of Informatics " +
+                        "Biodiversity Research Center University of Kansas<br>Lawrence, KS  USA 66045<br><br>" +  //$NON-NLS-1$
+                        "<a href=\"http://specify6.specifysoftware.org\">www.specifysoftware.org</a>"+ //$NON-NLS-1$
+                        "<br><a href=\"mailto:specify@ku.edu\">specify@ku.edu</a><br>" +  //$NON-NLS-1$
+                        "<p>The Specify Software Project is "+ //$NON-NLS-1$
+                        "funded by the Advances in Biological Informatics Program,<br>" + //$NON-NLS-1$
+                        "U.S. National Science Foundation  (Award DBI-0446544 and earlier awards).<br><br>" + //$NON-NLS-1$
+                        "Specify 6.0 Copyright (C) 2009 University of Kansas Center for Research.<br>" + 
+                        "Specify comes with ABSOLUTELY NO WARRANTY.<br><br>" + //$NON-NLS-1$
+                        "This is free software licensed under General Public License 2 (GPL2).</P></font></html>"; //$NON-NLS-1$
+        JLabel txtLbl = createLabel(txt);
+        txtLbl.setFont(UIRegistry.getDefaultFont());
+        
+        final JEditorPane txtPane = new JEditorPane("text/html", txt);
+        txtPane.setEditable(false);
+        txtPane.setBackground(new JPanel().getBackground());
+        
+        PanelBuilder pb = new PanelBuilder(new FormLayout("p,20px,f:min(400px;p):g,10px,8px,10px,p:g", "f:p:g"));
+
+        pb.add(iconPB.getPanel(), cc.xy(1, 1));
+        pb.add(txtPane,           cc.xy(3, 1));
         Color bg = getBackground();
         
         if (hasContext)
         {
             pb.add(new VerticalSeparator(bg.darker(), bg.brighter()), cc.xy(5, 1));
-            pb.add(ipb.getPanel(), cc.xy(7, 1));
+            pb.add(infoPB.getPanel(), cc.xy(7, 1));
         }
         
         pb.setDefaultDialogBorder();
-        String title = getResourceString("Specify.ABOUT");//$NON-NLS-1$
+        
+        String       title    = getResourceString("Specify.ABOUT");//$NON-NLS-1$
         CustomDialog aboutDlg = new CustomDialog(topFrame,  title + " " +appName, true, CustomDialog.OK_BTN, pb.getPanel()); //$NON-NLS-1$ 
-        String okLabel = getResourceString("Specify.CLOSE");//$NON-NLS-1$
+        String       okLabel  = getResourceString("Specify.CLOSE");//$NON-NLS-1$
         aboutDlg.setOkLabel(okLabel); 
+        
+        aboutDlg.createUI();
+        aboutDlg.pack();
+        
+        // for some strange reason I can't get the dialog to size itself correctly
+        Dimension size = aboutDlg.getSize();
+        size.height += 100;
+        aboutDlg.setSize(size);
+        
+        txtPane.addHyperlinkListener(new HyperlinkListener() {
+            public void hyperlinkUpdate(HyperlinkEvent event)
+            {
+                if (event.getEventType() == HyperlinkEvent.EventType.ACTIVATED)
+                {
+                    try
+                    {
+                        AttachmentUtils.openURI(event.getURL().toURI());
+                        
+                    }
+                    catch (Exception e)
+                    {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    }
+                }
+            }
+        });
+        
         UIHelper.centerAndShow(aboutDlg);
 
     }
