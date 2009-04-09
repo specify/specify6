@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<link href="../../main.css" rel="stylesheet" type="text/css" media="screen"></link>
+<link href="../../main.css" rel="stylesheet" type="text/css" media="screen" />
 <title>WorkBench Uploader</title>
 <style type="text/css">
 <!--
@@ -23,9 +23,9 @@
 <p>The WorkBench is both a stand alone tool and an integrate part of the Specify platform. The Upload function is only available in the Specify WorkBench, not the stand alone WorkBench. Data Sets created using the stand alone version will need to be exported and reimported into the Specify 6 WorkBench  for uploading. The current version of the stand alone WorkBench is not able to export Data Sets along with their mapping information, but a future release of the WorkBench will have this capability.</p>
 <p>Data Sets in the Specify WorkBench can be uploaded into Specify 6 with the Uploader tool. This makes the uploader a fast and easy way to transfer data from an MS Excel or CSV file into Specify by first <a href="../Workbench/ImportData.html">importing</a> the data into the WorkBench. Before uploading the Data Set please note the following:</p>
 <ul>
-  <li>Check  Data Set mapping and verify that Data Set fields are being mapped to the correct fields in Specify 6.</li></br>
+  <li>Check  Data Set mapping and verify that Data Set fields are being mapped to the correct fields in Specify 6.</li>
   <li>Check existing data in Specify to verify that data being uploaded will not add a duplicate record because of a typo or abbreviation. One example is Geography. If you have run the Wizard and uploaded the Geography data the United States exists within the Geography table (and tree) as 'United States'. If your Data Set includes the United States as anything other than 'United States' (for example, 'US' or 'USA') the Upload function will create a new Geography record (and node on the Geography tree). </li>
-  </br>
+  
   <li>Columns in imported files that do not map to a specific Specify  field should be mapped to a Text or Number field. These fields will then need to be renamed accordingly within Specify to display correctly on forms and become searchable in queries. This can be accomplished by changing the field caption in the <a href="../../SchemaConfig/schema_config.html#change_caption">Schema Configuration tool</a>. </li>
   <br />
   <li>The Data Set must have data in field sthat are required by Specify 6. For example; if a Data Set column is mapped to a Taxon field in Specify,  all required Taxon fields, including enforced ranks, must be mapped and include data in the Data Set.</li>
@@ -68,7 +68,7 @@
 
   <br />
   <br />
-  <li><a name="uploader_validate" id="uploader_validate"></a>Click the <em>Validate</em> button, this allows the Uploader to check for required fields and field formats within the Data Set to match them in the Specify schema.  It also ensures that the necessary related fields are present to link multiple tables. When validation errors are present the Uploader will split the <em>Messages</em> window showing validation errors in the top portion and general messages below as well as  a <em>View Report</em> button. Click the button to view and print a report of the validation errors. The Upload button will remain inactive until all validation errors have been corrected.
+  </li><li><a name="uploader_validate" id="uploader_validate"></a>Click the <em>Validate</em> button, this allows the Uploader to check for required fields and field formats within the Data Set to match them in the Specify schema.  It also ensures that the necessary related fields are present to link multiple tables. When validation errors are present the Uploader will split the <em>Messages</em> window showing validation errors in the top portion and general messages below as well as  a <em>View Report</em> button. Click the button to view and print a report of the validation errors. The Upload button will remain inactive until all validation errors have been corrected.
     Some errors may need to be fixed within the data set and require the user to exit the Uploader tool by clicking the <em>Close</em> button.<br />
     <br />
     Examples of data set mapping requirements:<br />
