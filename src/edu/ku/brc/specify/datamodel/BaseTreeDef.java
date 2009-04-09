@@ -18,10 +18,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.persistence.Transient;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
-import org.apache.batik.ext.swing.JAffineTransformChooser.Dialog;
 import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -493,7 +493,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
         final ProgressDialog progDlg = nStatusBar != null ? null :
             new ProgressDialog(UIRegistry.getResourceString("BaseTreeDef.UPDATING_TREE_DLG"), false, false);
         progDlg.setResizable(false);
-        progDlg.setDefaultCloseOperation(Dialog.DO_NOTHING_ON_CLOSE);
+        progDlg.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
         if (nStatusBar != null)
         {
             nStatusBar.setProgressRange(nodeNumberer.getProgressName(), 0, 100);
