@@ -755,7 +755,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
         DefaultComboBoxModel cbxModel = (DefaultComboBoxModel)formatCombo.getModel();
         cbxModel.removeAllElements();
         
-        DBFieldInfo                 precision = tableInfo.getFieldByName(fieldInfo.getName()+"Precision");
+        DBFieldInfo precision = tableInfo.getFieldByName(fieldInfo.getName()+"Precision");
         if (precision != null)
         {
             cbxModel.addElement(getResourceString("SL_PARTIAL_DATE"));
@@ -1435,7 +1435,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
                         fieldLengthTxt.setEnabled(StringUtils.isNotEmpty(lenStr));
                         
                         mustBeRequired = fi.isRequiredInSchema();
-                        fieldReqChk.setSelected(fi.isRequired());
+                        fieldReqChk.setSelected(mustBeRequired || fld.getIsRequired());
 
                     } else
                     {
@@ -1458,7 +1458,8 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
                             fieldLengthLbl.setEnabled(false);
                             fieldLengthTxt.setEnabled(false);
                             
-                            fieldReqChk.setSelected(ri.isRequired());
+                            //fieldReqChk.setSelected(ri.isRequired());
+                            fieldReqChk.setSelected(false);//fld.getIsRequired());
                         } else
                         {
                             //throw new RuntimeException("couldn't find field or relationship.");

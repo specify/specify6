@@ -747,8 +747,8 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
      */
     protected void doSchemaConfig(final Byte schemaType, final DBTableIdMgr tableMgr)
     {
-        if (askBeforeStartingTool())
-        {
+        //if (askBeforeStartingTool())
+        //{
             boolean ok = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).displayAgentsLoggedInDlg("SystemSetupTask.SCHEMA_CFG");
             if (!ok)
             {
@@ -788,10 +788,10 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             
             // start the background task
             workerThread.start();
-        } else
-        {
-            TaskMgr.getTask("Startup").requestContext();
-        }
+        //} else
+        //{
+        //    TaskMgr.getTask("Startup").requestContext();
+        //}
     }
     
     

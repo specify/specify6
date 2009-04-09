@@ -220,9 +220,8 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
         UIRegistry.getStatusBar().setText(getResourceString("SL_SAVING_SCHEMA_LOC"));
         UIRegistry.getStatusBar().setIndeterminate(SCHEMALOCDLG, true);
         
-        if (false) // Old Way
+        if (true) // Old Way
         {
-            
             SwingWorker workerThread = new SwingWorker()
             {
                 @Override
@@ -236,9 +235,9 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
                     
                     SpecifyAppContextMgr.getInstance().setForceReloadViews(true);
                     
+                    UIFieldFormatterMgr.getInstance().load();
                     WebLinkMgr.getInstance().reload();
-                    
-                    DataObjFieldFormatMgr.clear();
+                    DataObjFieldFormatMgr.getInstance().load();
                     
                     return null;
                 }
@@ -590,9 +589,10 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
                 
             } catch (Exception ex)
             {
+                ex.printStackTrace();
                 edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SchemaLocalizerDlg.class, ex);
-                ex.printStackTrace();
+                
             } finally
             {
                 if (session != null)
@@ -602,7 +602,8 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
             }
             //notify app of localizer changes
             CommandAction cmd = new CommandAction(SCHEMA_LOCALIZER, SCHEMA_LOCALIZER, null);
-            CommandDispatcher.dispatch(cmd);        
+            CommandDispatcher.dispatch(cmd);
+            
         } else
         {
             log.warn("No Changes were saved!");

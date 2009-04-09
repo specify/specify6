@@ -75,6 +75,8 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuListener;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -880,14 +882,21 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                     });
     
             
-            
-            menu.addMouseListener(new MouseAdapter() {
-                @SuppressWarnings("synthetic-access") //$NON-NLS-1$
+            menu.addMenuListener(new MenuListener() {
                 @Override
-                public void mousePressed(MouseEvent e) {
-                    changeCollectionMenuItem.setEnabled(Uploader.getCurrentUpload() == null &&
-                    		((SpecifyAppContextMgr)AppContextMgr.getInstance()).getNumOfCollectionsForUser() > 1);
+                public void menuCanceled(MenuEvent e) {}
+                @Override
+                public void menuDeselected(MenuEvent e) {}
+                @Override
+                public void menuSelected(MenuEvent e)
+                {
+                    boolean enable = Uploader.getCurrentUpload() == null &&
+                                    ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getNumOfCollectionsForUser() > 1
+                                    && !TaskMgr.areTasksDisabled();
+
+                    changeCollectionMenuItem.setEnabled(enable);
                 }
+                
             });
         }
 

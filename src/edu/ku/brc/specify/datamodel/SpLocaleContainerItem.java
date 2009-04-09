@@ -189,7 +189,7 @@ public class SpLocaleContainerItem extends SpLocaleBase implements LocalizableIt
     @Column(name = "IsRequired", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
     public Boolean getIsRequired()
     {
-        return isRequired;
+        return isRequired == null ? false : isRequired;
     }
 
     /**

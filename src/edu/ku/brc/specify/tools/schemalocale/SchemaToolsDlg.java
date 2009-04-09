@@ -38,9 +38,6 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
-import edu.ku.brc.af.tasks.BaseTask;
-import edu.ku.brc.ui.CommandAction;
-import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -221,15 +218,15 @@ public class SchemaToolsDlg extends CustomDialog
                     
                     isCancelled = true; // We need to do this here so we don't get a StatsPane we don't want
 
-                    if (dlg.wasSaved())
-                    {
-                        UIRegistry.showLocalizedMsg("Specify.ABT_EXIT");
-                        CommandDispatcher.dispatch(new CommandAction(BaseTask.APP_CMD_TYPE, BaseTask.APP_REQ_EXIT));
+                    //if (dlg.wasSaved())
+                    //{
+                        //UIRegistry.showLocalizedMsg("Specify.ABT_EXIT");
+                        //CommandDispatcher.dispatch(new CommandAction(BaseTask.APP_CMD_TYPE, BaseTask.APP_REQ_EXIT));
                         
-                    } else
-                    {
+                    //} else
+                    //{
                         ContextMgr.getTaskByName("Startup").requestContext();
-                    }
+                    //}
                 }
             }
         });

@@ -750,6 +750,14 @@ public class TaskMgr implements CommandListener
             }
         }
     }
+    
+    /**
+     * @return true if there are one or more taks disabled.
+     */
+    public static boolean areTasksDisabled()
+    {
+        return getInstance().disabledTasks.size() > 0;
+    }
 
     /**
      * Re-Enables all the tasks that had been disabled by a call to 'disableAllEnabledTasks'
