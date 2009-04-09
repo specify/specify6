@@ -730,6 +730,16 @@ public class BuildSampleDatabase
             LithoStratTreeDefItem bed       = createLithoStratTreeDefItem(member,    "Bed",         500, true);
             persist(earth);
             
+            // setup the root Geography record (planet Earth)
+            LithoStrat earthNode = new LithoStrat();
+            earthNode.initialize();
+            earthNode.setName("Earth");
+            earthNode.setRankId(0);
+            earthNode.setDefinition(lithoStratTreeDef);
+            earthNode.setDefinitionItem(earth);
+            earth.getTreeEntries().add(earthNode);
+            persist(earthNode);
+            
             commitTx();
             
             convertChronoStratFromXLS(gtpTreeDef);
@@ -7752,7 +7762,8 @@ public class BuildSampleDatabase
                                         final SpLocaleContainerItem memoryItemArg, 
                                         final SpLocaleContainerItem newItem,
                                         final SpLocaleContainerItem dispItem,
-                                        final boolean               hideGenericFields)
+                                        final boolean               hideGenericFields,
+                                        final boolean               isFish)
     {
         SpLocaleContainerItem memoryItem = dispItem != null ? dispItem : memoryItemArg;
         
@@ -7772,7 +7783,13 @@ public class BuildSampleDatabase
             SpLocaleItemStr str = new SpLocaleItemStr();
             str.initialize();
             
-            str.setText(nm.getText());
+            String title = nm.getText();
+            if (!isFish && title.equals("Collecting Event"))
+            {
+                title = "Collecting Information";
+            }
+            str.setText(title);
+            
             if (debugOn) System.out.println(nm.getText());
             str.setLanguage(nm.getLanguage());
             str.setCountry(nm.getCountry());
@@ -7819,8 +7836,10 @@ public class BuildSampleDatabase
         newContainer.setIsHidden(newContainer.getIsHidden());
 
         
-        boolean isColObj    = memoryContainer.getName().equals("collectionobject");
-        boolean isAccession = memoryContainer.getName().equals("accession");
+        boolean isColObj          = memoryContainer.getName().equals("collectionobject");
+        boolean isAccession       = memoryContainer.getName().equals("accession");
+        boolean isCollectingEvent = memoryContainer.getName().equals("collectingevent");
+        boolean isFish            = disciplineName.equals("fish");
         
         //debugOn = false;
        
@@ -7829,7 +7848,12 @@ public class BuildSampleDatabase
             SpLocaleItemStr str = new SpLocaleItemStr();
             str.initialize();
             
-            str.setText(nm.getText());
+            String title = nm.getText();
+            if (isCollectingEvent && !isFish)
+            {
+                title = "Collecting Information";
+            }
+            str.setText(title);
             str.setLanguage(nm.getLanguage());
             str.setCountry(nm.getCountry());
             str.setVariant(nm.getVariant());
@@ -7874,7 +7898,7 @@ public class BuildSampleDatabase
             
             SpLocaleContainerItem dispItem = dispItemHash.get(item.getName());
             
-            loadLocalization(memoryContainer.getName(), item, newItem, dispItem, hideGenericFields);
+            loadLocalization(memoryContainer.getName(), item, newItem, dispItem, hideGenericFields, isFish);
             
             if (isColObj && item.getName().equals("catalogNumber") && catFmtName != null)
             {
