@@ -22,6 +22,24 @@
         </descs>
         <spExportSchemaItems/>
       </item>
+      <item name="stationFieldNumber" type="java.lang.String" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <isHidden>false</isHidden>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en" country="" variant="">
+            <version>0</version>
+            <text>Collector Number</text>
+          </str>
+        </names>
+        <descs>
+          <str language="en" country="" variant="">
+            <version>0</version>
+            <text>Collector Number</text>
+          </str>
+        </descs>
+        <spExportSchemaItems/>
+      </item>
     </items>
     <names/>
     <descs/>
@@ -68,6 +86,22 @@
         <spExportSchemaItems/>
       </item>
     </items>
+    <names/>
+    <descs/>
+  </container>
+  <container name="exchangein" type="">
+    <version>0</version>
+    <isHidden>false</isHidden>
+    <isSystem>false</isSystem>
+    <items/>
+    <names/>
+    <descs/>
+  </container>
+  <container name="exchangeout" type="">
+    <version>0</version>
+    <isHidden>false</isHidden>
+    <isSystem>false</isSystem>
+    <items/>
     <names/>
     <descs/>
   </container>
