@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<link href="../../main.css" rel="stylesheet" type="text/css" media="screen"></link>
+<link href="../../main.css" rel="stylesheet" type="text/css" media="screen" />
 <title>Adding Users and Setting Permissions</title>
 </head>
 
@@ -32,7 +32,7 @@
     </ul>
   </ul>
 </ul>
-<p>At this time users are added at the Collection  levels only. The lowest level, Collection, can access  data within a specific Collection (Wet Collection, Teaching Collection). Specify opens in a collection, or at a Collection level; therefore users added to only one Collection can not access other collections. </p>
+<p>At this time users are added at the Collection  level only. The lowest level, Collection, can access  data within a specific Collection (Wet Collection, Teaching Collection). Specify opens in a collection, or at a Collection level; therefore users added to only one Collection can not access other collections. </p>
 <p>Users can belong to more than one Collection and more than one Institutional level.</p>
 <p>&nbsp;</p>
  <p><strong>Adding Institutional Levels</strong></p>
@@ -78,32 +78,32 @@
 <h4>Setting Permissions</h4>
 <p>Click on a User or Group to view both their User information and Permissions in the work space. The Permissions open in the bottom half of the work space and include a tab with three permission categories:</p>
 <ul>
-   <li><strong>Tools</strong> refer to anything used to manipulate data within Specify. </br><br /><br />
+   <li><strong>Tools</strong> refer to anything used to manipulate data within Specify. <br /><br />
  
-Click on a Tool in the list to display the options for the permissions. Configuration, Data Entry, Information Request, Interactions, Plugins, Record Sets, Reports, Security Tools, Simple Search, Statistics have these permissions:</br></br><br />
+Click on a Tool in the list to display the options for the permissions. Configuration, Data Entry, Information Request, Interactions, Plugins, Record Sets, Reports, Security Tools, Simple Search, Statistics have these permissions:<br />
 <ul>
   <li><strong>View</strong> allows a user to view data within a tool. </li>
   <li><strong>Add</strong> allows a user to add  a record within the context of the tool.</li>
   <li><strong>Modify</strong> allows users to edit data within the context of the tool.</li>
   <li><strong>Delete</strong> allows users to delete data within the context of the tool.</li>
 </ul>
-</br></br><br />
+<br />
 Backup and Restore, Query, Resource Import and Export, Schema Configuration, WorkBench and WorkBench Schema Configuration and allow tools to be enabled only.<br />
   </li>
    </ul>
 <ul>
-  <li><strong>Tables </strong>refers to each of the tables in Specify.</br>
+  <li><strong>Tables </strong>refers to each of the tables in Specify.
     Permissions can be set for each individual table within the Specify schema.<br />
     <br />
  
-Click on a Table in the list to display the options for the permissions:</br></br><br />
+Click on a Table in the list to display the options for the permissions:<br />
 <ul>
   <li><strong>View</strong> allows a user to view table data. </li>
   <li><strong>Add</strong> allows a user to add  a record.</li>
   <li><strong>Modify</strong> allows users to edit table data within a record.</li>
-  <li><strong>Delete</strong> allows users to delete table data within a record.</li></br>
+  <li><strong>Delete</strong> allows users to delete table data within a record.</li>
 </ul>
-  <li><strong>Preferences</strong> lists the modules in the actual Preferences module. Each can be set for View, Add, Modify and Delete.</li>
+  </li><li><strong>Preferences</strong> lists the modules in the actual Preferences module. Each can be set for View, Add, Modify and Delete.</li>
 </ul>
 <p>&nbsp;</p>
  <p><strong>How Permissions affects the Specify Application </strong></p>
@@ -112,6 +112,9 @@ Click on a Table in the list to display the options for the permissions:</br></b
  <p>If a user has questions about their permissions they can view it by clicking <em>System &gt; System Setup &gt; Security Summary</em>.</p>
 <p>It is extremely important to note that even though  permissions are listed seperately for each table and tool, many of these affect each other and should have similar settings. For instance, for a user to have access to a Collection Object form for data entry purposes the user will need to have View, Add and possibly Modify priviledges for ALL the tables on the Collection Object form (Collection Object, Determinations, Collecting Event, Taxon, Perparations, Collection Object Attribute, Collectors and Collection Object Attachments) IN ADDITION to the Form tool itself. For instance, in this example if permission was not given for a user to Add or Modify the Prepartions table the user would not be provided with the <img src="../../images/add.png" width="16" height="16" /> (add) or <img src="../../images/delete.png" width="16" height="16" /> (delete) button on the Preparations sub form within the Collection Object form. For this reason a good practice may be to set the same level of permissions for all the Tables within a tool with the same level of permissions being set for the Tool itself. </p>
 <p>A good approach to setting permissions may be to decide what Tables and Tools a particular user should not have access to and then change the permissions accordingly. </p>
+<p>&nbsp;</p>
+<h3><a name="security_summary" id="security_summary"></a>Security Summary</h3>
+<p>Users can view their permission settings by clicking <em>System &gt; System Setup &gt; Show Security Summary</em>.</p>
 <p>&nbsp;</p>
 </body>
 </html>

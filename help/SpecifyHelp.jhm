@@ -131,6 +131,7 @@
    <mapID target="uploading" url="SpecifyHelp/Uploading/wb_uploader.html"/>
    <mapID target="WorkbenchWorkingWithImages" url="SpecifyHelp/Workbench/WorkingWithImages.html"/>
 
+
 <!-- Index Bookmarks -->
 
    <mapID target="specify" url="http://specify6.specifysoftware.org"/>
@@ -150,6 +151,7 @@
    <mapID target="Add_Discipline" url="SpecifyHelp/Configuration/institution_hierarchy.html#add_discipline"/>
    <mapID target="Add_Collection" url="SpecifyHelp/Configuration/institution_hierarchy.html#add_collection"/>
    <mapID target="Add_User" url="SpecifyHelp/Security/permissions.html#add_user"/>
+   <mapID target="SecuritySummary" url="SpecifyHelp/Security/permissions.html#security_summary"/>
    <mapID target="Set_Permissions" url="SpecifyHelp/Security/permissions.html#set_permissions"/>
    <mapID target="DataEntryConfigure" url="SpecifyHelp/Data_Entry/Data_Entry.html#data_entry_configure"/>
    <mapID target="SUBVIEW_FORM_HELP" url="SpecifyHelp/Dialogs/Using_Forms.html#sub_form"/>
@@ -242,9 +244,9 @@
    <mapID target="Web_Field" url="SpecifyHelp/SchemaConfig/WebLinks.html#web_field"/>
    <mapID target="Web_New_Field" url="SpecifyHelp/SchemaConfig/WebLinks.html#web_new_field"/>
    <mapID target="Web_URL" url="SpecifyHelp/SchemaConfig/WebLinks.html#web_url"/>
-   <mapID target="DOF_LIST_EDITOR" url="SpecifyHelp/SchemaConfig/schema_config.html#schema_format"/>
-   <mapID target="DOF_EDITOR" url="SpecifyHelp/SchemaConfig/schema_config.html#schema_format"/>
-   <mapID target="DOF_SINGLE_FF" url="SpecifyHelp/SchemaConfig/schema_config.html#schema_format"/>
+   <mapID target="DOF_LIST_EDITOR" url="SpecifyHelp/SchemaConfig/schema_config.html#display_format_"/>
+   <mapID target="DOF_EDITOR" url="SpecifyHelp/SchemaConfig/schema_config.html#display_format"/>
+   <mapID target="DOF_SINGLE_FF" url="SpecifyHelp/SchemaConfig/schema_config.html#table_format_single"/>
    <mapID target="DOA_LIST_EDITOR" url="SpecifyHelp/SchemaConfig/schema_config.html#schema_agg"/>
    <mapID target="DOA_EDITOR" url="SpecifyHelp/SchemaConfig/schema_config.html#schema_agg"/>
    <mapID target="WorkbenchNewMapping" url="SpecifyHelp/Workbench/NewDataSet.html#NewDataSetMapping"/>
@@ -266,6 +268,12 @@
    <mapID target="SC_hide_table" url="SpecifyHelp/SchemaConfig/schema_config.html#hide_table"/>
    <mapID target="SC_field_description" url="SpecifyHelp/SchemaConfig/schema_config.html#field_description"/>   
    <mapID target="SC_aggregate" url="SpecifyHelp/SchemaConfig/schema_config.html#aggregation"/>  
-   <mapID target="SC_field_format" url="SpecifyHelp/SchemaConfig/schema_config.html#field_format"/>  
-   
+   <mapID target="SC_field_format" url="SpecifyHelp/SchemaConfig/schema_config.html#field_format"/> 
+   <mapID target="UIFieldFmtListEditor" url="SpecifyHelp/SchemaConfig/schema_config.html#field_format_list"/>
+   <mapID target="UIFieldFmtEditor" url="SpecifyHelp/SchemaConfig/schema_config.html#create_field_format"/>
+   <mapID target="DataObjFmtListEditor" url="SpecifyHelp/SchemaConfig/schema_config.html#display_format"/>
+   <mapID target="DataObjFmtSingleEditor" url="SpecifyHelp/SchemaConfig/schema_config.html#table_format_single"/>        
+   <mapID target="DataObjFmtEditor" url="SpecifyHelp/SchemaConfig/schema_config.html#display_format"/>
+   <mapID target="DataObjAggListEditor" url="SpecifyHelp/SchemaConfig/schema_config.html#aggregation"/>
+   <mapID target="DataObjAggEditor" url="SpecifyHelp/SchemaConfig/schema_config.html#aggregation"/>
 </map>

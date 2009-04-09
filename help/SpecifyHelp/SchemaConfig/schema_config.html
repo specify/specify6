@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<link href="../../main.css" rel="stylesheet" type="text/css" media="screen"></link>
+<link href="../../main.css" rel="stylesheet" type="text/css" media="screen" />
 <title>Editing the Schema Configuration</title>
 </head>
 
@@ -69,7 +69,7 @@
   <li><strong>Title</strong> is the name of the format and will appear in any table format lists (in the first format editor dialog and the Display Format Pick List). This will link to the shorter name in the database, allowing the title to be more descriptive.</li>
 </ul>
 <p>There are two types of Table Formats, a 'Single display format' that links to one or more fields and a 'Display depends on value of field', which displays different results based on a conditional field.</p>
-<p><strong>Single table format</strong></p>
+<p><strong><a name="table_format_single" id="table_format_single"></a>Single table format</strong></p>
 <p>The Single display format allows users to select fields from the Available Fields window to be used in the table format.</p>
 <ol>
   <li>First, click the <strong>Single table format</strong> button.</li>
@@ -140,14 +140,18 @@
 <h4>Overview</h4>
 <p>Accession and Catalog Number formats are configured during the institution setup but there may be other fields that require either a number scheme or a format. A format allows a field to include sections for different data, such as static text, a date or in incremented number. Gift Number and Loan Number often have a unique format within collections. These can be formatted in the Schema Configuration tool, which will change the format for the entire discipline. In other words, if a Gift Number  is formatted in the schema configuration all the collections within the discipline will be required to use the new format, which will display on the Gift form.</p>
 <p>Field Formats can not be changed if data exists within the database in the format. In other words, before changing a field format all data using the old format must first be deleted.</p>
-<p>Create and choose a format for a field in the Field Formatting Editor, which is available in the Schema Configuration tool (<em>System &gt; Schema Configuration</em>). The Schema Configuration tool is only available to users in a Manager or Administrator group.</p>
+<p>Create a format for a field in the Field Formatting Editor, which is available in the Schema Configuration tool (<em>System &gt; Schema Configuration</em>). The Schema Configuration tool is only available to  Administrators.</p>
 <p>Once in the Schema Configuration tool, choose a table and field from the Table and Field lists (on the left side of the tool) respectively.</p>
 <p>Field formatting functions are configured using the Format Type section at the bottom of the Schema Configuration tool.</p>
 <p>Choose <em>Formatting</em> from the pick list next to the Format Type caption.</p>
 <p align="center"><img src="../../images/field_format.png" alt="field_format" width="327" height="19" /></p>
 <p align="center" class="imgcaption">Format Type</p>
+<p align="center" class="imgcaption">&nbsp;</p>
+<p align="left"><a name="field_format_list" id="field_format_list"></a>If a format exists choose it from the middle drop-down list.</p>
+<p align="center"><img src="../../images/field_format_list.png" width="330" height="82" /></p>
+<p align="center" class="imgcaption">List of existing Field Formats</p>
 <p>&nbsp;</p>
-<h4>Creating a Field Format</h4>
+<h4><a name="create_field_format" id="create_field_format"></a>Creating a Field Format</h4>
 <p>Click the <em>...</em> button to open the Field Formatting Editor.</p>
 <p align="center"><img src="../../images/number_format_1.png" alt="number" width="360" height="184" /></p>
 <p align="center" class="imgcaption">Field Formatting Editor</p>
