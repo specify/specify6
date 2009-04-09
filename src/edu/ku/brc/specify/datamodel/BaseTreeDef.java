@@ -427,10 +427,10 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
      */
     @Override
     @SuppressWarnings("unchecked")
-    public void updateAllNodeNumbers(final DataModelObjBase rootObj) throws Exception
+    public void updateAllNodeNumbers(final DataModelObjBase rootObj, final boolean useProgDlg) throws Exception
     {    	
     	final NodeNumberer<N,D,I> nodeNumberer = new NodeNumberer<N,D,I>((D )this);
-        final JStatusBar nStatusBar = UIRegistry.getStatusBar();
+        final JStatusBar nStatusBar = useProgDlg ? null : UIRegistry.getStatusBar();        
         final ProgressDialog progDlg = nStatusBar != null ? null :
             new ProgressDialog(UIRegistry.getResourceString("BaseTreeDef.UPDATING_TREE_DLG"), false, false);
         if (nStatusBar != null)
@@ -610,7 +610,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
                 UIHelper.centerAndShow(dlg);
                 if (dlg.getBtnPressed() == CustomDialog.OK_BTN)
                 {
-                    updateAllNodeNumbers(null);
+                    updateAllNodeNumbers(null, false);
                     result = TreeDefStatusMgr.isNodeNumbersAreUpToDate(this);                    
                 }
                 else

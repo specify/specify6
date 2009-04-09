@@ -1907,8 +1907,8 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
             catch (Exception e)
             {
-                UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchPaneSS.class, e);
+                //UsageTracker.incrHandledUsageCount();
+                //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchPaneSS.class, e);
                 // this could be a number format exception
                 // or a null pointer exception if the field was empty
                 // either way, we skip this record

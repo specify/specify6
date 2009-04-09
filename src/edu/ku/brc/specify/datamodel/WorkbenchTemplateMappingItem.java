@@ -65,6 +65,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     protected Short             xCoord;
     protected Short             yCoord;
     protected Boolean           carryForward;
+    //protected boolean           useCaptionForText = false; //if true then toString will use the caption instead of the mapped field's title
     
     // Transient
     protected Class<?>          dataFieldClass = null;
@@ -433,10 +434,22 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     @Override
     public String toString()
     {
-        return fieldInfo != null ? fieldInfo.getTitle() : (caption != null ? caption : fieldName);
+//        if (useCaptionForText)
+//        {
+//        	return caption != null ? caption : fieldInfo != null ? fieldInfo.getTitle() : fieldName;
+//        }
+    	return fieldInfo != null ? fieldInfo.getTitle() : (caption != null ? caption : fieldName);
     }
 
-    /*
+//    /**
+//	 * @param useCaptionForText the useCaptionForText to set
+//	 */
+//	public void setUseCaptionForText(boolean useCaptionForText)
+//	{
+//		this.useCaptionForText = useCaptionForText;
+//	}
+
+	/*
      * (non-Javadoc)
      * 
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()

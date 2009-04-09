@@ -88,7 +88,7 @@ public interface TreeDefIface<N extends Treeable<N,D,I>,
 	 * 
 	 * Walks the entire tree and assigns node numbers for every item.
 	 */
-	public void updateAllNodeNumbers(DataModelObjBase rootObj) throws Exception;
+	public void updateAllNodeNumbers(DataModelObjBase rootObj, final boolean useProgDlg) throws Exception;
 	
 	/**
 	 * @param rootObj

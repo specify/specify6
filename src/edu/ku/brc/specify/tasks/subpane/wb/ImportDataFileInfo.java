@@ -177,7 +177,7 @@ public class ImportDataFileInfo
         {
             return XLS_MIME_TYPE;
             
-        } else if (extension.equalsIgnoreCase("csv"))
+        } else if (extension.equalsIgnoreCase("csv") || extension.equalsIgnoreCase("txt"))
         {
             return CSV_MIME_TYPE;
         }

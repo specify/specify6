@@ -1483,6 +1483,15 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         chooser.setMultiSelectionEnabled(false);
         String[] exts = {"xls", "csv"};
         chooser.setFileFilter(new UIFileFilter(exts, getResourceString("WB_EXCELANDCSVFILES")));
+        String currDirPath = AppPreferences.getLocalPrefs().get(IMPORT_FILE_PATH, null);
+        if (currDirPath != null)
+        {
+        	File currDir = new File(currDirPath);
+        	if (currDir.isDirectory() && currDir.exists())
+        	{
+        		chooser.setCurrentDirectory(currDir);
+        	}
+        }
         
         if (chooser.showOpenDialog(UIRegistry.get(UIRegistry.FRAME)) != JFileChooser.APPROVE_OPTION)
         {
@@ -1514,7 +1523,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         	if (StringUtils.isNotEmpty(file.getPath()))
         	{
         		AppPreferences localPrefs = AppPreferences.getLocalPrefs();
-        		localPrefs.put(IMPORT_FILE_PATH, file.getPath());
+        		localPrefs.put(IMPORT_FILE_PATH, file.getParent());
         	}
   
         	

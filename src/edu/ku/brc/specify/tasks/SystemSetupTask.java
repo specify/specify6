@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
 
+import javax.swing.JLabel;
+import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
@@ -37,6 +39,10 @@ import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.auth.BasicPermisionPanel;
 import edu.ku.brc.af.auth.PermissionEditorIFace;
@@ -72,6 +78,7 @@ import edu.ku.brc.af.ui.weblink.WebLinkMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.specify.SpecifyUserTypes.UserType;
 import edu.ku.brc.specify.config.ResourceImportExportDlg;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.Discipline;
@@ -80,7 +87,9 @@ import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
+import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.busrules.PickListBusRules;
+import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
 import edu.ku.brc.specify.tools.schemalocale.PickListEditorDlg;
 import edu.ku.brc.specify.tools.schemalocale.SchemaToolsDlg;
 import edu.ku.brc.ui.CommandAction;
@@ -827,6 +836,74 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
         }
     }
 
+    
+    protected void doTreeUpdate(final BaseTreeTask<?,?,?> tree)
+    {
+    	List<String> logins = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getAgentListLoggedIn(AppContextMgr.getInstance().getClassObject(Discipline.class));
+        if (logins.size() > 0)
+        {
+            String loginStr = "";
+            for (int l = 0; l < logins.size(); l++)
+            {
+                if (l > 0)
+                {
+                    loginStr += ", ";
+                }
+                loginStr += "'" + logins.get(l) + "'";
+            }
+            PanelBuilder pb = new PanelBuilder(new FormLayout("5dlu, f:p:g, 5dlu", "5dlu, f:p:g, 2dlu, f:p:g, 2dlu, f:p:g, 5dlu"));
+            pb.add(new JLabel(UIRegistry.getResourceString("SystemSetupTask.OTHER_USERS")), new CellConstraints().xy(2, 2));
+            pb.add(new JLabel(loginStr), new CellConstraints().xy(2, 4));
+            pb.add(new JLabel(UIRegistry.getResourceString("SystemSetupTask.OTHER_USERS2")), new CellConstraints().xy(2, 6));
+            
+            CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(),
+                    UIRegistry.getResourceString("SystemSetupTask.DENIED_DLG"),
+                    true,
+                    CustomDialog.OKCANCELAPPLYHELP,
+                    pb.getPanel());
+            dlg.setApplyLabel(UIRegistry.getResourceString("SystemSetupTask.OVERRIDE"));
+            dlg.setCloseOnApplyClk(true);
+            dlg.createUI();
+            
+            //Stoopid x-box...
+            dlg.getOkBtn().setVisible(false); 
+            dlg.setCancelLabel(dlg.getOkBtn().getText());
+            //...Stoopid x-box
+            
+            UIHelper.centerAndShow(dlg);
+            dlg.dispose();
+            if (dlg.isCancelled())
+            {
+                return;
+            }
+            PanelBuilder pb2 = new PanelBuilder(new FormLayout("5dlu, f:p:g, 5dlu", "5dlu, f:p:g, 5dlu"));
+            pb2.add(new JLabel(UIRegistry.getResourceString("SystemSetupTask.CONFIRM_ANNIHILATION")), new CellConstraints().xy(2, 2));
+            CustomDialog dlg2 = new CustomDialog((Frame)UIRegistry.getTopWindow(),
+                    UIRegistry.getResourceString("SystemSetupTask.DANGER"),
+                    true,
+                    CustomDialog.OKCANCELHELP,
+                    pb2.getPanel());
+            UIHelper.centerAndShow(dlg2);
+            dlg2.dispose();
+            if (dlg2.isCancelled())
+            {
+                return;
+            }
+        }
+        try
+        {
+        	tree.getCurrentTreeDef().updateAllNodeNumbers(null, true); //true forces a progress dialog. 
+        															   //Currently can't get WriteGlassPane working in this context.(???)
+        	UIRegistry.displayInfoMsgDlgLocalized("SystemSetupTask.TREE_UPDATE_SUCCESS", tree.getTitle());
+        }
+        catch (Exception ex)
+        {
+        	UIRegistry.displayErrorDlgLocalized("SystemSetupTask.TREE_UPDATE_DISASTER", tree.getTitle());
+            UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SystemSetupTask.class, ex);
+        }
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.BaseTask#getStarterPane()
      */
@@ -921,6 +998,33 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
 //            mid.setPosition(MenuItemDesc.Position.After, menuDesc);
 //            menuItems.add(mid);
 //        }
+        
+        if (!AppContextMgr.isSecurityOn()
+				|| SpecifyUser.isCurrentUserType(UserType.Manager))
+		{
+			for (BaseTreeTask<?,?,?> tree : TreeTaskMgr.getInstance().getTreeTasks())
+			{
+				if (tree.isTreeOnByDefault())
+				{
+					final BaseTreeTask<?,?,?> ftree = tree;
+					titleArg = getResourceString(getI18NKey("Tree_MENU")) + " " + ftree.getTitle(); //$NON-NLS-1$
+					mneu = getI18NKey("Trees_MNU"); //$NON-NLS-1$
+					mi = UIHelper.createMenuItemWithAction((JMenu )null, titleArg, mneu, titleArg,
+							true, null);
+					mi.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent ae)
+						{
+							doTreeUpdate(ftree);
+						}
+					});
+					mid = new MenuItemDesc(mi, SYSTEM_MENU);
+					mid.setPosition(MenuItemDesc.Position.After, menuDesc);
+
+					menuItems.add(mid);
+				}
+			}
+		}
+        
         
         if (!AppContextMgr.isSecurityOn() || 
             (secMgr.getPermission(RESIMPORTEXPORT_SECURITY) != null && 

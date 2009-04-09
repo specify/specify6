@@ -232,12 +232,22 @@ public class TreeTaskMgr implements CommandListener
         }
     }
     
+    
+    
     //-------------------------------------------------------
     // CommandListener Interface
     //-------------------------------------------------------
 
 
-    /* (non-Javadoc)
+    /**
+	 * @return a copy of the treeTasks
+	 */
+	public Vector<BaseTreeTask<?, ?, ?>> getTreeTasks()
+	{
+		return new Vector<BaseTreeTask<?,?,?>>(treeTasks);
+	}
+
+	/* (non-Javadoc)
      * @see edu.ku.brc.af.ui.CommandListener#doCommand(edu.ku.brc.af.ui.CommandAction)
      */
     @Override
