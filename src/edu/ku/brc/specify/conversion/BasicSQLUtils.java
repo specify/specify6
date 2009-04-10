@@ -425,7 +425,7 @@ public class BasicSQLUtils
         }
 
         return count;
-    }
+   }
     
     /**
      * @param sql
@@ -433,12 +433,19 @@ public class BasicSQLUtils
      */
     public static Integer getCount(final String sql)
     {
+        return getCount(dbConn != null ? dbConn : DBConnection.getInstance().getConnection(), sql);
+    }
+    
+    /**
+     * @param sql
+     * @return
+     */
+    public static Integer getCount(final Connection connection, final String sql)
+    {
         Integer   count = null;
         Statement stmt  = null;
         try
         {
-            Connection connection = dbConn != null ? dbConn : DBConnection.getInstance().getConnection();
-
             stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
             if (rs.next())
@@ -458,6 +465,7 @@ public class BasicSQLUtils
                 try
                 {
                     stmt.close();
+                    
                 } catch (Exception ex) {}
             }
         }

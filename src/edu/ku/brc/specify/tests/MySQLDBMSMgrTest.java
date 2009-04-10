@@ -12,7 +12,6 @@ package edu.ku.brc.specify.tests;
 import junit.framework.TestCase;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DBMSUserMgr;
-import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.MySQLDMBSUserMgr;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 
@@ -43,7 +42,7 @@ public class MySQLDBMSMgrTest extends TestCase
         
         BasicSQLUtils.setSkipTrackExceptions(true);
         
-        DatabaseDriverInfo driverInfo = DatabaseDriverInfo.getDriver("MySQL");
+        /*DatabaseDriverInfo driverInfo = DatabaseDriverInfo.getDriver("MySQL");
 
         
         String connStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Opensys, hostName, dbName);
@@ -58,6 +57,9 @@ public class MySQLDBMSMgrTest extends TestCase
         
         mgr = new MySQLDMBSUserMgr();
         mgr.setHostName(hostName);
+        */
+        
+        mgr = new MySQLDMBSUserMgr();
     }
 
     /* (non-Javadoc)
@@ -67,7 +69,7 @@ public class MySQLDBMSMgrTest extends TestCase
     protected void tearDown() throws Exception
     {
         mgr.close();
-        dbConn.close();
+        //dbConn.close();
     }
 
     /**
@@ -75,12 +77,17 @@ public class MySQLDBMSMgrTest extends TestCase
      */
     public void testCreateDB()
     {
-        if (mgr.connect(itUsername, itPassword))
+        BasicSQLUtils.setSkipTrackExceptions(false);
+        
+        if (mgr.connectToDBMS(itUsername, itPassword, hostName))
         {
             if (mgr.doesDBExists(dbName))
             {
                 assertTrue(mgr.dropDatabase(dbName));
             }
+            
+            System.out.println("Created database"+dbName);
+            
             assertTrue(mgr.createDatabase(dbName));
             
             System.out.println("Created database"+dbName);
@@ -92,6 +99,9 @@ public class MySQLDBMSMgrTest extends TestCase
             assertTrue(mgr.dropDatabase(dbName));
             
             System.out.println("Dropped database"+dbName);
+        } else
+        {
+            assertTrue(false);
         }
     }
     
@@ -100,8 +110,9 @@ public class MySQLDBMSMgrTest extends TestCase
      */
     public void testCreateUser()
     {
+        BasicSQLUtils.setSkipTrackExceptions(false);
         
-        if (mgr.connect(itUsername, itPassword))
+        if (mgr.connectToDBMS(itUsername, itPassword, hostName))
         {
             if (mgr.doesDBExists(dbName))
             {

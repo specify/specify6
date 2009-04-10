@@ -7245,7 +7245,7 @@ public class BuildSampleDatabase
         mgr.setHostName(hostName);
         
         boolean isOK = false;
-        if (mgr.connect(itUsername, itPassword))
+        if (mgr.connectToDBMS(itUsername, itPassword, hostName))
         {
             if (!mgr.doesUserExists(saUsername))
             {

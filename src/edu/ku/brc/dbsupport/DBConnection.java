@@ -25,7 +25,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 /**
- * A singleton that remembers all the information needed for creating a Database connection. 
+ * A singleton that remembers all the information needed for creating a JDBC Database connection. 
+ * It uses the DBConnection
  * After setting the necessary parameters you can ask it for a connection at anytime.<br><br>
  * Also, has a factory method for creating instances so users can connect to more than one database ata time.
  *
@@ -65,6 +66,31 @@ public class DBConnection
         
     }
     
+    /**
+     * @param dbUsername
+     * @param dbPassword
+     * @param dbConnectionStr
+     * @param dbDriver
+     * @param dbDialect
+     * @param dbName
+     */
+    public DBConnection(String dbUsername, 
+                        String dbPassword, 
+                        String dbConnectionStr,
+                        String dbDriver, 
+                        String dbDialect, 
+                        String dbName)
+    {
+        super();
+        this.dbUsername      = dbUsername;
+        this.dbPassword      = dbPassword;
+        this.dbConnectionStr = dbConnectionStr;
+        this.dbDriver        = dbDriver;
+        this.dbDialect       = dbDialect;
+        this.dbName          = dbName;
+        this.skipDBNameCheck = dbName == null;
+    }
+
     /**
      * The error message if it was caused by an exception.
      * @return the error message if it was caused by an exception
@@ -148,12 +174,13 @@ public class DBConnection
     }
     
     /**
-     * This is primarily for Derby non-networked database. 
+     * Closes the connection to the database and disposes it.
      */
     public void close()
     {
         try
         {
+            // This is primarily for Derby non-networked database. 
             if (dbCloseConnectionStr != null)
             {
                 Connection con = DriverManager.getConnection(dbCloseConnectionStr, dbUsername, dbPassword);

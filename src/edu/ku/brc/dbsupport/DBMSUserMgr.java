@@ -84,14 +84,24 @@ public abstract class DBMSUserMgr
 	 */
 	public abstract boolean close();
 
-	/**
-	 * Connects to the DBMS.
-	 * @param username the IT Username
-	 * @param password the IT password
-	 * @return true if the IT user got logged in
-	 */
-	public abstract boolean connect(String username, String password);
+    /**
+     * Connects JUST to the DBMS.
+     * @param username the IT Username
+     * @param password the IT password
+     * @param databaseHost the name or IP address of the machine
+     * @return true if the IT user got logged in
+     */
+    public abstract boolean connectToDBMS(String username, String password, String databaseHost);
 
+    /**
+     * Connects to the DBMS and a database.
+     * @param username the IT Username
+     * @param password the IT password
+     * @param databaseHost the name or IP address of the machine
+     * @param dbName the name of the database.
+     * @return true if the IT user got logged in
+     */
+    public abstract boolean connect(String username, String password, String databaseHost, String dbName);
 
 	/**
 	 * Creates a user and assigns permissions.
@@ -102,6 +112,13 @@ public abstract class DBMSUserMgr
 	 * @return true if created
 	 */
 	public abstract boolean createUser(String username, String password, String dbName, int permissions);
+	
+	/**
+	 * The database exists, but does it have any tables?
+	 * @param dbName the database name
+	 * @return true if is at least one table, false if not.
+	 */
+	public abstract boolean doesDBHaveTables(String dbName);
 
 	/**
 	 * @return a localized test message describing the error when a method fails

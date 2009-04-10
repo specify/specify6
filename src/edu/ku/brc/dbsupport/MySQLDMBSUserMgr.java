@@ -40,6 +40,8 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
 	private Connection   connection   = null;
     private String       itUsername   = null;
     private String       itPassword   = null;
+    
+    private DatabaseDriverInfo driverInfo;
 	
 	/**
 	 * 
@@ -47,13 +49,87 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
 	public MySQLDMBSUserMgr() 
 	{
 		super();
+		
+		driverInfo = DatabaseDriverInfo.getDriver("MySQL");
+		
+		
 	}
+	
+	/**
+	 * @param userName
+	 * @param password
+	 * @param databaseHost
+	 * @return
+	 */
+	@Override
+	public boolean connectToDBMS(final String itUsernameArg, 
+	                             final String itPasswordArg,
+	                             final String databaseHost)
+	{
+	    try
+        {
+            itUsername = itUsernameArg;
+            itPassword = itPasswordArg;
+            hostName   = databaseHost;
+            
+     	    String connStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Opensys, databaseHost, null);
+     	    
+    	    dbConnection   = new DBConnection(itUsernameArg, 
+    	                                      itPasswordArg, 
+    	                                      connStr, 
+    	                                      driverInfo.getDriverClassName(), 
+    	                                      driverInfo.getDialectClassName(), null);
+            if (dbConnection != null)
+            {
+                connection = dbConnection.createConnection();
+            }
+            return true;
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+	    return false;
+	}
+	
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.DBMSUserMgrIFace#connect(java.lang.String, java.lang.String)
+     */
+    @Override
+    public boolean connect(final String itUsernameArg, 
+                           final String itPasswordArg,
+                           final String databaseHost,
+                           final String dbName) 
+    {
+        itUsername = itUsernameArg;
+        itPassword = itPasswordArg;
+        hostName   = databaseHost;
+        
+        String connStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Create, databaseHost,  dbName);
+        if (connStr == null)
+        {
+            connStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, databaseHost,  dbName);
+        }
+        
+        dbConnection   = new DBConnection(itUsernameArg, 
+                                          itPasswordArg, 
+                                          connStr, 
+                                          driverInfo.getDriverClassName(), 
+                                          driverInfo.getDialectClassName(), dbName);
+        if (connection != null)
+        {
+            connection = dbConnection.createConnection();
+        }
+        return connection != null;
+    }
+
 
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.DBMSUserMgr#createDatabase(java.lang.String)
      */
     @Override
-    public boolean createDatabase(String dbName)
+    public boolean createDatabase(final String dbName)
     {
         try
         {
@@ -104,11 +180,11 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
      * @see edu.ku.brc.dbsupport.DBMSUserMgr#exists(java.lang.String)
      */
     @Override
-    public boolean doesDBExists(String dbName)
+    public boolean doesDBExists(final String dbName)
     {
         try
         {
-            for (Object[] row : BasicSQLUtils.query("show databases"))
+            for (Object[] row : BasicSQLUtils.query(connection, "show databases"))
             {
                 if (dbName.equals(row[0].toString()))
                 {
@@ -128,7 +204,7 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
     @Override
     public boolean doesUserExists(String userName)
     {
-        return BasicSQLUtils.getCount(String.format("SELECT count(*) FROM mysql.user WHERE User = '%s' AND Host = '%s'", userName, hostName)) == 1;
+        return BasicSQLUtils.getCount(connection, String.format("SELECT count(*) FROM mysql.user WHERE User = '%s' AND Host = '%s'", userName, hostName)) == 1;
     }
 
     
@@ -226,8 +302,32 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
         return PERM_NONE;
     }
 
+    
 
 	/* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.DBMSUserMgr#doesDBHaveTables(java.lang.String)
+     */
+    @Override
+    public boolean doesDBHaveTables(String dbName)
+    {
+        try
+        {
+            for (Object[] row : BasicSQLUtils.query(connection, "show tables"))
+            {
+                if (dbName.equals(row[0].toString()))
+                {
+                    return true;
+                }
+            }
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+
+        return false;
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.DBMSUserMgr#setPermissions(java.lang.String, java.lang.String, int)
      */
     @Override
@@ -293,36 +393,8 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
 		try
 		{
 			dbConnection.close();
+			dbConnection = null;
 			return true;
-			
-		} catch (Exception ex)
-		{
-			ex.printStackTrace();
-		}
-		return false;
-	}
-
-
-	/* (non-Javadoc)
-	 * @see edu.ku.brc.dbsupport.DBMSUserMgrIFace#connect(java.lang.String, java.lang.String)
-	 */
-	@Override
-	public boolean connect(final String itUsernameArg, final String itPasswordArg) 
-	{
-	    itUsername = itUsernameArg;
-	    itPassword = itPasswordArg;
-	    
-		try
-		{
-			dbConnection = new DBConnection();
-			dbConnection.setSkipDBNameCheck(true);
-			dbConnection.setConnectionStr("jdbc:mysql://"+hostName);
-			dbConnection.setDialect("com.mysql.jdbc.Driver");
-			dbConnection.setDriver("org.hibernate.dialect.MySQLDialect");
-			dbConnection.setUsernamePassword(itUsername, itPassword);
-			
-			connection = dbConnection.createConnection();
-			return connection != null;
 			
 		} catch (Exception ex)
 		{

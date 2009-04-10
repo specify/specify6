@@ -43,7 +43,6 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
-import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DBMSUserMgr;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.HibernateUtil;
@@ -601,34 +600,55 @@ public class SpecifyDBSetupWizard extends JPanel
             {
                 System.setProperty(DBMSUserMgr.factoryName, "edu.ku.brc.dbsupport.MySQLDMBSUserMgr");
                 DBMSUserMgr mgr = DBMSUserMgr.getInstance();
+                // need to call a factory here based on the type of DBMS we are using.
                 
-                DatabaseDriverInfo driverInfo = dbPanel.getDriver();
                 String             dbName     = props.getProperty("dbName");
                 String             hostName   = props.getProperty("hostName");
                 
-                String connStr    = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Opensys, hostName, dbName);
-        
                 String saUsername = props.getProperty("saUserName");
                 String saPassword = props.getProperty("saPassword");
                 
                 String itUsername = props.getProperty("dbUserName");
                 String itPassword = props.getProperty("dbPassword");
                 
-                DBConnection dbConn = DBConnection.getInstance();
-        
-                dbConn.setDriver(driverInfo.getDriverClassName());
-                dbConn.setDialect(driverInfo.getDialectClassName());
-                dbConn.setConnectionStr(connStr);
-                dbConn.setUsernamePassword(itUsername, itPassword);
-                dbConn.setSkipDBNameCheck(true);
-                
-                mgr.setHostName(hostName);
-                
-                if (mgr.connect(itUsername, itPassword))
+                if (mgr.connectToDBMS(itUsername, itPassword, hostName))
                 {
+                    if (!mgr.doesDBExists(dbName))
+                    {
+                        try
+                        {
+                            isOK = mgr.createDatabase(dbName);
+                            
+                        } catch (Exception ex)
+                        {
+                            ex.printStackTrace();
+                        }
+                    }
+                    if (!isOK)
+                    {
+                        mgr.close();
+                        UIRegistry.showLocalizedMsg("You were unable to create the database, you must login as root.");
+                        return null;
+                    }
+                    
                     if (!mgr.doesUserExists(saUsername))
                     {
-                        isOK = mgr.createUser(saUsername, saPassword, dbName, DBMSUserMgr.PERM_ALL);
+                        try
+                        {
+                            isOK = mgr.createUser(saUsername, saPassword, dbName, DBMSUserMgr.PERM_ALL);
+                            
+                        } catch (Exception ex)
+                        {
+                            ex.printStackTrace();
+                            
+                        }
+                        
+                        if (!isOK)
+                        {
+                            mgr.close();
+                            UIRegistry.showLocalizedMsg("You were unable to create the user you must be root.");
+                            return null;
+                        }
                     } else
                     {
                         isOK = true;
@@ -636,11 +656,9 @@ public class SpecifyDBSetupWizard extends JPanel
                 } else
                 {
                     // No Connect Error
-                    isOK = false;
+                    UIRegistry.showLocalizedMsg("You were unable to to connect to the database.");
                 }
                 mgr.close();
-                dbConn.setSkipDBNameCheck(false);
-                dbConn.close();
                 
                 return null;
             }
@@ -690,8 +708,10 @@ public class SpecifyDBSetupWizard extends JPanel
      */
     protected void setupLoginPrefs()
     {
-        String encryptedMasterUP = UserAndMasterPasswordMgr.getInstance().encrypt(props.getProperty("saUserName"), 
-                props.getProperty("saPassword"), props.getProperty("usrPassword"));
+        String encryptedMasterUP = UserAndMasterPasswordMgr.getInstance().encrypt(
+                                       props.getProperty("saUserName"), 
+                                       props.getProperty("saPassword"), 
+                                       props.getProperty("usrPassword"));
 
         DatabaseDriverInfo driverInfo = dbPanel.getDriver();
         AppPreferences ap = AppPreferences.getLocalPrefs();
@@ -708,6 +728,7 @@ public class SpecifyDBSetupWizard extends JPanel
         try
         {
             ap.flush();
+            
         } catch (BackingStoreException ex) {}
     }
 
@@ -848,37 +869,43 @@ public class SpecifyDBSetupWizard extends JPanel
     {
         final String dbName = properties.getProperty("dbName");
         
-        DatabaseDriverInfo driverInfo = (DatabaseDriverInfo)properties.get("driver");
-        
+        DBMSUserMgr mgr = null;
         try
         {
             
-            String connStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Create, 
-                                                         properties.getProperty("hostName"), 
-                                                         dbName);
-            if (connStr == null)
-            {
-                connStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, properties.getProperty("hostName"),  dbName);
-            }
-            String userName = properties.getProperty("dbUserName");
-            String password = properties.getProperty("dbPassword");
+            String itUsername = properties.getProperty("dbUserName");
+            String itPassword = properties.getProperty("dbPassword");
+            String hostName   = properties.getProperty("hostName");
             
-            if (!UIHelper.tryLogin(driverInfo.getDriverClassName(), 
-                    driverInfo.getDialectClassName(), 
-                    dbName, 
-                    connStr, 
-                    userName, 
-                    password))
+            mgr = DBMSUserMgr.getInstance();
+            
+            if (mgr.connectToDBMS(itUsername, itPassword, hostName))
             {
-                return false;
+                if (mgr.doesDBExists(dbName))
+                {
+                    mgr.close();
+                    
+                    if (mgr.connect(itUsername, itPassword, hostName, dbName))
+                    {
+                        return mgr.doesDBHaveTables(dbName);
+                    }
+                    
+                }
             }
+            
         } catch (Exception ex)
         {
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyDBSetupWizard.class, ex);
-            return false;
+            
+        } finally
+        {
+            if (mgr != null)
+            {
+                mgr.close();
+            }
         }
-        return true;
+        return false;
     }
     
     //-------------------------------------------------
