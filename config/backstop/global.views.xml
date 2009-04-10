@@ -61,7 +61,7 @@
             </altviews>
         </view>
 
-<view name="AddressSingle"
+        <view name="AddressSingle"
             class="edu.ku.brc.specify.datamodel.Address"
              busrules="edu.ku.brc.specify.datamodel.busrules.AddressBusRules"
             resourcelabels="false">

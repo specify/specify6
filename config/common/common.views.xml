@@ -740,7 +740,7 @@
             <enableRules/>
 
             <columnDef os="exp">p,0px,175px,5px:g,p,2px,150px,5px:g,p,2px,150px,0px,p,p:g</columnDef>
-            <columnDef>p,0px,175px,5px,120px,2px,150px,5px,116px,2px,150px,0px,15px,p:g</columnDef>
+            <columnDef>p,0px,175px,5px,120px,2px,141px,5px,100px,2px,140px,0px,15px,p:g</columnDef>
             <columnDef os="mac">130px,2px,208px,5px,160px,2px,189px,5px,140px,2px,189px,0px,15px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="1px"/>
 
@@ -928,7 +928,7 @@
             <enableRules/>
 
             <columnDef os="exp">p,2px,200px,5px,85px,2px,150px,p:g</columnDef>
-            <columnDef>105px,2px,200px,5px,85px,2px,150px,283px,p:g</columnDef>
+            <columnDef>105px,2px,200px,5px,85px,2px,150px,263px,p:g</columnDef>
             <columnDef os="mac">130px,2px,215px,5px,153px,2px,189px,336px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
 
@@ -957,7 +957,7 @@
             <enableRules/>
 
             <columnDef os="exp">p,2px,200px,p:g</columnDef>
-            <columnDef>105px,2px,200px,520px,p:g</columnDef>
+            <columnDef>105px,2px,200px,500px,p:g</columnDef>
             <columnDef os="mac">130px,2px,215px,685px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             <rows>
@@ -984,7 +984,7 @@
             <enableRules/>
             
             <columnDef os="exp">p,2px,106px,5px:g,p,2px,106px,5px:g,p,2px,106px,5px:g,p,2px,106px,p:g</columnDef>
-            <columnDef>105px,2px,106px,5px,87px,2px,106px,5px,100px,2px,106px,5px,88px,2px,106px,0px,p:g</columnDef>
+            <columnDef>105px,2px,106px,5px,77px,2px,106px,5px,100px,2px,106px,5px,78px,2px,106px,0px,p:g</columnDef>
             <columnDef os="mac">130px,2px,140px,5px,103px,2px,140px,5px,113px,2px,140px,5px,101px,2px,140px,0px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             <rows>
@@ -1058,7 +1058,7 @@
             
             <desc><![CDATA[Borrow viewing form.]]></desc>
             <columnDef os="exp">p,2px,122px,5px:g,p,2px,122px,10px,p,5px:g,p,2px,122px,0px,p,p:g</columnDef> 
-            <columnDef>105px,2px,122px,5px,125px,2px,122px,10px,140px,5px,80px,2px,112px,0px,15px,p:g</columnDef>
+            <columnDef>105px,2px,122px,5px,125px,2px,107px,10px,132px,5px,80px,2px,112px,0px,15px,p:g</columnDef>
             <columnDef os="mac">130px,2px,142px,5px,170px,2px,142px,10px,200px,5px,80px,2px,142px,0px,15px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="1dlu"/>
             
@@ -1116,7 +1116,7 @@
             <enableRules/>
             
             <columnDef os="exp">p,2px,200px,5px,133px,2px,110px,p:g</columnDef>
-            <columnDef>105px,2px,200px,5px,133px,2px,110px,275px,p:g</columnDef>
+            <columnDef>105px,2px,200px,5px,133px,2px,110px,260px,p:g</columnDef>
             <columnDef os="mac">130px,2px,215px,5px,80px,2px,165px,433px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             
@@ -1145,7 +1145,7 @@
             <desc><![CDATA[BorrowMaterial viewing form.]]></desc>
             
             <columnDef os="exp">p,2px,160px,5px:g,p,2px,90px,5px:g,p,2px,90px,5px:g,p,2px,90px,p:g</columnDef>
-            <columnDef>105px,2px,120px,5px,70px,2px,90px,5px,122px,2px,90px,5px,122px,2px,90px,0px,p:g</columnDef>
+            <columnDef>105px,2px,120px,5px,65px,2px,90px,5px,117px,2px,90px,5px,117px,2px,90px,0px,p:g</columnDef>
             <columnDef os="mac">130px,2px,150px,5px,90px,2px,100px,5px,160px,2px,109px,5px,160px,2px,110px,0px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="1dlu"/>
             
@@ -1397,7 +1397,7 @@
               <enableRules/>
               
               <columnDef os="exp">p,2px,100px,5px:g,p,2px,100px,5px:g,p,2px,100px,5px:g,p,2px,100px:g</columnDef>
-              <columnDef>100px,2px,100px,5px,107px,2px,100px,5px,100px,2px,100px,5px,100px,2px,100px,p:g</columnDef>
+              <columnDef>100px,2px,95px,5px,107px,2px,95px,5px,100px,2px,95px,5px,100px,2px,95px,p:g</columnDef>
               <columnDef os="mac">130px,2px,130px,5px,130px,2px,126px,5px,121px,2px,126px,5px,120px,2px,126px,p:g</columnDef>
               <rowDef auto="true" cell="p" sep="2px"/>
 		  
@@ -1494,8 +1494,8 @@
             <enableRules/>
             
             <columnDef os="exp">p,2px,205px,5px:g,p,2px,115px,5px:g,p,2px,55px,0px:g</columnDef>
-            <columnDef>100px,2px,205px,5px,135px,2px,115px,5px,130px,2px,55px,71px,0px,p:g</columnDef>
-            <columnDef os="mac">130px,2px,250px,5px,163px,2px,145px,5px,183px,2px,70px,75px,0px,p:g</columnDef>
+            <columnDef>100px,2px,205px,5px,135px,2px,115px,5px,130px,2px,126px,0px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,250px,5px,163px,2px,145px,5px,183px,2px,145px,0px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             <rows>
                 <row> 
@@ -1503,8 +1503,8 @@
                     <cell type="field" id="5" name="Curator" uitype="querycbx" initialize="name=Agent;title=Agent"/>
                     <cell type="label" labelfor="6"/>
                     <cell type="field" id="6" name="CuratorApprovalDate" uitype="formattedtext" uifieldformatter="Date" default="today"/>
-                    <cell type="label" label="" colspan="2"/>
-                    <cell type="subview" id="4" name="conservEventAttachments" viewname="ObjectAttachment" initialize="btn=true;icon=ConservEventAttachment;addsearch=true"/>
+                    <cell type="label" label=""/>
+                    <cell type="subview" id="4" name="conservEventAttachments" viewname="ObjectAttachment" initialize="align=right;btn=true;icon=ConservEventAttachment;addsearch=true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="13"/>
@@ -1850,32 +1850,32 @@
 	              <cell type="panel" id="16" name="outerPanel" coldef="100px,2px,76px" rowdef="p,2px,p,2px,p,2px,p,2px,p,2px,p,2px" colspan="3">
 	                  <rows>
 	                      <row>
-	                          <cell type="label" label="Total Residues:" initialize="align=right"/>
-	                          <cell type="field" id="residues" name="totalResidues" uitype="text" readonly="true"/>
+	                          <cell type="label" labelfor="39"/>
+	                          <cell type="field" id="39" name="totalResidues" uitype="text" readonly="true"/>
 	                      </row>
 	                      <row>
-	                          <cell type="label" label="Comp A:" initialize="align=right;fg=0,190,0"/>
-	                          <cell type="field" id="compA" name="compA" uitype="text" readonly="true"/>
+	                          <cell type="label" labelfor="40" initialize="fg=0,190,0"/>
+	                          <cell type="field" id="40" name="compA" uitype="text" readonly="true"/>
 	                      </row>
 	                      <row>
-	                          <cell type="label" label="Comp G:" initialize="align=right"/>
-	                          <cell type="field" id="compG" name="compG" uitype="text" readonly="true"/>
+	                          <cell type="label" labelfor="41" initialize="fg=200,70,0"/>
+	                          <cell type="field" id="41" name="compG" uitype="text" readonly="true"/>
 	                      </row>
 	                      <row>
-	                          <cell type="label" label="Comp C:" initialize="align=right;fg=0,0,190"/>
-	                          <cell type="field" id="compC" name="compC" uitype="text" readonly="true"/>
+	                          <cell type="label" labelfor="42" initialize="fg=0,0,190"/>
+	                          <cell type="field" id="42" name="compC" uitype="text" readonly="true"/>
 	                      </row>
 	                      <row>
-	                          <cell type="label" label="Comp T:" initialize="align=right;fg=190,0,0"/>
-	                          <cell type="field" id="compT" name="compT" uitype="text" readonly="true"/>
+	                          <cell type="label" labelfor="43" initialize="fg=190,0,0"/>
+	                          <cell type="field" id="43" name="compT" uitype="text" readonly="true"/>
 	                      </row>
 	                      <row>
-	                          <cell type="label" label="Ambiguous:" initialize="align=right"/>
-	                          <cell type="field" id="ambiguous" name="ambiguousResidues" uitype="text" readonly="true"/>
+	                          <cell type="label" labelfor="44"/>
+	                          <cell type="field" id="44" name="ambiguousResidues" uitype="text" readonly="true"/>
 	                      </row>
 	                  </rows>
 	              </cell>
-	              <cell type="label" label="Gene Sequence" initialize="align=right"/>
+	              <cell type="label" labelfor="4"/>
 	              <cell type="field" id="4" name="geneSequence" uitype="textarea" colspan="7" rows="9"/>
 	          </row>
 	          <!--
@@ -2003,7 +2003,7 @@
             <desc><![CDATA[ExchangeIn viewing form.]]></desc>
             
             <columnDef os="exp">p,2px,125px,5px:g,p,2px,136px,5px:g,p,2px,220px,0px,p,p:g</columnDef>
-            <columnDef>105px,2px,120px,5px,130px,2px,136px,5px,100px,2px,220px,0px,15px,p,p:g</columnDef>
+            <columnDef>105px,2px,120px,5px,130px,2px,136px,5px,80px,2px,220px,0px,15px,p,p:g</columnDef>
             <columnDef os="mac">130px,2px,140px,5px,165px,2px,160px,5px,171px,2px,250px,0px,15px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="1dlu"/>
             
@@ -2039,7 +2039,7 @@
             <desc><![CDATA[ExchangeOut viewing form.]]></desc>
             
             <columnDef os="exp">p,2px,125px,5px:g,p,2px,136px,5px:g,p,2px,220px,0px,p,p:g</columnDef>
-            <columnDef>105px,2px,120px,5px,130px,2px,136px,5px,100px,2px,220px,0px,15px,p,p:g</columnDef>
+            <columnDef>105px,2px,120px,5px,130px,2px,136px,5px,80px,2px,220px,0px,15px,p,p:g</columnDef>
             <columnDef os="mac">130px,2px,140px,5px,165px,2px,160px,5px,171px,2px,250px,0px,15px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="1dlu"/>
             
@@ -2126,16 +2126,16 @@
             <desc><![CDATA[Form For FieldNotebookPage]]></desc>
             
             <columnDef os="exp">p,2px,111px,5px,80px,2px,95px,p:g,75px,p:g</columnDef>
-            <columnDef>100px,2px,111px,5px,73px,2px,95px,370px,69px,0px,10px,p:g</columnDef>
-            <columnDef os="mac">130px,2px,154px,5px,95px,2px,115px,454px,75px,0px,10px,p:g</columnDef>
+            <columnDef>100px,2px,111px,5px,73px,2px,95px,5px,434px,0px,10px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,154px,5px,95px,2px,115px,5px,524px,0px,10px,p:g</columnDef>
             <rowDef auto="true" sep="2px" cell="p"/>
             <rows>
                 <row>
                     <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="startDate" uitype="formattedtext" uifieldformatter="Date"/>
                     <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="endDate" uitype="formattedtext" uifieldformatter="Date"/>
-                    <cell type="subview" id="4" name="attachments" viewname="ObjectAttachment" initialize="btn=true;icon=FieldNotebookPageSetAttachment;addsearch=true"/>
+                    <cell type="field" id="3" name="endDate" uitype="formattedtext" uifieldformatter="Date"  initialize="align=right"/>
+                    <cell type="subview" id="4" name="attachments" viewname="ObjectAttachment" initialize="align=right;btn=true;icon=FieldNotebookPageSetAttachment;addsearch=true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="1"/>
@@ -2159,8 +2159,8 @@
             <desc><![CDATA[Form For FieldNotebookPage]]></desc>
             
             <columnDef os="exp">p,2px,111px,5px,80px,2px,95px,p:g,75px,p:g</columnDef>
-            <columnDef>100px,2px,111px,5px,73px,2px,95px,370px,69px,p:g</columnDef>
-            <columnDef os="mac">130px,2px,154px,5px,95px,2px,115px,450px,75px,0px,p:g</columnDef>
+            <columnDef>100px,2px,111px,5px,73px,2px,95px,5px,430px,0px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,154px,5px,95px,2px,115px,5px,520px,0px,p:g</columnDef>
             <rowDef auto="true" sep="2px" cell="p"/>
             <rows>
                 
@@ -2169,7 +2169,7 @@
                     <cell type="field" id="2" name="pageNumber" uitype="text"/>
                     <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="scanDate" uitype="formattedtext" uifieldformatter="Date"/>
-                    <cell type="subview" id="6" name="attachments" viewname="ObjectAttachment" initialize="btn=true;icon=FieldNotebookPageAttachment;addsearch=true"/>
+                    <cell type="subview" id="6" name="attachments" viewname="ObjectAttachment" initialize="align=right;btn=true;icon=FieldNotebookPageAttachment;addsearch=true"/>
                     
                     <!-- 
                         <cell type="label" labelfor="7"/>
@@ -2228,7 +2228,7 @@
             <desc><![CDATA[Gift viewing form.]]></desc>
             
             <columnDef os="exp">p,2px,125px,5px:g,p,2px,100px,5px:g,p,2px,161px,5px,p,0px,p,p:g</columnDef>
-            <columnDef>105px,2px,125px,5px,65px,2px,100px,5px,90px,2px,161px,5px,165px,0px,15px,p:g</columnDef>
+            <columnDef>105px,2px,125px,5px,65px,2px,100px,5px,90px,2px,136px,5px,165px,0px,15px,p:g</columnDef>
             <columnDef os="mac">130px,2px,150px,5px,86px,2px,115px,5px,140px,2px,185px,10px,200px,0px,15px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="1dlu"/>
             
@@ -2247,7 +2247,7 @@
                     <cell type="field" id="5" name="remarks" uitype="textareabrief" rows="2" colspan="12"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="GiftAgent" id="8" name="giftAgents" desc="Agents" colspan="15" rows="4"/>
+                    <cell type="subview" viewname="GiftAgent" id="8" name="giftAgents" desc="Agents" colspan="15" rows="2"/>
                 </row>
                 <row>
                     <cell type="subview" viewname="Shipment" id="11" name="shipments" colspan="15"/>
@@ -2279,7 +2279,7 @@
             <enableRules/>
 
             <columnDef os="exp">p,2px,200px,5px,100px,2px,176px,p:g</columnDef>
-            <columnDef>105px,2px,200px,5px,233px,2px,176px,p:g</columnDef>
+            <columnDef>105px,2px,200px,5px,213px,2px,176px,p:g</columnDef>
             <columnDef os="mac">130px,2px,215px,5px,80px,2px,165px,433px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
 
@@ -2314,8 +2314,8 @@
             <desc><![CDATA[Gift viewing form.]]></desc>
             
             <columnDef os="exp">p,2px,120px,5px:g,p,2px,80px,5px:g,p,2px,150px,5px:g,p,2px,80px,0px:g</columnDef>
-            <columnDef>105px,2px,120px,5px,70px,2px,80px,5px,150px,2px,150px,5px,54px,2px,80px,0px,p:g</columnDef>
-            <columnDef os="mac">130px,2px,160px,5px,146px,2px,160px,5px,110px,2px,100px,5px,80px,2px,123px,0px,p:g</columnDef>
+            <columnDef>105px,2px,120px,5px,70px,2px,80px,5px,150px,2px,130px,5px,54px,2px,80px,0px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,160px,5px,76px,2px,100px,5px,150px,2px,170px,5px,100px,2px,123px,0px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
@@ -2379,7 +2379,7 @@
             
             <desc><![CDATA[Loan viewing form.]]></desc>
             <columnDef os="exp">p,2px,120px,5px:g,p,2px,110px,5px,p,5px:g,p,2px,110px,0px,p,p:g</columnDef>
-            <columnDef>105px,2px,120px,5px,90px,2px,110px,5px,120px,5px,156px,2px,110px,0px,15px,p,p:g</columnDef>
+            <columnDef>105px,2px,105px,5px,90px,2px,105px,5px,120px,5px,156px,2px,105px,0px,15px,p,p:g</columnDef>
             <columnDef os="mac">130px,2px,150px,5px,105px,2px,150px,5px,155px,5px,170px,2px,150,0px,15px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="1dlu"/>
             
@@ -2416,15 +2416,15 @@
                      <cell type="subview" viewname="LoanItems" id="10" name="loanPreparations" defaulttype="table" colspan="15" rows="4"/>
                 </row>
                 <row>
-                    <cell type="panel" id="16" name="outerPanel" coldef="max(p;100px),f:600px,p,5px,p," rowdef="p,4px,p" colspan="15">
+                    <cell type="panel" id="16" name="outerPanel" coldef="max(p;100px),f:480px,p,5px,p," rowdef="p,4px,p" colspan="15">
                         <rows>
 			                <row>
 			                    <cell type="separator" label="Attachments" colspan="5"/>
 			                </row>
                             <row>
-                                <cell type="subview" id="attachments" viewname="ObjectAttachment" name="loanAttachments" colspan="1" initialize="btn=true;icon=LoanAttachment"/>
+                                <cell type="subview" id="attachments" viewname="ObjectAttachment" name="loanAttachments" initialize="btn=true;icon=LoanAttachment"/>
                                 <cell type="command" id="14" name="ReturnLoan" label="Return Loan" commandtype="Interactions" action="ReturnLoan" ignore="true" initialize="vis=false"/>
-                                <cell type="field" uitype="checkbox" id="13" name="generateInvoice" label="Generate Invoice on Save" ignore="true" default="true" initialize="vis=false"/>
+                                <cell type="field" id="13" uitype="checkbox" name="generateInvoice" label="Generate Invoice on Save" ignore="true" default="true" initialize="vis=false"/>
                             </row>
                         </rows>
                     </cell>
@@ -2453,7 +2453,7 @@
             <enableRules/>
 
             <columnDef os="exp">p,2px,200px,5px,100px,2px,110px,p:g</columnDef>
-            <columnDef>105px,2px,200px,5px,133px,2px,110px,p:g</columnDef>
+            <columnDef>105px,2px,200px,5px,103px,2px,150px,p:g</columnDef>
             <columnDef os="mac">130px,2px,215px,5px,80px,2px,165px,433px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
 
@@ -2488,7 +2488,7 @@
             <desc><![CDATA[Loan viewing form.]]></desc>
             
             <columnDef os="exp">p,2px,105px,5px:g,p,2px,135px,5px:g,p,2px,81px,p:g</columnDef>
-            <columnDef>105px,2px,105px,5px,130px,2px,135px,5px,125px,2px,81px,15px,120px,0px,p:g</columnDef>
+            <columnDef>105px,2px,105px,5px,130px,2px,115px,5px,125px,2px,81px,15px,120px,0px,p:g</columnDef>
             <columnDef os="mac">130px,2px,150px,5px,155px,2px,155px,5px,155px,2px,110px,21px,140px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
@@ -2780,7 +2780,7 @@
             <enableRules/>
 
             <columnDef os="exp">p,2px,200px,5px:g,p,2px,200px,5px:g,p,2px,135px,0px,p,p:g</columnDef>
-            <columnDef>105px,2px,200px,5px,88px,2px,200px,5px,90px,2px,135px,0px,15px,p,p:g</columnDef>
+            <columnDef>105px,2px,200px,5px,88px,2px,200px,5px,90px,2px,115px,0px,15px,p,p:g</columnDef>
             <columnDef os="mac">130px,2px,215px,5px,150px,2px,215px,5px,170px,2px,136px,0px,15px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
@@ -2974,7 +2974,7 @@
             <enableRules/>
 
             <columnDef os="exp">p,2px,p,5px:g,p,2px,p,5px:g,p,2px,p,5px:g,p,2px,p,0px,p:g</columnDef>            
-            <columnDef>105px,2px,120px,5px,84px,2px,90px,5px,70px,2px,90px,5px,50px,2px,200px,0px,15px,p:g</columnDef>
+            <columnDef>105px,2px,120px,5px,84px,2px,80px,5px,70px,2px,78px,5px,50px,2px,200px,0px,15px,p:g</columnDef>
             <columnDef os="mac">130px,2px,127px,5px,111px,2px,120px,5px,101px,2px,120px,5px,81px,2px,220px,0px,15px,p,p:g</columnDef>
             <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,200px,2dlu,p</rowDef>>
             
@@ -3070,7 +3070,7 @@
             <enableRules/>
 
             <columnDef os="exp">p,2px,120px,5px:g,p,2px,223px,5px:g,p,2px,151px,2px,70px,p:g</columnDef>
-            <columnDef>100px,2px,150px,5px,130px,2px,223px,5px,90px,2px,146px,2px,70px,p:g</columnDef>
+            <columnDef>100px,2px,120px,5px,100px,2px,223px,5px,70px,2px,126px,2px,70px,p:g</columnDef>
             <columnDef os="mac">130px,2px,180px,5px,130px,2px,255px,5px,100px,2px,174px,2px,70px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
 
@@ -3082,7 +3082,7 @@
                     <cell type="field" id="1" uitype="plugin" name="this" initialize="name=PartialDateUI;df=preparedDate;tp=preparedDateDatePrecision" uifieldformatter="Date"/>
                    <cell type="label" label="  "/>
                    <cell type="field" id="isOnLoan" name="isOnLoan" uitype="checkbox" label="ISONLOAN" readonly="true"/>
-                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="preparationAttachments" initialize="btn=true;icon=PreparationAttachment"/>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="preparationAttachments" initialize="align=right;btn=true;icon=PreparationAttachment"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="3"/>
@@ -3105,7 +3105,7 @@
             <enableRules/>
             
             <columnDef os="exp">p,2px,135px,5px:g,p,2px,136px,5px:g,p,2px,200px,0px,p,p:g</columnDef>
-            <columnDef>105px,2px,135px,5px,115px,2px,136px,5px,120px,2px,200px,0px,15px,p:g</columnDef>
+            <columnDef>105px,2px,135px,5px,105px,2px,136px,5px,110px,2px,200px,0px,15px,p:g</columnDef>
             <columnDef os="mac">130px,2px,120px,5px,90px,2px,150px,5px,119px,2px,215px,0px,15px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="1px"/>
             
@@ -3166,7 +3166,7 @@
             <enableRules/>
 
             <columnDef os="exp">p,2px,200px,5px,48px,2px,136px,p:g</columnDef>
-            <columnDef>105px,2px,200px,5px,48px,2px,136px,329px,p:g</columnDef>
+            <columnDef>105px,2px,200px,5px,48px,2px,136px,319px,p:g</columnDef>
             <columnDef os="mac">130px,2px,215px,5px,271px,2px,215px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
 
@@ -3197,7 +3197,7 @@
             <enableRules/>
 
             <columnDef os="exp">p,2px,200px,p:g</columnDef>
-            <columnDef>100px,2px,200px,520px,p:g</columnDef>
+            <columnDef>105px,2px,200px,511px,p:g</columnDef>
             <columnDef os="mac">130px,2px,215px,493px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             <rows>
@@ -3222,7 +3222,7 @@
             <desc><![CDATA[Shipment form.]]></desc>
             
             <columnDef os="exp">p,2px,140px,5px:g,p,2px,140px,5px:g,p,2px,175px,p:g</columnDef> 
-            <columnDef>105px,2px,140px,5px,113px,2px,140px,5px,143px,2px,175px,0px,p:g</columnDef> 
+            <columnDef>105px,2px,125px,5px,113px,2px,140px,5px,143px,2px,175px,0px,p:g</columnDef> 
             <columnDef os="mac">130px,2px,160px,5px,146px,2px,160px,5px,170px,2px,250px,0px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             <rows>
