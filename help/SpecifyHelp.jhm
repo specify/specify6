@@ -278,5 +278,21 @@
    <mapID target="DataObjAggListEditor" url="SpecifyHelp/SchemaConfig/schema_config.html#aggregation"/>
    <mapID target="DataObjAggEditor" url="SpecifyHelp/SchemaConfig/schema_config.html#aggregation"/>
    <mapID target="Security_On" url="SpecifyHelp/Security/permissions.html#security_on"/>
-   <mapID target="Record_Delete" url="SpecifyHelp/Data_Entry/using_forms.html#delete_record"/>  
+   <mapID target="Record_Delete" url="SpecifyHelp/Data_Entry/using_forms.html#delete_record"/> 
+   <mapID target="wizard_mysql_username" url="SpecifyHelp/Security/Wizard.html#mysql_username"/>   
+   <mapID target="wizard_master_username" url="SpecifyHelp/Security/Wizard.html#master_username"/>   
+   <mapID target="wizard_security_on" url="SpecifyHelp/Security/Wizard.html#security_on"/>
+   <mapID target="wizard_create_it_user" url="SpecifyHelp/Security/Wizard.html#create_it_user"/>
+   <mapID target="wizard_create_institution" url="SpecifyHelp/Security/Wizard.html#create_institution"/>    
+   <mapID target="wizard_choose_accession_level" url="SpecifyHelp/Security/Wizard.html#choose_accession_level"/>    
+   <mapID target="wizard_create_accession_number" url="SpecifyHelp/Security/Wizard.html#create_accession_number"/>    
+   <mapID target="wizard_configure_storage_tree" url="SpecifyHelp/Security/Wizard.html#configure_storage_tree"/>   
+   <mapID target="wizard_enter_division" url="SpecifyHelp/Security/Wizard.html#enter_division"/>    
+   <mapID target="wizard_choose_discipline_type" url="SpecifyHelp/Security/Wizard.html#choose_discipline_type"/>    
+   <mapID target="wizard_configure_taxon_tree" url="SpecifyHelp/Security/Wizard.html#configure_taxon_tree"/>
+   <mapID target="wizard_preload_taxon" url="SpecifyHelp/Security/Wizard.html#preload_taxon"/>   
+   <mapID target="wizard_configure_geography_tree" url="SpecifyHelp/Security/Wizard.html#configure_geography_tree"/>   
+   <mapID target="wizard_create_catalog_number" url="SpecifyHelp/Security/Wizard.html#create_catalog_number"/> 
+   <mapID target="wizard_create_collection" url="SpecifyHelp/Security/Wizard.html#create_collection"/>    
+   <mapID target="wizard_summary" url="SpecifyHelp/Security/Wizard.html#summary"/>              
 </map>
