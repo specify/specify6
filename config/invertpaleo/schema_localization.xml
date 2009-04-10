@@ -1,20 +1,4 @@
 <vector>
-  <container name="determination" type="">
-    <version>0</version>
-    <isHidden>false</isHidden>
-    <isSystem>false</isSystem>
-    <items/>
-    <names/>
-    <descs/>
-  </container>
-  <container name="paleocontext" type="">
-    <version>0</version>
-    <isHidden>false</isHidden>
-    <isSystem>false</isSystem>
-    <items/>
-    <names/>
-    <descs/>
-  </container>
   <container name="collectionobjectattribute">
     <version>0</version>
     <isHidden>false</isHidden>
