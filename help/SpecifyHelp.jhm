@@ -130,6 +130,7 @@
    <mapID target="WorkbenchOverview" url="SpecifyHelp/Workbench/Overview.html"/>
    <mapID target="uploading" url="SpecifyHelp/Uploading/wb_uploader.html"/>
    <mapID target="WorkbenchWorkingWithImages" url="SpecifyHelp/Workbench/WorkingWithImages.html"/>
+   <mapID target="Stats" url="SpecifyHelp/Statistics/Statistics.html"/>
 
 
 <!-- Index Bookmarks -->
@@ -277,4 +278,5 @@
    <mapID target="DataObjAggListEditor" url="SpecifyHelp/SchemaConfig/schema_config.html#aggregation"/>
    <mapID target="DataObjAggEditor" url="SpecifyHelp/SchemaConfig/schema_config.html#aggregation"/>
    <mapID target="Security_On" url="SpecifyHelp/Security/permissions.html#security_on"/>
+   <mapID target="Record_Delete" url="SpecifyHelp/Data_Entry/using_forms.html#delete_record"/>  
 </map>

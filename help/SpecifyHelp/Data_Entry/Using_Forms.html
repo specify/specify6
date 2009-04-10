@@ -18,7 +18,9 @@
 <p>&nbsp;</p>
 <h3><a name="forms_permissions"></a>Permissions</h3>
 <p>Specify includes  extensive controls for limiting access to data for each user. When starting up, Specify reads the permissions for the user based on their login information, then loads the correct tables and tools based on these permissions. For this reason, some of the controls and/or data may not be available. For example, users that belong to the Guest group and only have permission to view tables and forms will not have access to data through the Data module. They must first Query to find records, then view the data in a form. </p>
-<p>Also, if a user has permission to view forms, but does not have permission to view a particular table or tables included within the form, they will be advised that the data is restricted. For instance, the user below does not have permission to view any Preparations data, but they do have View permission for both the form system and Collection Object table.</p>
+<p>Also, if a user has permission to view forms, but does not have permission to view a particular table or tables included within the form, they will be advised that the data is restricted. For instance, in the example below the user has permission to view a Collection Object form, but not a Preparations form. When opened the Preparations will sub form inside the does not have permission to view any Preparations data, but they do have View permission for both the form system and Collection Object table. </p>
+<p align="center"><img src="../../images/restricted_co.png" width="504" height="281"></p>
+<p align="center" class="imgcaption">Form with Restricted sub form</p>
 <p align="center"><img src="../../images/restricted.png" width="720" height="86"/></p>
 <p align="center" class="imgcaption">Restricted Data</p>
 <p align="left">The default permissions that Specify ships with allow Guest users to View the forms, but not modify, add or delete them. All other users can use forms in their entirety.</p>
@@ -31,7 +33,7 @@
 <h4>One-to-Many</h4>
 <p>A relationship involving a primary and related table in which a single primary record links to many related records  in the related table is referred to as a one-to-many relationship. For example, several Collection Object records would be linked to a single record in the Collection Event table because all the specimens were collected during the same event.</p>
 <p><strong><a name="sub_form"></a>Sub Forms</strong></p>
-<p>Related tables with a many-to-one relationship display on a form as a Query Combo Box. Control buttons next to the Query Combo Box; </p> src="../../images/Edit-2-16x16.png" alt="a" width="16" height="16"> (edit), <img src="../../images/add.png" alt="a" width="16" height="16"/> (add), and <img src="../../images/Search-16x16.png" alt="a" width="16" height="16"/> (search), allow single records to be searched, added or edited in a pop-up sub form.</p>
+<p>Related tables with a many-to-one relationship display on a form as a Query Combo Box. Control buttons next to the Query Combo Box; </p> src="../../images/Edit-2-16x16.png" alt="a" width="16" height="16"> (edit), <img src="../../images/add.png" alt="a" width="16" height="16"/> (add), and <img src="../../images/Search-16x16.png" alt="a" width="16" height="16"/> (search), allow single records to be searched, added or edited in a pop-up sub form.<p></p>
 <p>Related tables with a one-to-many relationship to the primary table are included on the form as a sub form with navigation controls.</p>
 <p>Data is added and edited in sub forms the same way that it is added and edited to forms. Boxes are used in the same way and required fields have a bold label.</p>
 <p>&nbsp;</p>
@@ -298,5 +300,18 @@
 <p>Records that are related, or linked, to other records can not be deleted. For example, a Preparation that is linked to specific Collection Objects can not be deleted while the link and/or Collection Object exists. To delete the Preparation, first edit each Collection Object record and remove the Preparation. </p>
 <p>When related records are edited, the data changes in each record that references that data. For example, if the spelling of a name in the Last Name field is changed in the Agent record, the spelling will also change in the Deaccession Agents, Loan Agents, Authors and other records. </p>
 <p><em><strong>Note:</strong></em> Only users with add and edit privileges will be offered the add and edit button on their form.</p>
+<p>&nbsp;</p>
+<h3><a name="delete_record"></a>Deleting Records</h3>
+<p>Multiple records can be entered within a single tab in Specify. Records can also be deleted from within that original tab. Once the original tab has been closed the record will need to be searched and reopened within a form to delete it from the database. The following example shows the steps to delete a Collection Object record with Catalog Number 100. </p>
+<ol>
+  <li>Use Simple Search or the Query tool to find Catalog Number 100. </li><br>
+  <li><img src="../../images/search_100.png" width="576" height="80" align="center"></li><br>
+  <li>Simple Search results with results for Catalog Number 100</li><br>
+  <li>Double click the Catalog Number (100) to open the record in a form.</li><br>
+  <li>Click the <img src="../../images/edit.png" width="65" height="25"> (edit) button at the bottom of the form to edit the form. </li><br>
+  <li>Click the <img src="../../images/delete.png" width="16" height="16"> (delete) button at the top of the form to delete the record.</li>
+</ol>
+<p align="center"><img src="../../images/co_100.png" width="504" height="308"></p>
+<p align="center" class="imgcaption">Edit Collection Object form</p>
 </body>
 </html>

@@ -63,23 +63,24 @@
 			 <tocitem text="Using Backup and Restore" target="Backup_Restore" />
 		  </tocitem>
 	
+	         <tocitem text="Setting Specify Preferences" target="PreferencesOverview">
+            <tocitem text="EMail" target="PrefsEMail"/>
+            <tocitem text="Formatting" target="PrefsFormatting"/>
+            <tocitem text="GoogleEarth" target="PrefsGoogleEarth"/>
+            <tocitem text="Task Bar" target="PrefsMisc"/>
+            <tocitem text="System" target="PrefsSystem"/>
+            <tocitem text="Tree" target="PrefsTree"/>
+            <tocitem text="Login" target="PrefsLogin"/>
+            <tocitem text="MySQL" target="PrefsMySQL"/>
+          </tocitem>
 	
 		  
 		  
 		  <tocitem text="Introduction to Specify" target="Intro">
 		    <tocitem text="Components in Specify" target="Intro"/>
 		  </tocitem>  
+          <tocitem text="Statistics" target="Stats"/>
 
-		  <tocitem text="Setting Specify Preferences" target="PreferencesOverview">
-          	<tocitem text="EMail" target="PrefsEMail"/>
-          	<tocitem text="Formatting" target="PrefsFormatting"/>
-          	<tocitem text="GoogleEarth" target="PrefsGoogleEarth"/>
-          	<tocitem text="Task Bar" target="PrefsMisc"/>
-          	<tocitem text="System" target="PrefsSystem"/>
-          	<tocitem text="Tree" target="PrefsTree"/>
-			<tocitem text="Login" target="PrefsLogin"/>
-			<tocitem text="MySQL" target="PrefsMySQL"/>
-	      </tocitem>
 	      
 	      <tocitem text="Using Forms in Specify" target="Using_Forms">
 					<tocitem text="Related Information" target="Forms_Related_Information"/>

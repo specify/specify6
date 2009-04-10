@@ -16,7 +16,7 @@
 <td><h2>Trees in Specify</h2></td></tr>
 </table>
 
-<p>Specify 6 displays various table data in hierarchical tree format. These include Taxon, Geography, Storage, Chronostratigraphy and Lithostratigraphy. These tables are also included in the form system, but the tree offers a more broad, visual glimpse of the data. Data can be viewed, added and edited using both the form and tree system.</p>
+<p>Specify 6 visually presents some data  types in hierarchical tree displays. These data types include the Taxon, Geography, (Specimen) Storage, Chronostratigraphy and Lithostratigraphy tables. These data types, or tables, are also included in the form system, but the tree offers a more broad, visual glimpse of the data. Data can be viewed, added and edited using both the form and tree system.</p>
 <p>The Taxon, Geography,  Chronostratigraphy and Lithostratigraphy trees (and tables) are scoped at the Discipline level, meaning that all collections within a discipline share the same tree. Collections Objects that are associated with the nodes on the tree are only available for the collection (these are accessed from the tree by right-clicking the node and choosing <em>Associated Collection Objects </em>from the ensuing context menu.)</p>
 <p>The Storage tree is scoped at the institution level, but as with the other trees only collection objects for the current collection will be shown when right-clicking on the node and choosing Associated Collection Objects from the context menu.</p>
 <p>The default permissions that Specify ships with allow Guest users to View the trees, but not modify them in any way. All other users can use trees in their entirety.</p>
@@ -26,23 +26,27 @@
 <p>Ranks are shown in columns on the tree.<em><strong> </strong></em>tree column colors can be set in <em>Preferences &gt; Tree</em>. See also <em><a href="../Prefs/Tree.html">Preferences</a></em>.</p>
 <p>&nbsp;</p>
 <h4><strong><a name="trees_build" id="trees_build"></a>Building Ranks</strong></h4>
-<p>Before creating a tree it is first necessary to create the <a href="../Trees/editing_tree_def">Tree Definition</a>. This defines the Ranks for the tree, as well as how the ranks are enforced and if they are included in the full name. At this time in Specify 6 the configuration of full name can not be edited once nodes are placed on the tree. Therefore; this is a decision that must be made before populating the tree, and collections receiving databases with populated trees will need to request the desired configuration before import!</p>
+<p>There are two distinctions for trees; the first is the tree definition, or list of all the Ranks (levels) included in each tree,  the second is the nodes which reside on the tree at each of these levels.  The ranks must first be defined, then nodes can be added. Ranks are defined and edited through the use of both the Specify Setup Wizard and the Add a Discipline Wizard. They can also be edited in the <a href="../Trees/editing_tree_def">Tree Definition</a> as well as marked to be enforced and  included in the full name. The Full Name field in Specify is useful to search and use in reports. For example, the Geography tree may use city and state as the full name for Geography. The Full Name is also used in the Taxon and Geography Query Combo Boxes on forms as a way to distinguish between two similar records.</p>
+<p>At this time in Specify 6 the configuration of full name can not be edited once nodes are placed on the tree. Therefore; this is a decision that must be made before populating the tree, and collections receiving databases with populated trees will need to request the desired configuration before import!</p>
 <p>&nbsp;</p>
 <h4><strong><a name="trees_build" id="trees_build"></a>Building Trees</strong></h4>
-<p>Each of these Trees can be built in the following ways:</p>
+<p>All Trees can be defined and loaded into Specify through either the Specify Setup Wizard or the Add a Discipline Wizard. Data in these trees include:</p>
+<ul>
+  <li>Converted Taxon authority files  for each of the Disciplines from the Catalog of Life. </li></br>
+  <li>Converted Geographic authority files from Getty Thesaurus of Geographic Names, which includes Continent, Country, and States throughout the world as well as County data  for the United States.</li></br>
+  <li>Chronostratigraphy  authority files for five ranks in the North American System as converted from the Geological Society of America. </li></br>
+  <li>Four predefined ranks for Lithostratigraphy. </li></br>
+  <li>Ranks for the Storage tree.</li>
+</ul>
+<p>Users that do not wish to build their trees through a Specify Wizard may build their own trees in the following ways:</p>
 <ul>
   <li>Manually by adding  one record at a time. This will be necessary for the Storage tree, as it is unique to each Institution and Collection.</li>
   <br />
   <li>Dynamically from an existing user database. This may include a conversion from Specify 5 or other type of database, which the Specify team can help with, or a data import through the WorkBench. </li>
   <br />
-  <li>Dynamically by either downloading and importing an authority file from an authority source or taking advantage of a converted file from the Specify team. </li>
-
+  <li>Dynamically by  downloading and importing an authority file from an authority source. </li>
 </ul>
-<p>Specify has  converted Taxon authority files  from the Catalog of Life. These  are available as predefined, discipline-specific files that can either be preloaded into a blank database for those users wishing to start from scratch, or used to augment existing data by sending the Specify team your database for inclusion of this data.</p>
-<p>Specify has also converted Geographic authority files from Getty Thesaurus of Geographic Names and ships with data for Continent, Country, and States throughout the world. County data  for the United States is also included.</p>
-<p>The Chronostratigraphy tree includes authority files for five ranks in the North American System as converted from the Geological Society of America. </p>
-<p>The Lithostratigraphy tree includes four predefined ranks only. </p>
-<p>Although it is possible to enter Trees in their entirety from within Specify 6, the Specify project does not recommend building  large Trees  manually. </p>
+<p>&nbsp; </p>
 <p>&nbsp;</p>
 <h3><a name="trees_using" id="trees_using"></a>Using Trees</h3>
 <p>Trees are available through a tree button on the task bar. The task bar is configurable in Preferences. Users that do not have the tree button included on their task bar can add it by clicking <span class="MichaelsChanges"><em>Edit &gt; Preferences &gt; Task Bar </em>on Windows, or<em> Specify &gt; Preferences &gt; Task Bar</em> on the Mac, then checking the <em>Trees</em> box.</span></p>
