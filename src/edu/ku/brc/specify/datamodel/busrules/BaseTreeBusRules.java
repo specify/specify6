@@ -333,7 +333,7 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
             	if (acceptedCheckBox != null && acceptedParentWidget != null)
             	{
             		acceptedCheckBox.setEnabled(canSynonymize && theParent != null);
-            		if (!acceptedCheckBox.isSelected() && acceptedCheckBox.isEnabled())
+            		if (acceptedCheckBox.isSelected() && acceptedCheckBox.isEnabled())
             		{
             			acceptedParentWidget.setValue(null, null);
             			acceptedParentWidget.setChanged(true); // This should be done automatically

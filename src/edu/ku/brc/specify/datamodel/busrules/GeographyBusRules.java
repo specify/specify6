@@ -138,7 +138,7 @@ public class GeographyBusRules extends BaseTreeBusRules<Geography, GeographyTree
      * 
      * @param geo the {@link Geography} being saved
      */
-    protected void beforeSaveGeography(@SuppressWarnings("unused") Geography geo)
+    protected void beforeSaveGeography(Geography geo)
     {
         // nothing specific to Geography
     }    
