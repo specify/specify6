@@ -400,7 +400,7 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
             listeners.add(dl);
         }
         ValPlainTextDocument doc;
-        if (fieldInfo.getType().equals("java.lang.Byte"))
+        if (fieldInfo != null && fieldInfo.getType().equals("java.lang.Byte"))
         {
             doc = tf.new JFormattedDoc(tf, UIFieldFormatterField.FieldType.numeric, 3);
         } else
