@@ -2010,7 +2010,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                         "U.S. National Science Foundation  (Award DBI-0446544 and earlier awards).<br><br>" + //$NON-NLS-1$
                         "Specify 6.0 Copyright \u00A9 2009 University of Kansas Center for Research. " + 
                         "Specify comes with ABSOLUTELY NO WARRANTY.<br><br>" + //$NON-NLS-1$
-                        "This is free software licensed under General Public License 2 (GPL2).</P></font></html>"; //$NON-NLS-1$
+                        "This is free software licensed under GNU General Public License 2 (GPL2).</P></font></html>"; //$NON-NLS-1$
         JLabel txtLbl = createLabel(txt);
         txtLbl.setFont(UIRegistry.getDefaultFont());
         
