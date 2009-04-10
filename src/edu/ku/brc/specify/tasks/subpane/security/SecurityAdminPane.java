@@ -183,7 +183,7 @@ public class SecurityAdminPane extends BaseSubPane
         navTreePanel.setMinimumSize(new Dimension(200, 200));
         
         PanelBuilder btnPB = new PanelBuilder(new FormLayout("p,4px,p,4px,p,4px,p,f:p:g", "p"));
-        JButton addUserBtn = UIHelper.createIconBtn("add-person", IconManager.IconSize.NonStd, "Add User to Group", null); // I18N
+        JButton addUserBtn = UIHelper.createIconBtn("add-person", IconManager.IconSize.NonStd, "Add New User to Group", null); // I18N
         JButton addExtUserBtn = UIHelper.createIconBtn("addext-person", IconManager.IconSize.NonStd, "Add Existing User to Group", null); // I18N
         JButton delUserBtn = UIHelper.createIconBtn("del-person", IconManager.IconSize.NonStd, "Delete User from Group", null);
         JButton rmvUserBtn = UIHelper.createIconBtn("rmv-person", IconManager.IconSize.NonStd, "Remove User from Group (does not delete the user)", null);
