@@ -1837,9 +1837,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             strBuf.setLength(0);
             
             // Adding Institution
-            strBuf.append("INSERT INTO institution (InstitutionID, IsServerBased, TimestampModified, Name, TimestampCreated, StorageTreeDefID, ");
+            strBuf.append("INSERT INTO institution (InstitutionID, IsServerBased, IsAccessionsGlobal, TimestampModified, Name, TimestampCreated, StorageTreeDefID, ");
             strBuf.append("CreatedByAgentID, ModifiedByAgentID, Version, UserGroupScopeId, IsSecurityOn) VALUES (");
-            strBuf.append(institutionId + ",FALSE,");
+            strBuf.append(institutionId + ",FALSE,FALSE,");
             strBuf.append("'" + dateTimeFormatter.format(now) + "',"); // TimestampModified
             strBuf.append("'" + instName + "',");
             strBuf.append("'" + dateTimeFormatter.format(now) + "',"); // TimestampCreated
@@ -1884,7 +1884,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             Statement     updateStatement = newDBConn.createStatement();
             
             // Adding Institution
-            strBuf.append("INSERT INTO division (DivisionID, InstitutionID, TimestampModified, DisciplineType, Name, AltName, Abbrev, IsAccessionBound, TimestampCreated, ");
+            strBuf.append("INSERT INTO division (DivisionID, InstitutionID, TimestampModified, DisciplineType, Name, AltName, Abbrev, TimestampCreated, ");
             strBuf.append("CreatedByAgentID, ModifiedByAgentID, Version, UserGroupScopeId) VALUES (");
             strBuf.append(curDivisionID + ",");
             strBuf.append(institutionId + ",");
@@ -1893,7 +1893,6 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             strBuf.append("'" + disciplineType.getTitle() + "',");
             strBuf.append("NULL,");
             strBuf.append("'" + disciplineType.getAbbrev() + "',");
-            strBuf.append("1, ");  // IsAccessionBound
             strBuf.append("'" + dateTimeFormatter.format(now) + "',"); // TimestampCreated
             strBuf.append(getCreatorAgentId(null) + "," + getModifiedByAgentId(null) + ",0, ");
             strBuf.append(curDivisionID); // UserGroupScopeID
