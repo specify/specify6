@@ -77,7 +77,7 @@
             <desc><![CDATA[The Collection Object form.]]></desc>
             <enableRules/>
             
-            <columnDef os="exp">p,2px,200px,5px:g,p,2px,210px,5px:g,p,2px,200px,p,p:g</columnDef>
+            <columnDef os="exp">p,2px,220px,5px:g,p,2px,255px,5px:g,p,2px,200px,p,p:g</columnDef>
             <columnDef>100px,2px,200px,5px,100px,2px,210px,5px,100px,2px,101px,15px,p:g</columnDef>
             <columnDef os="mac">130px,2px,215px,5px,138px,2px,255px,5px,138px,2px,155px,15px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
@@ -161,7 +161,7 @@
             <desc><![CDATA[Determination subform for Collection Object form.]]></desc>
             <enableRules/>
             
-            <columnDef os="exp">p,2px,210px,5px:g,p,2px,200px,15px,p,2px,136px,p:g</columnDef>
+            <columnDef os="exp">p,2px,255px,5px:g,p,2px,220px,15px,p,2px,175px,p:g</columnDef>
             <columnDef>100px,2px,210px,5px,76px,2px,200px,15px,80px,2px,140px,0px,p:g</columnDef>
             <columnDef os="mac">130px,2px,253px,5px,95px,2px,238px,5px,140px,2px,185px,0px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
@@ -208,7 +208,7 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[Collecting Event]]></desc>
             
-            <columnDef os="exp">p,2px,120px,5px:g,p,2px,190px,5px:g,p,p:g</columnDef>
+            <columnDef os="exp">p,2px,150px,5px:g,p,2px,255px,5px:g,p:g,0px</columnDef>
             <columnDef>100px,2px,120px,5px,80px,2px,215px,2px,301px,0px,p:g</columnDef>-->
             <columnDef os="mac">130px,2px,200px,5px,100px,2px,255px,293px,70px,0px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
@@ -243,7 +243,7 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[Collecting Event]]></desc>
 
-            <columnDef os="exp">p,2px,200px,5px,100px,2px,200px,p:g</columnDef>
+            <columnDef os="exp">p,2px,200px,5px,100px,2px,255px,p:g</columnDef>
             <columnDef>100px,2px,158px,5px,100px,2px,220px,380px,15px,p:g</columnDef>
             <columnDef os="mac">130px,2px,200px,5px,100px,2px,255px,363px,15px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
