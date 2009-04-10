@@ -131,6 +131,7 @@
    <mapID target="uploading" url="SpecifyHelp/Uploading/wb_uploader.html"/>
    <mapID target="WorkbenchWorkingWithImages" url="SpecifyHelp/Workbench/WorkingWithImages.html"/>
    <mapID target="Stats" url="SpecifyHelp/Statistics/Statistics.html"/>
+   <mapID target="Load" url="SpecifyHelp/Security/loading.html"/>   
 
 
 <!-- Index Bookmarks -->
