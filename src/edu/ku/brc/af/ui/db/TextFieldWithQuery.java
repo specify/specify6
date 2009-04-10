@@ -22,6 +22,7 @@ import java.awt.Graphics2D;
 import java.awt.HeadlessException;
 import java.awt.Point;
 import java.awt.RenderingHints;
+import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -1253,12 +1254,21 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                     {
                         newSql = buildSQL(newEntryStr, true);
                     }
-                               
-                    JPAQuery jpaQuery = new JPAQuery(newSql, this);
-                    jpaQuery.setUnique(true);
-                    jpaQuery.setData(newEntryStr);
-                    jpaQuery.start();
                     
+                    if (StringUtils.isBlank(newSql))
+                    {
+                    	Toolkit.getDefaultToolkit().beep();
+                    	UIRegistry.displayLocalizedStatusBarError("TFWQ_InvalidEntry", newEntryStr);
+                    	isDoingQuery.set(false);
+                    	isDoingCount.set(false);
+                    }
+                    else
+                    {
+                    	JPAQuery jpaQuery = new JPAQuery(newSql, this);
+                    	jpaQuery.setUnique(true);
+                    	jpaQuery.setData(newEntryStr);
+                    	jpaQuery.start();
+                    }
                 } else if (returnCount != null && returnCount > popupDlgThreshold)
                 {
                     showDialog();

@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.core.AppContextMgr;
@@ -30,6 +31,7 @@ import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
+import edu.ku.brc.ui.UIHelper;
 
 /**
  * @author rod
@@ -72,9 +74,12 @@ public class TreeableSearchQueryBuilder implements ViewBasedSearchQueryBuilderIF
     {
         //XXX use SQL instead of HQL, for portability.
         
-        String queryStr = "";
-        if (QueryAdjusterForDomain.getInstance().isUserInputNotInjectable(searchText))
+        if (!QueryAdjusterForDomain.getInstance().isUserInputNotInjectable(searchText))
         {
+        	return "";
+        }
+        String queryStr = "";
+        
             TreeDefIface<?, ?, ?> treeDef = ((SpecifyAppContextMgr )AppContextMgr.getInstance()).getTreeDefForClass((Class<? extends Treeable<?,?,?>> )nodeInForm.getClass());
             Integer treeDefId = treeDef.getTreeDefId();
             
@@ -198,7 +203,7 @@ public class TreeableSearchQueryBuilder implements ViewBasedSearchQueryBuilderIF
                 queryStr += " ORDER BY n.fullName asc";
             }
             //log.debug(queryStr);
-        }
+        
         return queryStr;
     }
 
