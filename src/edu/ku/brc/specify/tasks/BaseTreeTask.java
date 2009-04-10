@@ -284,10 +284,12 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
     	if (!isOpeningTree) // as oppose to opening the TreeDef
     	{
             PermissionSettings perms = DBTableIdMgr.getInstance().getByShortClassName(treeClass.getSimpleName()).getPermissions();
-            final boolean isViewable = perms == null || perms.canView();//perms.isViewOnly();
+            final boolean isViewOnly = perms != null && perms.isViewOnly();
+            final boolean isViewable = perms == null || perms.canView();
             final boolean isEditable = perms == null || perms.canModify();
             
-            final TaskSemaphoreMgr.USER_ACTION action = isViewable ? TaskSemaphoreMgr.USER_ACTION.ViewMode : TaskSemaphoreMgr.lock(titleArg, treeDefClass.getSimpleName(), "def", TaskSemaphoreMgr.SCOPE.Discipline, true);
+            final TaskSemaphoreMgr.USER_ACTION action = isViewOnly ? TaskSemaphoreMgr.USER_ACTION.ViewMode 
+            		: TaskSemaphoreMgr.lock(titleArg, treeDefClass.getSimpleName(), "def", TaskSemaphoreMgr.SCOPE.Discipline, true);
             final boolean isViewMode = action == TaskSemaphoreMgr.USER_ACTION.ViewMode;
             
             if ((isViewable && (action == TaskSemaphoreMgr.USER_ACTION.ViewMode || action == TaskSemaphoreMgr.USER_ACTION.OK)) || 
