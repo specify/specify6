@@ -81,6 +81,7 @@ import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.UserGroupScope;
 import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.VerticalSeparator;
 import edu.ku.brc.util.ComparatorByStringRepresentation;
@@ -105,10 +106,10 @@ public class SecurityAdminPane extends BaseSubPane
     private EditorPanel                                 currentEditorPanel  = null;
     private String                                      currentTitle        = null;
     private JAutoCompTextField                          searchText;
-
+    
     // manages creation and deletion of items on the navigation tree
-    private NavigationTreeMgr navTreeMgr;
-
+     NavigationTreeMgr navTreeMgr;
+     private NavigationTreeContextMenuMgr navTreeContextMgr;
     
     @SuppressWarnings("unused")
     private boolean hasPermissionToModify = false;
@@ -175,18 +176,30 @@ public class SecurityAdminPane extends BaseSubPane
     {
         JPanel navigationPanel = new JPanel();
         final PanelBuilder mainPB = new PanelBuilder(new FormLayout(
-                "min(210px;p)", "p,3dlu,p,3dlu,f:p:g,p,15px,p,p,p,5px,p"), navigationPanel);
+                "min(210px;p)", "p,3dlu,p,3dlu,f:p:g,2px,p,10px,p"), navigationPanel);
         final CellConstraints cc = new CellConstraints();
 
         JPanel navTreePanel = createFullTreeNavPanel(); // navigation jTree gets created here 
         navTreePanel.setMinimumSize(new Dimension(200, 200));
         
+        PanelBuilder btnPB = new PanelBuilder(new FormLayout("p,4px,p,4px,p,4px,p,f:p:g", "p"));
+        JButton addUserBtn = UIHelper.createIconBtn("add-person", IconManager.IconSize.NonStd, "Add User to Group", null); // I18N
+        JButton addExtUserBtn = UIHelper.createIconBtn("addext-person", IconManager.IconSize.NonStd, "Add Existing User to Group", null); // I18N
+        JButton delUserBtn = UIHelper.createIconBtn("del-person", IconManager.IconSize.NonStd, "Delete User from Group", null);
+        JButton rmvUserBtn = UIHelper.createIconBtn("rmv-person", IconManager.IconSize.NonStd, "Remove User from Group (does not delete the user)", null);
+        btnPB.add(addUserBtn,    cc.xy(1, 1));
+        btnPB.add(addExtUserBtn, cc.xy(3, 1));
+        btnPB.add(rmvUserBtn,    cc.xy(5, 1));
+        btnPB.add(delUserBtn,    cc.xy(7, 1));
+        
+        navTreeContextMgr.setBtn(addUserBtn, addExtUserBtn, delUserBtn, rmvUserBtn);
+               
         // Other components that were added to the tree panel are now created here
-        // It's better to include the scrollpane with the navigation JTree in a separate palen
+        // It's better to include the scrollpane with the navigation JTree in a separate panel
         // to let it shrink correctly (bug 6409)
 
-        String helpStr = getResourceString("ADD_USER_HINT");
-        JLabel userDnDHelp = createLabel(helpStr);
+        //String helpStr = getResourceString("ADD_USER_HINT");
+        //JLabel userDnDHelp = createLabel(helpStr);
                 
         final PanelBuilder tbRightPB = new PanelBuilder(new FormLayout("f:p:g,p", "p"));
         mainPB.add(tbRightPB.getPanel(),         cc.xy(1, 6));
@@ -204,8 +217,8 @@ public class SecurityAdminPane extends BaseSubPane
             lpb.add(createI18NLabel(lbl[i]), cc.xy(3,y)); y+= 2;
         }
                 
-        mainPB.add(userDnDHelp,    cc.xy(1, 10));
-        mainPB.add(lpb.getPanel(), cc.xy(1, 12));
+        mainPB.add(btnPB.getPanel(), cc.xy(1, 7));
+        mainPB.add(lpb.getPanel(),   cc.xy(1, 9));
 
         DocumentListener searchDL = new DocumentAdaptor()
         {
@@ -316,7 +329,7 @@ public class SecurityAdminPane extends BaseSubPane
         
         // create object that will control the creation of popups
         // constructor will take care of hooking up right listeners to the tree.
-        new NavigationTreeContextMenuMgr(navTreeMgr);
+        navTreeContextMgr = new NavigationTreeContextMenuMgr(navTreeMgr);
         
         IconManager.IconSize iconSize = IconManager.IconSize.Std20;
         ImageIcon            sysIcon  = IconManager.getIcon("SystemSetup", iconSize);
@@ -525,7 +538,6 @@ public class SecurityAdminPane extends BaseSubPane
         // adding the tree as f:p:g makes it grow too large
         final PanelBuilder mainPB = new PanelBuilder(new FormLayout("min(210px;p):g", "f:p:g"));
         final CellConstraints cc = new CellConstraints();
-
 
         // to let the panel shrink correctly (bug 6409)
         JScrollPane sp = createScrollPane(tree, true);

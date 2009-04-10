@@ -98,6 +98,9 @@
     <icon name="person"                          file="person.png" sizes="all"/>
     
     <icon name="add-person"                      file="add-person.png" sizes="NonStd"/>
+    <icon name="addext-person"                   file="addext-person.png" sizes="NonStd"/>
+    <icon name="del-person"                      file="del-person.png" sizes="NonStd"/>
+    <icon name="rmv-person"                      file="rmv-person.png" sizes="NonStd"/>
     <icon name="add-group"                       file="add-group.png" sizes="NonStd"/>
     <!-- <icon name="add-discipline"                  file="add-discipline.png" sizes="NonStd"/>
     <icon name="add-collection"                  file="add-collection.png" sizes="NonStd"/>  -->

@@ -7,11 +7,12 @@
 package edu.ku.brc.specify.tasks.subpane.security;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.AbstractAction;
-import javax.swing.Action;
+import javax.swing.JButton;
 import javax.swing.JPopupMenu;
 import javax.swing.JTree;
 import javax.swing.event.TreeSelectionEvent;
@@ -27,7 +28,7 @@ import edu.ku.brc.specify.datamodel.SpecifyUser;
 /**
  * An instance of this class manages the creation of the context (pop-up or right-click) menu that
  * that lets the user perform operations on the contents of the security admin panel navigation
- * tree. It lets users add or delete items to the tree.
+ * tree. It lets users add or delete items to the tree. 
  * 
  * @author Ricardo
  * 
@@ -36,6 +37,13 @@ import edu.ku.brc.specify.datamodel.SpecifyUser;
 public class NavigationTreeContextMenuMgr extends MouseAdapter implements TreeSelectionListener
 {
     private NavigationTreeMgr treeMgr;
+    private JButton           addUserBtn;
+    private JButton           addExtUserBtn;
+    private JButton           delUserBtn;
+    private JButton           rmvUserBtn;
+    
+    private DefaultMutableTreeNode lastClickComp = null;
+
 
     /**
      * Constructor. Attaches itself as tree selection and mouse listener.
@@ -47,6 +55,70 @@ public class NavigationTreeContextMenuMgr extends MouseAdapter implements TreeSe
         this.treeMgr = treeMgr;
         getTree().addTreeSelectionListener(this);
         getTree().addMouseListener(this);
+    }
+    
+    /**
+     * @param addBtn
+     * @param delBtn
+     * @param rmvBtn
+     */
+    public void setBtn(final JButton addBtn, 
+                       final JButton addExtBtn, 
+                       final JButton delBtn, 
+                       final JButton rmvBtn)
+    {
+        this.addUserBtn    = addBtn;
+        this.addExtUserBtn = addExtBtn;
+        this.delUserBtn    = delBtn;
+        this.rmvUserBtn    = rmvBtn;
+        
+        addUserBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                getTreeMgr().addNewUser(lastClickComp);
+                updateBtnUI();
+            }
+        });
+        
+        addExtUserBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                getTreeMgr().addExistingUser(lastClickComp);
+                updateBtnUI();
+            }
+        });
+        
+        delUserBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                getTreeMgr().deleteUser(lastClickComp);
+                updateBtnUI();
+            }
+        });
+        
+        rmvUserBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                getTreeMgr().removeUserFromGroup(lastClickComp);
+                updateBtnUI();
+            }
+        });
+    }        
+    
+    /**
+     * 
+     */
+    protected void updateBtnUI()
+    {
+         addUserBtn.setEnabled(false);
+         addExtUserBtn.setEnabled(false);
+         delUserBtn.setEnabled(false);
+         rmvUserBtn.setEnabled(false);
+
     }
 
     /**
@@ -70,9 +142,40 @@ public class NavigationTreeContextMenuMgr extends MouseAdapter implements TreeSe
      */
     public void mousePressed(MouseEvent e)
     {
-        if (e.isPopupTrigger() && e.getClickCount() == 1)
+        
+        TreePath clickedElement = getTree().getPathForLocation(e.getX(), e.getY());
+
+        // Update the selection if necessary
+        updateSelection(clickedElement);
+        
+        TreePath tp = clickedElement;
+        if (tp != null)
         {
-            doPopup(e.getX(), e.getY());
+            lastClickComp = (DefaultMutableTreeNode)tp.getLastPathComponent();
+            
+            Object           userObject = ((DefaultMutableTreeNode) clickedElement.getLastPathComponent()).getUserObject();
+            FormDataObjIFace dmObject   = ((DataModelObjBaseWrapper) userObject).getDataObj();
+    
+            if (dmObject instanceof SpecifyUser)
+            {
+                addUserBtn.setEnabled(false);
+                addExtUserBtn.setEnabled(false);
+                delUserBtn.setEnabled(getTreeMgr().canDeleteUser(lastClickComp));
+                rmvUserBtn.setEnabled(getTreeMgr().canRemoveUserFromGroup(lastClickComp));
+                
+            }
+            else if (dmObject instanceof SpPrincipal)
+            {
+                boolean enable = getTreeMgr().canAddNewUser(lastClickComp);
+                addUserBtn.setEnabled(enable);
+                addExtUserBtn.setEnabled(enable);
+                delUserBtn.setEnabled(false);
+                rmvUserBtn.setEnabled(false);
+                
+            } else if (dmObject instanceof Collection)
+            {
+                // object is a collection: offer to add new group and to delete the collection
+            }
         }
     }
 
@@ -83,7 +186,7 @@ public class NavigationTreeContextMenuMgr extends MouseAdapter implements TreeSe
     {
         if (e.isPopupTrigger() && e.getClickCount() == 1)
         {
-            doPopup(e.getX(), e.getY());
+            //doPopup(e.getX(), e.getY());
         }
     }
 
@@ -179,11 +282,16 @@ public class NavigationTreeContextMenuMgr extends MouseAdapter implements TreeSe
         JPopupMenu groupNodeContextMenu = new JPopupMenu("Group Context Menu");
         DeleteUserAction deleteUserAction = new DeleteUserAction("User", clickedElement, getTreeMgr());
         deleteUserAction.setEnabled(getTreeMgr().canDeleteUser((DefaultMutableTreeNode) clickedElement.getLastPathComponent()));
-        groupNodeContextMenu.add(deleteUserAction);
+        //groupNodeContextMenu.add(deleteUserAction);
+        
+        delUserBtn.setAction(deleteUserAction);
+        //delUserBtn.setEnabled(getTreeMgr().canDeleteUser((DefaultMutableTreeNode) clickedElement.getLastPathComponent()));
+        //rmvUserBtn.setEnabled(getTreeMgr().canRemoveUserFromGroup((DefaultMutableTreeNode) clickedElement.getLastPathComponent()));
 
         RemoveUserFromGroupAction action = new RemoveUserFromGroupAction("User", clickedElement, getTreeMgr());
         action.setEnabled(getTreeMgr().canRemoveUserFromGroup((DefaultMutableTreeNode) clickedElement.getLastPathComponent()));
-        groupNodeContextMenu.add(action);
+        //groupNodeContextMenu.add(action);
+        rmvUserBtn.setAction(action);
 
         return groupNodeContextMenu;
     }
@@ -199,14 +307,17 @@ public class NavigationTreeContextMenuMgr extends MouseAdapter implements TreeSe
         boolean canAddNewUser = getTreeMgr().canAddNewUser((DefaultMutableTreeNode) clickedElement.getLastPathComponent());
         AddNewUserAction addNewUserAction = new AddNewUserAction(clickedElement, getTreeMgr());
         addNewUserAction.setEnabled(canAddNewUser);
-        groupNodeContextMenu.add(addNewUserAction);
+        //groupNodeContextMenu.add(addNewUserAction);
+        
+        addUserBtn.setAction(addNewUserAction);
+        //addUserBtn.setEnabled(canAddNewUser);
 
         groupNodeContextMenu.add(new AddExistingUserAction(clickedElement, getTreeMgr()));
         
         boolean canDelete = getTreeMgr().canDeleteItem((DefaultMutableTreeNode) clickedElement.getLastPathComponent());
         DeleteUserGroupScopeAction deleteAction = new DeleteUserGroupScopeAction("Group", clickedElement, getTreeMgr());
         deleteAction.setEnabled(canDelete);
-        groupNodeContextMenu.add(deleteAction);
+        //groupNodeContextMenu.add(deleteAction);
         return groupNodeContextMenu;
     }
 
@@ -307,18 +418,6 @@ public class NavigationTreeContextMenuMgr extends MouseAdapter implements TreeSe
     // -------------------------------------------------------------------
     // -- Inner Classes
     // -------------------------------------------------------------------
-    public class LabelAction extends AbstractAction
-    {
-        LabelAction(final String label)
-        {
-            super(label);
-        }
-
-        public void actionPerformed(ActionEvent e)
-        {
-            // do nothing
-        }
-    }
 
     // -------------------------------------------------------------------
     // -- 
@@ -328,12 +427,13 @@ public class NavigationTreeContextMenuMgr extends MouseAdapter implements TreeSe
         private TreePath          clickedObject;
         private NavigationTreeMgr treeManager;
 
-        public NavigationTreeContextMenuAction(String label, TreePath clickedObject,
-                NavigationTreeMgr treeManager)
+        public NavigationTreeContextMenuAction(String label, 
+                                               TreePath clickedObject,
+                                               NavigationTreeMgr treeManager)
         {
-            super(label);
+            super(null);
             this.clickedObject = clickedObject;
-            this.treeManager = treeManager;
+            this.treeManager  = treeManager;
         }
 
         public TreePath getClickedObject()
@@ -354,7 +454,7 @@ public class NavigationTreeContextMenuMgr extends MouseAdapter implements TreeSe
     {
         public AddNewUserAction(final TreePath clickedObject, final NavigationTreeMgr treeMgr)
         {
-            super("Add New User", clickedObject, treeMgr);
+            super(null, clickedObject, treeMgr);
         }
 
         public void actionPerformed(ActionEvent e)
@@ -370,7 +470,7 @@ public class NavigationTreeContextMenuMgr extends MouseAdapter implements TreeSe
     {
         public AddExistingUserAction(final TreePath clickedObject, final NavigationTreeMgr treeMgr)
         {
-            super("Add Existing User...", clickedObject, treeMgr);
+            super(null, clickedObject, treeMgr);
         }
 
         public void actionPerformed(ActionEvent e)
@@ -386,7 +486,7 @@ public class NavigationTreeContextMenuMgr extends MouseAdapter implements TreeSe
     {
         public AddNewGroupAction(final TreePath clickedObject, final NavigationTreeMgr treeMgr)
         {
-            super("Add New Group", clickedObject, treeMgr);
+            super(null, clickedObject, treeMgr);
         }
 
         public void actionPerformed(ActionEvent e)
@@ -403,7 +503,7 @@ public class NavigationTreeContextMenuMgr extends MouseAdapter implements TreeSe
     {
         public AddNewCollectionAction(final TreePath clickedObject, final NavigationTreeMgr treeMgr)
         {
-            super("Add New Collection", clickedObject, treeMgr);
+            super(null, clickedObject, treeMgr);
         }
 
         public void actionPerformed(ActionEvent e)
@@ -420,13 +520,12 @@ public class NavigationTreeContextMenuMgr extends MouseAdapter implements TreeSe
     {
         public AddNewDisciplineAction(final TreePath clickedObject, final NavigationTreeMgr treeMgr)
         {
-            super("Add New Discipline", clickedObject, treeMgr);
+            super(null, clickedObject, treeMgr);
         }
 
         public void actionPerformed(ActionEvent e)
         {
-            getTreeMgr().addNewDiscipline(
-                    (DefaultMutableTreeNode) getClickedObject().getLastPathComponent());
+            getTreeMgr().addNewDiscipline((DefaultMutableTreeNode) getClickedObject().getLastPathComponent());
         }
     }
 
@@ -439,10 +538,10 @@ public class NavigationTreeContextMenuMgr extends MouseAdapter implements TreeSe
                 final NavigationTreeMgr treeMgr)
         {
             // will come up with label at the end of this constructor
-            super("", clickedObject, treeMgr);
-            DefaultMutableTreeNode node = (DefaultMutableTreeNode) getClickedObject().getLastPathComponent();
-            DataModelObjBaseWrapper wrapper = (DataModelObjBaseWrapper) node.getUserObject();
-            putValue(Action.NAME, "Delete " + itemTypeName + " " + wrapper.getName());
+            super(null, clickedObject, treeMgr);
+            //DefaultMutableTreeNode node = (DefaultMutableTreeNode) getClickedObject().getLastPathComponent();
+            //DataModelObjBaseWrapper wrapper = (DataModelObjBaseWrapper) node.getUserObject();
+            //putValue(Action.NAME, "Delete " + itemTypeName + " " + wrapper.getName());
         }
 
         public void actionPerformed(ActionEvent e)
@@ -461,16 +560,15 @@ public class NavigationTreeContextMenuMgr extends MouseAdapter implements TreeSe
                final NavigationTreeMgr treeMgr)
        {
            // will come up with label at the end of this constructor
-           super("", clickedObject, treeMgr);
-           DefaultMutableTreeNode node = (DefaultMutableTreeNode) getClickedObject().getLastPathComponent();
-           DataModelObjBaseWrapper wrapper = (DataModelObjBaseWrapper) node.getUserObject();
-           putValue(Action.NAME, "Delete user " + wrapper.getName());
+           super(null, clickedObject, treeMgr);
+           //DefaultMutableTreeNode node = (DefaultMutableTreeNode) getClickedObject().getLastPathComponent();
+           //DataModelObjBaseWrapper wrapper = (DataModelObjBaseWrapper) node.getUserObject();
+           //putValue(Action.NAME, "Delete user " + wrapper.getName());
        }
 
        public void actionPerformed(ActionEvent e)
        {
-           getTreeMgr().deleteUser(
-                   (DefaultMutableTreeNode) getClickedObject().getLastPathComponent());
+           getTreeMgr().deleteUser((DefaultMutableTreeNode) getClickedObject().getLastPathComponent());
        }
    }
    
@@ -483,16 +581,15 @@ public class NavigationTreeContextMenuMgr extends MouseAdapter implements TreeSe
                final NavigationTreeMgr treeMgr)
        {
            // will come up with label at the end of this constructor
-           super("", clickedObject, treeMgr);
-           DefaultMutableTreeNode node = (DefaultMutableTreeNode) getClickedObject().getLastPathComponent();
-           DataModelObjBaseWrapper wrapper = (DataModelObjBaseWrapper) node.getUserObject();
-           putValue(Action.NAME, "Remove user " + wrapper.getName() + " from group");
+           super(null, clickedObject, treeMgr);
+           //DefaultMutableTreeNode node = (DefaultMutableTreeNode) getClickedObject().getLastPathComponent();
+           //DataModelObjBaseWrapper wrapper = (DataModelObjBaseWrapper) node.getUserObject();
+           //putValue(Action.NAME, "Remove user " + wrapper.getName() + " from group");
        }
 
        public void actionPerformed(ActionEvent e)
        {
-           getTreeMgr().removeUserFromGroup(
-                   (DefaultMutableTreeNode) getClickedObject().getLastPathComponent());
+           getTreeMgr().removeUserFromGroup((DefaultMutableTreeNode) getClickedObject().getLastPathComponent());
        }
    }
 }

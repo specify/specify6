@@ -193,7 +193,7 @@ public class NavigationTreeMgr
         // get the user from the selected tree node
         DataModelObjBaseWrapper wrapper = (DataModelObjBaseWrapper) userNode.getUserObject();
         Object                  object  = wrapper.getDataObj();
-        SpecifyUser             user    = (SpecifyUser) object;
+        SpecifyUser             user    = (SpecifyUser)object;
 
         if (currentUser.getSpecifyUserId().equals(user.getSpecifyUserId()))
         {
@@ -207,11 +207,8 @@ public class NavigationTreeMgr
         {
             session = DataProviderFactory.getInstance().createSession();
             
-            session.beginTransaction();
-            
-            session.update(user);
-            
-            session.commit();
+            user = (SpecifyUser)session.getData("FROM SpecifyUser WHERE id = "+user.getId());
+            wrapper.setDataObj(user);
             
             // XXX do we need a session here? 
             // We need it in the next call to get SpPrincipals, but they have probably been 
