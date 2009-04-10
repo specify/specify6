@@ -204,8 +204,8 @@ public class SecurityAdminPane extends BaseSubPane
             lpb.add(createI18NLabel(lbl[i]), cc.xy(3,y)); y+= 2;
         }
                 
-        mainPB.add(userDnDHelp,               cc.xy(1, 10));
-        mainPB.add(lpb.getPanel(),            cc.xy(1, 12));
+        mainPB.add(userDnDHelp,    cc.xy(1, 10));
+        mainPB.add(lpb.getPanel(), cc.xy(1, 12));
 
         DocumentListener searchDL = new DocumentAdaptor()
         {
@@ -254,20 +254,23 @@ public class SecurityAdminPane extends BaseSubPane
                     return;
                 }
                 
-                DataModelObjBaseWrapper dataWrp  = (DataModelObjBaseWrapper) (node.getUserObject());
+                DataModelObjBaseWrapper dataWrp = (DataModelObjBaseWrapper) (node.getUserObject());
                 
                 // get parent if it is a user
                 DataModelObjBaseWrapper secondObjWrp = null;
-                if (dataWrp.getDataObj() instanceof SpecifyUser)
+                Object                  dataObj      = dataWrp.getDataObj();
+                if (dataObj instanceof SpecifyUser)
                 {
                     // XXX Also might need to check to see if anyone is logged into the Group
                     // when editing a Group
                     SpecifyUser currentUser = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
-                    SpecifyUser spUser      = (SpecifyUser)dataWrp.getDataObj();
+                    SpecifyUser spUser      = (SpecifyUser)dataObj;
+                    
                     if (!spUser.getIsLoggedIn() || currentUser.getId().equals(spUser.getId()))
                     {
                         DefaultMutableTreeNode parent = (DefaultMutableTreeNode) node.getParent();
                         secondObjWrp = (DataModelObjBaseWrapper) parent.getUserObject();
+                        
                     } else
                     {
                         UIRegistry.showLocalizedError("SecuirytAdminPane.USR_IS_ON", spUser.getName());
@@ -316,8 +319,9 @@ public class SecurityAdminPane extends BaseSubPane
         new NavigationTreeContextMenuMgr(navTreeMgr);
         
         IconManager.IconSize iconSize = IconManager.IconSize.Std20;
-        ImageIcon sysIcon = IconManager.getIcon("SystemSetup", iconSize);
-        JLabel label = createLabel("XXXX");
+        ImageIcon            sysIcon  = IconManager.getIcon("SystemSetup", iconSize);
+        JLabel               label    = createLabel("XXXX");
+        
         label.setIcon(sysIcon);
         label.setBorder(BorderFactory.createEmptyBorder(1, 0, 0, 0));
         
@@ -840,16 +844,16 @@ public class SecurityAdminPane extends BaseSubPane
         
         // create tabbed panel for different kinds of permission editing tables
         final JTabbedPane tabbedPane = new JTabbedPane();
-        tabbedPane.addTab(getResourceString("SEC_GENERAL"), generalEditor); // I18N
+        tabbedPane.addTab(getResourceString("SEC_GENERAL"), generalEditor);
         //tabbedPane.addTab("Objects", objEditor);     // I18N
         
         final PanelBuilder mainPB = new PanelBuilder(new FormLayout("f:p:g", "t:p,4px,p,5px,f:p:g,2dlu,p"), infoPanel);
         
         // lay out controls on panel
         int y = 1;
-        mainPB.add(panel,                  cc.xy(1, y)); y += 2;
-        mainPB.addSeparator("Permissions", cc.xy(1, y)); y += 2; // I18N
-        mainPB.add(tabbedPane,             cc.xy(1, y)); y += 2;
+        mainPB.add(panel,                                   cc.xy(1, y)); y += 2;
+        mainPB.addSeparator(getResourceString("SEC_PERMS"), cc.xy(1, y)); y += 2; 
+        mainPB.add(tabbedPane,                              cc.xy(1, y)); y += 2;
         
         PanelBuilder saveBtnPB = new PanelBuilder(new FormLayout("f:p:g,p,2px,p,2px,p,2px,p", "p"));
         
@@ -857,12 +861,12 @@ public class SecurityAdminPane extends BaseSubPane
         JButton  valBtn   = FormViewObj.createValidationIndicator(viewable.getUIComponent(), viewable.getValidator());
         panel.getMultiView().getCurrentValidator().setValidationBtn(valBtn);
         
-        saveBtnPB.add(selectAllBtn,   cc.xy(2, 1));
-        saveBtnPB.add(deselectAllBtn, cc.xy(4, 1));
-        saveBtnPB.add(valBtn,         cc.xy(6, 1)); 
+        saveBtnPB.add(selectAllBtn,           cc.xy(2, 1));
+        saveBtnPB.add(deselectAllBtn,         cc.xy(4, 1));
+        saveBtnPB.add(valBtn,                 cc.xy(6, 1)); 
         saveBtnPB.add(infoPanel.getSaveBtn(), cc.xy(8, 1));
         
-        mainPB.add(saveBtnPB.getPanel(), cc.xy(1, y)); y += 2;
+        mainPB.add(saveBtnPB.getPanel(),      cc.xy(1, y)); y += 2;
         
         String className = SpecifyUser.class.getCanonicalName();
         infoCards.add(infoPanel, className);

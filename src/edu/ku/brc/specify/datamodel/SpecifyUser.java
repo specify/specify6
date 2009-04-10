@@ -510,7 +510,9 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
      * @return - 
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "specifyUser")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.SAVE_UPDATE, 
+                                          org.hibernate.annotations.CascadeType.MERGE, 
+                                          org.hibernate.annotations.CascadeType.LOCK })
     public Set<Agent> getAgents()
     {
         return this.agents;

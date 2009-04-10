@@ -15,6 +15,7 @@ import javax.swing.JPanel;
 import edu.ku.brc.af.auth.specify.permission.PermissionService;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayPanel;
 import edu.ku.brc.af.ui.forms.MultiView;
+import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.SpPermission;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
@@ -33,8 +34,13 @@ public class AdminInfoSubPanelWrapper
     private JPanel                      displayPanel;
     private List<PermissionPanelEditor> permissionEditors; 
     
-    private SpPrincipal                 principal           = null;
-
+    private SpPrincipal                 principal   = null;  // first  Principal
+    private SpPrincipal                 principal2  = null;  // second Principal
+    
+    private SpecifyUser                 user        = null;
+    private DataModelObjBaseWrapper     firstWrp    = null;
+    private DataModelObjBaseWrapper     secondWrp   = null;
+    
     /**
      * Constructor taking only a JPanel as parameter
      * 
@@ -89,13 +95,16 @@ public class AdminInfoSubPanelWrapper
     /**
      * Set form data based on a given persistent object
      * If first object is a SpecifyUser, secondObject is the group (GroupPrincipal) a user belongs to
-     * @param firstWrp
-     * @param secondWrp
+     * @param firstWrpArg
+     * @param secondWrpArg
      * @return whether new data was set (usually from setting defaults)
      */
-    public boolean setData(final DataModelObjBaseWrapper firstWrp, 
-                           final DataModelObjBaseWrapper secondWrp)
+    public boolean setData(final DataModelObjBaseWrapper firstWrpArg, 
+                           final DataModelObjBaseWrapper secondWrpArg)
     {
+        firstWrp  = firstWrpArg;
+        secondWrp = secondWrpArg;
+        
         boolean hasChanged = false;
         if (!(displayPanel instanceof ViewBasedDisplayPanel))
         {
@@ -103,46 +112,69 @@ public class AdminInfoSubPanelWrapper
             return false;
         }
         
-        Object firstObj = firstWrp.getDataObj();
+        Object firstObj  = firstWrp.getDataObj();
         Object secondObj = (secondWrp != null) ? secondWrp.getDataObj() : null;
-        
-        ViewBasedDisplayPanel panel = (ViewBasedDisplayPanel) displayPanel;
+
+        ViewBasedDisplayPanel panel = (ViewBasedDisplayPanel)displayPanel;
         panel.setData(null);
-        panel.setData(firstWrp.getDataObj());
+
+        user = null;
         
-        SpecifyUser user = null;
+        String userType = null;
         
         // set permissions table if appropriate according to principal (user or usergroup)
-        SpPrincipal firstPrincipal = null;
+        SpPrincipal firstPrincipal  = null;
         SpPrincipal secondPrincipal = null;
-        if (firstObj instanceof SpecifyUser)
+        
+        DataProviderSessionIFace session = null;
+        try
         {
-            user            = (SpecifyUser) firstObj;
-            firstPrincipal  = user.getUserPrincipal();
-            secondPrincipal = (SpPrincipal) secondObj; // must be the user group
+            session = DataProviderFactory.getInstance().createSession();
+                    
+            if (firstObj instanceof SpecifyUser)
+            {
+                user            = session.get(SpecifyUser.class, ((SpecifyUser)firstObj).getId());
+                userType        = user.getUserType();
+                firstPrincipal  = user.getUserPrincipal();
+                secondPrincipal = (SpPrincipal)secondObj; // must be the user group
+                
+                panel.setData(user);
+                
+            } else if (firstObj instanceof SpPrincipal)
+            {
+                // first object is just a user group 
+                user            = null;
+                firstPrincipal  = session.get(SpPrincipal.class, ((SpPrincipal)firstObj).getId());
+                secondPrincipal = null;
+                panel.setData(firstPrincipal);
+            }
             
-        } else if (firstObj instanceof SpPrincipal)
+        } catch (Exception ex)
         {
-            // first object is just a user group 
-            firstPrincipal = (SpPrincipal) firstObj;
+            ex.printStackTrace();
+            
+        } finally
+        {
+            if (session != null)
+            {
+                session.close();
+            }
         }
-
+        
         if (firstPrincipal == null || permissionEditors.size() == 0)
         {
             return false;
         }
-
-        String userType = (user != null)? user.getUserType() : null;
-
-        Hashtable<String, SpPermission> existingPerms = PermissionService.getExistingPermissions(firstPrincipal.getId());
-        Hashtable<String, SpPermission> overrulingPerms = null;
-        if (secondPrincipal != null)
-        {
-            overrulingPerms = PermissionService.getExistingPermissions(secondPrincipal.getId());
-        }
         
-        principal           = firstPrincipal;
-        //overrulingPrincipal = secondPrincipal;
+        principal  = firstPrincipal;
+        principal2 = secondPrincipal;
+
+        Hashtable<String, SpPermission> existingPerms   = PermissionService.getExistingPermissions(principal.getId());
+        Hashtable<String, SpPermission> overrulingPerms = null;
+        if (principal2 != null)
+        {
+            overrulingPerms = PermissionService.getExistingPermissions(principal2.getId());
+        }
 
         for (PermissionPanelEditor editor : permissionEditors)
         {
@@ -171,6 +203,17 @@ public class AdminInfoSubPanelWrapper
         {
             editor.savePermissions(session);            
         }
+        
+        if (user != null)
+        {
+            user = session.merge(user);
+            firstWrp.setDataObj(user);
+            secondWrp.setDataObj(principal2);
+            
+        } else
+        {
+            firstWrp.setDataObj(principal);
+        }
     }
     
     /**
@@ -182,7 +225,7 @@ public class AdminInfoSubPanelWrapper
     {
         if (displayPanel instanceof ViewBasedDisplayPanel)
         {
-            ViewBasedDisplayPanel panel = (ViewBasedDisplayPanel) displayPanel;
+            ViewBasedDisplayPanel panel = (ViewBasedDisplayPanel)displayPanel;
             return panel.getMultiView();
         }
         // else

@@ -722,10 +722,6 @@
                     <cell type="label" labelfor="6"/>
                     <cell type="field" id="6" name="description" uitype="textareabrief" rows="2" colspan="10"/>
                 </row>
-                 <row>
-                    <cell type="label" label="  "/>
-                    <cell type="field" id="8" name="isAccessionBound" uitype="checkbox"/>
-                </row>
                 <row>
                     <cell type="subview" viewname="AddressSingle" id="10" name="address" colspan="12" initialize="btn=true"/>
                 </row>

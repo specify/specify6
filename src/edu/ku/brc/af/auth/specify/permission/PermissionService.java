@@ -229,7 +229,7 @@ public class PermissionService
         	{
         		SpPermission perm = (SpPermission)permObj;
         		hash.put(perm.getName(), perm);
-        		log.debug(principalId+"  "+perm.getName()+"  "+perm.getActions());
+        		//log.debug(principalId+"  "+perm.getName()+"  "+perm.getActions());
         	}
         }
         catch (Exception e)

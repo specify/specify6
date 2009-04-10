@@ -60,20 +60,20 @@ public class IndvPanelPermEditor extends JPanel implements PermissionPanelContai
 {
     //private static final Logger log = Logger.getLogger(IndvPanelPermEditor.class);
     
-    protected String                panelName;
-    protected PermissionEnumerator  enumerator;
-    protected SpPrincipal           principal                 = null;
-    protected SpPrincipal           overrulingPrincipal; 
-    protected Hashtable<String, SpPermission> existingPerms;
-    protected Hashtable<String, SpPermission> overrulingPerms;
-    protected String                userType;
-    protected ChangeListener        listener;
-    protected boolean               readOnly;
+    protected String                           panelName;
+    protected PermissionEnumerator             enumerator;
+    protected SpPrincipal                      principal                 = null;
+    protected SpPrincipal                      overrulingPrincipal; 
+    protected Hashtable<String, SpPermission>  existingPerms;
+    protected Hashtable<String, SpPermission>  overrulingPerms;
+    protected String                           userType;
+    protected ChangeListener                   listener;
+    protected boolean                          readOnly;
     
-    protected JList                 list;
-    protected DefaultListModel      model = new DefaultListModel();
-    protected JPanel                mainPanel;
-    protected ImageIcon             icon;
+    protected JList                            list;
+    protected DefaultListModel                 model = new DefaultListModel();
+    protected JPanel                           mainPanel;
+    protected ImageIcon                        icon;
       
     protected Vector<PermissionEditorRowIFace> rowDataList = new Vector<PermissionEditorRowIFace>();
     protected PermissionEditorIFace            editor      = null;
@@ -111,11 +111,11 @@ public class IndvPanelPermEditor extends JPanel implements PermissionPanelContai
     {
         super(new BorderLayout());
         
-        this.panelName          = UIRegistry.getResourceString(panelNameKey);
-        this.enumerator         = enumerator;
-        this.principal          = null;
-        this.listener           = listener;
-        this.readOnly           = readOnly;
+        this.panelName  = UIRegistry.getResourceString(panelNameKey);
+        this.enumerator = enumerator;
+        this.principal  = null;
+        this.listener   = listener;
+        this.readOnly   = readOnly;
         
         if (doAddTableEditor)
         {
@@ -365,14 +365,6 @@ public class IndvPanelPermEditor extends JPanel implements PermissionPanelContai
                 list.setSelectedIndex(selectedIndex == -1 ? 0 : selectedIndex);
             }
         });
-    }
-    
-    /* (non-Javadoc)
-     * @see javax.swing.JComponent#setVisible(boolean)
-     */
-    public void setVisible(final boolean vis)
-    {
-       super.setVisible(vis); 
     }
     
     /* (non-Javadoc)

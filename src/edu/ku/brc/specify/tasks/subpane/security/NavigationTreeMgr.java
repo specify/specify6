@@ -63,7 +63,7 @@ public class NavigationTreeMgr
 {
     private static final Logger log = Logger.getLogger(NavigationTreeMgr.class);
 
-    private JTree tree;
+    private JTree            tree;
     private Set<SpecifyUser> spUsers;
     
     /**
@@ -101,18 +101,20 @@ public class NavigationTreeMgr
         try
         {
             session = DataProviderFactory.getInstance().createSession();
+            
             DataModelObjBaseWrapper wrapper = (DataModelObjBaseWrapper) userNode.getUserObject();
-            Object object = wrapper.getDataObj();
-            SpecifyUser user  = (SpecifyUser) object;
+            Object                  object  = wrapper.getDataObj();
+            SpecifyUser             user    = (SpecifyUser) object;
+            
             result = user.getUserGroupCount() > 1; 
-        } 
-        catch (final Exception e1)
+            
+        } catch (final Exception e1)
         {
+            e1.printStackTrace();
+            
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(NavigationTreeMgr.class, e1);
             session.rollback();
-            
-            e1.printStackTrace();
             
         } finally
         {
@@ -131,15 +133,15 @@ public class NavigationTreeMgr
     public void removeUserFromGroup(final DefaultMutableTreeNode userNode)
     {
         DataModelObjBaseWrapper wrapper = (DataModelObjBaseWrapper) userNode.getUserObject();
-        Object object = wrapper.getDataObj();
+        Object                  object  = wrapper.getDataObj();
         
-        DefaultMutableTreeNode parent = (DefaultMutableTreeNode) userNode.getParent();
+        DefaultMutableTreeNode  parent        = (DefaultMutableTreeNode) userNode.getParent();
         DataModelObjBaseWrapper parentWrapper = (DataModelObjBaseWrapper) parent.getUserObject();
-        Object parentObject = parentWrapper.getDataObj();
+        Object                  parentObject  = parentWrapper.getDataObj();
 
         if (!(object instanceof SpecifyUser) || 
-                !(parentObject instanceof SpPrincipal) || 
-                !canRemoveUserFromGroup(userNode))
+            !(parentObject instanceof SpPrincipal) || 
+            !canRemoveUserFromGroup(userNode))
         {
             // not a user, so bail out
             return;
@@ -147,6 +149,7 @@ public class NavigationTreeMgr
 
         SpecifyUser user  = (SpecifyUser) object;
         SpPrincipal group = (SpPrincipal) parentObject;
+        
         DataProviderSessionIFace session = null;
         try
         {
@@ -160,14 +163,14 @@ public class NavigationTreeMgr
             // remove child from tree
             DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
             model.removeNodeFromParent(userNode);
-        } 
-        catch (final Exception e1)
+            
+        } catch (final Exception e1)
         {
+            e1.printStackTrace();
+            
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(NavigationTreeMgr.class, e1);
             session.rollback();
-            
-            e1.printStackTrace();
             
         } finally
         {
@@ -189,8 +192,8 @@ public class NavigationTreeMgr
 
         // get the user from the selected tree node
         DataModelObjBaseWrapper wrapper = (DataModelObjBaseWrapper) userNode.getUserObject();
-        Object object = wrapper.getDataObj();
-        SpecifyUser user  = (SpecifyUser) object;
+        Object                  object  = wrapper.getDataObj();
+        SpecifyUser             user    = (SpecifyUser) object;
 
         if (currentUser.getSpecifyUserId().equals(user.getSpecifyUserId()))
         {
@@ -203,7 +206,13 @@ public class NavigationTreeMgr
         try
         {
             session = DataProviderFactory.getInstance().createSession();
+            
+            session.beginTransaction();
+            
             session.update(user);
+            
+            session.commit();
+            
             // XXX do we need a session here? 
             // We need it in the next call to get SpPrincipals, but they have probably been 
             // loaded by then. Notice we don't attach the user to the session anywhere in this code... 
@@ -213,11 +222,10 @@ public class NavigationTreeMgr
         } 
         catch (final Exception e1)
         {
+            e1.printStackTrace();
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(NavigationTreeMgr.class, e1);
             session.rollback();
-            
-            e1.printStackTrace();
             
         } finally
         {
@@ -237,23 +245,29 @@ public class NavigationTreeMgr
     public void deleteUser(final DefaultMutableTreeNode userNode)
     {
         DataModelObjBaseWrapper wrapper = (DataModelObjBaseWrapper) userNode.getUserObject();
-        Object object = wrapper.getDataObj();
+        Object                  object  = wrapper.getDataObj();
         if (!(object instanceof SpecifyUser) || !canDeleteUser(userNode))
         {
             // for some reason, we cannot delete this user
             return;
         }
-
-        SpecifyUser user = (SpecifyUser) object;
+        
         DataProviderSessionIFace session = null;
         try
         {
             session = DataProviderFactory.getInstance().createSession();
             session.beginTransaction();
-            session.attach(user);
+            
+            SpecifyUser user = session.get(SpecifyUser.class, ((SpecifyUser)object).getId());
+            
             // break the association between the user and all its agents, 
             // so the user can be later deleted
+            for (Agent agent : user.getAgents())
+            {
+                agent.setSpecifyUser(null);
+            }
             user.getAgents().clear();
+            
             // delete related user principal (but leave other principals (admin & regular groups) intact
             for (SpPrincipal principal : user.getSpPrincipals())
             {
@@ -275,6 +289,7 @@ public class NavigationTreeMgr
             user.getSpPrincipals().clear();
             user.setModifiedByAgent(null);
             session.delete(user);
+            
             session.commit();
             
             // remove user from the group in the tree
@@ -283,11 +298,10 @@ public class NavigationTreeMgr
             
         } catch (final Exception e1)
         {
+            e1.printStackTrace();
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(NavigationTreeMgr.class, e1);
             session.rollback();
-            
-            e1.printStackTrace();
             
         } finally
         {
@@ -298,10 +312,14 @@ public class NavigationTreeMgr
         }
     }
 
+    /**
+     * @param node
+     * @return
+     */
     public boolean canAddNewUser(final DefaultMutableTreeNode node)
     {
-        DataModelObjBaseWrapper wrapper = (DataModelObjBaseWrapper) node.getUserObject();
-        Object object = wrapper.getDataObj();
+        DataModelObjBaseWrapper wrapper = (DataModelObjBaseWrapper)node.getUserObject();
+        Object                  object  = wrapper.getDataObj();
 
         if (object instanceof SpPrincipal)
         {
@@ -321,7 +339,7 @@ public class NavigationTreeMgr
     public boolean canDeleteItem(final DefaultMutableTreeNode node)
     {
         DataModelObjBaseWrapper wrapper = (DataModelObjBaseWrapper) node.getUserObject();
-        Object object = wrapper.getDataObj();
+        Object                  object  = wrapper.getDataObj();
 
         if (!(object instanceof SpPrincipal) && 
             !(object instanceof Collection) &&
@@ -339,10 +357,10 @@ public class NavigationTreeMgr
      * Delete an item in the navigation tree. The item can be any instance of ...
      * @param node
      */
-    public void deleteItem(DefaultMutableTreeNode node) 
+    public void deleteItem(final DefaultMutableTreeNode node) 
     {
         DataModelObjBaseWrapper wrapper = (DataModelObjBaseWrapper) node.getUserObject();
-        Object object = wrapper.getDataObj();
+        Object                  object  = wrapper.getDataObj();
         
         if (!canDeleteItem(node))
         {
@@ -366,11 +384,10 @@ public class NavigationTreeMgr
             
         } catch (final Exception e1)
         {
+            e1.printStackTrace();
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(NavigationTreeMgr.class, e1);
             session.rollback();
-            
-            e1.printStackTrace();
             
         } finally
         {
@@ -388,15 +405,16 @@ public class NavigationTreeMgr
      */
     private Discipline getParentDiscipline(final DefaultMutableTreeNode grpNode)
     {
-        Discipline parentDiscipline = null;
-        DefaultMutableTreeNode parent = (DefaultMutableTreeNode)grpNode.getParent();
+        Discipline             parentDiscipline = null;
+        DefaultMutableTreeNode parent           = (DefaultMutableTreeNode)grpNode.getParent();
 
         while (parent != null)
         {
             if (parent.getUserObject() instanceof DataModelObjBaseWrapper)
             {
                 DataModelObjBaseWrapper wrp = (DataModelObjBaseWrapper)parent.getUserObject();
-                System.out.println(wrp.getDataObj()+"  "+wrp.getDataObj());
+                
+                log.debug(wrp.getDataObj()+"  "+wrp.getDataObj());
                 
                 FormDataObjIFace obj = wrp.getDataObj();
                 
@@ -422,23 +440,23 @@ public class NavigationTreeMgr
             return; // Nothing is selected or object type isn't relevant 
         }
         
-        
         // discipline to which the user's being added
         Discipline parentDiscipline = getParentDiscipline(grpNode);
        
         final Division   division   = parentDiscipline.getDivision();
         final Discipline discipline = parentDiscipline;
         
-        DataModelObjBaseWrapper parentWrp  = (DataModelObjBaseWrapper) (grpNode.getUserObject());
+        DataModelObjBaseWrapper parentWrp = (DataModelObjBaseWrapper)grpNode.getUserObject();
         if (!parentWrp.isGroup())
         {
             return; // selection isn't a suitable parent for a group
         }
         
-        SpPrincipal group = (SpPrincipal) parentWrp.getDataObj();
-        SpecifyUser spUser = new SpecifyUser();
+        SpPrincipal grpPrin = (SpPrincipal)parentWrp.getDataObj();
+        
+        SpecifyUser spUser  = new SpecifyUser();
         spUser.initialize();
-        spUser.setUserType(group.getGroupType());
+        spUser.setUserType(grpPrin.getGroupType());
         
         ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog((Frame)getMostRecentWindow(),
                                                                 null,
@@ -450,14 +468,16 @@ public class NavigationTreeMgr
                                                                 "specifyUserId",
                                                                 true,
                                                                 MultiView.HIDE_SAVE_BTN | 
-                                                                   MultiView.DONT_ADD_ALL_ALTVIEWS | 
-                                                                   MultiView.USE_ONLY_CREATION_MODE |
-                                                                   MultiView.IS_NEW_OBJECT);
+                                                                MultiView.DONT_ADD_ALL_ALTVIEWS | 
+                                                                MultiView.USE_ONLY_CREATION_MODE |
+                                                                MultiView.IS_NEW_OBJECT);
         dlg.setOkLabel(getResourceString("SAVE"));
         dlg.createUI();
+        
         final ValComboBoxFromQuery cbx = (ValComboBoxFromQuery)dlg.getMultiView().getCurrentViewAsFormViewObj().getControlByName("agent");
         
-        cbx.registerQueryBuilder(new ViewBasedSearchQueryBuilderIFace() {
+        cbx.registerQueryBuilder(new ViewBasedSearchQueryBuilderIFace() 
+        {
             protected ExpressResultsTableInfo esTblInfo = null;
             
             @Override
@@ -480,7 +500,7 @@ public class NavigationTreeMgr
             {
                 String newEntryStr = searchText + '%';
                 String sqlTemplate = "SELECT %s1 FROM Agent a LEFT JOIN a.specifyUser s INNER JOIN a.division d WHERE d.id = "+division.getId()+" AND s = null AND LOWER(a.lastName) LIKE '%s2' ORDER BY a.lastName";
-                String sql = StringUtils.replace(sqlTemplate, "%s1", isForCount ? "count(*)" : "a.lastName, a.firstName, a.agentId"); //$NON-NLS-1$
+                String sql         = StringUtils.replace(sqlTemplate, "%s1", isForCount ? "count(*)" : "a.lastName, a.firstName, a.agentId"); //$NON-NLS-1$
                 sql = StringUtils.replace(sql, "%s2", newEntryStr); //$NON-NLS-1$
                 log.debug(sql);
                 return sql;
@@ -490,11 +510,12 @@ public class NavigationTreeMgr
             {
                 return new TableSearchResults(DBTableIdMgr.getInstance().getInfoById(Agent.getClassTableId()), esTblInfo.getCaptionInfo()); //true => is HQL
             }
-            
         });
         
-        Discipline currDiscipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
-        AppContextMgr.getInstance().setClassObject(Discipline.class, parentDiscipline);
+        AppContextMgr acMgr = AppContextMgr.getInstance();
+        
+        Discipline currDiscipline = acMgr.getClassObject(Discipline.class);
+        acMgr.setClassObject(Discipline.class, parentDiscipline);
         
         // This is just an extra safety measure to make sure the current Discipline gets set back
         try
@@ -504,13 +525,13 @@ public class NavigationTreeMgr
             
         } catch (Exception ex)
         {
+            ex.printStackTrace();
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(NavigationTreeMgr.class, ex);
-            ex.printStackTrace();
             
         } finally
         {
-            AppContextMgr.getInstance().setClassObject(Discipline.class, currDiscipline);    
+            acMgr.setClassObject(Discipline.class, currDiscipline);    
         }
         
         if (!dlg.isCancelled())
@@ -533,8 +554,8 @@ public class NavigationTreeMgr
                 session.save(spUser);
 
                 // get fresh copies of parentDiscipline and group to make Hibernate happy
-                Discipline localDiscipline = session.get(Discipline.class, parentDiscipline.getUserGroupScopeId());
-                SpPrincipal localGroup = session.get(SpPrincipal.class, group.getUserGroupId());
+                Discipline  localDiscipline = session.get(Discipline.class, parentDiscipline.getUserGroupScopeId());
+                SpPrincipal localGroup      = session.get(SpPrincipal.class, grpPrin.getUserGroupId());
 
                 // link user to its group
                 spUser.getSpPrincipals().add(localGroup);
@@ -555,16 +576,17 @@ public class NavigationTreeMgr
                 localDiscipline.getAgents().add(userAgent);
                 session.commit();
                 
+                parentWrp.setDataObj(localGroup);
+                
                 spUsers.add(spUser);
                 spUser = session.get(SpecifyUser.class, spUser.getId());
                 
             } catch (final Exception e1)
             {
+                e1.printStackTrace();
                 edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(NavigationTreeMgr.class, e1);
                 session.rollback();
-                
-                e1.printStackTrace();
                 
             } finally
             {
@@ -654,12 +676,12 @@ public class NavigationTreeMgr
         SpecifyUser[] userArray = dlg.getSelectedUsers();
         
         if (userArray.length == 0 || grpNode == null || 
-                !(grpNode.getUserObject() instanceof DataModelObjBaseWrapper))
+            !(grpNode.getUserObject() instanceof DataModelObjBaseWrapper))
         {
             return; // Nothing is selected or object type isn't relevant 
         }
 
-        DataModelObjBaseWrapper parentWrp  = (DataModelObjBaseWrapper) (grpNode.getUserObject());
+        DataModelObjBaseWrapper parentWrp = (DataModelObjBaseWrapper) (grpNode.getUserObject());
         if (!parentWrp.isGroup())
         {
             return; // selection isn't a suitable parent for a group
@@ -690,11 +712,11 @@ public class NavigationTreeMgr
             
         } catch (final Exception e1)
         {
+            e1.printStackTrace();
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(NavigationTreeMgr.class, e1);
             session.rollback();
             log.error("Exception caught: " + e1.toString());
-            e1.printStackTrace();
             
         } finally
         {
@@ -714,7 +736,7 @@ public class NavigationTreeMgr
      * @param userArray
      * @return
      */
-    private DefaultMutableTreeNode addUsersToTree(final  DefaultMutableTreeNode grpNode, 
+    private DefaultMutableTreeNode addUsersToTree(final DefaultMutableTreeNode grpNode, 
                                                   final SpecifyUser[] userArray)
     {
         DefaultMutableTreeNode lastUserNode = null;
@@ -731,6 +753,12 @@ public class NavigationTreeMgr
         return lastUserNode;
     }
     
+    /**
+     * @param <T>
+     * @param node
+     * @param cls
+     * @return
+     */
     @SuppressWarnings( { "unchecked", "unused" })
     private <T> T getParentOfClass(final  DefaultMutableTreeNode node, final Class<?> cls)
     {
@@ -757,7 +785,7 @@ public class NavigationTreeMgr
             return; // Nothing is selected or object type isn't relevant    
         }
 
-        DataModelObjBaseWrapper parentWrp  = (DataModelObjBaseWrapper) (parentNode.getUserObject());
+        DataModelObjBaseWrapper parentWrp = (DataModelObjBaseWrapper) (parentNode.getUserObject());
         if (!parentWrp.isInstitution() && !parentWrp.isDiscipline() && !parentWrp.isCollection())
         {
             return; // selection isn't a suitable parent for a group
@@ -838,8 +866,8 @@ public class NavigationTreeMgr
         division.setInstitution(institution);
         discipline.setDivision(division);
         
-        division.setName("Anonymous Division");
-        discipline.setType("New Discipline");
+        division.setName("Anonymous Division"); // I18N
+        discipline.setType("New Discipline");   // I18N
         
         save(new Object[] { division, discipline }, false);
         
@@ -893,11 +921,11 @@ public class NavigationTreeMgr
             
         } catch (final Exception e1)
         {
+            e1.printStackTrace();
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(NavigationTreeMgr.class, e1);
             session.rollback();
             log.error("Exception caught: " + e1.toString());
-            e1.printStackTrace();
             
         } finally
         {

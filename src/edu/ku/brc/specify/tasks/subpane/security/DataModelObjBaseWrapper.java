@@ -164,8 +164,9 @@ public class DataModelObjBaseWrapper
 		if (dataObj instanceof SpPrincipal)
 		{
 			SpPrincipal pc = (SpPrincipal) dataObj;
+			
 			return GroupPrincipal.class.getCanonicalName().equals(pc.getGroupSubClass()) ||
-			    AdminPrincipal.class.getCanonicalName().equals(pc.getGroupSubClass());
+			       AdminPrincipal.class.getCanonicalName().equals(pc.getGroupSubClass());
 		}
 		
 		return (dataObj.getClass().equals(GroupPrincipal.class));
@@ -201,7 +202,7 @@ public class DataModelObjBaseWrapper
 	        if (dataObj instanceof Discipline)
 	        {
 	            DisciplineType dispType = DisciplineType.getDiscipline(((Discipline)dataObj).getType());
-	            title =dispType != null ?  dispType.getTitle() : "N/A";
+	            title = dispType != null ?  dispType.getTitle() : "N/A";
 	        } else
 	        {
 	            title = dataObj.getIdentityTitle();
