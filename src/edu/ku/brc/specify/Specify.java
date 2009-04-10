@@ -2001,8 +2001,8 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         }
         
         String txt = "<html><font face=\"sans-serif\" size=\"11pt\">"+appName+" " + appVersion +  //$NON-NLS-1$ //$NON-NLS-2$
-                        "<br><br>Department of Informatics " +
-                        "Biodiversity Research Center University of Kansas<br>1345 Jayhawk Blvd.<br>Lawrence, KS  USA 66045<br><br>" +  //$NON-NLS-1$
+                        "<br><br>Specify Software Project<br>" +//$NON-NLS-1$
+                        "Biodiversity Institute<br>University of Kansas<br>1345 Jayhawk Blvd.<br>Lawrence, KS  USA 66045<br><br>" +  //$NON-NLS-1$
                         "<a href=\"http://specify6.specifysoftware.org\">www.specifysoftware.org</a>"+ //$NON-NLS-1$
                         "<br><a href=\"mailto:specify@ku.edu\">specify@ku.edu</a><br>" +  //$NON-NLS-1$
                         "<p>The Specify Software Project is "+ //$NON-NLS-1$
@@ -2042,7 +2042,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         
         // for some strange reason I can't get the dialog to size itself correctly
         Dimension size = aboutDlg.getSize();
-        size.height += 100;
+        size.height += 120;
         aboutDlg.setSize(size);
         
         txtPane.addHyperlinkListener(new HyperlinkListener() {
