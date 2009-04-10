@@ -6,6 +6,5 @@
        
     <file level="3" mimetype="text/xml" name="QueryFreqList" description="QueryFreqList" file="queryfreqlist.xml"/>
     <file level="3" mimetype="text/xml" name="QueryExtraList" description="QueryExtraList" file="queryextralist.xml"/>
-    <file level="3" mimetype="text/xml" name="ExpressSearchConfig" description="ExpressSearchConfig" file="es_config.xml"/>
 
 </files>
