@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.core.AppContextMgr;
@@ -31,7 +30,6 @@ import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
-import edu.ku.brc.ui.UIHelper;
 
 /**
  * @author rod
@@ -331,7 +329,7 @@ public class TreeableSearchQueryBuilder implements ViewBasedSearchQueryBuilderIF
             Object rank = rankCombo.getValue();
             if (rank != null)
             {
-                queryStr += " and n.rankId < " + rank;
+                queryStr += " and n.rankId < " + ((TreeDefItemIface )rank).getRankId();
             }
             else
             {
