@@ -747,15 +747,17 @@ public class SpecifyDBSetupWizard extends JPanel
      */
     protected void setupLoginPrefs()
     {
+        String userName = props.getProperty("usrPassword");
+        
         String encryptedMasterUP = UserAndMasterPasswordMgr.getInstance().encrypt(
                                        props.getProperty("saUserName"), 
                                        props.getProperty("saPassword"), 
-                                       props.getProperty("usrPassword"));
+                                       userName);
 
         DatabaseDriverInfo driverInfo = dbPanel.getDriver();
         AppPreferences ap = AppPreferences.getLocalPrefs();
-        ap.put("testuser_master.islocal",  "true");
-        ap.put("testuser_master.path",     encryptedMasterUP);
+        ap.put(userName+"_master.islocal",  "true");
+        ap.put(userName+"_master.path",     encryptedMasterUP);
         ap.put("login.dbdriver_selected",  driverInfo.getName());
         ap.put("login.username",           props.getProperty("usrUsername"));
         ap.put("login.databases_selected", dbPanel.getDbName());
