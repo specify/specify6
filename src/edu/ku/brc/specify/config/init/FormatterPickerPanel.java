@@ -70,10 +70,11 @@ public class FormatterPickerPanel extends BaseSetupPanel
      * @param doingCatNums
      */
     public FormatterPickerPanel(final String panelName, 
+                                final String helpContext,
                                 final JButton nextBtn, 
                                 final boolean doingCatNums)
     {
-        super(panelName, nextBtn);
+        super(panelName, helpContext, nextBtn);
         
         this.doingCatNums = doingCatNums;
         

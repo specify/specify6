@@ -62,15 +62,18 @@ public class DisciplineSetupPanel extends JPanel implements SetupPanelIFace
     protected Discipline discipline = null;
     protected Properties props      = null;
     protected Vector<Discipline> dList = null;
+    
+    protected String helpContext;
 
     
     /**
      * 
      */
     @SuppressWarnings("unchecked")
-    public DisciplineSetupPanel(final JButton nextBtn)
+    public DisciplineSetupPanel(final String helpContext, final JButton nextBtn)
     {
         super();
+        this.helpContext = helpContext;
         this.nextBtn = nextBtn;
         
         DefaultComboBoxModel model = new DefaultComboBoxModel();
@@ -118,6 +121,18 @@ public class DisciplineSetupPanel extends JPanel implements SetupPanelIFace
         });
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.config.init.SetupPanelIFace#getHelpContext()
+     */
+    @Override
+    public String getHelpContext()
+    {
+        return helpContext;
+    }
+
+    /**
+     * @param div
+     */
     @SuppressWarnings("unchecked")
     protected void load(final Division div)
     {

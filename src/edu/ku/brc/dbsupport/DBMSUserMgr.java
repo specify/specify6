@@ -118,7 +118,7 @@ public abstract class DBMSUserMgr
 	 * @param dbName the database name
 	 * @return true if is at least one table, false if not.
 	 */
-	public abstract boolean doesDBHaveTables(String dbName);
+	public abstract boolean doesDBHaveTables();
 
 	/**
 	 * @return a localized test message describing the error when a method fails

@@ -61,7 +61,7 @@ class DBLocationPanel extends BaseSetupPanel
      */
     public DBLocationPanel(final JButton nextBtn)
     {
-        super("Storage", nextBtn);
+        super("Storage", null, nextBtn);
 
         
         localDirOK = true;

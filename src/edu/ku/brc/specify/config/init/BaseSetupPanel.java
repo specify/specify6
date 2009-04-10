@@ -46,6 +46,7 @@ public abstract class BaseSetupPanel extends JPanel implements SetupPanelIFace
     protected static final boolean DO_DEBUG = false;
     
     protected String             panelName;
+    protected String             helpContext;
     protected KeyAdapter         keyAdapter;
     protected JButton            nextBtn;
     protected boolean            makeStretchy = false;
@@ -53,23 +54,29 @@ public abstract class BaseSetupPanel extends JPanel implements SetupPanelIFace
 
     /**
      * @param panelName
+     * @param helpContext
      * @param nextBtn
      */
     public BaseSetupPanel(final String panelName,
+                          final String helpContext,
                           final JButton nextBtn)
     {
-        this(panelName, nextBtn, false);
+        this(panelName, helpContext, nextBtn, false);
     }
     
     /**
      * @param panelName
+     * @param helpContext
      * @param nextBtn
+     * @param makeStretchy
      */
     public BaseSetupPanel(final String panelName,
+                          final String helpContext,
                           final JButton nextBtn,
                           final boolean makeStretchy)
     {
         this.panelName    = panelName;
+        this.helpContext  = helpContext;
         this.nextBtn      = nextBtn;
         this.makeStretchy = makeStretchy;
         
@@ -81,6 +88,15 @@ public abstract class BaseSetupPanel extends JPanel implements SetupPanelIFace
         };
     }
     
+    /**
+     * @return the helpContext
+     */
+    @Override
+    public String getHelpContext()
+    {
+        return helpContext;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.config.init.SetupPanelIFace#getPanelName()
      */

@@ -56,6 +56,8 @@ public class HelpMgr
     protected static HelpSet    hs;
     protected static HelpBroker hb;
     protected static String     helpSystemName;
+    protected static String     loadingPage = null;
+    
     
     protected static Hashtable<Component, String> compHelpHash = new Hashtable<Component, String>();
 
@@ -102,6 +104,14 @@ public class HelpMgr
                 }
             }
         }
+    }
+
+    /**
+     * @param loadingPage the loadingPage to set
+     */
+    public static void setLoadingPage(String loadingPage)
+    {
+        HelpMgr.loadingPage = loadingPage;
     }
 
     /**
@@ -175,7 +185,7 @@ public class HelpMgr
         	for (ActionListener l : component.getActionListeners())
             {
                 component.removeActionListener(l);    
-                log.warn("removing action listener from help component: " + component.getName());
+                //log.warn("removing action listener from help component: " + component.getName());
             }
             if (isGoodID(idString))
             {
@@ -372,6 +382,10 @@ public class HelpMgr
                 if (hb.isDisplayed())
                 {
                 	hb.setDisplayed(false);
+                }
+                if (loadingPage != null)
+                {
+                    hb.setCurrentID(getMapID(loadingPage));
                 }
                 hb.setCurrentID(id);
                 Window fWin = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusedWindow();

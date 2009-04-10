@@ -85,11 +85,12 @@ public class TreeDefSetupPanel extends BaseSetupPanel implements SetupPanelIFace
     public TreeDefSetupPanel(final Class<?>      classType,
                              final String        classTitle,
                              final String        panelName,
+                             final String        helpContext,
                              final String        descKey,
                              final JButton       nextBtn,
                              final DisciplinePanel disciplinePanel)
     {
-        super(panelName, nextBtn);
+        super(panelName, helpContext, nextBtn);
         
         this.classType       = classType;
         this.classTitle      = classTitle;

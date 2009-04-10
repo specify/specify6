@@ -56,15 +56,16 @@ public class DivisionSetupPanel extends JPanel implements SetupPanelIFace
     protected Division  division       = null;
     protected JList     disciplineList = null;
     protected Properties props         = null;
-
+    protected String     helpContext;
     /**
      * 
      */
     @SuppressWarnings("unchecked")
-    public DivisionSetupPanel(final JButton nextBtn)
+    public DivisionSetupPanel(final String helpContext, final JButton nextBtn)
     {
         super();
         this.nextBtn = nextBtn;
+        this.helpContext = helpContext;
         
         DefaultComboBoxModel model = new DefaultComboBoxModel();
         cbx = new JComboBox(model);
@@ -134,6 +135,15 @@ public class DivisionSetupPanel extends JPanel implements SetupPanelIFace
         });
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.config.init.SetupPanelIFace#getHelpContext()
+     */
+    @Override
+    public String getHelpContext()
+    {
+        return helpContext;
+    }
+
     /**
      * Fills the JList with the Disciplines that the Division has.
      */

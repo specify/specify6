@@ -43,11 +43,12 @@ public class SummaryPanel extends BaseSetupPanel
      * @param panelName
      * @param nextBtn
      */
-    public SummaryPanel(final String panelName,
+    public SummaryPanel(final String  panelName,
+                        final String  helpContext, 
                         final JButton nextBtn,
                         final Vector<BaseSetupPanel> panels)
     {
-        super(panelName, nextBtn, false);
+        super(panelName, helpContext, nextBtn, false);
         
         this.panels = panels;
         

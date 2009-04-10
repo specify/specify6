@@ -61,82 +61,96 @@ public class GenericFormPanel extends BaseSetupPanel
     
     /**
      * @param panelName
+     * @param helpContext
      * @param nextBtn
      */
     public GenericFormPanel(final String panelName,
+                            final String helpContext,
                             final JButton nextBtn)
     {
-        this(panelName, nextBtn, false);
+        this(panelName, helpContext, nextBtn, false);
     }
 
     /**
      * @param panelName
+     * @param helpContext
      * @param nextBtn
      * @param makeStretchy
      */
     public GenericFormPanel(final String panelName,
+                            final String helpContext,
                             final JButton nextBtn,
                             final boolean makeStretchy)
     {
-        super(panelName, nextBtn, makeStretchy);
+        super(panelName, helpContext, nextBtn, makeStretchy);
     }
 
     /**
      * @param name
      * @param title
+     * @param helpContext
      * @param labels
      * @param fields
      * @param nextBtn
+     * @param makeStretchy
      */
     public GenericFormPanel(final String   name,
                             final String   title,
+                            final String   helpContext,
                             final String[] labels,
                             final String[] fields, 
                             final JButton  nextBtn,
                             final boolean makeStretchy)
     {
-        this(null, name, title, labels, fields, (boolean[])null, nextBtn, makeStretchy);
+        this(null, name, title, helpContext, labels, fields, (boolean[])null, nextBtn, makeStretchy);
     }
     
     /**
      * @param name
      * @param title
+     * @param helpContext
      * @param labels
      * @param fields
      * @param required
      * @param nextBtn
+     * @param makeStretchy
      */
     public GenericFormPanel(final String   name,
                             final String   title,
+                            final String   helpContext,
                             final String[] labels,
                             final String[] fields, 
                             final boolean[] required, 
                             final JButton  nextBtn,
                             final boolean makeStretchy)
     {
-        this(null, name, title, labels, fields, required, nextBtn, makeStretchy);
+        this(null, name, title, helpContext, labels, fields, required, nextBtn, makeStretchy);
         
     }
     
+
     /**
      * @param dataObj
      * @param name
      * @param title
+     * @param helpContext
      * @param labels
      * @param fields
      * @param required
      * @param nextBtn
+     * @param makeStretchy
      */
     public GenericFormPanel(final FormDataObjIFace dataObj,
                             final String   name,
                             final String   title,
+                            final String   helpContext,
                             final String[] labels,
                             final String[] fields, 
                             final boolean[] required, 
                             final JButton  nextBtn,
                             final boolean makeStretchy)
     {
-        super(name, nextBtn);
+        super(name, helpContext, nextBtn);
         
         this.dataObj      = dataObj;
         this.fieldsNames  = fields;
@@ -146,15 +160,26 @@ public class GenericFormPanel extends BaseSetupPanel
         init(title, fields, required, null);
     }
     
+    /**
+     * @param name
+     * @param title
+     * @param helpContext
+     * @param labels
+     * @param fields
+     * @param types
+     * @param nextBtn
+     * @param makeStretchy
+     */
     public GenericFormPanel(final String   name,
                             final String   title,
+                            final String   helpContext,
                             final String[] labels,
                             final String[] fields, 
                             final String[] types, 
                             final JButton  nextBtn,
                             final boolean makeStretchy)
     {
-        super(name, nextBtn);
+        super(name, helpContext, nextBtn);
         
         this.dataObj      = null;
         this.fieldsNames  = fields;

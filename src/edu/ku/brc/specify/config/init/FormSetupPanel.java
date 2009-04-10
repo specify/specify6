@@ -93,6 +93,15 @@ public class FormSetupPanel extends ViewBasedDisplayPanel implements SetupPanelI
     }
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.specify.config.init.SetupPanelIFace#getHelpContext()
+     */
+    @Override
+    public String getHelpContext()
+    {
+        return null;
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.specify.config.init.SetupPanelIFace#doingNext()
      */
     @Override

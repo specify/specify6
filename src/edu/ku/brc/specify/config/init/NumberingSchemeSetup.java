@@ -125,6 +125,15 @@ public class NumberingSchemeSetup extends JPanel implements SetupPanelIFace
         });
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.config.init.SetupPanelIFace#getHelpContext()
+     */
+    @Override
+    public String getHelpContext()
+    {
+        return null;
+    }
+
     /**
      * @param model
      */

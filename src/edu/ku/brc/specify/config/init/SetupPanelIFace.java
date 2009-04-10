@@ -19,6 +19,8 @@ public interface SetupPanelIFace
      * @return the panelName
      */
     public abstract String getPanelName();
+    
+    public abstract String getHelpContext();
 
     public abstract void getValues(Properties props);
 

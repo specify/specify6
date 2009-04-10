@@ -62,9 +62,10 @@ public class DatabasePanel extends BaseSetupPanel
      * Creates a dialog for entering database name and selecting the appropriate driver.
      */
     public DatabasePanel(final JButton nextBtn, 
+                         final String  helpContext,
                          final boolean doSetDefaultValues)
     {
-        super("DATABASE", nextBtn);
+        super("DATABASE", helpContext, nextBtn);
         
         this.doSetDefaultValues = doSetDefaultValues;
         

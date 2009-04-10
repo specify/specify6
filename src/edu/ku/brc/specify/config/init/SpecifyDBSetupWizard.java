@@ -132,6 +132,8 @@ public class SpecifyDBSetupWizard extends JPanel
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyDBSetupWizard.class, ex);
         }*/
         
+        HelpMgr.setLoadingPage("Load");
+        
         cardPanel = new JPanel(cardLayout);
         
         cancelBtn  = createButton(UIRegistry.getResourceString("CANCEL"));
@@ -141,7 +143,6 @@ public class SpecifyDBSetupWizard extends JPanel
         backBtn    = createButton(UIRegistry.getResourceString("BACK"));
         nextBtn    = createButton(UIRegistry.getResourceString("NEXT"));
         
-        HelpMgr.registerComponent(helpBtn, "SetupSpecifyDB");
         CellConstraints cc = new CellConstraints();
         PanelBuilder bbpb = new PanelBuilder(new FormLayout("f:p:g,p,4px,p,4px,p,4px,p,4px", "p"));
         
@@ -197,17 +198,20 @@ public class SpecifyDBSetupWizard extends JPanel
         
         if (wizardType == WizardType.Institution)
         {
-            dbPanel = new DatabasePanel(nextBtn, true);
+            dbPanel = new DatabasePanel(nextBtn, "wizard_mysql_username", true);
             panels.add(dbPanel);
+            HelpMgr.registerComponent(helpBtn, dbPanel.getHelpContext());
             
-            panels.add(new GenericFormPanel("SA", 
+            panels.add(new GenericFormPanel("SA",
                     "ENTER_SA_INFO", 
+                    "wizard_master_username",
                     new String[] { "SA_USERNAME", "SA_PASSWORD"}, 
                     new String[] { "saUserName", "saPassword"}, 
                     nextBtn, true));
             
             panels.add(new GenericFormPanel("SECURITY", 
                     "SECURITY_INFO",
+                    "wizard_security_on",
                     new String[] { "SECURITY_ON"}, 
                     new String[] { "security_on"},
                     new String[] { "checkbox"},
@@ -216,6 +220,7 @@ public class SpecifyDBSetupWizard extends JPanel
     
             userInfoPanel = new UserInfoPanel("AGENT", 
                     "ENTER_COLMGR_INFO", 
+                    "wizard_create_it_user",
                     new String[] { "FIRSTNAME", "LASTNAME", "MIDNAME",       "EMAIL",  null,  "USERLOGININFO", "USERNAME",    "PASSWORD"}, 
                     new String[] { "firstName", "lastName", "middleInitial", "email",  " ",   "-",             "usrUsername",  "usrPassword"}, 
                     new boolean[] { true,       true,       false,            true,    true,  false,           true,           true},
@@ -224,6 +229,7 @@ public class SpecifyDBSetupWizard extends JPanel
             
             panels.add(new GenericFormPanel("INST", 
                     "ENTER_INST_INFO",
+                    "wizard_create_institution",
                     new String[]  { "NAME",     "ABBREV",     null,  "INST_ADDR", "ADDR1", "ADDR2", "CITY",  "STATE", "COUNTRY", "ZIP", "PHONE"}, 
                     new String[]  { "instName", "instAbbrev", " ",   "-",         "addr1", "addr2", "city",  "state", "country", "zip", "phone"}, 
                     new boolean[] { true,       true,         false,  false,      true,    false,   true,    true,    true,      true,  true},
@@ -231,6 +237,7 @@ public class SpecifyDBSetupWizard extends JPanel
 
             panels.add(new GenericFormPanel("ACCESSIONGLOBALLY", 
                     "ENTER_ACC_INFO",
+                    "wizard_choose_accession_level",
                     new String[] { "ACCGLOBALLY"}, 
                     new String[] { "accglobal"},
                     new String[] { "checkbox"},
@@ -238,24 +245,46 @@ public class SpecifyDBSetupWizard extends JPanel
             
             if (wizardType == WizardType.Institution)
             {
-                panels.add(new FormatterPickerPanel("ACCNOFMT", nextBtn, false));
+                panels.add(new FormatterPickerPanel("ACCNOFMT", "wizard_create_accession_number", nextBtn, false));
             }
 
             storageTDPanel = new TreeDefSetupPanel(StorageTreeDef.class, 
-                    getResourceString("Storage"), 
-                    "Storage", 
-                    "CONFIG_TREEDEF", 
-                    nextBtn, 
-                    null);
+                                                    getResourceString("Storage"), 
+                                                    "Storage", 
+                                                    "wizard_configure_storage_tree",
+                                                    "CONFIG_TREEDEF", 
+                                                    nextBtn, 
+                                                    null);
             panels.add(storageTDPanel);
             
         }
+        
+        /*
+        target="wizard_mysql_username"
+        target="wizard_master_username"
+        target="wizard_security_on"
+        target="wizard_create_it_user"
+        target="wizard_create_institution"
+        target="wizard_choose_accession_level"
+          target="wizard_create_accession_number"
+        target="wizard_configure_storage_tree"
+        
+        target="wizard_enter_division" url="
+        target="wizard_choose_discipline_type"
+        target="wizard_configure_taxon_tree"
+        target="wizard_preload_taxon" url="
+        target="wizard_configure_geography_tree"
+        target="wizard_create_catalog_number"
+         target="wizard_create_collection" url="
+        target="wizard_summary" url=" 
+                 */
         
         if (wizardType == WizardType.Institution ||
             wizardType == WizardType.Division)
         {
             panels.add(new GenericFormPanel("DIV", 
                 "ENTER_DIV_INFO",
+                "wizard_enter_division",
                 new String[] { "NAME",    "ABBREV"}, 
                 new String[] { "divName", "divAbbrev"}, 
                 nextBtn, true));
@@ -266,12 +295,13 @@ public class SpecifyDBSetupWizard extends JPanel
             wizardType == WizardType.Discipline)
         {
             nextBtn.setEnabled(false);
-            disciplinePanel = new DisciplinePanel(nextBtn);
+            disciplinePanel = new DisciplinePanel("wizard_choose_discipline_type", nextBtn);
             panels.add(disciplinePanel);
 
             taxonTDPanel = new TreeDefSetupPanel(TaxonTreeDef.class, 
                                                  getResourceString("Taxon"), 
                                                  "Taxon", 
+                                                 "wizard_configure_taxon_tree",
                                                  "CONFIG_TREEDEF", 
                                                  nextBtn, 
                                                  disciplinePanel);
@@ -279,6 +309,7 @@ public class SpecifyDBSetupWizard extends JPanel
             
             panels.add(new GenericFormPanel("PRELOADTXN", 
                     "PRELOADTXN_INFO",
+                    "wizard_preload_taxon",
                     new String[] { "LOAD_TAXON"}, 
                     new String[] { "preloadtaxon"},
                     new String[] { "checkbox"},
@@ -287,6 +318,7 @@ public class SpecifyDBSetupWizard extends JPanel
             geoTDPanel = new TreeDefSetupPanel(GeographyTreeDef.class, 
                                                getResourceString("Geography"), 
                                                "Geography", 
+                                               "wizard_configure_geography_tree",
                                                "CONFIG_TREEDEF", 
                                                nextBtn, 
                                                disciplinePanel);
@@ -295,22 +327,23 @@ public class SpecifyDBSetupWizard extends JPanel
 
         panels.add(new GenericFormPanel("COLLECTION", 
                     "ENTER_COL_INFO",
+                    "wizard_create_collection",
                     new String[] { "NAME",     "PREFIX", }, 
                     new String[] { "collName", "collPrefix", }, 
                     nextBtn, true));
         
-        panels.add(new FormatterPickerPanel("CATNOFMT", nextBtn, true));
+        panels.add(new FormatterPickerPanel("CATNOFMT", "wizard_create_catalog_number", nextBtn, true));
         
         if (wizardType != WizardType.Institution)
         {
             Institution inst = AppContextMgr.getInstance().getClassObject(Institution.class);
             if (inst != null && !inst.getIsAccessionsGlobal())
             {
-                panels.add(new FormatterPickerPanel("ACCNOFMT", nextBtn, false));
+                panels.add(new FormatterPickerPanel("ACCNOFMT", "wizard_create_accession_number", nextBtn, false));
             }
         }
         
-        panels.add(new SummaryPanel("SUMMARY", nextBtn, panels));
+        panels.add(new SummaryPanel("SUMMARY", "wizard_summary", nextBtn, panels));
          
         lastStep = panels.size();
         
@@ -325,6 +358,7 @@ public class SpecifyDBSetupWizard extends JPanel
                     {
                         step--;
                         panels.get(step).doingPrev();
+                        HelpMgr.registerComponent(helpBtn, panels.get(step).getHelpContext());
                         cardLayout.show(cardPanel, Integer.toString(step));
                     }
                     updateBtnBar();
@@ -370,6 +404,7 @@ public class SpecifyDBSetupWizard extends JPanel
                         }
                     }
                     step++;
+                    HelpMgr.registerComponent(helpBtn, panels.get(step).getHelpContext());
                     panels.get(step).doingNext();
                     cardLayout.show(cardPanel, Integer.toString(step));
 
@@ -623,7 +658,11 @@ public class SpecifyDBSetupWizard extends JPanel
                         {
                             ex.printStackTrace();
                         }
+                    } else
+                    {
+                        isOK = true;
                     }
+                    
                     if (!isOK)
                     {
                         mgr.close();
@@ -887,7 +926,7 @@ public class SpecifyDBSetupWizard extends JPanel
                     
                     if (mgr.connect(itUsername, itPassword, hostName, dbName))
                     {
-                        return mgr.doesDBHaveTables(dbName);
+                        return mgr.doesDBHaveTables();
                     }
                     
                 }

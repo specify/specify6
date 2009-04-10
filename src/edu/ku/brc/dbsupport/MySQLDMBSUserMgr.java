@@ -83,7 +83,7 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
             {
                 connection = dbConnection.createConnection();
             }
-            return true;
+            return connection != null;
             
         } catch (Exception ex)
         {
@@ -308,16 +308,14 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
      * @see edu.ku.brc.dbsupport.DBMSUserMgr#doesDBHaveTables(java.lang.String)
      */
     @Override
-    public boolean doesDBHaveTables(String dbName)
+    public boolean doesDBHaveTables()
     {
         try
         {
-            for (Object[] row : BasicSQLUtils.query(connection, "show tables"))
+            for (@SuppressWarnings("unused")
+            Object[] row : BasicSQLUtils.query(connection, "show tables"))
             {
-                if (dbName.equals(row[0].toString()))
-                {
-                    return true;
-                }
+                return true;
             }
         } catch (Exception ex)
         {

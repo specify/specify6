@@ -47,7 +47,7 @@ public class NewAgentPanel extends BaseSetupPanel
      */
     public NewAgentPanel(final JButton nextBtn)
     {
-        super("agent", nextBtn);
+        super("agent", null, nextBtn);
         
         CellConstraints cc = new CellConstraints();
 
