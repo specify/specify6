@@ -247,7 +247,7 @@
 		<copy file="packaging/spbuilder.icns" todir="${installer.dir}/images" />
 		<copy file="packaging/statistics.icns" todir="${installer.dir}/images" />
 		
-		<copy file="packaging/changelog.html" todir="${installer.dir}" />
+		<copy file="packaging/readme.html" todir="${installer.dir}" />
 		<copy file="packaging/license_agreement.html" todir="${installer.dir}" />
 		<copy file="./packaging/SpecifyBigSplashBordered.png" todir="${installer.dir}" />
 		<rename src="${installer.dir}/SpecifyBigSplashBordered.png" dest="${installer.dir}/SpecifyBigSplash.png"/>
