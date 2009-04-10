@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="4.2.1" transformSequenceNumber="2">
   <directoryPresets config="../InstallerFiles/images" />
-  <application name="Specify" distributionSourceDir="" applicationId="5397-6897-2502-8965" mediaDir="../MediaUpdate" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}_Beta_update" compression="6" lzmaCompression="false" pack200Compression="false" excludeSignedFromPacking="true" keepModificationTimes="false" missingFilesStrategy="warn" shortName="Specify" publisher="Biodiversity Research Center, University of Kansas" publisherWeb="http://www.specifysoftware.org" version="6.2.46" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="true" macSignature="????" installerName="" javaMinVersion="1.6" javaMaxVersion="1.6" allowBetaVM="false" jdkMode="runtimeJre" jdkName="">
+  <application name="Specify" distributionSourceDir="" applicationId="5397-6897-2502-8965" mediaDir="../MediaUpdate" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}_Beta_update" compression="6" lzmaCompression="false" pack200Compression="false" excludeSignedFromPacking="true" keepModificationTimes="false" missingFilesStrategy="warn" shortName="Specify" publisher="Biodiversity Research Center, University of Kansas" publisherWeb="http://www.specifysoftware.org" version="6.2.47" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="true" macSignature="????" installerName="" javaMinVersion="1.6" javaMaxVersion="1.6" allowBetaVM="false" jdkMode="runtimeJre" jdkName="">
     <languages skipLanguageSelection="false" languageSelectionInPrincipalLanguage="false">
       <principalLanguage id="en" customLocalizationFile="" />
       <additionalLanguages />
@@ -41,7 +41,7 @@
       </executable>
       <splashScreen show="true" autoOff="true" alwaysOnTop="false" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" java6SplashScreen="false">
         <text>
-          <statusLine x="95" y="326" text="Copyright © 2009 Kansas University Center for Research. FOSS licensed under GNU GPL2." font="Arial" fontSize="10" fontColor="0,0,0" fontWeight="500" />
+          <statusLine x="95" y="326" text="Copyright (C) 2009 Kansas University Center for Research. FOSS licensed under GNU GPL2." font="Arial" fontSize="10" fontColor="0,0,0" fontWeight="500" />
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
@@ -68,7 +68,7 @@
       </executable>
       <splashScreen show="true" autoOff="true" alwaysOnTop="false" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" java6SplashScreen="false">
         <text>
-          <statusLine x="95" y="326" text="Copyright © 2009 Kansas University Center for Research. FOSS licensed under GNU GPL2." font="Arial" fontSize="10" fontColor="0,0,0" fontWeight="500" />
+          <statusLine x="95" y="326" text="Copyright (C) 2009 Kansas University Center for Research. FOSS licensed under GNU GPL2." font="Arial" fontSize="10" fontColor="0,0,0" fontWeight="500" />
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
@@ -94,7 +94,7 @@
       </executable>
       <splashScreen show="true" autoOff="true" alwaysOnTop="false" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" java6SplashScreen="false">
         <text>
-          <statusLine x="95" y="326" text="Copyright © 2009 Kansas University Center for Research. FOSS licensed under GNU GPL2." font="Arial" fontSize="10" fontColor="0,0,0" fontWeight="500" />
+          <statusLine x="95" y="326" text="Copyright (C) 2009 Kansas University Center for Research. FOSS licensed under GNU GPL2." font="Arial" fontSize="10" fontColor="0,0,0" fontWeight="500" />
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
@@ -120,7 +120,7 @@
       </executable>
       <splashScreen show="true" autoOff="true" alwaysOnTop="false" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" java6SplashScreen="false">
         <text>
-          <statusLine x="95" y="326" text="Copyright © 2009 Kansas University Center for Research. FOSS licensed under GNU GPL2." font="Arial" fontSize="10" fontColor="0,0,0" fontWeight="500" />
+          <statusLine x="95" y="326" text="Copyright (C) 2009 Kansas University Center for Research. FOSS licensed under GNU GPL2." font="Arial" fontSize="10" fontColor="0,0,0" fontWeight="500" />
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
@@ -146,7 +146,7 @@
       </executable>
       <splashScreen show="true" autoOff="true" alwaysOnTop="false" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" java6SplashScreen="false">
         <text>
-          <statusLine x="95" y="326" text="Copyright © 2009 Kansas University Center for Research. FOSS licensed under GNU GPL2." font="Arial" fontSize="10" fontColor="0,0,0" fontWeight="500" />
+          <statusLine x="95" y="326" text="Copyright (C) 2009 Kansas University Center for Research. FOSS licensed under GNU GPL2." font="Arial" fontSize="10" fontColor="0,0,0" fontWeight="500" />
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
@@ -172,7 +172,7 @@
       </executable>
       <splashScreen show="true" autoOff="true" alwaysOnTop="false" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" java6SplashScreen="false">
         <text>
-          <statusLine x="95" y="326" text="Copyright © 2009 Kansas University Center for Research. FOSS licensed under GNU GPL2." font="Arial" fontSize="10" fontColor="0,0,0" fontWeight="500" />
+          <statusLine x="95" y="326" text="Copyright (C) 2009 Kansas University Center for Research. FOSS licensed under GNU GPL2." font="Arial" fontSize="10" fontColor="0,0,0" fontWeight="500" />
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
@@ -198,7 +198,7 @@
       </executable>
       <splashScreen show="true" autoOff="true" alwaysOnTop="false" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" java6SplashScreen="false">
         <text>
-          <statusLine x="95" y="326" text="Copyright © 2009 Kansas University Center for Research. FOSS licensed under GNU GPL2." font="Arial" fontSize="10" fontColor="0,0,0" fontWeight="500" />
+          <statusLine x="95" y="326" text="Copyright (C) 2009 Kansas University Center for Research. FOSS licensed under GNU GPL2." font="Arial" fontSize="10" fontColor="0,0,0" fontWeight="500" />
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
@@ -224,7 +224,7 @@
       </executable>
       <splashScreen show="true" autoOff="true" alwaysOnTop="false" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" java6SplashScreen="false">
         <text>
-          <statusLine x="95" y="326" text="Copyright © 2009 Kansas University Center for Research. FOSS licensed under GNU GPL2." font="Arial" fontSize="10" fontColor="0,0,0" fontWeight="500" />
+          <statusLine x="95" y="326" text="Copyright (C) 2009 Kansas University Center for Research. FOSS licensed under GNU GPL2." font="Arial" fontSize="10" fontColor="0,0,0" fontWeight="500" />
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
@@ -251,7 +251,7 @@
       </executable>
       <splashScreen show="true" autoOff="true" alwaysOnTop="false" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" java6SplashScreen="false">
         <text>
-          <statusLine x="95" y="326" text="Copyright © 2009 Kansas University Center for Research. FOSS licensed under GNU GPL2." font="Arial" fontSize="10" fontColor="0,0,0" fontWeight="500" />
+          <statusLine x="95" y="326" text="Copyright (C) 2009 Kansas University Center for Research. FOSS licensed under GNU GPL2." font="Arial" fontSize="10" fontColor="0,0,0" fontWeight="500" />
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
@@ -278,7 +278,7 @@
       </executable>
       <splashScreen show="true" autoOff="true" alwaysOnTop="false" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" java6SplashScreen="false">
         <text>
-          <statusLine x="95" y="326" text="Copyright © 2009 Kansas University Center for Research. FOSS licensed under GNU GPL2." font="Arial" fontSize="10" fontColor="0,0,0" fontWeight="500" />
+          <statusLine x="95" y="326" text="Copyright (C) 2009 Kansas University Center for Research. FOSS licensed under GNU GPL2." font="Arial" fontSize="10" fontColor="0,0,0" fontWeight="500" />
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
@@ -386,7 +386,7 @@
                 <object class="com.install4j.runtime.beans.screens.CustomizableInfoScreen">
                   <void property="displayedTextFile">
                     <object class="com.install4j.api.beans.ExternalFile">
-                      <string>../InstallerFiles/changelog.html</string>
+                      <string>../InstallerFiles/readme.html</string>
                     </object>
                   </void>
                   <void property="subTitle">
@@ -1398,6 +1398,7 @@ if (wizardContext != null) {
     </unixInstaller>
   </mediaSets>
   <buildIds buildAll="false">
+    <mediaSet refId="176" />
     <mediaSet refId="179" />
   </buildIds>
 </install4j>
