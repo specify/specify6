@@ -2,7 +2,7 @@
 <tree>
 	<treedef>
 		<level name="Site"       enforced="true"  infullname="false" rank="0"/>
-		<level name="Building"   enforced="true"  infullname="false" rank="100"/>
+		<level name="Building"   enforced="false"  infullname="false" rank="100"/>
         <level name="Collection" enforced="false" infullname="false" rank="150"/>
 		<level name="Room"       enforced="false" infullname="false" rank="200" /> 
         <level name="Aisle"      enforced="false" infullname="false" rank="250" />         
