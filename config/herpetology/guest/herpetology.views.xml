@@ -85,7 +85,7 @@
             <desc><![CDATA[Form For OtherIdentifier]]></desc>
             
             <columnDef os="exp">p,2px,120px,5px:g,p,2px,100px,5px:g,p,2px,100px,5px:g,p,2px,120px,p:g</columnDef>
-            <columnDef>100px,2px,125px,5px,110px,2px,102px,5px,120px,2px,103px,5px,119px,2px,125px,0px,p:g</columnDef>
+            <columnDef>100px,2px,115px,5px,90px,2px,92px,5px,100px,2px,93px,5px,99px,2px,115px,0px,p:g</columnDef>
             <columnDef os="mac">130px,2px,140px,5px,100px,2px,140px,5px,125px,2px,140px,5px,109px,2px,150px,0px,p:g</columnDef>
             <rowDef auto="true" sep="2px" cell="p"/>
             <rows>
@@ -127,17 +127,17 @@
             <enableRules/>
             
             <columnDef os="exp">p,2px,200px,5px:g,p,2px,210px,5px:g,p,2px,200px,p,p:g</columnDef>
-            <columnDef>100px,2px,200px,5px,100px,2px,210px,5px,100px,2px,201px,15px,p:g</columnDef>
-            <columnDef os="mac">130px,2px,215px,5px,113px,2px,255px,5px,113px,2px,215px,15px,p:g</columnDef>
+            <columnDef>100px,2px,200px,5px,100px,2px,210px,5px,100px,2px,101px,15px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,215px,5px,138px,2px,255px,5px,138px,2px,155px,15px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             <rows>
                 <row>
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="catalogNumber" uitype="formattedtext"/>
-                    <cell type="label" labelfor="14"/>
-                    <cell type="field" id="14" name="altCatalogNumber" uitype="text"/>
                     <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="accession" uitype="querycbx" initialize="name=AccessionCO;title=AccessionCO" isrequired="false"/>
+                    <cell type="label" labelfor="14"/>
+                    <cell type="field" id="14" name="altCatalogNumber" uitype="text"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="4"/>
@@ -203,7 +203,7 @@
             <enableRules/>
 
             <columnDef os="exp">p,2px,210px,5px:g,p,2px,200px,5px:g,p,2px,70px,5px:g,p,p:g</columnDef>
-            <columnDef>100px,2px,215px,5px,120px,2px,205px,5px,130px,2px,76px,5px,60px,0px,p:g</columnDef>
+            <columnDef>100px,2px,215px,5px,75px,2px,205px,5px,80px,2px,46px,5px,85px,0px,p:g</columnDef>
             <columnDef os="mac">130px,2px,255px,5px,120px,2px,234px,5px,127px,2px,90px,5px,80px,0px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             <rows>
@@ -291,7 +291,7 @@
             <desc><![CDATA[Collecting Event]]></desc>
 
             <columnDef os="exp">p,2px,210px,5px:g,p,2px,210px,5px:g,p,2px,80px,50px:g</columnDef>
-            <columnDef>100px,2px,214px,5px,100px,2px,213px,5px,120px,2px,90px,75px,p:g</columnDef>
+            <columnDef>100px,2px,210px,5px,80px,2px,210px,5px,100px,2px,111px,0px,p:g</columnDef>
             <columnDef os="mac">130px,2px,255px,5px,95px,2px,255px,5px,125px,2px,110px,71px,0px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             
@@ -301,8 +301,8 @@
                     <cell type="field" id="5" name="stationFieldNumber" uitype="text"/>
                     <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="method" uitype="combobox"/>
-                    <cell type="label" label="" colspan="2"/>
-                    <cell type="subview" id="1" viewname="ObjectAttachment" name="collectingEventAttachments" initialize="btn=true;icon=CollectingEventAttachment"/>
+                    <cell type="label" label=""/>
+                    <cell type="subview" id="1" viewname="ObjectAttachment" name="collectingEventAttachments" initialize="align=right;btn=true;icon=CollectingEventAttachment"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="7"/>

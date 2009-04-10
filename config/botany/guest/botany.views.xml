@@ -78,17 +78,17 @@
             <enableRules/>
             
             <columnDef os="exp">p,2px,200px,5px:g,p,2px,210px,5px:g,p,2px,200px,p,p:g</columnDef>
-            <columnDef>100px,2px,200px,5px,115px,2px,210px,5px,105px,2px,200px,15px,p:g</columnDef>
-            <columnDef os="mac">130px,2px,215px,5px,113px,2px,255px,5px,113px,2px,215px,15px,p:g</columnDef>
+            <columnDef>100px,2px,200px,5px,100px,2px,210px,5px,100px,2px,101px,15px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,215px,5px,138px,2px,255px,5px,138px,2px,155px,15px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             <rows>
                 <row>
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="catalogNumber" uitype="formattedtext"/>
-                    <cell type="label" labelfor="14"/>
-                    <cell type="field" id="14" name="altCatalogNumber" uitype="text"/>
                     <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="accession" uitype="querycbx" initialize="name=AccessionCO;title=AccessionCO" isrequired="false"/>
+                    <cell type="label" labelfor="14"/>
+                    <cell type="field" id="14" name="altCatalogNumber" uitype="text"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="4"/>
@@ -139,6 +139,102 @@
             </rows>
         </viewdef>
         
+        
+        <viewdef
+            type="formtable"
+            name="Determination Table"
+            class="edu.ku.brc.specify.datamodel.Determination"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Determination subform table for Collection Object form.]]></desc>
+            <definition>Determination</definition>
+        </viewdef>
+        
+        <viewdef
+            name="Determination"
+            type="form"
+            class="edu.ku.brc.specify.datamodel.Determination"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Determination subform for Collection Object form.]]></desc>
+            <enableRules/>
+            
+            <columnDef os="exp">p,2px,210px,5px:g,p,2px,200px,15px,p,2px,136px,p:g</columnDef>
+            <columnDef>100px,2px,210px,5px,76px,2px,200px,15px,80px,2px,140px,0px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,253px,5px,95px,2px,238px,5px,140px,2px,185px,0px,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="taxon" uitype="querycbx" initialize="name=Taxon" colspan="10"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="8"/>
+                    <cell type="field" id="8" name="qualifier" uitype="text"/>
+                    <cell type="label" labelfor="9"/>
+                    <cell type="field" id="9" name="addendum" uitype="text"/>            
+                    <cell type="field" id="3" name="isCurrent" uitype="checkbox"/>
+                </row>
+                <row>
+                        <cell type="label" labelfor="13"/>
+                        <cell type="field" id="13" name="preferredTaxon" uitype="text" readonly="true" colspan = "5"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="10"/>
+                    <cell type="field" id="10" name="alternateName" uitype="text" colspan="5"/>              
+                    <cell type="label" labelfor="11"/>
+                    <cell type="field" id="11" name="nameUsage" uitype="combobox"/>
+                    
+                </row>
+                <row>
+                    <cell type="label" labelfor="7"/>
+                    <cell type="field" id="7" uitype="plugin" name="this" initialize="name=PartialDateUI;df=determinedDate;tp=determinedDatePrecision" uifieldformatter="Date"/>
+                    <cell type="label" labelfor="5"/>
+                    <cell type="field" id="5" name="determiner" uitype="querycbx" initialize="name=Agent" />
+                    <cell type="label" labelfor="6"/>
+                    <cell type="field" id="6" name="typeStatusName" uitype="combobox"/>
+                </row>
+            </rows>
+            
+        </viewdef>
+        
+        <viewdef
+            type="form"
+            name="CollectingEventSub"
+            class="edu.ku.brc.specify.datamodel.CollectingEvent"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            <desc><![CDATA[Collecting Event]]></desc>
+            
+            <columnDef os="exp">p,2px,120px,5px:g,p,2px,190px,5px:g,p,p:g</columnDef>
+            <columnDef>100px,2px,120px,5px,80px,2px,215px,2px,301px,0px,p:g</columnDef>-->
+            <columnDef os="mac">130px,2px,200px,5px,100px,2px,255px,293px,70px,0px,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="stationFieldNumber" uitype="text"/>
+                    <cell type="label" labelfor="2"/>
+                    <cell type="field" id="2" uitype="plugin" name="this" initialize="name=PartialDateUI;df=startDate;tp=startDatePrecision" uifieldformatter="Date"/>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectingEventAttachments" initialize="align=right;btn=true;icon=CollectingEventAttachment"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="4"/>
+                    <cell type="field" id="4" name="locality" uitype="querycbx" initialize="name=Locality;title=Locality" colspan="8"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="6"/>
+                    <cell type="field" id="6" name="remarks" uitype="textareabrief" rows="2" colspan="8"/>
+                </row>
+                <row>
+                    <cell type="subview" viewname="Collectors" id="5" name="collectors" colspan="10" rows="3"/>
+                </row>
+            </rows>
+        </viewdef>
+
         <viewdef
             type="form"
             name="CollectingEvent"
@@ -146,7 +242,7 @@
             gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[Collecting Event]]></desc>
-            
+
             <columnDef os="exp">p,2px,200px,5px,100px,2px,200px,p:g</columnDef>
             <columnDef>100px,2px,158px,5px,100px,2px,220px,380px,15px,p:g</columnDef>
             <columnDef os="mac">130px,2px,200px,5px,100px,2px,255px,363px,15px,p:g</columnDef>
@@ -186,101 +282,6 @@
                     </row>
                 -->
             </rows>
-        </viewdef>
-        
-        <viewdef
-            type="form"
-            name="CollectingEventSub"
-            class="edu.ku.brc.specify.datamodel.CollectingEvent"
-            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
-            <desc><![CDATA[Collecting Event]]></desc>
-            
-            <columnDef os="exp">p,2px,120px,5px:g,p,2px,190px,5px:g,p,p:g</columnDef>
-            <columnDef>100px,2px,120px,5px,80px,2px,215px,345px,75px,0px,p:g</columnDef>-->
-            <columnDef os="mac">130px,2px,200px,5px,100px,2px,255px,293px,70px,0px,p:g</columnDef>
-            <rowDef auto="true" cell="p" sep="2px"/>
-            
-            <rows>
-                <row>
-                    <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="stationFieldNumber" uitype="text"/>
-                    <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" uitype="plugin" name="this" initialize="name=PartialDateUI;df=startDate;tp=startDatePrecision" uifieldformatter="Date"/>
-                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectingEventAttachments" initialize="btn=true;icon=CollectingEventAttachment"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="4"/>
-                    <cell type="field" id="4" name="locality" uitype="querycbx" initialize="name=Locality;title=Locality" colspan="8"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="6"/>
-                    <cell type="field" id="6" name="remarks" uitype="textareabrief" rows="2" colspan="8"/>
-                </row>
-                <row>
-                    <cell type="subview" viewname="Collectors" id="5" name="collectors" colspan="10" rows="3"/>
-                </row>
-            </rows>
-        </viewdef>
-        
-        <viewdef
-            type="formtable"
-            name="Determination Table"
-            class="edu.ku.brc.specify.datamodel.Determination"
-            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
-            
-            <desc><![CDATA[Determination subform table for Collection Object form.]]></desc>
-            <definition>Determination</definition>
-        </viewdef>
-        
-        <viewdef
-            name="Determination"
-            type="form"
-            class="edu.ku.brc.specify.datamodel.Determination"
-            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
-            
-            <desc><![CDATA[Determination subform for Collection Object form.]]></desc>
-            <enableRules/>
-            
-            <columnDef os="exp">p,2px,210px,5px:g,p,2px,200px,15px,p,2px,136px,p:g</columnDef>
-            <columnDef>100px,2px,210px,5px,130px,2px,200px,15px,120px,2px,146px,0px,p:g</columnDef>
-            <columnDef os="mac">130px,2px,253px,5px,95px,2px,238px,5px,140px,2px,185px,0px,p:g</columnDef>
-            <rowDef auto="true" cell="p" sep="2px"/>
-            <rows>
-                <row>
-                    <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="taxon" uitype="querycbx" initialize="name=Taxon" colspan="10"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="8"/>
-                    <cell type="field" id="8" name="qualifier" uitype="text"/>
-                    <cell type="label" labelfor="9"/>
-                    <cell type="field" id="9" name="addendum" uitype="text"/>            
-                    <cell type="field" id="3" name="isCurrent" uitype="checkbox"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="13"/>
-                    <cell type="field" id="13" name="preferredTaxon" uitype="text" readonly="true" colspan = "5"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="10"/>
-                    <cell type="field" id="10" name="alternateName" uitype="text" colspan = "5"/>              
-                    <cell type="label" labelfor="11"/>
-                    <cell type="field" id="11" name="nameUsage" uitype="combobox"/>
-                    
-                </row>
-                <row>
-                    <cell type="label" labelfor="7"/>
-                    <cell type="field" id="7" uitype="plugin" name="this" initialize="name=PartialDateUI;df=determinedDate;tp=determinedDatePrecision" uifieldformatter="Date"/>
-                    <cell type="label" labelfor="5"/>
-                    <cell type="field" id="5" name="determiner" uitype="querycbx" initialize="name=Agent"  />
-                    <cell type="label" labelfor="6"/>
-                    <cell type="field" id="6" name="typeStatusName" uitype="combobox"/>
-                </row>
-            </rows>
-            
         </viewdef>
         
         
