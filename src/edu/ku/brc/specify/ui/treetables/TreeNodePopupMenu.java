@@ -45,7 +45,7 @@ public class TreeNodePopupMenu extends JPopupMenu
 	 * @param isEditMode whether it is in edit mode or not
 	 */
 	@SuppressWarnings("unchecked")
-	public TreeNodePopupMenu(final TreeTableViewer owner, final boolean isEditMode)
+	public TreeNodePopupMenu(final TreeTableViewer owner, final boolean isEditMode, final boolean canAdd, final boolean canDelete)
 	{
 		this.ttv = owner;
 		
@@ -61,13 +61,19 @@ public class TreeNodePopupMenu extends JPopupMenu
         edit     = new JMenuItem(isEditMode ? getResourceString("TTV_EDITING") : getResourceString("TTV_VIEWING"));
         if (isEditMode)
         {
-            delete   = new JMenuItem(getResourceString("TTV_DELETE"));
+            delete   = canDelete ? new JMenuItem(getResourceString("TTV_DELETE")) : null;
             unSyn    = new JMenuItem(getResourceString("TTV_UNSYN"));
-            newChild = new JMenuItem(getResourceString("TTV_NEW_CHILD"));
+            newChild = canAdd ? new JMenuItem(getResourceString("TTV_NEW_CHILD")) : null;
             
             selectionSensativeButtons.add(edit);
-            selectionSensativeButtons.add(newChild);
-            selectionSensativeButtons.add(delete);
+            if (canAdd)
+            {
+            	selectionSensativeButtons.add(newChild);
+            }
+            if (canDelete)
+            {
+            	selectionSensativeButtons.add(delete);
+            }
             selectionSensativeButtons.add(unSyn);
         } else
         {
@@ -113,14 +119,17 @@ public class TreeNodePopupMenu extends JPopupMenu
 		if (isEditMode)
 		{
     
-    		delete.addActionListener(new ActionListener()
-    		{
-    			public void actionPerformed(ActionEvent ae)
-    			{
-    				ttv.deleteSelectedNode(list);
-    			}
-    		});
-    
+    		if (canDelete)
+			{
+				delete.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent ae)
+					{
+						ttv.deleteSelectedNode(list);
+					}
+				});
+	            this.add(delete);
+			}
+    		
             unSyn.addActionListener(new ActionListener()
             {
                 public void actionPerformed(ActionEvent ae)
@@ -129,15 +138,16 @@ public class TreeNodePopupMenu extends JPopupMenu
                 }
             });
 
-    		newChild.addActionListener(new ActionListener()
-    		{
-    			public void actionPerformed(ActionEvent ae)
-    			{
-    				ttv.addChildToSelectedNode(list);
-    			}
-    		});
-            this.add(delete);
-            this.add(newChild);
+            if (canAdd)
+			{
+				newChild.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent ae)
+					{
+						ttv.addChildToSelectedNode(list);
+					}
+				});
+	            this.add(newChild);
+			}
             this.add(unSyn);
 		}
 

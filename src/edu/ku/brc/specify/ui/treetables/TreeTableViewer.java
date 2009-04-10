@@ -65,6 +65,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.auth.PermissionSettings;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
@@ -182,6 +183,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
     protected JButton deleteNode0   = null;
     
     protected boolean isEditMode;
+    protected boolean canAdd;
+    protected boolean canDelete;
     
     protected JButton subtree1;
     protected JButton wholeTree1;
@@ -226,10 +229,15 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		super(name,task);
 		
 		this.isEditMode = isEditMode;
+		//XXX perms checks is already done in BaseTreeTask, and BaseTreeTask should pass info here, but not enough time to deal
+		//with complications (e.g. BaseTreeTask.switchViewType		
+        PermissionSettings perms = DBTableIdMgr.getInstance().getByShortClassName(treeDef.getNodeClass().getSimpleName()).getPermissions();
+		canAdd = isEditMode && perms.canAdd();
+		canDelete = isEditMode && perms.canDelete();
 		this.treeDef = treeDef;
 		allButtons = new Vector<AbstractButton>();
 		statusBar = UIRegistry.getStatusBar();
-		popupMenu = new TreeNodePopupMenu(this, isEditMode);
+		popupMenu = new TreeNodePopupMenu(this, isEditMode, canAdd, canDelete);
 		
 		getLayout().removeLayoutComponent(progressBarPanel);
 		
@@ -600,7 +608,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             }
         });
 
-        if (isEditMode)
+        if (canAdd)
         {
             newChild0 = new JButton(icon_newChild);
             newChild0.setSize(20,20);
@@ -632,12 +640,11 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             }
         });
         
-        if (isEditMode)
+        if (canDelete)
         {
             deleteNode0 = new JButton(icon_delNode);
             deleteNode0.setSize(20,20);
-            //XXX i18n            
-            deleteNode0.setToolTipText("Delete Selected Node"); 
+            deleteNode0.setToolTipText(UIRegistry.getResourceString("TTV_DELETE_TOOLTIP")); 
             deleteNode0.addActionListener(new ActionListener()
             {
                 public void actionPerformed(ActionEvent ae)
@@ -674,13 +681,22 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         }
         buttonPanel0.add(editNode0);
         editNode0.setAlignmentX(Component.CENTER_ALIGNMENT);
-        if (isEditMode)
+        if (canAdd)
         {
             buttonPanel0.add(newChild0);
             newChild0.setAlignmentX(Component.CENTER_ALIGNMENT);
             buttonPanel0.add(deleteNode0);
             deleteNode0.setAlignmentX(Component.CENTER_ALIGNMENT);
             buttonPanel0.add(Box.createVerticalGlue());
+        }
+        if (canDelete)
+        {
+        	buttonPanel0.add(deleteNode0);
+        	deleteNode0.setAlignmentX(Component.CENTER_ALIGNMENT);
+        }
+        if (canAdd || canDelete)
+        {
+        	buttonPanel0.add(Box.createVerticalGlue());
         }
         
         buttonPanel0.add(syncViews0);
@@ -691,12 +707,12 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         allButtons.add(toParent0);
         allButtons.add(toggle0);
         
-        if (isEditMode)
+        if (canAdd)
         {
             allButtons.add(newChild0);
         }
         allButtons.add(editNode0);
-        if (isEditMode)
+        if (canDelete)
         {
             allButtons.add(deleteNode0);
         }
@@ -769,7 +785,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             }
         });
 
-        if (isEditMode)
+        if (canAdd)
         {
             newChild1 = new JButton(icon_newChild);
             newChild1.setSize(20,20);
@@ -799,7 +815,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                 editSelectedNode(lists[1]);
             }
         });
-        if (isEditMode)
+        if (canDelete)
         {
             deleteNode1 = new JButton(icon_delNode);
             deleteNode1.setSize(20,20);
@@ -839,16 +855,23 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         }
     	buttonPanel1.add(editNode1);
         editNode1.setAlignmentX(Component.CENTER_ALIGNMENT);
-        if (isEditMode)
+        if (canAdd)
         {
             // tree editing buttons
             buttonPanel1.add(newChild1);
             newChild1.setAlignmentX(Component.CENTER_ALIGNMENT);
+        }
+        if (canDelete)
+        {
             buttonPanel1.add(deleteNode1);
             deleteNode1.setAlignmentX(Component.CENTER_ALIGNMENT);
             buttonPanel1.add(Box.createVerticalGlue());
         }
-
+        if (canDelete || canAdd)
+        {
+            buttonPanel1.add(Box.createVerticalGlue());
+        }
+        
         buttonPanel1.add(syncViews1);
         syncViews1.setAlignmentX(Component.CENTER_ALIGNMENT);
         
@@ -857,12 +880,12 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         allButtons.add(toParent1);
         allButtons.add(toggle1);
         
-        if (isEditMode)
+        if (canAdd)
         {
             allButtons.add(newChild1);
         }
         allButtons.add(editNode1);
-        if (isEditMode)
+        if (canDelete)
         {
             allButtons.add(deleteNode1);
         }
@@ -1379,7 +1402,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	/**
 	 * @param list
 	 */
-	@SuppressWarnings("unchecked")
 	public void selectParentOfSelection(final TreeDataGhostDropJList list)
 	{
 		Object selection = list.getSelectedValue();
@@ -2178,7 +2200,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         {
             popupMenu.setNewEnabled(canAddChild && nonNullSelection);
             editNode0.setEnabled(nonNullSelection);
-            if (isEditMode)
+            if (canAdd)
             {
                 newChild0.setEnabled(canAddChild && nonNullSelection);
             }
@@ -2186,7 +2208,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             toParent0.setEnabled(!isVisibleRoot);
 
             // turn these off until the bg thread can find out if user can delete this node
-            if (isEditMode)
+            if (canDelete)
             {
                 deleteNode0.setEnabled(false);
             }
@@ -2196,7 +2218,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         {
             popupMenu.setNewEnabled(canAddChild && nonNullSelection); 
             editNode1.setEnabled(nonNullSelection);
-            if (isEditMode)
+            if (canAdd)
             {
                 newChild1.setEnabled(canAddChild && nonNullSelection);
             }
@@ -2204,7 +2226,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             toParent1.setEnabled(!isVisibleRoot && nonNullSelection);
             
             // turn these off until the bg thread can find out if user can delete this node
-            if (isEditMode)
+            if (canDelete)
             {
                 deleteNode1.setEnabled(false);
             }
@@ -2217,7 +2239,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         SwingWorker bgWork = new SwingWorker()
         {
             private T nodeRecord;
-            private boolean canDelete = false;
+            private boolean swCanDelete = false;
             
             @SuppressWarnings("synthetic-access")
             @Override
@@ -2233,8 +2255,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                 
                 // these calls should work even if nodeRecord is null
                 //log.debug("processing business rules to determine if node " + (selectedNode != null ? selectedNode.getId() : "null") + " is deleteable");
-                canDelete = (businessRules != null) ? businessRules.okToEnableDelete(nodeRecord) : false;
-                canDelete = canDelete && (selectedNode != listModel.getVisibleRoot());
+                swCanDelete = (businessRules != null) ? businessRules.okToEnableDelete(nodeRecord) : false;
+                swCanDelete = swCanDelete && (selectedNode != listModel.getVisibleRoot());
                 return null;
             }
 
@@ -2257,19 +2279,19 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                 // update the state of all selection-sensative buttons
                 if (sourceList == lists[0])
                 {
-                    if (isEditMode)
+                    if (canDelete)
                     {
-                        deleteNode0.setEnabled(canDelete && validSelection);
+                        deleteNode0.setEnabled(swCanDelete && validSelection);
                     }
-                    popupMenu.setDeleteEnabled(canDelete && validSelection);
+                    popupMenu.setDeleteEnabled(swCanDelete && validSelection);
                 }
                 else
                 {
-                    if (isEditMode)
+                    if (canDelete)
                     {
-                        deleteNode1.setEnabled(canDelete && validSelection);
+                        deleteNode1.setEnabled(swCanDelete && validSelection);
                     }
-                    popupMenu.setDeleteEnabled(canDelete && validSelection);
+                    popupMenu.setDeleteEnabled(swCanDelete && validSelection);
                 }
             }            
         };
