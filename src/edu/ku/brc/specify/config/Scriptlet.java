@@ -280,7 +280,7 @@ public class Scriptlet extends JRDefaultScriptlet
                            final Float lon, 
                            final int    originalLatLongUnit) throws JRScriptletException
     {
-        return localityBD(desc, new BigDecimal(lat), new BigDecimal(lat), originalLatLongUnit);
+        return localityBD(desc, new BigDecimal(lat), new BigDecimal(lon), originalLatLongUnit);
     }
 
     /**
