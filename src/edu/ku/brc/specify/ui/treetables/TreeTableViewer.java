@@ -685,9 +685,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         {
             buttonPanel0.add(newChild0);
             newChild0.setAlignmentX(Component.CENTER_ALIGNMENT);
-            buttonPanel0.add(deleteNode0);
-            deleteNode0.setAlignmentX(Component.CENTER_ALIGNMENT);
-            buttonPanel0.add(Box.createVerticalGlue());
         }
         if (canDelete)
         {
@@ -865,7 +862,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         {
             buttonPanel1.add(deleteNode1);
             deleteNode1.setAlignmentX(Component.CENTER_ALIGNMENT);
-            buttonPanel1.add(Box.createVerticalGlue());
         }
         if (canDelete || canAdd)
         {
