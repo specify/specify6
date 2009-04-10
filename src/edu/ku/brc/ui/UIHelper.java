@@ -82,9 +82,11 @@ import java.util.Vector;
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
 import javax.swing.Action;
+import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.ComboBoxModel;
 import javax.swing.ImageIcon;
+import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JCheckBoxMenuItem;
@@ -3362,5 +3364,48 @@ public final class UIHelper
         }
         return textColor;
     }
+    
+    /**
+     * Adds a 'standard' Save key binding for a Save component (i.e. <ctrl>S for Windows).
+     * @param saveComp the component (usually a JButton)
+     * @param saveAction the action to be invoked
+     */
+    public static void addSaveKeyBinding(final JComponent saveComp, 
+                                         final Action     saveAction)
+    {
+        /*String    ACTION_KEY = "SAVE";
+        KeyStroke ctrlS      = KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
+        InputMap  inputMap   = saveComp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        
+        inputMap.put(ctrlS, ACTION_KEY);
+        ActionMap actionMap = saveComp.getActionMap();
+        actionMap.put(ACTION_KEY, saveAction);*/
+        addKeyBinding(saveComp, saveAction, "SAVE", KeyEvent.VK_S, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
+    }
+    
+    /**
+     * Helper for adding KeyBindings.
+     * @param comp the component (usually a JButton)
+     * @param action the action to be invoked
+     * @param actionName the name to put into the map for the action
+     * @param keyCode the key code
+     * @param modifier the modifer
+     */
+    public static void addKeyBinding(final JComponent comp, 
+                                     final Action     action,
+                                     final String     actionName,
+                                     final int        keyCode,
+                                     final int        modifier)
+    {
+        KeyStroke ctrlS      = KeyStroke.getKeyStroke(keyCode, modifier);
+        InputMap  inputMap   = comp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        
+        inputMap.put(ctrlS, actionName);
+        ActionMap actionMap = comp.getActionMap();
+        actionMap.put(actionName, action);
+    }
+
+        
+                                
     
 }

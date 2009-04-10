@@ -179,14 +179,14 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
     }
 
     /**
-     * Returns a formatter by name
+     * Returns a formatter by name, passing in null will return null.
      * 
      * @param name the name of the format
      * @return return a formatter if it is there, returns null if it isn't
      */
     public UIFieldFormatterIFace getFormatter(final String name)
     {
-        return getFormatterInternal(name);
+        return StringUtils.isNotEmpty(name) ? getFormatterInternal(name) : null;
     }
 
     /**

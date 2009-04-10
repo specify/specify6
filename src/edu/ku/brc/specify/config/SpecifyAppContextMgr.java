@@ -81,6 +81,7 @@ import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Borrow;
 import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
@@ -1452,10 +1453,17 @@ public class SpecifyAppContextMgr extends AppContextMgr
             
             session = openSession();
             
-            int disciplineeId = AppContextMgr.getInstance().getClassObject(Discipline.class).getDisciplineId();
-            if (disciplineeId != prevDisciplineId)
+            int disciplineId = AppContextMgr.getInstance().getClassObject(Discipline.class).getDisciplineId();
+            if (disciplineId != prevDisciplineId)
             {
-                SchemaI18NService.getInstance().loadWithLocale(SpLocaleContainer.CORE_SCHEMA, disciplineeId, DBTableIdMgr.getInstance(), Locale.getDefault());
+                SchemaI18NService.getInstance().loadWithLocale(SpLocaleContainer.CORE_SCHEMA, disciplineId, DBTableIdMgr.getInstance(), Locale.getDefault());
+            }
+            
+            UIFieldFormatterIFace catNumFmtr = UIFieldFormatterMgr.getInstance().getFormatter(collection.getCatalogNumFormatName());
+            if (catNumFmtr != null)
+            {
+                DBFieldInfo field = DBTableIdMgr.getInstance().getInfoById(CollectionObject.getClassTableId()).getFieldByName("catalogNumber");
+                field.setFormatter(catNumFmtr);
             }
             
             // We close the session here so all SpAppResourceDir get unattached to hibernate

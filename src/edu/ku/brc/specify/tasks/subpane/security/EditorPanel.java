@@ -11,8 +11,9 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.event.ChangeEvent;
@@ -47,12 +48,14 @@ public class EditorPanel extends JPanel implements ChangeListener,
         saveBtn = UIHelper.createButton(getResourceString("SAVE"));
         saveBtn.setEnabled(false);
         
-        saveBtn.addActionListener(new ActionListener() {
+        Action saveAction = new AbstractAction() {
             public void actionPerformed(ActionEvent e)
             {
                 sap.doSave(true);
             }
-        });
+        };
+        saveBtn.addActionListener(saveAction);
+        UIHelper.addSaveKeyBinding(saveBtn, saveAction);
     }
 
     /**

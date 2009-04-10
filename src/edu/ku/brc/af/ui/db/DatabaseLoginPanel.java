@@ -466,7 +466,7 @@ public class DatabaseLoginPanel extends JTiledPanel
             });
         }
         
-        if (!UIRegistry.isRelease())
+        if (!UIRegistry.isRelease() || AppPreferences.getLocalPrefs().getBoolean("pwd.save", false))
         {
             password.setText(Encryption.decrypt(AppPreferences.getLocalPrefs().get("login.password", ""))); //$NON-NLS-1$ //$NON-NLS-2$
         }
@@ -744,7 +744,7 @@ public class DatabaseLoginPanel extends JTiledPanel
 
         AppPreferences.getLocalPrefs().put("login.dbdriver_selected", dbDrivers.get(dbDriverCBX.getSelectedIndex()).getName()); //$NON-NLS-1$
 
-        if (!UIRegistry.isRelease())
+        if (!UIRegistry.isRelease() || AppPreferences.getLocalPrefs().getBoolean("pwd.save", false))
         {
             AppPreferences.getLocalPrefs().put("login.password", Encryption.encrypt(new String(password.getPassword()))); //$NON-NLS-1$
         }
