@@ -754,6 +754,15 @@ public class BaseBusRules implements BusinessRulesIFace
             {
                 return STATUS.OK;
             }
+            
+            if (fi != null && fi.getFormatter() != null)
+            {
+                Object fmtObj = fi.getFormatter().formatToUI(fieldValue);
+                if (fmtObj != null)
+                {
+                    fieldValue = fmtObj.toString();
+                }
+            }
             reasonList.add(getErrorMsg("GENERIC_FIELD_IN_USE", dataClass, fieldName, fieldValue));
             return STATUS.Error;
             
