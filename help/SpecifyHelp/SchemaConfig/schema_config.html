@@ -33,21 +33,22 @@
 <p>&nbsp;</p>
 <p>The Schema Configuration tool opens with the schema listed on the left side and the tools on the right. The top left pane titled 'Tables' lists all the tables in the Specify schema. The bottom left pane titled 'Fields' lists the fields for each table. Click a table to display the available fields. Many of the fields listed are related fields, which belong to other tables. This will be discussed in more detail later. </p>
 <p>The available tools for the Tables are listed on the top right and the tools for Fields are listed on the bottom right.</p>
-<h3>Table and Field Tools</h3>
+<h3>Common Tools</h3>
 <p>The following tools within the Schema Configuration are the same for both tables and fields.</p>
 <h4><a name="change_caption" id="change_caption"></a><u>Change a Caption for a Table or Field</u></h4>
-<p>The first tool  is  <em>Caption</em> and is available for both Tables and Fields. Simply select a table or field from the appropriate list and type the new name into the <em>Caption</em> field. The new caption will appear on forms, in Query Creators and the Simple Search Configuration tool. </p>
+<p>The first tool  is  <em>Caption</em> and is available for both Tables and Fields. Simply select a table or field from the appropriate list and type the new name into the <em>Caption</em> field. The new caption will appear on forms, in Query Creators and the Simple Search Configuration tool.</p>
+<p><em><strong>Note:</strong></em> Only fields that are included on existing forms will reflect these caption changes.</p>
 <h4>&nbsp;</h4>
 <h4><u><a name="hide_table" id="hide_table"></a>Hide Table / Field</u></h4>
 <p>Tables and fields that are not used by a particular discipline can be hidden. This will remove them from the Query Creators list and Simple Search Configuration choices. This will not remove the fields from forms. Data can still be added to the forms in the hidden field and will be saved in the database. This tool is mainly used to clean the lists presented for creating queries and simple searches. The hidden fields will not be removed from previously saved queries or reports. </p>
 <p>&nbsp;</p>
 <p><strong><u><a name="field_description" id="field_description"></a>Edit Table / Field Description</u></strong></p>
-<p>Both the Tables and Fields have a description. This is useful when describing how fields and tables are used within individual disciplines. This is an editable field. These can be viewed in a form by double clicking on a field caption. </p>
+<p>Both the Tables and Fields have a description. This is useful when describing how fields and tables are used within individual disciplines. This is an editable field. These can be viewed as usage notes in a form by double clicking on a field caption. </p>
 <p>&nbsp;</p>
 <h3>Table Tools</h3>
 <p>The following tools are available for tables only.</p>
 <h4><u><a name="display_format" id="display_format"></a>Table Format</u></h4>
-<p>Tables can be formatted, or represented by at least one main field.  These formats are used on forms and in search results as well as reports. Most tables are represented by only one field, (Collection Object shows the Catalog Number), but some are best represented by more than one field (Agent may be formatted to display last name, first name, middle initial). </p>
+<p>The way tables are represented on forms (in Query Combo Boxes), in search results and in reports can be formatted, or represented by at least one main field.   Most tables are represented by only one field, (Collection Object shows the Catalog Number), but some are best represented by more than one field (Agent may be formatted to display Last Name, First Name, Middle Initial). </p>
 <p>It is important to note that Preferred Taxon, Geography, Chronostratigraphy and Lithostratigraphy fields use the Full Name as their format. This is configured in the Tree Definition.</p>
 <p>Open the Table Formatting Editor by first choosing a table to format from the Tables list, then clicking  the <em>...</em> (dialog) button next to the Table Format field. </p>
 <p>The first dialog that opens displays the name of the table, then displays any saved table formats for editing purposes. </p>
@@ -133,6 +134,8 @@
 <p><strong>Is Required </strong>refers to the required fields on forms. Any fields that are required by the application can not be edited to not be required, but fields that are not required can be changed to a required field. When entering data into a form with required fields the form changes can not be saved until all the required fields contain data.</p>
 <p>&nbsp;</p>
 <p><strong>Field Format Type</strong> offers choices for formatting string fields into either a Format (described below), <a href="PickList/Pick_List.html">Pick List</a> or <a href="System/Web_Link.html">Web Link</a>.</p>
+<p>At this time User-Defined Pick Lists that are configured in the Schema Configuration  also need to be added to individual forms by exporting the form set and editing the xml file for the form. Please refer to <a href="../PickList/Pick_List.html">User-Defined Pick List</a>. System Pick Lists are already included in the Specify forms and can be edited. Please refer to <a href="../PickList/system_picklist.html">System Pick Lists</a>.</p>
+<p>&nbsp;</p>
 <p>Creating a Format and editing an existing System Pick List will immediately be reflected within other Specify modules, such as forms and queries.</p>
 <p>New, or User Defined Pick Lists and Web Links will not be automatically reflected within the forms in Specify. The User Defined Pick List and Web Links must be configured in the editor Forms will need to be exported, edited in XML to include the Pick List and Web Link, then imported back into Specify. Please refer to <a href="../../Import/import_export.html">Import/Export Forms</a> for more details.</p>
 <p>&nbsp;</p>

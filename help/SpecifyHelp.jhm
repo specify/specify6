@@ -195,7 +195,7 @@
    <mapID target="Trees_Counts" url="SpecifyHelp/Trees/Trees_About.html#trees_counts"/>
    <mapID target="Trees_More" url="SpecifyHelp/Trees/Trees_About.html#trees_more"/>
    <mapID target="Trees_Find" url="SpecifyHelp/Trees/Trees_About.html#trees_find"/>
-   <mapID target="Trees_Title" url="SpecifyHelp/Trees/editing_tree_def.html#trees_title"/>
+   <mapID target="Trees_Title" url="SpecifyHelp/Trees/editing_tree_def.html#tree_title"/>
    <mapID target="Trees_Ranks" url="SpecifyHelp/Trees/editing_tree_def.html#tree_ranks"/>
    <mapID target="Trees_Pre" url="SpecifyHelp/Trees/editing_tree_def.html#trees_pre"/>
    <mapID target="SYNONIMIZE_NODE" url="SpecifyHelp/Trees/Trees_About.html#drag_drop"/>
@@ -295,5 +295,6 @@
    <mapID target="wizard_configure_geography_tree" url="SpecifyHelp/Security/Wizard.html#configure_geography_tree"/>   
    <mapID target="wizard_create_catalog_number" url="SpecifyHelp/Security/Wizard.html#create_catalog_number"/> 
    <mapID target="wizard_create_collection" url="SpecifyHelp/Security/Wizard.html#create_collection"/>    
-   <mapID target="wizard_summary" url="SpecifyHelp/Security/Wizard.html#summary"/>              
+   <mapID target="wizard_summary" url="SpecifyHelp/Security/Wizard.html#summary"/>
+   <mapID target="update_tree" url="SpecifyHelp/Trees/editing_tree_def.html#update_tree_nodes"/>              
 </map>

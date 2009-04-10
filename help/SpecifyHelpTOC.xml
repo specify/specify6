@@ -46,7 +46,7 @@
 
 		  
 		  <tocitem text="Specify Setup" target="Config_Overview">
-	         <tocitem text="Configuration Overview" target="Config_Overview">	  
+	         <tocitem text="Configuration Overview" target="SystemSetup">	  
 		  	    <tocitem text="Adding Institutional Levels" target="Inst_Hier">
 			 	   <tocitem text="Add Divisions" target="Add_Division"/>
 				   <tocitem text="Add Disciplines" target="Add_Discipline"/>
@@ -120,7 +120,7 @@
 			    <tocitem text="Tree Terminology" target="Trees_Terms"/>
 			    <tocitem text="Building Trees" target="Trees_Build"/>
 			    <tocitem text="Using Trees" target="Trees_Using"/>
-			    <tocitem text="Reparent Node" target="Trees_Reparent"/>
+			    <tocitem text="Move a Node" target="Trees_Reparent"/>
 			    <tocitem text="Synonymize Node" target="SYNONIMIZE_NODE"/>
 			    <tocitem text="Collection Object Counts" target="Trees_Counts"/>
 			    <tocitem text="More Options" target="Trees_More"/>
@@ -155,7 +155,6 @@
 				<tocitem text="Saved Query Menu" target="Q_Saved" />
 				<tocitem text="Import and Export Queries" target="QBImport"/>
 				<tocitem text="Delete a Query" target="Q_Delete"/>
-				<tocitem text="Edit a Query" target="Q_Edit"/>
 			  </tocitem>
 		    </tocitem>
 			
@@ -182,7 +181,6 @@
 			
 		  <tocitem text="Plugins" target="Plugins">
 		    <tocitem text="Google Earth" target="GE"/>
-			<tocitem text="BioGeomancer" target="BioGeo"/>
 			<tocitem text="GEOLocate" target="BioGeo"/>
 		  </tocitem>  
 			  
