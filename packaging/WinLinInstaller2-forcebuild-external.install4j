@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="4.2.1" transformSequenceNumber="2">
   <directoryPresets config="../InstallerFiles/images" />
-  <application name="Specify" distributionSourceDir="" applicationId="5397-6897-2502-8965" mediaDir="../Media" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}_Beta" compression="6" lzmaCompression="false" pack200Compression="false" excludeSignedFromPacking="true" keepModificationTimes="false" missingFilesStrategy="warn" shortName="Specify" publisher="Biodiversity Research Center, University of Kansas" publisherWeb="http://www.specifysoftware.org" version="6.0.00" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="true" macSignature="????" installerName="" javaMinVersion="1.6" javaMaxVersion="1.6" allowBetaVM="false" jdkMode="runtimeJre" jdkName="">
+  <application name="Specify" distributionSourceDir="" applicationId="5397-6897-2502-8965" mediaDir="../Media" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}" compression="6" lzmaCompression="false" pack200Compression="false" excludeSignedFromPacking="true" keepModificationTimes="false" missingFilesStrategy="warn" shortName="Specify" publisher="Biodiversity Research Center, University of Kansas" publisherWeb="http://www.specifysoftware.org" version="6.0.00" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="true" macSignature="????" installerName="" javaMinVersion="1.6" javaMaxVersion="1.6" allowBetaVM="false" jdkMode="runtimeJre" jdkName="">
     <languages skipLanguageSelection="false" languageSelectionInPrincipalLanguage="false">
       <principalLanguage id="en" customLocalizationFile="" />
       <additionalLanguages />
@@ -48,32 +48,6 @@
           <scanDirectory location="iReportLibs" failOnError="true" />
           <archive location="non-mac-application-adapter.jar" failOnError="true" />
           <directory location="help" failOnError="false" />
-        </classPath>
-        <nativeLibraryDirectories />
-      </java>
-      <includedFiles />
-      <unextractableFiles />
-      <customScript mode="1" file="">
-        <scriptLines />
-      </customScript>
-    </launcher>
-    <launcher name="SpLocalizer" id="242" external="false" excludeFromMenu="false" menuName="" icnsFile="../InstallerFiles/images/specify.icns" pngIcon16File="../InstallerFiles/images/specify16.png" pngIcon32File="../InstallerFiles/images/specify32.png" macServiceDependencies="" swtApp="false" fileset="">
-      <executable name="SpLocalizer" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
-        <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
-      </executable>
-      <splashScreen show="true" autoOff="true" alwaysOnTop="false" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" java6SplashScreen="false">
-        <text>
-          <statusLine x="95" y="326" text="Copyright (C) 2009 Kansas University Center for Research. FOSS licensed under GNU GPL2." font="Arial" fontSize="10" fontColor="0,0,0" fontWeight="500" />
-          <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
-        </text>
-      </splashScreen>
-      <java mainClass="edu.ku.brc.specify.tools.schemalocale.SchemaLocalizerFrame" vmParameters="-Xmx512m" arguments="-Dappdir=.." allowVMPassthroughParameters="true" preferredVM="">
-        <classPath>
-          <archive location="specify.jar" failOnError="true" />
-          <scanDirectory location="libs" failOnError="true" />
-          <scanDirectory location="hibernate_libs" failOnError="true" />
-          <scanDirectory location="iReportLibs" failOnError="true" />
-          <archive location="non-mac-application-adapter.jar" failOnError="true" />
         </classPath>
         <nativeLibraryDirectories />
       </java>
@@ -619,7 +593,7 @@
                         <boolean>false</boolean>
                       </void>
                       <void property="updateDescriptorUrl">
-                        <string>http://files.specifysoftware.org/specify6_ext/updates.xml</string>
+                        <string>http://update.specifysoftware.org/updates.xml</string>
                       </void>
                       <void property="variable">
                         <string>updateDescriptor</string>
