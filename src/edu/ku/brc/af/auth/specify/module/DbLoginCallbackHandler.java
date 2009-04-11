@@ -68,7 +68,7 @@ public class DbLoginCallbackHandler implements CallbackHandler
         this.driver = driver;
         this.dbUserName = dbUserName;
         this.dbPwd = dbPwd;
-        log.debug("DbLoginCallbackHandler() created"); //$NON-NLS-1$
+        //log.debug("DbLoginCallbackHandler() created"); //$NON-NLS-1$
     }
     
     /**
@@ -93,26 +93,26 @@ public class DbLoginCallbackHandler implements CallbackHandler
 
                 if (callbacks[i] instanceof NameCallback) 
                 {
-                    log.debug("handle - [LoginPanelCallback]"); //$NON-NLS-1$
-                    log.debug("handle - got user:" + user); //$NON-NLS-1$
+                    //log.debug("handle - [LoginPanelCallback]"); //$NON-NLS-1$
+                    //log.debug("handle - got user:" + user); //$NON-NLS-1$
                     ((NameCallback)callbacks[i]).setName(user);
                 } 
                 else if (callbacks[i] instanceof PasswordCallback) 
                 {
-                    log.debug("handle - [PasswordCallback]"); //$NON-NLS-1$
-                    log.debug("handle - got password:" + pass); //$NON-NLS-1$
+                    //log.debug("handle - [PasswordCallback]"); //$NON-NLS-1$
+                    //log.debug("handle - got password:" + pass); //$NON-NLS-1$
                     ((PasswordCallback)callbacks[i]).setPassword(pass.toCharArray());
                 } 
                 else if (callbacks[i] instanceof TextInputCallback) 
                 {
-                    log.debug("handle - [TextInputCallback]"); //$NON-NLS-1$
+                    //log.debug("handle - [TextInputCallback]"); //$NON-NLS-1$
                     if ((((TextInputCallback)callbacks[i]).getPrompt()).equals("Url:")) //$NON-NLS-1$
                     {
-                        log.debug("handle - got url:" + url); //$NON-NLS-1$
+                        //log.debug("handle - got url:" + url); //$NON-NLS-1$
                         ((TextInputCallback)callbacks[i]).setText(url);
                     } else if ((((TextInputCallback)callbacks[i]).getPrompt()).equals("Driver:")) //$NON-NLS-1$
                     {
-                        log.debug("handle - got driver:" + driver); //$NON-NLS-1$
+                        //log.debug("handle - got driver:" + driver); //$NON-NLS-1$
                         ((TextInputCallback)callbacks[i]).setText(driver);
                         
                     } else if ((((TextInputCallback)callbacks[i]).getPrompt()).equals("DBUserName:")) //$NON-NLS-1$
