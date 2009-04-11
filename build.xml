@@ -820,7 +820,7 @@
 	  	<arg value="${dist-linux}SearchConfig.txt"/>
 	  	<arg value="-db" />
 	  	<arg value="SpecifyHelpSearchIndex"/>
-	    <arg value="SpecifyHelp/Workbench"/>
+	    <arg value="SpecifyHelp"/>
 	  </java>
 		<antcall target="delete-config-files"/>
 	</target>
@@ -846,7 +846,7 @@
 	  	<arg value="${installer.dir}SearchConfig.txt"/>
 	  	<arg value="-db" />
 	  	<arg value="SpecifyHelpSearchIndex"/>
-	    <arg value="SpecifyHelp/Workbench"/>
+	    <arg value="SpecifyHelp"/>
 	  </java>
 		<antcall target="delete-config-files"/>
 	</target>
