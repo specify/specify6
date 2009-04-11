@@ -20,18 +20,18 @@
 		<type>javax.help.IndexView</type>
 		<data>SpecifyHelpIndex.xml</data>
 	</view>
-	<view>
+	<!--<view>
 		<name>Search</name>
 		<label>Search</label>
 		<type>javax.help.SearchView</type>
 		<data engine="com.sun.java.help.search.DefaultSearchEngine">JavaHelpSearch</data>
-	</view>
-	<view mergetype="javax.help.SortMerge">
+	</view>-->
+	<!--<view mergetype="javax.help.SortMerge">
 		<name>glossary</name>
 		<label>Glossary</label>
 		<type>javax.help.GlossaryView</type>
 		<data>SpecifyHelpGlossary.xml</data>
-	</view>
+	</view>-->
 	<view mergetype="javax.help.NoMerge">
 		<name>favorites</name>
 		<label>Favorites</label>

@@ -229,8 +229,8 @@
    <mapID target="RS_Add" url="SpecifyHelp/RecordSet/record_set.html#record_set_add"/>
    <mapID target="RS_Use" url="SpecifyHelp/RecordSet/record_set.html#rs_use"/>
    <mapID target="RS_Menu" url="SpecifyHelp/RecordSet/record_set.html#rs_menu"/>
-   <mapID target="validate" url="SpecifyHelp/Uploading/wb_uploader.htm#uploader_validate"/>
-   <mapID target="UnconvertableGeoCoords" url="SpecifyHelp/Uploading/wb_uploader.htm#lat_long_formats"/>
+   <mapID target="validate" url="SpecifyHelp/Uploading/wb_uploader.html#uploader_validate"/>
+   <mapID target="UnconvertableGeoCoords" url="SpecifyHelp/Uploading/wb_uploader.html#lat_long_formats"/>
    <mapID target="RepRunSettings" url="SpecifyHelp/ReportsLabels/reports.html#report_sidebar"/>
    <mapID target="Report_Sidebar" url="SpecifyHelp/ReportsLabels/reports.html#report_sidebar"/>
    <mapID target="IR_Create" url="SpecifyHelp/ReportsLabels/specifyireports.html#ir_create"/>
