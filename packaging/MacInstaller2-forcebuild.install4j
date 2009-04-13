@@ -198,6 +198,7 @@
           <scanDirectory location="libs" failOnError="true" />
           <scanDirectory location="hibernate_libs" failOnError="true" />
           <scanDirectory location="iReportLibs" failOnError="true" />
+          <directory location="help" failOnError="false" />
         </classPath>
         <nativeLibraryDirectories />
       </java>
