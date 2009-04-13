@@ -221,10 +221,15 @@ public class UIFieldFormatterField implements Cloneable
 			return alphaNumericSample.substring(0, value.length());
 		}
 
-		if (type == FieldType.alpha)
-		{
-			return alphaSample.substring(0, value.length());
-		}
+        if (type == FieldType.alpha)
+        {
+            return alphaSample.substring(0, value.length());
+        }
+
+        if (type == FieldType.anychar)
+        {
+            return anyCharSample.substring(0, value.length());
+        }
 
 		if (type == FieldType.numeric)
 		{

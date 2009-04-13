@@ -189,7 +189,8 @@ public class CollectionBusRules extends BaseBusRules
         progressFrame.setProcess(0, 4);
         progressFrame.getCloseBtn().setVisible(false);
         progressFrame.setAlwaysOnTop(true);
-        bldSampleDB.adjustProgressFrame();
+        progressFrame.adjustProgressFrame();
+        
         UIHelper.centerAndShow(progressFrame);
         
         SwingWorker<Integer, Integer> bldWorker = new SwingWorker<Integer, Integer>()

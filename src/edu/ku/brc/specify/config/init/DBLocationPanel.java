@@ -74,7 +74,7 @@ class DBLocationPanel extends BaseSetupPanel
      */
     public DBLocationPanel(final JButton nextBtn)
     {
-        super("Storage", null, nextBtn);
+        super("Storage", null, nextBtn, null);
 
         
         localDirOK = true;
@@ -191,6 +191,15 @@ class DBLocationPanel extends BaseSetupPanel
     public void updateBtnUI()
     {
         nextBtn.setEnabled(isUIValid());
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.config.init.SetupPanelIFace#enablePreviousBtn()
+     */
+    @Override
+    public boolean enablePreviousBtn()
+    {
+        return true;
     }
     
     /**

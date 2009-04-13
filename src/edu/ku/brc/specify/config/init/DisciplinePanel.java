@@ -64,9 +64,9 @@ public class DisciplinePanel extends BaseSetupPanel
     /**
      * Creates a dialog for entering database name and selecting the appropriate driver.
      */
-    public DisciplinePanel(final String helpContext, final JButton nextBtn)
+    public DisciplinePanel(final String helpContext, final JButton nextBtn, final JButton prevBtn)
     {
-        super("DISCIPLINE", helpContext, nextBtn);
+        super("DISCIPLINE", helpContext, nextBtn, prevBtn);
         
         String header = getResourceString("DISP_INFO") + ":";
 

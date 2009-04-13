@@ -34,6 +34,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.event.DocumentEvent;
@@ -62,8 +63,13 @@ public abstract class BaseSetupPanel extends JPanel implements SetupPanelIFace
     protected String             helpContext;
     protected KeyAdapter         keyAdapter;
     protected JButton            nextBtn;
+    protected JButton            prevBtn;
     protected boolean            makeStretchy = false;
     protected Font               bold         = (new JLabel()).getFont().deriveFont(Font.BOLD);
+    protected Properties         properties   = null;
+
+    protected JProgressBar       progressBar  = null;
+
 
     /**
      * @param panelName
@@ -72,9 +78,10 @@ public abstract class BaseSetupPanel extends JPanel implements SetupPanelIFace
      */
     public BaseSetupPanel(final String panelName,
                           final String helpContext,
-                          final JButton nextBtn)
+                          final JButton nextBtn,
+                          final JButton prevBtn)
     {
-        this(panelName, helpContext, nextBtn, false);
+        this(panelName, helpContext, nextBtn, prevBtn, false);
     }
     
     /**
@@ -86,19 +93,34 @@ public abstract class BaseSetupPanel extends JPanel implements SetupPanelIFace
     public BaseSetupPanel(final String panelName,
                           final String helpContext,
                           final JButton nextBtn,
+                          final JButton prevBtn,
                           final boolean makeStretchy)
     {
         this.panelName    = panelName;
         this.helpContext  = helpContext;
         this.nextBtn      = nextBtn;
+        this.prevBtn      = prevBtn;
         this.makeStretchy = makeStretchy;
         
-        this.keyAdapter = new KeyAdapter() {
+        this.keyAdapter = new KeyAdapter() 
+        {
           public void keyPressed(KeyEvent e)
           {
               nextBtn.setEnabled(isUIValid());
           }
         };
+    }
+    
+    /**
+     * @return
+     */
+    protected JProgressBar getProgressBar()
+    {
+        if (progressBar == null)
+        {
+            progressBar = new JProgressBar();
+        }
+        return progressBar;
     }
     
     /**
@@ -124,9 +146,13 @@ public abstract class BaseSetupPanel extends JPanel implements SetupPanelIFace
     public abstract void getValues(Properties props);
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.config.init.SetupPanelIFace#setValues(java.util.Properties)
+     * @see edu.ku.brc.specify.config.init.BaseSetupPanel#setValues(java.util.Hashtable)
      */
-    public abstract void setValues(Properties values);
+    @Override
+    public void setValues(Properties values)
+    {
+        properties = values;
+    }
     
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.config.init.SetupPanelIFace#isUIValid()
@@ -151,6 +177,23 @@ public abstract class BaseSetupPanel extends JPanel implements SetupPanelIFace
      */
     @Override
     public void doingPrev()
+    {
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.config.init.SetupPanelIFace#enablePreviousBtn()
+     */
+    @Override
+    public boolean enablePreviousBtn()
+    {
+        return true;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.config.init.SetupPanelIFace#aboutToLeave(java.beans.PropertyChangeListener)
+     */
+    @Override
+    public void aboutToLeave()
     {
     }
 
@@ -182,8 +225,7 @@ public abstract class BaseSetupPanel extends JPanel implements SetupPanelIFace
     {
         CellConstraints cc = new CellConstraints();
         
-        JTextField txt = isPassword ? createPasswordField(15) : createTextField(15);
-        
+        final JTextField txt = isPassword ? createPasswordField(15) : createTextField(15);
         
         JLabel lbl = createI18NFormLabel(label, SwingConstants.RIGHT);
         if (isRequired)
@@ -201,9 +243,17 @@ public abstract class BaseSetupPanel extends JPanel implements SetupPanelIFace
         
         txt.getDocument().addDocumentListener(new DocumentAdaptor() {
             @Override
-            protected void changed(DocumentEvent e) { updateBtnUI(); }
+            protected void changed(DocumentEvent e) { textChanged(txt); updateBtnUI(); }
         });
         return txt;
+    }
+    
+    /**
+     * @param txt
+     */
+    protected void textChanged(final JTextField txt)
+    {
+        
     }
 
     /**

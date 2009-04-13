@@ -137,7 +137,24 @@ public class NumberingSchemeSetup extends JPanel implements SetupPanelIFace
             }
         });
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.config.init.SetupPanelIFace#aboutToLeave(java.beans.PropertyChangeListener)
+     */
+    @Override
+    public void aboutToLeave()
+    {
+    }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.config.init.SetupPanelIFace#enablePreviousBtn()
+     */
+    @Override
+    public boolean enablePreviousBtn()
+    {
+        return true;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.config.init.SetupPanelIFace#getHelpContext()
      */

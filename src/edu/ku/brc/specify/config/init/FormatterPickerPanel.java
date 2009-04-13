@@ -71,7 +71,9 @@ public class FormatterPickerPanel extends BaseSetupPanel
 {
     protected JCheckBox isNumericChk    = UIHelper.createCheckBox(getResourceString("IS_NUM_CHK"));
     protected JComboBox formatterCBX    = createComboBox(new DefaultComboBoxModel());
-    protected JLabel    isNumericLbl    = createLabel("");
+    protected JLabel    isNumericLbl    = createLabel(" ");
+    protected JLabel    patternLbl      = createLabel(" ");
+    protected JLabel    autoIncLbl      = createLabel(" ");
     
     protected boolean                     doingCatNums;
     protected List<UIFieldFormatterIFace> fmtList;
@@ -85,9 +87,10 @@ public class FormatterPickerPanel extends BaseSetupPanel
     public FormatterPickerPanel(final String panelName, 
                                 final String helpContext,
                                 final JButton nextBtn, 
+                                final JButton prevBtn, 
                                 final boolean doingCatNums)
     {
-        super(panelName, helpContext, nextBtn);
+        super(panelName, helpContext, nextBtn, prevBtn);
         
         this.doingCatNums = doingCatNums;
         
@@ -96,7 +99,8 @@ public class FormatterPickerPanel extends BaseSetupPanel
         loadFormatCbx(null);
 
         CellConstraints cc = new CellConstraints();
-        PanelBuilder    pb = new PanelBuilder(new FormLayout("p,4px,p,2px,p,f:p:g", "p,10px,p,4px,p"), this);
+        PanelBuilder    pb = new PanelBuilder(new FormLayout("p,4px,p,2px,p,f:p:g", "p,10px,p,4px,p,2px,p,2px,p"), this);
+        
         int y = 1;
         String label = getResourceString(doingCatNums ? "CHOOSE_FMT_CAT" : "CHOOSE_FMT_ACC");
         pb.add(createLabel(label, SwingConstants.CENTER), cc.xywh(1, y, 6, 1)); 
@@ -115,6 +119,14 @@ public class FormatterPickerPanel extends BaseSetupPanel
             y +=2;
         }
         
+        pb.add(createI18NFormLabel("PATTERN", SwingConstants.RIGHT), cc.xy(1, y));
+        pb.add(patternLbl, cc.xy(3, y));
+        y +=2;
+
+        pb.add(createI18NFormLabel("IS_AUTO_INC", SwingConstants.RIGHT), cc.xy(1, y));
+        pb.add(autoIncLbl, cc.xy(3, y));
+        y +=2;
+
         nextBtn.setEnabled(false);
 
     }
@@ -169,6 +181,8 @@ public class FormatterPickerPanel extends BaseSetupPanel
                     if (fmt != null)
                     {
                         isNumericLbl.setText(getResourceString(fmt.isNumeric() ? "YES" : "NO"));
+                        patternLbl.setText(fmt.toPattern());
+                        autoIncLbl.setText(getResourceString(fmt.isIncrementer() ? "YES" : "NO"));
                     }
                 }
                 

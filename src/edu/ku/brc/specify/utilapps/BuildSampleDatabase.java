@@ -338,6 +338,11 @@ public class BuildSampleDatabase
         return session;
     }
     
+    public DataType getDataType()
+    {
+        return dataType;
+    }
+    
     public void setSession(Session s)
     {
         session = s;
@@ -437,15 +442,15 @@ public class BuildSampleDatabase
      * @return the entire list of DB object to be persisted
      */
     @SuppressWarnings("unchecked")
-    public void createEmptyInstitution(final Properties props)
+    public boolean createEmptyInstitution(final Properties props, final boolean doCreateDiv, final boolean doCreateDisp)
     {
         AppContextMgr.getInstance().setHasContext(true);
         
         createStep = 0;    
         
-        frame.setProcess(0, 10);
+        if (frame != null) frame.setProcess(0, 10);
         
-        frame.setProcess(++createStep);
+        if (frame != null) frame.setProcess(++createStep);
         
         Institution institution = null;
         
@@ -509,12 +514,16 @@ public class BuildSampleDatabase
         commitTx();
         
         AppContextMgr.getInstance().setClassObject(SpecifyUser.class, specifyAdminUser);
+        AppContextMgr.getInstance().setClassObject(Institution.class, institution);
         
-        frame.setProcess(++createStep);
+        if (frame != null) frame.setProcess(++createStep);
         
-        DisciplineType disciplineType = (DisciplineType)props.get("disciplineType");   
-        createEmptyDivision(institution, disciplineType, specifyAdminUser, props, false);
-        
+        if (doCreateDiv)
+        {
+            DisciplineType disciplineType = (DisciplineType)props.get("disciplineType");   
+            createEmptyDivision(institution, disciplineType, specifyAdminUser, props, doCreateDisp, false);
+        }
+        return true;
     }
     
     /**
@@ -535,9 +544,10 @@ public class BuildSampleDatabase
                                         final DisciplineType disciplineType,
                                         final SpecifyUser    specifyAdminUser, 
                                         final Properties     props,
+                                        final boolean        doCreateDisp,
                                         final boolean        doSetProgressRange)
     {
-        if (doSetProgressRange)
+        if (doSetProgressRange && frame != null)
         {
             frame.setProcess(0, 19);
         }
@@ -545,12 +555,15 @@ public class BuildSampleDatabase
         startTx();
 
         Division division = createDivision(institution, 
-                                          disciplineType.getName(), 
-                                          props.getProperty("divName"), 
-                                          props.getProperty("divAbbrev"), 
-                                          null); //props.getProperty("divTitle");
+                                           disciplineType.getName(), 
+                                           props.getProperty("divName"), 
+                                           props.getProperty("divAbbrev"), 
+                                           null); //props.getProperty("divTitle");
+        
+        frame.incOverall();
         
         //AppContextMgr.getInstance().setClassObject(Division.class, division);   // Needed for creating an Agent
+        persist(division);
         
         String title     = props.getProperty("title",     "");
         String firstName = props.getProperty("firstName", "Test");
@@ -560,7 +573,7 @@ public class BuildSampleDatabase
         String email     = props.getProperty("email");
         String userType  = props.getProperty("userType");
 
-        System.out.println("----- User Agent -----");
+        /*System.out.println("----- User Agent -----");
         System.out.println("Title:     "+title);
         System.out.println("FirstName: "+firstName);
         System.out.println("LastName:  "+lastName);
@@ -568,6 +581,9 @@ public class BuildSampleDatabase
         System.out.println("Abbrev:    "+abbrev);
         System.out.println("Email:     "+email);
         System.out.println("UserType:  "+userType);
+        */
+        
+        frame.incOverall();
         
         Agent userAgent = createAgent(title, firstName, midInit, lastName, abbrev, email, division, null);
         
@@ -576,8 +592,13 @@ public class BuildSampleDatabase
         
         commitTx();
         
-        createEmptyDisciplineAndCollection(division, props, disciplineType, userAgent, specifyAdminUser, true, false);
+        if (doCreateDisp)
+        {
+            createEmptyDisciplineAndCollection(division, props, disciplineType, userAgent, specifyAdminUser, true, false);
+        }
         
+        frame.incOverall();
+
         return division;
     }
     
@@ -615,6 +636,8 @@ public class BuildSampleDatabase
         
         String taxonXML = props.getProperty("TaxonTreeDef.treedefs");
         String geoXML   = props.getProperty("GeographyTreeDef.treedefs");
+        
+        frame.incOverall();
         
         Discipline discipline = createEmptyDiscipline(division, dispName, disciplineType, userAgent,
                                                       preLoadTaxon, taxonXML, geoXML);
@@ -659,7 +682,6 @@ public class BuildSampleDatabase
         log.debug("Out createEmptyDisciplineAndCollection - createStep: "+createStep);
         
         return new Pair<Discipline, Collection>(discipline, collection);
-
     }
     
     /**
@@ -690,6 +712,8 @@ public class BuildSampleDatabase
         GeologicTimePeriodTreeDef gtpTreeDef        = createGeologicTimePeriodTreeDef("Chronos Stratigraphy");
         LithoStratTreeDef         lithoStratTreeDef = createLithoStratTreeDef("LithoStrat");
         
+        frame.incOverall();
+        
         Discipline discipline = createDiscipline(division, 
                                                  disciplineType.getName(), 
                                                  dispTitle, 
@@ -707,6 +731,8 @@ public class BuildSampleDatabase
         persist(userAgent);
         
         commitTx();
+        
+        frame.incOverall();
         
         startTx();
 
@@ -756,8 +782,9 @@ public class BuildSampleDatabase
             commitTx();
             
             convertChronoStratFromXLS(gtpTreeDef);
-            
         }
+        
+        frame.incOverall();
         
         List<Object> geos        = new Vector<Object>();
         //List<Object> lithoStrats = isPaleo ? createSimpleLithoStrat(lithoStratTreeDef, false) : null;
@@ -791,6 +818,8 @@ public class BuildSampleDatabase
             }
         }
         
+        frame.incOverall();
+        
         log.debug(" taxonWasBuilt "+taxonWasBuilt);
         if (!taxonWasBuilt)
         {
@@ -817,6 +846,7 @@ public class BuildSampleDatabase
         }
         
         frame.setProcess(++createStep);
+        frame.incOverall();
         
         createGeographyDefFromXML(geos, geoTreeDef, geoXML);
         
@@ -828,6 +858,7 @@ public class BuildSampleDatabase
         commitTx();
         
         frame.setProcess(++createStep);
+        frame.incOverall();
         
         log.debug(" preLoadTaxon ["+preLoadTaxon+"]");
         log.debug(" fileName     ["+fileName+"]");
@@ -837,6 +868,7 @@ public class BuildSampleDatabase
         }
         
         frame.setProcess(++createStep);
+        frame.incOverall();
 
 //        startTx();
 //        
@@ -853,6 +885,7 @@ public class BuildSampleDatabase
         convertGeographyFromXLS(geoTreeDef);  // this does a startTx() / commitTx()
         
         frame.setProcess(++createStep);
+        frame.incOverall();
         
         log.debug("Out createEmptyDiscipline - createStep: "+createStep);
         
@@ -6896,18 +6929,22 @@ public class BuildSampleDatabase
     {
         if (oList != null)
         {
-            int max = frame.getOrigMax();
+            int max = frame != null ? frame.getOrigMax() : 0;
             
-            frame.setProcess(0, oList.size());
+            if (frame != null) frame.setProcess(0, oList.size());
             int cnt = 0;
             for (Object o: oList)
             {
-                frame.setProcess(++cnt);
+                if (frame != null) frame.setProcess(++cnt);
                 //System.out.println("* " + cnt + " " + o.getClass().getSimpleName());
                 persist(o);
             }
-            frame.setProcess(oList.size());
-            frame.setOrigMax(max);
+            
+            if (frame != null) 
+            {
+                frame.setProcess(oList.size());
+                frame.setOrigMax(max);
+            }
         }
     }
 
@@ -7276,18 +7313,6 @@ public class BuildSampleDatabase
         return isOK;
     }
     
-    /**
-     * Pack and then sets the width to 500px.
-     */
-    public void adjustProgressFrame()
-    {
-        frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-        frame.pack();
-        Dimension size = frame.getSize();
-        size.width = Math.max(size.width, 500);
-        frame.setSize(size);
-    }
-    
     /** 
      * Drops, Creates and Builds the Database.
      * 
@@ -7300,7 +7325,7 @@ public class BuildSampleDatabase
 
         final String dbName = props.getProperty("dbName");
         
-        adjustProgressFrame();
+        frame.adjustProgressFrame();
         
         frame.setTitle("Building Specify Database");
         if (!hideFrame)
@@ -7430,7 +7455,7 @@ public class BuildSampleDatabase
             
             if (hideFrame) System.out.println("Creating Empty Database");
             
-            createEmptyInstitution(props);
+            createEmptyInstitution(props, true, true);
 
             SwingUtilities.invokeLater(new Runnable()
             {

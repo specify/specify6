@@ -101,9 +101,10 @@ public class TreeDefSetupPanel extends BaseSetupPanel implements SetupPanelIFace
                              final String        helpContext,
                              final String        descKey,
                              final JButton       nextBtn,
+                             final JButton       prevBtn,
                              final DisciplinePanel disciplinePanel)
     {
-        super(panelName, helpContext, nextBtn);
+        super(panelName, helpContext, nextBtn, prevBtn);
         
         this.classType       = classType;
         this.classTitle      = classTitle;
@@ -214,7 +215,7 @@ public class TreeDefSetupPanel extends BaseSetupPanel implements SetupPanelIFace
         String fileName = null;
         if (classType == TaxonTreeDef.class)
         {
-            fileName = dType.getName()+ File.separator + "taxon_init.xml";
+            fileName = dType.getFolder()+ File.separator + "taxon_init.xml";
             
         } else if (classType == GeographyTreeDef.class)
         {

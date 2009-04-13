@@ -61,6 +61,13 @@ public abstract class DBMSUserMgr
     public abstract boolean dropDatabase(String dbName);
     
     /**
+     * Drops a user with a given name.
+     * @param username the name of the user's login
+     * @return true on success
+     */
+    public abstract boolean dropUser(String username);
+    
+    /**
      * Checks to see if the DB exists
      * @param dbName the database name
      * @return true if exists

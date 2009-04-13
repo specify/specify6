@@ -47,8 +47,13 @@ public interface SetupPanelIFace
     
     public abstract void doingPrev();
     
+    public abstract void aboutToLeave();
+    
     public abstract void doingNext();
     
+    public abstract boolean enablePreviousBtn();
+    
     public abstract List<Pair<String, String>> getSummary();
-
+    
+    
 }

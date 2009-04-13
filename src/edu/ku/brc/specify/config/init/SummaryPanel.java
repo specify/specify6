@@ -56,9 +56,10 @@ public class SummaryPanel extends BaseSetupPanel
     public SummaryPanel(final String  panelName,
                         final String  helpContext, 
                         final JButton nextBtn,
+                        final JButton prevBtn,
                         final Vector<BaseSetupPanel> panels)
     {
-        super(panelName, helpContext, nextBtn, false);
+        super(panelName, helpContext, nextBtn, prevBtn, false);
         
         this.panels = panels;
         

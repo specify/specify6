@@ -35,6 +35,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingConstants;
+import javax.swing.WindowConstants;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -150,6 +151,18 @@ public class ProgressFrame extends JFrame
 
         
         pack();
+    }
+    
+    /**
+     * Pack and then sets the width to 500px.
+     */
+    public void adjustProgressFrame()
+    {
+        setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        pack();
+        Dimension size = getSize();
+        size.width = Math.max(size.width, 500);
+        setSize(size);
     }
     
     /**

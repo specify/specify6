@@ -239,7 +239,6 @@ public class UserAndMasterPasswordMgr
         
         if (isLocal == null || StringUtils.isEmpty(masterKey))
         {
-            
             if (askToContForCredentials() == JOptionPane.NO_OPTION)
             {
                 return null;

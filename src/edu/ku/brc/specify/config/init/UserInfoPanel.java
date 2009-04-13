@@ -25,8 +25,6 @@ import javax.swing.JButton;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 
-import com.jgoodies.forms.layout.CellConstraints;
-
 import edu.ku.brc.af.ui.PasswordStrengthUI;
 import edu.ku.brc.af.ui.forms.ViewFactory;
 import edu.ku.brc.helpers.Encryption;
@@ -57,9 +55,10 @@ public class UserInfoPanel extends GenericFormPanel
                          final String[] labels, 
                          final String[] fields, 
                          final boolean[] isReq, 
-                         final JButton  nextBtn)
+                         final JButton  nextBtn, 
+                         final JButton  prevBtn)
     {
-        super(name, title, helpContext, labels, fields, isReq, nextBtn, true);
+        super(name, title, helpContext, labels, fields, isReq, nextBtn, prevBtn, true);
     }
 
     /* (non-Javadoc)
@@ -82,8 +81,6 @@ public class UserInfoPanel extends GenericFormPanel
     {
         super.init(title, fields, required, types);
         
-        CellConstraints cc = new CellConstraints();
-        
         PasswordStrengthUI pwdStrength = new PasswordStrengthUI();
         builder.add(createI18NFormLabel("PWDSTRENGTH"), cc.xy(1, row));
         builder.add(pwdStrength,                        cc.xyw(3, row, 2)); row += 2;
@@ -93,8 +90,6 @@ public class UserInfoPanel extends GenericFormPanel
         
         encryptedTF = new JTextField(20);
         ViewFactory.changeTextFieldUIForDisplay(encryptedTF, false);
-        //builder.add(createI18NFormLabel("ENCRYPT_KEY"), cc.xy(1, row));
-        //builder.add(encryptedTF,                        cc.xyw(3, row, 2));
         
         pwdTF.getDocument().addDocumentListener(new DocumentAdaptor() {
             @Override
@@ -105,12 +100,4 @@ public class UserInfoPanel extends GenericFormPanel
         });
     }
 
-    /**
-     * @return the encrypted string for loggin in
-     */
-    public String getEncryptedStr()
-    {
-        return encryptedTF.getText();
-    }
-    
 }

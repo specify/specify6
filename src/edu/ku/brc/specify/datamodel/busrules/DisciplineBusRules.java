@@ -225,7 +225,8 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
         progressFrame.setProcess(0, 17);
         progressFrame.getCloseBtn().setVisible(false);
         progressFrame.setAlwaysOnTop(true);
-        bldSampleDB.adjustProgressFrame();
+        progressFrame.adjustProgressFrame();
+        
         UIHelper.centerAndShow(progressFrame);
         
         SwingWorker<Integer, Integer> bldWorker = new SwingWorker<Integer, Integer>()
@@ -293,10 +294,6 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
                 
                 progressFrame.setVisible(false);
                 progressFrame.dispose();
-                
-                System.out.println(pair);
-                System.out.println(pair.first);
-                System.out.println(pair.second);
                 
                if (pair != null && pair.first != null && pair.second != null)
                {

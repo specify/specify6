@@ -63,7 +63,8 @@ public class GenericFormPanel extends BaseSetupPanel
     protected DataGetterForObj getter    = null;
     protected DataSetterForObj setter    = null;
     protected Hashtable<String, Boolean> reqHash  = null;
-
+    
+    protected CellConstraints       cc = new CellConstraints();
     protected PanelBuilder          builder   = null;
     protected int                   row       = 1;
     protected String[]              labels;
@@ -76,9 +77,10 @@ public class GenericFormPanel extends BaseSetupPanel
      */
     public GenericFormPanel(final String panelName,
                             final String helpContext,
-                            final JButton nextBtn)
+                            final JButton nextBtn,
+                            final JButton prevBtn)
     {
-        this(panelName, helpContext, nextBtn, false);
+        this(panelName, helpContext, nextBtn, prevBtn, false);
     }
 
     /**
@@ -90,9 +92,10 @@ public class GenericFormPanel extends BaseSetupPanel
     public GenericFormPanel(final String panelName,
                             final String helpContext,
                             final JButton nextBtn,
+                            final JButton prevBtn,
                             final boolean makeStretchy)
     {
-        super(panelName, helpContext, nextBtn, makeStretchy);
+        super(panelName, helpContext, nextBtn, prevBtn, makeStretchy);
     }
 
     /**
@@ -110,9 +113,10 @@ public class GenericFormPanel extends BaseSetupPanel
                             final String[] labels,
                             final String[] fields, 
                             final JButton  nextBtn,
+                            final JButton  prevBtn,
                             final boolean makeStretchy)
     {
-        this(null, name, title, helpContext, labels, fields, (boolean[])null, nextBtn, makeStretchy);
+        this(null, name, title, helpContext, labels, fields, (boolean[])null, nextBtn, prevBtn, makeStretchy);
     }
     
     /**
@@ -132,9 +136,10 @@ public class GenericFormPanel extends BaseSetupPanel
                             final String[] fields, 
                             final boolean[] required, 
                             final JButton  nextBtn,
+                            final JButton prevBtn,
                             final boolean makeStretchy)
     {
-        this(null, name, title, helpContext, labels, fields, required, nextBtn, makeStretchy);
+        this(null, name, title, helpContext, labels, fields, required, nextBtn, prevBtn, makeStretchy);
         
     }
     
@@ -158,9 +163,10 @@ public class GenericFormPanel extends BaseSetupPanel
                             final String[] fields, 
                             final boolean[] required, 
                             final JButton  nextBtn,
+                            final JButton  prevBtn,
                             final boolean makeStretchy)
     {
-        super(name, helpContext, nextBtn);
+        super(name, helpContext, nextBtn, prevBtn);
         
         this.dataObj      = dataObj;
         this.fieldsNames  = fields;
@@ -187,9 +193,10 @@ public class GenericFormPanel extends BaseSetupPanel
                             final String[] fields, 
                             final String[] types, 
                             final JButton  nextBtn,
+                            final JButton  prevBtnBtn,
                             final boolean makeStretchy)
     {
-        super(name, helpContext, nextBtn);
+        super(name, helpContext, nextBtn, prevBtnBtn);
         
         this.dataObj      = null;
         this.fieldsNames  = fields;
@@ -209,7 +216,6 @@ public class GenericFormPanel extends BaseSetupPanel
                         final boolean[] required, 
                         final String[]  types)
     {
-        CellConstraints cc = new CellConstraints();
         
         Pair<String, String> rowCol = getRowColDefs();
         
@@ -267,9 +273,8 @@ public class GenericFormPanel extends BaseSetupPanel
      */
     protected Pair<String, String> getRowColDefs()
     {
-        return new Pair<String, String>("p,2px,p,f:p:g", 
-                                        "p,5px," + createDuplicateJGoodiesDef("p", "2px", fieldsNames.length) +
-                                        getAdditionalRowDefs() + ",p:g");
+        String rowDef = "p,5px" + (fieldsNames.length > 0 ? ","+createDuplicateJGoodiesDef("p", "2px", fieldsNames.length) : "") + getAdditionalRowDefs() + ",p:g";
+        return new Pair<String, String>("p,2px,p,f:p:g", rowDef);
     }
     
     /**
@@ -353,6 +358,8 @@ public class GenericFormPanel extends BaseSetupPanel
     @Override
     public void setValues(final Properties values)
     {
+        properties = values;
+        
         for (String fName : comps.keySet())
         {
             JComponent comp = comps.get(fName);

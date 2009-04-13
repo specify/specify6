@@ -176,6 +176,29 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
         } catch (Exception ex)
         {
             ex.printStackTrace();
+        }   
+        
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.DBMSUserMgr#dropUser(java.lang.String)
+     */
+    @Override
+    public boolean dropUser(String username)
+    {
+        try
+        {
+            if (connection != null)
+            {
+                int rv = BasicSQLUtils.update(connection, "DROP USER "+username);
+                
+                return rv == 0;
+            }
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
         }
         
         return false;
