@@ -18,10 +18,9 @@
 -->
 		  <tocitem text="About Specify" target="About">
 		    <tocitem text="Overview" target="About"/>
-			    <tocitem text="Queries" target="Sample_Queries"/>
-				<tocitem text="Reports" target="Sample_Reports"/>
-				<tocitem text="Labels" target="Sample_Labels"/>
-			</tocitem>
+			<tocitem text="Queries" target="Sample_Queries"/>
+			<tocitem text="Reports" target="Sample_Reports"/>
+			<tocitem text="Labels" target="Sample_Labels"/>
 			<tocitem text="Using Help" target="Using_Help"/>
 		  </tocitem>
 		  
