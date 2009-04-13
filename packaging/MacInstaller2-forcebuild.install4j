@@ -372,7 +372,7 @@
                 <object class="com.install4j.runtime.beans.screens.CustomizableInfoScreen">
                   <void property="displayedTextFile">
                     <object class="com.install4j.api.beans.ExternalFile">
-                      <string>../InstallerFiles/changelog.html</string>
+                      <string>../InstallerFiles/readme.html</string>
                     </object>
                   </void>
                   <void property="subTitle">
