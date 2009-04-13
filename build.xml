@@ -251,8 +251,9 @@
 		<copy file="packaging/license_agreement.html" todir="${installer.dir}" />
 		<copy file="./packaging/SpecifyBigSplashBordered.png" todir="${installer.dir}" />
 		<rename src="${installer.dir}/SpecifyBigSplashBordered.png" dest="${installer.dir}/SpecifyBigSplash.png"/>
-        <copy file="./demo_files/Stratigraphy.csv" todir="${installer.dir}/config" />
-        <copy file="./demo_files/Stratigraphy.csv" todir="${installer.dir}/config" />
+     <!--  
+     	<copy file="./demo_files/Stratigraphy.csv" todir="${installer.dir}/config" />
+        <copy file="./demo_files/Stratigraphy.csv" todir="${installer.dir}/config" /> -->
 		<copy file="./demo_files/topbrc4.jpg" todir="${installer.dir}/demo_files" />
         <copy file="./demo_files/topbrc195x68.png" todir="${installer.dir}/demo_files" />
         <copy file="./demo_files/Geography.xls" todir="${installer.dir}/demo_files" />
