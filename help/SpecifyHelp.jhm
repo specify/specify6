@@ -98,7 +98,6 @@
    <mapID target="WorkbenchPreferences" url="SpecifyHelp/Workbench/Preferences.html"/>
    <mapID target="PreferencesOverview" url="SpecifyHelp/Prefs/Prefs.html"/>
    <mapID target="PreferencesOverview" url="SpecifyHelp/Prefs/Prefs.html"/>
-   <mapID target="Search" url="SpecifyHelp/Search/Search.html"/>
    <mapID target="WorkbenchSpecialTools" url="SpecifyHelp/Workbench/SpecialTools.html"/>
    <mapID target="Config_Overview" url="SpecifyHelp/Configuration/config_overview.html"/>
    <mapID target="iReport" url="SpecifyHelp/ReportsLabels/specifyireports.html"/>

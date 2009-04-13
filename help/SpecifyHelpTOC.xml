@@ -18,8 +18,6 @@
 -->
 		  <tocitem text="About Specify" target="About">
 		    <tocitem text="Overview" target="About"/>
-		    <tocitem text="User Forums" target="Forum"/>
-			<tocitem text="Sample Resources" target="Sample_Resources">
 			    <tocitem text="Queries" target="Sample_Queries"/>
 				<tocitem text="Reports" target="Sample_Reports"/>
 				<tocitem text="Labels" target="Sample_Labels"/>
@@ -30,7 +28,7 @@
 		  <tocitem text="Welcome to Specify" target="Welcome">
 		  	<tocitem text="Registration" target="Registration"/>
 			<tocitem text="Services and Support" target="Services"/>
-            <tocitem text="PHUI Information" target="PHUI"/>
+            <tocitem text="Usage and Usability Statistics" target="PHUI"/>
 			<tocitem text="Updating" target="Updating"/>
 			<tocitem text="Contact Information" target="Contact_Information"/>
 		  </tocitem>

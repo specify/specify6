@@ -49,28 +49,26 @@
 </ul>
 <p>Users can be added to more than one group within different Disciplines, but should not be added to both a Discipline and Collection within the same Discipline.</p>
 <p>An Administrator group also exists outside the Institutional Hierarchy. An Administrator is automatically given full access to all data and tools inside Specify. Administrators are the only users with access to the Backup and Restore, Schema Configuration, Resource Import/Export, Configuration, WorkBench Schema Configuration and Security tools. At this time an Administrator must also belong to a Collection inside the Institutional Hierarchy for the purpose of opening Specify to a Collection. If Specify was originally configured by running the Specify Setup Wizard the original user was placed in both the Administrator group and Manager group in the Collection that was created by the Wizard.</p>
-<p>&nbsp;</p>
- <h4><a name="add_user" id="add_user"></a>Adding Users</h4>
-<p>Right-click on the  appropriate Group name within the applicable Institution level to add a user to a group. A dialog will appear to either add a new user or existing user. </p>
- <p><u>Existing User</u></p>
- <p>This is the beauty of implementing the Institutional Heirarchy at the Security level; users can be given unique permissions to different collections without needing more than one password. Simply choose a User from the ensueing dialog to add them.</p>
-<p><u>New User</u></p>
- <p>Users are added in the Specify User dialog. </p>
- <ul>
-   <li><strong>Name</strong> refers to the username the user will use to login to Specify. Once the username is saved it may not be edited.</li>
+<p>Buttons for adding and deleting users are found on the bottom left of the work work space under the institution tree.</p>
+ <h3><a name="add_user" id="add_user"></a>Add A User</h3>
+<p><img src="../../images/add_existing_user.png" width="30" height="24" /> <u>Existing User</u></p>
+ <p>Click the desired group (within the desired Collection), then click the <em>Add an Existing User to Group</em> button. A list of existing users will appear, choose the desired user from the list and click the <em>OK</em> button.</p>
+<p><img src="../../images/add_new_user.png" width="30" height="24" /> <u>New User</u></p>
+ <p>Click the desired group (within the desired collection), then click the Add a New User to the Group. The Specify User form will appear to add the information for the new user. </p>
+<ul>
+  <li><strong>Name</strong> refers to the username the user will use to login to Specify. Once the username is saved it may not be edited.</li>
    <li><strong>Password</strong> is the password the user will use to login to Specify. Passwords can be edited at a later date either in Security Tools or by choosing <em>Help &gt; Change Password</em>.</li>
    <li><strong>Email </strong></li>
    <li><strong>Agent</strong> refers to the data in the Agent table. All users must be Agents. If the user already exists within the table  type the first few letters in the name and either type the down-arrow key.</li>
    <li><strong>Key</strong> refers to the encrypted Master Username and Password. Simply fill in all the information within the dialog and click the <em>Generate New Key</em> button. The key can not be created without the Name and Password information. The key is stored locally and will therefore need to be given to the user and entered by the user at the time of their first login to Specify. For more information regarding this key please refer to <a href="../Security/security.html">Security</a>.</li>
  </ul>
+<h3><a name="delete_user" id="delete_user"></a>Delete a User </h3>
+ <p>Security offers two buttons for deleting a user:</p>
+<p><strong><img src="../../images/delete_user_total.png" width="30" height="24" /> </strong><u>Delete User</u>  is enabled for users that do not exist in any other group or collection. This will delete the user within the Security tool, but their information will remain in the Agent table.</p>
+<p><strong><img src="../../images/delete_user_group.png" width="30" height="24" /> </strong><u>Remove User from Group</u> is enabled when users are part of another group in another collection. This will only remove the user from the selected group/collection.</p>
+ <p>Click on a user to enable the relevant delete button.</p>
  <p>&nbsp;</p>
- <h3><a name="delete_user" id="delete_user"></a>Delete a User </h3>
- <p>Right-click on a user within the Institution tree. A context menu will appear with one of two choices enabled:</p>
- <p><strong>Delete user (username)</strong> is enabled for users that do not exist in any other group or Collection. This will delete the user within the Security tool.</p>
- <p><strong>Remove user (username) from group</strong> is enabled when users are part of another group in another collection. This will only remove the user from the selected group/Collection.</p>
- <p>&nbsp;</p>
-<p>&nbsp;</p>
- <h3><strong><u><a name="set_permissions" id="set_permissions"></a> Permissions</u></strong></h3>
+<h3><strong><u><a name="set_permissions" id="set_permissions"></a> Permissions</u></strong></h3>
  <h4>Setting User Permissions</h4>
 <p>Specify 6.0 grants default permissions to each User Group within Specify. These permissions are then passed down to each User within the Group. The permissions for the individual user can either be left unchanged and therefore remain exactly like the Group, or be edited for that user. When editing permissions for individual users permissions for tables and tools can be added, but not removed. </p>
 <h4>Group Permissions</h4>
