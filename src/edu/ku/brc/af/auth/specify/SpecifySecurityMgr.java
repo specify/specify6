@@ -130,15 +130,14 @@ public class SpecifySecurityMgr extends SecurityMgr
                 }                    
                 dbPassword = result.getString(result.findColumn("Password")); //$NON-NLS-1$
                 
-                if (StringUtils.isNotEmpty(dbPassword))
+                if (StringUtils.isNotEmpty(dbPassword) && 
+                    StringUtils.isAlphanumeric(dbPassword) &&
+                    isAllCaps(dbPassword) && 
+                    dbPassword.length() > 20)
                 {
-                    if (dbPassword.length() > 40)
-                    {
-                        dbPassword = Encryption.decrypt(dbPassword, pass);
-                    }
+                    dbPassword = Encryption.decrypt(dbPassword, pass);
                 }
                 break;
-                
             }
 
             /*if (dbPassword == null)
@@ -182,6 +181,23 @@ public class SpecifySecurityMgr extends SecurityMgr
             }
         }
         return passwordMatch;
+    }
+    
+    /**
+     * @param str
+     * @return
+     */
+    public static boolean isAllCaps(final String str)
+    {
+        for (int i=0;i<str.length();i++)
+        {
+            char ch = str.charAt(i);
+            if (Character.isLetter(ch) && Character.isLowerCase(ch))
+            {
+                return false;
+            }
+        }
+        return true;
     }
     
     // XXX should be moved to PermissionService class

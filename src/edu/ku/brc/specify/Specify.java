@@ -102,6 +102,7 @@ import com.jgoodies.looks.plastic.theme.ExperienceBlue;
 
 import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.auth.UserAndMasterPasswordMgr;
+import edu.ku.brc.af.auth.specify.SpecifySecurityMgr;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.FrameworkAppIFace;
 import edu.ku.brc.af.core.MacOSAppHandler;
@@ -2401,13 +2402,22 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         {
             // XXX Temporary Fix!
             SpecifyUser spUser = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
-            if (spUser != null && spUser.getPassword() != null && spUser.getPassword().length() < 40)
+            
+            
+            if (spUser != null)
             {
-                String encryptedPassword = Encryption.encrypt(spUser.getPassword(), spUser.getPassword());
-                System.out.println(encryptedPassword+"  "+encryptedPassword.length());
-                String updateSQL         = String.format("UPDATE specifyuser set Password ='%s'", encryptedPassword);
-                int rv = BasicSQLUtils.update(updateSQL);
-                log.debug("Password " + (rv == 1 ? "was" : "was NOT") + " converted.");
+                String dbPassword = spUser.getPassword();
+                
+                if (StringUtils.isNotEmpty(dbPassword) && 
+                        StringUtils.isAlphanumeric(dbPassword) &&
+                        SpecifySecurityMgr.isAllCaps(dbPassword) && 
+                        dbPassword.length() > 20)
+                {
+                    String encryptedPassword = Encryption.encrypt(spUser.getPassword(), spUser.getPassword());
+                    String updateSQL         = String.format("UPDATE specifyuser set Password ='%s'", encryptedPassword);
+                    int rv = BasicSQLUtils.update(updateSQL);
+                    log.debug("Password " + (rv == 1 ? "was" : "was NOT") + " converted.");
+                }
             }
         }
         

@@ -908,7 +908,7 @@ public class DatabaseLoginPanel extends JTiledPanel
                                                    getConnectionStr(), 
                                                    usrPwd.first, 
                                                    usrPwd.second);
-                    if (masterUsrPwdProvider != null)
+                    if (isLoggedIn && masterUsrPwdProvider != null)
                     {
                         isLoggedIn &= jaasLogin();
                     }
