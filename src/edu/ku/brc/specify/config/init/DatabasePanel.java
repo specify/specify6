@@ -152,7 +152,7 @@ public class DatabasePanel extends BaseSetupPanel
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                testConnection();
+                createDB();
             }
         });
         
@@ -226,8 +226,10 @@ public class DatabasePanel extends BaseSetupPanel
     /**
      * 
      */
-    public void testConnection()
+    public void createDB()
     {
+        getValues(properties);
+        
         if ((isOK == null || !isOK) && verifyDatabase(properties))
         {
             progressBar.setIndeterminate(true);

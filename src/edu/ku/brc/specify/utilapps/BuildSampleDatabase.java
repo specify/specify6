@@ -150,6 +150,7 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.HibernateUtil;
+import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
@@ -499,7 +500,8 @@ public class BuildSampleDatabase
         String email    = props.getProperty("email");
         String userType = props.getProperty("userType");
 
-        SpecifyUser specifyAdminUser = DataBuilder.createAdminGroupAndUser(session, institution, username, email, password, userType);
+        String encrypted = Encryption.encrypt(password, password);
+        SpecifyUser specifyAdminUser = DataBuilder.createAdminGroupAndUser(session, institution, username, email, encrypted, userType);
         
         ////////////////////////////////
         // Create the really high-level stuff

@@ -150,6 +150,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.dbsupport.QueryExecutor;
 import edu.ku.brc.exceptions.ExceptionTracker;
+import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.DebugLoggerDialog;
@@ -2370,6 +2371,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                            final boolean startOver, 
                            final boolean firstTime)
     {
+        
         log.debug("restartApp"); //$NON-NLS-1$
         if (dbLoginPanel != null)
         {
@@ -2395,6 +2397,19 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         // NOTE: AppPreferences.startup(); is called inside setContext's implementation.
         //
         AppContextMgr.CONTEXT_STATUS status = AppContextMgr.getInstance().setContext(databaseNameArg, userNameArg, startOver);
+        if (status == AppContextMgr.CONTEXT_STATUS.OK)
+        {
+            // XXX Temporary Fix!
+            SpecifyUser spUser = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
+            if (spUser != null && spUser.getPassword() != null && spUser.getPassword().length() < 40)
+            {
+                String encryptedPassword = Encryption.encrypt(spUser.getPassword(), spUser.getPassword());
+                System.out.println(encryptedPassword+"  "+encryptedPassword.length());
+                String updateSQL         = String.format("UPDATE specifyuser set Password ='%s'", encryptedPassword);
+                int rv = BasicSQLUtils.update(updateSQL);
+                log.debug("Password " + (rv == 1 ? "was" : "was NOT") + " converted.");
+            }
+        }
         
         UsageTracker.setUserInfo(databaseNameArg, userNameArg);
         

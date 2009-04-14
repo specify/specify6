@@ -34,6 +34,7 @@ import java.util.Set;
 import javax.security.auth.Subject;
 import javax.security.auth.login.LoginException;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.auth.JaasContext;
@@ -41,6 +42,7 @@ import edu.ku.brc.af.auth.PermissionSettings;
 import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.auth.specify.permission.BasicSpPermission;
 import edu.ku.brc.af.auth.specify.permission.PermissionService;
+import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
 
 /**
@@ -127,6 +129,16 @@ public class SpecifySecurityMgr extends SecurityMgr
                     throw new LoginException("authenticateDB - Ambiguous user (located more than once): " + user); //$NON-NLS-1$
                 }                    
                 dbPassword = result.getString(result.findColumn("Password")); //$NON-NLS-1$
+                
+                if (StringUtils.isNotEmpty(dbPassword))
+                {
+                    if (dbPassword.length() > 40)
+                    {
+                        dbPassword = Encryption.decrypt(dbPassword, pass);
+                    }
+                }
+                break;
+                
             }
 
             /*if (dbPassword == null)
