@@ -8631,20 +8631,28 @@ public class BuildSampleDatabase
         {
             if (TaxonIndexNames[inx] != null)
             {
-                int index = taxonIndexes.get(TaxonIndexNames[inx].toLowerCase());
-                String data = cells[index];
-                if (StringUtils.isNotEmpty(data))
-                {
-                    sb.append(",");
-                    if (doFieldNames)
-                    {
-                        sb.append(TaxonFieldNames[inx]);
-                    } else
-                    {
-                        data = StringUtils.replace(data, "'", "\\\'");
-                        sb.append("'" + data + "'");    
-                    }
-                }
+                //XXX - temporary work-around for initialization problems (bug #7204) when botany sample
+            	//taxon is loaded. Skipping  block if gotten is null results in common names
+            	//(for botany) not being loaded.
+            	Integer gotten = taxonIndexes.get(TaxonIndexNames[inx].toLowerCase());
+            	if (gotten != null)
+            	{
+            	
+            		int index = gotten;
+            		String data = cells[index];
+            		if (StringUtils.isNotEmpty(data))
+            		{
+            			sb.append(",");
+            			if (doFieldNames)
+            			{
+            				sb.append(TaxonFieldNames[inx]);
+            			} else
+            			{
+            				data = StringUtils.replace(data, "'", "\\\'");
+            				sb.append("'" + data + "'");    
+            			}
+            		}
+            	}
             }
         }
     }

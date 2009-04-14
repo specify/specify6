@@ -502,14 +502,14 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
         final JStatusBar nStatusBar = useProgDlg ? null : UIRegistry.getStatusBar();        
         final ProgressDialog progDlg = nStatusBar != null ? null :
             new ProgressDialog(UIRegistry.getResourceString("BaseTreeDef.UPDATING_TREE_DLG"), false, false);
-        progDlg.setResizable(false);
-        progDlg.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
         if (nStatusBar != null)
         {
             nStatusBar.setProgressRange(nodeNumberer.getProgressName(), 0, 100);
         }
         else
         {
+        	progDlg.setResizable(false);
+        	progDlg.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
             progDlg.setModal(true);
             progDlg.setProcess(0,100);
             progDlg.setProcessPercent(true);
