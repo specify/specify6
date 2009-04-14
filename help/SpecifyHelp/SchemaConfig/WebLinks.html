@@ -14,26 +14,26 @@
 <table border="0">
   <tr><td width="32"><img src="../../images/weblink.png" width="32" height="32" /></td>
 <td><h2>Web Links</h2></td></tr></table>
-<p>Many web sites currently offer services that Collection Managers find useful when entering or evaluating data within a collection. Specify includes a Web Links Editor that configures links to web addresses and can then launch an URL by clicking a web link button. </p>
+<p>Many web sites currently offer services that Collection Managers find useful when entering or evaluating data within a collection. Specify includes a Web Links Editor that configures links to web addresses and can then launch a browser by clicking a web link button. </p>
 <p>At this time web links can not be inserted into forms automatically without editing the form manually. To do this the form will need to be exported out of Specify, edited and imported back into Specify. For this reason Web Links should NOT be defined until the new form containing the Web Link has been imported into Specify. </p>
 <p>There are 4 types of web links. Each link requires that a button be placed on a form and configures that button for one of the following types of web link. </p>
-<p>1. A Global web link is not linked to a table or field, but offers a prompt for a value before launching. </p>
+<p><strong>1</strong>. A Global web link is not linked to a table or field, but offers a prompt for a value before launching. </p>
 <p><strong>2.</strong> A Field link sends data from an existing field to a web service, causing it to open to a specific page based on that data. </p>
-<p><strong>3.</strong> A New Field link creates a new field (not included in the Specify Schema) and launches the web site to a specific page based on teh data in that field when the <em>Web Link</em> button is pushed. This link would require that a field be added to a form next to the web link button.</p>
-<p><strong>4.</strong> A URL Field link allows an URL to be entered into a field, then launches the URL by clicking the web link button. This link would require that a field be added to a form next to the web link button.</p>
+<p><strong>3.</strong> A New Field link creates a new field (not included in the Specify Schema) and launches the web site to a specific page based on the data in that field when the <em>Web Link</em> button is pushed. This link would require that a field be added to a form next to the web link button.</p>
+<p><strong>4.</strong> A URL Field link allows a URL to be entered into a field, then launches a browser and connects to the URL by clicking the web link button. This link would require that a field be added to a form next to the web link button.</p>
 <p>Web links are created using the Web Link Editor. It is highly recommended that the Desc (description) field in the Web Link Editor contain a description of exactly how the web link should work. This will be very useful when editing a form to include the web link as well as for future reference.</p>
 <p>&nbsp;</p>
 <h4>Web Link Editors</h4>
 <p>The Web Links editor can be opened from three different areas in Specify. </p>
-<p><u>System Configuration</u> (<em>System &gt; Collection Setup &gt; Configuration</em>) editor can be used to create a Global Web Link only and can edit any link. </p>
-<p><u>Schema Configuration Table</u> (<em>System &gt; Schema Configuration</em>) then choose a table from the Tables list and click the <em>...</em> (dialog) button next to the Web Links field. This editor can create a Global, Field or New Field link.</p>
-<p><a name="web_link_field" id="web_link_field"></a><u>Schema Configuration Field</u> (<em>System &gt; Schema Configuration</em>) then choose a table from the Tables list and a field from the Fields list.Then, in the Field pane, click the <em>Format Type</em> button and choose <em>Web Link</em> from the resulting list. This editor can create any of the web link types and is the only editor that can complete the creation of the URL Field link.</p>
-<p>Once a web link is created it will display in the Pick List next to the ... (dialog) button. When creating a Global, Field or New Field web link the name of the web link will need to be chosen from the pick list to link to the field. When creating an URL Field link the pick list will need to say 'none'.</p>
+<p><u>System Configuration</u> (<em>System &gt; Collection Setup &gt; Configuration</em>); choose the Web Link from the side bar. This Web Link editor can be used to create a Global Web Link only and can edit any link. </p>
+<p><u>Schema Configuration Table</u> (<em>System &gt; Schema Configuration</em>); choose a table from the Tables list and click the <em>...</em> (dialog) button next to the Web Links field. This editor can create a Global, Field or New Field link.</p>
+<p><a name="web_link_field" id="web_link_field"></a><u>Schema Configuration Field</u> (<em>System &gt; Schema Configuration</em>);  choose a table from the Tables list and a field from the Fields list.Then, in the Field pane, click <em>Field Format Type</em> button and choose <em>Web Link</em> from the resulting list. This editor can create any of the web link types and is the only editor that can complete the creation of the URL Field link.</p>
+<p>Once a web link is created it will display in the Pick List next to the ... (dialog) button. When creating a Global, Field or New Field web link the name of the web link will need to be chosen from the pick list to link to the field. When you create a URL Field link, the pick list will need to say 'none'.</p>
 <p>&nbsp;</p>
 <h4><a name="web_global" id="global"></a>Global Web Link</h4>
 <p>A global link is useful when a field does not exist for the information required by a web service. It can be created in the System Configuration (<em>System &gt; Collection Setup &gt; Configuration</em>) or the Schema Configuration (<em>System &gt; Schema Configuration</em>). </p>
 <p>Open the Web Link Editor by one of the methods above.</p>
-<p>Buttons at the  bottom of the dialog offers the following:</p>
+<p>Buttons at the  bottom of the dialog offer the following:</p>
 <ul>
   <li><img src="../../images/Edit-2-16x16.png" alt="edit" width="16" height="16" /> (edit) opens the Web Link Editor for editing a saved web link.</li>
   <li><img src="../../images/delete.png" alt="delete" width="16" height="16" /> (delete) removes the web link.</li>
@@ -46,7 +46,7 @@
   <li>Type the name you wish the prompt to use at the end of the url with brackets on each end. Example; &lt;climate&gt;</li>
 </ul>
 <p>The name of the prompt will appear in both a Name and Title field in the editor. The Title is editable and is what will display for the prompt. The Name will appear in the web link lists. </p>
-<p>More than one prompt can be added by simply adding brackets, they do not require a separator</p>
+<p>More than one prompt can be added by simply adding brackets; they do not require a separator.</p>
 <h4>&nbsp;</h4>
 <h4><a name="web_field" id="web_field"></a>Field Link</h4>
 <p>A Field Link  can be very useful when linking to additional information for a particular specimen. This type of link is very useful for web services that return data based on data that is offered. For instance, FishBase returns information about a particular specimen based on genus and species information. This web link would be configured to include the genus and species field from a record and launch to the exact page rather than the Fish Base home page. </p>

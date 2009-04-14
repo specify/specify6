@@ -13,22 +13,22 @@
 </table>
 <h2>Editing the Schema Configuration</h2>
 <p>Schema refers to the many tables and fields that systematize the many dimensions and relationships of the data within biological collections. The Schema Configuration module is a highly functional, though somewhat complex, set of tools created to configure the Specify schema for individual discipline needs. Changes made in the Schema Configuration tool will affect all collections within a discipline and can be used to individualize Specify for each discipline.</p>
-<p>Changes made within the Schema Configuration tool affect some very sensitive areas of the database and require the Specify application to shut down. For this reason, all tabs must be closed before the tool will open, and when changes are saved within the Schema Configuration tool the Specify application will shut down and will need to be restarted. It is a good practice to save all changes within any open tabs before opening the Schema Configuration. </p>
+<p>Changes made within the Schema Configuration tool affect some very sensitive areas of the database and require the Specify application to shut down. For this reason, all tabs must be closed before the tool will open, and when changes are saved within the Schema Configuration tool the Specify application will shut down and will need to be restarted. You will be prompted to save all changes within any open tabs before opening the Schema Configuration. </p>
 <p>The tools in the Schema Configuration provide the following functions:</p>
 <ul>
   <li>Hide unused tables or fields.</li>
   <li>Change the captions, or display names, of tables and fields in Specify. These are displayed on forms and in searches. The names in the database  are not editable, but the  captions can be edited.</li>
   <li>Edit descriptions (usage notes) for tables and fields. These can be viewed from within a form by double-clicking on the caption.</li>
-  <li>Create a format for a table. This allows one or more fields to represent a table on a form (Query Combo Box) or in a search result. For example, an Agent is usually represented by the Last Name and First Name fields.</li>
-  <li>Create or edit an aggregatation for a table. A related table with a one-to-many relationship to the primary table combines records into one record typically separated by a semi colon.</li>
-  <li>Designate a field as being required. This is reflected on forms and in the WorkBench uploader. Data entered in a form can not be saved unless all required fields containing data.</li>
+  <li>Create a format for a table. This allows one or more fields to represent a table on a form (Query Combo Box) or in a search result. For example, an Agent is sometimes represented by the Last Name and First Name fields, separated by a comma.</li>
+  <li>Create or edit an aggregatation for a table. A related table with a one-to-many relationship to the primary table combines records into a single record typically separated by semi colons.</li>
+  <li>Designate a field as being required. This is reflected on forms and in the WorkBench uploader. A record can not be saved unless all required fields containing data.</li>
   <li>Format a Field as a Pick List, Weblink or Field Format.</li>
 </ul>
-<p>Close all tabs before opening Schema Configuration. Open Schema Configuration by clicking <em>System &gt; Schema Configuration</em>. The Schema Configuration tool (and menu) is only available to users in a Manager or Administrators group.</p>
+<p>Close all tabs and save any changes before opening Schema Configuration (you will be prompted). Open Schema Configuration by clicking <em>System &gt; Schema Configuration</em>. The Schema Configuration tool (and menu) is only available to users in a Manager or Administrators group.</p>
 <ul>
-  <li>In the resulting dialog choose English for the Available Locales. The current release of Specify has not been translated and does not offer other languages. Because the Specify project is Open Source, any third parties that are interested in translating Specify could easily do so. If you are interested in translating Specify please contact the Specify Project at <a href="mailto:specify@ku.edu">specify@ku.edu</a>. </li>
+  <li>In the resulting dialog choose English for the Available Locales. The current release of Specify has not been translated and does not offer other languages. Because the Specify project is Open Source, any third parties that are interested in translating Specify could easily do so, but would be required to send the changes to the Specify project. If you are interested in translating Specify please contact the Specify Project at <a href="mailto:specify@ku.edu">specify@ku.edu</a>. </li>
   <br />
-  <li>Next,  click the <em>Edit a Schema</em> button in the Tasks section of the dialog. Future releases of Specify will allow schemas to be both imported and exported. This can be a very powerful tool for collecting communities to share information. A Collection Manager that has both the Schema Configuration and the forms changed to manage their discipline could share both with the entire community, allowing all Collection Managers to have the exact same set-up for their collection data.</li>
+  <li>Next,  click the <em>Edit a Schema</em> button in the Tasks section of the dialog. Future releases of Specify will allow schemas to be both imported and exported. This would allow communities to share common schema configurations. A Collection Manager who has both the Schema Configuration and the forms changed to manage their discipline could share both with the entire community, allowing all Collection Managers to have the exact same set-up for their collection data.</li>
 </ul>
 <p>&nbsp;</p>
 <p>The Schema Configuration tool opens with the schema listed on the left side and the tools on the right. The top left pane titled 'Tables' lists all the tables in the Specify schema. The bottom left pane titled 'Fields' lists the fields for each table. Click a table to display the available fields. Many of the fields listed are related fields, which belong to other tables. This will be discussed in more detail later. </p>
@@ -36,11 +36,12 @@
 <h3>Common Tools</h3>
 <p>The following tools within the Schema Configuration are the same for both tables and fields.</p>
 <h4><a name="change_caption" id="change_caption"></a><u>Change a Caption for a Table or Field</u></h4>
-<p>The first tool  is  <em>Caption</em> and is available for both Tables and Fields. Simply select a table or field from the appropriate list and type the new name into the <em>Caption</em> field. The new caption will appear on forms, in Query Creators and the Simple Search Configuration tool.</p>
+<p>The first tool  is  <em>Caption</em> and is available for both Tables and Fields. Simply select a table or field from the appropriate list and type the new name into the <em>Caption</em> field. The new caption will appear on forms, in the list of Query Creators and the Simple Search Configuration tool.</p>
 <p><em><strong>Note:</strong></em> Only fields that are included on existing forms will reflect these caption changes.</p>
 <h4>&nbsp;</h4>
 <h4><u><a name="hide_table" id="hide_table"></a>Hide Table / Field</u></h4>
-<p>Tables and fields that are not used by a particular discipline can be hidden. This will remove them from the Query Creators list and Simple Search Configuration choices. This will not remove the fields from forms. Data can still be added to the forms in the hidden field and will be saved in the database. This tool is mainly used to clean the lists presented for creating queries and simple searches. The hidden fields will not be removed from previously saved queries or reports. </p>
+<p>Tables and fields that are not used by a particular discipline can be hidden. This will remove them from the Query Creators list and Simple Search Configuration choices. This will not remove fields from forms. Data can still be added to the forms in the hidden field and will be saved in the database. This tool is mainly used to simplify the lists presented for creating queries and simple searches by removing fields that are not used. The hidden tables and fields will not be removed from previously saved queries or reports. </p>
+<p>Tables will not be removed from any side bar configurations. To remove tables from the side bar click <em>Tabs &gt; Configure Side Bar</em>, then select the name from the list and click the <img src="../../images/delete.png" alt="delete" width="16" height="16" /> (delete) button.</p>
 <p>&nbsp;</p>
 <p><strong><u><a name="field_description" id="field_description"></a>Edit Table / Field Description</u></strong></p>
 <p>Both the Tables and Fields have a description. This is useful when describing how fields and tables are used within individual disciplines. This is an editable field. These can be viewed as usage notes in a form by double clicking on a field caption. </p>
@@ -48,10 +49,10 @@
 <h3>Table Tools</h3>
 <p>The following tools are available for tables only.</p>
 <h4><u><a name="display_format" id="display_format"></a>Table Format</u></h4>
-<p>The way tables are represented on forms (in Query Combo Boxes), in search results and in reports can be formatted, or represented by at least one main field.   Most tables are represented by only one field, (Collection Object shows the Catalog Number), but some are best represented by more than one field (Agent may be formatted to display Last Name, First Name, Middle Initial). </p>
+<p>Tables can be represented on forms (in Query Combo Boxes), in search results and in reports by one or several fields within the table.   Most tables are represented by only one field, (Collection Object shows the Catalog Number), but some are best represented by more than one field (Agent may be formatted to display Last Name, First Name, Middle Initial). </p>
 <p>It is important to note that Preferred Taxon, Geography, Chronostratigraphy and Lithostratigraphy fields use the Full Name as their format. This is configured in the Tree Definition.</p>
 <p>Open the Table Formatting Editor by first choosing a table to format from the Tables list, then clicking  the <em>...</em> (dialog) button next to the Table Format field. </p>
-<p>The first dialog that opens displays the name of the table, then displays any saved table formats for editing purposes. </p>
+<p>The initial dialog screen displays a list of saved table formats for editing purposes. </p>
 <p align="center"><img src="../../images/available_table_formats.png" width="292" height="386" /></p>
 <p align="center" class="imgcaption">Available Table Formats</p>
 <p>&nbsp;</p>
@@ -66,26 +67,26 @@
 <p align="center"><img src="../../images/table_format_editor.png" width="512" height="655" /></p>
 <p align="center" class="imgcaption">Table Format Editor</p>
 <ul>
-  <li><strong>Name</strong> is used when storing the format in the database. This should be short so as not to take up too much space.</li>
-  <li><strong>Title</strong> is the name of the format and will appear in any table format lists (in the first format editor dialog and the Display Format Pick List). This will link to the shorter name in the database, allowing the title to be more descriptive.</li>
+  <li><strong>Name</strong> is used when storing the format in the database. This name should be short.</li>
+  <li><strong>Title</strong> is the name of the format and will appear in any table format lists (in the first format editor dialog and the Display Format Pick List). This will link to the shorter name in the database and can be more descriptive.</li>
 </ul>
-<p>There are two types of Table Formats, a 'Single display format' that links to one or more fields and a 'Display depends on value of field', which displays different results based on a conditional field.</p>
+<p>There are two types of Table Formats, a 'Single display format' that links to one or more fields and a 'Display depends on value of field', which allows for different formats based on the value in a conditional field.</p>
 <p><strong><a name="table_format_single" id="table_format_single"></a>Single table format</strong></p>
 <p>The Single display format allows users to select fields from the Available Fields window to be used in the table format.</p>
 <ol>
   <li>First, click the <strong>Single table format</strong> button.</li>
-  <li>Then select a <strong>Separator</strong>. These are typically commas.</li>
   <li>Next, select a field from the <strong>Available Fields</strong> window by either double clicking on a field or selecting the field and clicking the <em>Add Field </em>button. The Available Fields lists related tables and their fields. Simply click on the file folder of a related table to display the available fields for the table. </li>
+  <li>Then select a <strong>Separator</strong>. These can be any character.</li>
 </ol>
 <p><strong>Display depends on value of field:</strong></p>
-<p>This type of format is useful when the data in one field sets a condition for another field. A good example is a Current Determination in Ichthyology. A Collection Object can have many Determinations, but only one can be marked as Current. Rather than displaying all Determinations the table can be formatted to only display the Current Determination.</p>
-<p>First choose the Display depends on value of field button.</p>
+<p>This type of format is useful when the data in one field sets a condition for another field. A good example is a Current Determination in Ichthyology. A Collection Object can have many Determinations, but only one can be marked as Current. Rather than displaying all Determinations the table can be formatted to display only the Current Determination.</p>
+<p>First choose the <em>'Display depends on value of field'</em> button.</p>
 <p>The window will change to include a Field Value and Display Format.</p>
 <p>Then choose a conditional field by clicking the <img src="../../images/open_arrows.png" width="16" height="16" /> button on the Pick List and choosing a field from the list.</p>
 <p>Next, click the <img src="../../images/add.png" width="16" height="16" />(add) button at the bottom of the dialog. A <em>...</em> (dialog) button will appear in the window.</p>
 <p>Click the <em>...</em> (dialog) button. The Format Editor described above will appear. </p>
 <ol>
-  <li>Select a <strong>Separator</strong>. These are typically commas.</li>
+  <li>Select a <strong>Separator</strong>. This can be any character.</li>
   <li>Next, select a field from the <strong>Available Fields</strong> window by either double clicking on a field or selecting the field and clicking the <em>Add Field </em>button. The Available Fields lists related tables and their fields. Simply click on the file folder of a related table to display the available fields for the table. </li>
 <li>Once the Display Format has been saved, type the Field Value into the box. These will vary depending on the table and fields for the format. In the above example the Field Value for Current would be <em>true</em> and <em>false</em>. The Field Value can also be set to the Value of fields in a Pick List (a good example of this is Agent).</li>
 </ol>
@@ -95,9 +96,9 @@
 <p align="center" class="imgcaption">Choose a Table Format</p>
 <p>&nbsp;</p>
 <h4><u><a name="aggregation" id="aggregation"></a>Table Aggregation</u> </h4>
-<p>Tables with a one-to-many relationship  to the primary table typically link multiple records to the primary table. Aggregating the related table will use the table format for each individual record and groups them together into one record.  These are useful when displaying data on forms, in search results and on reports. For example, a Collection Object can have many Preparations. The results of a query of Collection Objects with Preparations will return formatted Preparations data aggregated together in one record, separated by semi colons.</p>
+<p>Tables with a one-to-many relationship  to the primary table could potentially link multiple records to the primary table. The only method of displaying these in a single line (e.g. for results or reports) is to aggregate them. Aggregating the related table will use the table format for each individual record and group them together into one record using a separator of your choosing. For example, a Collection Object can have many Preparations. The results of a query on Collection Objects containing any field in the Preparation table (for Collection objects with multiple Preparations) will return multiple rows for that Collection Object. However; selecting the aggregated and formatted table name in the query tool will return a single record with the Preparation information formatted and aggregated into a single string.</p>
 <p>Open the Aggregation Editor by first choosing a table to aggregate from the Tables list, then clicking  the <em>...</em> (dialog) button next to the Aggregation field. </p>
-<p>The first dialog that opens displays the name of the table, then displays any saved aggregation formats for editing purposes. </p>
+<p>The initial dialog  displays any saved aggregation formats for editing and selection of the default format. </p>
 <p align="center"><img src="../../images/available_table_aggregators.png" width="292" height="386" /></p>
 <p align="center" class="imgcaption">Available Table Aggregations</p>
 <p>&nbsp;</p>
@@ -108,7 +109,7 @@
   <li><img src="../../images/delete.png" alt="delete" width="16" height="16" /> (delete) removes the aggregation.</li>
   <li><img src="../../images/add.png" alt="add" width="16" height="16" /> (add) opens the aggregation editor for creating a new aggregation.</li>
 </ul>
-<p>Clicking the<em> <img src="../../images/Edit-2-16x16.png" alt="edit" width="16" height="16" /></em> (edit) or<em> <img src="../../images/add.png" alt="add" width="16" height="16" /></em> (add) button opens the second aggregation editor dialog.</p>
+<p>Clicking the<em> <img src="../../images/Edit-2-16x16.png" alt="edit" width="16" height="16" /></em> (edit) or<em> <img src="../../images/add.png" alt="add" width="16" height="16" /></em> (add) button opens the following editor dialog.</p>
 <p align="center"><img src="../../images/table_aggregation_editor.png" width="402" height="335" /></p>
 <p align="center" class="imgcaption">Table Aggregation Editor</p>
 <p>Table lists the name of the table being aggregated.</p>
@@ -116,12 +117,12 @@
   <li><strong>Name</strong> is used when storing the aggregation in the database. This should be short so as not to take up too much space.</li>
   <li><strong>Title</strong> is the name of the aggregation and will appear in any aggregation format lists (in the first aggregation editor dialog and the Aggregation Pick List). This will link to the shorter name in the database, allowing the title to be more descriptive.</li>
   <li><strong>Display</strong> offers a Pick List of formats for the table. The ... (dialog) button opens the Format Editor for creating a new format or editing an old one.</li>
-  <li><strong>Separator</strong> refers to the punctuation that will separate the individual records from one another. </li>
+  <li><strong>Separator</strong> refers to the character that will separate the individual records from one another. </li>
   <li><strong>Count</strong> refers to the number of records you wish to display. The limit is 10.</li>
-  <li><strong>Ending</strong> is required when choosing a Count. It is a text field for typing in the words that will mark the end of the aggregation. This is typically <em>et al</em>.</li>
+  <li><strong>Ending</strong> is required when choosing a Count. It is a text field for typing in the words that will be placed at the end of the record to indicate that more records are present but are not being displayed. Examples include <em>et al, &amp;, etc</em>.</li>
   <li><strong>Sort by</strong> offers a Pick List of fields in the table for sorting the returns. </li>
 </ul>
-<p>Once the Aggregation has been created the table will need to be selected from the Aggregation pick list next to the Aggregation caption.</p>
+<p>Once the Aggregation has been created, it will need to be selected from the Aggregation pick list next to the Aggregation caption.</p>
 <p align="center"><img src="../../images/table_aggregation_choice.png" width="408" height="38" /></p>
 <p align="center" class="imgcaption">Choose an Aggregation</p>
 <h4><u>Web Links</u></h4>
@@ -129,24 +130,21 @@
 <p>&nbsp;</p>
 <h4><u>Field Tools</u></h4>
 <p>Fields have several properties that tables do not. </p>
-<p><strong>Type</strong> displays the type of field. </p>
-<p><strong>Length</strong> tells the length of the field. This is particularly useful to know when adding text to remarks fields.</p>
-<p><strong>Is Required </strong>refers to the required fields on forms. Any fields that are required by the application can not be edited to not be required, but fields that are not required can be changed to a required field. When entering data into a form with required fields the form changes can not be saved until all the required fields contain data.</p>
-<p>&nbsp;</p>
-<p><strong>Field Format Type</strong> offers choices for formatting string fields into either a Format (described below), <a href="PickList/Pick_List.html">Pick List</a> or <a href="System/Web_Link.html">Web Link</a>.</p>
+<p><strong>Type</strong> indicates the type of field and is not user editable. </p>
+<p><strong>Length</strong> indicates the length of the field. This can be useful to indicate how much text can be added to a particular string or text field.</p>
+<p><strong>Is Required </strong>refers to the required fields on forms. When entering data into a form with required fields the form changes can not be saved until all the required fields contain data. Any system required fields can not be edited. Other fields can be changed. </p>
+<p><strong>Field Format Type</strong> offers choices for altering string fields into either a Formatted (described below), <a href="PickList/Pick_List.html">Pick List</a> or <a href="System/Web_Link.html">Web Link</a>.</p>
 <p>At this time User-Defined Pick Lists that are configured in the Schema Configuration  also need to be added to individual forms by exporting the form set and editing the xml file for the form. Please refer to <a href="../PickList/Pick_List.html">User-Defined Pick List</a>. System Pick Lists are already included in the Specify forms and can be edited. Please refer to <a href="../PickList/system_picklist.html">System Pick Lists</a>.</p>
 <p>&nbsp;</p>
-<p>Creating a Format and editing an existing System Pick List will immediately be reflected within other Specify modules, such as forms and queries.</p>
-<p>New, or User Defined Pick Lists and Web Links will not be automatically reflected within the forms in Specify. The User Defined Pick List and Web Links must be configured in the editor Forms will need to be exported, edited in XML to include the Pick List and Web Link, then imported back into Specify. Please refer to <a href="../../Import/import_export.html">Import/Export Forms</a> for more details.</p>
+<p>Creating a Formatted Field and editing an existing System Pick List will immediately be reflected within other Specify modules, such as queries and forms which include the edited field.</p>
+<p>New, or User Defined Pick Lists and Web Links will not be automatically reflected within the forms in Specify. The User Defined Pick List and Web Links must be configured in the Web Links or Pick List editors. Forms will then need to be exported, edited in XML to include the Pick List and Web Link, then imported back into Specify. Please refer to <a href="../../Import/import_export.html">Import/Export Forms</a> for more details.</p>
 <p>&nbsp;</p>
 <h4><u><a name="field_format" id="field_format"></a>Creating a Field Format</u></h4>
 <h4>Overview</h4>
-<p>Accession and Catalog Number formats are configured during the institution setup but there may be other fields that require either a number scheme or a format. A format allows a field to include sections for different data, such as static text, a date or an incremented number. Gift Number and Loan Number often have a unique format within collections. These can be formatted in the Schema Configuration tool, which will change the format for the entire discipline. In other words, if a Gift Number  is formatted in the schema configuration all the collections within the discipline will be required to use the new format, which will display on the Gift form.</p>
+<p>Accession and Catalog Number formats are configured during the institution setup but there may be other fields that require either a number scheme or a format. A format allows a field to include various data components, such as static text, a date or an incremented number. Gift Number and Loan Number often have a unique format within collections. These can be formatted in the Schema Configuration tool, which will change the format for the entire discipline. In other words, if a Gift Number  is formatted in the schema configuration all the collections within the discipline will be required to use the new format, which will display on the Gift form.</p>
 <p>Field Formats can not be changed if data exists within the database in the format. In other words, before changing a field format all data using the old format must first be deleted.</p>
-<p>Create a format for a field in the Field Formatting Editor, which is available in the Schema Configuration tool (<em>System &gt; Schema Configuration</em>). The Schema Configuration tool is only available to  Administrators.</p>
-<p>Once in the Schema Configuration tool, choose a table and field from the Table and Field lists (on the left side of the tool) respectively.</p>
 <p>Field formatting functions are configured using the Format Type section at the bottom of the Schema Configuration tool.</p>
-<p>Choose <em>Formatting</em> from the pick list next to the Format Type caption.</p>
+<p>Choose <em>Formatted</em> from the pick list next to the Format Type caption.</p>
 <p align="center"><img src="../../images/field_format.png" alt="field_format" width="327" height="19" /></p>
 <p align="center" class="imgcaption">Format Type</p>
 <p align="center" class="imgcaption">&nbsp;</p>
