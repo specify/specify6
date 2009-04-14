@@ -836,6 +836,8 @@ public class SpecifyDBSetupWizard extends JPanel
     }
     
     //-------------------------------------------------
+    //-- Wizard Listener
+    //-------------------------------------------------
     public interface WizardListener
     {
         public abstract void panelChanged(String title);

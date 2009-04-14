@@ -226,7 +226,6 @@ public class TreeDefSetupPanel extends BaseSetupPanel implements SetupPanelIFace
             fileName = "common" + File.separator + "storage_init.xml";
         }
         
-        System.out.println(fileName);
         File file = getConfigDir(fileName);
         if (file.exists())
         {
@@ -246,9 +245,13 @@ public class TreeDefSetupPanel extends BaseSetupPanel implements SetupPanelIFace
                         if (classType == TaxonTreeDef.class)
                         {
                             required = TaxonTreeDef.isStdRequiredLevel(rank) || rank == 0;
-                        } else
+                            
+                        } else if (classType == GeographyTreeDef.class)
                         {
                             required = GeographyTreeDef.isStdRequiredLevel(rank) || rank == 0;
+                        } else
+                        {
+                            required = rank == 0;
                         }
                         String sep = classType == TaxonTreeDef.class ? " " : ", ";
                         treeDefList.add(new TreeDefRow(name, rank, required, enforced, required && isInFullName, required || rank == 0, sep));

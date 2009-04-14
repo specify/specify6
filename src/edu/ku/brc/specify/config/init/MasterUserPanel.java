@@ -91,10 +91,10 @@ public class MasterUserPanel extends GenericFormPanel
         PanelBuilder tstPB = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g", "p"));
         tstPB.add(testBtn,            cc.xy(2, 1));
         
-        PanelBuilder panelPB = new PanelBuilder(new FormLayout("f:p:g", "p,2px,p,2px,p,f:p:g"));
-        panelPB.add(tstPB.getPanel(), cc.xy(1, 1));
-        panelPB.add(getProgressBar(), cc.xy(1, 3));
-        panelPB.add(label,            cc.xy(1, 5));
+        PanelBuilder panelPB = new PanelBuilder(new FormLayout("f:p:g", "20px,p,2px,p,2px,p,f:p:g"));
+        panelPB.add(tstPB.getPanel(), cc.xy(1, 2));
+        panelPB.add(getProgressBar(), cc.xy(1, 4));
+        panelPB.add(label,            cc.xy(1, 6));
         
         builder.add(panelPB.getPanel(), cc.xyw(3, row, 2));
         row += 2;

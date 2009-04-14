@@ -39,6 +39,7 @@ import javax.swing.WindowConstants;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.install4j.api.launcher.ApplicationLauncher;
 import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.DesertBlue;
@@ -308,9 +309,53 @@ public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFa
                 IconManager.loadIcons(XMLHelper.getConfigDir("icons_plugins.xml")); //$NON-NLS-1$
                 IconManager.loadIcons(XMLHelper.getConfigDir("icons_disciplines.xml")); //$NON-NLS-1$
                 
+                // Load Local Prefs
+                AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+                localPrefs.setDirPath(UIRegistry.getAppDataDir());
+                
+                // Check to see if we should check for a new version
+                String VERSION_CHECK = "version_check.auto";
+                if (localPrefs.getBoolean(VERSION_CHECK, null) == null)
+                {
+                    localPrefs.putBoolean(VERSION_CHECK, true);
+                }
+
+                String EXTRA_CHECK = "extra.check";
+                if (localPrefs.getBoolean(EXTRA_CHECK, null) == null)
+                {
+                    localPrefs.putBoolean(EXTRA_CHECK, true);
+                }
+                
                 setUpSystemProperties();
-                SpecifyDBSetupWizardFrame setup = new SpecifyDBSetupWizardFrame();
-                UIHelper.centerAndShow(setup);
+                final SpecifyDBSetupWizardFrame wizardFrame = new SpecifyDBSetupWizardFrame();
+
+                if (localPrefs.getBoolean(VERSION_CHECK, true) && localPrefs.getBoolean(EXTRA_CHECK, true))
+                {
+                    
+                    try
+                    {
+                       com.install4j.api.launcher.SplashScreen.hide();
+                       ApplicationLauncher.Callback callback = new ApplicationLauncher.Callback()
+                       {
+                           public void exited(int exitValue)
+                           {
+                               UIHelper.centerAndShow(wizardFrame);
+                           }
+                           public void prepareShutdown()
+                           {
+                               
+                           }
+                        };
+                        ApplicationLauncher.launchApplication("100", null, true, callback);
+                        
+                    } catch (Exception ex)
+                    {
+                        UIHelper.centerAndShow(wizardFrame);
+                    }
+                } else
+                {
+                    UIHelper.centerAndShow(wizardFrame);
+                }
             }
         });
     }

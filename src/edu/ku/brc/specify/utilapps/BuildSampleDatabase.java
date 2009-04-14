@@ -458,7 +458,7 @@ public class BuildSampleDatabase
         // Create the really high-level stuff
         ////////////////////////////////
         String username = props.getProperty("usrUsername");
-        String password = props.getProperty("usrUsername");
+        String password = props.getProperty("usrPassword");
         
         startTx();
         

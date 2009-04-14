@@ -49,6 +49,7 @@ import javax.swing.SwingWorker;
 
 import org.apache.commons.lang.StringUtils;
 
+import edu.ku.brc.af.auth.UserAndMasterPasswordMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.tasks.subpane.BackupCompareDlg;
 import edu.ku.brc.dbsupport.DBConnection;
@@ -57,6 +58,7 @@ import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.Pair;
 
 /**
  * Backups a MySQL database use command line tools mysqldump and restores using mysql.
@@ -264,7 +266,8 @@ public class MySQLBackupService extends BackupServiceFactory
                     
                     writeStats(getCollectionStats(getTableNames()), getStatsName(fullPath));
                     
-                    String cmdLine  = mysqldumpLoc + " -u Specify --password=Specify " + databaseName;// XXX RELEASE
+                    Pair<String, String> up = UserAndMasterPasswordMgr.getInstance().getUserNamePasswordForDB();
+                    String cmdLine  = String.format("%s -u %s --password=%s %s", mysqldumpLoc, up.first, up.second, databaseName);
                     String[] args   = StringUtils.split(cmdLine, ' ');
                     Process process = Runtime.getRuntime().exec(args);
                     
