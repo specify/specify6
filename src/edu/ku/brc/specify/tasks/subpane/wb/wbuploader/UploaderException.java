@@ -25,6 +25,7 @@ package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
  * @code_status Alpha
  *
  */
+@SuppressWarnings("serial")
 public class UploaderException extends Exception
 {
 	protected int status = ABORT_ROW;
