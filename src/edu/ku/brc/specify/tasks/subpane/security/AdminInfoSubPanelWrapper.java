@@ -27,9 +27,11 @@ import javax.swing.JPanel;
 
 import edu.ku.brc.af.auth.specify.permission.PermissionService;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayPanel;
+import edu.ku.brc.af.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.specify.datamodel.SpPermission;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
@@ -206,6 +208,21 @@ public class AdminInfoSubPanelWrapper
         mv.getDataFromUI();
         
         Object obj = mv.getData();
+        
+        // Couldn't call BuinessRules because of a double session
+        // need to look into it later
+        //BusinessRulesIFace br = mv.getCurrentViewAsFormViewObj().getBusinessRules();
+        
+        // We need to do this because we can't call the BusniessRules
+        if (obj instanceof SpecifyUser)
+        {
+            SpecifyUser spUser = (SpecifyUser)obj;
+            String      pwd    = spUser.getPassword();
+            if (pwd.length() < 30)
+            {
+                spUser.setPassword(Encryption.encrypt(pwd, pwd));
+            }
+        }
         
         obj = session.merge(obj);
         session.saveOrUpdate(obj);

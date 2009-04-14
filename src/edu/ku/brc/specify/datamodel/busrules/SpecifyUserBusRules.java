@@ -192,24 +192,24 @@ public class SpecifyUserBusRules extends BaseBusRules
         
         if (formViewObj != null)
         {
-            SpecifyUser spUser  = (SpecifyUser)formViewObj.getDataObj();
-            //Division    currDiv = AppContextMgr.getInstance().getClassObject(Division.class);
+            SpecifyUser spUser = (SpecifyUser)formViewObj.getDataObj();
+            String      pwd    = spUser.getPassword();
+            if (pwd.length() < 30)
+            {
+                spUser.setPassword(Encryption.encrypt(pwd, pwd));
+            }
             
             for (Agent agent : spUser.getAgents())
             {
-                //if (agent.getDivision().getId().equals(currDiv.getId()))
+                try
                 {
-                    try
-                    {
-                        session.saveOrUpdate(agent);
-                        
-                    } catch (Exception ex)
-                    {
-                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyUserBusRules.class, ex);
-                        ex.printStackTrace();
-                    }
-                    break;
+                    session.saveOrUpdate(agent);
+                    
+                } catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyUserBusRules.class, ex);
                 }
             }
         }

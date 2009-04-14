@@ -52,6 +52,7 @@ import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.specify.config.init.DataBuilder;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Collection;
@@ -530,6 +531,7 @@ public class NavigationTreeMgr
         // This is just an extra safety measure to make sure the current Discipline gets set back
         try
         {
+            // Has no password here
             dlg.setData(spUser);
             dlg.setVisible(true);
             
@@ -546,6 +548,9 @@ public class NavigationTreeMgr
         
         if (!dlg.isCancelled())
         {
+            String textPwd    = spUser.getPassword();
+            spUser.setPassword(Encryption.encrypt(textPwd, textPwd));
+            
             Agent userAgent = (Agent)cbx.getValue();
             
             DataProviderSessionIFace session = null;
