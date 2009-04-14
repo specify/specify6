@@ -64,6 +64,7 @@ import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.SpecifyUserTypes;
 import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.datamodel.DataType;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.Institution;
@@ -430,7 +431,17 @@ public class SpecifyDBSetupWizard extends JPanel
 
                 if (step < lastStep-1)
                 {
-                    DisciplineType disciplineType = disciplinePanel.getDisciplineType();
+                    DisciplineType disciplineType = null;
+                    if (disciplinePanel == null)
+                    {
+                        Discipline discipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
+                        disciplineType = DisciplineType.getByName(discipline.getType());
+                        
+                    } else
+                    {
+                        disciplineType = disciplinePanel.getDisciplineType();
+                    }
+                    
                     if (disciplineType.isPaleo() && panels.get(step) instanceof TreeDefSetupPanel)
                     {
                         step++;
@@ -658,13 +669,12 @@ public class SpecifyDBSetupWizard extends JPanel
      */
     protected void setupLoginPrefs()
     {
-        String userName = props.getProperty("usrUsername");
-        String password = props.getProperty("usrPassword");
+        String userName   = props.getProperty("usrUsername");
+        String password   = props.getProperty("usrPassword");
+        String saUserName = props.getProperty("saUserName");
+        String saPassword = props.getProperty("saPassword");
         
-        String encryptedMasterUP = UserAndMasterPasswordMgr.getInstance().encrypt(
-                                       props.getProperty("saUserName"), 
-                                       props.getProperty("saPassword"), 
-                                       password);
+        String encryptedMasterUP = UserAndMasterPasswordMgr.getInstance().encrypt(saUserName, saPassword, password);
 
         DatabaseDriverInfo driverInfo = dbPanel.getDriver();
         AppPreferences ap = AppPreferences.getLocalPrefs();
@@ -727,7 +737,10 @@ public class SpecifyDBSetupWizard extends JPanel
      */
     public void configureDatabase()
     {
-        setupLoginPrefs();
+        if (wizardType == WizardType.Institution)
+        {
+            setupLoginPrefs();
+        }
         
         if (SpecifyDBSetupWizard.this.listener != null)
         {

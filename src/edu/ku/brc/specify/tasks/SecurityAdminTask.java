@@ -36,6 +36,7 @@ import javax.swing.JMenuItem;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.auth.BasicPermisionPanel;
@@ -49,6 +50,7 @@ import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.ToolBarItemDesc;
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.af.ui.PasswordStrengthUI;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
@@ -66,6 +68,7 @@ import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.Pair;
 
 /**
  * 
@@ -203,16 +206,37 @@ public class SecurityAdminTask extends BaseTask
             {
                 if (newPwd1.length() >= pwdLen)
                 {
-                    SpecifyUser spUser     = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
-                    String      spuOldPwd  = spUser.getPassword();
-                    String oldDecryptedPwd = Encryption.decrypt(spuOldPwd, oldPwd);
+                    SpecifyUser spUser    = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
+                    String      username  = spUser.getName();
+                    String      spuOldPwd = spUser.getPassword();
                     
+                    String newEncryptedPwd = null;
+                    String oldDecryptedPwd = Encryption.decrypt(spuOldPwd, oldPwd);
                     if (oldDecryptedPwd != null && oldDecryptedPwd.equals(oldPwd))
                     {
-                        spUser.setPassword(Encryption.encrypt(newPwd1, newPwd1));
+                        newEncryptedPwd = Encryption.encrypt(newPwd2, newPwd2);
+                        spUser.setPassword(newEncryptedPwd);
                         if (!DataModelObjBase.save(spUser))
                         {
                             UIRegistry.writeTimedSimpleGlassPaneMsg(getResourceString(getKey("PWD_ERR_SAVE")), Color.RED);
+                        }
+                        
+                    } else
+                    {
+                        UIRegistry.writeTimedSimpleGlassPaneMsg(getResourceString(getKey("PWD_ERR_BAD")), Color.RED);
+                    }
+                    
+                    if (newEncryptedPwd != null)
+                    {
+                        Pair<String, String> masterPwd = UserAndMasterPasswordMgr.getInstance().getUserNamePasswordForDB();
+                        
+                        String encryptedMasterUP = UserAndMasterPasswordMgr.getInstance().encrypt(masterPwd.first, masterPwd.second, newPwd2);
+                        if (StringUtils.isNotEmpty(encryptedMasterUP))
+                        {
+                            AppPreferences.getLocalPrefs().put(username+"_"+UserAndMasterPasswordMgr.MASTER_PATH, encryptedMasterUP);
+                        } else
+                        {
+                            UIRegistry.writeTimedSimpleGlassPaneMsg(getResourceString(getKey("PWD_ERR_RTRV")), Color.RED);
                         }
                         
                     } else
