@@ -111,7 +111,7 @@
             <picklistitem title="Other" value="other"/>
         </items>
     </picklist> -->
-  <picklist name="ReferenceWorkType" issystem="true" type="0" readonly="true" sizelimit="6">
+  <picklist name="ReferenceWorkType" issystem="true" type="0" readonly="true" sizelimit="6" tablename="referencework" fieldname="referenceWorkType">
     <items>
       <picklistitem title="Book" value="0"/>
       <picklistitem title="Electronic Media" value="1"/>

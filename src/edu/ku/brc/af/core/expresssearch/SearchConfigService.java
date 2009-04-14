@@ -21,13 +21,11 @@ package edu.ku.brc.af.core.expresssearch;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.File;
-import java.io.IOException;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
-import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
 import com.thoughtworks.xstream.XStream;
@@ -49,7 +47,7 @@ import edu.ku.brc.helpers.XMLHelper;
  */
 public class SearchConfigService
 {
-    //private static final Logger log = Logger.getLogger(SearchConfigService.class);
+    private static final Logger log = Logger.getLogger(SearchConfigService.class);
     
     protected static SearchConfigService   instance = new SearchConfigService();
     protected static final String          resourceName = "ExpressSearchConfig"; //$NON-NLS-1$
@@ -167,9 +165,15 @@ public class SearchConfigService
         {
             // Get the default resource by name and copy it to a new User Area Resource
             AppResourceIFace newAppRes = AppContextMgr.getInstance().copyToDirAppRes("Personal", resourceName); //$NON-NLS-1$
-            // Save it in the User Area
-            AppContextMgr.getInstance().saveResource(newAppRes);
-            xmlStr = newAppRes.getDataAsString();
+            if (newAppRes != null)
+            {
+                // Save it in the User Area
+                AppContextMgr.getInstance().saveResource(newAppRes);
+                xmlStr = newAppRes.getDataAsString();
+            } else
+            {
+                log.error("copyToDirAppRes(\"Personal\", "+resourceName+")");
+            }
         }
         
         //log.debug(xmlStr);

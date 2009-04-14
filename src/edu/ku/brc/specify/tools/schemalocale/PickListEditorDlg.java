@@ -40,12 +40,15 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBFieldInfo;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
@@ -389,6 +392,16 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
      */
     protected boolean editPL(final PickList pickList)
     {
+        String tableName = pickList.getTableName();
+        String fieldName = pickList.getFieldName();
+        if (StringUtils.isNotEmpty(tableName) && StringUtils.isNotEmpty(fieldName))
+        {
+            tableInfo = DBTableIdMgr.getInstance().getInfoByTableName(tableName);
+            if (tableInfo != null)
+            {
+                fieldInfo = tableInfo.getFieldByName(fieldName);
+            }
+        }
         plBusRules.setTableInfo(tableInfo);
         plBusRules.setFieldInfo(fieldInfo);
         
