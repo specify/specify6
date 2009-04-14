@@ -8545,15 +8545,16 @@ public class BuildSampleDatabase
         gSQLStr.append("',");
         gSQLStr.append(txTreeDefId);
         gSQLStr.append(",");
+        gSQLStr.append('\'');
         if (StringUtils.isNotEmpty(fullName))
         {
-            gSQLStr.append('\'');
             gSQLStr.append(fullName);
-            gSQLStr.append('\'');
+            
         } else
         {
-            gSQLStr.append("null");
+            gSQLStr.append(name);
         }
+        gSQLStr.append('\'');        
         gSQLStr.append(",");
         gSQLStr.append(tdi.getId());
         gSQLStr.append(',');
