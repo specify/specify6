@@ -238,12 +238,13 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
             /* (non-Javadoc)
              * @see javax.swing.SwingWorker#doInBackground()
              */
+            @SuppressWarnings("cast")
             @Override
             protected Integer doInBackground() throws Exception
             {
                 firePropertyChange(PROGRESS, 0, ++steps);
                 
-                bldSampleDB.setDataType((DataType)acm.getClassObject(DataType.class));
+                bldSampleDB.setDataType(acm.getClassObject(DataType.class));
                 
                 Session session = null;
                 try
@@ -251,7 +252,8 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
                     session = HibernateUtil.getNewSession();
                     DataProviderSessionIFace hSession = new HibernateDataProviderSession(session);
                     
-                    Division       division         = (Division)formViewObj.getMVParent().getMultiViewParent().getData();
+                    Division       curDiv           = (Division)formViewObj.getMVParent().getMultiViewParent().getData(); 
+                    Division       division         = hSession.get(Division.class, curDiv.getId());
                     SpecifyUser    specifyAdminUser = (SpecifyUser)acm.getClassObject(SpecifyUser.class);
                     Agent          userAgent        = (Agent)hSession.getData("FROM Agent WHERE id = "+Agent.getUserAgent().getId());
                     Properties     props            = wizardPanel.getProps();

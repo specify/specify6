@@ -63,5 +63,10 @@
 	<discipline name="vertpaleo">
 		<table name="agentvariant"/>
 	</discipline>
+	
+	<discipline name="vascplant">
+		<table name="agentvariant"/>
+	</discipline>
+	
 </disciplines>
 	

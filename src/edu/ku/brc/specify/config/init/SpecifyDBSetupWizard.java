@@ -500,9 +500,16 @@ public class SpecifyDBSetupWizard extends JPanel
                 {
                     nextBtn.setEnabled(false);
                     
-                    configSetup();
+                    if (wizardType == WizardType.Institution)
+                    {
+                        configSetup();
                     
-                    configureDatabase();
+                        configureDatabase();
+                    } else
+                    {
+                        //SpecifyDBSetupWizard.this.listener.hide();
+                        SpecifyDBSetupWizard.this.listener.finished();
+                    }
                 }
             }
         });
@@ -786,15 +793,13 @@ public class SpecifyDBSetupWizard extends JPanel
                 try
                 {
                     String             dbName     = props.getProperty("dbName");
+                    String             hostName   = props.getProperty("hostName");
                     DatabaseDriverInfo driverInfo = (DatabaseDriverInfo)props.get("driverObj");
                     
-                    String connStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Create, 
-                                                                    props.getProperty("hostName"), 
-                                                                    dbName);
-                    
+                    String connStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Create, hostName, dbName);
                     if (connStr == null)
                     {
-                        connStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, props.getProperty("hostName"),  dbName);
+                        connStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostName, dbName);
                     }
                     
                     String saUserName = props.getProperty("saUserName"); // Master Username
