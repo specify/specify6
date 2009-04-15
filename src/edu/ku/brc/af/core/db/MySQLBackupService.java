@@ -887,11 +887,26 @@ public class MySQLBackupService extends BackupServiceFactory
             File dir = new File(programFilesPath);
             if (dir.exists() && dir.isDirectory())
             {
-                for (File file : (Collection<File>)FileUtils.listFiles(dir, new String[] {"exe"}, true))
+                // First search for the mysql directory
+                File mysqlDir = null;
+                for (File file : dir.listFiles())
                 {
-                    if (file.getName().equalsIgnoreCase(exeName))
+                    if (StringUtils.contains(file.getName().toLowerCase(), "mysql"))
                     {
-                        return file.getAbsolutePath();
+                        mysqlDir = file;
+                        break;
+                    }
+                }
+                
+                // Now search for exes
+                if (mysqlDir != null)
+                {
+                    for (File file : (Collection<File>)FileUtils.listFiles(mysqlDir, new String[] {"exe"}, true))
+                    {
+                        if (file.getName().equalsIgnoreCase(exeName))
+                        {
+                            return file.getAbsolutePath();
+                        }
                     }
                 }
             }
