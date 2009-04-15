@@ -12,10 +12,10 @@
   </tr>
 </table>
 <h2>Adding Users and Setting Permissions</h2>
-<p>Specify includes a highly flexible Security module that allows a system administrator to add users, then limit their operations within and access to the various tables and tools within Specify. These are essentially the User Permissions.</p>
+<p>Specify includes a highly flexible Security module that allows a system administrator to add users, then limit their operations within, and access to, the various tables and tools within Specify. These are essentially constitute the User Permissions.</p>
 <p>To access the Security tool click <em>System &gt; Collection Setup &gt; Security Tools</em>. Security tools are only available to users in a Manager or Administrators group.</p>
-<p>Users are added to Specify based on their Institution Level and User Group.</p>
-<h4>Institution Levels</h4>
+<p>Users are added to Specify based on their Institutional Level and User Group.</p>
+<h4>Institutional Levels</h4>
 <p>Specify mirrors the common levels of hierarchy within institutions. This hierarchy is viewed in an Institution Tree on the left side of the Security window.</p>
 <ul>
   <li>Institution</li>
@@ -32,34 +32,34 @@
     </ul>
   </ul>
 </ul>
-<p>At this time users are added at the Collection  level only. The lowest level, Collection, can access  data within a specific Collection (Wet Collection, Teaching Collection). Specify opens in a collection, or at a Collection level; therefore users added to only one Collection can not access other collections. </p>
-<p>Users can belong to more than one Collection and more than one Institutional level.</p>
+<p>At this time users are added at the Collection  level only. The lowest level, collection, can access  data within a specific collection (Wet Collection, Teaching Collection). Specify opens in a collection, or at a collection level (in a multi-collection database); therefore users added to only one collection can not access other collections. </p>
+<p>Users can belong to more than one collection and more than one Institutional level.</p>
 <p>&nbsp;</p>
  <p><strong>Adding Institutional Levels</strong></p>
  <p>If the desired Institutional level is not present in the Institution Tree it can be added in the System Configuration module by choosing <em>System &gt; Collection Setup &gt; Configuration</em> and following the instructions for <a href="../../Configuration/institution_hierarcy.html">Adding Institutional Levels</a>.</p>
 <p>&nbsp;</p>
  <h4><strong>User Groups</strong></h4>
- <p>Specify adds users within  an existing user group. The groups are editable and can be established according to their access to data and tools within Specify per institution. Each group has a set of  default  privileges. Users entered into the group acquire the default privileges. The user  privileges can then be edited based on the exact privileges the individual user will require.</p>
+ <p>Specify adds users within  an existing user group. The groups are editable and can be established according to levels of access to data and tools within Specify per institution. Each group has a set of  default  privileges. Users entered into the group acquire the default privileges of that group. The user  privileges can then be edited based on the exact privileges the individual user will require.</p>
  <p>The default permissions in Specify include:</p>
 <ul>
-   <li><strong>Guest</strong> users can  view the data within a Collection  and use the WorkBench, but may not Upload data from the WorkBench into the Specify database.</li>
+   <li><strong>Guest</strong> users can  view the data within a collection  and use the WorkBench, but may not Upload data from the WorkBench into the Specify database.</li>
   <li><strong>Limited Access</strong> users are granted full access to all data and tools except Backup and Restore, Schema Configuration, Resource Import/Export, Configuration, WorkBench Schema Configuration and Security.</li>
    <li><strong>Full Access</strong> users are granted full access to all data and tools except Backup and Restore, Schema Configuration, Resource Import/Export, Configuration, WorkBench Schema Configuration and Security.</li>
   <li><strong>Managers</strong> have full permissions to all data and tools within Specify.</li>
 </ul>
-<p>Users can be added to more than one group within different Disciplines, but should not be added to both a Discipline and Collection within the same Discipline.</p>
-<p>An Administrator group also exists outside the Institutional Hierarchy. An Administrator is automatically given full access to all data and tools inside Specify. Administrators are the only users with access to the Backup and Restore, Schema Configuration, Resource Import/Export, Configuration, WorkBench Schema Configuration and Security tools. At this time an Administrator must also belong to a Collection inside the Institutional Hierarchy for the purpose of opening Specify to a Collection. If Specify was originally configured by running the Specify Setup Wizard the original user was placed in both the Administrator group and Manager group in the Collection that was created by the Wizard.</p>
+<p>Users can be added to more than one group within different Disciplines.</p>
+<p>An Administrator group also exists outside the Institutional Hierarchy. An Administrator is automatically given full access to all data and tools inside Specify. Administrators are the only users with access to the Backup and Restore, Schema Configuration, Resource Import/Export, Configuration, WorkBench Schema Configuration and Security tools. At this time an Administrator must also belong to a collection inside the Institutional Hierarchy for the purpose of opening Specify to a collection and creating an associated Agent in that collection. If Specify was originally configured by running the Specify Setup Wizard the original user was placed in both the Administrator group and Manager group in the collection that was created by the Wizard.</p>
 <p>Buttons for adding and deleting users are found on the bottom left of the work work space under the institution tree.</p>
  <h3><a name="add_user" id="add_user"></a>Add A User</h3>
 <p><img src="../../images/add_existing_user.png" width="30" height="24" /> <u>Existing User</u></p>
- <p>Click the desired group (within the desired Collection), then click the <em>Add an Existing User to Group</em> button. A list of existing users will appear, choose the desired user from the list and click the <em>OK</em> button.</p>
+ <p>Click the desired group (within the desired collection), then click the <em>Add an Existing User to Group</em> button. A list of existing users will appear, choose the desired user from the list and click the <em>OK</em> button.</p>
 <p><img src="../../images/add_new_user.png" width="30" height="24" /> <u>New User</u></p>
  <p>Click the desired group (within the desired collection), then click the Add a New User to the Group. The Specify User form will appear to add the information for the new user. </p>
 <ul>
   <li><strong>Name</strong> refers to the username the user will use to login to Specify. Once the username is saved it may not be edited.</li>
-   <li><strong>Password</strong> is the password the user will use to login to Specify. Passwords can be edited at a later date either in Security Tools or by choosing <em>Help &gt; Change Password</em>.</li>
+   <li><strong>Password</strong> is the password the user will use to login to Specify. Passwords can be edited at a later date either in Security Tools or by choosing <em>Help &gt; Change Password</em>. Users should choose strong passwords with varying characters and capitalization. A strength bar exists for judging the quality of the entered password.</li>
    <li><strong>Email </strong></li>
-   <li><strong>Agent</strong> refers to the data in the Agent table. All users must be Agents. If the user already exists within the table, either type the first few letters in the name, or type the down-arrow key.</li>
+   <li><strong>Agent</strong> refers to the data in the Agent table. All users must be Agents. If the Agent already exists within the table, either type the first few letters in the name, or type the down-arrow key. If the new user does not already exist within the Agent table click the <img src="../../images/add.png" width="16" height="16" /> (add) button and enter all necessary details in the ensuing Agent sub form.</li>
    <li><strong>Key</strong> refers to the encrypted Master Username and Password. Simply fill in all the information within the dialog and click the <em>Generate New Key</em> button. The key can not be created without the Name and Password information. The key is stored locally and will therefore need to be given to the user and entered by the user at the time of their first login to Specify. For more information regarding this key please refer to <a href="../Security/security.html">Security</a>.</li>
  </ul>
 <h3><a name="delete_user" id="delete_user"></a>Delete a User </h3>
@@ -70,16 +70,16 @@
  <p>&nbsp;</p>
 <h3><strong><u><a name="set_permissions" id="set_permissions"></a> Permissions</u></strong></h3>
  <h4>Setting User Permissions</h4>
-<p>Specify 6.0 grants default permissions to each User Group within Specify. These permissions are then passed down to each User within the Group. The permissions for the individual user can either be left unchanged and therefore remain exactly like the Group, or be edited for that user. When editing permissions for individual users permissions for tables and tools can be added, but not removed. </p>
+<p>Specify 6.0 grants default permissions to each User Group within Specify. These permissions are then passed down to each User within the Group. The permissions for the individual user can either be left unchanged and therefore remain exactly like the Group, or be edited for that user. When editing permissions for individual users permissions for tables and tools can be added, but not removed. In other words, permissions inherited from the Group can not be edited. To change these permissions the Group itself must be edited.</p>
 <h4>Group Permissions</h4>
-<p>Permissions can be removed and added at the Group level, but keep in mind that Specify will update all the Users in the group with the changed permissions. Changing permissions for a Group will only affect that Group's Collection. </p>
+<p>Permissions can be removed and added at the Group level, but keep in mind that Specify will update all the Users in the group with the changed permissions. Changing permissions for a Group will only affect that Group's collection. </p>
 <p>Specify limits the Backup and Restore, Schema Configuration, Resource Import/Export, Configuration, WorkBench Schema Configuration and Security tools to Administrators only, but permissions for all other data and tools are configurable per Group and per User.</p>
 <h4>Setting Permissions</h4>
 <p>Click on a User or Group to view both their information and permissions in the work space. The permissions open in the bottom half of the work space and include a tab with three permission categories:</p>
 <ul>
    <li><strong>Tools</strong> refer to anything used to manipulate data within Specify. <br /><br />
  
-Click on a Tool in the list to display the options for the permissions. Configuration, Data Entry, Information Request, Interactions, Plugins, Record Sets, Reports, Security Tools, Simple Search, Statistics have these permissions:<br />
+Click on a Tool in the list to display the permissions options. Configuration, Data Entry, Information Request, Interactions, Plugins, Record Sets, Reports, Security Tools, Simple Search, Statistics have these permissions:<br />
 <ul>
   <li><strong>View</strong> allows a user to view data within a tool. </li>
   <li><strong>Add</strong> allows a user to add  a record within the context of the tool.</li>
@@ -95,21 +95,21 @@ Backup and Restore, Query, Resource Import and Export, Schema Configuration, Wor
     Permissions can be set for each individual table within the Specify schema.<br />
     <br />
  
-Click on a Table in the list to display the options for the permissions:<br />
+Click a Table in the list to display the options for the permissions:<br />
 <ul>
   <li><strong>View</strong> allows a user to view table data. </li>
   <li><strong>Add</strong> allows a user to add  a record.</li>
   <li><strong>Modify</strong> allows users to edit table data within a record.</li>
-  <li><strong>Delete</strong> allows users to delete table data within a record.</li>
+  <li><strong>Delete</strong> allows users to delete table data within a record.</li><br />
 </ul>
   </li><li><strong>Preferences</strong> lists the modules in the actual Preferences module. Each can be set for View, Add, Modify and Delete.</li>
 </ul>
 <p>&nbsp;</p>
  <p><strong>How Permissions affects the Specify Application </strong></p>
-<p>When Specify starts up it checks the user permissions and loads various Specify tools accordingly. Therefore, users that are not given permission to use modules in Specify will not see the corresponding buttons that connect users to that module. For instance, users that are not given permission to edit trees will not have a tree button on the task bar or have the ability to add the tree button in the user preferences tool.</p>
+<p>When Specify starts up it checks the user permissions and loads various Specify tools accordingly. Therefore, users that are not given permission to use modules in Specify will not see the corresponding buttons that connect users to that module. For instance, users that are not given permission to view trees will not have a tree button on the task bar or have the ability to add the tree button in the user preferences tool.</p>
  <p>Similarly, users that are not given permission to delete or add data  will not see the add or delete buttons. </p>
  <p>If a user has questions about their permissions they can view it by clicking <em>System &gt; System Setup &gt; Security Summary</em>.</p>
-<p>It is extremely important to note that even though  permissions are listed separately for each table and tool, many of these affect each other and should have similar settings. For instance, for a user to have access to a Collection Object form for data entry purposes the user will need to have View, Add and possibly Modify privileges for ALL the tables on the Collection Object form (Collection Object, Determinations, Collecting Event, Taxon, Preparations, Collection Object Attribute, Collectors and Collection Object Attachments) IN ADDITION to the Form tool itself. For instance, in this example if permission was not given for a user to Add or Modify the Preparations table the user would not be provided with the <img src="../../images/add.png" width="16" height="16" /> (add) or <img src="../../images/delete.png" width="16" height="16" /> (delete) button on the Preparations sub form within the Collection Object form. For this reason a good practice may be to set the same level of permissions for all the Tables within a tool with the same level of permissions being set for the Tool itself. </p>
+<p>It is extremely important to note that even though  permissions are listed separately for each table and tool, many of these work in unison and should have similar settings. For instance, for a user to have access to a Collection Object form for data entry purposes the user will need to have View, Add and possibly Modify privileges for ALL the tables on the Collection Object form (Collection Object, Determinations, Collecting Event, Taxon, Preparations, Collection Object Attribute, Collectors and Collection Object Attachments) IN ADDITION to the Form tool itself. For instance, in this example if permission was not given for a user to Add or Modify the Preparations table the user would not be provided with the <img src="../../images/add.png" width="16" height="16" /> (add) or <img src="../../images/delete.png" width="16" height="16" /> (delete) button on the Preparations sub form within the Collection Object form. For this reason a good practice may be to set the same level of permissions for all the Tables within a tool with the same level of permissions being set for the Tool itself. </p>
 <p>A good approach to setting permissions may be to decide what Tables and Tools a particular user should not have access to and then change the permissions accordingly. </p>
 <p>&nbsp;</p>
 <h3><a name="security_summary" id="security_summary"></a>Security Summary</h3>
