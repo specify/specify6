@@ -642,7 +642,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
     @Column(name="IsAccepted")
     public Boolean getIsAccepted()
 	{
-		return this.isAccepted;
+		return this.isAccepted == null ? true : this.isAccepted; //see comment in initialize() for isAccecpted 
 	}
 
 	public void setIsAccepted(Boolean accepted)
