@@ -32,6 +32,8 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 
@@ -172,6 +174,14 @@ public class MasterUserPanel extends GenericFormPanel
      */
     protected void testCreateMU()
     {
+        String saUsrNm = ((JTextField)comps.get("saUserName")).getText();
+        if (StringUtils.isNotEmpty(saUsrNm) && saUsrNm.equalsIgnoreCase("root"))
+        {
+            UIRegistry.showLocalizedError("MASTER_NO_ROOT");
+            ((JTextField)comps.get("saUserName")).setText("");
+            return;
+        }
+        
         if (isOK == null || !isOK)
         {
             progressBar.setIndeterminate(true);
