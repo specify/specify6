@@ -118,10 +118,12 @@ public class DbLoginCallbackHandler implements CallbackHandler
                     } else if ((((TextInputCallback)callbacks[i]).getPrompt()).equals("DBUserName:")) //$NON-NLS-1$
                     {
                         ((TextInputCallback)callbacks[i]).setText(dbUserName);
+                        log.debug("handle - got dbUserName:" + dbUserName); //$NON-NLS-1$
                         
                     } else if ((((TextInputCallback)callbacks[i]).getPrompt()).equals("DBPwd:")) //$NON-NLS-1$
                     {
                         ((TextInputCallback)callbacks[i]).setText(dbPwd);
+                        log.debug("handle - got dbPwd:" + dbPwd); //$NON-NLS-1$
                     }
                 }
                 else
