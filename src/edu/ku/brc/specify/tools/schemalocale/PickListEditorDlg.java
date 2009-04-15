@@ -95,8 +95,11 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
     protected JList              pickListCache = null; // needed when deleting a PL
     protected boolean            doImportExport;
     
-    protected DBTableInfo        tableInfo = null;
-    protected DBFieldInfo        fieldInfo = null;
+    protected DBTableInfo        tableInfo    = null;
+    protected DBFieldInfo        fieldInfo    = null;
+    
+    protected boolean            isChanged    = false;
+    protected Vector<PickList>   newPickLists = new Vector<PickList>();
     
     /**
      * @param localizableIO
@@ -148,6 +151,11 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
         pack();
     }
     
+    public boolean hasChanged()
+    {
+        return isChanged;
+    }
+    
     /**
      * @param tableInfo the tableInfo to set
      */
@@ -164,6 +172,14 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
         this.fieldInfo = fieldInfo;
     }
 
+    /**
+     * @return any newly created picklists
+     */
+    public Vector<PickList> getNewPickLists()
+    {
+        return newPickLists;
+    }
+    
     /**
      * @param list
      * @param isSystemPL
@@ -204,7 +220,6 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
                     {
                         addPL(list);
                     }
-                    
                 };
                 
                 delAL = new ActionListener() {
@@ -340,6 +355,7 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
         if (editPL(pickList))
         {
             ((DefaultListModel)list.getModel()).addElement(pickList);
+            newPickLists.add(pickList);
         }
     }
     
@@ -357,6 +373,8 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
                 pickListCache = list;
                 session       = DataProviderFactory.getInstance().createSession();
                 plBusRules.okToDelete(pickList, session, this);
+                isChanged     = true;
+                newPickLists.remove(pickList);
                 
             } catch (Exception ex)
             {
@@ -375,6 +393,7 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
     protected boolean importPL(@SuppressWarnings("unused")
     final JList listArg)
     {
+        isChanged = true;
         return true;
     }
     
@@ -450,6 +469,7 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
             boolean isOK = PickList.save(true, pickList);
             if (isOK)
             {
+                isChanged = true;
                 dispatchChangeNotification(pickList);
             }
             return isOK;

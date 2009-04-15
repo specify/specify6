@@ -2409,9 +2409,9 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                 String dbPassword = spUser.getPassword();
                 
                 if (StringUtils.isNotEmpty(dbPassword) && 
-                        StringUtils.isAlphanumeric(dbPassword) &&
-                        SpecifySecurityMgr.isAllCaps(dbPassword) && 
-                        dbPassword.length() > 20)
+                        (!StringUtils.isAlphanumeric(dbPassword) ||
+                         !SpecifySecurityMgr.isAllCaps(dbPassword) ||
+                         dbPassword.length() < 25))
                 {
                     String encryptedPassword = Encryption.encrypt(spUser.getPassword(), spUser.getPassword());
                     String updateSQL         = String.format("UPDATE specifyuser set Password ='%s'", encryptedPassword);

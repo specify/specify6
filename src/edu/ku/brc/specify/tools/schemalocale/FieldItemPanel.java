@@ -468,12 +468,47 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
         pickListMoreBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
+                LocalizableItemIFace currentField = prevField;
+                prevField = getSelectedFieldItem();
+                
+                PickList selectedItem = (PickList)pickListCBX.getSelectedItem();
+                
                 PickListEditorDlg dlg = new PickListEditorDlg(localizableIO.hasUpdatablePickLists() ? null : localizableIO, false);
                 dlg.setTableInfo(tableInfo);
                 dlg.setFieldInfo(fieldInfo);
                 dlg.createUI();
                 dlg.setSize(400,500);
                 dlg.setVisible(true);
+                if (!dlg.isCancelled())
+                {
+                    if (dlg.hasChanged())
+                    {
+                        hasChanged = true;
+                        Vector<PickList>     list         = dlg.getNewPickLists();
+                        DefaultComboBoxModel plCbxModel   = (DefaultComboBoxModel)pickListCBX.getModel();
+                        for (int i=0;i<plCbxModel.getSize();i++)
+                        {
+                            list.add((PickList)plCbxModel.getElementAt(i));
+                        }
+                        Collections.sort(list);
+                        plCbxModel.removeAllElements();
+                        plCbxModel.addElement(pickListNone);
+                        int inx = -1;
+                        int i   = 0;
+                        for (PickList pl : list)
+                        {
+                            plCbxModel.addElement(pl);
+                            if (inx == -1 && selectedItem != null && selectedItem.getId().equals(pl.getId()))
+                            {
+                                inx = i;
+                            }
+                            i++;
+                        }
+                        pickListCBX.setSelectedIndex(inx+1);
+                    }
+                }
+                
+                prevField = currentField;
             }
         });
         
@@ -857,6 +892,9 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
         return selectedFmt;
     }
     
+    /**
+     * 
+     */
     private void setAsDefFormatter() 
     {
         Object item = formatCombo.getSelectedItem();
@@ -1332,92 +1370,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
                 dspName = AppContextMgr.getInstance().getClassObject(Discipline.class).getType();
             }
             
-            if (disciplineName == null || !dspName.equals(disciplineName))
-            {
-                disciplineName = dspName;
-                
-                pickLists.clear();
-                List<PickList> plList = localizableIO.getPickLists(null);
-                if (plList != null)
-                {
-                    pickLists.addAll(plList);
-                }
-                
-                //for (PickList pl : pickLists) System.out.println("0: "+pl.getName());
-                if (disciplineName != null)
-                {
-                    plList = localizableIO.getPickLists(disciplineName);
-                    if (plList != null)
-                    {
-                        pickLists.addAll(plList);
-                    }
-                    //for (PickList pl : localizableIO.getPickLists(disciplineName)) System.out.println("1: "+pl.getName());
-                }
-                
-                Collections.sort(pickLists);
-            }
-            
-            if (pickLists != null)
-            {
-                DBRelationshipInfo.RelationshipType relType = relInfo != null ? relInfo.getType() : null;
-                
-                String  typeStr  = fieldInfo != null ? fieldInfo.getType() : null;
-                boolean isTypeOK = typeStr != null && (typeStr.equals("java.lang.String") || typeStr.equals("java.lang.Byte") || typeStr.equals("string"));
-                
-                int selectedIndex = 0;
-                DefaultComboBoxModel plCbxModel = (DefaultComboBoxModel)pickListCBX.getModel();
-                
-                if (isTypeOK)
-                {
-                    plCbxModel.removeAllElements();
-                    plCbxModel.addElement(pickListNone);
-                    
-                    int inx = 1;
-                    for (PickList pl : pickLists)
-                    {
-                        if (pl.getType() == PickListIFace.PL_WITH_ITEMS ||
-                            pl.getType() == PickListIFace.PL_TABLE_FIELD)
-                        {
-                            plCbxModel.addElement(pl);
-                            String plName = fld.getPickListName();
-                            if (selectedIndex == 0 && StringUtils.isNotEmpty(plName) && plName.equals(pl.getName()))
-                            {
-                                selectedIndex = inx;
-                            }
-                            inx++;
-                        }
-                    }
-                } else if (relType != null && relType == DBRelationshipInfo.RelationshipType.ManyToOne)
-                {
-                    plCbxModel.removeAllElements();
-                    plCbxModel.addElement(pickListNone);
-                    int inx = 1;
-                    for (PickList pl : pickLists)
-                    {
-                        if (pl.getType() == PickListIFace.PL_WHOLE_TABLE)
-                        {
-                            DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoByTableName(pl.getTableName());
-                            if (relInfo.getDataClass() == tblInfo.getClassObj())
-                            {
-                                plCbxModel.addElement(pl);
-                                String plName = fld.getPickListName();
-                                //System.out.println(plName+"  "+pl.getName());
-                                if (StringUtils.isNotEmpty(plName) && plName.equals(pl.getName()))
-                                {
-                                    selectedIndex = inx;
-                                }
-                                inx++;
-                            }
-                        }
-                    }
-                }
-                pickListCBX.setEnabled(isTypeOK || relType != null);
-                pickListCBX.setSelectedIndex(pickListCBX.getModel().getSize() > 0 ? selectedIndex : -1);
-                
-            } else
-            {
-                pickListCBX.setEnabled(false);
-            }
+            loadPickLists(dspName, fld);
             
             if (isDBSchema)
             {
@@ -1534,6 +1487,101 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
         updateBtns();
         
         hasChanged = false;
+    }
+    
+    /**
+     * @param dspName
+     * @param fld
+     */
+    protected void loadPickLists(final String               dspName, 
+                                 final LocalizableItemIFace fld)
+    {
+        if (disciplineName == null || !dspName.equals(disciplineName))
+        {
+            disciplineName = dspName;
+            
+            pickLists.clear();
+            List<PickList> plList = localizableIO.getPickLists(null);
+            if (plList != null)
+            {
+                pickLists.addAll(plList);
+            }
+            
+            //for (PickList pl : pickLists) System.out.println("0: "+pl.getName());
+            if (disciplineName != null)
+            {
+                plList = localizableIO.getPickLists(disciplineName);
+                if (plList != null)
+                {
+                    pickLists.addAll(plList);
+                }
+                //for (PickList pl : localizableIO.getPickLists(disciplineName)) System.out.println("1: "+pl.getName());
+            }
+            
+            Collections.sort(pickLists);
+        }
+        
+        if (pickLists != null)
+        {
+            DBRelationshipInfo.RelationshipType relType = relInfo != null ? relInfo.getType() : null;
+            
+            String  typeStr  = fieldInfo != null ? fieldInfo.getType() : null;
+            boolean isTypeOK = typeStr != null && (typeStr.equals("java.lang.String") || typeStr.equals("java.lang.Byte") || typeStr.equals("string"));
+            
+            int selectedIndex = 0;
+            DefaultComboBoxModel plCbxModel = (DefaultComboBoxModel)pickListCBX.getModel();
+            
+            if (isTypeOK)
+            {
+                plCbxModel.removeAllElements();
+                plCbxModel.addElement(pickListNone);
+                
+                int inx = 1;
+                for (PickList pl : pickLists)
+                {
+                    if (pl.getType() == PickListIFace.PL_WITH_ITEMS ||
+                        pl.getType() == PickListIFace.PL_TABLE_FIELD)
+                    {
+                        plCbxModel.addElement(pl);
+                        String plName = fld.getPickListName();
+                        if (selectedIndex == 0 && StringUtils.isNotEmpty(plName) && plName.equals(pl.getName()))
+                        {
+                            selectedIndex = inx;
+                        }
+                        inx++;
+                    }
+                }
+            } else if (relType != null && relType == DBRelationshipInfo.RelationshipType.ManyToOne)
+            {
+                plCbxModel.removeAllElements();
+                plCbxModel.addElement(pickListNone);
+                int inx = 1;
+                for (PickList pl : pickLists)
+                {
+                    if (pl.getType() == PickListIFace.PL_WHOLE_TABLE)
+                    {
+                        DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoByTableName(pl.getTableName());
+                        if (relInfo.getDataClass() == tblInfo.getClassObj())
+                        {
+                            plCbxModel.addElement(pl);
+                            String plName = fld.getPickListName();
+                            //System.out.println(plName+"  "+pl.getName());
+                            if (StringUtils.isNotEmpty(plName) && plName.equals(pl.getName()))
+                            {
+                                selectedIndex = inx;
+                            }
+                            inx++;
+                        }
+                    }
+                }
+            }
+            pickListCBX.setEnabled(isTypeOK || relType != null);
+            pickListCBX.setSelectedIndex(pickListCBX.getModel().getSize() > 0 ? selectedIndex : -1);
+            
+        } else
+        {
+            pickListCBX.setEnabled(false);
+        }
     }
 
     /* (non-Javadoc)
