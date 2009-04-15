@@ -887,6 +887,7 @@ public class MySQLBackupService extends BackupServiceFactory
             File dir = new File(programFilesPath);
             if (dir.exists() && dir.isDirectory())
             {
+            	System.out.println(dir.getAbsolutePath());
                 // First search for the mysql directory
                 File mysqlDir = null;
                 for (File file : dir.listFiles())
