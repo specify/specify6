@@ -634,7 +634,7 @@ public class BuildSampleDatabase
             dispName = disciplineType.getTitle();
         }
         
-        boolean preLoadTaxon = (Boolean)props.get("preloadtaxon");
+        boolean preLoadTaxon = props.get("preloadtaxon") == null ? false : (Boolean)props.get("preloadtaxon");
         
         String taxonXML = props.getProperty("TaxonTreeDef.treedefs");
         String geoXML   = props.getProperty("GeographyTreeDef.treedefs");
