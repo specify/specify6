@@ -380,7 +380,9 @@ public class SpecifyDBSetupWizard extends JPanel
                         if (disciplinePanel != null)
                         {
                             DisciplineType disciplineType = disciplinePanel.getDisciplineType();
-                            if (disciplineType.isPaleo() && panels.get(step) instanceof TreeDefSetupPanel)
+                            if (disciplineType.isPaleo() && 
+                                panels.get(step) instanceof TreeDefSetupPanel &&
+                                ((TreeDefSetupPanel)panels.get(step)).getClassType() == TaxonTreeDef.class)
                             {
                                 step--;
                             }
@@ -466,7 +468,9 @@ public class SpecifyDBSetupWizard extends JPanel
                     panels.get(step).getValues(props);
                     panels.get(step).aboutToLeave();
                     
-                    if (disciplineType.isPaleo() && panels.get(step) instanceof TreeDefSetupPanel)
+                    if (disciplineType.isPaleo() && 
+                        panels.get(step) instanceof TreeDefSetupPanel &&
+                        ((TreeDefSetupPanel)panels.get(step)).getClassType() == TaxonTreeDef.class)
                     {
                         step++;
                     }
@@ -482,11 +486,11 @@ public class SpecifyDBSetupWizard extends JPanel
                     
                     if (panels.get(step) == catNumPicker)
                     {
-                        boolean isAccGlobal;
+                       
                         if (accessionPanel != null)
                         {
                             accessionPanel.getValues(props);
-                            isAccGlobal = (Boolean)props.get("accglobal");
+                            boolean isAccGlobal = (Boolean)props.get("accglobal");
                             if (isAccGlobal)
                             {
                                 step++;
