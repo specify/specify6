@@ -113,6 +113,10 @@ public class SpecifyDBSetupWizard extends JPanel
     protected TreeDefSetupPanel      geoTDPanel;
     protected DBLocationPanel        locationPanel;
     protected UserInfoPanel          userInfoPanel;
+    protected GenericFormPanel       accessionPanel;
+    protected FormatterPickerPanel   accessionPickerGbl;
+    protected FormatterPickerPanel   accessionPickerCol;
+    protected FormatterPickerPanel   catNumPicker;
     
     protected int                    step     = 0;
     protected int                    lastStep = 0;
@@ -255,17 +259,19 @@ public class SpecifyDBSetupWizard extends JPanel
                     new boolean[] { true,       true,         false,  false,      true,    false,   true,    true,    true,      true,  true},
                     nextBtn, backBtn, true));
 
-            panels.add(new GenericFormPanel("ACCESSIONGLOBALLY", 
+            accessionPanel = new GenericFormPanel("ACCESSIONGLOBALLY", 
                     "ENTER_ACC_INFO",
                     "wizard_choose_accession_level",
                     new String[] { "ACCGLOBALLY"}, 
                     new String[] { "accglobal"},
                     new String[] { "checkbox"},
-                    nextBtn, backBtn, true));
+                    nextBtn, backBtn, true);
+            panels.add(accessionPanel);
             
             if (wizardType == WizardType.Institution)
             {
-                panels.add(new FormatterPickerPanel("ACCNOFMT", "wizard_create_accession_number", nextBtn, backBtn, false));
+                accessionPickerGbl = new FormatterPickerPanel("ACCNOFMT", "wizard_create_accession_number", nextBtn, backBtn, false);
+                panels.add(accessionPickerGbl);
             }
 
             storageTDPanel = new TreeDefSetupPanel(StorageTreeDef.class, 
@@ -285,26 +291,6 @@ public class SpecifyDBSetupWizard extends JPanel
                     new String[] { },
                     nextBtn, backBtn, true));
         }
-        
-        /*
-        target="wizard_mysql_username"
-        target="wizard_master_username"
-        target="wizard_security_on"
-        target="wizard_create_it_user"
-        target="wizard_create_institution"
-        target="wizard_choose_accession_level"
-          target="wizard_create_accession_number"
-        target="wizard_configure_storage_tree"
-        
-        target="wizard_enter_division" url="
-        target="wizard_choose_discipline_type"
-        target="wizard_configure_taxon_tree"
-        target="wizard_preload_taxon" url="
-        target="wizard_configure_geography_tree"
-        target="wizard_create_catalog_number"
-         target="wizard_create_collection" url="
-        target="wizard_summary" url=" 
-                 */
         
         if (wizardType == WizardType.Institution ||
             wizardType == WizardType.Division)
@@ -361,15 +347,21 @@ public class SpecifyDBSetupWizard extends JPanel
                     new String[] { "collName", "collPrefix", }, 
                     nextBtn, backBtn, true));
         
-        panels.add(new FormatterPickerPanel("CATNOFMT", "wizard_create_catalog_number", nextBtn, backBtn, true));
+        catNumPicker = new FormatterPickerPanel("CATNOFMT", "wizard_create_catalog_number", nextBtn, backBtn, true);
+        panels.add(catNumPicker);
         
         if (wizardType != WizardType.Institution)
         {
             Institution inst = AppContextMgr.getInstance().getClassObject(Institution.class);
             if (inst != null && !inst.getIsAccessionsGlobal())
             {
-                panels.add(new FormatterPickerPanel("ACCNOFMT", "wizard_create_accession_number", nextBtn, backBtn, false));
+                accessionPickerCol = new FormatterPickerPanel("ACCNOFMT", "wizard_create_accession_number", nextBtn, backBtn, false); 
+                panels.add(accessionPickerCol);
             }
+        } else
+        {
+            accessionPickerCol = new FormatterPickerPanel("ACCNOFMT", "wizard_create_accession_number", nextBtn, backBtn, false); 
+            panels.add(accessionPickerCol);
         }
         
         panels.add(new SummaryPanel("SUMMARY", "wizard_summary", nextBtn, backBtn, panels));
@@ -385,10 +377,39 @@ public class SpecifyDBSetupWizard extends JPanel
                 {
                     if (step > 0)
                     {
-                        DisciplineType disciplineType = disciplinePanel.getDisciplineType();
-                        if (disciplineType.isPaleo() && panels.get(step) instanceof TreeDefSetupPanel)
+                        if (disciplinePanel != null)
                         {
-                            step--;
+                            DisciplineType disciplineType = disciplinePanel.getDisciplineType();
+                            if (disciplineType.isPaleo() && panels.get(step) instanceof TreeDefSetupPanel)
+                            {
+                                step--;
+                            }
+                        }
+                        
+                        if (panels.get(step-1) == accessionPickerGbl)
+                        {
+                            if (!((Boolean)props.get("accglobal")))
+                            {
+                                step--;
+                            } 
+                        }
+
+                        if (panels.get(step-1) == accessionPickerCol)
+                        {
+                            boolean isAccGlobal;
+                            if (accessionPanel != null)
+                            {
+                                accessionPanel.getValues(props);
+                                isAccGlobal = (Boolean)props.get("accglobal");
+                            } else
+                            {
+                                Institution inst = AppContextMgr.getInstance().getClassObject(Institution.class);
+                                isAccGlobal = inst != null && !inst.getIsAccessionsGlobal();
+                            }
+                            if (isAccGlobal)
+                            {
+                                step--;
+                            } 
                         }
 
                         step--;
@@ -442,13 +463,36 @@ public class SpecifyDBSetupWizard extends JPanel
                         disciplineType = disciplinePanel.getDisciplineType();
                     }
                     
+                    panels.get(step).getValues(props);
+                    panels.get(step).aboutToLeave();
+                    
                     if (disciplineType.isPaleo() && panels.get(step) instanceof TreeDefSetupPanel)
                     {
                         step++;
                     }
                     
-                    panels.get(step).getValues(props);
-                    panels.get(step).aboutToLeave();
+                    if (panels.get(step) == accessionPanel)
+                    {
+                        accessionPanel.getValues(props);
+                        if (!((Boolean)props.get("accglobal")))
+                        {
+                            step++;
+                        }
+                    }
+                    
+                    if (panels.get(step) == catNumPicker)
+                    {
+                        boolean isAccGlobal;
+                        if (accessionPanel != null)
+                        {
+                            accessionPanel.getValues(props);
+                            isAccGlobal = (Boolean)props.get("accglobal");
+                            if (isAccGlobal)
+                            {
+                                step++;
+                            }
+                        }
+                    }
                     
                     advanceToNextPanel();
                     
@@ -623,20 +667,6 @@ public class SpecifyDBSetupWizard extends JPanel
      */
     protected void configSetup()
     {
-        try
-        {
-            for (SetupPanelIFace panel : panels)
-            {
-                panel.getValues(props);
-            }
-            //props.storeToXML(new FileOutputStream(new File(setupXMLPath)), "SetUp Props");
-            
-        } catch (Exception ex)
-        {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyDBSetupWizard.class, ex);
-            
-        }
         
         if (wizardType == WizardType.Institution)
         {

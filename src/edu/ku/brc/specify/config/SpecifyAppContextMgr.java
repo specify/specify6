@@ -1555,7 +1555,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
      */
     public void checkForInitialFormats()
     {
-        if (addFormatFromFile("catnumfmt.xml") || addFormatFromFile("accsnumfmt.xml"))
+        if (addFormatFromFile("catnumfmt.xml") || addFormatFromFile("accnumfmt.xml"))
         {
             UIFieldFormatterMgr.getInstance().save();
         }

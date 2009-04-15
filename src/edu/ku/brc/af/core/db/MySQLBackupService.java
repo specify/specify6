@@ -41,12 +41,15 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.auth.UserAndMasterPasswordMgr;
@@ -823,6 +826,10 @@ public class MySQLBackupService extends BackupServiceFactory
         String mysqldumpLoc = "";
         switch (UIHelper.getOSType())
         {
+            case Windows : 
+                mysqldumpLoc = searchForWindowsPath(true); // true means search for mysqldump.exe
+                break;
+                
             case MacOSX : 
                 mysqldumpLoc = "/usr/local/mysql/bin/mysqldump";
                 break;
@@ -845,6 +852,10 @@ public class MySQLBackupService extends BackupServiceFactory
         String mysqlLoc = "";
         switch (UIHelper.getOSType())
         {
+            case Windows : 
+                mysqlLoc = searchForWindowsPath(false);// false means search for mysql.exe
+                break;
+                
             case MacOSX : 
                 mysqlLoc = "/usr/local/mysql/bin/mysql";
                 break;
@@ -858,6 +869,39 @@ public class MySQLBackupService extends BackupServiceFactory
                 
         }
         return mysqlLoc;
+    }
+    
+    /**
+     * Search for the mysql exes starting at the location of Specify, assuming it was installed
+     * into the 'Program Files' location. If it can't find it it just returns empty string.
+     * @param doDump true searches for 'mysqldump.exe'; false searches for 'mysql.exe'
+     * @return the full path or empty string.
+     */
+    @SuppressWarnings("unchecked")
+    private static String searchForWindowsPath(final boolean doDump)
+    {
+        String exeName = doDump ? "mysqldump.exe" : "mysql.exe";
+        
+        try
+        {
+            String programFilesPath = UIRegistry.getDefaultWorkingPath() + File.separator + ".." + File.separator + "..";
+            File dir = new File(programFilesPath);
+            if (dir.exists() && dir.isDirectory())
+            {
+                for (File file : (Collection<File>)FileUtils.listFiles(dir, new String[] {"exe"}, true))
+                {
+                    if (file.getName().equalsIgnoreCase(exeName))
+                    {
+                        return file.getAbsolutePath();
+                    }
+                }
+            }
+            
+        } catch (Exception ex)
+        {
+            // might get an exception on Vista
+        }
+        return "";
     }
     
     /**

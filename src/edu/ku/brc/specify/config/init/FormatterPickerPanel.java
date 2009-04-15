@@ -79,6 +79,7 @@ public class FormatterPickerPanel extends BaseSetupPanel
     protected List<UIFieldFormatterIFace> fmtList;
     protected UIFieldFormatterIFace       newFormatter = null;
     protected int                         newFmtInx    = 0;
+    protected boolean                     wasUsed      = false;
     
     /**
      * @param nextBtn
@@ -259,21 +260,33 @@ public class FormatterPickerPanel extends BaseSetupPanel
     }
 
     /* (non-Javadoc)
+     * @see javax.swing.JComponent#setVisible(boolean)
+     */
+    public void setVisible(final boolean vis)
+    {
+        super.setVisible(vis);
+        wasUsed = true;
+    }
+    
+    /* (non-Javadoc)
      * @see edu.ku.brc.specify.config.init.BaseSetupPanel#getValues()
      */
     @Override
     public void getValues(final Properties props)
     {
-        if (doingCatNums)
+        if (wasUsed)
         {
-            props.put("catnumfmt", newFormatter != null ? newFormatter : formatterCBX.getSelectedItem());
-            
-        } else if (formatterCBX.getSelectedIndex() > 1)
-        {
-            props.put("accnumfmt", newFormatter != null ? newFormatter : formatterCBX.getSelectedItem());
-        } else
-        {
-            props.remove("accnumfmt");
+            if (doingCatNums)
+            {
+                props.put("catnumfmt", newFormatter != null ? newFormatter : formatterCBX.getSelectedItem());
+                
+            } else if (formatterCBX.getSelectedIndex() > 1)
+            {
+                props.put("accnumfmt", newFormatter != null ? newFormatter : formatterCBX.getSelectedItem());
+            } else
+            {
+                props.remove("accnumfmt");
+            }
         }
     }
 

@@ -1031,7 +1031,6 @@ public class BuildSampleDatabase
     public Pair<AutoNumberingScheme, AutoNumberingScheme> localizeDisciplineSchema(final Discipline discipline, 
                                                                                    final Properties props)
     {
-
         AutoNumberingScheme catNumScheme = createAutoNumScheme(props, "catnumfmt", "Catalog Numbering Scheme",   CollectionObject.getClassTableId());
         AutoNumberingScheme accNumScheme = createAutoNumScheme(props, "accnumfmt", "Accession Numbering Scheme", Accession.getClassTableId());
 
