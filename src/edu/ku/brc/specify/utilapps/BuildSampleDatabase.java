@@ -8395,6 +8395,9 @@ public class BuildSampleDatabase
     
                 counter++;
             }
+            
+            stmt.executeUpdate("update taxon set isaccepted = true where isaccepted is null and acceptedid is null");
+            
             conn.close();
             
             input.close();
