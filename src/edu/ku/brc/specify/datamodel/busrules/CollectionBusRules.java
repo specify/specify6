@@ -45,6 +45,8 @@ import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.ResultSetController;
 import edu.ku.brc.af.ui.forms.Viewable;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.af.ui.forms.validation.ValCheckBox;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -379,8 +381,9 @@ public class CollectionBusRules extends BaseBusRules
             {
                 if (set.size() > 0)
                 {
-                    AutoNumberingScheme ans = set.iterator().next();
-                    txt.setText(ans.getIdentityTitle());
+                    AutoNumberingScheme   ans = set.iterator().next();
+                    UIFieldFormatterIFace fmt = UIFieldFormatterMgr.getInstance().getFormatter(ans.getFormatName());
+                    txt.setText(ans.getIdentityTitle()+ (fmt != null ? (" ("+fmt.toPattern()+")") : ""));
                 }
             }
         }
