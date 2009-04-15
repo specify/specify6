@@ -204,6 +204,14 @@ public class TreeDefSetupPanel extends BaseSetupPanel implements SetupPanelIFace
     }
     
     /**
+     * @return the classType
+     */
+    public Class<?> getClassType()
+    {
+        return classType;
+    }
+
+    /**
      * @param disciplineType
      */
     private void loadTree(final STD_DISCIPLINES disciplineType)
