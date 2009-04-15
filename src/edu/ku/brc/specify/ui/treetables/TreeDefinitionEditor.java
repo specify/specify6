@@ -149,7 +149,6 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 	 * @param task
 	 * @param isEditMode
 	 */
-	@SuppressWarnings("unchecked") //$NON-NLS-1$
 	public TreeDefinitionEditor(final D treeDef, 
 	                            final String name, 
 	                            final Taskable task, 
@@ -317,8 +316,18 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
             {
                 if (e.getClickCount()==2)
                 {
-                    int index = defItemsTable.getSelectedRow();
-                    editTreeDefItem(index);
+                     SwingUtilities.invokeLater(new Runnable(){
+
+						/* (non-Javadoc)
+						 * @see java.lang.Runnable#run()
+						 */
+						@Override
+						public void run()
+						{
+		                    editTreeDefItem( defItemsTable.getSelectedRow());
+						}
+                    	
+                    });
                 }
             }
         });
@@ -498,6 +507,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
         I uiDefItem = tableModel.get(index);
         DataProviderSessionIFace tmpSession = DataProviderFactory.getInstance().createSession();
         final I defItem = (I)tmpSession.load(uiDefItem.getClass(), uiDefItem.getTreeDefItemId());
+        log.info("loaded defItem for editing");
         if (defItem == null)
         {
             statusBar.setErrorMessage("The tree def has been changed by another user.  The def editor must be reloaded."); //$NON-NLS-1$
@@ -505,13 +515,16 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
             {
                 public void run()
                 {
-                    UIRegistry.writeGlassPaneMsg(getResourceString("TTV_Loading"), 24); //$NON-NLS-1$
+                    log.info("initializing tree editor"); //$NON-NLS-1$
+                   UIRegistry.writeGlassPaneMsg(getResourceString("TTV_Loading"), 24); //$NON-NLS-1$
                     
                     initTreeDefEditorComponent(displayedDef);
+                    log.info("initialized tree editor");
                     repaint();
                     
                     UIRegistry.clearGlassPaneMsg();
                     
+                    log.info("invoking selectionValueChanged()");
                     selectionValueChanged();
                 }
             });
@@ -522,6 +535,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
         
         // keep track of what these values are before the edits happen
         final I beforeItem = (I)TreeFactory.createNewTreeDefItem(defItem.getClass(),null,null);
+        log.info("created beforeItem"); //$NON-NLS-1$
         beforeItem.setIsInFullName(boolVal(defItem.getIsInFullName(), false));
         beforeItem.setTextBefore(defItem.getTextBefore());
         beforeItem.setTextAfter(defItem.getTextAfter());
@@ -542,8 +556,10 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
         
         // create the form dialog
         String title = getResourceString("TreeRankEditDialogTitle"); //$NON-NLS-1$
+        log.info("creating dialog"); //$NON-NLS-1$
         ViewBasedDisplayDialog dialog = new ViewBasedDisplayDialog(parentFrame, null, viewName, displayName, title, 
                                                                    closeBtnText, className, idFieldName, isEdit, options);
+        log.info("created dialog"); //$NON-NLS-1$
         dialog.setModal(true);
         dialog.setData(defItem);
         dialog.preCreateUI();
@@ -559,7 +575,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                 boolean success;
                 I mergedItem;
                 
-                @SuppressWarnings({ "unchecked", "synthetic-access" }) //$NON-NLS-1$ //$NON-NLS-2$
+                @SuppressWarnings("synthetic-access") //$NON-NLS-1$ //$NON-NLS-2$
                 @Override
                 public Object construct()
                 {
@@ -972,7 +988,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
             {
                 boolean success;
                 
-                @SuppressWarnings({ "unchecked", "synthetic-access" }) //$NON-NLS-1$ //$NON-NLS-2$
+                @SuppressWarnings("synthetic-access") //$NON-NLS-1$ //$NON-NLS-2$
                 @Override
                 public Object construct()
                 {
@@ -1202,7 +1218,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
             boolean success;
             I mergedItem;
             
-            @SuppressWarnings({ "unchecked", "synthetic-access" }) //$NON-NLS-1$ //$NON-NLS-2$
+            @SuppressWarnings("synthetic-access") //$NON-NLS-1$ //$NON-NLS-2$
             @Override
             public Object construct()
             {
@@ -1421,7 +1437,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                 boolean success;
                 D mergedDef;
                 
-                @SuppressWarnings({ "unchecked", "synthetic-access" }) //$NON-NLS-1$ //$NON-NLS-2$
+                @SuppressWarnings("synthetic-access") //$NON-NLS-1$ //$NON-NLS-2$
                 @Override
                 public Object construct()
                 {
