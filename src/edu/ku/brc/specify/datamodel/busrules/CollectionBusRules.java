@@ -185,10 +185,11 @@ public class CollectionBusRules extends BaseBusRules
         wizardPanel.processDataForNonBuild();
         
         final BuildSampleDatabase bldSampleDB   = new BuildSampleDatabase();
-        final ProgressFrame       progressFrame = bldSampleDB.createProgressFrame("Creating Disicipline");
+        final ProgressFrame       progressFrame = bldSampleDB.createProgressFrame("Creating Disicipline"); // I18N
         progressFrame.turnOffOverAll();
         
         progressFrame.setProcess(0, 4);
+        progressFrame.setProcessPercent(true);
         progressFrame.getCloseBtn().setVisible(false);
         progressFrame.setAlwaysOnTop(true);
         progressFrame.adjustProgressFrame();

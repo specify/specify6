@@ -223,6 +223,7 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
         progressFrame.turnOffOverAll();
         
         progressFrame.setProcess(0, 17);
+        progressFrame.setProcessPercent(true);
         progressFrame.getCloseBtn().setVisible(false);
         progressFrame.setAlwaysOnTop(true);
         progressFrame.adjustProgressFrame();
