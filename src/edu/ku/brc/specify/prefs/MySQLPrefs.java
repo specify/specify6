@@ -186,6 +186,11 @@ public class MySQLPrefs extends JPanel implements PrefsSavable, PrefsPanelIFace
             mysqlLoc = MySQLBackupService.getDefaultMySQLLoc();
         }
         
+        if (StringUtils.isEmpty(mysqlDumpLoc))
+        {
+            mysqlDumpLoc = MySQLBackupService.getDefaultMySQLDumpLoc();
+        }
+        
         if (StringUtils.isEmpty(backupLoc))
         {
             backupLoc = MySQLBackupService.getDefaultBackupLoc();
@@ -305,6 +310,7 @@ public class MySQLPrefs extends JPanel implements PrefsSavable, PrefsPanelIFace
     {
         
     }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.af.prefs.PrefsPanelIFace#getPermissions()
      */
@@ -390,8 +396,11 @@ public class MySQLPrefs extends JPanel implements PrefsSavable, PrefsPanelIFace
     @Override
     public boolean isFormValid()
     {
-        return StringUtils.isNotEmpty(mysqlLocBP.getTextField().getText()) &&
-               StringUtils.isNotEmpty(mysqlDumpLocBP.getTextField().getText()) &&
+        String mysql     = mysqlLocBP.getTextField().getText();
+        String mysqldump = mysqlDumpLocBP.getTextField().getText();
+        
+        return StringUtils.isNotEmpty(mysql) && StringUtils.contains(mysql.toLowerCase(), "mysql") &&
+               StringUtils.isNotEmpty(mysqldump) && StringUtils.contains(mysqldump.toLowerCase(), "mysqldump") &&
                StringUtils.isNotEmpty(backupLocBP.getTextField().getText());
     }
 
