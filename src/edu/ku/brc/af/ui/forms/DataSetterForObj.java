@@ -85,24 +85,37 @@ public class DataSetterForObj implements DataObjectSettable
                     }
                 }*/
                 Method setter = PropertyUtils.getWriteMethod(descr);
-                if (setter != null)
+                if (setter != null && dataObj != null)
                 {
                     args[0] = dataVal;
                     //log.debug("fieldname["+fieldName+"] dataObj["+dataObj+"] data ["+dataVal+"] ("+(dataVal != null ? dataVal.getClass().getSimpleName() : "")+")");
                     setter.invoke(dataObj, dataVal);
+                } else
+                {
+                    log.error("dataObj was null - Trouble setting value field named[" + (fieldName != null ? fieldName.trim() : "null")+ 
+                            "] in data object [" + (dataObj != null ? dataObj.getClass().toString() : "null")+ "]");
                 }
             } else
             {
                 log.error("We could not find a field named[" + fieldName.trim()+ "] in data object [" + dataObj.getClass().toString() + "]");
             }
-        } catch (Exception ex)
+        } catch (java.lang.reflect.InvocationTargetException ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataSetterForObj.class, ex);
             log.error("Trouble setting value field named[" + (fieldName != null ? fieldName.trim() : "null")+ 
                     "] in data object [" + (dataObj != null ? dataObj.getClass().toString() : "null")+ "]");
             log.error(ex);
             ex.printStackTrace();
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataSetterForObj.class, ex);
+            
+        } catch (Exception ex)
+        {
+            log.error("Trouble setting value field named[" + (fieldName != null ? fieldName.trim() : "null")+ 
+                    "] in data object [" + (dataObj != null ? dataObj.getClass().toString() : "null")+ "]");
+            log.error(ex);
+            ex.printStackTrace();
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataSetterForObj.class, ex);
         }
     }
     
