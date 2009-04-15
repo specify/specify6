@@ -548,6 +548,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
             //locking issues will hopefully have been made apparent to user during the preceding setXXX calls. 
             UIRegistry.showLocalizedError("BaseTreeDef.UnableToUpdate");
             setRenumberingNodes(false);
+            setNodeNumbersAreUpToDate(true);
             return false;
         }
             
