@@ -54,6 +54,8 @@ public interface TreeDefItemIface<N extends Treeable<N,D,I>,
 
 	public Set<N> getTreeEntries();
 	public void setTreeEntries(Set<N> treeables);
+	
+	public boolean hasTreeEntries();
     
     public String getTextBefore();
     public void setTextBefore(String text);

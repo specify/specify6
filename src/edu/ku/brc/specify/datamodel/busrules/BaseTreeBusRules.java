@@ -551,7 +551,7 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
             //disable FullName -related fields if TreeDefItem is used by nodes in the tree
             if (nodeInForm != null && nodeInForm.getTreeDef() != null)
             {
-            	boolean canEditFullNameFlds = nodeInForm.getTreeEntries().size() != 0;
+            	boolean canEditFullNameFlds = nodeInForm.hasTreeEntries();
             	if (canEditFullNameFlds)
             	{
             		ValTextField ftCtrl = (ValTextField )formViewObj.getControlByName("textAfter");

@@ -38,6 +38,9 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
+import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
+
 @SuppressWarnings("serial")
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
@@ -355,8 +358,25 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable,
     {
         return 77;
     }
+
+    
     
     /* (non-Javadoc)
+	 * @see edu.ku.brc.specify.datamodel.TreeDefItemIface#hasTreeEntries()
+	 */
+	@Override
+	public boolean hasTreeEntries()
+	{
+		if (getId() == null)
+		{
+			return false;
+		}
+		String sql = "select distinct TaxonTreeDefItemID from taxon where TaxonTreeDefItemID = "
+			+ getId();
+		return BasicSQLUtils.getNumRecords(sql) > 0;
+	}
+
+	/* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override

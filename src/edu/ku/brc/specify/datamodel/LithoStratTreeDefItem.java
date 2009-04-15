@@ -38,6 +38,8 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
+
 @SuppressWarnings("serial")
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
@@ -382,8 +384,24 @@ public class LithoStratTreeDefItem extends DataModelObjBase implements Serializa
     {
         return 48;
     }
+
     
     /* (non-Javadoc)
+	 * @see edu.ku.brc.specify.datamodel.TreeDefItemIface#hasTreeEntries()
+	 */
+	@Override
+	public boolean hasTreeEntries()
+	{
+		if (getId() == null)
+		{
+			return false;
+		}
+		String sql = "select distinct LithoStratTreeDefItemID from lithostrat where LithoStratTreeDefItemID = "
+			+ getId();
+		return BasicSQLUtils.getNumRecords(sql) > 0;
+	}
+
+	/* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
