@@ -1544,9 +1544,15 @@ public class SpecifyAppContextMgr extends AppContextMgr
      * @param fmtFileName the name of the file.
      * @return true if the formatter was added
      */
-    protected boolean addFormatFromFile(final String fmtFileName)
+    protected boolean addFormatFromFile(final String fmtFileName, final boolean isCatNum)
     {
-        String  path     = UIRegistry.getAppDataDir() + File.separator + fmtFileName;
+        Collection  coll        = AppContextMgr.getInstance().getClassObject(Collection.class);
+        Institution inst        = AppContextMgr.getInstance().getClassObject(Institution.class);
+        boolean     isAccGlobal = inst != null && inst.getIsAccessionsGlobal();
+        
+        String prefix  = isCatNum || !isAccGlobal ? coll.getCollectionName() : null;
+        
+        String  path     = UIRegistry.getAppDataDir() + File.separator + (prefix != null ? (prefix + "_") : "") + fmtFileName;
         File    uifFile  = new File(path);
         boolean loadedOK = false;
         if (uifFile.exists())
@@ -1575,7 +1581,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
      */
     public void checkForInitialFormats()
     {
-        if (addFormatFromFile("catnumfmt.xml") || addFormatFromFile("accnumfmt.xml"))
+        if (addFormatFromFile("catnumfmt.xml", true) || addFormatFromFile("accnumfmt.xml", false))
         {
             UIFieldFormatterMgr.getInstance().save();
         }

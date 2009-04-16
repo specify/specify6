@@ -647,16 +647,18 @@ public class SpecifyDBSetupWizard extends JPanel
     
     /**
      * @param fmt
+     * @param prefix
      * @param fileName
+     * @return
      */
-    protected boolean saveFormatters(final UIFieldFormatterIFace fmt, final String fileName)
+    protected boolean saveFormatters(final UIFieldFormatterIFace fmt, final String prefix, final String fileName)
     {
         if (fmt != null)
         {
             StringBuilder sb = new StringBuilder();
             fmt.toXML(sb);
             
-            String path = UIRegistry.getAppDataDir() + File.separator + fileName;
+            String path = UIRegistry.getAppDataDir() + File.separator + (prefix != null ? (prefix + "_") : "")  + fileName;
             try
             {
                 FileUtils.writeStringToFile(new File(path), sb.toString());
@@ -760,16 +762,21 @@ public class SpecifyDBSetupWizard extends JPanel
         Object catNumFmtObj = props.get("catnumfmt");
         Object accNumFmtObj = props.get("accnumfmt");
         
+        String collectionName = props.getProperty("collName");
+        
+        Institution inst        = AppContextMgr.getInstance().getClassObject(Institution.class);
+        boolean     isAccGlobal = inst != null && inst.getIsAccessionsGlobal();
+        
         UIFieldFormatterIFace catNumFmt = catNumFmtObj instanceof UIFieldFormatterIFace ? (UIFieldFormatterIFace)catNumFmtObj : null;
         UIFieldFormatterIFace accNumFmt = accNumFmtObj instanceof UIFieldFormatterIFace ? (UIFieldFormatterIFace)accNumFmtObj : null;
         
         if (catNumFmt != null)
         {
-            saveFormatters(catNumFmt, "catnumfmt.xml");
+            saveFormatters(catNumFmt, collectionName, "catnumfmt.xml");
         }
         if (accNumFmt != null)
         {
-            saveFormatters(accNumFmt, "accnumfmt.xml");
+            saveFormatters(accNumFmt, isAccGlobal ? null : collectionName, "accnumfmt.xml");
         }
     }
 

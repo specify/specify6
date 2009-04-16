@@ -743,6 +743,7 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
         for (AutoNumberingScheme ans : numberingSchemes) // Force Load of Numbering Schemes
         {
             ans.getTableNumber();
+            ans.getCollections();
         }
     }
 
