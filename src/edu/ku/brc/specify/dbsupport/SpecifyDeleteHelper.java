@@ -70,8 +70,9 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class SpecifyDeleteHelper
 {
-    protected boolean    debug             = false;
-    protected boolean    debugUpdate       = false;
+    protected static boolean    debug       = false;
+    protected static boolean    debugUpdate = false;
+    
     protected boolean    doTrees           = false;
 
     protected Integer    totalCount        = null;
@@ -273,7 +274,7 @@ public class SpecifyDeleteHelper
         
         Hashtable<String, Boolean> inUseHash = inUseHashArg == null && level == 1 ? new Hashtable<String, Boolean>() : inUseHashArg;
         
-        if (tblInfo.getTableId() == 4)
+        if (tblInfo.getTableId() == 1)
         {
             int x = 0;
             x++;
@@ -282,7 +283,7 @@ public class SpecifyDeleteHelper
         for (Method method : cls.getMethods())
         {
             String methodName = method.getName();
-            //System.out.println(methodName);
+            System.out.println(methodName);
             
             // Skip if it is a not a getter
             if (!methodName.startsWith("get"))
@@ -335,9 +336,9 @@ public class SpecifyDeleteHelper
                                 treeClass = Class.forName("edu.ku.brc.specify.datamodel."+className);
                             } catch (Exception ex)
                             {
+                                ex.printStackTrace();
                                 edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyDeleteHelper.class, ex);
-                                ex.printStackTrace();
                             }
                             if (treeClass == cls)
                             {
@@ -430,7 +431,7 @@ public class SpecifyDeleteHelper
                             break;
                         }
                     }
-                    //System.out.println(joinColName);
+                    System.out.println(joinColName);
                     
                     
                     if (cls != Agent.class)
@@ -576,7 +577,7 @@ public class SpecifyDeleteHelper
                             
                         } else if (ri.getDataClass() == tblInfo.getClassObj() && !hashOK && StringUtils.isEmpty(ri.getOtherSide()))
                         {
-                            System.out.println("Skipping "+ti.getClassObj().getSimpleName()+" for "+tblInfo.getClassObj().getSimpleName());
+                            if (debug) System.out.println("Skipping "+ti.getClassObj().getSimpleName()+" for "+tblInfo.getClassObj().getSimpleName());
                             int x = 0;
                             x++;
                         }
@@ -711,6 +712,12 @@ public class SpecifyDeleteHelper
         if (!doTrees && (si.getTableInfo() == null || Treeable.class.isAssignableFrom(si.getTableInfo().getClassObj())))
         {
             return;
+        }
+        
+        if (si.getTableInfo().getTableId() == 1)
+        {
+            int x = 0;
+            x++;
         }
         
         if (debugUpdate)
@@ -896,7 +903,7 @@ public class SpecifyDeleteHelper
             int count = BasicSQLUtils.getNumRecords("select count(*) FROM "+tablename, connection);
             if (count > 0)
             {
-                System.out.println(tablename+" "+count);
+                if (debug) System.out.println(tablename+" "+count);
             }
         }
         rs.close();
@@ -1352,16 +1359,16 @@ public class SpecifyDeleteHelper
                 if (count != null && ( !filterEmpty || count > 0))
                 {
                     int cnt = count == 0 ? 0 : count;
-                    System.out.println(String.format("%5d - %s", cnt, name));
+                    if (debug) System.out.println(String.format("%5d - %s", cnt, name));
                     pw.println(String.format("%5d - %s", cnt, name));
                     total += cnt;
                     tblCount++;
                 }
             }
-            System.out.println(String.format("%5d - %s", total, "Total"));
+            if (debug) System.out.println(String.format("%5d - %s", total, "Total"));
             pw.println(String.format("%5d - %s", total, "Total"));
             
-            System.out.println(String.format("%5d - %s", tblCount, "Total Tables"));
+            if (debug) System.out.println(String.format("%5d - %s", tblCount, "Total Tables"));
             pw.println(String.format("%5d - %s", tblCount, "Total Tables"));
             pw.close();
             

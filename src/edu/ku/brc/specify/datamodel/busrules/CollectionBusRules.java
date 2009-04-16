@@ -59,6 +59,7 @@ import edu.ku.brc.specify.datamodel.AutoNumberingScheme;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.dbsupport.HibernateDataProviderSession;
 import edu.ku.brc.specify.dbsupport.SpecifyDeleteHelper;
@@ -213,19 +214,32 @@ public class CollectionBusRules extends BaseBusRules
                     DataProviderSessionIFace hSession = new HibernateDataProviderSession(session);
                     
                     Discipline     discipline       = (Discipline)formViewObj.getMVParent().getMultiViewParent().getData();
-                    SpecifyUser    specifyAdminUser = (SpecifyUser)acm.getClassObject(SpecifyUser.class);
+                    Institution    institution      = acm.getClassObject(Institution.class);
+                    SpecifyUser    specifyAdminUser = acm.getClassObject(SpecifyUser.class);
                     Agent          userAgent        = (Agent)hSession.getData("FROM Agent WHERE id = "+Agent.getUserAgent().getId());
                     Properties     props            = wizardPanel.getProps();
                     DisciplineType disciplineType   = DisciplineType.getByName(discipline.getType());
                     
-                    discipline         = (Discipline)session.merge(discipline);
+                    discipline       = (Discipline)session.merge(discipline);
                     specifyAdminUser = (SpecifyUser)hSession.getData("FROM SpecifyUser WHERE id = "+specifyAdminUser.getId());
                     
                     bldSampleDB.setSession(session);
                     
                     AutoNumberingScheme catNumScheme = bldSampleDB.createAutoNumScheme(props, "catnumfmt", "Catalog Numbering Scheme",   CollectionObject.getClassTableId());
-                    AutoNumberingScheme accNumScheme = bldSampleDB.createAutoNumScheme(props, "accnumfmt", "Accession Numbering Scheme", Accession.getClassTableId());
+                    AutoNumberingScheme accNumScheme = null;
 
+                    if (!institution.getIsAccessionsGlobal())
+                    {
+                        accNumScheme = bldSampleDB.createAutoNumScheme(props, "accnumfmt", "Accession Numbering Scheme", Accession.getClassTableId()); // I18N
+                        
+                    } else
+                    {
+                        List<?> list = hSession.getDataList("FROM AutoNumberingScheme WHERE tableNumber = "+Accession.getClassTableId());
+                        if (list != null && list.size() == 1)
+                        {
+                            accNumScheme = (AutoNumberingScheme)list.get(0);
+                        }
+                    }
                     
                     newCollection = bldSampleDB.createEmptyCollection(discipline, 
                                                                       props.getProperty("collPrefix").toString(), 
@@ -568,9 +582,54 @@ public class CollectionBusRules extends BaseBusRules
                 {
                     try
                     {
-                        SpecifyDeleteHelper delHelper = new SpecifyDeleteHelper(true);
-                        delHelper.delRecordFromTable(Collection.class, collection.getId(), true);
-                        delHelper.done();
+                        // The DeleteHelper is deleting the AutoNumberingScheme
+                        DataProviderSessionIFace pSession = null;
+                        try
+                        {
+                            pSession = session != null ? session : DataProviderFactory.getInstance().createSession();
+                            
+                            Institution institution = AppContextMgr.getInstance().getClassObject(Institution.class);
+                            
+                            pSession.attach(collection);
+                            
+                            pSession.beginTransaction();
+                            
+                            Set<AutoNumberingScheme> colANSSet = collection.getNumberingSchemes();
+                            for (AutoNumberingScheme ans : new Vector<AutoNumberingScheme>(colANSSet))
+                            {
+                                pSession.attach(ans);
+                                
+                                colANSSet.remove(ans);
+                                ans.getCollections().remove(collection);
+                                
+                                if (ans.getTableNumber() == Accession.getClassTableId() && !institution.getIsAccessionsGlobal())
+                                {
+                                    pSession.delete(ans);
+                                }
+                            }
+                            pSession.saveOrUpdate(collection);
+                            pSession.commit();
+                            
+                            SpecifyDeleteHelper delHelper = new SpecifyDeleteHelper(true);
+                            delHelper.delRecordFromTable(Collection.class, collection.getId(), true);
+                            delHelper.done();
+                            
+                            //pSession.beginTransaction();
+                            //pSession.delete(collection);
+                            //pSession.commit();
+                            
+                        } catch (Exception ex)
+                        {
+                            ex.printStackTrace();
+                        } finally
+                        {
+                            if (pSession != null && session == null)
+                            {
+                                pSession.close();
+                            }
+                        }
+                        
+                        
                         
                         // This is called instead of calling 'okToDelete' because we had the SpecifyDeleteHelper
                         // delete the actual dataObj and now we tell the form to remove the dataObj from
@@ -580,9 +639,9 @@ public class CollectionBusRules extends BaseBusRules
                         
                     } catch (Exception ex)
                     {
+                        ex.printStackTrace();
                         edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                         edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(CollectionBusRules.class, ex);
-                        ex.printStackTrace();
                     }
                 }
             } else

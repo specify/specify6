@@ -239,7 +239,7 @@ public class SimpleGlassPane extends JPanel implements AWTEventListener
         
         if (r.contains(p))
         {
-            System.out.println("consumed");
+            //System.out.println("consumed");
             e.consume();
         }
     }

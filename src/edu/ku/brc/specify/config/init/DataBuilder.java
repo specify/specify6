@@ -490,10 +490,13 @@ public class DataBuilder
         collection.setCode(prefix);
         collection.setModifiedByAgent(null);
         collection.setCollectionName(name);
-        collection.addReference(catalogNumberingScheme, "numberingSchemes");
         collection.setIsEmbeddedCollectingEvent(isEmbeddedCollectingEvent);
         
-        catalogNumberingScheme.getCollections().add(collection);
+        if (catalogNumberingScheme != null)
+        {
+            collection.getNumberingSchemes().add(catalogNumberingScheme);
+            catalogNumberingScheme.getCollections().add(collection);
+        }
         
         for (Discipline disp : disciplines)
         {
@@ -501,6 +504,12 @@ public class DataBuilder
         }
 
         persist(collection);
+        
+        if (catalogNumberingScheme != null)
+        {
+            persist(catalogNumberingScheme);
+        }
+
         return collection;
     }
 

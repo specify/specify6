@@ -264,7 +264,22 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
                     
                     bldSampleDB.setSession(session);
                     
-                    pair = bldSampleDB.createEmptyDisciplineAndCollection(division, props, dispType, userAgent, 
+                    
+                    Agent newUserAgent = null;
+                    try
+                    {
+                        newUserAgent = (Agent)userAgent.clone();
+                        specifyAdminUser.getAgents().add(newUserAgent);
+                        newUserAgent.setSpecifyUser(specifyAdminUser);
+                        session.saveOrUpdate(newUserAgent);
+                        session.saveOrUpdate(specifyAdminUser);
+                        
+                    } catch (CloneNotSupportedException ex)
+                    {
+                        ex.printStackTrace();
+                    }
+                    
+                    pair = bldSampleDB.createEmptyDisciplineAndCollection(division, props, dispType, newUserAgent, 
                                                                           specifyAdminUser, true, true);
                     
                     if (pair != null && pair.first != null && pair.second != null)
@@ -446,6 +461,12 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
                 {
                     try
                     {
+                        /*CollectionBusRules collBR = new CollectionBusRules();
+                        for (Collection coll : new Vector<Collection>(discipline.getCollections()))
+                        {
+                            collBR.okToDelete(coll, null, null);
+                        }*/
+                        
                         SpecifyDeleteHelper delHelper = new SpecifyDeleteHelper(true);
                         delHelper.delRecordFromTable(Discipline.class, discipline.getId(), true);
                         delHelper.done();

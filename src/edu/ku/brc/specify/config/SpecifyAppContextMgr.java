@@ -84,6 +84,7 @@ import edu.ku.brc.specify.config.init.RegisterSpecify;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.Agent;
+import edu.ku.brc.specify.datamodel.AutoNumberingScheme;
 import edu.ku.brc.specify.datamodel.Borrow;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
@@ -1471,6 +1472,27 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 field.setFormatter(catNumFmtr);
             }
             
+            Institution institution = AppContextMgr.getInstance().getClassObject(Institution.class);
+            if (!institution.getIsAccessionsGlobal())
+            {
+                for (AutoNumberingScheme ans : collection.getNumberingSchemes())
+                {
+                    if (ans.getTableNumber() != null && ans.getTableNumber().equals(Accession.getClassTableId()))
+                    {
+                        DBFieldInfo field = DBTableIdMgr.getInstance().getInfoById(Accession.getClassTableId()).getFieldByName("accessionNumber");
+                        if (field != null)
+                        {
+                            UIFieldFormatterIFace accNumFmtr = UIFieldFormatterMgr.getInstance().getFormatter(ans.getFormatName());
+                            if (accNumFmtr != null)
+                            {
+                                field.setFormatter(accNumFmtr);
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+            
             // We close the session here so all SpAppResourceDir get unattached to hibernate
             // because UIFieldFormatterMgr and loading views all need a session
             // and we don't want to reuse it and get a double session
@@ -1489,8 +1511,6 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 ViewLoader.setDoFieldVerification(false);
                 
                 UIFieldFormatterMgr.getInstance();
-                
-                //backStopViewSetMgr.getView("Global", "Accession"); // force the loading of all the views
                 
                 ViewLoader.setDoFieldVerification(cacheDoVerify);
             }

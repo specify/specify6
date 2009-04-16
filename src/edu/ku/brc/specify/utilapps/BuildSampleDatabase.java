@@ -234,6 +234,7 @@ import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchRowImage;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
+import edu.ku.brc.specify.dbsupport.HibernateDataProviderSession;
 import edu.ku.brc.specify.dbsupport.SpecifyDeleteHelper;
 import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
 import edu.ku.brc.specify.tools.schemalocale.DisciplineBasedContainer;
@@ -564,7 +565,6 @@ public class BuildSampleDatabase
         
         frame.incOverall();
         
-        //AppContextMgr.getInstance().setClassObject(Division.class, division);   // Needed for creating an Agent
         persist(division);
         
         String title     = props.getProperty("title",     "");
@@ -573,7 +573,7 @@ public class BuildSampleDatabase
         String midInit   = props.getProperty("middleInitial", "A");
         String abbrev    = props.getProperty("abbrev",     "");
         String email     = props.getProperty("email");
-        String userType  = props.getProperty("userType");
+        //String userType  = props.getProperty("userType");
 
         /*System.out.println("----- User Agent -----");
         System.out.println("Title:     "+title);
@@ -634,7 +634,8 @@ public class BuildSampleDatabase
             dispName = disciplineType.getTitle();
         }
         
-        boolean preLoadTaxon = props.get("preloadtaxon") == null ? false : (Boolean)props.get("preloadtaxon");
+        Object pltObj = props.get("preloadtaxon");
+        boolean preLoadTaxon = pltObj == null ? false : (Boolean)pltObj;
         
         String taxonXML = props.getProperty("TaxonTreeDef.treedefs");
         String geoXML   = props.getProperty("GeographyTreeDef.treedefs");
@@ -646,10 +647,23 @@ public class BuildSampleDatabase
         
         frame.setProcess(0, 17);
         frame.setProcess(++createStep);
-        frame.setDesc("Loading Schema...");
+        frame.setDesc("Loading Schema..."); // I18N
         
-        Pair<AutoNumberingScheme, AutoNumberingScheme> pair = localizeDisciplineSchema(discipline, props);
+        boolean isAccGlobal = false;
+        if (props.get("accglobal") == null)
+        {
+            Institution inst = AppContextMgr.getInstance().getClassObject(Institution.class);
+            isAccGlobal = inst != null && inst.getIsAccessionsGlobal();
+            
+        } else
+        {
+            isAccGlobal = (Boolean)props.get("accglobal");
+        }
         
+        // The two AutoNumberingSchemes have been commited
+        Pair<AutoNumberingScheme, AutoNumberingScheme> pair = localizeDisciplineSchema(discipline, props, isAccGlobal);
+        
+        // These create a new session and persist records in the Schema tables (SpLocaleContainerItem)
         makeFieldVisible(null, discipline);
         makeFieldVisible(disciplineType.getName(), discipline);
         
@@ -659,6 +673,7 @@ public class BuildSampleDatabase
         Collection collection = null;
         if (doCollection)
         {
+            // Persists the Collection
             collection = createEmptyCollection(discipline, 
                                                props.getProperty("collPrefix").toString(), 
                                                props.getProperty("collName").toString(),
@@ -732,11 +747,12 @@ public class BuildSampleDatabase
         persist(discipline);
         persist(userAgent);
         
-        commitTx();
+        //commitTx();
+        
         
         frame.incOverall();
         
-        startTx();
+        //startTx();
 
         frame.setProcess(++createStep);
         
@@ -783,7 +799,7 @@ public class BuildSampleDatabase
             
             commitTx();
             
-            convertChronoStratFromXLS(gtpTreeDef);
+            convertChronoStratFromXLS(gtpTreeDef); // does commits
         }
         
         frame.incOverall();
@@ -920,12 +936,15 @@ public class BuildSampleDatabase
         frame.setProcess(++createStep);
         
         startTx();
+        
+        //AutoNumberingScheme catNumScheme = (AutoNumberingScheme)session.merge(catNumSchemeArg);
+        //AutoNumberingScheme accANS       = accANSArg != null ? (AutoNumberingScheme)session.merge(accANSArg) : null; // should NOT be null
 
         ////////////////////////////////
         // Create Collection
         ////////////////////////////////
         log.info("Creating a Collection");
-        frame.setDesc("Creating a Collection");
+        frame.setDesc("Creating a Collection"); // I18N
         
         Collection collection = createCollection(collPrefix, 
                                                  collName, 
@@ -939,7 +958,18 @@ public class BuildSampleDatabase
         collection.getTechnicalContacts().add(userAgent);
         collection.getContentContacts().add(userAgent);
         
-        persist(collection);
+        if (accANS != null)
+        {
+            collection.getNumberingSchemes().add(accANS);
+            accANS.getCollections().add(collection);
+            persist(collection);
+            persist(accANS);
+            
+        } else
+        {
+            persist(collection);
+        }
+        persist(catNumScheme);
         
         frame.setProcess(++createStep);
         
@@ -1017,7 +1047,7 @@ public class BuildSampleDatabase
         if (numFormat != null)
         {
             autoNumScheme = createAutoNumberingScheme(schemeName, "", numFmtName, isNumFmtNumeric, tableId);
-            persist(autoNumScheme);
+            //persist(autoNumScheme);
         }
 
         return autoNumScheme;
@@ -1029,20 +1059,41 @@ public class BuildSampleDatabase
      * @return
      */
     public Pair<AutoNumberingScheme, AutoNumberingScheme> localizeDisciplineSchema(final Discipline discipline, 
-                                                                                   final Properties props)
+                                                                                   final Properties props,
+                                                                                   final boolean    isAccGlobal)
     {
-        AutoNumberingScheme catNumScheme = createAutoNumScheme(props, "catnumfmt", "Catalog Numbering Scheme",   CollectionObject.getClassTableId());
-        AutoNumberingScheme accNumScheme = createAutoNumScheme(props, "accnumfmt", "Accession Numbering Scheme", Accession.getClassTableId());
-
+        AutoNumberingScheme catNumScheme = createAutoNumScheme(props, "catnumfmt", "Catalog Numbering Scheme",   CollectionObject.getClassTableId()); // I18N
+        AutoNumberingScheme accNumScheme = null;
+        
+        // Check to see if we are creating from scratch
+        boolean isFromScratch = props.getProperty("instName") != null;
+        /*for (Object key : props.keySet())
+        {
+            System.out.println(key+" -> "+props.get(key));
+        }*/
+        
+        // NOTE: createAutoNumScheme persists the AutoNumberingScheme
+        if (!isAccGlobal || isFromScratch)
+        {
+            accNumScheme = createAutoNumScheme(props, "accnumfmt", "Accession Numbering Scheme", Accession.getClassTableId()); // I18N
+            
+        } else
+        {
+            DataProviderSessionIFace hSession = new HibernateDataProviderSession(session);
+            List<?> list = hSession.getDataList("FROM AutoNumberingScheme WHERE tableNumber = "+Accession.getClassTableId());
+            if (list != null && list.size() == 1)
+            {
+                accNumScheme = (AutoNumberingScheme)list.get(0);
+            }
+        }
+        
         startTx();
 
-        //Discipline discipline = (Discipline)session.merge(disciplineArg);
-        
         loadSchemaLocalization(discipline, 
                                SpLocaleContainer.CORE_SCHEMA, 
                                DBTableIdMgr.getInstance(),
                                catNumScheme.getFormatName(),
-                               accNumScheme != null ? accNumScheme.getFormatName() : null);
+                               accNumScheme.getFormatName());
         
         frame.setProcess(++createStep);
         
@@ -1051,6 +1102,8 @@ public class BuildSampleDatabase
         frame.setProcess(++createStep);
 
         commitTx();
+        
+        // The two AutoNumberingSchemes have been persisted.
         
         return new Pair<AutoNumberingScheme, AutoNumberingScheme>(catNumScheme, accNumScheme);
     }
@@ -7865,9 +7918,9 @@ public class BuildSampleDatabase
     public static void loadLocalization(final String            disciplineName,
                                         final SpLocaleContainer memoryContainer, 
                                         final SpLocaleContainer newContainer,
-                                        final boolean hideGenericFields,
-                                        final String catFmtName,
-                                        final String accFmtName)
+                                        final boolean           hideGenericFields,
+                                        final String            catFmtName,
+                                        final String            accFmtName)
     {
         newContainer.setName(memoryContainer.getName());
         newContainer.setType(memoryContainer.getType());
@@ -7893,7 +7946,7 @@ public class BuildSampleDatabase
             String title = nm.getText();
             if (isCollectingEvent && !isFish)
             {
-                title = "Collecting Information";
+                title = "Collecting Information"; // I18N
             }
             str.setText(title);
             str.setLanguage(nm.getLanguage());
@@ -7942,13 +7995,13 @@ public class BuildSampleDatabase
             
             loadLocalization(memoryContainer.getName(), item, newItem, dispItem, hideGenericFields, isFish);
             
-            if (isColObj && item.getName().equals("catalogNumber") && catFmtName != null)
+            if (isColObj && catFmtName != null && item.getName().equals("catalogNumber"))
             {
                 newItem.setFormat(catFmtName);
                 newItem.setIsUIFormatter(true);
             }
             
-            if (isAccession && item.getName().equals("accessionNumber") && accFmtName != null)
+            if (isAccession && accFmtName != null && item.getName().equals("accessionNumber"))
             {
                 newItem.setFormat(accFmtName);
                 newItem.setIsUIFormatter(true);
