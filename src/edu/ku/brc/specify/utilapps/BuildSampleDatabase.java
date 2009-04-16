@@ -791,6 +791,9 @@ public class BuildSampleDatabase
             LithoStrat earthNode = new LithoStrat();
             earthNode.initialize();
             earthNode.setName("Earth");
+            earthNode.setFullName("Earth");
+            earthNode.setNodeNumber(1);
+            earthNode.setHighestChildNodeNumber(1);
             earthNode.setRankId(0);
             earthNode.setDefinition(lithoStratTreeDef);
             earthNode.setDefinitionItem(earth);
