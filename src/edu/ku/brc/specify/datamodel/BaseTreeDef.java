@@ -540,6 +540,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
             return false;
         }
 
+        boolean wasUpToDate = TreeDefStatusMgr.isNodeNumbersAreUpToDate(this);
         setRenumberingNodes(true);
         setNodeNumbersAreUpToDate(false);
         
@@ -548,7 +549,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
             //locking issues will hopefully have been made apparent to user during the preceding setXXX calls. 
             UIRegistry.showLocalizedError("BaseTreeDef.UnableToUpdate");
             setRenumberingNodes(false);
-            setNodeNumbersAreUpToDate(true);
+            setNodeNumbersAreUpToDate(wasUpToDate);
             return false;
         }
             
@@ -577,6 +578,8 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
     	}))
     	{
     		//hopefully lock problems will already have been reported 
+            setRenumberingNodes(false);
+            setNodeNumbersAreUpToDate(wasUpToDate);
     		return false; 
     	}
         try
