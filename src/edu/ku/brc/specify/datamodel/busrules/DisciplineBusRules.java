@@ -325,6 +325,8 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
                        pSession = DataProviderFactory.getInstance().createSession();
                        
                        division = (Division)pSession.getData("FROM Division WHERE id = "+division.getId());
+                       division.forceLoad();
+                       
                        //formViewObj.getMVParent().getMultiViewParent().setData(division);
                        acm.setClassObject(Division.class, division);
                        
@@ -335,7 +337,9 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
                            for (Object row : dataItems)
                            {
                                Object[] cols = (Object[])row;
-                               dataList.add(cols[0]);
+                               Division div = (Division)cols[0];
+                               div.forceLoad();
+                               dataList.add(div);
                            }
                            dataItems = dataList;
                        }
