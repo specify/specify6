@@ -1093,7 +1093,7 @@ public class BuildSampleDatabase
                                SpLocaleContainer.CORE_SCHEMA, 
                                DBTableIdMgr.getInstance(),
                                catNumScheme.getFormatName(),
-                               accNumScheme.getFormatName());
+                               accNumScheme != null ? accNumScheme.getFormatName() : null);
         
         frame.setProcess(++createStep);
         
