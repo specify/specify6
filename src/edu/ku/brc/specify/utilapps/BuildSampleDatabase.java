@@ -3462,6 +3462,9 @@ public class BuildSampleDatabase
         LithoStrat earth = new LithoStrat();
         earth.initialize();
         earth.setName("Earth");
+        earth.setFullName("Earth");
+        earth.setNodeNumber(1);
+        earth.setHighestChildNodeNumber(1);
         earth.setRankId(0);
         earth.setDefinition(treeDef);
         LithoStratTreeDefItem defItem = treeDef.getDefItemByRank(0);
@@ -3574,6 +3577,9 @@ public class BuildSampleDatabase
         Geography earth = new Geography();
         earth.initialize();
         earth.setName("Earth");
+        earth.setFullName("Earth");
+        earth.setNodeNumber(1);
+        earth.setHighestChildNodeNumber(1);
         earth.setRankId(0);
         earth.setDefinition(treeDef);
         GeographyTreeDefItem defItem = treeDef.getDefItemByRank(0);
@@ -4636,6 +4642,9 @@ public class BuildSampleDatabase
         
         storage.setRankId(0);
         storage.setName("Storage Root");
+        storage.setFullName("Storage Root");
+        storage.setNodeNumber(1);
+        storage.setHighestChildNodeNumber(1);
         storage.setDefinition(treeDef);
         storage.setDefinitionItem(rootTTD);
         rootTTD.getTreeEntries().add(storage);
@@ -4671,6 +4680,7 @@ public class BuildSampleDatabase
         
         storage.setRankId(rankId);
         storage.setName(name);
+        storage.setFullName(name); 
         storage.setDefinition(treeDef);
         storage.setDefinitionItem(treeDefItemHash.get(rankId));
         storage.setParent(parent);
@@ -4740,6 +4750,9 @@ public class BuildSampleDatabase
         
         taxon.setRankId(0);
         taxon.setName("Taxonomy Root");
+        taxon.setFullName("Taxonomy Root");
+        taxon.setNodeNumber(1);
+        taxon.setHighestChildNodeNumber(1);
         taxon.setDefinition(treeDef);
         taxon.setDefinitionItem(rootTTD);
         rootTTD.getTreeEntries().add(taxon);
@@ -4774,6 +4787,7 @@ public class BuildSampleDatabase
         
         taxon.setRankId(rankId);
         taxon.setName(name);
+        taxon.setFullName(name);
         taxon.setCommonName(common);
         taxon.setDefinition(treeDef);
         taxon.setDefinitionItem(treeDefItemHash.get(rankId));
@@ -8766,6 +8780,7 @@ public class BuildSampleDatabase
         GeologicTimePeriod rootNode = new GeologicTimePeriod();
         rootNode.initialize();
         rootNode.setName("Root");
+        rootNode.setFullName("Root");
         rootNode.setRankId(0);
         rootNode.setDefinition(treeDef);
         rootNode.setDefinitionItem(root);
