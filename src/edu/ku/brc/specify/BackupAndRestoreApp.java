@@ -65,7 +65,6 @@ import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
-import edu.ku.brc.af.prefs.PrefsPanelIFace;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.ui.db.DatabaseLoginListener;
 import edu.ku.brc.af.ui.db.DatabaseLoginPanel;
@@ -110,7 +109,7 @@ public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener
     private JStatusBar          statusField        = null;
     private JMenuBar            menuBar            = null;
     private JFrame              topFrame           = null;
-    private PrefsPanelIFace     mainPanel          = null;
+    private MySQLPrefs          mainPanel          = null;
     private JLabel              appIcon            = null;
 
     protected boolean           hasChanged         = false;
@@ -211,7 +210,8 @@ public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener
         SpecifyAppPrefs.initialPrefs();
         
         mainPanel = new MySQLPrefs(true);
-
+        add(mainPanel, BorderLayout.CENTER);
+        
         int[] sections = {5};
         statusField = new JStatusBar(sections);
         statusField.setErrorIcon(IconManager.getIcon("Error", IconManager.IconSize.Std16)); //$NON-NLS-1$
@@ -219,6 +219,8 @@ public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener
         UIRegistry.setStatusBar(statusField);
 
         add(statusField, BorderLayout.SOUTH);
+        
+        topFrame.setContentPane(this);
     }
     
     /**
@@ -251,11 +253,8 @@ public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener
         
         appIcon = new JLabel("  "); //$NON-NLS-1$
         
-
         return toolBar;
     }
-
-
 
     /**
      * Create menus
@@ -314,22 +313,14 @@ public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener
         JLabel iconLabel = new JLabel(IconManager.getIcon("SpecifyLargeIcon")); //$NON-NLS-1$
         iconLabel.setBorder(BorderFactory.createEmptyBorder(2, 0, 2, 8));
         panel.add(iconLabel, BorderLayout.WEST);
-        panel.add(createLabel("<html>"+appName+" " + appVersion +  //$NON-NLS-1$ //$NON-NLS-2$
-                "<br><br>Biodiversity Research Center<br>University of Kansas<br>Lawrence, KS  USA 66045<br><br>" +  //$NON-NLS-1$
-                "www.specifysoftware.org<br>specify@ku.edu<br><br>" +  //$NON-NLS-1$
-                "<p>The Specify Software Project is<br>"+ //$NON-NLS-1$
-                "funded by the Biological Databases<br>"+ //$NON-NLS-1$
-                "and Informatics Program of the<br>"+ //$NON-NLS-1$
-                "U.S. National Science Foundation <br>(Award DBI-0446544)</P><br>" + //$NON-NLS-1$
-                "Build: " + appBuildVersion + "<br>Java Version: "+System.getProperty("java.version") + //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                "</html>"), BorderLayout.EAST); //$NON-NLS-1$
+        
+        panel.add(createLabel(Specify.getAboutText(appName, appVersion)), BorderLayout.EAST);
         panel.setBorder(BorderFactory.createEmptyBorder(6,6,0,6));
         String title = getResourceString("Specify.ABOUT");//$NON-NLS-1$
         CustomDialog aboutDlg = new CustomDialog(topFrame,  title + " " +appName, true, CustomDialog.OK_BTN, panel); //$NON-NLS-1$ 
         String okLabel = getResourceString("Specify.CLOSE");//$NON-NLS-1$
         aboutDlg.setOkLabel(okLabel); 
         UIHelper.centerAndShow(aboutDlg);
-
     }
 
     /**
@@ -433,12 +424,12 @@ public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener
      */
     public void showApp()
     {
-        JFrame f = getFrame();
-        f.setTitle(getTitle());
-        f.getContentPane().add(this, BorderLayout.CENTER);
-        f.pack();
+        
+        topFrame.pack();
+        
+        topFrame.setTitle(getTitle());
 
-        f.addWindowListener(new WindowAdapter()
+        topFrame.addWindowListener(new WindowAdapter()
                 {
                     @Override
                     public void windowClosing(WindowEvent e)
@@ -447,7 +438,7 @@ public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener
                     }
                 });
         
-        UIHelper.centerWindow(f);
+        UIHelper.centerWindow(topFrame);
         
         /*Rectangle r = f.getBounds();
         int x = AppPreferences.getLocalPrefs().getInt("APP.X", r.x);
@@ -457,11 +448,11 @@ public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener
         UIHelper.positionAndFitToScreen(f, x, y, w, h);
         */
         
-        Rectangle r = f.getBounds();
+        Rectangle r = topFrame.getBounds();
         r.setBounds(1, 1, 600, 275);
-        f.setBounds(r);
-        UIHelper.centerWindow(f);
-        f.setVisible(true);
+        topFrame.setBounds(r);
+        UIHelper.centerWindow(topFrame);
+        topFrame.setVisible(true);
     }
     
     /**
@@ -584,7 +575,7 @@ public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener
      * @param databaseNameArg the database name
      * @param userNameArg the user name
      * @param startOver tells the AppContext to start over
-     * @param firstTime indicates this is the first time in the app and it should create all the UI for the core app
+     * @param firstTime indicates this is the first time in the application and it should create all the UI for the core app
      */
     public void restartApp(final Window  window, 
                            final String  databaseNameArg, 
@@ -619,7 +610,6 @@ public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener
         if (dbLoginPanel != null)
         {
             dbLoginPanel.getWindow().setVisible(false);
-            dbLoginPanel = null;
         }
     }
     
@@ -657,7 +647,8 @@ public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener
         
         restartApp(window, databaseName, userName, false, firstTime);
         
-        add((JPanel)mainPanel, BorderLayout.CENTER);
+        mainPanel.setUsernameAndPassword(userName, dbLoginPanel.getPassword());
+        
         doLayout();
 
         JToolBar toolBar = (JToolBar)UIRegistry.get(UIRegistry.TOOLBAR);

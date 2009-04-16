@@ -2006,17 +2006,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             infoPB.add(UIHelper.createLabel(System.getProperty("java.version")),cc.xy(3, y)); y += 2;
         }
         
-        String txt = "<html><font face=\"sans-serif\" size=\"11pt\">"+appName+" " + appVersion +  //$NON-NLS-1$ //$NON-NLS-2$
-                        "<br><br>Specify Software Project<br>" +//$NON-NLS-1$
-                        "Biodiversity Institute<br>University of Kansas<br>1345 Jayhawk Blvd.<br>Lawrence, KS  USA 66045<br><br>" +  //$NON-NLS-1$
-                        "<a href=\"http://www.specifysoftware .org\">www.specifysoftware.org</a>"+ //$NON-NLS-1$
-                        "<br><a href=\"mailto:specify@ku.edu\">specify@ku.edu</a><br>" +  //$NON-NLS-1$
-                        "<p>The Specify Software Project is "+ //$NON-NLS-1$
-                        "funded by the Advances in Biological Informatics Program, " + //$NON-NLS-1$
-                        "U.S. National Science Foundation  (Award DBI-0446544 and earlier awards).<br><br>" + //$NON-NLS-1$
-                        "Specify 6.0 Copyright \u00A9 2009 University of Kansas Center for Research. " + 
-                        "Specify comes with ABSOLUTELY NO WARRANTY.<br><br>" + //$NON-NLS-1$
-                        "This is free software licensed under GNU General Public License 2 (GPL2).</P></font></html>"; //$NON-NLS-1$
+        String txt = getAboutText(appName, appVersion);
         JLabel txtLbl = createLabel(txt);
         txtLbl.setFont(UIRegistry.getDefaultFont());
         
@@ -2070,6 +2060,27 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         });
         
         UIHelper.centerAndShow(aboutDlg);
+    }
+    
+    /**
+     * Returns a standard String for the about box
+     * @param appNameArg the application name  
+     * @param appVersionArg the application version
+     * @return the about string
+     */
+    public static String getAboutText(final String appNameArg, final String appVersionArg)
+    {
+        return "<html><font face=\"sans-serif\" size=\"11pt\">"+appNameArg+" " + appVersionArg +  //$NON-NLS-1$ //$NON-NLS-2$
+        "<br><br>Specify Software Project<br>" +//$NON-NLS-1$
+        "Biodiversity Institute<br>University of Kansas<br>1345 Jayhawk Blvd.<br>Lawrence, KS  USA 66045<br><br>" +  //$NON-NLS-1$
+        "<a href=\"http://www.specifysoftware .org\">www.specifysoftware.org</a>"+ //$NON-NLS-1$
+        "<br><a href=\"mailto:specify@ku.edu\">specify@ku.edu</a><br>" +  //$NON-NLS-1$
+        "<p>The Specify Software Project is "+ //$NON-NLS-1$
+        "funded by the Advances in Biological Informatics Program, " + //$NON-NLS-1$
+        "U.S. National Science Foundation  (Award DBI-0446544 and earlier awards).<br><br>" + //$NON-NLS-1$
+        "Specify 6.0 Copyright \u00A9 2009 University of Kansas Center for Research. " + 
+        "Specify comes with ABSOLUTELY NO WARRANTY.<br><br>" + //$NON-NLS-1$
+        "This is free software licensed under GNU General Public License 2 (GPL2).</P></font></html>"; //$NON-NLS-1$
 
     }
 

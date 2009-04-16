@@ -51,6 +51,9 @@ public abstract class BackupServiceFactory
     
     protected static BackupServiceFactory instance = null;
     
+    protected String username = null;
+    protected String password = null;
+    
     /**
      * Protected Constructor
      */
@@ -98,12 +101,23 @@ public abstract class BackupServiceFactory
     public abstract int getNumberofTables();
    
     /**
-     * @return
+     * Sets an alternative user name and password to override anything it would normally use.
+     * @param username the username to use to login
+     * @param password the password to use to login
+     */
+    public void setAlternateUsernameAndPassword(String username, String password)
+    {
+        this.username = username;
+        this.password = password;
+    }
+    
+    /**
+     * 
      */
     public abstract void doBackUp();
 
     /**
-     * @return
+     * 
      */
     public abstract void doRestore();
     
