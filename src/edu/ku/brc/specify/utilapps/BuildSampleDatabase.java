@@ -1256,6 +1256,9 @@ public class BuildSampleDatabase
                         stg.setDefinitionItem(stdi);
                         stdi.getTreeEntries().add(stg);
                         stg.setName("Site");
+                        stg.setFullName("Site");
+                        stg.setNodeNumber(1);
+                        stg.setHighestChildNodeNumber(1);
                     }
                    
                     if (parent != null)
