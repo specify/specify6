@@ -95,10 +95,6 @@ public class MySQLPrefs extends JPanel implements PrefsSavable, PrefsPanelIFace
     protected String             title;
     protected String             hContext      = "PrefsMySQL";
     protected Color              shadeColor    = null;
-    
-    protected String             userName      = null;
-    protected String             password      = null;
-
 
     // Security
     protected PermissionIFace permissions = null;
@@ -227,7 +223,6 @@ public class MySQLPrefs extends JPanel implements PrefsSavable, PrefsPanelIFace
                 if (mgr == null || mgr.closePrefs())
                 {
                     savePrefs();
-                    BackupServiceFactory.getInstance().setAlternateUsernameAndPassword(userName, password);
                     BackupServiceFactory.getInstance().doBackUp();
                 }
             }
@@ -248,18 +243,6 @@ public class MySQLPrefs extends JPanel implements PrefsSavable, PrefsPanelIFace
             restoreBtn.setVisible(perm.canModify()); // this means Enabled
             backupBtn.setVisible(perm.canView()); // this means Enabled
         }
-    }
-    
-    /**
-     * Sets the Username and PAssword to be used. This is called when it is a stand-alone panel
-     * and not part of Prefs.
-     * @param usernameArg the username
-     * @param passwordArg the password
-     */
-    public void setUsernameAndPassword(final String usernameArg, final String passwordArg)
-    {
-        userName = usernameArg;
-        password = passwordArg;
     }
     
     /**
@@ -291,7 +274,6 @@ public class MySQLPrefs extends JPanel implements PrefsSavable, PrefsPanelIFace
                             SubPaneMgr.getInstance().addPane(splash);
                             SubPaneMgr.getInstance().showPane(splash);
                         }
-                        BackupServiceFactory.getInstance().setAlternateUsernameAndPassword(userName, password);
                         BackupServiceFactory.getInstance().doRestore();
                     }
                 }

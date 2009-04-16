@@ -37,7 +37,6 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.sql.Timestamp;
 
-import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -46,6 +45,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
@@ -53,6 +53,9 @@ import javax.swing.WindowConstants;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.ExperienceBlue;
 
@@ -309,17 +312,28 @@ public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener
      */
     public void doAbout()
     {
-        JPanel panel = new JPanel(new BorderLayout());
-        JLabel iconLabel = new JLabel(IconManager.getIcon("SpecifyLargeIcon")); //$NON-NLS-1$
-        iconLabel.setBorder(BorderFactory.createEmptyBorder(2, 0, 2, 8));
-        panel.add(iconLabel, BorderLayout.WEST);
+        CellConstraints cc     = new CellConstraints();
+        PanelBuilder    infoPB = new PanelBuilder(new FormLayout("p,6px,f:min(400;p):g", "p:g"));
         
-        panel.add(createLabel(Specify.getAboutText(appName, appVersion)), BorderLayout.EAST);
-        panel.setBorder(BorderFactory.createEmptyBorder(6,6,0,6));
+        JLabel       iconLabel = new JLabel(IconManager.getIcon("SpecifyLargeIcon"), SwingConstants.CENTER); //$NON-NLS-1$
+        PanelBuilder iconPB    = new PanelBuilder(new FormLayout("p", "20px,t:p,f:p:g"));
+        iconPB.add(iconLabel, cc.xy(1, 2));
+
+        infoPB.setDefaultDialogBorder();
+        
+        infoPB.add(iconPB.getPanel(), cc.xy(1, 1));
+        infoPB.add(createLabel(Specify.getAboutText(appName, appVersion)), cc.xy(3, 1));
+        
         String title = getResourceString("Specify.ABOUT");//$NON-NLS-1$
-        CustomDialog aboutDlg = new CustomDialog(topFrame,  title + " " +appName, true, CustomDialog.OK_BTN, panel); //$NON-NLS-1$ 
+        CustomDialog aboutDlg = new CustomDialog(topFrame,  title + " " +appName, true, CustomDialog.OK_BTN, infoPB.getPanel()); //$NON-NLS-1$ 
         String okLabel = getResourceString("Specify.CLOSE");//$NON-NLS-1$
         aboutDlg.setOkLabel(okLabel); 
+        aboutDlg.createUI();
+        aboutDlg.pack();
+        // for some strange reason I can't get the dialog to size itself correctly
+        Dimension size = aboutDlg.getSize();
+        size.height += 80;
+        aboutDlg.setSize(size);
         UIHelper.centerAndShow(aboutDlg);
     }
 
@@ -640,14 +654,12 @@ public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener
         this.databaseName = databaseNameArg;
         this.userName     = userNameArg;
         
-        // This is used to fill who editted the object
+        // This is used to fill who edited the object
         FormHelper.setCurrentUserEditStr(userNameArg);
         
         AppPreferences.setConnectedToDB(true);
         
         restartApp(window, databaseName, userName, false, firstTime);
-        
-        mainPanel.setUsernameAndPassword(userName, dbLoginPanel.getPassword());
         
         doLayout();
 

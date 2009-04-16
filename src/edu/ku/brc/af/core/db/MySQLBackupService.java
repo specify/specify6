@@ -266,20 +266,20 @@ public class MySQLBackupService extends BackupServiceFactory
                     
                     writeStats(getCollectionStats(getTableNames()), getStatsName(fullPath));
                     
-                    String usrnm = username;
-                    String pwd   = password;
+                    String userName = DBConnection.getInstance().getUserName();
+                    String password = DBConnection.getInstance().getPassword();
                     
-                    if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password))
+                    if (StringUtils.isEmpty(userName) || StringUtils.isEmpty(password))
                     {
                         Pair<String, String> up = UserAndMasterPasswordMgr.getInstance().getUserNamePasswordForDB();
                         if (up != null &&  up.first != null && up.second != null)
                         {
-                            usrnm = up.first;
-                            pwd   = up.second;
+                            userName = up.first;
+                            password = up.second;
                         }
                     }
                     
-                    String cmdLine  = String.format("%s -u %s --password=%s %s", mysqldumpLoc, usrnm, pwd, databaseName);
+                    String cmdLine  = String.format("%s -u %s --password=%s %s", mysqldumpLoc, userName, password, databaseName);
                     String[] args   = StringUtils.split(cmdLine, ' ');
                     Process process = Runtime.getRuntime().exec(args);
                     
