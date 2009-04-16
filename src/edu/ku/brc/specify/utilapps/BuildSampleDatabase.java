@@ -1196,6 +1196,7 @@ public class BuildSampleDatabase
                         tx.setDefinitionItem(ttdi);
                         ttdi.getTreeEntries().add(tx);
                         tx.setName("Life"); // I18N
+                        tx.setFullName("Life"); //I18N
                         tx.setNodeNumber(1);
                         tx.setHighestChildNodeNumber(1);
                     }
