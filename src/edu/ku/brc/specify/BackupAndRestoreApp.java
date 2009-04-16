@@ -35,7 +35,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.sql.Timestamp;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -72,12 +71,9 @@ import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.ui.db.DatabaseLoginListener;
 import edu.ku.brc.af.ui.db.DatabaseLoginPanel;
 import edu.ku.brc.af.ui.forms.FormHelper;
-import edu.ku.brc.dbsupport.DataProviderFactory;
-import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.SpecifyAppPrefs;
-import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.prefs.MySQLPrefs;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.CommandAction;
@@ -354,7 +350,7 @@ public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener
             okToShutdown = SubPaneMgr.getInstance().aboutToShutdown();
             if (okToShutdown)
             {
-                try
+                /*try
                 {
                     DataProviderSessionIFace session     = null;
                     SpecifyUser              currentUser = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
@@ -394,14 +390,14 @@ public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener
                     edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                     edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BackupAndRestoreApp.class, ex);
                     
-                }
+                }*/
             }
             
         } catch (Exception ex)
         {
+            ex.printStackTrace();
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BackupAndRestoreApp.class, ex);
-            ex.printStackTrace();
             
         } finally
         {
