@@ -823,7 +823,7 @@ public class BuildSampleDatabase
             case insect       : fileName = "col2008_orthoptera.xls"; break;
             case botany       : fileName = "col2008_poales.xls"; break;
             case invertebrate : fileName = "col2008_inverts.xls"; break;
-            case fungi        : fileName = "col2008_mycology.xls"; break;
+            //case fungi        : fileName = "col2008_mycology.xls"; break;
             default: break;
         }
         
