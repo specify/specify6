@@ -947,12 +947,9 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
                 throw new RuntimeException(node.getDefinition().getName() + " has out of date node numbers.");
             }
            
-            if (node.getFullName() == null)
-            {
-                // set it's fullname
-                String fullname = TreeHelper.generateFullname(node);
-                node.setFullName(fullname);
-            }
+            // set it's fullname
+            String fullname = TreeHelper.generateFullname(node);
+            node.setFullName(fullname);
         }
     }
     
