@@ -162,8 +162,8 @@ public abstract class BackupServiceFactory
         Properties stats = new Properties();
         for (String tableName : tableNames)
         {
-            int count = BasicSQLUtils.getCount("SELECT COUNT(*) FROM "+tableName);
-            stats.put(tableName, Integer.toString(count));
+            Integer count = BasicSQLUtils.getCount("SELECT COUNT(*) FROM "+tableName);
+            stats.put(tableName, count != null ? Integer.toString(count) : 0);
         }
         return stats;
     }
