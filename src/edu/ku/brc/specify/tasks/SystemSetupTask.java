@@ -1051,7 +1051,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                     {
                         public void actionPerformed(ActionEvent ae)
                         {
-                            doSchemaConfig(SpLocaleContainer.CORE_SCHEMA, DBTableIdMgr.getInstance());
+                        	doSchemaConfig(SpLocaleContainer.CORE_SCHEMA, DBTableIdMgr.getInstance());
                         }
                     });
             mid = new MenuItemDesc(mi, SYSTEM_MENU);
@@ -1069,7 +1069,9 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             {
                 public void actionPerformed(ActionEvent ae)
                 {
-                    SystemSetupTask.this.requestContext();
+                    //XXX Until issues with incorrect treedefs and other stuff after adding disciplines is cleared up...
+                    UIRegistry.showLocalizedMsg(JOptionPane.WARNING_MESSAGE, "WARNING", "SystemSetupTask.RestartWarn");
+                	SystemSetupTask.this.requestContext();
                 }
             }); 
             mid = new MenuItemDesc(mi, FULL_SYSTEM_MENU);

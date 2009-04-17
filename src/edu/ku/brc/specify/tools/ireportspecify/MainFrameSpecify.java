@@ -1618,6 +1618,7 @@ public class MainFrameSpecify extends MainFrame
                    }
                 };
                 String nameAndTitle = "Specify iReport"; // I18N
+                UIRegistry.setRelease(true);
                 UIHelper.doLogin(usrPwdProvider, false, false, new IReportLauncher(), "SPIReports", nameAndTitle, nameAndTitle, "SpecifyWhite32"); // true
 																																	// means
 																																	// do
