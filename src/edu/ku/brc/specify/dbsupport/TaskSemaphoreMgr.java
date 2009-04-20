@@ -722,7 +722,15 @@ public class TaskSemaphoreMgr
                 if (semaphore.getIsLocked() && !doOverride)
                 {
                     previouslyLocked = true;
-                    prevLockedBy     = semaphore.getOwner().getAgents().iterator().next().getIdentityTitle();
+                    if (semaphore.getOwner() != null && 
+                        semaphore.getOwner().getAgents() != null &&
+                        semaphore.getOwner().getAgents().size() > 0)
+                    {
+                        prevLockedBy = semaphore.getOwner().getAgents().iterator().next().getIdentityTitle();
+                    } else
+                    {
+                        prevLockedBy = null;
+                    }
                     return semaphore;
                 }
             } else if (!semaphore.getIsLocked())
