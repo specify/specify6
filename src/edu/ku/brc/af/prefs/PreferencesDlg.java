@@ -207,19 +207,9 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
     protected void okButtonPressed()
     {
         final Properties changesHash = new Properties();
-        saveChangedPrefs(changesHash);
         
-        try
-        {
-            AppPreferences.getRemote().flush();
-            
-        } catch (BackingStoreException ex)
-        {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            // XXX Should notify the user nicely
-            //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PreferencesDlg.class, ex);
-            log.error(ex);
-        }
+        saveChangedPrefs(changesHash); // This flushes
+        
         super.okButtonPressed();
         
         SwingUtilities.invokeLater(new Runnable() {
@@ -249,7 +239,7 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
     /**
      * Save any Preferences that have changed.
      */
-    protected void saveChangedPrefs(final Properties changesHash)
+    protected synchronized void saveChangedPrefs(final Properties changesHash)
     {
         for (PrefsPanelIFace pp : prefPanelsHash.values())
         {
