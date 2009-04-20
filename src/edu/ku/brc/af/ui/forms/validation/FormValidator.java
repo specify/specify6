@@ -44,6 +44,7 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * This class manages all the validators for a single form. One or all the UI components
@@ -765,9 +766,9 @@ public class FormValidator implements ValidationListener, DataChangeListener
     {
         if (isNotEmpty(id) && comp != null)
         {
-            //log.debug("["+id+"]["+comp+"]");
             jc.getVars().put(id, comp);
-        } else
+            
+        } else if (!UIRegistry.isRelease())
         {
             throw new RuntimeException("id["+id+"] or Comp["+comp+"] is null.");
         }
