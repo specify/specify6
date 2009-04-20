@@ -2783,6 +2783,11 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     public void saveObject()
     {
+        if (workbench == null)
+        {
+            UIRegistry.showError("The workbench is 'null' before save.\nPlease contact Specify support.");
+            return;
+        }
         //backup current database contents for workbench
         logDebug("backupObject(): " + System.nanoTime());
         backupObject();
