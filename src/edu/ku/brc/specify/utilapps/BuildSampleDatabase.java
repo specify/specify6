@@ -5992,11 +5992,16 @@ public class BuildSampleDatabase
                 try
                 {
                     int imageIndex = wbRow.addImage(f);
-                    wbRowImage= wbRow.getRowImage(imageIndex);
+                    if (imageIndex > -1)
+                    {
+                        wbRowImage= wbRow.getRowImage(imageIndex);    
+                    }
                 }
                 catch (IOException e)
                 {
-                    log.error("Unable to add card image to workbench row", e);
+                    String msg = UIRegistry.getResourceString("WB_IMG_ERR_LOAD");
+                    UIRegistry.getStatusBar().setErrorMessage(msg, e);
+                    log.error(msg, e);
                 }
             }
 

@@ -2790,18 +2790,20 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                     //pane.addRowAfter();
                     pane.addRowToSpreadSheet();
                 }
-                row.addImage(file);
-                                
-                if (i % 5 == 0)
+                int inx = row.addImage(file);
+                if (inx > -1)
                 {
-                    final String msg = workbench.getName() + " (" + i + " / " + fileList.size() + ")";
-                    SwingUtilities.invokeLater(new Runnable() {
-                        public void run()
-                        {
-                            
-                            UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_LOADING_IMGS_DATASET"), new Object[] {msg}), GLASSPANE_FONT_SIZE);
-                        }
-                    });
+                    if (i % 5 == 0)
+                    {
+                        final String msg = workbench.getName() + " (" + i + " / " + fileList.size() + ")";
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run()
+                            {
+                                
+                                UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_LOADING_IMGS_DATASET"), new Object[] {msg}), GLASSPANE_FONT_SIZE);
+                            }
+                        });
+                    }
                 }
             }
             

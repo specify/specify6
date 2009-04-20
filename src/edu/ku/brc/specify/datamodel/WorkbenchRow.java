@@ -52,6 +52,7 @@ import org.hibernate.annotations.Index;
 
 import edu.ku.brc.services.biogeomancer.GeoCoordDataIFace;
 import edu.ku.brc.ui.GraphicsUtils;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.GeoRefConverter;
 import edu.ku.brc.util.LatLonConverter;
 import edu.ku.brc.util.GeoRefConverter.GeoRefFormat;
@@ -212,12 +213,20 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
         return cardImageData;
     }
 
+    /**
+     * @param cardImageData
+     */
     public void setCardImageData(byte[] cardImageData)
     {
         imgIcon = null;
         this.cardImageData = cardImageData;
     }
         
+    /**
+     * @param index
+     * @param imgOrig
+     * @throws IOException
+     */
     public synchronized void setImage(int index, File imgOrig) throws IOException
     {
         if (workbenchRowImages == null)
@@ -236,9 +245,12 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
             if (img.getImageOrder().intValue() == index)
             {
                 byte[] newImageData = readAndScaleCardImage(imgOrig);
-                img.setCardImageData(newImageData);
-                img.setCardImageFullPath(imgOrig.getAbsolutePath());
-                return;
+                if (newImageData != null)
+                {
+                    img.setCardImageData(newImageData);
+                    img.setCardImageFullPath(imgOrig.getAbsolutePath());
+                    return;
+                }
             }
         }
     }
@@ -250,7 +262,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
      * @return the index of the new image
      * @throws IOException if an error occurs while loading or scaling the image file
      */
-    public synchronized int addImage(File orig) throws IOException
+    public synchronized int addImage(final File orig) throws IOException
     {
         if (workbenchRowImages == null)
         {
@@ -258,18 +270,24 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
         }
         
         byte[] imgData = readAndScaleCardImage(orig);
-        
-        int order = workbenchRowImages.size();
-        WorkbenchRowImage newRowImage = new WorkbenchRowImage();
-        newRowImage.initialize();
-        newRowImage.setImageOrder(order);
-        newRowImage.setCardImageFullPath(orig.getAbsolutePath());
-        newRowImage.setCardImageData(imgData);
-        newRowImage.setWorkbenchRow(this);
-        workbenchRowImages.add(newRowImage);
-        return order;
+        if (imgData != null)
+        {
+            int order = workbenchRowImages.size();
+            WorkbenchRowImage newRowImage = new WorkbenchRowImage();
+            newRowImage.initialize();
+            newRowImage.setImageOrder(order);
+            newRowImage.setCardImageFullPath(orig.getAbsolutePath());
+            newRowImage.setCardImageData(imgData);
+            newRowImage.setWorkbenchRow(this);
+            workbenchRowImages.add(newRowImage);
+            return order;
+        }
+        return -1;
     }
     
+    /**
+     * @param index
+     */
     public synchronized void deleteImage(int index)
     {
         if (workbenchRowImages == null)
@@ -303,6 +321,10 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
         }
     }
     
+    /**
+     * @param index
+     * @return
+     */
     @Transient
     public synchronized WorkbenchRowImage getRowImage(int index)
     {
@@ -322,6 +344,9 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
         return null;
     }
     
+    /**
+     * @return
+     */
     @Transient
     public synchronized ImageIcon getCardImage()
     {
@@ -366,35 +391,48 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
 
         if (imageFile.length() < this.maxImageSize)
         {
-            // read the original
-            BufferedImage img = ImageIO.read(imageFile);
-
-            // determine if we need to scale
-            int origWidth = img.getWidth();
-            int origHeight = img.getHeight();
-            boolean scale = false;
-
-            if (origWidth > this.maxWidth || origHeight > maxHeight)
-            {
-                scale = true;
-            }
-
             byte[] imgBytes = null;
+            try
+            {
+                // read the original
+                BufferedImage img = ImageIO.read(imageFile);
+    
+                // determine if we need to scale
+                int origWidth = img.getWidth();
+                int origHeight = img.getHeight();
+                boolean scale = false;
+    
+                if (origWidth > this.maxWidth || origHeight > maxHeight)
+                {
+                    scale = true;
+                }
+    
+                if (scale)
+                {
+                    imgBytes = GraphicsUtils.scaleImage(img, this.maxHeight, this.maxWidth, true, false);
+                }
+                else
+                {
+                    // since we don't need to scale the image, just grab its bytes
+                    imgBytes = FileUtils.readFileToByteArray(imageFile);
+                }
+                
+            } catch (javax.imageio.IIOException ex)
+            {
+                UIRegistry.showLocalizedError("WB_IMG_BAD_FMT");
+                loadStatus = LoadStatus.Error;
+                loadException = ex;
 
-            if (scale)
-            {
-                imgBytes = GraphicsUtils.scaleImage(img, this.maxHeight, this.maxWidth, true, false);
-            }
-            else
-            {
-                // since we don't need to scale the image, just grab its bytes
-                imgBytes = FileUtils.readFileToByteArray(imageFile);
+                return null;
             }
             
             return imgBytes;
         }
         // else, image is too large
-        throw new IOException("Provided image is too large.  Maximum image size is " + this.maxImageSize + " bytes.");
+        String msg = String.format(UIRegistry.getResourceString("WB_IMG_TOO_BIG"), this.maxImageSize);
+        UIRegistry.showError(msg);
+        loadStatus = LoadStatus.Error;
+        return null;
     }
     
     /**
@@ -422,7 +460,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
             return;
         }
         
-        byte[] imgData;
+        byte[] imgData = null;
         try
         {
             imgData = readAndScaleCardImage(imageFile);
@@ -433,7 +471,6 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(WorkbenchRow.class, e);
             loadStatus = LoadStatus.Error;
             loadException = e;
-            return;
         }
         
         if (imgData != null)

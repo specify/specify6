@@ -654,25 +654,25 @@ public class ImageFrame extends JFrame implements PropertyChangeListener
                     try
                     {
                         int newIndex = wbRow.addImage(f);
-
-                        newIndexes.add(newIndex);
-                        
-                        SwingUtilities.invokeLater(new Runnable()
+                        if (newIndex > -1)
                         {
-                            public void run()
+                            newIndexes.add(newIndex);
+                            
+                            SwingUtilities.invokeLater(new Runnable()
                             {
-                                UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_ADDING_IMAGE_X_OF_Y"), index+1, imageFiles.length), 24);
-                            }
-                        });
-                        
-                        WorkbenchRowImage rowImage = row.getRowImage(newIndex);
-                        rowImagesNeedingThumbnails.add(rowImage);
-                        wbPane.setChanged(true);
+                                public void run()
+                                {
+                                    UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_ADDING_IMAGE_X_OF_Y"), index+1, imageFiles.length), 24);
+                                }
+                            });
+                            
+                            WorkbenchRowImage rowImage = row.getRowImage(newIndex);
+                            rowImagesNeedingThumbnails.add(rowImage);
+                            wbPane.setChanged(true);
+                        }
                     }
                     catch (IOException e)
                     {
-                        UsageTracker.incrHandledUsageCount();
-                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImageFrame.class, e);
                         statusBar.setErrorMessage("Exception while adding a new image", e);
                     }
                 }

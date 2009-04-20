@@ -302,8 +302,8 @@ public class XLSImport extends DataImport implements DataImportIFace
                     }
                     catch (IOException e)
                     {
-                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(XLSImport.class, e);
+                        //edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(XLSImport.class, e);
                         UIRegistry.getStatusBar().setErrorMessage(e.getMessage());
                         StringBuilder errMsg = new StringBuilder(getResourceString("WB_IMG_IMPORT_ERROR"));
                         errMsg.append(": ");
