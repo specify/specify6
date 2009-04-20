@@ -745,12 +745,15 @@ public class BaseBusRules implements BusinessRulesIFace
             
             fi = ti.getFieldByName(fieldName);
             
-            String quote  = fi.getDataClass() == String.class || fi.getDataClass() == Date.class ? "'" : "";
+            String special = QueryAdjusterForDomain.getInstance().getSpecialColumns(ti, false);
+            String quote   = fi.getDataClass() == String.class || fi.getDataClass() == Date.class ? "'" : "";
             String sql = String.format("SELECT COUNT(%s) FROM %s WHERE %s = %s%s%s", colName, ti.getName(), fi.getColumn(), quote, fieldValue, quote);
             if (id != null)
             {
                 sql += " AND " + colName + " <> " + id;
             }
+            sql += StringUtils.isNotEmpty(special) ? (" AND "+special) : "";
+            
             log.debug(sql);
             
             Integer cnt = BasicSQLUtils.getCount(sql);

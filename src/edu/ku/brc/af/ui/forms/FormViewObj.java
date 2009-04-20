@@ -1520,10 +1520,10 @@ public class FormViewObj implements Viewable,
                 
                 if (parentDataObjArg instanceof FormDataObjIFace && oldDataObjArg instanceof FormDataObjIFace)
                 {
-                    boolean addSearch = mvParent != null && MultiView.isOptionOn(mvParent.getOptions(), MultiView.ADD_SEARCH_BTN);
+                    boolean hasSearch = mvParent != null && MultiView.isOptionOn(mvParent.getOptions(), MultiView.ADD_SEARCH_BTN);
                     
-                    ((FormDataObjIFace)parentDataObjArg).removeReference((FormDataObjIFace)oldDataObjArg, cellNameArg, addSearch);
-                    if (addSearch && mvParent != null && ((FormDataObjIFace)oldDataObjArg).getId() != null)
+                    ((FormDataObjIFace)parentDataObjArg).removeReference((FormDataObjIFace)oldDataObjArg, cellNameArg, true);
+                    if (hasSearch && mvParent != null && ((FormDataObjIFace)oldDataObjArg).getId() != null)
                     {
                         mvParent.getTopLevel().addToBeSavedItem(oldDataObjArg);
                     }

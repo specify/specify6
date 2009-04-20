@@ -234,13 +234,13 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
             {
                 try
                 {
-                    session.saveOrUpdate(ce);
+                    ce = session.merge(ce); // do this which merges AND saves/updates instead of just saveOrUpdate
                     
                 } catch (Exception ex)
                 {
+                    ex.printStackTrace();
                     edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                     edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(CollectionObjectBusRules.class, ex);
-                    ex.printStackTrace();
                 }
             }
         }
