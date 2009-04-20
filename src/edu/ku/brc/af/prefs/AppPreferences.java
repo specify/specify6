@@ -68,6 +68,7 @@ public class AppPreferences
     
     protected String             remoteSaverClassName = null;
     protected AppPrefsIOIFace    appPrefsIO           = null;
+    protected boolean            isEnabled            = false;
 
     protected Hashtable<String, List<AppPrefsChangeListener>> listeners = new Hashtable<String, List<AppPrefsChangeListener>>();
     
@@ -899,11 +900,19 @@ public class AppPreferences
     }
     
     /**
+     * @param enabled
+     */
+    public void setEnabled(final boolean enabled)
+    {
+        this.isEnabled = enabled;
+    }
+    
+    /**
      * @return whether the preferences are available. (Whether they have been setup).
      */
     public boolean isAvailable()
     {
-        return appPrefsIO != null && appPrefsIO.isAvailable();
+        return isEnabled && appPrefsIO != null && appPrefsIO.isAvailable();
     }
 
     /**

@@ -221,8 +221,11 @@ public class UsageTracker
             if (usageFile == null || usageProps == null)
             {
                 String         usagePrefName     = USAGE_PREFIX + featureName; //$NON-NLS-1$
-                int            currentUsageCount = appPrefs.getInt(usagePrefName, 0);
-                appPrefs.putInt(usagePrefName, ++currentUsageCount);
+                Integer        currentUsageCount = appPrefs.getInt(usagePrefName, 0);
+                if (currentUsageCount != null)
+                {
+                    appPrefs.putInt(usagePrefName, ++currentUsageCount);
+                }
                 
             } else
             {

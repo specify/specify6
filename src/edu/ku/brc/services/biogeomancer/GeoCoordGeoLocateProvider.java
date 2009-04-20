@@ -258,71 +258,73 @@ public class GeoCoordGeoLocateProvider implements GeoCoordServiceProviderIFace
                                            final List<GeoCoordDataIFace> items)
     {
         final JStatusBar statusBar = UIRegistry.getStatusBar();
-        
-        statusBar.setText(getResourceString("GeoCoordGeoLocateProvider.GEOLOC_COMPLETED")); //$NON-NLS-1$
-        
-        List<Pair<GeoCoordDataIFace, GeorefResultSet>> withResults = new Vector<Pair<GeoCoordDataIFace, GeorefResultSet>>();
-
-        for (Pair<GeoCoordDataIFace, GeorefResultSet> result: glResults)
+        if (statusBar != null)
         {
-            if (result.second.getNumResults() > 0)
-            {
-                withResults.add(result);
-            }
-        }
-        
-        if (withResults.size() == 0)
-        {
-            statusBar.setText(getResourceString("GeoCoordGeoLocateProvider.NO_GL_RESULTS")); //$NON-NLS-1$
-            JOptionPane.showMessageDialog(UIRegistry.getTopWindow(),
-                    getResourceString("GeoCoordGeoLocateProvider.NO_GL_RESULTS"), //$NON-NLS-1$
-                    getResourceString("NO_RESULTS"), JOptionPane.INFORMATION_MESSAGE); //$NON-NLS-1$
-
-            return;
-        }
-        
-        if (listener != null)
-        {
-            listener.aboutToDisplayResults();
-        }
-        
-        // ask the user if they want to review the results
-        String message = String.format(getResourceString("GeoCoordGeoLocateProvider.GEOLOCATE_RESULTS_VIEW_CONFIRM"), String.valueOf(withResults.size())); //$NON-NLS-1$
-        int userChoice = JOptionPane.showConfirmDialog(UIRegistry.getTopWindow(), message,
-                getResourceString("GeoCoordGeoLocateProvider.GEO_CONTINUE"), JOptionPane.YES_NO_OPTION); //$NON-NLS-1$
-        
-        if (userChoice != JOptionPane.YES_OPTION)
-        {
-            statusBar.setText(getResourceString("GeoCoordGeoLocateProvider.USER_TERMINATED")); //$NON-NLS-1$
-            return;
-        }
-
-        // create the UI for displaying the BG results
-        JFrame topFrame = (JFrame)UIRegistry.getTopWindow();
-        GeoLocateResultsChooser bgResChooser = new GeoLocateResultsChooser(topFrame, withResults); //$NON-NLS-1$
-        
-        List<GeorefResult> results = bgResChooser.getResultsChosen();
-        
-        int itemsUpdated = 0;
-        
-        for (int i = 0; i < results.size(); ++i)
-        {
-            GeoCoordDataIFace item = withResults.get(i).first;
-            GeorefResult chosenResult = results.get(i);
+            statusBar.setText(getResourceString("GeoCoordGeoLocateProvider.GEOLOC_COMPLETED")); //$NON-NLS-1$
             
-            if (chosenResult != null)
+            List<Pair<GeoCoordDataIFace, GeorefResultSet>> withResults = new Vector<Pair<GeoCoordDataIFace, GeorefResultSet>>();
+    
+            for (Pair<GeoCoordDataIFace, GeorefResultSet> result: glResults)
             {
-                Double latitude = chosenResult.getWGS84Coordinate().getLatitude();
-                Double longitude = chosenResult.getWGS84Coordinate().getLongitude();
-                item.set(String.format("%7.5f", latitude), String.format("%7.5f", longitude)); //$NON-NLS-1$ //$NON-NLS-2$
-                
-                itemsUpdated++;
+                if (result.second.getNumResults() > 0)
+                {
+                    withResults.add(result);
+                }
             }
-        }
-        
-        if (listener != null)
-        {
-            listener.complete(items, itemsUpdated);
+            
+            if (withResults.size() == 0)
+            {
+                statusBar.setText(getResourceString("GeoCoordGeoLocateProvider.NO_GL_RESULTS")); //$NON-NLS-1$
+                JOptionPane.showMessageDialog(UIRegistry.getTopWindow(),
+                        getResourceString("GeoCoordGeoLocateProvider.NO_GL_RESULTS"), //$NON-NLS-1$
+                        getResourceString("NO_RESULTS"), JOptionPane.INFORMATION_MESSAGE); //$NON-NLS-1$
+    
+                return;
+            }
+            
+            if (listener != null)
+            {
+                listener.aboutToDisplayResults();
+            }
+            
+            // ask the user if they want to review the results
+            String message = String.format(getResourceString("GeoCoordGeoLocateProvider.GEOLOCATE_RESULTS_VIEW_CONFIRM"), String.valueOf(withResults.size())); //$NON-NLS-1$
+            int userChoice = JOptionPane.showConfirmDialog(UIRegistry.getTopWindow(), message,
+                    getResourceString("GeoCoordGeoLocateProvider.GEO_CONTINUE"), JOptionPane.YES_NO_OPTION); //$NON-NLS-1$
+            
+            if (userChoice != JOptionPane.YES_OPTION)
+            {
+                statusBar.setText(getResourceString("GeoCoordGeoLocateProvider.USER_TERMINATED")); //$NON-NLS-1$
+                return;
+            }
+    
+            // create the UI for displaying the BG results
+            JFrame topFrame = (JFrame)UIRegistry.getTopWindow();
+            GeoLocateResultsChooser bgResChooser = new GeoLocateResultsChooser(topFrame, withResults); //$NON-NLS-1$
+            
+            List<GeorefResult> results = bgResChooser.getResultsChosen();
+            
+            int itemsUpdated = 0;
+            
+            for (int i = 0; i < results.size(); ++i)
+            {
+                GeoCoordDataIFace item = withResults.get(i).first;
+                GeorefResult chosenResult = results.get(i);
+                
+                if (chosenResult != null)
+                {
+                    Double latitude = chosenResult.getWGS84Coordinate().getLatitude();
+                    Double longitude = chosenResult.getWGS84Coordinate().getLongitude();
+                    item.set(String.format("%7.5f", latitude), String.format("%7.5f", longitude)); //$NON-NLS-1$ //$NON-NLS-2$
+                    
+                    itemsUpdated++;
+                }
+            }
+            
+            if (listener != null)
+            {
+                listener.complete(items, itemsUpdated);
+            }
         }
     }
 }
