@@ -599,22 +599,28 @@ public class ViewFactory
             String helpContext = cellField.getProperty("hc");
             
             ValComboBoxFromQuery cbx = TypeSearchForQueryFactory.createValComboBoxFromQuery(cbxName, btnOpts, cellField.getFormatName(), helpContext);
-            cbx.setRequired(isRequired);
-            cbx.setSearchDlgName(cellField.getProperty("searchdlg"));
-            cbx.setDisplayDlgName(cellField.getProperty("displaydlg"));
-            
-            if (validator != null)// && (cellField.isRequired() || isNotEmpty(cellField.getValidationRule())))
+            if (cbx != null)
             {
-                DataChangeNotifier dcn = validator.hookupComponent(cbx, cellField.getIdent(), parseValidationType(cellField.getValidationType()), cellField.getValidationRule(), false);
-                cbx.addListSelectionListener(dcn);
-
-                //if (dcn.getValidationType() == UIValidator.Type.Focus) // returns None when no Validator
-                //{
-                    cbx.addFocusListener(dcn);
-                //}
+                cbx.setRequired(isRequired);
+                cbx.setSearchDlgName(cellField.getProperty("searchdlg"));
+                cbx.setDisplayDlgName(cellField.getProperty("displaydlg"));
+                
+                if (validator != null)// && (cellField.isRequired() || isNotEmpty(cellField.getValidationRule())))
+                {
+                    DataChangeNotifier dcn = validator.hookupComponent(cbx, cellField.getIdent(), parseValidationType(cellField.getValidationType()), cellField.getValidationRule(), false);
+                    cbx.addListSelectionListener(dcn);
+    
+                    //if (dcn.getValidationType() == UIValidator.Type.Focus) // returns None when no Validator
+                    //{
+                        cbx.addFocusListener(dcn);
+                    //}
+                }
+                cbx.setCellName(cellField.getName());
+                cbx.setDoAdjustQuery(doAdjustQuery);
+            } else
+            {
+                UIRegistry.showLocalizedError("ERR_NEED_SHUTDOWN");
             }
-            cbx.setCellName(cellField.getName());
-            cbx.setDoAdjustQuery(doAdjustQuery);
             
             return cbx;
 
