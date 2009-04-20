@@ -1174,6 +1174,12 @@ public class ViewFactory
         {
             FormCellField cellField = (FormCellField)cell;
             
+            /*if (StringUtils.isEmpty(cellField.getIdent()))
+            {
+                UIRegistry.showLocalizedError("ViewFactory.NO_ID", cellField.getName(), formViewDef.getName());
+                
+            }*
+            
             /* DEBUG
             String fieldName = cellField.getName();
             if (childInfo == null && 
