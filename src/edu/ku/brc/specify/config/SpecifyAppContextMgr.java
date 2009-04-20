@@ -1926,13 +1926,24 @@ public class SpecifyAppContextMgr extends AppContextMgr
         try
         {
             session = openSession();
-            for (SpAppResourceDir appResDir : spAppResourceList)
+            for (SpAppResourceDir appResDir : new ArrayList<SpAppResourceDir>(spAppResourceList))
             {
                 //log.debug(appResDir.getIdentityTitle());
                 
                 if (appResDir.getSpAppResourceDirId() != null)
                 {
-                    session.attach(appResDir);
+                    try
+                    {
+                        session.attach(appResDir);
+                        
+                    } catch (org.hibernate.HibernateException ex)
+                    {
+                        // if attach fails then go get the entire obj.
+                        SpAppResourceDir oldObj = appResDir;
+                        appResDir = session.get(SpAppResourceDir.class, appResDir.getId());
+                        spAppResourceList.remove(oldObj);
+                        spAppResourceList.add(appResDir);
+                    }
                 }
                 
                 for (AppResourceIFace appRes : appResDir.getSpAppResources())
