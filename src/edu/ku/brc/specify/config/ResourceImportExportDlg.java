@@ -33,6 +33,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Collections;
@@ -600,6 +601,7 @@ public class ResourceImportExportDlg extends CustomDialog
             {
                 FileDialog fileDlg = new FileDialog(this, "RIE_ExportResource", FileDialog.SAVE); 
                 fileDlg.setFile(fileName);
+                fileDlg.setDirectory(UIRegistry.getUserHomeDir());
                 fileDlg.setVisible(true);
                 
                 String dirStr = fileDlg.getDirectory();
@@ -618,6 +620,10 @@ public class ResourceImportExportDlg extends CustomDialog
                         {
                         	FileUtils.writeStringToFile(expFile, data);
                         }
+                        
+                    } catch (FileNotFoundException ex)
+                    {
+                        UIRegistry.showLocalizedMsg("RIE_NOFILEPERM");
                         
                     } catch (Exception ex)
                     {
