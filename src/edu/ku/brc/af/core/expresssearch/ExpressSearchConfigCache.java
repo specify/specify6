@@ -31,6 +31,7 @@ import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.ui.UIRegistry;
 
 
 /**
@@ -206,19 +207,25 @@ public class ExpressSearchConfigCache
             {
                 Element esDOM = AppContextMgr.getInstance().getResourceAsDOM("SearchConfig"); // Describes the definitions of the full text search //$NON-NLS-1$
                 
-                intializeTableInfo(esDOM.selectNodes("/searches/express/table"),  //$NON-NLS-1$
-                                   tables, 
-                                   idToTableInfoHash, 
-                                   joinIdToTableInfoHash, 
-                                   true,
-                                   resBundle);
-                
-                intializeTableInfo(esDOM.selectNodes("/searches/generic/table"),  //$NON-NLS-1$
-                                                     tables, 
-                                                     idToTableInfoHash, 
-                                                     joinIdToTableInfoHash, 
-                                                     false,
-                                                     resBundle);
+                if (esDOM != null)
+                {
+                    intializeTableInfo(esDOM.selectNodes("/searches/express/table"),  //$NON-NLS-1$
+                                       tables, 
+                                       idToTableInfoHash, 
+                                       joinIdToTableInfoHash, 
+                                       true,
+                                       resBundle);
+                    
+                    intializeTableInfo(esDOM.selectNodes("/searches/generic/table"),  //$NON-NLS-1$
+                                                         tables, 
+                                                         idToTableInfoHash, 
+                                                         joinIdToTableInfoHash, 
+                                                         false,
+                                                         resBundle);
+                } else
+                {
+                    UIRegistry.showLocalizedError("ERR_NEED_SHUTDOWN");
+                }
                     
             } catch (Exception ex)
             {
