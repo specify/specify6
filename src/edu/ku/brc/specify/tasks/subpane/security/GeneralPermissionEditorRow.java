@@ -96,6 +96,9 @@ public class GeneralPermissionEditorRow implements PermissionEditorRowIFace
     public List<SpPermission> getPermissionList()
     {
         ArrayList<SpPermission> list = new ArrayList<SpPermission>(1);
+        
+        PermissionSettings ps = new PermissionSettings(getPermOptions());
+        permission.setActions(ps.canView(), ps.canAdd(), ps.canModify(), ps.canDelete());
         list.add(permission);
         return list;
     }
@@ -157,6 +160,16 @@ public class GeneralPermissionEditorRow implements PermissionEditorRowIFace
     {
         return editorPanel;
     }
+    
+    protected int getPermOptions()
+    {
+        int options = PermissionSettings.NO_PERM;
+        options |= (modWrap.isOverriden()  ? modWrap.getOverrulingPermissionActionValue()  : modWrap.getPermissionActionValue()) ? PermissionSettings.CAN_MODIFY : 0;
+        options |= (viewWrap.isOverriden() ? viewWrap.getOverrulingPermissionActionValue() : viewWrap.getPermissionActionValue()) ? PermissionSettings.CAN_VIEW   : 0;
+        options |= (addWrap.isOverriden()  ? addWrap.getOverrulingPermissionActionValue()  : addWrap.getPermissionActionValue()) ? PermissionSettings.CAN_ADD    : 0;
+        options |= (delWrap.isOverriden()  ? delWrap.getOverrulingPermissionActionValue()  : delWrap.getPermissionActionValue()) ? PermissionSettings.CAN_DELETE : 0;
+        return options;
+    }
 
     /*
      * (non-Javadoc)
@@ -167,14 +180,7 @@ public class GeneralPermissionEditorRow implements PermissionEditorRowIFace
     public List<PermissionIFace> getPermissions()
     {
         ArrayList<PermissionIFace> list = new ArrayList<PermissionIFace>(1);
-        
-        int options = PermissionSettings.NO_PERM;
-        options |= (modWrap.isOverriden()  ? modWrap.getOverrulingPermissionActionValue()  : modWrap.getPermissionActionValue()) ? PermissionSettings.CAN_MODIFY : 0;
-        options |= (viewWrap.isOverriden() ? viewWrap.getOverrulingPermissionActionValue() : viewWrap.getPermissionActionValue()) ? PermissionSettings.CAN_VIEW   : 0;
-        options |= (addWrap.isOverriden()  ? addWrap.getOverrulingPermissionActionValue()  : addWrap.getPermissionActionValue()) ? PermissionSettings.CAN_ADD    : 0;
-        options |= (delWrap.isOverriden()  ? delWrap.getOverrulingPermissionActionValue()  : delWrap.getPermissionActionValue()) ? PermissionSettings.CAN_DELETE : 0;
-        list.add(new PermissionSettings(options));
-
+        list.add(new PermissionSettings(getPermOptions()));
         return list;
     }
 
@@ -187,7 +193,36 @@ public class GeneralPermissionEditorRow implements PermissionEditorRowIFace
     public void setPermissions(final List<PermissionIFace> permissionSettings)
     {
         PermissionIFace permSettings = permissionSettings.get(0);
-        permission.setActions(permSettings.canView(), permSettings.canAdd(), permSettings.canModify(), permSettings.canDelete());
+        if (viewWrap.isOverriden())
+        {
+            viewWrap.setOverrulingPermissionActionValue(permSettings.canView());
+        } else
+        {
+            viewWrap.setPermissionActionValue(permSettings.canView());
+        }
+        if (modWrap.isOverriden())
+        {
+            modWrap.setOverrulingPermissionActionValue(permSettings.canModify());
+        } else
+        {
+            modWrap.setPermissionActionValue(permSettings.canModify());
+        }
+        
+        if (addWrap.isOverriden())
+        {
+            addWrap.setOverrulingPermissionActionValue(permSettings.canAdd());
+        } else
+        {
+            addWrap.setPermissionActionValue(permSettings.canAdd());
+        }
+        
+        if (delWrap.isOverriden())
+        {
+            delWrap.setOverrulingPermissionActionValue(permSettings.canDelete());
+        } else
+        {
+            delWrap.setPermissionActionValue(permSettings.canDelete());
+        }
     }
 
     /*

@@ -37,20 +37,27 @@ import javax.swing.JCheckBox;
 @SuppressWarnings("serial")
 public class GeneralPermissionTableCheckBox extends JCheckBox
 {
-
     private GeneralPermissionTableCellValueWrapper cellValue;
 
-    public GeneralPermissionTableCheckBox(
-            GeneralPermissionTableCellValueWrapper cellValue)
+    /**
+     * @param cellValue
+     */
+    public GeneralPermissionTableCheckBox(final GeneralPermissionTableCellValueWrapper cellValue)
     {
         this.cellValue = cellValue;
     }
 
+    /**
+     * @return
+     */
     public GeneralPermissionTableCellValueWrapper getCellValue()
     {
         return cellValue;
     }
 
+    /**
+     * @param cellValue
+     */
     public void setCellValue(GeneralPermissionTableCellValueWrapper cellValue)
     {
         this.cellValue = cellValue;

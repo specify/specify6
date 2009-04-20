@@ -281,6 +281,8 @@ public class IndvPanelPermEditor extends JPanel implements PermissionPanelContai
             for (SpPermission perm : rowData.getPermissionList())
             {
                 SpPermission newPerm = perm;
+                System.out.println(perm.getName()+" ["+perm.getActions()+"]");
+                
                 if ( !(perm.canView() || perm.canAdd() || perm.canModify() || perm.canDelete()))
                 {
                     // no flag is set, so delete the permission

@@ -276,7 +276,7 @@ public class BasicPermisionPanel extends JPanel implements PermissionEditorIFace
         if (addChk != null) permissions.setCanAdd(addChk.isSelected());
         if (delChk != null) permissions.setCanDelete(delChk.isSelected());
         if (modifyChk != null) permissions.setCanModify(modifyChk.isSelected());
-        if (viewChk != null) permissions.setCanView(viewChk.isSelected());
+        if (viewChk != null) { System.out.println(viewChk.isSelected()); permissions.setCanView(viewChk.isSelected()); }
         
         list.add(permissions);
         return list;

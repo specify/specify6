@@ -22,6 +22,8 @@ package edu.ku.brc.specify.tasks.subpane.security;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Set;
+import java.util.Vector;
 
 import javax.swing.JPanel;
 
@@ -31,6 +33,7 @@ import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.Encryption;
+import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.SpPermission;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
@@ -216,15 +219,34 @@ public class AdminInfoSubPanelWrapper
         if (obj instanceof SpecifyUser)
         {
             SpecifyUser spUser = (SpecifyUser)obj;
-            String      pwd    = spUser.getPassword();
+            
+            // Hibernate doesn't seem to be cascading the Merge
+            // when Agent has been edited outside the session.
+            // So this seems to be the only way I can cal merge and save.
+            // it is totally bizarre
+            Set<Agent> set = spUser.getAgents();
+            for (Agent agent : new Vector<Agent>(set))
+            {
+                set.remove(agent);
+                set.add(session.get(Agent.class, agent.getId()));
+            }
+            
+            spUser = session.merge(spUser);
+            
+            String pwd = spUser.getPassword();
             if (pwd.length() < 30)
             {
                 spUser.setPassword(Encryption.encrypt(pwd, pwd));
             }
+            session.saveOrUpdate(spUser);
+            
+        } else
+        {
+            obj = session.merge(obj);
+            session.saveOrUpdate(obj);
         }
         
-        obj = session.merge(obj);
-        session.saveOrUpdate(obj);
+        
         principal = session.merge(principal);
         session.saveOrUpdate(principal);
         
