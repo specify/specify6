@@ -37,8 +37,10 @@ import java.util.Comparator;
 import java.util.Vector;
 
 import javax.swing.JComboBox;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
 
 import org.apache.commons.httpclient.NameValuePair;
 
@@ -101,6 +103,8 @@ public class SpecifyExceptionTracker extends ExceptionTracker
         final JTextArea         commentsTA = createTextArea(6, 60);
         final JTextArea         stackTraceTA = createTextArea(15, 60);
         
+        JScrollPane sp = new JScrollPane(stackTraceTA,  ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+        
         int y = 1;
         pb.add(createFormLabel("Task"), cc.xy(1, y));
         pb.add(taskCBX,                 cc.xy(3, y)); y += 2;
@@ -115,7 +119,7 @@ public class SpecifyExceptionTracker extends ExceptionTracker
         pb.add(createScrollPane(commentsTA, true), cc.xyw(1, y, 4)); y += 2;
         
         pb.add(createFormLabel("Stack Trace"), cc.xy(1, y));     y += 2;
-        pb.add(createScrollPane(stackTraceTA), cc.xyw(1, y, 4)); y += 2;
+        pb.add(sp, cc.xyw(1, y, 4)); y += 2;
         
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         exception.printStackTrace(new PrintStream(baos));
