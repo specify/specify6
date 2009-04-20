@@ -78,24 +78,31 @@ public class UIFieldFormatterSampler implements SQLExecutionListener
 	 * @param formatter formatter being checked for validity against field value samples
 	 * @return A field sample that is invalidated by the formatter or null if no sample is invalidated
 	 */
-	public boolean isValid(UIFieldFormatterIFace formatter)
-		throws UIFieldFormatterInvalidatesExistingValueException
+	public boolean isValid(UIFieldFormatterIFace formatter) throws UIFieldFormatterInvalidatesExistingValueException
 	{
-		if (!ready)
-		{
-			// could not get samples from DB for some reason, so just bypass test quietly
-			return true;
-		}
-		
-		for (Object obj : results)
-		{
-			if (!formatter.isValid(obj.toString()))
-			{
-				throw new UIFieldFormatterInvalidatesExistingValueException(
-						"Format invalidates existing field value.", formatter.toPattern(), obj.toString());
-			}
-		}
-		return true;
+	    if (formatter != null)
+	    {
+    		if (!ready)
+    		{
+    			// could not get samples from DB for some reason, so just bypass test quietly
+    			return true;
+    		}
+    		
+    		for (Object obj : results)
+    		{
+    			if (obj == null || !formatter.isValid(obj.toString()))
+    			{
+    				throw new UIFieldFormatterInvalidatesExistingValueException(
+    						"Format invalidates existing field value.", formatter.toPattern(), obj.toString());
+    			}
+    		}
+    		return true;
+    		
+	    } else
+	    {
+	        log.error("Formatter was null!");
+	    }
+	    return false;
 	}
 	
 	protected void processSamples()
