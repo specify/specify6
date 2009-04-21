@@ -20,7 +20,6 @@
 package edu.ku.brc.specify.ui.treetables;
 
 import static edu.ku.brc.ui.UIHelper.createLabel;
-import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -30,12 +29,15 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedMap;
+import java.util.Stack;
 import java.util.TreeMap;
 
 import javax.swing.Icon;
@@ -47,6 +49,7 @@ import javax.swing.event.ListDataListener;
 
 import edu.ku.brc.ui.GraphicsUtils;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -66,24 +69,34 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
     protected JList list;
     
     protected SortedMap<Integer, Integer> columnWidths;
-    protected boolean widthsValid;
+    protected boolean    widthsValid;
 
-    protected Color bgs[];
+    protected Color      bgs[];
     
-    protected int leadTextOffset;
-    protected int tailTextOffset;
+    protected int        leadTextOffset;
+    protected int        tailTextOffset;
 
     protected TreeNodeUI nodeUI;
     
-    protected boolean firstTime = true;
+    protected boolean    firstTime = true;
     
-    protected Stroke lineStroke;
-    protected Color  lineColor;
-    protected Color  synonymyColor;
+    protected Stroke     lineStroke;
+    protected Color      lineColor;
+    protected Color      synonymyColor;
     
     protected TreeTableViewer<?,?,?> treeViewer;
     
     protected boolean renderTooltip = true;
+    
+    protected Stack<Pair<Integer,Integer>> intPairRecycler = new Stack<Pair<Integer,Integer>>();
+    protected StringBuilder                nameStrBldr     = new StringBuilder();
+    protected boolean                      recalc          = true;
+    
+    protected Hashtable<Integer, Pair<Integer, Integer>> anchorRankHash = new Hashtable<Integer, Pair<Integer, Integer>>();
+    protected Hashtable<Integer, Pair<Integer, Integer>> textRankHash   = new Hashtable<Integer, Pair<Integer, Integer>>();
+    protected Hashtable<Integer, Pair<Integer, Integer>> colRankHash    = new Hashtable<Integer, Pair<Integer, Integer>>();
+    protected BufferedImage                              bgImg          = null;
+    protected int                                        numVisRanks    = 0;
     
     /**
      * @param ttv
@@ -117,7 +130,7 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
         
         model.addListDataListener(this);
         
-        lineStroke = new BasicStroke(1.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+        this.lineStroke = new BasicStroke(1.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
         this.lineColor = lineColor;
         
         nodeUI = new TreeNodeUI();
@@ -159,7 +172,7 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
         //log.debug("getListCellRendererComponent( " + value + " )");
         this.list = l;
         
-        if ( !(value instanceof TreeNode))
+        if (!(value instanceof TreeNode))
         {
             return createLabel("Item must be an instance of TreeNode");
         }
@@ -182,96 +195,143 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
             return nodeUI;
         }
         
-        // build up the tooltip from the synonym information
-        StringBuilder tooltipBuilder = new StringBuilder("<html><div style=\"font-family: sans-serif; font-size: 12pt\">");
-        tooltipBuilder.append(node.getFullName());
-        
-        Set<Pair<Integer,String>> idsAndNames = node.getSynonymIdsAndNames();
-        if (idsAndNames.size() > 0)
+        if (node.getTooltipText() == null)
         {
-            tooltipBuilder.append("</div><<div style=\"font-family: sans-serif; font-size: 10pt\">");
-            //tooltipBuilder.append("</div><br><div>");
-        	tooltipBuilder.append("<br>");
-        	if (idsAndNames.size() > 1)
-        	{
-        		tooltipBuilder.append(getResourceString("TTV_SYNONYMS" )+ ":");
-        	}
-        	else
-        	{
-        		tooltipBuilder.append(getResourceString("TTV_SYNONYM" )+ ":");
-        	}
-            //tooltipBuilder.append("<ul>");
-            List<String> justNames = new ArrayList<String>();
-            for (Pair<Integer,String> idAndName: idsAndNames)
+            // build up the tooltip from the synonym information
+            nameStrBldr.setLength(0);
+            nameStrBldr.append("<html><div style=\"font-family: sans-serif; font-size: 12pt\">");
+            nameStrBldr.append(node.getFullName());
+            
+            Set<Pair<Integer,String>> idsAndNames = node.getSynonymIdsAndNames();
+            if (idsAndNames.size() > 0)
             {
-                justNames.add(idAndName.second);
+                nameStrBldr.append("</div><<div style=\"font-family: sans-serif; font-size: 10pt\">");
+                //tooltipBuilder.append("</div><br><div>");
+            	nameStrBldr.append("<br>");
+            	if (idsAndNames.size() > 1)
+            	{
+            		nameStrBldr.append(UIRegistry.getResourceString("TTV_SYNONYMS" )+ ":");
+            	}
+            	else
+            	{
+            		nameStrBldr.append(UIRegistry.getResourceString("TTV_SYNONYM" )+ ":");
+            	}
+                //tooltipBuilder.append("<ul>");
+                List<String> justNames = new ArrayList<String>();
+                for (Pair<Integer,String> idAndName: idsAndNames)
+                {
+                    justNames.add(idAndName.second);
+                }
+                Collections.sort(justNames);
+                for (String name: justNames)
+                {
+                    nameStrBldr.append("<br>");
+                	//tooltipBuilder.append("<li>");
+                    nameStrBldr.append(name);
+                    //tooltipBuilder.append("</li>");
+                }
+                nameStrBldr.append("</ul>");
             }
-            Collections.sort(justNames);
-            for (String name: justNames)
+            if (node.getAcceptedParentFullName() != null)
             {
-                tooltipBuilder.append("<br>");
-            	//tooltipBuilder.append("<li>");
-                tooltipBuilder.append(name);
-                //tooltipBuilder.append("</li>");
+                nameStrBldr.append("</div><br><div style=\"font-family: sans-serif; font-size: 10pt\">");
+                nameStrBldr.append(UIRegistry.getResourceString("TTV_PREFERRED_NAME"));
+                nameStrBldr.append(": ");
+                nameStrBldr.append(node.getAcceptedParentFullName());
             }
-            tooltipBuilder.append("</ul>");
+            nameStrBldr.append("</div></html>");
+            node.setTooltipText(nameStrBldr.toString());
         }
-        if (node.getAcceptedParentFullName() != null)
-        {
-            tooltipBuilder.append("</div><br><div style=\"font-family: sans-serif; font-size: 10pt\">");
-            tooltipBuilder.append(getResourceString("TTV_PREFERRED_NAME"));
-            tooltipBuilder.append(": ");
-            tooltipBuilder.append(node.getAcceptedParentFullName());
-        }
-        tooltipBuilder.append("</div></html>");
-        nodeUI.setToolTipText(tooltipBuilder.toString());
+        nodeUI.setToolTipText(node.getTooltipText());
         
         return nodeUI;
     }
     
-    public synchronized Pair<Integer,Integer> getTextBoundsForRank(Integer rank)
+    /**
+     * @return
+     */
+    public Pair<Integer,Integer> getRecycledIntPair()
     {
-        if( rank == null )
+        return intPairRecycler.size() == 0 ? new Pair<Integer,Integer>() : intPairRecycler.pop();
+    }
+    
+    /**
+     * @param item
+     */
+    public void recycle(final Pair<Integer,Integer> item)
+    {
+        if (item != null)
+        {
+            intPairRecycler.push(item);
+        }
+    }
+    
+    /**
+     * @param rank
+     * @return
+     */
+    public synchronized Pair<Integer,Integer> getTextBoundsForRank(final Integer rank)
+    {
+        if (rank == null)
         {
             return null;
         }
         
-        Pair<Integer,Integer> textBounds = new Pair<Integer,Integer>();
         Pair<Integer,Integer> bounds = getColumnBoundsForRank(rank);
-        if( bounds == null )
+        if (bounds == null)
         {
             return null;
         }
         
-        textBounds.first = bounds.first + leadTextOffset;
-        textBounds.second = bounds.second - tailTextOffset;
-        
+        Pair<Integer,Integer> textBounds = textRankHash.get(rank.intValue());
+        if (textBounds == null)
+        {
+            textBounds        = getRecycledIntPair();
+            textBounds.first  = bounds.first + leadTextOffset;
+            textBounds.second = bounds.second - tailTextOffset;
+            textRankHash.put(rank, textBounds);
+        }
         return textBounds;
     }
     
-    public synchronized Pair<Integer,Integer> getAnchorBoundsForRank(Integer rank)
+    /**
+     * @param rank
+     * @return
+     */
+    public synchronized Pair<Integer,Integer> getAnchorBoundsForRank(final Integer rank)
     {
-        if( rank == null )
+        if (rank == null)
         {
             return null;
         }
         
-        Pair<Integer,Integer> anchorBounds = new Pair<Integer,Integer>();
-        Pair<Integer,Integer> bounds = getColumnBoundsForRank(rank);
-        if( bounds == null )
+        //hash.clear();
+        Pair<Integer,Integer> anchorBnds = anchorRankHash.get(rank);
+        if (anchorBnds == null)
         {
-            return null;
+            anchorBnds = getRecycledIntPair();
+            
+            Pair<Integer,Integer> bounds = getColumnBoundsForRank(rank);
+            if (bounds == null)
+            {
+                return null;
+            }
+            
+            anchorBnds.first  = bounds.first;
+            anchorBnds.second = bounds.first + leadTextOffset;
+            anchorRankHash.put(rank, anchorBnds);
         }
         
-        anchorBounds.first = bounds.first;
-        anchorBounds.second = bounds.first + leadTextOffset;
-        
-        return anchorBounds;
+        return anchorBnds;
     }
     
-    public synchronized Pair<Integer,Integer> getColumnBoundsForRank(Integer rank)
+    /**
+     * @param rank
+     * @return
+     */
+    public synchronized Pair<Integer,Integer> getColumnBoundsForRank(final Integer rank)
     {
-        if( rank == null )
+        if (rank == null)
         {
             return null;
         }
@@ -282,33 +342,42 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
             return null;
         }
         
-        Pair<Integer,Integer> colBounds = new Pair<Integer,Integer>();
-        
-        int widthsOfLowerColumns = 0;
-        for (Integer r: visibleRanks)
+        Pair<Integer,Integer> colBounds = colRankHash.get(rank);
+        if (colBounds == null)
         {
-            if (r < rank)
-            {
-                Integer colWidth = columnWidths.get(r);
-                widthsOfLowerColumns += colWidth;
-            }
-            else
-            {
-                break;
-            }
-        }
+            colBounds = getRecycledIntPair();
         
-        colBounds.first = widthsOfLowerColumns;
-        Integer colWidth = columnWidths.get(rank);
-        if (colWidth == null)
-        {
-            return null;
+            int widthsOfLowerColumns = 0;
+            for (Integer r: visibleRanks)
+            {
+                if (r < rank)
+                {
+                    Integer colWidth = columnWidths.get(r);
+                    widthsOfLowerColumns += colWidth;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            
+            Integer colWidth = columnWidths.get(rank);
+            if (colWidth == null)
+            {
+                recycle(colBounds);
+                return null;
+            }
+            
+            colBounds.first  = widthsOfLowerColumns;
+            colBounds.second = widthsOfLowerColumns + colWidth;
+            colRankHash.put(rank, colBounds);
         }
-        
-        colBounds.second = widthsOfLowerColumns + colWidth;
         return colBounds;
     }        
     
+    /**
+     * @param g
+     */
     public synchronized void computeMissingColumnWidths( Graphics g )
     {
         //log.debug("Computing missing column widths");
@@ -323,6 +392,9 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
         widthsValid = true;
     }
     
+    /**
+     * 
+     */
     public synchronized void removeUnusedColumnWidths()
     {
         Set<Integer> ranksWithWidths = new HashSet<Integer>();
@@ -338,23 +410,54 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
         }
     }
     
+    /**
+     * @param rank
+     * @return
+     */
     public synchronized int getColumnWidth(int rank)
     {
         return columnWidths.get(rank);
     }
     
+    /**
+     * 
+     */
+    public void reset()
+    {
+        bgImg = null;
+        
+        intPairRecycler.addAll(anchorRankHash.values());
+        intPairRecycler.addAll(textRankHash.values());
+        intPairRecycler.addAll(colRankHash.values());
+        
+        anchorRankHash.clear();
+        textRankHash.clear();
+        colRankHash.clear();
+        
+    }
+    
+    /**
+     * @param rank
+     * @param change
+     */
     public synchronized void changeColumnWidth(int rank, int change)
     {
         int width = columnWidths.get(rank);
         columnWidths.put(rank, width+change);
         
+        reset();
+        
         treeViewer.updateAllUI();
     }
     
+    /**
+     * @param x
+     * @return
+     */
     protected synchronized int[] getRanksSurroundingPoint(int x)
     {
-        int[] ranks = new int[] {-1,-1};
-        boolean leftSet = false;
+        int[]    ranks   = new int[] {-1,-1};
+        boolean leftSet  = false;
         boolean rightSet = false;
         for (int rank: model.getVisibleRanks())
         {
@@ -378,6 +481,9 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
         return null;
     }
     
+    /**
+     * @return
+     */
     public synchronized int getSumOfColumnWidths()
     {
         int width = 0;
@@ -388,6 +494,9 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
         return width;
     }
 
+    /* (non-Javadoc)
+     * @see javax.swing.event.ListDataListener#intervalAdded(javax.swing.event.ListDataEvent)
+     */
     public void intervalAdded(ListDataEvent e)
     {
         widthsValid = false;
@@ -397,13 +506,19 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
         }
     }
 
+    /* (non-Javadoc)
+     * @see javax.swing.event.ListDataListener#intervalRemoved(javax.swing.event.ListDataEvent)
+     */
     public void intervalRemoved(ListDataEvent e)
     {
         widthsValid = false;
         removeUnusedColumnWidths();
     }
 
-    public void contentsChanged(ListDataEvent e)
+    /* (non-Javadoc)
+     * @see javax.swing.event.ListDataListener#contentsChanged(javax.swing.event.ListDataEvent)
+     */
+    public void contentsChanged(final ListDataEvent e)
     {
         widthsValid = false;
         if (list != null && list.getGraphics() != null)
@@ -412,6 +527,9 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
         }
     }
     
+    /**
+     *
+     */
     @SuppressWarnings("serial")
     public class TreeNodeUI extends JPanel
     {
@@ -419,6 +537,11 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
         protected boolean hasFocus;
         protected boolean selected;
         
+        protected boolean isOpen = false;
+        
+        /**
+         * 
+         */
         public TreeNodeUI()
         {
             super();
@@ -454,13 +577,15 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
             this.selected = selected;
         }
 
-        @SuppressWarnings("synthetic-access")
+        /* (non-Javadoc)
+         * @see javax.swing.JComponent#getPreferredSize()
+         */
         @Override
         public Dimension getPreferredSize()
         {
             //log.debug("TreeViewerNodeRenderer.getPreferredSize() called.  " + treeNode);
             // ensure that the lengths are valid
-            if( !widthsValid )
+            if (!widthsValid )
             {
                 computeMissingColumnWidths(list.getGraphics());
             }
@@ -470,16 +595,19 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
             return prefSize;
         }
         
+        /* (non-Javadoc)
+         * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
+         */
         @Override
         protected void paintComponent(Graphics g)
         {
-            if( list.getFont() != null )
+            if (list.getFont() != null)
             {
                 this.setFont(list.getFont());
             }
 
             // ensure that the lengths are valid
-            if( !widthsValid )
+            if (!widthsValid )
             {
                 computeMissingColumnWidths(list.getGraphics());
                 widthsValid = true;
@@ -491,13 +619,13 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
             // draw the alternating color background
             drawBackgroundColors(g);
             
-            drawNodeAnchors(g);
-            
             // draw the downward lines from ancestors to descendants renderered below this node
             drawTreeLinesToLowerNodes(g);
             
             // draw the open/close icon
             drawOpenClosedIcon(g);
+            
+            drawNodeAnchors(g);
             
             // draw the string name of the node
             drawNodeString(g);
@@ -510,21 +638,46 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
 //            }
         }
         
-        public void drawBackgroundColors(Graphics g)
+        /**
+         * @param graphics
+         */
+        public void drawBackgroundColors(Graphics graphics)
         {
-            Color orig = g.getColor();
-            int cellHeight = list.getFixedCellHeight();
-
-            int i = 0;
-            for( Integer rank: model.getVisibleRanks() )
+            Dimension size = getSize();
+            boolean sizeChanged = bgImg == null || size.width > bgImg.getWidth() || size.height > bgImg.getHeight();
+            if (sizeChanged || model.getVisibleRanks().size() != numVisRanks)
             {
-                Pair<Integer,Integer> startEnd = getColumnBoundsForRank(rank);
-                g.setColor(bgs[i%2]);
-                g.fillRect(startEnd.first,0,startEnd.second-startEnd.first,cellHeight);
-                ++i;
+                if (sizeChanged)
+                {
+                    if (bgImg != null)
+                    {
+                        reset();
+                    }
+                    bgImg = new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_RGB);
+                }
+                
+                Graphics g = bgImg.createGraphics();
+
+                g.setColor(Color.WHITE);
+                g.fillRect(0, 0, size.width, size.height);
+                
+                List<Integer> visRanksList = model.getVisibleRanks();
+                int cellHeight = list.getFixedCellHeight();
+                
+                int i = 0;
+                for( Integer rank : visRanksList)
+                {
+                    Pair<Integer,Integer> startEnd = getColumnBoundsForRank(rank);
+                    g.setColor(bgs[i%2]);
+                    g.fillRect(startEnd.first,0,startEnd.second-startEnd.first,cellHeight);
+                    ++i;
+                }
+                numVisRanks = visRanksList.size();
+                
+                g.dispose();
             }
             
-            g.setColor(orig);
+            graphics.drawImage(bgImg, 0, 0, null);
         }
         
         /**
@@ -548,28 +701,36 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
             g.setColor(orig);
         }
         
-        private void drawNodeAnchors(Graphics g)
+        /**
+         * @param g
+         */
+        private void drawNodeAnchors(final Graphics g)
         {
+            TreeNode node   = treeNode;
+            TreeNode parent = model.getNodeById(treeNode.getParentId());
+            
             // setup the color and stroke
-            Graphics2D g2d = (Graphics2D)g;
-            Stroke origStroke = g2d.getStroke();
+            Graphics2D g2d        = (Graphics2D)g;
+            Stroke     origStroke = g2d.getStroke();
+            Color      origColor  = g.getColor();
+            
             g2d.setStroke(lineStroke);
-            Color origColor = g.getColor();
             g.setColor(lineColor);
             
-            TreeNode node = treeNode;
-            TreeNode parent = model.getNodeById(treeNode.getParentId());
             int cellHeight = list.getFixedCellHeight();
-            int midCell = cellHeight/2;
+            int midCell    = cellHeight / 2;
 
-            if( node != model.getVisibleRoot() && parent != null )
+            if (node.fullName.startsWith("Paragon")) System.out.println(node.fullName);
+            
+            if (node != model.getVisibleRoot() && parent != null)
             {
-                int parentRank = parent.getRank();
-                int rank  = node.getRank();
-                Pair<Integer,Integer> parentAnchorBounds = getAnchorBoundsForRank(parentRank);
-                Pair<Integer,Integer> nodeAnchorBounds = getAnchorBoundsForRank(rank);
+                Pair<Integer,Integer> parentAnchorBounds = getAnchorBoundsForRank(parent.getRank());
+                Pair<Integer,Integer> nodeAnchorBounds   = getAnchorBoundsForRank(node.getRank());
                 
-                if( !model.parentHasChildrenAfterNode(parent, node) )
+                // This can be optimized also
+                boolean isLastKid = model.parentHasChildrenAfterNode(parent, node);
+                
+                if (!isLastKid)
                 {
                     // draw an L-line
                     g.drawLine(parentAnchorBounds.second,0,parentAnchorBounds.second,midCell);
@@ -588,33 +749,37 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
             g.setColor(origColor);
         }
         
-        private void drawTreeLinesToLowerNodes(Graphics g)
+        /**
+         * @param g
+         */
+        private void drawTreeLinesToLowerNodes(final Graphics g)
         {
             // setup the color and stroke
-            Graphics2D g2d = (Graphics2D)g;
-            Stroke origStroke = g2d.getStroke();
+            Graphics2D g2d        = (Graphics2D)g;
+            Stroke     origStroke = g2d.getStroke();
+            Color      origColor  = g.getColor();
+            
             g2d.setStroke(lineStroke);
-            Color origColor = g.getColor();
             g.setColor(lineColor);
             
             // determine if this node has more peer nodes below it
             // if not, draw an L-shape
             // if so, draw a T-shape
 
-            TreeNode node = treeNode;
+            TreeNode node   = treeNode;
             TreeNode parent = model.getNodeById(treeNode.getParentId());
-            int cellHeight = list.getFixedCellHeight();
+            int cellHeight  = list.getFixedCellHeight();
 
-            while( node != model.getVisibleRoot() && parent != null )
+            while (node != model.getVisibleRoot() && parent != null)
             {
-                if( model.parentHasChildrenAfterNode(parent, node) )
+                if (model.parentHasChildrenAfterNode(parent, node))
                 {
                     // draw the vertical line for under this parent
-                    int width = getAnchorBoundsForRank(parent.getRank()).second;
+                    Pair<Integer,Integer> anchorBnds = getAnchorBoundsForRank(parent.getRank());
                     
                     if (parent.getRank() != treeNode.getParentRank())
                     {
-                        g.drawLine(width, 0, width, cellHeight);
+                        g.drawLine(anchorBnds.second, 0, anchorBnds.second, cellHeight);
                     }
                 }
                 
@@ -627,60 +792,70 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
             g.setColor(origColor);
         }
         
-        private void drawOpenClosedIcon(Graphics g)
+        /**
+         * @param g
+         */
+        private void drawOpenClosedIcon(final Graphics g)
         {
-            int cellHeight = list.getFixedCellHeight();
-            Pair<Integer,Integer> anchorBounds = getAnchorBoundsForRank(treeNode.getRank());
-            int anchorStartX = anchorBounds.getFirst();
-
             // don't do anything for leaf nodes
-            if( !treeNode.isHasChildren() )
+            if (!treeNode.isHasChildren() )
             {
                 return;
             }
             
-            Icon openClose = null;
-            if( !model.showingChildrenOf(treeNode) )
+            Boolean hasVisKids = treeNode.hasVisualChildren();
+            if (hasVisKids == null)
             {
-                openClose = closed;
+                hasVisKids = model.showingChildrenOf(treeNode);
+                treeNode.setHasVisualChildren(hasVisKids);
             }
-            else
-            {
-                openClose = open;
-            }
+            
+            Icon openCloseIcon = hasVisKids ? open : closed;
+            
+            int                   cellHeight   = list.getFixedCellHeight();
+            Pair<Integer,Integer> anchorBounds = getAnchorBoundsForRank(treeNode.getRank());
+            int                   anchorStartX = anchorBounds.getFirst();
 
             // calculate offsets for icon
-            int iconWidth = openClose.getIconWidth();
-            int iconHeight = openClose.getIconHeight();
-            int widthDiff = anchorBounds.second - anchorBounds.first - iconWidth;
-            int heightDiff = cellHeight - iconHeight;
-            openClose.paintIcon(list,g,anchorStartX+(int)(.5*widthDiff),0+(int)(.5*heightDiff));
+            int widthDiff  = anchorBounds.second - anchorBounds.first - openCloseIcon.getIconWidth();
+            int heightDiff = cellHeight - openCloseIcon.getIconHeight();
+            
+            openCloseIcon.paintIcon(list,g,anchorStartX+(int)(.5*widthDiff),0+(int)(.5*heightDiff));
         }
         
-        private void drawNodeString(Graphics g)
+        /**
+         * @param g
+         */
+        private void drawNodeString(final Graphics g)
         {
             Color startingColor = g.getColor();
             if (treeNode.getAcceptedParentFullName() != null)
             {
                 g.setColor(synonymyColor);
             }
+            
+            nameStrBldr.setLength(0);
+            nameStrBldr.append(treeNode.getName());
+            
             Graphics2D    g2d         = (Graphics2D)g;
             FontMetrics   fm          = g.getFontMetrics();
             int           cellHeight  = list.getFixedCellHeight();
-            StringBuilder name        = new StringBuilder(treeNode.getName());
             int           baselineAdj = (int)(1.0/2.0*fm.getAscent() + 1.0/2.0*cellHeight);
+            
             Pair<Integer,Integer> stringBounds = getTextBoundsForRank(treeNode.getRank());
+            
             int stringStartX = stringBounds.getFirst();
             int stringEndX   = stringBounds.getSecond();
             int stringLength = stringEndX - stringStartX;
             int stringY      = baselineAdj;
             
-            if( selected )
+            if (selected)
             {
                 g2d.setColor(list.getSelectionBackground());
                 g2d.fillRoundRect(stringStartX-2, 1, stringLength+4, cellHeight-2, 8, 8);
                 g2d.setColor(list.getSelectionForeground());
             }
+            
             if (treeNode == model.getDropLocationNode())
             {
                 Color selBG = list.getSelectionBackground();
@@ -692,8 +867,8 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
             
             if (treeNode.getAssociatedRecordCount() > 0)
             {
-                name.append(" (");
-                name.append(treeNode.getAssociatedRecordCount());
+                nameStrBldr.append(" (");
+                nameStrBldr.append(treeNode.getAssociatedRecordCount());
             }
             
             // Draw the Line from the start of the column to the text.
@@ -717,27 +892,30 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
             {
                 if (treeNode.getAssociatedRecordCount() > 0)
                 {
-                    name.append(", ");
+                    nameStrBldr.append(", ");
                 } else
                 {
-                    name.append(" (0, ");
+                    nameStrBldr.append(" (0, ");
                 }
-                name.append(treeNode.getAssociatedRecordCount2());
-                name.append(")");
+                nameStrBldr.append(treeNode.getAssociatedRecordCount2());
+                nameStrBldr.append(")");
                 
             } else if (treeNode.getAssociatedRecordCount() > 0)
             {
-                name.append(")");
+                nameStrBldr.append(")");
             }
             
-            String clippedName = GraphicsUtils.clipString(fm, name.toString(), stringLength);
+            String clippedName = GraphicsUtils.clipString(fm, nameStrBldr.toString(), stringLength);
             g.drawString(clippedName, stringStartX, stringY);
             
             g.setColor(startingColor);
         }
         
+        /**
+         * @param g
+         */
         @SuppressWarnings("unused")
-        private void drawParentageStrings(Graphics g)
+        private void drawParentageStrings(final Graphics g)
         {
             TreeNode node = treeNode;
             FontMetrics fm = g.getFontMetrics();
@@ -753,9 +931,9 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
                 if (stringBounds != null)
                 {
                     int stringStartX = stringBounds.getFirst();
-                    int stringEndX = stringBounds.getSecond();
+                    int stringEndX   = stringBounds.getSecond();
                     int stringLength = stringEndX - stringStartX;
-                    int stringY = baselineAdj;
+                    int stringY      = baselineAdj;
                     String clippedName = GraphicsUtils.clipString(fm, name, stringLength);
                     g.drawString(clippedName, stringStartX, stringY);
                 }

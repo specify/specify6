@@ -490,6 +490,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         int rowHeight = 20;
         
 		lists[0] = new TreeDataGhostDropJList(listModel, this, isEditMode);
+		
+		listModel.addListDataListener(listCellRenderer);
         
         // we need our MouseListener to be the first one called, so we detach the other MouseListeners, attach ours, then reattach the others.
         MouseListener[] mouseListeners = lists[0].getMouseListeners();
@@ -996,14 +998,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                     return;
                 }
                 
-                if (p.x >= textBounds.first && p.x <= textBounds.second)
-                {
-                    listCellRenderer.setRenderTooltip(true);
-                }
-                else
-                {
-                    listCellRenderer.setRenderTooltip(false);
-                }
+                listCellRenderer.setRenderTooltip(p.x >= textBounds.first && p.x <= textBounds.second);
             }
         };
         
@@ -2820,19 +2815,16 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		final TreeDataGhostDropJList list = (TreeDataGhostDropJList)e.getSource();
 		Point p = e.getPoint();
 		int index = list.locationToIndex(p);
-		if (index==-1)
+		if (index == -1)
 		{
 			return false;
 		}
-		TreeNode t = listModel.getElementAt(index);
-		Integer rank = t.getRank();
+		
+		TreeNode t    = listModel.getElementAt(index);
+		Integer  rank = t.getRank();
 		Pair<Integer,Integer> textBounds = listCellRenderer.getTextBoundsForRank(rank);
 		
-		if ( textBounds.first < p.x && p.x < textBounds.second )
-		{
-			return true;
-		}
-		return false;
+		return textBounds.first < p.x && p.x < textBounds.second;
 	}
 	
 	/**
@@ -2844,20 +2836,17 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		TreeDataGhostDropJList list = (TreeDataGhostDropJList)e.getSource();
 		Point p = e.getPoint();
 		int index = list.locationToIndex(p);
-		if (index==-1)
+		if (index == -1)
 		{
 			return false;
 		}
+		
         ListModel model = list.getModel();
-        TreeNode t = (TreeNode)model.getElementAt(index);
-		Integer rank = t.getRank();
+        TreeNode  t     = (TreeNode)model.getElementAt(index);
+		Integer   rank  = t.getRank();
 		Pair<Integer,Integer> anchorBounds = listCellRenderer.getAnchorBoundsForRank(rank);
 		
-		if ( anchorBounds.first < p.x && p.x < anchorBounds.second )
-		{
-			return true;
-		}
-		return false;
+		return anchorBounds.first < p.x && p.x < anchorBounds.second;
 	}
 	
 	/**

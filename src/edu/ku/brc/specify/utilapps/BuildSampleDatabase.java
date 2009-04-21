@@ -276,7 +276,8 @@ public class BuildSampleDatabase
     private static int SUBSPECIES_LSID        = 7;
     private static int SUBSPECIES_COMMON_NAME = 8;
     
-    protected Hashtable<String, Integer> taxonIndexes = new Hashtable<String, Integer>();
+    protected Hashtable<String, Integer> taxonExtraColsIndexes = new Hashtable<String, Integer>();
+    protected Hashtable<String, Integer> taxonIndexes          = new Hashtable<String, Integer>();
 
     protected static boolean     debugOn        = false;
     protected static final int   TIME_THRESHOLD = 3000;
@@ -8386,6 +8387,7 @@ public class BuildSampleDatabase
             commitTx();
             
             String[]        cells    = new String[35];
+            String[]        header   = new String[35];
             InputStream     input    = new FileInputStream(file);
             POIFSFileSystem fs       = new POIFSFileSystem(input);
             HSSFWorkbook    workBook = new HSSFWorkbook(fs);
@@ -8428,6 +8430,7 @@ public class BuildSampleDatabase
                         if (cell != null)
                         {
                             cells[i] = StringUtils.trim(cell.getRichStringCellValue().getString());
+                            header[i] = cells[i];
                             i++;
                         }
                     }
@@ -8450,6 +8453,22 @@ public class BuildSampleDatabase
                     }
                     loadIndexes(cells);
                     counter = 1;
+                    
+                    for (String hdr : header)
+                    {
+                        if (hdr == null) break;
+                        
+                        int inx = 0;
+                        for (TaxonTreeDefItem item : rankedItems)
+                        {
+                            if (hdr.equalsIgnoreCase(item.getName()))
+                            {
+                                System.err.println(hdr+" -> "+inx);
+                                taxonIndexes.put(hdr, inx);
+                            }
+                            inx++;
+                        }
+                    }
                     continue;
                 }
                 
@@ -8472,7 +8491,7 @@ public class BuildSampleDatabase
                     }
                 }
 
-                convertTaxonNodes(conn, stmt, cells, numDataCols, rootNode, nodeList, rankedItems, root.getDefinition().getId());
+                convertTaxonNodes(conn, stmt, header, cells, numDataCols, rootNode, nodeList, rankedItems, root.getDefinition().getId());
     
                 counter++;
             }
@@ -8530,7 +8549,7 @@ public class BuildSampleDatabase
                 if (cells[inx].equals(TaxonIndexNames[i]))
                 {
                     //System.out.println("** "+TaxonIndexNames[i]+" -> "+inx);
-                    taxonIndexes.put(TaxonIndexNames[i].toLowerCase(), inx);
+                    taxonExtraColsIndexes.put(TaxonIndexNames[i].toLowerCase(), inx);
                     break;
                 }
             }
@@ -8551,6 +8570,7 @@ public class BuildSampleDatabase
      */
     public void convertTaxonNodes(final Connection            conn,
                                   final Statement             stmt,
+                                  final String[]              header,
                                   final String[]              levelNames,
                                   final int                   numColumns,
                                   final Pair<String, Integer> parent,
@@ -8558,6 +8578,10 @@ public class BuildSampleDatabase
                                   final Vector<TaxonTreeDefItem>      rankedItems,
                                   final int                   txTreeDefId) throws SQLException
     {
+        /*
+         * kingdom     phylum      class   order       superfamily family      genus       species   subspecies  species author  species source  species lsid    species common name family common name  subspecies author   subspecies source   subspecies lsid subspecies common name
+           Animalia    Arthropoda  Insecta Orthoptera  Acridoidea  Acrididae   Abisares    depressus             Uvarov 1938 orthoptera.speciesfile.org  urn:lsid:catalogueoflife.org:taxon:e32007de-29c1-102b-9a4a-00304854f820:ac2008                      
+         */
         String fullName = "";
         
         for (int i = 0; i < numColumns; i++)
@@ -8568,7 +8592,13 @@ public class BuildSampleDatabase
                 break;
             }
             
-            TaxonTreeDefItem ttdi = rankedItems.get(inx);
+            Integer depthInx = taxonIndexes.get(header[i]);
+            if (depthInx == null && taxonExtraColsIndexes.get(header[i]) != null)
+            {
+                break;
+            }
+            TaxonTreeDefItem ttdi = rankedItems.get(depthInx);
+            
             if (ttdi.getIsInFullName())
             {
                 if (StringUtils.isNotEmpty(ttdi.getTextBefore()))
@@ -8717,7 +8747,7 @@ public class BuildSampleDatabase
                 //XXX - temporary work-around for initialization problems (bug #7204) when botany sample
             	//taxon is loaded. Skipping  block if gotten is null results in common names
             	//(for botany) not being loaded.
-            	Integer gotten = taxonIndexes.get(TaxonIndexNames[inx].toLowerCase());
+            	Integer gotten = taxonExtraColsIndexes.get(TaxonIndexNames[inx].toLowerCase());
             	if (gotten != null)
             	{
             	

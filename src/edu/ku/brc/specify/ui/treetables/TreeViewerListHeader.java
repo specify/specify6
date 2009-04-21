@@ -75,6 +75,8 @@ public class TreeViewerListHeader extends JPanel implements ListDataListener
     protected Integer expandingRank;
     protected int     mostRecentX     = -1;
     protected int     minColWidth     = 50;
+    
+    protected BasicStroke basicStroke8 = new BasicStroke(8);
 	
 	/**
 	 * Creates a header appropriate for labelling the columns of the given
@@ -85,10 +87,10 @@ public class TreeViewerListHeader extends JPanel implements ListDataListener
 	 * @param listCellRenderer
 	 * @param rankToNameMap
 	 */
-	public TreeViewerListHeader(JList                  list, 
-	                            TreeViewerListModel    tvlm, 
-	                            TreeViewerNodeRenderer listCellRenderer, 
-	                            Map<Integer, String>   rankToNameMap)
+	public TreeViewerListHeader(final JList                  list, 
+	                            final TreeViewerListModel    tvlm, 
+	                            final TreeViewerNodeRenderer listCellRenderer, 
+	                            final Map<Integer, String>   rankToNameMap)
 	{
 		this.list = list;
 		this.model = tvlm;
@@ -142,6 +144,9 @@ public class TreeViewerListHeader extends JPanel implements ListDataListener
         this.addMouseMotionListener(mouseMotionAdapter);
 	}
     
+    /**
+     * @param e
+     */
     protected void pressed(MouseEvent e)
     {
         // if press is on a boundary between ranks
@@ -165,6 +170,9 @@ public class TreeViewerListHeader extends JPanel implements ListDataListener
         //log.debug("Starting a column resize action for rank " + expandingRank);
     }
     
+    /**
+     * @param e
+     */
     protected void hover(MouseEvent e)
     {
         int[] ranksBeingChanged = cellRenderer.getRanksSurroundingPoint(e.getX());
@@ -177,6 +185,9 @@ public class TreeViewerListHeader extends JPanel implements ListDataListener
         this.setCursor(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR));
     }
     
+    /**
+     * @param e
+     */
     protected void dragged(MouseEvent e)
     {
         if (resizingColumns)
@@ -218,6 +229,9 @@ public class TreeViewerListHeader extends JPanel implements ListDataListener
         }
     }
     
+    /**
+     * @param e
+     */
     protected void released(@SuppressWarnings("unused") MouseEvent e)
     {
         if (resizingColumns)
@@ -228,6 +242,9 @@ public class TreeViewerListHeader extends JPanel implements ListDataListener
         }
     }
 
+	/* (non-Javadoc)
+	 * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
+	 */
 	@Override
 	protected synchronized void paintComponent(Graphics g)
 	{
@@ -273,14 +290,13 @@ public class TreeViewerListHeader extends JPanel implements ListDataListener
             String clippedName = GraphicsUtils.clipString(g.getFontMetrics(), rankName, (colBounds.second - colBounds.first) - (2 * margin));
             int    x           = ((colBounds.second - colBounds.first) - fm.stringWidth(clippedName)) / 2;
             int    startX      = colBounds.first + x;
-
             
 			g.drawString(clippedName, startX, getHeight() / 2);
 			g.setFont(gFont);
 		}
         
         g2.setColor(this.getBackground());
-        g2.setStroke(new BasicStroke(8));
+        g2.setStroke(basicStroke8);
         g2.drawLine(0,h,w,h);
 	}
 
@@ -329,12 +345,12 @@ public class TreeViewerListHeader extends JPanel implements ListDataListener
 	{
         int fallback = 32;
         Graphics g = list.getGraphics();
-        if (g==null)
+        if (g == null)
         {
             return fallback;
         }
         FontMetrics fm = g.getFontMetrics();
-        if (fm==null)
+        if (fm == null)
         {
             return fallback;
         }
@@ -344,7 +360,7 @@ public class TreeViewerListHeader extends JPanel implements ListDataListener
 	@Override
 	public Dimension getPreferredSize()
 	{
-		return new Dimension(getWidth(),getHeight());
+		return new Dimension(getWidth(), getHeight());
 	}
 
 	/**

@@ -93,6 +93,7 @@ import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.busrules.PickListBusRules;
 import edu.ku.brc.specify.tools.schemalocale.PickListEditorDlg;
 import edu.ku.brc.specify.tools.schemalocale.SchemaToolsDlg;
+import edu.ku.brc.specify.ui.NumberingSchemeDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CustomDialog;
@@ -201,6 +202,17 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                     PickListEditorDlg dlg = new PickListEditorDlg(null, true);
                     dlg.createUI();
                     dlg.setSize(400,500);
+                    dlg.setVisible(true);
+                }
+            })); 
+            navBoxes.add(collNavBox);
+            
+            collNavBox.add(NavBox.createBtnWithTT(getResourceString("ANS_EDITOR"), "AutoNumberingScheme", "", IconManager.STD_ICON_SIZE, new ActionListener() {
+                public void actionPerformed(ActionEvent e)
+                {
+                    NumberingSchemeDlg dlg = new NumberingSchemeDlg(null);
+                    dlg.createUI();
+                    dlg.pack();
                     dlg.setVisible(true);
                 }
             })); 

@@ -63,6 +63,22 @@ public class TreeNode
     protected String  acceptedParentFullName;
     protected Set<Pair<Integer,String>> synonymIdsAndNames;
     
+    // Transient for faster rendering
+    protected Boolean hasVisualChildren = null; 
+    protected String  tooltipText       = null;
+    
+    /**
+     * @param name
+     * @param fullName
+     * @param id
+     * @param parentId
+     * @param rank
+     * @param parentRank
+     * @param hasChildren
+     * @param acceptedParentId
+     * @param acceptedParentFullName
+     * @param synonymIdsAndNames
+     */
     public TreeNode(final String name, 
                     final String fullName, 
                     final int id, 
@@ -85,58 +101,89 @@ public class TreeNode
         this.acceptedParentId       = acceptedParentId;
         this.acceptedParentFullName = acceptedParentFullName;
         this.synonymIdsAndNames     = synonymIdsAndNames;
-
-        //this.associatedRecordCount  = 0;
-        //this.associatedRecordCount2 = 0;
     }
 
+    /**
+     * @return
+     */
     public Class<?> getDataObjClass()
     {
         return dataObjClass;
     }
 
+    /**
+     * @param dataObjClass
+     */
     public void setDataObjClass(final Class<?> dataObjClass)
     {
         this.dataObjClass = dataObjClass;
     }
 
+    /**
+     * @return
+     */
     public boolean isHasChildren()
     {
         return hasChildren;
     }
 
+    /**
+     * @param hasChildren
+     */
     public void setHasChildren(final boolean hasChildren)
     {
         this.hasChildren = hasChildren;
     }
 
+    /**
+     * @return
+     */
     public int getId()
     {
         return id;
     }
 
+    /**
+     * @param id
+     */
     public void setId(final int id)
     {
         this.id = id;
     }
 
+    /**
+     * @return
+     */
     public String getName()
     {
         return name;
     }
 
+    /**
+     * @param name
+     */
     public void setName(final String name)
     {
+        tooltipText = null;
+
         this.name = name;
     }
 
+    /**
+     * @return
+     */
     public String getFullName()
     {
         return fullName;
     }
 
+    /**
+     * @param fullName
+     */
     public void setFullName(final String fullName)
     {
+        tooltipText = null;
+
         this.fullName = fullName;
     }
 
@@ -148,6 +195,9 @@ public class TreeNode
         return parentId;
     }
 
+    /**
+     * @param parentId
+     */
     public void setParentId(final int parentId)
     {
         this.parentId = parentId;
@@ -161,26 +211,41 @@ public class TreeNode
         return parentRank;
     }
 
+    /**
+     * @param parentRank
+     */
     public void setParentRank(final int parentRank)
     {
         this.parentRank = parentRank;
     }
 
+    /**
+     * @return
+     */
     public int getRank()
     {
         return rank;
     }
 
+    /**
+     * @param rank
+     */
     public void setRank(final int rank)
     {
         this.rank = rank;
     }
 
+    /**
+     * @return
+     */
     public int getAssociatedRecordCount()
     {
         return associatedRecordCount;
     }
 
+    /**
+     * @param associatedRecordCount
+     */
     public void setAssociatedRecordCount(final int associatedRecordCount)
     {
         this.associatedRecordCount = associatedRecordCount;
@@ -232,8 +297,6 @@ public class TreeNode
     public synchronized void setHasCalcCount(boolean hasCalcCount)
     {
         this.hasCalcCount = hasCalcCount;
-        //System.out.println("SET Calc: "+getFullName()+" "+hashCode());
-
     }
 
     /**
@@ -266,10 +329,11 @@ public class TreeNode
     public synchronized void setHasCalcCount2(boolean hasCalcCount2)
     {
         this.hasCalcCount2 = hasCalcCount2;
-        //System.out.println("SET Calc2: "+getFullName()+" "+hashCode());
-
     }
 
+    /**
+     * @return
+     */
     public synchronized boolean shouldCalcCount()
     {
         //don't do counts for taxon synonyms
@@ -282,33 +346,87 @@ public class TreeNode
         return !isCalc;
     }
     
+    /**
+     * @return
+     */
     public Integer getAcceptedParentId()
     {
         return acceptedParentId;
     }
 
+    /**
+     * @return
+     */
     public String getAcceptedParentFullName()
     {
         return acceptedParentFullName;
     }
 
+    /**
+     * @param acceptedParentFullName
+     */
     public void setAcceptedParentFullName(final String acceptedParentFullName)
     {
+        tooltipText = null;
+
         this.acceptedParentFullName = acceptedParentFullName;
     }
 
+    /**
+     * @param acceptedParentId
+     */
     public void setAcceptedParentId(final Integer acceptedParentId)
     {
         this.acceptedParentId = acceptedParentId;
     }
 
+    /**
+     * @return
+     */
     public Set<Pair<Integer, String>> getSynonymIdsAndNames()
     {
         return synonymIdsAndNames;
     }
     
+    /**
+     * @return the hasVisualChildren
+     */
+    public Boolean hasVisualChildren()
+    {
+        return hasVisualChildren;
+    }
+
+    /**
+     * @param hasVisualChildren the hasVisualChildren to set
+     */
+    public void setHasVisualChildren(final Boolean hasVisualChildren)
+    {
+        this.hasVisualChildren = hasVisualChildren;
+    }
+
+    /**
+     * @return the tooltipText
+     */
+    public String getTooltipText()
+    {
+        return tooltipText;
+    }
+
+    /**
+     * @param tooltipText the tooltipText to set
+     */
+    public void setTooltipText(String tooltipText)
+    {
+        this.tooltipText = tooltipText;
+    }
+
+    /**
+     * @param synonymNodeId
+     */
     public void removeSynonym(final Integer synonymNodeId)
     {
+        tooltipText = null;
+        
         Iterator<Pair<Integer,String>> iter = synonymIdsAndNames.iterator();
         while( iter.hasNext() )
         {
