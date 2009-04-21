@@ -84,6 +84,7 @@ public class ERTICaptionInfoQB extends ERTICaptionInfo
             }
         }	
     	//else
+    	//XXX for large picklists the next two blocks could become time-consuming...
     	if (value != null && pickList instanceof TypeCode)
         {
             PickListItemIFace item = ((TypeCode )pickList).getItemByValue(value);
@@ -93,6 +94,17 @@ public class ERTICaptionInfoQB extends ERTICaptionInfo
             }
             return value.toString();
         }
+    	if (value != null && pickList != null)
+    	{
+            for (PickListItemIFace item : pickList.getList())
+            {
+            	if (item.getValue() != null && item.getValue().equals(value))
+            	{
+            		return item.getTitle();
+            	}
+            }
+            return value.toString();
+    	}
     	//else
         return super.processValue(value);
     }
