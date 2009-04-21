@@ -1081,8 +1081,6 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             {
                 public void actionPerformed(ActionEvent ae)
                 {
-                    //XXX Until issues with incorrect treedefs and other stuff after adding disciplines is cleared up...
-                    UIRegistry.showLocalizedMsg(JOptionPane.WARNING_MESSAGE, "WARNING", "SystemSetupTask.RestartWarn");
                 	SystemSetupTask.this.requestContext();
                 }
             }); 

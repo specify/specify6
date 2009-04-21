@@ -143,7 +143,7 @@ public class QueryTask extends BaseTask
     protected QueryBldrPane                               queryBldrPane             = null;
     protected SoftReference<TableTree>                    tableTree                 = null;
     protected SoftReference<Hashtable<String, TableTree>> tableTreeHash             = null;
-    protected final AtomicBoolean                         localizationOrTreeDefEdit = new AtomicBoolean(false);
+    protected final AtomicBoolean                         configurationHasChanged = new AtomicBoolean(false);
     
     protected Vector<ToolBarDropDownBtn> tbList           = new Vector<ToolBarDropDownBtn>();
     protected Vector<JComponent>         menus            = new Vector<JComponent>();
@@ -1380,8 +1380,9 @@ public class QueryTask extends BaseTask
         
         if (cmdAction.isAction(APP_RESTART_ACT))
         {
-            isInitialized = false;
-            this.initialize();
+            configurationHasChanged.set(true);
+        	isInitialized = false;
+            initialize();
         }
     }
 
@@ -1402,13 +1403,13 @@ public class QueryTask extends BaseTask
         else if (cmdAction.isType(TreeDefinitionEditor.TREE_DEF_EDITOR))
         {
             //all we care to know is that a treeDefintion got changed somehow 
-            this.localizationOrTreeDefEdit.set(true);
+            this.configurationHasChanged.set(true);
         }
         else if (cmdAction.isType(SchemaLocalizerDlg.SCHEMA_LOCALIZER))
         {
             //XXX should check whether changed schema actually is the schema in use? 
             // e.g. If German schema was saved when English is in use then ignore??
-            this.localizationOrTreeDefEdit.set(true);
+            this.configurationHasChanged.set(true);
             SwingUtilities.invokeLater(new Runnable(){
                 public void run()
                 {
@@ -1424,6 +1425,7 @@ public class QueryTask extends BaseTask
         }
     }
 
+    
 
     //--------------------------------------------------------------
     // Inner Classes
@@ -1481,7 +1483,7 @@ public class QueryTask extends BaseTask
         {
             tableTreeHash = new SoftReference<Hashtable<String, TableTree>>(buildTableTreeHash(tableTree.get()));
         }
-        localizationOrTreeDefEdit.set(false);
+        configurationHasChanged.set(false);
     }
     
     
@@ -1530,7 +1532,7 @@ public class QueryTask extends BaseTask
     public synchronized boolean needToRebuildTableTree()
     {
         return tableTree == null || tableTree.get() == null || tableTreeHash == null || tableTreeHash.get() == null
-            || localizationOrTreeDefEdit.get();
+            || configurationHasChanged.get();
     }
     
     /**
