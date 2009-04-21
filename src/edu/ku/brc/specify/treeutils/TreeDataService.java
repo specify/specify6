@@ -55,7 +55,7 @@ public interface TreeDataService <T extends Treeable<T,D,I>,
 	 * @param name the node name to search for
 	 * @return a {@link List} of matching nodes
 	 */
-	public List<T> findByName(D treeDef, String name);
+	public List<T> findByName(D treeDef, String name, boolean isExact);
 	
     /**
      * Returns the root node of the given tree.

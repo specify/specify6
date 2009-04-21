@@ -1434,11 +1434,11 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.specify.tasks.DualViewSearchable#find(java.lang.String, int, boolean)
 	 */
-	public void find(final String nodeName, final int where, final boolean wrap)
+	public void find(final String nodeName, final int where, final boolean wrap, final boolean isExact)
 	{
         setStatusBarText(null);
 		findName    = nodeName;
-		findResults = dataService.findByName(treeDef, nodeName);
+		findResults = dataService.findByName(treeDef, nodeName, isExact);
 		if (findResults.isEmpty())
 		{
 			//TODO: notify the user that no results were found
@@ -1506,13 +1506,13 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.specify.tasks.DualViewSearchable#findNext(java.lang.String, int, boolean)
 	 */
-	public void findNext(final String key, final int where, final boolean wrap)
+	public void findNext(final String key, final int where, final boolean wrap, final boolean isExact)
 	{
         setStatusBarText(null);
 
 		if (key != null && !key.equals(findName))
 		{
-			find(key, where, wrap);
+			find(key, where, wrap, isExact);
 			return;
 		}
 		
@@ -1559,11 +1559,11 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	 * @param wrap
 	 * @param current
 	 */
-	public void findNext(final int where, final boolean wrap, final T current)
+	public void findNext(final int where, final boolean wrap, final T current, final boolean isExact)
 	{
         setStatusBarText(null);
 
-		List<T> matches = dataService.findByName(treeDef, current.getName());
+		List<T> matches = dataService.findByName(treeDef, current.getName(), isExact);
 		if (matches.size()==1)
 		{
 			setStatusBarText("TTV_FIND_NO_MORE_MATCHES");
@@ -1636,11 +1636,11 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         
 		if (where == lists[0])
 		{
-			findNext(DualViewSearchable.TOPVIEW,wrap,currentRecord);
+			findNext(DualViewSearchable.TOPVIEW,wrap,currentRecord, AppPreferences.getLocalPrefs().getBoolean("FindPanel.Exact", true));
 		}
 		else if (where == lists[1])
 		{
-			findNext(DualViewSearchable.BOTTOMVIEW,wrap,currentRecord);
+			findNext(DualViewSearchable.BOTTOMVIEW,wrap,currentRecord, AppPreferences.getLocalPrefs().getBoolean("FindPanel.Exact", true));
 		}
 		else
 		{

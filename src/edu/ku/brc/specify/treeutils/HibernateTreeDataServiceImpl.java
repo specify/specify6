@@ -84,7 +84,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
 	 * @see edu.ku.brc.specify.treeutils.TreeDataService#findByName(edu.ku.brc.specify.datamodel.TreeDefIface, java.lang.String)
 	 */
 	@SuppressWarnings("unchecked")
-    public synchronized List<T> findByName(final D treeDef, final String name)
+    public synchronized List<T> findByName(final D treeDef, final String name, final boolean isExact)
     {
         Vector<T> results = new Vector<T>();
         Class<T> nodeClass = treeDef.getNodeClass();
@@ -96,7 +96,19 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
             String      columns   = QueryAdjusterForDomain.getInstance().getSpecialColumns(tableInfo, true);
             String      sql       = "FROM "+nodeClass.getSimpleName()+" as node WHERE "+columns+" AND node.name LIKE :name";
             Query q = session.createQuery(sql);
-            q.setParameter("name", name + "%");
+        	String newName = name;
+            if (!isExact)
+            {
+            	if (newName.contains("*"));
+            	{
+            		newName = newName.replace("*", "%");
+            	}
+            	if (!newName.endsWith("%"))
+            	{
+            		newName += "%";
+            	}
+            }
+        	q.setParameter("name", newName);
             for (Object o: q.list())
             {
                 T t = (T)o;
@@ -217,7 +229,6 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
      * @param parent the parent record
      * @return a {@link TreeNode} object
      */
-    @SuppressWarnings("unchecked")
     private TreeNode createNode(final Object[] nodeInfo, final T parent)
     {
         Integer id                     = (Integer) nodeInfo[0];
@@ -275,7 +286,6 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.specify.treeutils.TreeDataService#getRootNode(edu.ku.brc.specify.datamodel.TreeDefIface)
 	 */
-	@SuppressWarnings("unchecked")
 	public synchronized T getRootNode(final D treeDef)
 	{
 		T root = null;
@@ -452,7 +462,6 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.treeutils.TreeDataService#deleteTreeNode(edu.ku.brc.specify.datamodel.Treeable)
      */
-    @SuppressWarnings("null")
     public synchronized boolean deleteTreeNode(final T node)
     {
         Session session = getNewSession(node);
@@ -622,7 +631,6 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         return 0;
     }
     
-    @SuppressWarnings({ "unchecked", "null" })
     public synchronized boolean updateNodeNumbersAfterNodeAddition(final T newNode, final DataProviderSessionIFace session) throws Exception
     {
         // update the nodeNumber and highestChildNodeNumber fields for all effected nodes
@@ -694,7 +702,6 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         return true;
     }
     
-    @SuppressWarnings("null")
     public boolean updateNodeNumbersAfterNodeDeletion(final T deletedNode, final DataProviderSessionIFace session) throws Exception
     {
         boolean success = true;
