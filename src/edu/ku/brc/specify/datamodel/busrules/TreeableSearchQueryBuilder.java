@@ -321,6 +321,11 @@ public class TreeableSearchQueryBuilder implements ViewBasedSearchQueryBuilderIF
             }
         }
 
+        //no action if no search criteria are present.
+        if (criteria.length() == 0)
+        {
+        	return null;
+        }
         
         queryStr = "SELECT n.id, " + colNames;
         queryStr += " from " + tableInfo.getShortClassName()+ " n INNER JOIN n.definition d WHERE " + criteria.toString() + " AND d.id = " + treeDefId;
