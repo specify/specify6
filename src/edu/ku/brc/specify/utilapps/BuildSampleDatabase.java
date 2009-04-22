@@ -638,13 +638,19 @@ public class BuildSampleDatabase
         Object pltObj = props.get("preloadtaxon");
         boolean preLoadTaxon = pltObj == null ? false : (Boolean)pltObj;
         
-        String taxonXML = props.getProperty("TaxonTreeDef.treedefs");
-        String geoXML   = props.getProperty("GeographyTreeDef.treedefs");
+        String taxonXML      = props.getProperty("TaxonTreeDef.treedefs");
+        String taxonFileName = props.getProperty("taxonfilename");
+        String geoXML        = props.getProperty("GeographyTreeDef.treedefs");
+        
+        Boolean usingOtherTxnFile = (Boolean)props.get("othertaxonfile");
         
         frame.incOverall();
         
         Discipline discipline = createEmptyDiscipline(division, dispName, disciplineType, userAgent,
-                                                      preLoadTaxon, taxonXML, geoXML);
+                                                      preLoadTaxon, 
+                                                      taxonFileName, 
+                                                      usingOtherTxnFile != null ? usingOtherTxnFile : false,
+                                                      taxonXML, geoXML);
         
         frame.setProcess(0, 17);
         frame.setProcess(++createStep);
@@ -717,6 +723,8 @@ public class BuildSampleDatabase
                                             final DisciplineType disciplineType,
                                             final Agent          userAgent,
                                             final boolean        preLoadTaxon, 
+                                            final String         taxonFileName,
+                                            final boolean        usingOtherTxnFile, 
                                             final String         taxonXML, 
                                             final String         geoXML)
     {
@@ -811,29 +819,12 @@ public class BuildSampleDatabase
         List<Object> geos        = new Vector<Object>();
         //List<Object> lithoStrats = isPaleo ? createSimpleLithoStrat(lithoStratTreeDef, false) : null;
         
-        String fileName = null;
-        switch (DisciplineType.getByName(discipline.getType()).getDisciplineType())
-        {
-            case fish         : fileName = "col2008_fishes.xls"; break;
-            case herpetology  : fileName = "col2008_herps.xls"; break;
-            case paleobotany  : break;
-            case invertpaleo  : break;
-            case vertpaleo    : break;
-            case bird         : fileName = "col2008_aves.xls"; break;
-            case mammal       : fileName = "col2008_mammalia.xls"; break;
-            case insect       : fileName = "col2008_orthoptera.xls"; break;
-            case botany       : fileName = "col2008_poales.xls"; break;
-            case invertebrate : fileName = "col2008_inverts.xls"; break;
-            //case fungi        : fileName = "col2008_mycology.xls"; break;
-            default: break;
-        }
-        
         startTx();
         
         boolean taxonWasBuilt = false;
-        if (!isPaleo)
+        if (!isPaleo && StringUtils.isNotEmpty(taxonFileName))
         {
-            Hashtable<String, Boolean> colNameHash = getColumnNamesFromXLS(fileName);
+            Hashtable<String, Boolean> colNameHash = getColumnNamesFromXLS(taxonFileName, usingOtherTxnFile);
             if (colNameHash != null)
             {
                 taxonWasBuilt = createTaxonDefFromXML(taxa, colNameHash, taxonTreeDef, taxonXML);
@@ -883,10 +874,10 @@ public class BuildSampleDatabase
         frame.incOverall();
         
         log.debug(" preLoadTaxon ["+preLoadTaxon+"]");
-        log.debug(" fileName     ["+fileName+"]");
-        if (preLoadTaxon && fileName != null)
+        log.debug(" fileName     ["+taxonFileName+"]");
+        if (preLoadTaxon && taxonFileName != null)
         {
-            convertTaxonFromXLS(taxonTreeDef, fileName); // this does a startTx() / commitTx()
+            convertTaxonFromXLS(taxonTreeDef, taxonFileName, usingOtherTxnFile); // this does a startTx() / commitTx()
         }
         
         frame.setProcess(++createStep);
@@ -912,6 +903,69 @@ public class BuildSampleDatabase
         log.debug("Out createEmptyDiscipline - createStep: "+createStep);
         
         return discipline;
+    }
+    
+    public static void writeTaxonFile()
+    {
+        try
+        {
+            
+            Vector<TaxonFileDesc> files = new Vector<TaxonFileDesc>();
+            TaxonFileDesc tfd = new TaxonFileDesc("disp", "title", "coverage", "file");
+            tfd.setDescription("desc");
+            files.add(tfd);
+            tfd = new TaxonFileDesc("disp2", "title2", "coverage2", "file2");
+            files.add(tfd);
+            
+            XStream xstream = new XStream();
+            TaxonFileDesc.configXStream(xstream);
+            FileUtils.writeStringToFile(new File("tfd.xml"), xstream.toXML(files));
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+    
+    /**
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public static Vector<TaxonFileDesc> readTaxonLoadFiles()
+    {
+        try
+        {
+            String fileName = "taxonfiles.xml";
+            
+            File file = XMLHelper.getConfigDir("../demo_files/taxonomy/"+fileName);
+            log.debug(" file "+file.getAbsolutePath() +"  "+file.exists());
+            if (!file.exists())
+            {
+                log.error("Couldn't file[" + file.getAbsolutePath() + "] checking the config dir");
+                file = XMLHelper.getConfigDir(fileName);
+                log.debug(" file "+file.getAbsolutePath() +"  "+file.exists());
+                if (!file.exists())
+                {
+                    file = new File("Specify/demo_files/"+fileName);
+                }
+            }
+    
+            if (file == null || !file.exists() || file.isDirectory())
+            {
+                log.error("Couldn't file[" + file.getAbsolutePath() + "]");
+                return null;
+            }
+            
+            XStream xstream = new XStream();
+            TaxonFileDesc.configXStream(xstream);
+            
+            return (Vector<TaxonFileDesc>)xstream.fromXML(FileUtils.readFileToString(file));
+            
+        } catch (IOException ex)
+        {
+            ex.printStackTrace();
+        }
+        return null;
     }
     
     /**
@@ -3622,6 +3676,7 @@ public class BuildSampleDatabase
                 if (counter == 0)
                 {
                     counter = 1;
+                    rows.next();
                     continue;
                 }
                 if (counter % 100 == 0)
@@ -8252,29 +8307,44 @@ public class BuildSampleDatabase
         });
     }
     
+    private File getFileForTaxon(final String fileName, final boolean usingOtherTxnFile)
+    {
+        if (!usingOtherTxnFile)
+        {
+            File file = XMLHelper.getConfigDir("../demo_files/taxonomy/"+fileName);
+            log.debug(" file "+file.getAbsolutePath() +"  "+file.exists());
+            if (!file.exists())
+            {
+                log.error("Couldn't file[" + file.getAbsolutePath() + "] checking the config dir");
+                file = XMLHelper.getConfigDir(fileName);
+                log.debug(" file "+file.getAbsolutePath() +"  "+file.exists());
+                if (!file.exists())
+                {
+                    return new File("Specify/demo_files/"+fileName);
+                }
+            }
+    
+            if (file == null || !file.exists() || file.isDirectory())
+            {
+                log.error("Couldn't file[" + file.getAbsolutePath() + "]");
+                return null;
+            }
+            return file;
+        } 
+        
+        File file = new File(fileName);
+        return file.exists() ? file : null;
+    }
+    
     /**
      * @param fileName
      * @return
      */
-    public Hashtable<String, Boolean> getColumnNamesFromXLS(final String fileName)
+    public Hashtable<String, Boolean> getColumnNamesFromXLS(final String fileName, final boolean usingOtherTxnFile)
     {
-        
-        File file = XMLHelper.getConfigDir("../demo_files/taxonomy/"+fileName);
-        log.debug(" file "+file.getAbsolutePath() +"  "+file.exists());
-        if (!file.exists())
+        File file = getFileForTaxon(fileName, usingOtherTxnFile);
+        if (file == null)
         {
-            log.error("Couldn't file[" + file.getAbsolutePath() + "] checking the config dir");
-            file = XMLHelper.getConfigDir(fileName);
-            log.debug(" file "+file.getAbsolutePath() +"  "+file.exists());
-            if (!file.exists())
-            {
-                file = new File("Specify/demo_files/"+fileName);
-            }
-        }
-
-        if (file == null || !file.exists() || file.isDirectory())
-        {
-            log.error("Couldn't file[" + file.getAbsolutePath() + "]");
             return null;
         }
         
@@ -8322,28 +8392,15 @@ public class BuildSampleDatabase
      * @return
      */
     @SuppressWarnings("unchecked")
-    public Taxon convertTaxonFromXLS(final TaxonTreeDef treeDef, final String fileName)
+    public Taxon convertTaxonFromXLS(final TaxonTreeDef treeDef, final String fileName, final boolean usingOtherTxnFile)
     {
         Hashtable<String, Taxon> taxonHash = new Hashtable<String, Taxon>();
         
         taxonHash.clear();
 
-        File file = XMLHelper.getConfigDir("../demo_files/taxonomy/"+fileName);
-        log.debug(" file "+file.getAbsolutePath() +"  "+file.exists());
-        if (!file.exists())
+        File file = getFileForTaxon(fileName, usingOtherTxnFile);
+        if (file == null)
         {
-            log.error("Couldn't file[" + file.getAbsolutePath() + "] checking the config dir");
-            file = XMLHelper.getConfigDir(fileName);
-            log.debug(" file "+file.getAbsolutePath() +"  "+file.exists());
-            if (!file.exists())
-            {
-                file = new File("Specify/demo_files/"+fileName);
-            }
-        }
-
-        if (file == null || !file.exists())
-        {
-            log.error("Couldn't file[" + file.getAbsolutePath() + "]");
             return null;
         }
         

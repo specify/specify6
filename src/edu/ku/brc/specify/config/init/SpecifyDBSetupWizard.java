@@ -321,13 +321,7 @@ public class SpecifyDBSetupWizard extends JPanel
                                                  disciplinePanel);
             panels.add(taxonTDPanel);
             
-            panels.add(new GenericFormPanel("PRELOADTXN", 
-                    "PRELOADTXN_INFO",
-                    "wizard_preload_taxon",
-                    new String[] { "LOAD_TAXON"}, 
-                    new String[] { "preloadtaxon"},
-                    new String[] { "checkbox"},
-                    nextBtn, backBtn, true));
+            panels.add(new TaxonLoadSetupPanel("wizard_preload_taxon", nextBtn, backBtn));
              
             geoTDPanel = new TreeDefSetupPanel(GeographyTreeDef.class, 
                                                getResourceString("Geography"), 

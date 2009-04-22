@@ -100,7 +100,7 @@ import edu.ku.brc.ui.dnd.Trash;
  * @author rods
  *
  */
-public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrListener, SecurityOptionIFace
+public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrListener
 {
     // Static Data Members
     //private static final Logger log = Logger.getLogger(BaseTask.class);
