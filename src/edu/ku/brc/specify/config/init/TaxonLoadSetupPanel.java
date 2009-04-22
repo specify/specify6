@@ -32,6 +32,8 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -109,7 +111,7 @@ public class TaxonLoadSetupPanel extends BaseSetupPanel
         CellConstraints cc = new CellConstraints();
         
         
-        String rowDef = "p,2px," + createDuplicateJGoodiesDef("p", "2px", 8) + ",p:g";
+        String rowDef = "p,10px," + createDuplicateJGoodiesDef("p", "2px", 8) + ",p:g";
         PanelBuilder builder = new PanelBuilder(new FormLayout("p,2px,p:g", rowDef), this);
         int row = 1;
         
@@ -184,6 +186,19 @@ public class TaxonLoadSetupPanel extends BaseSetupPanel
                     enableUI(false, true, false);
                 }
             }
+        });
+        
+        otherTF.addFocusListener(new FocusAdapter() {
+
+            /* (non-Javadoc)
+             * @see java.awt.event.FocusAdapter#focusLost(java.awt.event.FocusEvent)
+             */
+            @Override
+            public void focusLost(FocusEvent e)
+            {
+                updateBtnUI();
+            }
+            
         });
     }
     
@@ -285,7 +300,7 @@ public class TaxonLoadSetupPanel extends BaseSetupPanel
         }
         
         boolean checked = preloadChk.isSelected();
-        enableUI(otherTF.getText().isEmpty() && isValid && checked, true, isValid && checked);
+        enableUI(otherTF.getText().isEmpty() && isValid && checked, true, checked);
     }
     
     /**
