@@ -1322,7 +1322,52 @@ public class MainFrameSpecify extends MainFrame
         return result;
     }
     
-    /**
+    
+    
+    /* (non-Javadoc)
+	 * @see it.businesslogic.ireport.gui.MainFrame#getFirstNameFree()
+	 */
+	@Override
+	public String getFirstNameFree()
+	{
+        String base = UIRegistry.getResourceString("REP_NewReportName");
+        int count = 0;
+        javax.swing.JInternalFrame[] frames = getJMDIDesktopPane().getAllFrames();
+		for (int f = 0; f < frames.length; f++)
+        {
+            if (frames[f]  instanceof JReportFrame) 
+            {
+                JReportFrame jrf = (JReportFrame )frames[f];
+                String repName = jrf.getReport().getName();
+                if (repName.equals(base))
+                {
+                	if (count == 0)
+                	{
+                		count++;
+                	}
+                }
+                else if (repName.startsWith(base));
+                {
+                    String end = repName.substring(base.length());
+                    try
+                    {
+                    	int endInt = Integer.valueOf(StringUtils.strip(end));
+                    	if (endInt > count)
+                    	{
+                    		count = endInt;
+                    	}
+                    }
+                    catch (NumberFormatException ex)
+                    {
+                    	//skip it
+                    }
+                }
+            }
+        }
+		return base + (count > 0 ? " " + ++count : "");
+	}
+
+	/**
      * @param report
      * @return true if properties were gotten and set.
      */
