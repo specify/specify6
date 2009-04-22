@@ -174,7 +174,7 @@ public class WorkbenchRowPlacemarkWrapper implements GoogleEarthPlacemarkIFace
                     String latStr;
                     try
                     {
-                        latStr = converter.convert(valStr, GeoRefFormat.D_PLUS_MINUS.name());
+                        latStr = converter.convert(StringUtils.stripToNull(valStr), GeoRefFormat.D_PLUS_MINUS.name());
                         latitude = Double.parseDouble(latStr);
                     }
                     catch (Exception e)
@@ -192,7 +192,7 @@ public class WorkbenchRowPlacemarkWrapper implements GoogleEarthPlacemarkIFace
                     String lonStr;
                     try
                     {
-                        lonStr = converter.convert(valStr, GeoRefFormat.D_PLUS_MINUS.name());
+                        lonStr = converter.convert(StringUtils.stripToNull(valStr), GeoRefFormat.D_PLUS_MINUS.name());
                         longitude = Double.parseDouble(lonStr);
                     }
                     catch (Exception e)

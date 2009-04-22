@@ -19,6 +19,8 @@
 */
 package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 
+import org.apache.commons.lang.StringUtils;
+
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
@@ -49,7 +51,7 @@ public class LocalityRecFinalizer implements UploadedRecFinalizerIFace
         loc.setLong1text(wbRow.getLong1Text());
         loc.setLong2text(wbRow.getLong2Text());
         
-        LatLonConverter.FORMAT fmt = new GeoRefConverter().getLatLonFormat(wbRow.getLat1Text());
+        LatLonConverter.FORMAT fmt = new GeoRefConverter().getLatLonFormat(StringUtils.stripToNull(wbRow.getLat1Text()));
         loc.setOriginalLatLongUnit(fmt.ordinal());
         loc.setSrcLatLongUnit((byte )fmt.ordinal());
     }

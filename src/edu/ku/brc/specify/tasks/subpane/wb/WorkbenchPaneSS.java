@@ -1905,9 +1905,9 @@ public class WorkbenchPaneSS extends BaseSubPane
             try
             {
                 GeoRefConverter converter = new GeoRefConverter();
-                lat1 = converter.convert(lat1, GeoRefFormat.D_PLUS_MINUS.name());
+                lat1 = converter.convert(StringUtils.stripToNull(lat1), GeoRefFormat.D_PLUS_MINUS.name());
                 latitude = new Double(lat1);
-                lon1 = converter.convert(lon1, GeoRefFormat.D_PLUS_MINUS.name());
+                lon1 = converter.convert(StringUtils.stripToNull(lon1), GeoRefFormat.D_PLUS_MINUS.name());
                 longitude = new Double(lon1);
             }
             catch (Exception e)
@@ -2096,7 +2096,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             String convertedValue;
             try
             {
-                convertedValue = converter.convert(currentValue, outputFormat, latOrLon, degFmt);
+                convertedValue = converter.convert(StringUtils.stripToNull(currentValue), outputFormat, latOrLon, degFmt);
                 
             }
             catch (Exception e)

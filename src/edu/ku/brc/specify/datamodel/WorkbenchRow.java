@@ -742,12 +742,12 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
         try
         {
             GeoRefConverter geoConverter = new GeoRefConverter();
-            LatLonConverter.FORMAT fmt = geoConverter.getLatLonFormat(latEntry);
+            LatLonConverter.FORMAT fmt = geoConverter.getLatLonFormat(StringUtils.stripToNull(latEntry));
             if (fmt.equals(LatLonConverter.FORMAT.None))
             {
                 return null;
             }
-            ddString = geoConverter.convert(latEntry, GeoRefFormat.D_PLUS_MINUS.name());
+            ddString = geoConverter.convert(StringUtils.stripToNull(latEntry), GeoRefFormat.D_PLUS_MINUS.name());
             BigDecimal bigD = new BigDecimal(ddString);
             return LatLonConverter.ensureFormattedString(bigD, null, fmt, LatLonConverter.LATLON.Latitude);
         }
@@ -773,12 +773,12 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
         try
         {
             GeoRefConverter geoConverter = new GeoRefConverter();
-            LatLonConverter.FORMAT fmt = geoConverter.getLatLonFormat(longEntry);
+            LatLonConverter.FORMAT fmt = geoConverter.getLatLonFormat(StringUtils.stripToNull(longEntry));
             if (fmt.equals(LatLonConverter.FORMAT.None))
             {
                 return null;
             }
-            ddString = geoConverter.convert(longEntry, GeoRefFormat.D_PLUS_MINUS.name());
+            ddString = geoConverter.convert(StringUtils.stripToNull(longEntry), GeoRefFormat.D_PLUS_MINUS.name());
             BigDecimal bigD = new BigDecimal(ddString);
             return LatLonConverter.ensureFormattedString(bigD, null, fmt, LatLonConverter.LATLON.Longitude);
         }

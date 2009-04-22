@@ -1128,7 +1128,7 @@ public class UploadTable implements Comparable<UploadTable>
                     	{
                     		try
                     		{
-                    			fldStr = new GeoRefConverter().convert(fldStr, GeoRefFormat.D_PLUS_MINUS.name());
+                    			fldStr = new GeoRefConverter().convert(StringUtils.stripToNull(fldStr), GeoRefFormat.D_PLUS_MINUS.name());
                     		}
                     		catch (Exception ex)
                     		{
@@ -2135,7 +2135,7 @@ public class UploadTable implements Comparable<UploadTable>
                     if (fld.getField().getName().equalsIgnoreCase("latitude1") || fld.getField().getName().equalsIgnoreCase("latitude1")
                             || fld.getField().getName().equalsIgnoreCase("longitude1") || fld.getField().getName().equalsIgnoreCase("longitude2"))
                     {
-                        LatLonConverter.FORMAT fmt = gc.getLatLonFormat(uploadData.get(row, fld.getIndex()));
+                        LatLonConverter.FORMAT fmt = gc.getLatLonFormat(StringUtils.stripToNull(uploadData.get(row, fld.getIndex())));
                         if (llFmt == null)
                         {
                             llFmt = fmt;
