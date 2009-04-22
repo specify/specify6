@@ -38,7 +38,6 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
-import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 
 @SuppressWarnings("serial")
