@@ -266,8 +266,6 @@
 			</fileset>
 		</copy>
 		
-		<copy file="/home/specify/Documents/Specify/i4jruntime.jar" todir="${installer.dir}/libs" overwrite="true" />
-		
 		
 	</target>
 	
