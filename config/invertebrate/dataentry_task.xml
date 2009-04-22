@@ -2,7 +2,7 @@
 <views>
 	<std>
 	    <view sidebar="true"  title="Collection Object"  view="CollectionObject"   iconname="CollectionObject"   tooltip=""/>    
-	    <view sidebar="true"  title="Collecting Event"   view="CollectingEvent"    iconname="CollectingEvent"    tooltip=""/>    
+	    <view sidebar="false"  title="Collecting Event"   view="CollectingEvent"    iconname="CollectingEvent"    tooltip=""/>    
 	    <view sidebar="true"  title="Taxon"              view="Taxon"              iconname="Taxon"              tooltip=""/> 
 	    <view sidebar="true"  title="Agent"              view="Agent"              iconname="Agent"              tooltip=""/>    
 	    <view sidebar="true"  title="Geography"          view="Geography"          iconname="Geography"          tooltip=""/> 	    
