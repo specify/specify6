@@ -331,7 +331,6 @@ public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFa
 
                 if (localPrefs.getBoolean(VERSION_CHECK, true) && localPrefs.getBoolean(EXTRA_CHECK, true))
                 {
-                    
                     try
                     {
                        com.install4j.api.launcher.SplashScreen.hide();

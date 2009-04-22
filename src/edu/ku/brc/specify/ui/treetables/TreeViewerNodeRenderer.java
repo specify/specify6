@@ -803,7 +803,6 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
                 return;
             }
             
-            String n = treeNode.getName();
             Boolean hasVisKids = treeNode.hasVisualChildren();
             if (hasVisKids == null)
             {

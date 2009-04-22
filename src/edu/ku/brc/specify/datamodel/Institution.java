@@ -312,7 +312,7 @@ public class Institution extends UserGroupScope implements java.io.Serializable
     @Column(name = "IsAnonymous", unique = false, nullable = true, insertable = true, updatable = true)
     public Boolean getIsAnonymous()
     {
-        return isAnonymous;
+        return isAnonymous == null ? false : isAnonymous;
     }
 
     /**
@@ -321,7 +321,7 @@ public class Institution extends UserGroupScope implements java.io.Serializable
     @Column(name = "HasBeenAsked", unique = false, nullable = true, insertable = true, updatable = true)
     public Boolean getHasBeenAsked()
     {
-        return hasBeenAsked;
+        return hasBeenAsked == null ? false : hasBeenAsked;
     }
 
     /**

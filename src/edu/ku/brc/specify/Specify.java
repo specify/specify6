@@ -1911,10 +1911,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             statsTrackerTask.sendStats(false, false); // false means don't do it silently
             return;
         }
-        if (false)
-        {
-            ExceptionTracker.getInstance().capture(Specify.class, new Exception("Hello"));
-        }
         
         AppContextMgr acm        = AppContextMgr.getInstance();
         boolean       hasContext = acm.hasContext();
@@ -1935,7 +1931,8 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         
         if (hasContext)
         {
-            DBTableIdMgr  tdb = DBTableIdMgr.getInstance();
+            DBTableIdMgr tableMgr = DBTableIdMgr.getInstance();
+            boolean      hasReged = !RegisterSpecify.isAnonymous() && RegisterSpecify.hasInstitutionRegistered();
             
             int y = 1;
             infoPB.addSeparator(getResourceString("Specify.SYS_INFO"), cc.xyw(1, y, 3)); y += 2;
@@ -1954,7 +1951,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                 }
             });
             
-            infoPB.add(UIHelper.createFormLabel(tdb.getTitleForId(Institution.getClassTableId())),  cc.xy(1, y));
+            infoPB.add(UIHelper.createFormLabel(tableMgr.getTitleForId(Institution.getClassTableId())),  cc.xy(1, y));
             infoPB.add(lbl = UIHelper.createLabel(acm.getClassObject(Institution.class).getName()), cc.xy(3, y)); y += 2;
             lbl.addMouseListener(new MouseAdapter() {
                 @Override
@@ -1966,20 +1963,20 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                     }
                 }
             });
-            infoPB.add(UIHelper.createFormLabel(tdb.getTitleForId(Division.getClassTableId())), cc.xy(1, y));
+            infoPB.add(UIHelper.createFormLabel(tableMgr.getTitleForId(Division.getClassTableId())), cc.xy(1, y));
             infoPB.add(UIHelper.createLabel(acm.getClassObject(Division.class).getName()),      cc.xy(3, y)); y += 2;
             
-            infoPB.add(UIHelper.createFormLabel(tdb.getTitleForId(Discipline.getClassTableId())), cc.xy(1, y));
+            infoPB.add(UIHelper.createFormLabel(tableMgr.getTitleForId(Discipline.getClassTableId())), cc.xy(1, y));
             infoPB.add(UIHelper.createLabel(acm.getClassObject(Discipline.class).getName()),      cc.xy(3, y)); y += 2;
             
-            infoPB.add(UIHelper.createFormLabel(tdb.getTitleForId(Collection.getClassTableId())), cc.xy(1, y));
+            infoPB.add(UIHelper.createFormLabel(tableMgr.getTitleForId(Collection.getClassTableId())), cc.xy(1, y));
             infoPB.add(UIHelper.createLabel(acm.getClassObject(Collection.class).getCollectionName()),cc.xy(3, y)); y += 2;
             
             infoPB.add(UIHelper.createI18NFormLabel("Specify.BLD"), cc.xy(1, y));
             infoPB.add(UIHelper.createLabel(appBuildVersion),cc.xy(3, y)); y += 2;
             
             infoPB.add(UIHelper.createI18NFormLabel("Specify.REG"), cc.xy(1, y));
-            infoPB.add(UIHelper.createI18NLabel(RegisterSpecify.hasInstitutionRegistered() ? "Specify.HASREG" : "Specify.NOTREG"),cc.xy(3, y)); y += 2;
+            infoPB.add(UIHelper.createI18NLabel(hasReged ? "Specify.HASREG" : "Specify.NOTREG"),cc.xy(3, y)); y += 2;
             
             String isaNumber = RegisterSpecify.getISANumber();
             infoPB.add(UIHelper.createI18NFormLabel("Specify.ISANUM"), cc.xy(1, y));
@@ -3075,35 +3072,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
 
                   if (localPrefs.getBoolean(VERSION_CHECK, true) && localPrefs.getBoolean(EXTRA_CHECK, true))
                   {
-                	//Both of these trys seem necessary for updates to run correctly--but we do not know why.
-                      /*try
-                      {
-                          
-                          String lastVersion = getLastVersion();
-                          
-                          UpdateDescriptor updateDesc= UpdateChecker.getUpdateDescriptor(UIRegistry.getResourceString("UPDATE_PATH"),
-                                                                                         ApplicationDisplayMode.UNATTENDED);
-
-                          UpdateDescriptorEntry entry = updateDesc.getPossibleUpdateEntry();
-
-                          if (entry != null)
-                          {
-                               setLastVersion(entry.getNewVersion());
-                               com.install4j.api.launcher.SplashScreen.hide();
-                          }
-                          
-                          if (StringUtils.isNotEmpty(lastVersion) && lastVersion.equals(entry.getNewVersion()))
-                          {
-                              startApp(doConfig);
-                              return;
-                          }
-                          
-                      } catch (Exception ex)
-                      {
-                          startApp(doConfig);
-                          return;
-                      }*/
-                      
                       try
                       {
                     	 com.install4j.api.launcher.SplashScreen.hide();

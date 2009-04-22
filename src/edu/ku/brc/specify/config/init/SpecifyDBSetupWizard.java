@@ -724,6 +724,8 @@ public class SpecifyDBSetupWizard extends JPanel
         ap.put("login.servers",            props.getProperty("hostName"));
         ap.put("login.servers_selected",   props.getProperty("hostName"));
         ap.put("login.rememberuser",       "true");
+        ap.put("extra.check",              "true");
+        ap.put("version_check.auto",       "true");
         
         try
         {

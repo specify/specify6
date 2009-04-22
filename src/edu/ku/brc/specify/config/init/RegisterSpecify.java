@@ -131,10 +131,13 @@ public class RegisterSpecify
         return isReg;
     }
     
+    /**
+     * @return
+     */
     public static boolean isAnonymous()
     {
         Institution inst = AppContextMgr.getInstance().getClassObject(Institution.class);
-        return inst != null ? inst.getIsAnonymous() == null ? false : inst.getIsAnonymous() : false;
+        return inst != null ? inst.getIsAnonymous() : false;
     }
     
     /**
@@ -545,7 +548,7 @@ public class RegisterSpecify
     }
 
     /**
-     * 
+     * Registers the Institution and makes it be not Anonymous anymore.
      */
     public static void register(final boolean forceRegistration)
     {
@@ -553,7 +556,7 @@ public class RegisterSpecify
     }
 
     /**
-     * 
+     * Registers the Institution and makes it be not Anonymous anymore. (Non-static version)
      */
     private void registerInternal(final boolean forceRegistration)
     {
@@ -572,10 +575,10 @@ public class RegisterSpecify
         Institution inst         = AppContextMgr.getInstance().getClassObject(Institution.class);
         Collection  collection   = AppContextMgr.getInstance().getClassObject(Collection.class);
         
-        Boolean     hasBeenAsked = inst.getHasBeenAsked() != null && inst.getHasBeenAsked();
+        Boolean     hasBeenAsked = inst.getHasBeenAsked();
         boolean     isAnonymous  = isAnonymous();
         
-        if (!hasInstitutionRegistered() || (forceRegistration && !isAnonymous))
+        if (!hasInstitutionRegistered() || (forceRegistration && isAnonymous))
         {
             if (forceRegistration)
             {
@@ -584,8 +587,14 @@ public class RegisterSpecify
                     UIRegistry.showLocalizedMsg(JOptionPane.INFORMATION_MESSAGE, "SpReg.REGISTER", "SpReg.ITMS_REGED");
                     return;
                 }
+                
                 setIsAnonymous(false);
-                doStartRegister(RegisterType.Institution, false, false); // will register everything 
+                
+                // if it failt to get the registration numbers the first time, try again.
+                if (!hasInstitutionRegistered())
+                {
+                    doStartRegister(RegisterType.Institution, false, false); // will register everything
+                }
                 localPrefs.putBoolean(EXTRA_CHECK, true);
                 
             } else if (!hasBeenAsked)
@@ -634,22 +643,28 @@ public class RegisterSpecify
      */
     private void showRegisteredNumbers(final boolean isAnonymous)
     {
-        CellConstraints cc = new CellConstraints();
-        PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g", "10px,p,10px"));
-        
-        pb.add(UIHelper.createI18NLabel("SpReg.ITMS_NOT_REGED"), cc.xy(1,2));
-        pb.setDefaultDialogBorder();
-        
-        CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getMostRecentWindow(), getResourceString("SpReg.REG_TITLE"), true, CustomDialog.OKCANCELHELP, pb.getPanel());
-        dlg.setCancelLabel(getResourceString("CLOSE"));
-        dlg.setOkLabel(getResourceString("SpReg.REGISTER"));
-        
-        dlg.setVisible(true);
-        
-        if (dlg.getBtnPressed() == CustomDialog.OK_BTN)
+        if (!hasInstitutionRegistered() || isAnonymous)
         {
-            setIsAnonymous(false);
-            doStartRegister(RegisterType.Institution, false, false); // will register everything 
+            CellConstraints cc = new CellConstraints();
+            PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g", "10px,p,10px"));
+            
+            pb.add(UIHelper.createI18NLabel("SpReg.ITMS_NOT_REGED"), cc.xy(1,2));
+            pb.setDefaultDialogBorder();
+            
+            CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getMostRecentWindow(), getResourceString("SpReg.REG_TITLE"), true, CustomDialog.OKCANCELHELP, pb.getPanel());
+            dlg.setCancelLabel(getResourceString("CLOSE"));
+            dlg.setOkLabel(getResourceString("SpReg.REGISTER"));
+            
+            dlg.setVisible(true);
+            
+            if (dlg.getBtnPressed() == CustomDialog.OK_BTN)
+            {
+                setIsAnonymous(false);
+                doStartRegister(RegisterType.Institution, false, false); // will register everything 
+            }
+        } else
+        {
+            UIRegistry.showLocalizedMsg(JOptionPane.INFORMATION_MESSAGE, "SpReg.REGISTER", "SpReg.ITMS_REGED");
         }
     }
 
@@ -663,7 +678,7 @@ public class RegisterSpecify
     }
 
     /**
-     * 
+     * Registers the ISA number.
      */
     public static void registerISA()
     {
