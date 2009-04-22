@@ -2913,6 +2913,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             }
             else
             {
+                treeNode.setHasVisualChildren(null);
                 List<TreeNode> childrenShown = showChildren(treeNode);
                 if (childrenShown.size() > 0)
                 {
@@ -3324,6 +3325,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
      */
     protected synchronized void hideChildren(final TreeNode parent)
     {
+        parent.setHasVisualChildren(null);
         idsToReexpand.remove(parent.getId());
         listModel.removeChildNodes(parent);
     }

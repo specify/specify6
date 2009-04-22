@@ -798,11 +798,12 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
         private void drawOpenClosedIcon(final Graphics g)
         {
             // don't do anything for leaf nodes
-            if (!treeNode.isHasChildren() )
+            if (!treeNode.isHasChildren())
             {
                 return;
             }
             
+            String n = treeNode.getName();
             Boolean hasVisKids = treeNode.hasVisualChildren();
             if (hasVisKids == null)
             {
