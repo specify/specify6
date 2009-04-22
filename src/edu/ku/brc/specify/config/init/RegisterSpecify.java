@@ -582,7 +582,7 @@ public class RegisterSpecify
         {
             if (forceRegistration)
             {
-                if (!isAnonymous)
+                if (!isAnonymous) // this really shouldn't happen
                 {
                     UIRegistry.showLocalizedMsg(JOptionPane.INFORMATION_MESSAGE, "SpReg.REGISTER", "SpReg.ITMS_REGED");
                     return;
@@ -596,6 +596,7 @@ public class RegisterSpecify
                     doStartRegister(RegisterType.Institution, false, false); // will register everything
                 }
                 localPrefs.putBoolean(EXTRA_CHECK, true);
+                UIRegistry.showLocalizedMsg(JOptionPane.INFORMATION_MESSAGE, "SpReg.REGISTER", "SpReg.ITMS_REGED");
                 
             } else if (!hasBeenAsked)
             {

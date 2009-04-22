@@ -3065,12 +3065,14 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                   }
 
                   String EXTRA_CHECK = "extra.check";
-                  if (localPrefs.getBoolean(EXTRA_CHECK, null) == null)
+                  Boolean isExtraCheck = localPrefs.getBoolean(EXTRA_CHECK, true);
+                  if (isExtraCheck == null)
                   {
-                      localPrefs.putBoolean(EXTRA_CHECK, true);
+                      isExtraCheck = true;
+                      localPrefs.putBoolean(EXTRA_CHECK, isExtraCheck);
                   }
 
-                  if (localPrefs.getBoolean(VERSION_CHECK, true) && localPrefs.getBoolean(EXTRA_CHECK, true))
+                  if (localPrefs.getBoolean(VERSION_CHECK, true) && isExtraCheck)
                   {
                       try
                       {
@@ -3094,6 +3096,10 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                       }
                   } else
                   {
+                      if (!isExtraCheck)
+                      {
+                          UIRegistry.showLocalizedMsg(null, "SpReg.NOT_REGISTERED");
+                      }
                       startApp(doConfig);
                   }
               } catch (Exception ex)
