@@ -256,8 +256,6 @@ public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFa
             
         } catch (MissingResourceException ex)
         {
-            //edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyDBSetupWizard.class, ex);
             Locale.setDefault(Locale.ENGLISH);
             UIRegistry.setResourceLocale(Locale.ENGLISH);
         }

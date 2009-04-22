@@ -26,8 +26,10 @@ import static edu.ku.brc.ui.UIHelper.createI18NFormLabel;
 import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIHelper.createScrollPane;
 import static edu.ku.brc.ui.UIHelper.createTextArea;
+import static edu.ku.brc.ui.UIHelper.createTextField;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -42,6 +44,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.event.DocumentEvent;
 
@@ -49,12 +52,14 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.ui.forms.ViewFactory;
 import edu.ku.brc.af.ui.forms.validation.ValBrowseBtnPanel;
 import edu.ku.brc.af.ui.forms.validation.ValTextField;
 import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
 import edu.ku.brc.specify.utilapps.TaxonFileDesc;
 import edu.ku.brc.ui.DocumentAdaptor;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -71,15 +76,14 @@ public class TaxonLoadSetupPanel extends BaseSetupPanel
 {
     protected JCheckBox          preloadChk;
     
-    
     protected JLabel             fileLbl;
     protected JComboBox          fileCBX;
     
     protected JLabel             srcLbl;
-    protected JLabel             srcTF;
+    protected JTextField         srcTF;
     
     protected JLabel             coverageLbl;
-    protected JLabel             coverageTF;
+    protected JTextField         coverageTF;
     
     protected JLabel             descLbl;
     protected JTextArea          descTA;
@@ -87,6 +91,9 @@ public class TaxonLoadSetupPanel extends BaseSetupPanel
     protected JLabel             otherLbl;
     protected ValBrowseBtnPanel  otherBrw;
     protected ValTextField       otherTF;
+    
+    protected Component          stdSep;
+    protected Component          othSep;
     
     protected boolean            firstTime = true;
    
@@ -97,21 +104,21 @@ public class TaxonLoadSetupPanel extends BaseSetupPanel
     {
         super("PRELOADTXN", helpContext, nextBtn, prevBtn);
         
-        String header = getResourceString("PRELOADTXN_INFO") + ":";
+        String header = getResourceString("PRELOADTXN_INFO");
 
         CellConstraints cc = new CellConstraints();
         
         
-        String rowDef = "p,2px," + createDuplicateJGoodiesDef("p", "2px", 7) + ",p:g";
+        String rowDef = "p,2px," + createDuplicateJGoodiesDef("p", "2px", 8) + ",p:g";
         PanelBuilder builder = new PanelBuilder(new FormLayout("p,2px,p:g", rowDef), this);
         int row = 1;
         
-        builder.add(createLabel(header, SwingConstants.CENTER), cc.xywh(1,row,3,1));row += 2;
+        stdSep = builder.add(createLabel(header, SwingConstants.CENTER), cc.xywh(1,row,3,1));
+        row += 2;
         
-       
         fileCBX    = createComboBox();
-        srcTF      = createLabel("");
-        coverageTF = createLabel("");
+        srcTF      = createTextField("");
+        coverageTF = createTextField("");
         descTA     = createTextArea();
         otherBrw   = new ValBrowseBtnPanel(otherTF = new ValTextField(), false, true);
         
@@ -121,7 +128,13 @@ public class TaxonLoadSetupPanel extends BaseSetupPanel
         descTA.setWrapStyleWord(true);
         descTA.setLineWrap(true);
         
-        builder.add(preloadChk = createI18NCheckBox("TFD_LOAD_TAXON"), cc.xy(3, row));
+        ViewFactory.changeTextFieldUIForDisplay(srcTF, false);
+        ViewFactory.changeTextFieldUIForDisplay(coverageTF, false);
+        
+        builder.add(preloadChk = createI18NCheckBox("TFD_LOAD_TAXON"), cc.xy(1, row));
+        row += 2;
+        
+        builder.addSeparator(UIRegistry.getResourceString("TFD_SEP_STD"), cc.xyw(1, row, 3));
         row += 2;
         
         builder.add(fileLbl = createI18NFormLabel("TFD_FILE_LBL"), cc.xy(1, row));
@@ -138,6 +151,9 @@ public class TaxonLoadSetupPanel extends BaseSetupPanel
         
         builder.add(descLbl = createI18NFormLabel("TFD_DESC_LBL"), cc.xy(1, row));
         builder.add(createScrollPane(descTA),          cc.xy(3, row));
+        row += 2;
+        
+        othSep = builder.addSeparator(UIRegistry.getResourceString("TFD_SEP_OTH"), cc.xyw(1, row, 3));
         row += 2;
         
         builder.add(otherLbl = createI18NFormLabel("TFD_OTHER_LBL"), cc.xy(1, row));
@@ -250,7 +266,7 @@ public class TaxonLoadSetupPanel extends BaseSetupPanel
         if (tfd != null)
         {
             srcTF.setText(tfd.getSrc());
-            coverageLbl.setText(tfd.getCoverage());
+            coverageTF.setText(tfd.getCoverage());
             descTA.setText(tfd.getDescription());
         }
         updateBtnUI();
@@ -289,9 +305,11 @@ public class TaxonLoadSetupPanel extends BaseSetupPanel
         coverageTF.setEnabled(enabled);
         descLbl.setEnabled(enabled);
         descTA.setEnabled(enabled);
+        stdSep.setEnabled(enabled);
         
         if (doAll)
         {
+            othSep.setEnabled(otherEnabled);
             otherLbl.setEnabled(otherEnabled);
             otherBrw.setEnabled(otherEnabled);
         }
@@ -303,11 +321,14 @@ public class TaxonLoadSetupPanel extends BaseSetupPanel
      */
     public boolean isUIValid()
     {
-        String filePath = otherTF.getText();
-        if (!filePath.isEmpty())
+        if (!otherTF.isFocusOwner())
         {
-            File f = new File(filePath);
-            return f.exists();
+            String filePath = otherTF.getText();
+            if (!filePath.isEmpty())
+            {
+                File f = new File(filePath);
+                return f.exists();
+            }
         }
         return true;
     }

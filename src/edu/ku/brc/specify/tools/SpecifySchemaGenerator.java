@@ -69,8 +69,8 @@ public class SpecifySchemaGenerator
     {
         log.debug("generateSchema hostname:" + hostname);
         log.debug("generateSchema databaseName:" + databaseName);
-        log.debug("generateSchema userName:" + userName);
-        log.debug("generateSchema password:" + password);
+        //log.debug("generateSchema userName:" + userName);
+        //log.debug("generateSchema password:" + password);
         boolean isDerby     = dbdriverInfo.getName().equals("Derby");
         //boolean isSQLServer = dbdriverInfo.getName().equals("SQLServer");
         
@@ -85,7 +85,7 @@ public class SpecifySchemaGenerator
         // so we must first drop (delete) the Derby Database
         if (isDerby)
         {
-            log.debug("database is derby database, running special drop method");
+            //log.debug("database is derby database, running special drop method");
             dropDerbyDatabase(databaseName);
         }
 
