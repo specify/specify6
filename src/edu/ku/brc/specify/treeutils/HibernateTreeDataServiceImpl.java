@@ -1002,21 +1002,24 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.treeutils.TreeDataService#synonymize(edu.ku.brc.specify.datamodel.Treeable, edu.ku.brc.specify.datamodel.Treeable)
      */
+    /*
+     * null return value indicates success.
+     */
     @Override
     @SuppressWarnings("unchecked")
     public String synonymize(final T source, final T destination)
     {
         String statusMsg = null;
         Session session = getNewSession(source);
+        Transaction tx = null;
         try
         {
             T mergedDest = (T)mergeIntoSession(session, destination);
             T mergedSrc  = (T)mergeIntoSession(session, source);
-            Transaction tx = session.beginTransaction();
-            
+            tx = session.beginTransaction();
             if (fixAdditionalRelationsips(session, mergedSrc, mergedDest))
             {
-                statusMsg = TreeHelper.createNodeRelationship(mergedSrc,mergedDest);
+                TreeHelper.createNodeRelationship(mergedSrc,mergedDest);
                 
                 if (!commitTransaction(session, tx)) // NOTE: this call will close an open session.
                 {
@@ -1024,7 +1027,10 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
                 }
             } else
             {
-                // Error Dialog
+                if (tx != null)
+                {
+                	tx.rollback();
+                }
             }
 
         } catch (Exception ex)

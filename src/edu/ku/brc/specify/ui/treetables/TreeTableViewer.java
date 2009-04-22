@@ -135,7 +135,7 @@ import edu.ku.brc.util.Pair;
  * @param <D>
  * @param <I>
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({"serial", "hiding"})
 public class TreeTableViewer <T extends Treeable<T,D,I>,
 								D extends TreeDefIface<T,D,I>,
 								I extends TreeDefItemIface<T,D,I>>
@@ -2549,62 +2549,84 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		            }
 		            
 					String statusMsg = dataService.synonymize(draggedRecord, droppedRecord);
-		            draggedNode.setAcceptedParentId(droppedOnNode.getId());
-		            
-		            // fix all synonyms of the new synonym to point at the "final" accepted name in the chain
-		            for (Pair<Integer, String> idAndName: draggedNode.getSynonymIdsAndNames())
-		            {
-		                if (idAndName.first != null)
-		                {
-		                    int synNodeID = idAndName.first;
-		                    TreeNode synNode = listModel.getNodeById(synNodeID);
-		                    if (synNode != null)
-		                    {
-		                        synNode.setAcceptedParentId(droppedOnNode.getId());
-		                        synNode.setAcceptedParentFullName(droppedOnNode.getFullName());
-		                        droppedOnNode.getSynonymIdsAndNames().add(new Pair<Integer,String>(synNode.getId(),synNode.getFullName()));
-		                        
-		                    } else
-		                    {
-		                        // I don't think this is actually an error - rods 05/21/08
-		                        //String msg = "** - JDS - ** synNode was null and shouldn't have been for ID["+synNodeID+"]";
-		                        //log.error(msg);
-		                        //UIRegistry.displayErrorDlg(msg);
-		                    }
-		                } else
-		                {
-		                    String msg = "** - JDS - ** idAndName.first was null and shouldn't have been.";
-		                    log.error(msg);
-		                    UIRegistry.displayErrorDlg(msg);
-		                }
-		            }
-		            
-		            draggedNode.getSynonymIdsAndNames().clear();
-		            
-		            draggedNode.setAcceptedParentFullName(droppedOnNode.getFullName());
-		            droppedOnNode.getSynonymIdsAndNames().add(new Pair<Integer,String>(draggedNode.getId(),draggedNode.getFullName()));
-		            
-		            Vector<TreeNode> bogusity = new Vector<TreeNode>(1);
-		            bogusity.add(draggedNodeParent);
-		            draggedNodeParent.setHasCalcCount(false);
-		            draggedNodeParent.setHasCalcCount2(false);
-		            showCounts(getRecordForNode(draggedNodeParent), bogusity);
-		            showChildren(draggedNodeParent);
-		            if (droppedNodeParent != draggedNodeParent)
-		            {
-		            	droppedNodeParent.setHasCalcCount(false);
-		            	droppedNodeParent.setHasCalcCount2(false);
-		            	bogusity.clear();
-		            	bogusity.add(droppedNodeParent);
-		            	showCounts(getRecordForNode(droppedNodeParent), bogusity);
-		            	showChildren(droppedNodeParent);
-		            }
+		            if (statusMsg == null)
+					{
+						draggedNode.setAcceptedParentId(droppedOnNode.getId());
+
+						// fix all synonyms of the new synonym to point at the
+						// "final" accepted name in the chain
+						for (Pair<Integer, String> idAndName : draggedNode
+								.getSynonymIdsAndNames())
+						{
+							if (idAndName.first != null)
+							{
+								int synNodeID = idAndName.first;
+								TreeNode synNode = listModel
+										.getNodeById(synNodeID);
+								if (synNode != null)
+								{
+									synNode.setAcceptedParentId(droppedOnNode
+											.getId());
+									synNode
+											.setAcceptedParentFullName(droppedOnNode
+													.getFullName());
+									droppedOnNode.getSynonymIdsAndNames().add(
+											new Pair<Integer, String>(synNode
+													.getId(), synNode
+													.getFullName()));
+
+								} else
+								{
+									// I don't think this is actually an error -
+									// rods 05/21/08
+									// String msg =
+									// "** - JDS - ** synNode was null and shouldn't have been for ID["+synNodeID+"]";
+									// log.error(msg);
+									// UIRegistry.displayErrorDlg(msg);
+								}
+							} else
+							{
+								String msg = "** - JDS - ** idAndName.first was null and shouldn't have been.";
+								log.error(msg);
+								UIRegistry.displayErrorDlg(msg);
+							}
+						}
+
+						draggedNode.getSynonymIdsAndNames().clear();
+
+						draggedNode.setAcceptedParentFullName(droppedOnNode
+								.getFullName());
+						droppedOnNode.getSynonymIdsAndNames().add(
+								new Pair<Integer, String>(draggedNode.getId(),
+										draggedNode.getFullName()));
+
+						Vector<TreeNode> bogusity = new Vector<TreeNode>(1);
+						bogusity.add(draggedNodeParent);
+						draggedNodeParent.setHasCalcCount(false);
+						draggedNodeParent.setHasCalcCount2(false);
+						showCounts(getRecordForNode(draggedNodeParent),
+								bogusity);
+						showChildren(draggedNodeParent);
+						if (droppedNodeParent != draggedNodeParent)
+						{
+							droppedNodeParent.setHasCalcCount(false);
+							droppedNodeParent.setHasCalcCount2(false);
+							bogusity.clear();
+							bogusity.add(droppedNodeParent);
+							showCounts(getRecordForNode(droppedNodeParent),
+									bogusity);
+							showChildren(droppedNodeParent);
+						}
+					}
 		            updateAllUI();
 					if (statusMsg != null)
 					{
 					    statusBar.setText(statusMsg);
 					}
-					result = true;
+					result = statusMsg == null;
+					//If result is false the tree will be closed in finished(), but that might be overkill
+					//for synonymy since the tree structure (parent/child relationships) is
+					//not actually changed. 
 					return result;
 				}
 

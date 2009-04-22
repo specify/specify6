@@ -109,6 +109,7 @@ public class MissingDataResolver implements ActionListener
      * 
      * Pairs a string label with an Object
      */
+    @SuppressWarnings("serial")
     private class LabelledObject<F, S> extends Pair<F, S>
     {
         @Override
@@ -580,26 +581,28 @@ public class MissingDataResolver implements ActionListener
         }
         
         myself = this;
-        if (readOnly) { return new DefaultTableModel(rows, headers)
-        {
-            @Override
-            public boolean isCellEditable(int row, int col)
-            {
-                return false;
-            }
-        }; }
-        return new DefaultTableModel(rows, headers)
-        {
-            @Override
-            public boolean isCellEditable(int row, int col)
-            {
-                JComboBox jBox = createComboBox(lists.get(row));
-                jBox.addActionListener(myself);
+		if (readOnly)
+		{
+			return new DefaultTableModel(rows, headers) {
+				@Override
+				public boolean isCellEditable(int row, int col)
+				{
+					return false;
+				}
+			};
+		}
+		return new DefaultTableModel(rows, headers) {
+			@Override
+			public boolean isCellEditable(int row, int col)
+			{
+				JComboBox jBox = createComboBox(lists.get(row));
+				jBox.addActionListener(myself);
 
-                uiTbl.setDefaultEditor(uiTbl.getColumnClass(col), new DefaultCellEditor(jBox));
-                return col == 3;
-            }
-        };
+				uiTbl.setDefaultEditor(uiTbl.getColumnClass(col),
+						new DefaultCellEditor(jBox));
+				return col == 3;
+			}
+		};
     }
     
     public JPanel getUI(boolean readOnly)
