@@ -2537,7 +2537,9 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 				@Override
 				public Object construct()
 				{
-		            UIRegistry.writeGlassPaneMsg(UIRegistry.getResourceString("TreeTableViewer.Synonymizing"), 24);
+		            UIRegistry.writeGlassPaneMsg(String.format(
+		            		UIRegistry.getResourceString("TreeTableViewer.Synonymizing"), draggedRecord.getName()),
+		            		24);
 					TreeNode draggedNodeParent = listModel.getNodeById(draggedNode.getParentId());
 		            TreeNode droppedNodeParent = listModel.getNodeById(droppedOnNode.getParentId());
 		            hideChildren(draggedNodeParent);
@@ -2649,7 +2651,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 				@Override
 				public Object construct()
 				{
-		            UIRegistry.writeGlassPaneMsg(UIRegistry.getResourceString("TreeTableViewer.Moving"), 24);
+		            UIRegistry.writeGlassPaneMsg(
+		            		String.format(UIRegistry.getResourceString("TreeTableViewer.Moving"), child.getName()), 24);
 		            
 		            hideChildren(oldParentNode);
 		            hideChildren(droppedOnNode);
@@ -2706,36 +2709,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			}.start();
 			return true;
 			
-//            hideChildren(oldParentNode);
-//            hideChildren(droppedOnNode);
-//            // Removing the children of these nodes may have resulted in a node being removed from the model.
-//            // This happens when one of these nodes is a descendant of the other.  The lower ranked node will
-//            // no longer be in the model at all.
-//			
-//            // do the DB work to reparent the nodes
-//            int moveResult = dataService.moveTreeNode(child, newParent);
-//            if (moveResult == ERROR)
-//            {
-//                String msg = getResourceString("TTV_UNKOWN_MOVE_ERROR");
-//                statusBar.setErrorMessage(msg);
-//                UIRegistry.displayErrorDlg(msg);
-//            }
-//            
-//            // reshow the nodes' children, if the nodes are still in the tree (see comment above in this method)
-//            oldParentNode = listModel.getNodeById(oldParentNode.getId());
-//            newParentNode = listModel.getNodeById(newParentNode.getId());
-//            
-//            if (oldParentNode != null)
-//            {
-//                showChildren(oldParentNode);
-//            }
-//            if (newParentNode != null)
-//            {
-//                newParentNode.setHasChildren(true);
-//                showChildren(newParentNode);
-//            }
-//            
-//			return moveResult != ERROR;
 		}
 		return false;
 	}

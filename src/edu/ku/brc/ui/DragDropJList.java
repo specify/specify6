@@ -265,6 +265,8 @@ public class DragDropJList extends JList implements DragSourceListener,
 		catch( Exception e )
 		{
 			e.printStackTrace();
+			setDragCursor(false, dtde.getDropAction());
+			return false;
 		}
 		
 		if (droppedOn == dragged)
