@@ -234,7 +234,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
             {
                 try
                 {
-                    ce = session.merge(ce); // do this which merges AND saves/updates instead of just saveOrUpdate
+                    session.saveOrUpdate(colObj.getCollectingEvent()); // need to save attch and merge do not work.
                     
                 } catch (Exception ex)
                 {
