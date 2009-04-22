@@ -21,7 +21,8 @@ package edu.ku.brc.specify.config;
 
 import static edu.ku.brc.ui.UIHelper.centerAndShow;
 import static edu.ku.brc.ui.UIHelper.createComboBox;
-import static edu.ku.brc.ui.UIHelper.createFormLabel;
+import static edu.ku.brc.ui.UIHelper.createI18NFormLabel;
+import static edu.ku.brc.ui.UIHelper.createI18NLabel;
 import static edu.ku.brc.ui.UIHelper.createScrollPane;
 import static edu.ku.brc.ui.UIHelper.createTextArea;
 import static edu.ku.brc.ui.UIHelper.createTextField;
@@ -51,6 +52,7 @@ import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.FeedBackSender;
 import edu.ku.brc.ui.FeedBackSenderItem;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author rod
@@ -92,6 +94,12 @@ public class FeedBackDlg extends FeedBackSender
         {
             taskItems.add(task.getTitle());
         }
+        
+        String[] OTHERS = {"WEBSITE", "CSTSUP", "INSTL", "DOC", "WHTPR", "HLP"};
+        for (String key : OTHERS)
+        {
+            taskItems.add(UIRegistry.getResourceString("FeedBackDlg." + key));
+        }
         Collections.sort(taskItems);
         
         final JComboBox  taskCBX    = createComboBox(taskItems);
@@ -100,23 +108,25 @@ public class FeedBackDlg extends FeedBackSender
         final JTextArea  commentsTA = createTextArea(15, 60);
         
         int y = 1;
-        pb.add(createFormLabel("Subject"), cc.xy(1, y));
+        pb.add(createI18NLabel("FeedBackDlg.INFO"), cc.xyw(1, y, 4)); y += 2;
+
+        pb.add(createI18NFormLabel("FeedBackDlg.SUB"), cc.xy(1, y));
         pb.add(subjectTF,                  cc.xyw(3, y, 2)); y += 2;
         
-        pb.add(createFormLabel("Component"), cc.xy(1, y));
+        pb.add(createI18NFormLabel("FeedBackDlg.COMP"), cc.xy(1, y));
         pb.add(taskCBX,                      cc.xy(3, y)); y += 2;
         
-        pb.add(createFormLabel("Question/Issue"), cc.xy(1, y));
-        pb.add(issueTF,                           cc.xyw(3, y, 2)); y += 2;
+        //pb.add(createFormLabel("Question/Issue"), cc.xy(1, y));
+        //pb.add(issueTF,                           cc.xyw(3, y, 2)); y += 2;
         
-        pb.add(createFormLabel("Comments"), cc.xy(1, y));     y += 2;
+        pb.add(createI18NFormLabel("FeedBackDlg.COMM"), cc.xy(1, y));     y += 2;
         pb.add(createScrollPane(commentsTA, true), cc.xyw(1, y, 4)); y += 2;
         
         Taskable currTask = SubPaneMgr.getInstance().getCurrentSubPane().getTask();
         taskCBX.setSelectedItem(currTask != null ? currTask : TaskMgr.getDefaultTaskable());
         
         pb.setDefaultDialogBorder();
-        CustomDialog dlg = new CustomDialog((Frame)null, "Feedback", true, pb.getPanel());
+        CustomDialog dlg = new CustomDialog((Frame)null, UIRegistry.getResourceString("FeedBackDlg.TITLE"), true, pb.getPanel());
         
         centerAndShow(dlg);
         

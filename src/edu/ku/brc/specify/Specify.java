@@ -1561,7 +1561,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
     {
         try
         {
-            UpdateDescriptor updateDesc= UpdateChecker.getUpdateDescriptor(UIRegistry.getResourceString("UPDATE_PATH"),
+            UpdateDescriptor updateDesc = UpdateChecker.getUpdateDescriptor(UIRegistry.getResourceString("UPDATE_PATH"),
                                                                            ApplicationDisplayMode.UNATTENDED);
 
             UpdateDescriptorEntry entry = updateDesc.getPossibleUpdateEntry();

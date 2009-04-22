@@ -75,8 +75,8 @@ public class TaxonLoadSetupPanel extends BaseSetupPanel
     protected JLabel             fileLbl;
     protected JComboBox          fileCBX;
     
-    protected JLabel             titleLbl;
-    protected JLabel             titleTF;
+    protected JLabel             srcLbl;
+    protected JLabel             srcTF;
     
     protected JLabel             coverageLbl;
     protected JLabel             coverageTF;
@@ -102,7 +102,7 @@ public class TaxonLoadSetupPanel extends BaseSetupPanel
         CellConstraints cc = new CellConstraints();
         
         
-        String rowDef = "p,2px," + createDuplicateJGoodiesDef("p", "2px", 5) + ",p:g";
+        String rowDef = "p,2px," + createDuplicateJGoodiesDef("p", "2px", 7) + ",p:g";
         PanelBuilder builder = new PanelBuilder(new FormLayout("p,2px,p:g", rowDef), this);
         int row = 1;
         
@@ -110,7 +110,7 @@ public class TaxonLoadSetupPanel extends BaseSetupPanel
         
        
         fileCBX    = createComboBox();
-        titleTF    = createLabel("");
+        srcTF      = createLabel("");
         coverageTF = createLabel("");
         descTA     = createTextArea();
         otherBrw   = new ValBrowseBtnPanel(otherTF = new ValTextField(), false, true);
@@ -128,9 +128,9 @@ public class TaxonLoadSetupPanel extends BaseSetupPanel
         builder.add(fileCBX,          cc.xy(3, row));
         row += 2;
         
-        //builder.add(titleLbl = createI18NFormLabel("TFD_TITLE_LBL"), cc.xy(1, row));
-        //builder.add(titleTF,          cc.xy(3, row));
-        //row += 2;
+        builder.add(srcLbl = createI18NFormLabel("TFD_SRC_LBL"), cc.xy(1, row));
+        builder.add(srcTF,          cc.xy(3, row));
+        row += 2;
         
         builder.add(coverageLbl = createI18NFormLabel("TFD_CVRG_LBL"), cc.xy(1, row));
         builder.add(coverageTF,       cc.xy(3, row));
@@ -249,7 +249,7 @@ public class TaxonLoadSetupPanel extends BaseSetupPanel
         TaxonFileDesc tfd = (TaxonFileDesc)fileCBX.getSelectedItem();
         if (tfd != null)
         {
-            //titleTF.setText(tfd.getTitle());
+            srcTF.setText(tfd.getSrc());
             coverageLbl.setText(tfd.getCoverage());
             descTA.setText(tfd.getDescription());
         }
@@ -283,8 +283,8 @@ public class TaxonLoadSetupPanel extends BaseSetupPanel
     {
         fileLbl.setEnabled(enabled);
         fileCBX.setEnabled(enabled);
-        //titleLbl.setEnabled(enabled);
-        //titleTF.setEnabled(enabled);
+        srcLbl.setEnabled(enabled);
+        srcTF.setEnabled(enabled);
         coverageLbl.setEnabled(enabled);
         coverageTF.setEnabled(enabled);
         descLbl.setEnabled(enabled);

@@ -667,7 +667,7 @@ public class BuildSampleDatabase
             isAccGlobal = (Boolean)props.get("accglobal");
         }
         
-        // The two AutoNumberingSchemes have been commited
+        // The two AutoNumberingSchemes have been committed
         Pair<AutoNumberingScheme, AutoNumberingScheme> pair = localizeDisciplineSchema(discipline, props, isAccGlobal);
         
         // These create a new session and persist records in the Schema tables (SpLocaleContainerItem)
@@ -903,28 +903,6 @@ public class BuildSampleDatabase
         log.debug("Out createEmptyDiscipline - createStep: "+createStep);
         
         return discipline;
-    }
-    
-    public static void writeTaxonFile()
-    {
-        try
-        {
-            
-            Vector<TaxonFileDesc> files = new Vector<TaxonFileDesc>();
-            TaxonFileDesc tfd = new TaxonFileDesc("disp", "title", "coverage", "file");
-            tfd.setDescription("desc");
-            files.add(tfd);
-            tfd = new TaxonFileDesc("disp2", "title2", "coverage2", "file2");
-            files.add(tfd);
-            
-            XStream xstream = new XStream();
-            TaxonFileDesc.configXStream(xstream);
-            FileUtils.writeStringToFile(new File("tfd.xml"), xstream.toXML(files));
-            
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
     }
     
     /**

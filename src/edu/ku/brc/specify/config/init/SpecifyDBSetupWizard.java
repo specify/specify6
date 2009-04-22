@@ -214,6 +214,10 @@ public class SpecifyDBSetupWizard extends JPanel
             props.put("phone", "785-864-5555");
             
             props.put("addtaxon",   true);
+        } else
+        {
+            props.put("hostName",   "localhost");
+            props.put("dbName",     "specify");
         }
 
         props.put("userType", SpecifyUserTypes.UserType.Manager.toString());
@@ -462,7 +466,7 @@ public class SpecifyDBSetupWizard extends JPanel
                     panels.get(step).getValues(props);
                     panels.get(step).aboutToLeave();
                     
-                    if (disciplineType.isPaleo() && 
+                    if (disciplineType != null && disciplineType.isPaleo() && 
                         panels.get(step) instanceof TreeDefSetupPanel &&
                         ((TreeDefSetupPanel)panels.get(step)).getClassType() == TaxonTreeDef.class)
                     {

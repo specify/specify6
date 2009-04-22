@@ -24,6 +24,8 @@ import static edu.ku.brc.ui.UIHelper.createI18NFormLabel;
 import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -92,14 +94,7 @@ public class DisciplinePanel extends BaseSetupPanel
         
         disciplines = createComboBox(dispList);
         
-        // Select Fish as the default
-        for (DisciplineType disciplineType : dispList)
-        {
-            if (disciplineType.getName().equals("fish"))
-            {
-                disciplines.setSelectedItem(disciplineType);
-            }
-        }
+        disciplines.setSelectedIndex(-1);
         
         // Discipline 
         JLabel lbl = createI18NFormLabel("DSP_TYPE", SwingConstants.RIGHT);
@@ -111,6 +106,14 @@ public class DisciplinePanel extends BaseSetupPanel
         disciplineName     = createField(builder, "DISP_NAME",  true, row);       row += 2;
         
         updateBtnUI();
+        
+        disciplines.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                updateBtnUI();
+            }
+        });
     }
     
     /* (non-Javadoc)
@@ -151,11 +154,7 @@ public class DisciplinePanel extends BaseSetupPanel
      */
     public boolean isUIValid()
     {
-        if (StringUtils.isEmpty(disciplineName.getText()))
-        {
-            return false;
-        }
-        return true;
+        return StringUtils.isNotEmpty(disciplineName.getText()) && disciplines.getSelectedIndex() > -1;
     }
     
     // Getters 

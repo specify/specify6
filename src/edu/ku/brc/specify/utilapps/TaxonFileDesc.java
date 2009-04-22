@@ -38,21 +38,8 @@ public class TaxonFileDesc
     protected String coverage;
     protected String fileName;
     protected String description;
+    protected String src;
     
-    /**
-     * @param discipline
-     * @param title
-     * @param coverage
-     * @param fileName
-     */
-    public TaxonFileDesc(String discipline, String title, String coverage, String fileName)
-    {
-        super();
-        this.discipline = discipline;
-        this.title = title;
-        this.coverage = coverage;
-        this.fileName = fileName;
-    }
     /**
      * @return the discipline
      */
@@ -125,6 +112,24 @@ public class TaxonFileDesc
         this.description = description;
     }
     
+    /**
+     * @return the src
+     */
+    public String getSrc()
+    {
+        return src;
+    }
+    /**
+     * @param src the src to set
+     */
+    public void setSrc(String src)
+    {
+        this.src = src;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
     public String toString()
     {
         return title;
@@ -143,7 +148,8 @@ public class TaxonFileDesc
         xstream.useAttributeFor(TaxonFileDesc.class, "title");
         xstream.useAttributeFor(TaxonFileDesc.class, "coverage");
         xstream.useAttributeFor(TaxonFileDesc.class, "fileName");
-        
+        xstream.useAttributeFor(TaxonFileDesc.class, "src");
+               
         xstream.aliasAttribute(TaxonFileDesc.class, "fileName", "file");
         
     }

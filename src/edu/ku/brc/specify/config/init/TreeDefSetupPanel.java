@@ -114,16 +114,14 @@ public class TreeDefSetupPanel extends BaseSetupPanel implements SetupPanelIFace
             classType == GeographyTreeDef.class || 
             classType == StorageTreeDef.class)
         {
-            loadTree(disciplinePanel != null ? disciplinePanel.getDisciplineType().getDisciplineType() : null);
-            
             model = new TreeDefTableModel();
-            model.addTableModelListener(new TableModelListener() {
-                @Override
-                public void tableChanged(TableModelEvent e)
-                {
-                    updateBtnUI();
-                }
-            });
+             if (classType != TaxonTreeDef.class)
+            {
+                loadTree(disciplinePanel != null && disciplinePanel.getDisciplineType() != null ? 
+                        disciplinePanel.getDisciplineType().getDisciplineType() : null);
+            }
+            
+
             
             table              = new JTable(model);
             directionCBX       = new JComboBox(new String[] {getResourceString("FORWARD"), getResourceString("REVERSE")});
@@ -133,7 +131,15 @@ public class TreeDefSetupPanel extends BaseSetupPanel implements SetupPanelIFace
             
             table.setRowSelectionAllowed(false);
             table.setColumnSelectionAllowed(false);
+            model.addTableModelListener(new TableModelListener() {
+                @Override
+                public void tableChanged(TableModelEvent e)
+                {
+                    updateBtnUI();
+                }
+            });
             
+           
             CellConstraints cc = new CellConstraints();
             PanelBuilder    pb = new PanelBuilder(new FormLayout("p,2px,p,f:p:g", "p,4px,min(p;250px),4px,p,4px,p"), this);
             
@@ -265,6 +271,12 @@ public class TreeDefSetupPanel extends BaseSetupPanel implements SetupPanelIFace
                         treeDefList.add(new TreeDefRow(name, rank, required, enforced, required && isInFullName, required || rank == 0, sep));
                     }
                 }
+                
+                if (model != null)
+                {
+                    model.fireTableDataChanged();
+                }
+                
             } catch (Exception ex)
             {
                 ex.printStackTrace();
@@ -381,7 +393,11 @@ public class TreeDefSetupPanel extends BaseSetupPanel implements SetupPanelIFace
         {
             sb.setLength(sb.length()-lastSep.length());
         }
-        fullnameDisplayTxt.setText(sb.toString());
+        
+        if (fullnameDisplayTxt != null)
+        {
+            fullnameDisplayTxt.setText(sb.toString());
+        }
     }
     
     /* (non-Javadoc)

@@ -3,15 +3,21 @@
         <description>Comment or full description goes here.</description>
     </file>
     <file discipline="herpetology"  title="Herpetology" coverage="" file="col2008_herps.xls" src="Catalog of Life 2008">
+        <description>Comment or full description goes here.</description>
     </file>
     <file discipline="bird"         title="Ornithology" coverage="" file="col2008_aves.xls" src="Catalog of Life 2008">
+        <description>Comment or full description goes here.</description>
     </file>
     <file discipline="mammal"       title="Mammalogy"   coverage="" file="col2008_mammalia.xls" src="Catalog of Life 2008">
+        <description>Comment or full description goes here.</description>
     </file>
     <file discipline="insect"       title="Entomology"  coverage="" file="col2008_orthoptera.xls" src="Catalog of Life 2008">
+        <description>Comment or full description goes here.</description>
     </file>
     <file discipline="botany"       title="Botany"      coverage="" file="col2008_poales.xls" src="Catalog of Life 2008">
+        <description>Comment or full description goes here.</description>
     </file>
     <file discipline="invertebrate" title="Invertebrate Zoology" coverage="" file="col2008_inverts.xls" src="Catalog of Life 2008">
+        <description>Comment or full description goes here.</description>
     </file>
 </vector>

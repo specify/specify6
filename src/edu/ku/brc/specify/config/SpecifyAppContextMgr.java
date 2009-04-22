@@ -512,7 +512,6 @@ public class SpecifyAppContextMgr extends AppContextMgr
             
             if (collection != null && collectionHash.get(collection.getCollectionName()) == null)
             {
-
                 collection = null;
             }
             
@@ -583,6 +582,10 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 {
                     // Accession / Registrar / Director may not be assigned to any Collection
                     // Or for a stand alone Accessions Database there may not be any 
+                    
+                    UIRegistry.showLocalizedError("SpecifyAppContextMgr.ERR_NO_COLL");
+                    //CommandDispatcher.dispatch(new CommandAction("App", "AppReqExit"));
+                    return null;
                 }
     
                 if (collection != null)
