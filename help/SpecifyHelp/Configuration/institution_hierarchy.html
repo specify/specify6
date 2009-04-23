@@ -38,9 +38,10 @@
   </ul>
 <p>The   Divisions, Disciplines and Collections for each institution are added and edited in the System Configuration module of Specify; <em>System &gt; Collection Setup &gt; Configuration</em>. All tabs need to be closed before opening the Configuration. This tool is available to Administrators only.</p>
 <p>Collections information in Specify 6 databases is also organized at these institution levels to meet requirements for data integrity and data sharing among collections. Some data elements are commonly shared among all collections within an institution, while others are shared only among collections in the same taxonomic discipline, i.e. &quot;at the Discipline level&quot; in Specify. Before creating the institution levels it is imperative that an administrator also understand the data that is held at each level to create the correct setup. </p>
-<p>When starting with an empty database the Division levels should be added first, then Discipline and then Collection. Each  is added at the level above it. For instance, Divisions are added within the Institution form. </p>
-<h3>Edit Institution</h3>
-<p><a name="security_on" id="security_on"></a>Information for the Institution can also be edited in the Configuration tool. Security can be turned on or off on the Institution form by checking the box <em>Is Security On</em> box.</p>
+<p>When using a database that was created using the Wizard any additional Division levels should be added first, then Discipline and then Collection. Each  is added at the level above it. For instance, Divisions are added within the Institution form. </p>
+<p>&nbsp;</p>
+<h3><a name="edit_institution" id="edit_institution"></a>Edit Institution</h3>
+<p><a name="security_on" id="security_on"></a>Information for the Institution is edited in the Configuration tool. Security can be turned on or off on the Institution form by checking the box <em>Is Security On</em>. The status of security is shown on the status bar with an icon; <img src="../../images/security_on_20.png" width="20" height="20" /> (security on), or <img src="../../images/security_off_20.png" width="20" height="20" /> (security off).</p>
 <p>Editing  a Division and Discipline is accomplished on the Discipline form. A Collection can be edited either on the Discipline form or Collection form.</p>
 <p>&nbsp;</p>
 <h4><strong><a name="add_division" id="add_division"></a>Add  Divisions</strong></h4>
@@ -58,7 +59,8 @@
 <p>The Division form includes information for each of the existing Divisions. The new Discipline will be added in the Division that is currently displayed in the work space. Use the navigation control at the bottom of the window to step to the  Division that will include the new Discipline. </p>
 <p align="center"><img src="../../images/next_bar.png" width="174" height="25" /></p>
 <p align="center" class="imgcaption">Navigation Control</p>
-<p>In the Discipline sub form click the <img src="../../images/add.png" width="16" height="16" /> (add) button to add a Discipline.</p>
+<p>In the Discipline sub form click the <img src="../../images/add.png" width="16" height="16" /> (add) button to add a Discipline. </p>
+<p>It is important to note that Specify will require users to shut down and reopen the application after adding a Discipline. </p>
 <p>A Discipline Wizard will walk you through adding not only a Discipline, but a Collection within the Discipline as well as Taxon and Geography Tree Definitions and nodes (names of Taxa and Geographical locations) and Catalog and Accession number. Each of these windows is explained below.</p>
 <p>&nbsp;</p>
 <p align="center" class="style1"><img src="../../images/window9.png" width="432" height="362" /></p>
@@ -122,7 +124,7 @@
 <p align="center" class="style2"><img src="../../images/window13.png" width="432" height="362" /></p>
 <p align="center" class="imgcaption">Add a Collection</p>
 <p align="left"><u><strong><a name="wizard_collection" id="wizard_collection2"></a>Collection</strong></u><strong> </strong></p>
-<p align="left">Enter the <strong>Name</strong> and internationally recognized Collection <strong>Code</strong> to create a Collection within the Discipline.  This is the name that will appear within Specify on the Collection form and can be queried and used in reports. </p>
+<p align="left">Enter the <strong>Name</strong> and internationally recognized Collection <strong>Code</strong> to create a Collection within the Discipline.  This is the name that will appear within Specify on the Collection form and can be queried and used in reports. This name will also appear in the list of collections when users change collections, so it should be an easily recognizable name; i.e. <em>Fish Wet</em>. </p>
 <p align="left">The Code should be your standard collections community assigned code for your collection. This Code will be used in data export and web interfaces in upcoming releases of Specify.</p>
 <p align="left">&nbsp;</p>
 <p align="center"><img src="../../images/window14.png" width="432" height="362" /></p>
@@ -130,16 +132,35 @@
 <p>Specify is able to accept data for  collection objects or observations without assigning a Catalog Number. But when Catalog Numbers are used, they must be unique for each lot, specimen or observation.  Many collections routinely assign catalog numbers to  incoming specimens, perhaps as part of the accessioning process. These numbers may require a format with specific sections for data such as Institution Code and year or they may simply use an incrementing number.</p>
 <p>Catalog Numbers can either be unique to each Collection, shared by several or be used throughout the Institution. The Catalog Number chosen at this time will not affect where it is used relative to other Collections, this will be configured from within the Specify application.</p>
 <p>Collections that do not use a specific format for their Catalog Number may choose 'None' and the Catalog Number will remain a text field on the forms where it appears. </p>
-<p>Several formats are also available within this drop-down menu list.</p>
-<p>To create your own format choose 'Create'. This will open the Field Formatting Editor. Please click <a href="../Security/Field_Format_Editor.html">HERE</a> to open a help page for the Field Formatting Editor. </p>
-<p align="center"><img src="../../images/window4.png" width="432" height="362" /></p>
+<p>Several formats are also available within this drop-down menu list:</p>
+<p><strong>CatalogNumber</strong> (2009-######) The year will appear automatically in the first section (2009) of the format, and can also be manually edited. The '###' section of the format is a number that is six digits in length and automatically incremented when Auto Numbering is turned on in Specify and manually entered when Auto Numbering is turned off. These two sections are separated by a dash.</p>
+<p><strong>CatalogNumberAlphaNumByYear</strong> (2009-######) The year will appear automatically in the first section (2009) of the format, and can also be manually edited. The '###' section of the format is a number that is six digits in length and automatically incremented when Auto Numbering is turned on in Specify and manually entered when Auto Numbering is turned off. These two sections are separated by a dash.</p>
+<p><strong>CatalogNumberNumeric</strong> (#########) This is a nine digit number that is automatically incremented when Auto Numbering is turned on in Specify and manually entered when Auto Numbering is turned off.</p>
+<p><strong>CatalogNumberString</strong> (XXXXXXXXXX) This is a ten digit string that can include numbers, alphabet or characters.</p>
+<p>Specific information for each of these predefined formats can also be found on the window. </p>
+<ul>
+  <li><strong>Is Numeric</strong> will display a 'yes' if the format is numeric.</li>
+  <br/>
+  <li><strong>Pattern</strong> displays the pattern used to create each format (these are explained in further detail above).</li>
+  <br/>
+  <li><strong>Is Auto Incremented</strong> displays a 'yes' if the format is automatically incremented.</li>
+</ul>
+<p>To create your own format choose 'Create'. This will open the Field Formatting Editor. Click <a href="../Security/Field_Format_Editor.html">HERE</a> for the Field Formatting Editor help page. </p>
+<p align="center"><img src="../../images/window5.png" width="432" height="362" /></p>
 <p align="center" class="imgcaption">Acccession Number format </p>
 <p align="left"><strong><em>Note:</em></strong> If you chose to manage your Accessions at the institutional level you will NOT see this window.</p>
 <p align="left">Accession Numbers may require a format or may simply use a number. Choose None to leave the Accession Number as a text field on the Accession form. </p>
 <p align="left">Several formats are offered in the drop-down menu list:</p>
-<p align="left">AccessionNumber (2009-AA-###) The year will appear automatically in the first section (2009) of the format, and can also be manually edited. The 'AA' section of the format is alphanumeric and accepts both alphabet characters <em>a</em> through <em>z</em> and numbers.  The ### section of the format is a number that is automatically incremented when Auto Numbering is turned on in Specify and manually entered when Auto Numbering is turned off. This format offers two alphanumeric characters and three incremented numbers. </p>
-<p align="left">AccessionNumberByYear (2009-AA-AAA) The year will appear automatically in the first section (2009) of the format, and can also be manually edited. The 'A' sections of the format are alphanumeric and accept both alphabet characters <em>a</em> through <em>z</em> and numbers. This format offers two alphanumeric sections, the first is two characters in length and the second is three characters in length.</p>
-<p align="left">AccessionStringFormatter (AAAAAA) This is an alphanumeric format that accepts  both alphabet characters <em>a</em> through <em>z</em> and numbers. The Accession number would be seven characters in length.</p>
+<p align="left"><strong>AccessionNumber</strong> (2009-AA-###) The year will appear automatically in the first section (2009) of the format, and can also be manually edited. The 'AA' section of the format is alphanumeric and accepts both characters <em>a</em> through <em>z</em> and numbers.  The '###' section of the format is a number that is automatically incremented when Auto Numbering is turned on in Specify and manually entered when Auto Numbering is turned off. This format offers two alphanumeric characters and three incremented numbers. </p>
+<p align="left"><strong>AccessionNumberByYear</strong> (2009-AA-AAA) The year will appear automatically in the first section (2009) of the format, and can also be manually edited. The 'A' sections of the format are alphanumeric and accept both characters <em>a</em> through <em>z</em> and numbers. This format offers two alphanumeric sections, the first is two characters in length and the second is three characters in length.</p>
+<p align="left"><strong>AccessionStringFormatter</strong> (AAAAAA) This is a single alphanumeric format that accepts characters <em>a</em> through <em>z</em> and numbers. The Accession number would be seven characters in length.</p>
+<p>Specific information for each of these predefined formats can also be found on the window. <br/>
+</p>
+<ul>
+  <li><strong>Pattern</strong> displays the pattern used to create each format (these are explained in further detail above).</li>
+  <br/>
+  <li><strong>Is Auto Incremented</strong> displays a 'yes' if the format is automatically incremented.</li>
+</ul>
 <p align="left">To create your own format choose 'Create'. This will open the Field Formatting Editor. Please click <a href="../Security/Field_Format_Editor.html">HERE</a> to open a help page for the Field Formatting Editor. </p>
 <p align="center"><img src="../../images/discipline_summary.png" width="433" height="371" /></p>
 <p align="center" class="imgcaption">Sumary Window</p>
@@ -152,6 +173,7 @@
 <p align="center"><img src="../../images/next_bar.png" width="174" height="25" /></p>
 <p align="center" class="imgcaption">Navigation Control</p>
 <p>Click the<img src="../../images/add.png" width="16" height="16" />(add) button to add a Collection. </p>
+<p>It is important to note that Specify will require users to shut down and reopen the application after adding a Collection. </p>
 <p>A Collection Wizard will step you through the process of adding a collection as well as a Catalog Number format and Accession format (if applicable).</p>
 <p>&nbsp;</p>
 <p align="center" class="style2"><img src="../../images/window13.png" width="432" height="362" /></p>
@@ -163,18 +185,37 @@
 <p align="center"><img src="../../images/window14.png" width="432" height="362" /></p>
 <p align="center" class="imgcaption">Catalog Number format</p>
 <p>Specify is able to accept data for  collection objects or observations without assigning a Catalog Number. But when Catalog Numbers are used, they must be unique for each lot, specimen or observation.  Many collections routinely assign catalog numbers to  incoming specimens, perhaps as part of the accessioning process. These numbers may require a format with specific sections for data such as Institution Code and year or they may simply use an incrementing number.</p>
-<p>Catalog Numbers can either be unique to each Collection, shared by several or be used throughout the Institution. The Catalog Number chosen at this time will not affect where it is used relative to other Collections, this will be configured from within the Specify application.</p>
-<p>Collections that do not use a specific format for their Catalog Number may choose 'None' and the Catalog Number will remain a text field on the forms where it appears. </p>
-<p>Several formats are also available within this drop-down menu list.</p>
+<p>Catalog Numbers can either be unique to each Collection, shared by several or be used throughout the Institution. The Catalog Number chosen at this time will not affect where it is used relative to other Collections, this will be configured from within the Specify application. The Catalog Number format for this collection can not be edited once it is chosen.</p>
+<p>Several formats are also available within this drop-down menu list:</p>
+<p><strong>CatalogNumber</strong> (2009-######) The year will appear automatically in the first section (2009) of the format, and can also be manually edited. The '###' section of the format is a number that is six digits in length and automatically incremented when Auto Numbering is turned on in Specify and manually entered when Auto Numbering is turned off. These two sections are separated by a dash.</p>
+<p><strong>CatalogNumberAlphaNumByYear</strong> (2009-######) The year will appear automatically in the first section (2009) of the format, and can also be manually edited. The '###' section of the format is a number that is six digits in length and automatically incremented when Auto Numbering is turned on in Specify and manually entered when Auto Numbering is turned off. These two sections are separated by a dash.</p>
+<p><strong>CatalogNumberNumeric</strong> (#########) This is a nine digit number that is automatically incremented when Auto Numbering is turned on in Specify and manually entered when Auto Numbering is turned off.</p>
+<p><strong>CatalogNumberString</strong> (XXXXXXXXXX) This is a ten digit string that can include numbers, alphabet or characters.</p>
+<p>Specific information for each of these predefined formats can also be found on the window. </p>
+<ul>
+  <li><strong>Is Numeric</strong> will display a 'yes' if the format is numeric.</li>
+  <br/>
+  <li><strong>Pattern</strong> displays the pattern used to create each format (these are explained in further detail above).</li>
+  <br/>
+  <li><strong>Is Auto Incremented</strong> displays a 'yes' if the format is automatically incremented.</li>
+</ul>
+<p>Collections that do not use one specific format for their Catalog Number may wish to choose CatalogNumberString from the list, this will allow any format to be entered. </p>
 <p>To create your own format choose 'Create'. This will open the Field Formatting Editor. Please click <a href="../Security/Field_Format_Editor.html">HERE</a> to open a help page for the Field Formatting Editor. </p>
 <p align="center"><img src="../../images/window5.png" width="432" height="362" /></p>
 <p align="center" class="imgcaption">Acccession Number format </p>
 <p align="left"><strong><em>Note:</em></strong> If you chose to manage your Accessions at the institutional level you will NOT see this window.</p>
-<p align="left">Accession Numbers may require a format or may simply use a number. Choose None to leave the Accession Number as a text field on the Accession form. </p>
+<p align="left">Accession Numbers may require a format or may simply use a number. Choose None to leave the Accession Number as a text field on the Accession form. Accession Number formats are not editable once data has been entered in the database.</p>
 <p align="left">Several formats are offered in the drop-down menu list:</p>
-<p align="left">AccessionNumber (2009-AA-###) The year will appear automatically in the first section (2009) of the format, and can also be manually edited. The 'AA' section of the format is alphanumeric and accepts both alphabet characters <em>a</em> through <em>z</em> and numbers.  The ### section of the format is a number that is automatically incremented when Auto Numbering is turned on in Specify and manually entered when Auto Numbering is turned off. This format offers two alphanumeric characters and three incremented numbers. </p>
-<p align="left">AccessionNumberByYear (2009-AA-AAA) The year will appear automatically in the first section (2009) of the format, and can also be manually edited. The 'A' sections of the format are alphanumeric and accept both alphabet characters <em>a</em> through <em>z</em> and numbers. This format offers two alphanumeric sections, the first is two characters in length and the second is three characters in length.</p>
-<p align="left">AccessionStringFormatter (AAAAAA) This is an alphanumeric format that accepts  both alphabet characters <em>a</em> through <em>z</em> and numbers. The Accession number would be seven characters in length.</p>
+<p align="left"><strong>AccessionNumber</strong> (2009-AA-###) The year will appear automatically in the first section (2009) of the format, and can also be manually edited. The 'AA' section of the format is alphanumeric and accepts both characters <em>a</em> through <em>z</em> and numbers.  The ### section of the format is a number that is automatically incremented when Auto Numbering is turned on in Specify and manually entered when Auto Numbering is turned off. This format offers two alphanumeric characters and three incremented numbers. </p>
+<p align="left"><strong>AccessionNumberByYear</strong> (2009-AA-AAA) The year will appear automatically in the first section (2009) of the format, and can also be manually edited. The 'A' sections of the format are alphanumeric and accept both characters <em>a</em> through <em>z</em> and numbers. This format offers two alphanumeric sections, the first is two characters in length and the second is three characters in length.</p>
+<p align="left"><strong>AccessionStringFormatter</strong> (AAAAAA) This is a single alphanumeric format that accepts characters <em>a</em> through <em>z</em> and numbers. The Accession number would be seven characters in length.</p>
+<ul>
+  <li><strong>Is Numeric</strong> will display a 'yes' if the format is numeric.</li>
+  <br/>
+  <li><strong>Pattern</strong> displays the pattern used to create each format (these are explained in further detail above).</li>
+  <br/>
+  <li><strong>Is Auto Incremented</strong> displays a 'yes' if the format is automatically incremented.</li>
+</ul>
 <p align="left">To create your own format choose 'Create'. This will open the Field Formatting Editor. Please click <a href="../Security/Field_Format_Editor.html">HERE</a> to open a help page for the Field Formatting Editor. </p>
 <p align="center"><img src="../../images/collection_summary.png" width="433" height="371" /></p>
 <p align="center" class="imgcaption">Sumary Window</p>
