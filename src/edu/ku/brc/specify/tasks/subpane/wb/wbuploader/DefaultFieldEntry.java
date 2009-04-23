@@ -21,6 +21,8 @@ package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 
 import java.lang.reflect.Method;
 
+import edu.ku.brc.specify.datamodel.Determination;
+
 /**
  * @author timbo
  * 
@@ -81,7 +83,17 @@ public class DefaultFieldEntry
      */
     protected Object getDefaultValue(Object... params)
     {
-        return defaultValue[0];
+        //Cheapo fix for determination isCurrent
+    	if (uploadTbl.getTblClass().equals(Determination.class) && fldName.equalsIgnoreCase("iscurrent"))
+    	{
+    		if (params != null && params.length == 1 && params[0] instanceof Integer)
+    		{
+    			Integer recNum = (Integer )params[0];
+    			return recNum == 0;
+    		}    			
+    	}
+    	
+    	return defaultValue[0];
     }
 
     /**
