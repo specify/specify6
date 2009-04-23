@@ -333,9 +333,8 @@ public class DatabasePanel extends BaseSetupPanel
                     progressBar.setIndeterminate(false);
                     progressBar.setVisible(false);
                     
-                    testBtn.setVisible(false);
-                    
                     updateBtnUI();
+                    testBtn.setVisible(!isOK);
                     
                     if (isOK)
                     {
@@ -345,6 +344,7 @@ public class DatabasePanel extends BaseSetupPanel
                     } else
                     {
                         label.setText(UIRegistry.getResourceString(errorKey != null ? errorKey : "ERR_CRE_DB"));
+                        UIRegistry.showLocalizedError(errorKey != null ? errorKey : "ERR_CRE_DB");
                     }
                 }
             };

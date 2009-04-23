@@ -366,8 +366,6 @@ public class SpecifyDBSetupWizard extends JPanel
          
         lastStep = panels.size();
         
-        panels.get(0).updateBtnUI();
-        
         if (backBtn != null)
         {
             backBtn.addActionListener(new ActionListener() {
@@ -378,7 +376,7 @@ public class SpecifyDBSetupWizard extends JPanel
                         if (disciplinePanel != null)
                         {
                             DisciplineType disciplineType = disciplinePanel.getDisciplineType();
-                            if (disciplineType.isPaleo() && 
+                            if (disciplineType != null && disciplineType.isPaleo() && 
                                 panels.get(step) instanceof TreeDefSetupPanel &&
                                 ((TreeDefSetupPanel)panels.get(step)).getClassType() == TaxonTreeDef.class)
                             {
@@ -561,6 +559,9 @@ public class SpecifyDBSetupWizard extends JPanel
         progressBar = new JProgressBar(0, lastStep-1);
         progressBar.setStringPainted(true);
         add(progressBar, BorderLayout.SOUTH);
+        
+        panels.get(0).updateBtnUI();
+        
     }
     
     /**

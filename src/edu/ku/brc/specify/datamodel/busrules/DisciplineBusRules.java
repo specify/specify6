@@ -210,6 +210,8 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
         });
         UIHelper.centerAndShow(dlg);
         
+        UIRegistry.popResourceBundle();
+        
         if (!isOKToCont)
         {
             UIRegistry.clearSimpleGlassPaneMsg();
@@ -640,7 +642,7 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
         });
         UIHelper.centerAndShow(dlg);
         
-        //Properties prop = wizardPanel.getProps();
+        UIRegistry.popResourceBundle();
         
         DisciplineType            disciplineType = wizardPanel.getDisciplineType();
         

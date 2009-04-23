@@ -563,7 +563,7 @@ public class SpecifyDBConverter
             boolean doConvert = true;
             if (doConvert)
             {
-                boolean rv = BuildSampleDatabase.createSpecifySAUser(databaseHostDest,
+                BuildSampleDatabase.createSpecifySAUser(databaseHostDest,
                         userNameSource, 
                         passwordSource,
                         "Master",

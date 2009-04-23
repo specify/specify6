@@ -258,10 +258,17 @@ public class MasterUserPanel extends GenericFormPanel
                     
                     updateBtnUI();
                     
-                    label.setText(UIRegistry.getResourceString(isOK ? "MASTER_CREATED" : errorKey));
+                    testBtn.setVisible(!isOK);
+                    
                     if (isOK)
                     {
                         setUIEnabled(false);
+                        label.setText(UIRegistry.getResourceString("MASTER_CREATED"));
+                        
+                    } else
+                    {
+                        label.setText(UIRegistry.getResourceString(errorKey));
+                        UIRegistry.showLocalizedError(errorKey);
                     }
                 }
             };

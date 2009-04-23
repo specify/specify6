@@ -177,6 +177,8 @@ public class CollectionBusRules extends BaseBusRules
         dlg.pack();
         UIHelper.centerAndShow(dlg);
         
+        UIRegistry.popResourceBundle();
+        
         if (!isOKToCont)
         {
             UIRegistry.clearSimpleGlassPaneMsg();
