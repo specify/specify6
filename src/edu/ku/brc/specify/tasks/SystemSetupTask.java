@@ -65,6 +65,7 @@ import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.tasks.subpane.DroppableFormObject;
 import edu.ku.brc.af.tasks.subpane.DroppableTaskPane;
 import edu.ku.brc.af.tasks.subpane.FormPane;
@@ -207,16 +208,19 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             })); 
             navBoxes.add(collNavBox);
             
-            collNavBox.add(NavBox.createBtnWithTT(getResourceString("ANS_EDITOR"), "AutoNumberingScheme", "", IconManager.STD_ICON_SIZE, new ActionListener() {
-                public void actionPerformed(ActionEvent e)
-                {
-                    NumberingSchemeDlg dlg = new NumberingSchemeDlg(null);
-                    dlg.createUI();
-                    dlg.pack();
-                    dlg.setVisible(true);
-                }
-            })); 
-            navBoxes.add(collNavBox);
+            if (AppPreferences.getLocalPrefs().getBoolean("debug.menu", false))
+            {
+                collNavBox.add(NavBox.createBtnWithTT(getResourceString("ANS_EDITOR"), "AutoNumberingScheme", "", IconManager.STD_ICON_SIZE, new ActionListener() {
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        NumberingSchemeDlg dlg = new NumberingSchemeDlg(null);
+                        dlg.createUI();
+                        dlg.pack();
+                        dlg.setVisible(true);
+                    }
+                })); 
+                navBoxes.add(collNavBox);
+            }
             
             
         }
