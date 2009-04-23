@@ -19,7 +19,9 @@
 */
 package edu.ku.brc.specify.datamodel;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -34,8 +36,14 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+
+import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.util.Pair;
 
 /**
 
@@ -100,6 +108,31 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
         }
     }
 
+    public void checkMappings(final DBTableIdMgr schema)
+    {
+    	Element remapDom = XMLHelper.readDOMFromConfigDir("specify_workbench_remappings.xml");
+    	HashMap<String, Pair<String,String>> remaps = new HashMap<String, Pair<String,String>>();
+    	for (Iterator<?> i = remapDom.elementIterator("remapping"); i.hasNext();)
+    	{
+    		Element remap = (Element) i.next();
+    		String from = remap.attributeValue("table") + "." + remap.attributeValue("field");
+    		Pair<String,String> to = new Pair<String,String>(remap.attributeValue("newtable"), remap.attributeValue("newfield"));
+    		remaps.put(from, to);
+    	}
+        for (WorkbenchTemplateMappingItem item : getWorkbenchTemplateMappingItems())
+        {
+            String key = item.getTableName() + "." + item.getFieldName();
+            Pair<String,String> remap = remaps.get(key);
+            if (remap != null)
+            {
+            	item.setTableName(remap.getFirst());
+            	item.setFieldName(remap.getSecond());
+            	DBTableInfo tblInfo = schema.getInfoByTableName(remap.getFirst());
+            	item.setFieldInfo(tblInfo.getFieldByName(remap.getSecond()));
+            	item.setSrcTableId(tblInfo.getTableId());
+            }
+        }
+    }
     // Property accessors
 
     /**

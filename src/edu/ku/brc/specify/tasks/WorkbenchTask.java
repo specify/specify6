@@ -1243,7 +1243,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             try
             {
                 session.attach(workbenchTemplate);
-                workbenchTemplate.forceLoad();
+                workbenchTemplate.checkMappings(getDatabaseSchema());
                 Vector<WorkbenchTemplate> newDataRow = new Vector<WorkbenchTemplate>(1);
                 newDataRow.add(workbenchTemplate);
                 command.setData(newDataRow);
@@ -1854,7 +1854,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                          
                          //force load the workbench here instead of calling workbench.forceLoad() because
                          //is so time-consuming and needs progress bar.
-                         workbench.getWorkbenchTemplate().forceLoad();
+                         //workbench.getWorkbenchTemplate().forceLoad();
+                         workbench.getWorkbenchTemplate().checkMappings(getDatabaseSchema());
                          UIRegistry.getStatusBar().incrementValue(workbench.getName());
                          for (WorkbenchRow row : workbench.getWorkbenchRows())
                          {
@@ -2071,7 +2072,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 UIRegistry.getStatusBar().setIndeterminate(workbench.getName(), false);
                 //force load the workbench here instead of calling workbench.forceLoad() because
                 //is so time-consuming and needs progress bar.
-                workbench.getWorkbenchTemplate().forceLoad();
+                workbench.getWorkbenchTemplate().checkMappings(getDatabaseSchema());
                 UIRegistry.getStatusBar().incrementValue(workbench.getName());
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run()
@@ -2340,7 +2341,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                     
                 } else if (list.size() == 1)
                 {
-                    list.get(0).getWorkbenchTemplate().forceLoad();
+                    list.get(0).getWorkbenchTemplate().checkMappings(getDatabaseSchema());
                     return list.get(0);
                 }
                 
@@ -2652,7 +2653,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     protected void editTemplate(final WorkbenchTemplate wbTemplate)
     {
         loadTemplateFromData(wbTemplate);
-        
+        wbTemplate.checkMappings(getDatabaseSchema());
         TemplateEditor dlg = showColumnMapperDlg(null, wbTemplate, "WB_MAPPING_EDITOR");
         if (!dlg.isCancelled())
         {
@@ -3149,7 +3150,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 WorkbenchTemplate workbenchTemplate = session.get(WorkbenchTemplate.class, recordSet.getOnlyItem().getRecordId());
                 if (workbenchTemplate != null)
                 {
-                    workbenchTemplate.forceLoad();
+                    workbenchTemplate.checkMappings(getDatabaseSchema());
                 }
                 return workbenchTemplate;
                 

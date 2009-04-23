@@ -170,6 +170,17 @@
     <field table="Determination" name="determinerLastName1" onetomanysequence="0" relationshipname="determiner" relatedfieldname="lastName"/>
     <field table="Determination" name="determinerFirstName1" onetomanysequence="0" relationshipname="determiner" relatedfieldname="firstName"/>
     <field table="Determination" name="isCurrent1" actualname="isCurrent" onetomanysequence="0" relationshipname="collectionObject"/>
+    <field table="Determination" name="phylum1" onetomanysequence="0" treename="taxon" maptofield="name" rankid="30"/>
+    <field table="Determination" name="subphylum1" onetomanysequence="0" treename="taxon" maptofield="name" rankid="40"/>
+    <field table="Determination" name="superclass1" onetomanysequence="0" treename="taxon" maptofield="name" rankid="50"/>
+    <field table="Determination" name="class1" onetomanysequence="0" treename="taxon" maptofield="name" rankid="60"/>
+    <field table="Determination" name="subclass1" onetomanysequence="0" treename="taxon" maptofield="name" rankid="70"/>
+    <field table="Determination" name="infraclass1" onetomanysequence="0" treename="taxon" maptofield="name" rankid="80"/>
+    <field table="Determination" name="superorder1" onetomanysequence="0" treename="taxon" maptofield="name" rankid="90"/>
+    <field table="Determination" name="order1" onetomanysequence="0" treename="taxon" maptofield="name" rankid="100"/>
+    <field table="Determination" name="suborder1" onetomanysequence="0" treename="taxon" maptofield="name" rankid="110"/>
+    <field table="Determination" name="infraorder1" onetomanysequence="0" treename="taxon" maptofield="name" rankid="120"/>
+    <field table="Determination" name="superfamily1" onetomanysequence="0" treename="taxon" maptofield="name" rankid="130"/>
     <field table="Determination" name="family1" onetomanysequence="0" treename="taxon" maptofield="name" rankid="140"/>
     <field table="Determination" name="subfamily1" onetomanysequence="0" treename="taxon" maptofield="name" rankid="150"/>
     <field table="Determination" name="tribe1" onetomanysequence="0" treename="taxon" maptofield="name" rankid="160"/>
@@ -178,6 +189,17 @@
     <field table="Determination" name="species1" onetomanysequence="0" treename="taxon" maptofield="name" rankid="220"/>
     <field table="Determination" name="subspecies1" onetomanysequence="0" treename="taxon" maptofield="name" rankid="230"/>
     <field table="Determination" name="variety1" onetomanysequence="0" treename="taxon" maptofield="name" rankid="240"/>
+    <field table="Determination" name="phylumAuthor1" onetomanysequence="0" treename="taxon" maptofield="author" rankid="30"/>
+    <field table="Determination" name="subphylumAuthor1" onetomanysequence="0" treename="taxon" maptofield="author" rankid="40"/>
+    <field table="Determination" name="superclassAuthor1" onetomanysequence="0" treename="taxon" maptofield="author" rankid="50"/>
+    <field table="Determination" name="classAuthor1" onetomanysequence="0" treename="taxon" maptofield="author" rankid="60"/>
+    <field table="Determination" name="subclassAuthor1" onetomanysequence="0" treename="taxon" maptofield="author" rankid="70"/>
+    <field table="Determination" name="infraclassAuthor1" onetomanysequence="0" treename="taxon" maptofield="author" rankid="80"/>
+    <field table="Determination" name="superorderAuthor1" onetomanysequence="0" treename="taxon" maptofield="author" rankid="90"/>
+    <field table="Determination" name="orderAuthor1" onetomanysequence="0" treename="taxon" maptofield="author" rankid="100"/>
+    <field table="Determination" name="suborderAuthor1" onetomanysequence="0" treename="taxon" maptofield="author" rankid="110"/>
+    <field table="Determination" name="infraorderAuthor1" onetomanysequence="0" treename="taxon" maptofield="author" rankid="120"/>
+    <field table="Determination" name="superfamilyAuthor1" onetomanysequence="0" treename="taxon" maptofield="author" rankid="130"/>
     <field table="Determination" name="familyAuthor1" onetomanysequence="0" treename="taxon" maptofield="author" rankid="140"/>
     <field table="Determination" name="subfamilyAuthor1" onetomanysequence="0" treename="taxon" maptofield="author" rankid="150"/>
     <field table="Determination" name="tribeAuthor1" onetomanysequence="0" treename="taxon" maptofield="author" rankid="160"/>
@@ -192,6 +214,17 @@
     <field table="Determination" name="determinerLastName2" onetomanysequence="1" relationshipname="determiner" relatedfieldname="lastName"/>
     <field table="Determination" name="determinerFirstName2" onetomanysequence="1" relationshipname="determiner" relatedfieldname="firstName"/>
     <field table="Determination" name="isCurrent2" actualname="isCurrent" onetomanysequence="1" relationshipname="collectionObject"/>
+    <field table="Determination" name="phylum2" onetomanysequence="1" treename="taxon" maptofield="name" rankid="30"/>
+    <field table="Determination" name="subphylum2" onetomanysequence="1" treename="taxon" maptofield="name" rankid="40"/>
+    <field table="Determination" name="superclass2" onetomanysequence="1" treename="taxon" maptofield="name" rankid="50"/>
+    <field table="Determination" name="class2" onetomanysequence="1" treename="taxon" maptofield="name" rankid="60"/>
+    <field table="Determination" name="subclass2" onetomanysequence="1" treename="taxon" maptofield="name" rankid="70"/>
+    <field table="Determination" name="infraclass2" onetomanysequence="1" treename="taxon" maptofield="name" rankid="80"/>
+    <field table="Determination" name="superorder2" onetomanysequence="1" treename="taxon" maptofield="name" rankid="90"/>
+    <field table="Determination" name="order2" onetomanysequence="1" treename="taxon" maptofield="name" rankid="100"/>
+    <field table="Determination" name="suborder2" onetomanysequence="1" treename="taxon" maptofield="name" rankid="110"/>
+    <field table="Determination" name="infraorder2" onetomanysequence="1" treename="taxon" maptofield="name" rankid="120"/>
+    <field table="Determination" name="superfamily2" onetomanysequence="1" treename="taxon" maptofield="name" rankid="130"/>
     <field table="Determination" name="family2" onetomanysequence="1" treename="taxon" maptofield="name" rankid="140"/>
     <field table="Determination" name="subfamily2" onetomanysequence="1" treename="taxon" maptofield="name" rankid="150"/>
     <field table="Determination" name="tribe2" onetomanysequence="1" treename="taxon" maptofield="name" rankid="160"/>
@@ -200,6 +233,17 @@
     <field table="Determination" name="species2" onetomanysequence="1" treename="taxon" maptofield="name" rankid="220"/>
     <field table="Determination" name="subspecies2" onetomanysequence="1" treename="taxon" maptofield="name" rankid="230"/>
     <field table="Determination" name="variety2" onetomanysequence="1" treename="taxon" maptofield="name" rankid="240"/>
+    <field table="Determination" name="phylumAuthor2" onetomanysequence="1" treename="taxon" maptofield="author" rankid="30"/>
+    <field table="Determination" name="subphylumAuthor2" onetomanysequence="1" treename="taxon" maptofield="author" rankid="40"/>
+    <field table="Determination" name="superclassAuthor2" onetomanysequence="1" treename="taxon" maptofield="author" rankid="50"/>
+    <field table="Determination" name="classAuthor2" onetomanysequence="1" treename="taxon" maptofield="author" rankid="60"/>
+    <field table="Determination" name="subclassAuthor2" onetomanysequence="1" treename="taxon" maptofield="author" rankid="70"/>
+    <field table="Determination" name="infraclassAuthor2" onetomanysequence="1" treename="taxon" maptofield="author" rankid="80"/>
+    <field table="Determination" name="superorderAuthor2" onetomanysequence="1" treename="taxon" maptofield="author" rankid="90"/>
+    <field table="Determination" name="orderAuthor2" onetomanysequence="1" treename="taxon" maptofield="author" rankid="100"/>
+    <field table="Determination" name="suborderAuthor2" onetomanysequence="1" treename="taxon" maptofield="author" rankid="110"/>
+    <field table="Determination" name="infraorderAuthor2" onetomanysequence="1" treename="taxon" maptofield="author" rankid="120"/>
+    <field table="Determination" name="superfamilyAuthor2" onetomanysequence="1" treename="taxon" maptofield="author" rankid="130"/>
     <field table="Determination" name="familyAuthor2" onetomanysequence="1" treename="taxon" maptofield="author" rankid="140"/>
     <field table="Determination" name="subfamilyAuthor2" onetomanysequence="1" treename="taxon" maptofield="author" rankid="150"/>
     <field table="Determination" name="tribeAuthor2" onetomanysequence="1" treename="taxon" maptofield="author" rankid="160"/>

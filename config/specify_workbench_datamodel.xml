@@ -206,6 +206,17 @@
     <field column="Determiner Last Name 1"  	name="determinerLastName1" type="java.lang.String" length="64"/>
     <field column="Determiner First Name 1" 	name="determinerFirstName1" type="java.lang.String" length="64"/>
     <field column="Is Current (Yes/No) 1"       name="isCurrent1" type="boolean"/>
+    <field column="Phylum 1"                 	name="phylum1" type="java.lang.String" length="64"/>
+    <field column="Subphylum 1"                 name="subphylum1" type="java.lang.String" length="64"/>
+    <field column="Superclass 1"                name="superclass1" type="java.lang.String" length="64"/>
+    <field column="Class 1"                 	name="class1" type="java.lang.String" length="64"/>
+    <field column="Subclass 1"                 	name="subclass1" type="java.lang.String" length="64"/>
+    <field column="Infraclass 1"                name="infraclass1" type="java.lang.String" length="64"/>
+    <field column="Superorder 1"                name="superorder1" type="java.lang.String" length="64"/>
+    <field column="Order 1"                 	name="order1" type="java.lang.String" length="64"/>
+    <field column="Suborder 1"                 	name="suborder1" type="java.lang.String" length="64"/>
+    <field column="Infraorder 1"                name="infraorder1" type="java.lang.String" length="64"/>
+    <field column="Superfamily 1"               name="superfamily1" type="java.lang.String" length="64"/>
     <field column="Family 1"                 	name="family1" type="java.lang.String" length="64"/>
     <field column="Subfamily 1"                 name="subfamily1" type="java.lang.String" length="64"/>
     <field column="Tribe 1"                 	name="tribe1" type="java.lang.String" length="64"/>
@@ -214,6 +225,17 @@
     <field column="Species 1"               	name="species1" type="java.lang.String" length="64"/>
     <field column="Subspecies 1"            	name="subspecies1" type="java.lang.String" length="64"/>
     <field column="Variety 1"               	name="variety1" type="java.lang.String" length="64"/>
+    <field column="Phylum Author 1" 			name="phylumAuthor1" type="java.lang.String" length="128"/>
+    <field column="Subphylum Author 1" 			name="subphylumAuthor1" type="java.lang.String" length="128"/>
+    <field column="Superclass Author 1" 		name="superclassAuthor1" type="java.lang.String" length="128"/>
+    <field column="Class Author 1" 			    name="classAuthor1" type="java.lang.String" length="128"/>
+    <field column="Subclass Author 1" 			name="subclassAuthor1" type="java.lang.String" length="128"/>
+    <field column="Infraclass Author 1" 		name="infraclassAuthor1" type="java.lang.String" length="128"/>
+    <field column="Superorder Author 1" 		name="superorderAuthor1" type="java.lang.String" length="128"/>
+    <field column="Order Author 1" 			    name="orderAuthor1" type="java.lang.String" length="128"/>
+    <field column="Suborder Author 1" 			name="suborderAuthor1" type="java.lang.String" length="128"/>
+    <field column="Infraorder Author 1" 		name="infraorderAuthor1" type="java.lang.String" length="128"/>
+    <field column="Superfamily Author 1" 		name="superfamilyAuthor1" type="java.lang.String" length="128"/>
     <field column="Family Author 1" 			name="familyAuthor1" type="java.lang.String" length="128"/>
     <field column="Subfamily Author 1" 			name="subfamilyAuthor1" type="java.lang.String" length="128"/>
     <field column="Tribe Author 1" 			    name="tribeAuthor1" type="java.lang.String" length="128"/>
@@ -228,6 +250,17 @@
     <field column="Determiner Last Name 2"  	name="determinerLastName2" type="java.lang.String" length="64"/>
     <field column="Determiner First Name 2" 	name="determinerFirstName2" type="java.lang.String" length="64"/>
     <field column="Is Current (Yes/No) 2"       name="isCurrent2" type="boolean"/>
+    <field column="Phylum 2"                 	name="phylum2" type="java.lang.String" length="64"/>
+    <field column="Subphylum 2"                 name="subphylum2" type="java.lang.String" length="64"/>
+    <field column="Superclass 2"                name="superclass2" type="java.lang.String" length="64"/>
+    <field column="Class 2"                 	name="class2" type="java.lang.String" length="64"/>
+    <field column="Subclass 2"                 	name="subclass2" type="java.lang.String" length="64"/>
+    <field column="Infraclass 2"                name="infraclass2" type="java.lang.String" length="64"/>
+    <field column="Superorder 2"                name="superorder2" type="java.lang.String" length="64"/>
+    <field column="Order 2"                 	name="order2" type="java.lang.String" length="64"/>
+    <field column="Suborder 2"                 	name="suborder2" type="java.lang.String" length="64"/>
+    <field column="Infraorder 2"                name="infraorder2" type="java.lang.String" length="64"/>
+    <field column="Superfamily 2"               name="superfamily2" type="java.lang.String" length="64"/>
     <field column="Family 2"                 	name="family2" type="java.lang.String" length="64"/>
     <field column="Subfamily 2"                 name="subfamily2" type="java.lang.String" length="64"/>
     <field column="Tribe 2"                 	name="tribe2" type="java.lang.String" length="64"/>
@@ -236,6 +269,17 @@
     <field column="Species 2"               	name="species2" type="java.lang.String" length="64"/>
     <field column="Subspecies 2"            	name="subspecies2" type="java.lang.String" length="64"/>
     <field column="Variety 2"               	name="variety2" type="java.lang.String" length="64"/>
+    <field column="Phylum Author 2" 			name="phylumAuthor2" type="java.lang.String" length="128"/>
+    <field column="Subphylum Author 2" 			name="subphylumAuthor2" type="java.lang.String" length="128"/>
+    <field column="Superclass Author 2" 		name="superclassAuthor2" type="java.lang.String" length="128"/>
+    <field column="Class Author 2" 			    name="classAuthor2" type="java.lang.String" length="128"/>
+    <field column="Subclass Author 2" 			name="subclassAuthor2" type="java.lang.String" length="128"/>
+    <field column="Infraclass Author 2" 		name="infraclassAuthor2" type="java.lang.String" length="128"/>
+    <field column="Superorder Author 2" 		name="superorderAuthor2" type="java.lang.String" length="128"/>
+    <field column="Order Author 2" 			    name="orderAuthor2" type="java.lang.String" length="128"/>
+    <field column="Suborder Author 2" 			name="suborderAuthor2" type="java.lang.String" length="128"/>
+    <field column="Infraorder Author 2" 		name="infraorderAuthor2" type="java.lang.String" length="128"/>
+    <field column="Superfamily Author 2" 		name="superfamilyAuthor2" type="java.lang.String" length="128"/>
     <field column="Family Author 2" 			name="familyAuthor2" type="java.lang.String" length="128"/>    <field column="Subfamily Author 1" 			name="subfamilyAuthor1" type="java.lang.String" length="128"/>
     <field column="Subfamily Author 2" 			name="subfamilyAuthor2" type="java.lang.String" length="128"/>
     <field column="Tribe Author 2" 			    name="tribeAuthor2" type="java.lang.String" length="128"/>
@@ -571,7 +615,7 @@
     <field column="Superfamily Source" name="superfamilySource" type="java.lang.String" length="64"/>
     <field column="Superfamily GUID" name="superfamilyGUID" type="java.lang.String" length="128"/>
 
-    <!--<field column="Family" name="family" type="java.lang.String" length="64"/>
+    <field column="Family" name="family" type="java.lang.String" length="64"/>
     <field column="Family Author" name="familyAuthor" type="java.lang.String" length="128"/>
     <field column="Family CommonName" name="familyCommonName" type="java.lang.String" length="128"/>
     <field column="Family Source" name="familySource" type="java.lang.String" length="64"/>
@@ -593,7 +637,7 @@
     <field column="Subtribe Author" name="subtribeAuthor" type="java.lang.String" length="128"/>
     <field column="Subtribe CommonName" name="subtribeCommonName" type="java.lang.String" length="128"/>
     <field column="Subtribe Source" name="subtribeSource" type="java.lang.String" length="64"/>
-    <field column="Subtribe GUID" name="subtribeGUID" type="java.lang.String" length="128"/>-->
+    <field column="Subtribe GUID" name="subtribeGUID" type="java.lang.String" length="128"/>
     <!--
     <field column="Genus" name="genus" type="java.lang.String" length="64"/>
     <field column="Subgenus" name="subgenus" type="java.lang.String" length="64"/>
