@@ -1212,6 +1212,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         
         // get the DB record that corresponds to the TreeNode
         T nodeRecord = getRecordForNode(node);
+        I treeDefItem = nodeRecord.getDefinitionItem();
         int numNodesToDelete = dataService.getDescendantCount(nodeRecord)+1;
         int userChoice = JOptionPane.OK_OPTION;
         
@@ -1229,6 +1230,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         {
             UIRegistry.writeGlassPaneMsg(getResourceString("TTV_Deleting"), 24);
             
+            
             TreeNode parent = listModel.getNodeById(node.getParentId());
             
             // hide the children of the parent node (which will hide the node we're going to delete)
@@ -1244,6 +1246,10 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                 statusBar.setErrorMessage(getResourceString("TTV_PROBLEM_DELETING"));
             }
 
+            if (!treeDefItem.hasTreeEntries())
+            {
+            	this.listCellRenderer.reset();
+            }
             // re-show the children of the parent node
             showChildren(parent);
             
@@ -2083,7 +2089,21 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                         
                         if (isNewObject)
                         {
-                            // show the children of the 
+                            //this ensures column for rank is added to tree view
+                        	for (Integer rank : listModel.getVisibleRanks())
+                            {
+                            	if (mergedNode.getRankId().equals(rank))
+                            	{
+                            		break;
+                            	}
+                            	if (mergedNode.getRankId().compareTo(rank) < 0)
+                            	{
+                            		TreeTableViewer.this.listCellRenderer.reset();
+                            		break;
+                            	}
+                            }
+                            
+                        	// show the children of the 
                             T parent = mergedNode.getParent();
                             if (parent != null)
                             {
