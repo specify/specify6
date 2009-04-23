@@ -10,7 +10,13 @@ td {
 	}
 	
 a {
-	color: #993300;
+	color: #FFFFFF;
+	text-decoration:none;
+	font-weight: bold;
+	}
+span.bannerhead {
+	color: #FFFFFF;
+	font-weight: bold;
 	}
 	
 a:hover {
@@ -141,4 +147,8 @@ td.brdreven {
 #odd {
 	/* color: #99CC66; */
 	}
+	
+table.banner {
+	background-repeat:no-repeat;
+}
 	
