@@ -30,6 +30,7 @@ import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.persist.ViewIFace;
 import edu.ku.brc.af.ui.forms.persist.ViewSetIFace;
 import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.datamodel.Discipline;
 
 /**
  * Abstract class for setting application context. It is designed that each application should implement its own.<br>
@@ -261,7 +262,8 @@ public abstract class AppContextMgr
      */
     public void setClassObject(final Class<?> clazz, final Object object)
     {
-        if (clazz == Collection.class)
+        System.out.println(clazz+" "+object);
+        if (clazz == Discipline.class || clazz == Collection.class)
         {
             int x= 0;
             x++;

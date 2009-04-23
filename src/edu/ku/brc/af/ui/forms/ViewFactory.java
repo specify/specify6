@@ -406,8 +406,7 @@ public class ViewFactory
                 return textField;
             }
             
-            ValFormattedTextField textField = new ValFormattedTextField(formatter, isViewOnly, allEditOK);
-            textField.setPartialOK(isPartialOK);
+            ValFormattedTextField textField = new ValFormattedTextField(formatter, isViewOnly, allEditOK, isPartialOK);
             textField.setRequired(isRequired);
             textField.setFromUIFmtOverride(isFromUIFmtOverride);
 
@@ -444,9 +443,8 @@ public class ViewFactory
             return vtfs;
         }
         // else
-        ValFormattedTextField vtf = new ValFormattedTextField(uiFormatterName, isViewOnly, allEditOK);
+        ValFormattedTextField vtf = new ValFormattedTextField(uiFormatterName, isViewOnly, allEditOK, isPartialOK);
         vtf.setEnabled(!cellField.isReadOnly());
-        vtf.setPartialOK(isPartialOK);
         vtf.setRequired(isRequired);
         vtf.setFromUIFmtOverride(isFromUIFmtOverride);
         return vtf;
