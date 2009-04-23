@@ -383,6 +383,12 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PickListEditorDlg.class, ex);
                 //log.error(ex);
                 pickListCache = null;
+            } finally
+            {
+                if (session != null)
+                {
+                    session.close();
+                }
             }
         }
     }
@@ -406,8 +412,9 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
     }
     
     /**
-     * @param pickList
-     * @return
+     * Edits and saves a PickList 
+     * @param pickList the PickList to be edited
+     * @return true if it was saved ok
      */
     protected boolean editPL(final PickList pickList)
     {
@@ -438,13 +445,14 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
         dlg.setHelpContext("PL_ITEM_EDITOR");
         dlg.setFormAdjuster(plBusRules);
         
-        MultiView multiView = dlg.getMultiView();
-        ValTextField tf = multiView.getKids().get(0).getCurrentViewAsFormViewObj().getCompById("value");
+        MultiView    multiView = dlg.getMultiView();
+        ValTextField tf        = multiView.getKids().get(0).getCurrentViewAsFormViewObj().getCompById("value");
         ArrayList<DocumentListener> listeners = new ArrayList<DocumentListener>();
         for (DocumentListener dl : ((ValPlainTextDocument)tf.getDocument()).getDocumentListeners())
         {
             listeners.add(dl);
         }
+        
         ValPlainTextDocument doc;
         if (fieldInfo != null && fieldInfo.getType().equals("java.lang.Byte"))
         {
@@ -495,32 +503,16 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
         
         if (selectedPL != null)
         {
-            PickList pickList   = null;
-            
-            DataProviderSessionIFace session = null;
-            try
-            {
-                session = DataProviderFactory.getInstance().createSession();
-                pickList = (PickList)session.getData("FROM PickList WHERE id = "+selectedPL.getId());
-                
-            } catch (Exception ex)
-            {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(PickListEditorDlg.class, ex);
-                //log.error(ex);
-                ex.printStackTrace();
-                
-            } finally 
-            {
-                if (session != null)
-                {
-                    session.close();
-                }
-            }
-            
+            PickList pickList = PickList.getDataObj(PickList.class, selectedPL.getId());
             if (pickList != null)
             {
-                editPL(pickList);
+                if (editPL(pickList))
+                {
+                    DefaultListModel model = ((DefaultListModel)list.getModel());
+                    int inx = model.indexOf(selectedPL);
+                    ((DefaultListModel)list.getModel()).removeElement(selectedPL);
+                    model.insertElementAt(pickList, inx);
+                }
             }
         }
     }

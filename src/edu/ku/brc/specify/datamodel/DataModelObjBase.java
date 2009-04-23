@@ -772,7 +772,11 @@ public abstract class DataModelObjBase implements FormDataObjIFace,
     {
         return super.toString() + " : " + timestampModified;
     }
-    
+
+    //-------------------------------------------------------------------
+    //-- Static Helper methods
+    //-------------------------------------------------------------------
+
     /**
      * @param cls
      * @param id
