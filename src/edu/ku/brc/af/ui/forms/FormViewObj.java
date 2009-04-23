@@ -97,6 +97,7 @@ import edu.ku.brc.af.auth.PermissionSettings;
 import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.RecordSetFactory;
+import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBInfoBase;
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
@@ -888,8 +889,30 @@ public class FormViewObj implements Viewable,
      * Adjust the Action and MenuItem for CarryForward.
      * @param isVisible whether is is visible
      */
-    private void adjustActionsAndMenus(final boolean isVisible)
+    private void adjustActionsAndMenus(final boolean isVisibleArg)
     {
+        // Temporary fix for Bug 7231
+        // A call to showView get put out on the event queue for other reasons
+        // and with a closeAll happening that call to show comes after the
+        // call to hide it. This is great, what needs to be fixed
+        // is not putting the call to showView on the event thread.
+        // the call is made in 'aboutToShow'
+        boolean isVisible = isVisibleArg;
+        if (isVisible)
+        {
+            Component p = mainComp.getParent();
+            while (p != null && !(p instanceof SubPaneIFace))
+            {
+                p = p.getParent();
+            }
+            // it isn't in the TabbedPane if the parent is null
+            if (p != null && p instanceof SubPaneIFace && p.getParent() == null)
+            {
+                isVisible = false;
+            }
+        }
+        // done with temporary fix
+        
         boolean isConfiged = isCarryForwardConfgured() && isVisible;
         enableActionAndMenu("CarryForward", isConfiged, isConfiged);
         
