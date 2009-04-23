@@ -73,9 +73,11 @@ import edu.ku.brc.af.ui.db.DatabaseConnectionProperties;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.dbsupport.CustomQueryFactory;
 import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.dbsupport.DBMSUserMgr;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.dbsupport.ResultsPager;
+import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.SpecifyUserTypes;
 import edu.ku.brc.specify.datamodel.Agent;
@@ -396,12 +398,14 @@ public class SpecifyDBConverter
      * @param databaseNameDest name of new DB
      * @throws Exception xx
      */
-    protected  void convertDB(final String databaseNameSource, 
-                              final String databaseNameDest, 
-                              final boolean isCustomConvert,
+    protected  void convertDB(final String                       databaseNameSource, 
+                              final String                       databaseNameDest, 
+                              final boolean                      isCustomConvert,
                               final DatabaseConnectionProperties sourceDbProps,
                               final DatabaseConnectionProperties destDbProps) throws Exception
     {
+        System.setProperty(DBMSUserMgr.factoryName, "edu.ku.brc.dbsupport.MySQLDMBSUserMgr");
+
         AppContextMgr.getInstance().clear();
         
         boolean doAll               = true; 
@@ -457,18 +461,18 @@ public class SpecifyDBConverter
         
         log.debug("Custom Convert Source Properties ----------------------");
         log.debug("databaseNameSource: " + databaseNameSource);        
-        log.debug("userNameSource: " + userNameSource);
-        log.debug("passwordSource: " + passwordSource);
-        log.debug("driverNameSource: " + driverNameSource);
+        log.debug("userNameSource: "     + userNameSource);
+        log.debug("passwordSource: "     + passwordSource);
+        log.debug("driverNameSource: "   + driverNameSource);
         log.debug("databaseHostSource: " + databaseHostSource);
         
         log.debug("Custom Convert Destination Properties ----------------------");
         log.debug("databaseNameDest: " + databaseNameDest);
-        log.debug("userNameDest: " + userNameDest);
-        log.debug("passwordDest: " + passwordDest);
-        log.debug("driverNameDest: " + driverNameDest);
+        log.debug("userNameDest: "     + userNameDest);
+        log.debug("passwordDest: "     + passwordDest);
+        log.debug("driverNameDest: "   + driverNameDest);
         log.debug("databaseHostDest: " + databaseHostDest);
-
+        
         driverInfoSource = DatabaseDriverInfo.getDriver(driverNameSource);
         driverInfoDest   = DatabaseDriverInfo.getDriver(driverNameDest);
         
@@ -559,6 +563,14 @@ public class SpecifyDBConverter
             boolean doConvert = true;
             if (doConvert)
             {
+                boolean rv = BuildSampleDatabase.createSpecifySAUser(databaseHostDest,
+                        userNameSource, 
+                        passwordSource,
+                        "Master",
+                        "Master",
+                        databaseNameDest);
+
+
                 log.debug("SOURCE driver class: "      + driverInfoSource.getDriverClassName());
                 log.debug("SOURCE dialect class: "     + driverInfoSource.getDialectClassName());       
                 log.debug("SOURCE Connection String: " + driverInfoSource.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, databaseHostSource, databaseNameSource, userNameSource, passwordSource, driverNameSource));
@@ -598,83 +610,6 @@ public class SpecifyDBConverter
                 //---------------------------------------------------------------------------------------
                 conversion.doInitialize();
                 
-                /*if (false)
-                {
-                    frame.incOverall();
-                    
-                    BasicSQLUtils.deleteAllRecordsFromTable("picklist", BasicSQLUtils.myDestinationServerType);
-                    BasicSQLUtils.deleteAllRecordsFromTable("picklistitem", BasicSQLUtils.myDestinationServerType);
-
-                    if (getSession() != null)
-                    {
-                        getSession().close();
-                        setSession(null);
-                    }
-                    
-                    Collection collection   = null;
-                    Discipline dscp         = null;
-                    Session    localSession = HibernateUtil.getNewSession();
-                    try
-                    {
-                        if (conversion.getCurDisciplineID() == null || conversion.getCurDisciplineID() == 0)
-                        {
-                            List<?> list = localSession.createQuery("FROM Discipline").list();
-                            if (list.size() > 0)
-                            {
-                                dscp = (Discipline)list.get(0);
-                            }
-                            
-                        } else
-                        {
-                            List<?> list = localSession.createQuery("FROM Discipline WHERE disciplineId = "+conversion.getCurDisciplineID()).list();
-                            dscp = (Discipline)list.get(0);
-                        }
-                        AppContextMgr.getInstance().setClassObject(Discipline.class, dscp);
-                        
-                        if (dscp != null && dscp.getCollections().size() == 1)
-                        {
-                            collection = dscp.getCollections().iterator().next();
-                        }
-                        
-                        if (collection == null)
-                        {
-                            if (conversion.getCurCollectionID() == null || conversion.getCurCollectionID() == 0)
-                            {
-                                List<?> list = localSession.createQuery("FROM Collection").list();
-                                collection = (Collection)list.get(0);
-                                
-                            } else
-                            {
-                                List<?> list = localSession.createQuery("FROM Collection WHERE collectionId = "+conversion.getCurDisciplineID()).list();
-                                collection = (Collection)list.get(0);
-                            }
-                        }
-                        AppContextMgr.getInstance().setClassObject(Collection.class, collection);
-                        
-                        conversion.convertUSYSTables(localSession, collection);
-                        
-                        
-                        frame.setDesc("Creating PickLists from XML.");
-                        BuildSampleDatabase.createPickLists(localSession, null, true, collection);
-                        BuildSampleDatabase.createPickLists(localSession, dscp, true, collection);
-                        
-                        Transaction trans = localSession.beginTransaction();
-                        localSession.saveOrUpdate(collection);
-                        trans.commit();
-                        localSession.flush();
-                        
-                    } catch (Exception ex)
-                    {
-                        ex.printStackTrace();
-                    } finally
-                    {
-                        localSession.close();
-                    }
-                    frame.incOverall();
-                    return;
-                }*/
-  
-
                 if (startfromScratch)
                 {
                     BasicSQLUtils.deleteAllRecordsFromTable(conversion.getNewDBConnection(), "agent", BasicSQLUtils.myDestinationServerType);
@@ -755,7 +690,9 @@ public class SpecifyDBConverter
                         
                         //specifyUser = createSpecifyUser(username, email, password, userType);
                         Institution institution = (Institution)getSession().createQuery("FROM Institution").list().get(0);
-                        specifyUser = createAdminGroupAndUser(getSession(), institution,  username, email, password, userType);
+                        
+                        String encrypted = Encryption.encrypt(password, password);
+                        specifyUser = createAdminGroupAndUser(getSession(), institution,  username, email, encrypted, userType);
                         specifyUser.addReference(userAgent, "agents");
                         
                         getSession().saveOrUpdate(institution);

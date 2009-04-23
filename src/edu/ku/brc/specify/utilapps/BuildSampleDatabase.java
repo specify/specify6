@@ -85,6 +85,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
@@ -9034,6 +9035,48 @@ public class BuildSampleDatabase
         persist(newGeo);
         
         return newGeo;
+    }
+    
+    /**
+     * @param fmt
+     */
+    public static void fixNumericCatalogNumbers(final UIFieldFormatterIFace fmt)
+    {
+        Connection conn     = DBConnection.getInstance().createConnection();
+        Statement  stmt     = null;
+        Statement  updtStmt = null;
+        try
+        {
+             stmt = conn.createStatement();
+             updtStmt = conn.createStatement();
+            
+            ResultSet rs = stmt.executeQuery("select CollectionObjectID, CatalogNumber FROM collectionobject");
+            while (rs.next())
+            {
+                int id        = rs.getInt(1);
+                String catNum = (String)fmt.formatFromUI(rs.getString(2));
+                
+                updtStmt.executeUpdate("UPDATE collectionobject SET CatalogNumber='"+catNum+"' WHERE CollectionObjectID = "+id);
+            }
+            rs.close();
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            
+        } finally
+        {
+            try
+            {
+                stmt.close();
+                updtStmt.close();
+                conn.close();
+                
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
+        }
     }
 
 }
