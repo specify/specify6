@@ -19,6 +19,8 @@
 */
 package edu.ku.brc.specify.datamodel;
 
+import edu.ku.brc.ui.UIRegistry;
+
 /**
  * @author timbo
  *
@@ -29,6 +31,7 @@ package edu.ku.brc.specify.datamodel;
 public class TreeDefItemStandardEntry
 {
     protected final String name;
+	protected final String title;
     protected final int rank;
     /**
      * @param name
@@ -38,14 +41,15 @@ public class TreeDefItemStandardEntry
     {
         super();
         this.name = name;
+        this.title = UIRegistry.getResourceString(name);
         this.rank = rank;
     }
     /**
      * @return the name
      */
-    public String getName()
+    public String getTitle()
     {
-        return name;
+        return title;
     }
     /**
      * @return the rank
@@ -54,13 +58,22 @@ public class TreeDefItemStandardEntry
     {
         return rank;
     }
-    /* (non-Javadoc)
+    
+    
+    /**
+	 * @return the name
+	 */
+	public String getName()
+	{
+		return name;
+	}
+	/* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
     public String toString()
     {
-        return getName();
+        return getTitle();
     }
     
     

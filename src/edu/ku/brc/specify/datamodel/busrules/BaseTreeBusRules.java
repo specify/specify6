@@ -581,7 +581,7 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
                 TreeDefItemStandardEntry stdLevel = null;
                 for (TreeDefItemStandardEntry std : stds)
                 {
-                    if (std.getName().equals(nodeInForm.getName()) && std.getRank() == nodeInForm.getRankId())
+                    if (std.getTitle().equals(nodeInForm.getName()) && std.getRank() == nodeInForm.getRankId())
                     {
                         stdLevel = std;
                         break;

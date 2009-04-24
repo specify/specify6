@@ -37,8 +37,6 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
-import edu.ku.brc.ui.UIRegistry;
-
 @SuppressWarnings("serial") //$NON-NLS-1$
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
@@ -399,10 +397,10 @@ public class GeographyTreeDef extends BaseTreeDef<Geography, GeographyTreeDef, G
     public List<TreeDefItemStandardEntry> getStandardLevels()
     {
         List<TreeDefItemStandardEntry> result = new LinkedList<TreeDefItemStandardEntry>();    
-        result.add(new TreeDefItemStandardEntry(UIRegistry.getResourceString("GeographyTreeDef.9"), 100)); //$NON-NLS-1$
-        result.add(new TreeDefItemStandardEntry(UIRegistry.getResourceString("GeographyTreeDef.10"), 200)); //$NON-NLS-1$
-        result.add(new TreeDefItemStandardEntry(UIRegistry.getResourceString("GeographyTreeDef.11"), 300)); //$NON-NLS-1$
-        result.add(new TreeDefItemStandardEntry(UIRegistry.getResourceString("GeographyTreeDef.12"), 400)); //$NON-NLS-1$
+        result.add(new TreeDefItemStandardEntry("Continent", 100)); //$NON-NLS-1$
+        result.add(new TreeDefItemStandardEntry("Country", 200)); //$NON-NLS-1$
+        result.add(new TreeDefItemStandardEntry("State", 300)); //$NON-NLS-1$
+        result.add(new TreeDefItemStandardEntry("County", 400)); //$NON-NLS-1$
         return result;
     }
 

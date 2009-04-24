@@ -938,7 +938,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
         newItem.setIsEnforced(isRequiredLevel);
         if (stdLevel.getRank() != -1 )
         {
-            newItem.setName(stdLevel.getName());
+            newItem.setName(stdLevel.getTitle());
         }
         // we can only set the pointers from the newItem side right now
         // otherwise, if the user cancels, we end up with 'dirty' collections in the other objects

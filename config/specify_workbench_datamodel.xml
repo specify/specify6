@@ -206,7 +206,7 @@
     <field column="Determiner Last Name 1"  	name="determinerLastName1" type="java.lang.String" length="64"/>
     <field column="Determiner First Name 1" 	name="determinerFirstName1" type="java.lang.String" length="64"/>
     <field column="Is Current (Yes/No) 1"       name="isCurrent1" type="boolean"/>
-    <!-- removing upper ranks from determination until documentation and validation are completed #7247
+    <!-- removing upper ranks from determination until documentation and validation are completed #7247-->
     <field column="Phylum 1"                 	name="phylum1" type="java.lang.String" length="64"/>
     <field column="Subphylum 1"                 name="subphylum1" type="java.lang.String" length="64"/>
     <field column="Superclass 1"                name="superclass1" type="java.lang.String" length="64"/>
@@ -221,12 +221,12 @@
     <field column="Family 1"                 	name="family1" type="java.lang.String" length="64"/>
     <field column="Subfamily 1"                 name="subfamily1" type="java.lang.String" length="64"/>
     <field column="Tribe 1"                 	name="tribe1" type="java.lang.String" length="64"/>
-    <field column="Subtribe 1"                 	name="subtribe1" type="java.lang.String" length="64"/>-->
+    <field column="Subtribe 1"                 	name="subtribe1" type="java.lang.String" length="64"/>
     <field column="Genus 1"                 	name="genus1" type="java.lang.String" length="64"/>
     <field column="Species 1"               	name="species1" type="java.lang.String" length="64"/>
     <field column="Subspecies 1"            	name="subspecies1" type="java.lang.String" length="64"/>
     <field column="Variety 1"               	name="variety1" type="java.lang.String" length="64"/>
-    <!-- removing upper ranks from determination until documentation and validation are completed #7247
+    <!-- removing upper ranks from determination until documentation and validation are completed #7247-->
     <field column="Phylum Author 1" 			name="phylumAuthor1" type="java.lang.String" length="128"/>
     <field column="Subphylum Author 1" 			name="subphylumAuthor1" type="java.lang.String" length="128"/>
     <field column="Superclass Author 1" 		name="superclassAuthor1" type="java.lang.String" length="128"/>
@@ -241,7 +241,7 @@
     <field column="Family Author 1" 			name="familyAuthor1" type="java.lang.String" length="128"/>
     <field column="Subfamily Author 1" 			name="subfamilyAuthor1" type="java.lang.String" length="128"/>
     <field column="Tribe Author 1" 			    name="tribeAuthor1" type="java.lang.String" length="128"/>
-    <field column="Subtribe Author 1" 			name="subtribeAuthor1" type="java.lang.String" length="128"/>-->
+    <field column="Subtribe Author 1" 			name="subtribeAuthor1" type="java.lang.String" length="128"/>
     <field column="Genus Author 1" 			    name="genusAuthor1" type="java.lang.String" length="128"/>
     <field column="Species Author 1" 			name="speciesAuthor1" type="java.lang.String" length="128"/>
     <field column="Subspecies Author 1" 		name="subspeciesAuthor1" type="java.lang.String" length="128"/>
@@ -252,7 +252,7 @@
     <field column="Determiner Last Name 2"  	name="determinerLastName2" type="java.lang.String" length="64"/>
     <field column="Determiner First Name 2" 	name="determinerFirstName2" type="java.lang.String" length="64"/>
     <field column="Is Current (Yes/No) 2"       name="isCurrent2" type="boolean"/>
-    <!-- removing upper ranks from determination until documentation and validation are completed #7247
+    <!-- removing upper ranks from determination until documentation and validation are completed #7247-->
     <field column="Phylum 2"                 	name="phylum2" type="java.lang.String" length="64"/>
     <field column="Subphylum 2"                 name="subphylum2" type="java.lang.String" length="64"/>
     <field column="Superclass 2"                name="superclass2" type="java.lang.String" length="64"/>
@@ -267,12 +267,12 @@
     <field column="Family 2"                 	name="family2" type="java.lang.String" length="64"/>
     <field column="Subfamily 2"                 name="subfamily2" type="java.lang.String" length="64"/>
     <field column="Tribe 2"                 	name="tribe2" type="java.lang.String" length="64"/>
-    <field column="Subtribe 2"                 	name="subtribe2" type="java.lang.String" length="64"/>-->
+    <field column="Subtribe 2"                 	name="subtribe2" type="java.lang.String" length="64"/>
     <field column="Genus 2"                 	name="genus2" type="java.lang.String" length="64"/>
     <field column="Species 2"               	name="species2" type="java.lang.String" length="64"/>
     <field column="Subspecies 2"            	name="subspecies2" type="java.lang.String" length="64"/>
     <field column="Variety 2"               	name="variety2" type="java.lang.String" length="64"/>
-    <!-- removing upper ranks from determination until documentation and validation are completed #7247
+    <!-- removing upper ranks from determination until documentation and validation are completed #7247-->
     <field column="Phylum Author 2" 			name="phylumAuthor2" type="java.lang.String" length="128"/>
     <field column="Subphylum Author 2" 			name="subphylumAuthor2" type="java.lang.String" length="128"/>
     <field column="Superclass Author 2" 		name="superclassAuthor2" type="java.lang.String" length="128"/>
@@ -287,7 +287,7 @@
     <field column="Family Author 2" 			name="familyAuthor2" type="java.lang.String" length="128"/>    
     <field column="Subfamily Author 2" 			name="subfamilyAuthor2" type="java.lang.String" length="128"/>
     <field column="Tribe Author 2" 			    name="tribeAuthor2" type="java.lang.String" length="128"/>
-    <field column="Subtribe Author 2" 			name="subtribeAuthor2" type="java.lang.String" length="128"/>-->    
+    <field column="Subtribe Author 2" 			name="subtribeAuthor2" type="java.lang.String" length="128"/>    
     <field column="Genus Author 2" 			    name="genusAuthor2" type="java.lang.String" length="128"/>
     <field column="Species Author 2" 			name="speciesAuthor2" type="java.lang.String" length="128"/>
     <field column="Subspecies Author 2" 		name="subspeciesAuthor2" type="java.lang.String" length="128"/>

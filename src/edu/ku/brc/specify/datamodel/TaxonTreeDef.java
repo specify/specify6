@@ -37,8 +37,6 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
-import edu.ku.brc.ui.UIRegistry;
-
 @SuppressWarnings("serial") //$NON-NLS-1$
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
@@ -102,43 +100,79 @@ public class TaxonTreeDef extends BaseTreeDef<Taxon, TaxonTreeDef, TaxonTreeDefI
     @Transient
     public List<TreeDefItemStandardEntry> getStandardLevels()
     {
-        if (stdLevels == null)
-        {
-        	stdLevels = new LinkedList<TreeDefItemStandardEntry>();
-       
-        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(TAXONOMY_ROOT), TAXONOMY_ROOT));
-        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(KINGDOM), KINGDOM));
-        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(SUBKINGDOM), SUBKINGDOM));
-        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(DIVISION), DIVISION));
-        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(PHYLUM+1), PHYLUM));
-        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(SUBDIVISION), SUBDIVISION));
-        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(SUBPHYLUM+1), SUBPHYLUM));
-        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(SUPERCLASS), SUPERCLASS));
-        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(CLASS), CLASS));
-        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(SUBCLASS), SUBCLASS));
-        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(INFRACLASS), INFRACLASS));
-        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(SUPERORDER), SUPERORDER));
-        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(ORDER), ORDER));
-        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(SUBORDER), SUBORDER));
-        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(INFRAORDER), INFRAORDER));
-        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(SUPERFAMILY), SUPERFAMILY));
-        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(FAMILY), FAMILY));
-        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(SUBFAMILY), SUBFAMILY));
-        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(TRIBE), TRIBE));
-        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(SUBTRIBE), SUBTRIBE));
-        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(GENUS), GENUS));
-        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(SUBGENUS), SUBGENUS));
-        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(SECTION), SECTION));
-        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(SUBSECTION), SUBSECTION));
-        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(SPECIES), SPECIES));
-        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(SUBSPECIES), SUBSPECIES));
-        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(VARIETY), VARIETY));
-        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(SUBVARIETY), SUBVARIETY));
-        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(FORMA), FORMA));
-        	stdLevels.add(new TreeDefItemStandardEntry(getLocalizedLevelName(SUBFORMA), SUBFORMA));
-        }
-        return new LinkedList<TreeDefItemStandardEntry>(stdLevels);
+    	if (stdLevels == null)
+    	{
+    		stdLevels = getStandardLevelsStatic();
+    	}
+    	return new LinkedList<TreeDefItemStandardEntry>(stdLevels);
     }
+    
+    /**
+     * @return list of standard taxon ranks.
+     */
+    @Transient
+    public static List<TreeDefItemStandardEntry> getStandardLevelsStatic()
+	{
+		LinkedList<TreeDefItemStandardEntry> result = new LinkedList<TreeDefItemStandardEntry>();
+
+		result.add(new TreeDefItemStandardEntry(getLevelName(TAXONOMY_ROOT),
+				TAXONOMY_ROOT));
+		result.add(new TreeDefItemStandardEntry(getLevelName(KINGDOM),
+				KINGDOM));
+		result.add(new TreeDefItemStandardEntry(getLevelName(SUBKINGDOM),
+				SUBKINGDOM));
+		result.add(new TreeDefItemStandardEntry(getLevelName(DIVISION),
+				DIVISION));
+		result.add(new TreeDefItemStandardEntry(getLevelName(PHYLUM + 1),
+				PHYLUM));
+		result.add(new TreeDefItemStandardEntry(getLevelName(SUBDIVISION),
+				SUBDIVISION));
+		result.add(new TreeDefItemStandardEntry(getLevelName(SUBPHYLUM + 1),
+				SUBPHYLUM));
+		result.add(new TreeDefItemStandardEntry(getLevelName(SUPERCLASS),
+				SUPERCLASS));
+		result.add(new TreeDefItemStandardEntry(getLevelName(CLASS), CLASS));
+		result.add(new TreeDefItemStandardEntry(getLevelName(SUBCLASS),
+				SUBCLASS));
+		result.add(new TreeDefItemStandardEntry(getLevelName(INFRACLASS),
+				INFRACLASS));
+		result.add(new TreeDefItemStandardEntry(getLevelName(SUPERORDER),
+				SUPERORDER));
+		result.add(new TreeDefItemStandardEntry(getLevelName(ORDER), ORDER));
+		result.add(new TreeDefItemStandardEntry(getLevelName(SUBORDER),
+				SUBORDER));
+		result.add(new TreeDefItemStandardEntry(getLevelName(INFRAORDER),
+				INFRAORDER));
+		result.add(new TreeDefItemStandardEntry(getLevelName(SUPERFAMILY),
+				SUPERFAMILY));
+		result
+				.add(new TreeDefItemStandardEntry(getLevelName(FAMILY), FAMILY));
+		result.add(new TreeDefItemStandardEntry(getLevelName(SUBFAMILY),
+				SUBFAMILY));
+		result.add(new TreeDefItemStandardEntry(getLevelName(TRIBE), TRIBE));
+		result.add(new TreeDefItemStandardEntry(getLevelName(SUBTRIBE),
+				SUBTRIBE));
+		result.add(new TreeDefItemStandardEntry(getLevelName(GENUS), GENUS));
+		result.add(new TreeDefItemStandardEntry(getLevelName(SUBGENUS),
+				SUBGENUS));
+		result.add(new TreeDefItemStandardEntry(getLevelName(SECTION),
+				SECTION));
+		result.add(new TreeDefItemStandardEntry(getLevelName(SUBSECTION),
+				SUBSECTION));
+		result.add(new TreeDefItemStandardEntry(getLevelName(SPECIES),
+				SPECIES));
+		result.add(new TreeDefItemStandardEntry(getLevelName(SUBSPECIES),
+				SUBSPECIES));
+		result.add(new TreeDefItemStandardEntry(getLevelName(VARIETY),
+				VARIETY));
+		result.add(new TreeDefItemStandardEntry(getLevelName(SUBVARIETY),
+				SUBVARIETY));
+		result.add(new TreeDefItemStandardEntry(getLevelName(FORMA), FORMA));
+		result.add(new TreeDefItemStandardEntry(getLevelName(SUBFORMA),
+				SUBFORMA));
+
+		return result;
+	}
     
     /* (non-Javadoc)
 	 * @see edu.ku.brc.specify.datamodel.BaseTreeDef#isRequiredLevel(int)
@@ -171,40 +205,40 @@ public class TaxonTreeDef extends BaseTreeDef<Taxon, TaxonTreeDef, TaxonTreeDefI
      * @return localized text corresponding to levelRank.
      */
     @Transient
-    protected String getLocalizedLevelName(final int levelRank)
+    protected static String getLevelName(final int levelRank)
     {
         switch (levelRank)
         {
-            case TAXONOMY_ROOT: return UIRegistry.getResourceString("TaxonTreeDef.2"); //$NON-NLS-1$
-            case KINGDOM: return UIRegistry.getResourceString("TaxonTreeDef.3"); //$NON-NLS-1$
-            case SUBKINGDOM: return UIRegistry.getResourceString(UIRegistry.getResourceString("TaxonTreeDef.0"));  //$NON-NLS-1$
-            case DIVISION: return UIRegistry.getResourceString(UIRegistry.getResourceString("TaxonTreeDef.1"));  //$NON-NLS-1$
-            case PHYLUM+1: return UIRegistry.getResourceString(UIRegistry.getResourceString("TaxonTreeDef.28"));  //$NON-NLS-1$
-            case SUBDIVISION: return UIRegistry.getResourceString(UIRegistry.getResourceString("TaxonTreeDef.29"));  //$NON-NLS-1$
-            case SUBPHYLUM+1: return UIRegistry.getResourceString(UIRegistry.getResourceString("TaxonTreeDef.4"));  //$NON-NLS-1$
-            case SUPERCLASS: return UIRegistry.getResourceString(UIRegistry.getResourceString("TaxonTreeDef.5"));  //$NON-NLS-1$
-            case CLASS: return UIRegistry.getResourceString(UIRegistry.getResourceString("TaxonTreeDef.6"));  //$NON-NLS-1$
-            case SUBCLASS: return UIRegistry.getResourceString(UIRegistry.getResourceString("TaxonTreeDef.7"));  //$NON-NLS-1$
-            case INFRACLASS: return UIRegistry.getResourceString(UIRegistry.getResourceString("TaxonTreeDef.8"));  //$NON-NLS-1$
-            case SUPERORDER: return UIRegistry.getResourceString(UIRegistry.getResourceString("TaxonTreeDef.9"));  //$NON-NLS-1$
-            case ORDER: return UIRegistry.getResourceString(UIRegistry.getResourceString("TaxonTreeDef.10"));  //$NON-NLS-1$
-            case SUBORDER: return UIRegistry.getResourceString(UIRegistry.getResourceString("TaxonTreeDef.11"));  //$NON-NLS-1$
-            case INFRAORDER: return UIRegistry.getResourceString(UIRegistry.getResourceString("TaxonTreeDef.12"));  //$NON-NLS-1$
-            case SUPERFAMILY: return UIRegistry.getResourceString(UIRegistry.getResourceString("TaxonTreeDef.13"));  //$NON-NLS-1$
-            case FAMILY: return UIRegistry.getResourceString(UIRegistry.getResourceString("TaxonTreeDef.14"));  //$NON-NLS-1$
-            case SUBFAMILY: return UIRegistry.getResourceString(UIRegistry.getResourceString("TaxonTreeDef.15"));  //$NON-NLS-1$
-            case TRIBE: return UIRegistry.getResourceString(UIRegistry.getResourceString("TaxonTreeDef.16"));  //$NON-NLS-1$
-            case SUBTRIBE: return UIRegistry.getResourceString(UIRegistry.getResourceString("TaxonTreeDef.17"));  //$NON-NLS-1$
-            case GENUS: return UIRegistry.getResourceString(UIRegistry.getResourceString("TaxonTreeDef.18"));  //$NON-NLS-1$
-            case SUBGENUS: return UIRegistry.getResourceString(UIRegistry.getResourceString("TaxonTreeDef.19"));  //$NON-NLS-1$
-            case SECTION: return UIRegistry.getResourceString(UIRegistry.getResourceString("TaxonTreeDef.20"));  //$NON-NLS-1$
-            case SUBSECTION: return UIRegistry.getResourceString(UIRegistry.getResourceString("TaxonTreeDef.21"));  //$NON-NLS-1$
-            case SPECIES: return UIRegistry.getResourceString(UIRegistry.getResourceString("TaxonTreeDef.22"));  //$NON-NLS-1$
-            case SUBSPECIES: return UIRegistry.getResourceString(UIRegistry.getResourceString("TaxonTreeDef.23"));  //$NON-NLS-1$
-            case VARIETY: return UIRegistry.getResourceString(UIRegistry.getResourceString("TaxonTreeDef.24"));  //$NON-NLS-1$
-            case SUBVARIETY: return UIRegistry.getResourceString(UIRegistry.getResourceString("TaxonTreeDef.25"));  //$NON-NLS-1$
-            case FORMA: return UIRegistry.getResourceString(UIRegistry.getResourceString("TaxonTreeDef.26"));  //$NON-NLS-1$
-            case SUBFORMA: return UIRegistry.getResourceString(UIRegistry.getResourceString("TaxonTreeDef.27"));  //$NON-NLS-1$
+            case TAXONOMY_ROOT: return "Root"; //$NON-NLS-1$
+            case KINGDOM: return "Kingdom"; //$NON-NLS-1$
+            case SUBKINGDOM: return "Subkingdom";  //$NON-NLS-1$
+            case DIVISION: return "Division";  //$NON-NLS-1$
+            case PHYLUM+1: return "Phylum";  //$NON-NLS-1$
+            case SUBDIVISION: return "Subdivision";  //$NON-NLS-1$
+            case SUBPHYLUM+1: return "Subphylum";  //$NON-NLS-1$
+            case SUPERCLASS: return "Superclass";  //$NON-NLS-1$
+            case CLASS: return "Class";  //$NON-NLS-1$
+            case SUBCLASS: return "Subclass";  //$NON-NLS-1$
+            case INFRACLASS: return "Infraclass";  //$NON-NLS-1$
+            case SUPERORDER: return "Superorder";  //$NON-NLS-1$
+            case ORDER: return "Order";  //$NON-NLS-1$
+            case SUBORDER: return "Suborder";  //$NON-NLS-1$
+            case INFRAORDER: return "Infraorder";  //$NON-NLS-1$
+            case SUPERFAMILY: return "Superfamily";  //$NON-NLS-1$
+            case FAMILY: return "Family";  //$NON-NLS-1$
+            case SUBFAMILY: return "Subfamily";  //$NON-NLS-1$
+            case TRIBE: return "Tribe";  //$NON-NLS-1$
+            case SUBTRIBE: return "Subtribe";  //$NON-NLS-1$
+            case GENUS: return "Genus";  //$NON-NLS-1$
+            case SUBGENUS: return "Subgenus";  //$NON-NLS-1$
+            case SECTION: return "Section";  //$NON-NLS-1$
+            case SUBSECTION: return "Subsection";  //$NON-NLS-1$
+            case SPECIES: return "Species";  //$NON-NLS-1$
+            case SUBSPECIES: return "Subspecies";  //$NON-NLS-1$
+            case VARIETY: return "Variety";  //$NON-NLS-1$
+            case SUBVARIETY: return "Subvariety";  //$NON-NLS-1$
+            case FORMA: return "Forma";  //$NON-NLS-1$
+            case SUBFORMA: return "Subforma";  //$NON-NLS-1$
         }
         return null;
     }
