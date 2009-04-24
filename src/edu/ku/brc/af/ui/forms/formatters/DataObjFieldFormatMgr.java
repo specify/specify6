@@ -105,6 +105,18 @@ public class DataObjFieldFormatMgr
     }
     
     /**
+     * Resets the Mgr so it gets reloaded.
+     */
+    public static void reset()
+    {
+        if (instance != null)
+        {
+            instance.save();
+        }
+        instance = null;
+    }
+    
+    /**
      * 
      */
     private void init()
@@ -193,7 +205,7 @@ public class DataObjFieldFormatMgr
     /**
      * Resets the cache.
      */
-    protected void reset()
+    protected void resetInternal()
     {
         formatHash.clear();
         formatClassHash.clear();
@@ -207,7 +219,7 @@ public class DataObjFieldFormatMgr
      */
     public void load()
     {
-        reset();
+        resetInternal();
         
         try
         {

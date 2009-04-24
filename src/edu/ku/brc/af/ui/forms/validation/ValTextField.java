@@ -493,7 +493,30 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
         protected JTextField                      textField;
         protected UIFieldFormatterField.FieldType fieldType;
         protected int                             docLenLimit;
+        protected int                             minVal;
+        protected int                             maxVal;
         
+        /**
+         * Create a special formatted document
+         * @param textField the textfield the document is associated with
+         * @param formatter the formatter
+         * @param limit the length of the format
+         * @param minVal the min value for the number
+         * @param maxVal the max value for the number
+         */
+        public JFormattedDoc(final JTextField textField, 
+                             final int        limit,
+                             final int        minVal,
+                             final int        maxVal)
+        {
+            super();
+            this.textField    = textField;
+            this.fieldType    = UIFieldFormatterField.FieldType.numeric;
+            this.docLenLimit  = limit;
+            this.minVal       = minVal;
+            this.maxVal       = maxVal;
+        }
+
         /**
          * Create a special formatted document
          * @param textField the textfield the document is associated with
@@ -509,6 +532,10 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
             this.textField    = textField;
             this.fieldType    = fieldType;
             this.docLenLimit  = limit;
+            
+            this.minVal       = Integer.MIN_VALUE;
+            this.maxVal       = Integer.MAX_VALUE;
+
         }
 
         /**
@@ -530,10 +557,13 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
             {
                 return false;
 
-            } else if (fieldType == UIFieldFormatterField.FieldType.numeric && !StringUtils.isNumeric(str))
+            } else if (fieldType == UIFieldFormatterField.FieldType.numeric)
             {
+                if (StringUtils.isNumeric(str))
+                {
+                    return isNumValOK(str);
+                }
                 return false;
-
             }
             return true;
         }
@@ -545,6 +575,23 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
         public void remove(int offset, int len) throws BadLocationException
         {
             super.remove(offset, len);
+        }
+        
+        /**
+         * @return
+         */
+        private boolean isNumValOK(final String str)
+        {
+            try
+            {
+                String valStr = getText(0, getLength()) + str;
+                if (fieldType == UIFieldFormatterField.FieldType.numeric && StringUtils.isNumeric(valStr))
+                {
+                    int val = Integer.parseInt(valStr);
+                    return val >= minVal && val <= maxVal;
+                }
+            } catch (BadLocationException ex){}
+            return false;
         }
 
         /* (non-Javadoc)

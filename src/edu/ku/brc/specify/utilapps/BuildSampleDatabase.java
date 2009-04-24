@@ -1126,9 +1126,12 @@ public class BuildSampleDatabase
         
         startTx();
 
+        DBTableIdMgr dbMgr = new DBTableIdMgr(true);
+        dbMgr.initialize();
+        
         loadSchemaLocalization(discipline, 
                                SpLocaleContainer.CORE_SCHEMA, 
-                               DBTableIdMgr.getInstance(),
+                               dbMgr,
                                catNumScheme.getFormatName(),
                                accNumScheme != null ? accNumScheme.getFormatName() : null);
         
@@ -8213,7 +8216,7 @@ public class BuildSampleDatabase
         {
             localSession = DataProviderFactory.getInstance().createSession();
             String sql = "FROM SpLocaleContainer as sp INNER JOIN sp.discipline as d WHERE sp.name = '" + tableName + "' AND d.id = "+discipline.getId();
-            //System.err.println(sql);
+            System.err.println(sql);
             Object[] cols = (Object[])localSession.getData(sql);
             SpLocaleContainer container = (SpLocaleContainer)cols[0];
             if (container != null)

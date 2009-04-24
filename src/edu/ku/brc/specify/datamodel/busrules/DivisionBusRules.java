@@ -19,19 +19,54 @@
 */
 package edu.ku.brc.specify.datamodel.busrules;
 
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+
+import java.awt.Frame;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
+import java.util.Properties;
+import java.util.Vector;
+
+import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
+
+import org.hibernate.Session;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
+import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.ResultSetController;
 import edu.ku.brc.af.ui.forms.Viewable;
+import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
+import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.dbsupport.HibernateUtil;
+import edu.ku.brc.specify.config.DisciplineType;
+import edu.ku.brc.specify.config.init.SpecifyDBSetupWizard;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.datamodel.Agent;
+import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.datamodel.DataType;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.Institution;
+import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.specify.dbsupport.HibernateDataProviderSession;
 import edu.ku.brc.specify.dbsupport.SpecifyDeleteHelper;
+import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.CommandListener;
+import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.ProgressFrame;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -42,15 +77,20 @@ import edu.ku.brc.ui.UIRegistry;
  * Oct 1, 2008
  *
  */
-public class DivisionBusRules extends BaseBusRules
+public class DivisionBusRules extends BaseBusRules implements CommandListener
 {
+    private static final String CMD_TYPE = "DivisionBusRules"; 
+    private static final String PROGRESS = "progress"; 
+    
+    private boolean       isOKToCont    = false;
 
     /**
      * @param dataClasses
      */
     public DivisionBusRules()
     {
-        super(Division.class);
+        super(Institution.class);
+        CommandDispatcher.register(CMD_TYPE, this);
     }
 
     /* (non-Javadoc)
@@ -61,8 +101,6 @@ public class DivisionBusRules extends BaseBusRules
     {
         super.addChildrenToNewDataObjects(newDataObj);
         
-        Institution institution = AppContextMgr.getInstance().getClassObject(Institution.class);
-        ((Division)newDataObj).setInstitution(institution);
     }
 
     /* (non-Javadoc)
@@ -82,7 +120,282 @@ public class DivisionBusRules extends BaseBusRules
                 if (rsc.getDelRecBtn() != null) rsc.getDelRecBtn().setVisible(false);
             }
         }
+        
+        if (formViewObj != null)
+        {
+            if (formViewObj.getMVParent().isTopLevel())
+            {
+                ResultSetController rsc = formViewObj.getRsController();
+                if (rsc != null)
+                {
+                    if (rsc.getNewRecBtn() != null) rsc.getNewRecBtn().setVisible(false);
+                    if (rsc.getDelRecBtn() != null) rsc.getDelRecBtn().setVisible(false);
+                }
+            }
+            if (formViewObj.getRsController() != null)
+            {
+                JButton newBtn = formViewObj.getRsController().getNewRecBtn();
+                if (newBtn != null)
+                {
+                    // Remove all ActionListeners, there should only be one
+                    for (ActionListener al : newBtn.getActionListeners())
+                    {
+                        newBtn.removeActionListener(al);
+                    }
+                    
+                    newBtn.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e)
+                        {
+                            addNewDivision();
+                        }
+                    });
+                }
+            }
+        }
     }
+    
+    /**
+     * @return
+     */
+    public static boolean askForExitonChange(final String messageKey)
+    {
+        int userChoice = JOptionPane.NO_OPTION;
+        Object[] options = { getResourceString("Continue"),  //$NON-NLS-1$
+                             getResourceString("CANCEL")  //$NON-NLS-1$
+              };
+
+        userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
+                                                     getResourceString(messageKey),  //$NON-NLS-1$
+                                                     getResourceString("EXIT_REQ_TITLE"),  //$NON-NLS-1$
+                                                     JOptionPane.YES_NO_OPTION,
+                                                     JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+        
+        return userChoice == JOptionPane.YES_OPTION;
+    }
+    
+    /**
+     * 
+     */
+    private void addNewDivision()
+    {
+        if (!askForExitonChange("ASK_TO_ADD_DIV"))
+        {
+            return;
+        }
+        UIRegistry.writeSimpleGlassPaneMsg(UIRegistry.getResourceString("BUILD_DIV"), 20); // I18N
+        isOKToCont = true;
+        final AppContextMgr acm = AppContextMgr.getInstance();
+        
+        final SpecifyDBSetupWizard wizardPanel = new SpecifyDBSetupWizard(SpecifyDBSetupWizard.WizardType.Division, null);
+        
+        String bldTitle = UIRegistry.getResourceString("CREATEDIV");
+        final CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getMostRecentWindow(), "", true, CustomDialog.NONE_BTN, wizardPanel);
+        dlg.setCustomTitleBar(bldTitle);
+        wizardPanel.setListener(new SpecifyDBSetupWizard.WizardListener() {
+            @Override
+            public void cancelled()
+            {
+                isOKToCont = false;
+                dlg.setVisible(false);
+            }
+            @Override
+            public void finished()
+            {
+                dlg.setVisible(false);
+            }
+            @Override
+            public void hide()
+            {
+                dlg.setVisible(false);
+            }
+            @Override
+            public void panelChanged(String title)
+            {
+                dlg.setTitle(title);
+            }
+        });
+        UIHelper.centerAndShow(dlg);
+        
+        UIRegistry.popResourceBundle();
+        
+        if (!isOKToCont)
+        {
+            UIRegistry.clearSimpleGlassPaneMsg();
+            return;
+        }
+        
+        wizardPanel.processDataForNonBuild();
+        
+        final BuildSampleDatabase bldSampleDB   = new BuildSampleDatabase();
+        final ProgressFrame       progressFrame = bldSampleDB.createProgressFrame(bldTitle);
+        progressFrame.turnOffOverAll();
+        
+        progressFrame.setProcess(0, 17);
+        progressFrame.setProcessPercent(true);
+        progressFrame.getCloseBtn().setVisible(false);
+        progressFrame.setAlwaysOnTop(true);
+        progressFrame.adjustProgressFrame();
+        
+        UIHelper.centerAndShow(progressFrame);
+        
+        SwingWorker<Integer, Integer> bldWorker = new SwingWorker<Integer, Integer>()
+        {
+            private int steps = 0;
+            private Division newDivision = null;
+            
+            /* (non-Javadoc)
+             * @see javax.swing.SwingWorker#doInBackground()
+             */
+            @SuppressWarnings("cast")
+            @Override
+            protected Integer doInBackground() throws Exception
+            {
+                firePropertyChange(PROGRESS, 0, ++steps);
+                
+                bldSampleDB.setDataType(acm.getClassObject(DataType.class));
+                
+                Division   curDivCached  = acm.getClassObject(Division.class);
+                Discipline curDispCached = acm.getClassObject(Discipline.class);
+                Collection curCollCached = acm.getClassObject(Collection.class);
+                
+                acm.setClassObject(Division.class, null);
+                acm.setClassObject(Discipline.class, null);
+                acm.setClassObject(Collection.class, null);
+                
+                UIFieldFormatterMgr.reset();
+                DataObjFieldFormatMgr.reset();
+                
+                Session session = null;
+                try
+                {
+                    session = HibernateUtil.getNewSession();
+                    DataProviderSessionIFace hSession = new HibernateDataProviderSession(session);
+                    
+                    Institution    inst           = (Institution)formViewObj.getMVParent().getMultiViewParent().getData(); 
+                    Institution    institution         = hSession.get(Institution.class, inst.getId());
+                    SpecifyUser    specifyAdminUser = (SpecifyUser)acm.getClassObject(SpecifyUser.class);
+                    Agent          userAgent        = (Agent)hSession.getData("FROM Agent WHERE id = "+Agent.getUserAgent().getId());
+                    Properties     props            = wizardPanel.getProps();
+                    
+                    institution      = (Institution)session.merge(institution);
+                    specifyAdminUser = (SpecifyUser)hSession.getData("FROM SpecifyUser WHERE id = "+specifyAdminUser.getId());
+                    
+                    bldSampleDB.setSession(session);
+                    
+                    
+                    Agent newUserAgent = null;
+                    try
+                    {
+                        newUserAgent = (Agent)userAgent.clone();
+                        specifyAdminUser.getAgents().add(newUserAgent);
+                        newUserAgent.setSpecifyUser(specifyAdminUser);
+                        session.saveOrUpdate(newUserAgent);
+                        session.saveOrUpdate(specifyAdminUser);
+                        
+                    } catch (CloneNotSupportedException ex)
+                    {
+                        ex.printStackTrace();
+                    }
+                    
+                    DisciplineType dispType = (DisciplineType)props.get("disciplineType");
+                    newDivision = bldSampleDB.createEmptyDivision(institution, dispType, specifyAdminUser, props, true, true);
+                    
+                    acm.setClassObject(Division.class, curDivCached);
+                    acm.setClassObject(Discipline.class, curDispCached);
+                    acm.setClassObject(Collection.class, curCollCached);
+
+                    
+                } catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                    
+                } finally
+                {
+                    if (session != null)
+                    {
+                        session.close();
+                    }
+                }
+                
+                bldSampleDB.setDataType(null);
+                
+                return null;
+            }
+
+            @Override
+            protected void done()
+            {
+                super.done();
+                
+                progressFrame.setVisible(false);
+                progressFrame.dispose();
+                
+               if (newDivision != null)
+               {
+                   List<?> dataItems = null;
+                   
+                   FormViewObj instFVO   = formViewObj.getMVParent().getMultiViewParent().getCurrentViewAsFormViewObj();
+                   Institution    inst = (Institution)instFVO.getDataObj();
+                   DataProviderSessionIFace pSession = null;
+                   try
+                   {
+                       pSession = DataProviderFactory.getInstance().createSession();
+                       
+                       inst = (Institution)pSession.getData("FROM Institution WHERE id = "+inst.getId());
+                       inst.forceLoad();
+                       
+                       acm.setClassObject(Institution.class, inst);
+                       
+                       dataItems = pSession.getDataList("FROM Institution");
+                       if (dataItems.get(0) instanceof Object[])
+                       {
+                           Vector<Object>dataList = new Vector<Object>();
+                           for (Object row : dataItems)
+                           {
+                               Object[] cols = (Object[])row;
+                               Institution div = (Institution)cols[0];
+                               div.forceLoad();
+                               dataList.add(div);
+                           }
+                           dataItems = dataList;
+                       }
+                       
+                   } catch (Exception ex)
+                   {
+                       System.err.println(ex);
+                       ex.printStackTrace();
+                       
+                   } finally
+                   {
+                       if (pSession != null)
+                       {
+                           pSession.close();
+                       }
+                   }
+                   
+                   // Not needed now that we are exiting
+                   //int curInx = instFVO.getRsController().getCurrentIndex();
+                   //instFVO.setDataObj(dataItems);
+                   //instFVO.getRsController().setIndex(curInx);
+                   
+               } else
+               {
+                   // error creating
+               }
+               UIRegistry.clearSimpleGlassPaneMsg();
+               
+               UIRegistry.showLocalizedMsg("Specify.ABT_EXIT");
+               CommandDispatcher.dispatch(new CommandAction(BaseTask.APP_CMD_TYPE, BaseTask.APP_REQ_EXIT));
+
+            }
+        };
+        
+        bldWorker.execute();
+
+    }
+    
+
     
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.BaseBusRules#afterFillForm(java.lang.Object)
@@ -111,14 +424,14 @@ public class DivisionBusRules extends BaseBusRules
     {
         reasonList.clear();
         
-        if (!(dataObj instanceof Division))
+        if (!(dataObj instanceof Institution))
         {
             return STATUS.Error;
         }
         
         STATUS nameStatus = isCheckDuplicateNumberOK("name", 
                                                       (FormDataObjIFace)dataObj, 
-                                                      Division.class, 
+                                                      Institution.class, 
                                                       "userGroupScopeId");
         
         return nameStatus != STATUS.OK ? STATUS.Error : STATUS.OK;
@@ -136,29 +449,29 @@ public class DivisionBusRules extends BaseBusRules
         
         if (deletable != null)
         {
-            Division division = (Division)dataObj;
+            Institution division = (Institution)dataObj;
             
             Integer id = division.getId();
             if (id != null)
             {
-                Division currDivision = AppContextMgr.getInstance().getClassObject(Division.class);
-                if (currDivision.getId().equals(division.getId()))
+                Institution currInstitution = AppContextMgr.getInstance().getClassObject(Institution.class);
+                if (currInstitution.getId().equals(division.getId()))
                 {
-                    UIRegistry.showError("You cannot delete the current Division."); // I18N
+                    UIRegistry.showError("You cannot delete the current Institution."); // I18N
                     
                 } else
                 {
-                    String sql = "SELECT count(*) FROM agent a WHERE a.DivisionID = " + division.getId();
+                    String sql = "SELECT count(*) FROM agent a WHERE a.InstitutionID = " + division.getId();
                     int count = BasicSQLUtils.getCount(sql);
                     if (count > 0)
                     {
-                        UIRegistry.showError(String.format("There are too many agents associated with this the `%s` Division.", division.getName())); // I18N
+                        UIRegistry.showError(String.format("There are too many agents associated with this the `%s` Institution.", division.getName())); // I18N
                     } else
                     {
                         try
                         {
                             SpecifyDeleteHelper delHelper = new SpecifyDeleteHelper(true);
-                            delHelper.delRecordFromTable(Division.class, division.getId(), true);
+                            delHelper.delRecordFromTable(Institution.class, division.getId(), true);
                             delHelper.done();
                             
                             SwingUtilities.invokeLater(new Runnable() {
@@ -201,226 +514,23 @@ public class DivisionBusRules extends BaseBusRules
     {
         super.beforeDelete(dataObj, session);
         
-        /*Division division = (Division)dataObj;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.CommandListener#doCommand(edu.ku.brc.ui.CommandAction)
+     */
+    @Override
+    public void doCommand(final CommandAction cmdAction)
+    {
+        if (cmdAction.isAction("InstitutionSaved"))
+        {
+            Division divsion = (Division)cmdAction.getData();
+            formViewObj.getMVParent().getMultiViewParent().setData(divsion);
+            
+        } else if (cmdAction.isAction("InstitutionError"))
+        {
+        }
         
-        Statement stmt = null;
-        try
-        {
-            if (true)
-            {
-                stmt = DBConnection.getInstance().getConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
-                
-                List<Integer> disciplineIds = new Vector<Integer>();
-                ResultSet rs = stmt.executeQuery("SELECT DisciplineID FROM discipline WHERE DivisionID = "+division.getId());
-                while (rs.next())
-                {
-                    disciplineIds.add(rs.getInt(1));
-                }         
-                rs.close();
-                
-                Hashtable<Integer, Boolean> permitHash = new Hashtable<Integer, Boolean>();
-                
-                String sql = "SELECT permit.PermitID FROM division INNER JOIN accession ON division.UserGroupScopeId = accession.DivisionID "+
-                             "INNER JOIN accessionauthorization ON accession.AccessionID = accessionauthorization.AccessionID "+
-                             "INNER JOIN permit ON accessionauthorization.PermitID = permit.PermitID WHERE division.UserGroupScopeId = "+division.getId();
-                rs = stmt.executeQuery(sql);
-                while (rs.next())
-                {
-                    int id = rs.getInt(1);
-                    permitHash.put(id, true);
-                    Permit obj = session.get(Permit.class, id);
-                    System.err.println(obj.getIdentityTitle());
-                    session.delete(obj);
-                }         
-                rs.close();
-                
-                sql = "SELECT permit.PermitID FROM division INNER JOIN repositoryagreement ON division.UserGroupScopeId = repositoryagreement.DivisionID "+
-                      "INNER JOIN accessionauthorization ON repositoryagreement.RepositoryAgreementID = accessionauthorization.AccessionID "+
-                      "INNER JOIN permit ON accessionauthorization.PermitID = permit.PermitID WHERE division.UserGroupScopeId = "+division.getId();
-                rs = stmt.executeQuery(sql);
-                while (rs.next())
-                {
-                    int id = rs.getInt(1);
-                    if (permitHash.get(id) == null)
-                    {
-                        Permit obj = session.get(Permit.class, id);
-                        System.err.println(obj.getIdentityTitle());
-                        session.delete(obj);
-                        permitHash.put(id, true);
-                    }
-                }         
-                rs.close();
-                
-                rs = stmt.executeQuery("SELECT AccessionID FROM accession WHERE DivisionID = "+division.getId());
-                while (rs.next())
-                {
-                    Accession obj = session.get(Accession.class, rs.getInt(1));
-                    System.err.println(obj.getIdentityTitle());
-                    session.delete(obj);
-                }         
-                rs.close();
-                
-                rs = stmt.executeQuery("SELECT RepositoryAgreementID FROM repositoryagreement WHERE DivisionID = "+division.getId());
-                while (rs.next())
-                {
-                    RepositoryAgreement obj = session.get(RepositoryAgreement.class, rs.getInt(1));
-                    System.err.println(obj.getIdentityTitle());
-                    session.delete(obj);
-                }         
-                rs.close();
-                
-                rs = stmt.executeQuery("SELECT LoanID FROM loan WHERE DivisionID = "+division.getId());
-                while (rs.next())
-                {
-                    Loan obj = session.get(Loan.class, rs.getInt(1));
-                    System.err.println(obj.getIdentityTitle());
-                    session.delete(obj);
-                }         
-                rs.close();
-                
-                rs = stmt.executeQuery("SELECT GiftID FROM gift WHERE DivisionID = "+division.getId());
-                while (rs.next())
-                {
-                    Gift obj = session.get(Gift.class, rs.getInt(1));
-                    System.err.println(obj.getIdentityTitle());
-                    session.delete(obj);
-                }         
-                rs.close();
-                
-                rs = stmt.executeQuery("SELECT ConservDescriptionID FROM conservdescription WHERE DivisionID = "+division.getId());
-                while (rs.next())
-                {
-                    ConservDescription obj = session.get(ConservDescription.class, rs.getInt(1));
-                    System.err.println(obj.getIdentityTitle());
-                    session.delete(obj);
-                }         
-                rs.close();
-                
-                rs = stmt.executeQuery("SELECT TreatmentEventID FROM treatmentevent WHERE DivisionID = "+division.getId());
-                while (rs.next())
-                {
-                    TreatmentEvent obj = session.get(TreatmentEvent.class, rs.getInt(1));
-                    System.err.println(obj.getIdentityTitle());
-                    session.delete(obj);
-                }         
-                rs.close();
-                
-                for (Integer dspId : disciplineIds)
-                {
-                    List<Integer> ids = new Vector<Integer>();
-                    rs = stmt.executeQuery("SELECT SpAppResourceDirID FROM spappresourcedir WHERE DisciplineID = "+dspId);
-                    while (rs.next())
-                    {
-                        ids.add(rs.getInt(1));
-                    }         
-                    rs.close();
-                    
-                    if (ids.size() > 0)
-                    {
-                        for (Integer id : ids)
-                        {
-                            SpAppResourceDir obj = session.get(SpAppResourceDir.class, id);
-                            System.err.println(obj.getIdentityTitle());
-                            session.delete(obj);
-                        }
-                    }
-                    
-                    ids = new Vector<Integer>();
-                    rs = stmt.executeQuery("SELECT CollectingTripID FROM collectingtrip WHERE DisciplineID = "+dspId);
-                    while (rs.next())
-                    {
-                        ids.add(rs.getInt(1));
-                    }         
-                    rs.close();
-                    
-                    if (ids.size() > 0)
-                    {
-                        for (Integer id : ids)
-                        {
-                            CollectingTrip obj = session.get(CollectingTrip.class, id);
-                            System.err.println(obj.getIdentityTitle());
-                            session.delete(obj);
-                        }
-                    }
-                    
-                    ids = new Vector<Integer>();
-                    rs = stmt.executeQuery("SELECT CollectionID FROM collection WHERE DisciplineID = "+dspId);
-                    while (rs.next())
-                    {
-                        ids.add(rs.getInt(1));
-                    }         
-                    rs.close();
-                    
-                    for (Integer id : ids)
-                    {
-                        rs  = stmt.executeQuery("select CollectionObjectID from collectionobject where CollectionMemberID = "+id);
-                        while (rs.next())
-                        {
-                            CollectionObject co = session.get(CollectionObject.class, rs.getInt(1));
-                            session.delete(co);
-                        }
-                        rs.close();
-                    }
-                }
-                
-                stmt.close();
-
-            } else
-            {
-                stmt = DBConnection.getInstance().getConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
-                
-                List<Integer> disciplineIds = new Vector<Integer>();
-                ResultSet rs = stmt.executeQuery("SELECT DisciplineID FROM discipline WHERE DivisionID = "+division.getId());
-                while (rs.next())
-                {
-                    disciplineIds.add(rs.getInt(1));
-                }         
-                rs.close();
-                
-                for (Integer dspId : disciplineIds)
-                {
-                    List<Integer> collectionIds = new Vector<Integer>();
-                    rs = stmt.executeQuery("SELECT CollectionID FROM collection WHERE DisciplineID = "+dspId);
-                    while (rs.next())
-                    {
-                        collectionIds.add(rs.getInt(1));
-                    }         
-                    rs.close();
-                    
-                    for (Integer colId : collectionIds)
-                    {
-                        session.deleteHQL("DELETE FROM CollectionObject WHERE collectionMemberId = "+colId);
-                    }
-                }
-                
-                stmt.close();
-
-            }
-            
-        } catch (Exception ex)
-        {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DivisionBusRules.class, ex);
-            ex.printStackTrace();
-            //log.error(ex);
-            throw new RuntimeException(ex);
-            
-        } finally
-        {
-            try
-            {
-                stmt.close();
-                
-            } catch (Exception ex)
-            {
-                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DivisionBusRules.class, ex);
-                ex.printStackTrace();
-                //log.error(ex);
-                throw new RuntimeException(ex);
-            }
-        }*/
-
     }
 
 }

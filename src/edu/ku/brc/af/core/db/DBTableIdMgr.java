@@ -127,7 +127,7 @@ public class DBTableIdMgr
      * Reads in datamodel input file and populates the hashtable of the
      * DBTableMgr with DBTableInfo.
      */
-    protected void initialize()
+    public void initialize()
     {
         initialize(new File(DatamodelHelper.getDatamodelFilePath()));
     }

@@ -44,6 +44,7 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.ui.db.TextFieldFromPickListTable;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
@@ -177,6 +178,11 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
      */
     private void addNewDiscipline()
     {
+        if (!DivisionBusRules.askForExitonChange("ASK_TO_ADD_DISP"))
+        {
+            return;
+        }
+        
         UIRegistry.writeSimpleGlassPaneMsg("Building Discipline...", 20); // I18N
         isOKToCont = true;
         final AppContextMgr acm = AppContextMgr.getInstance();
@@ -247,6 +253,13 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
                 firePropertyChange(PROGRESS, 0, ++steps);
                 
                 bldSampleDB.setDataType(acm.getClassObject(DataType.class));
+                Division   curDivCached  = acm.getClassObject(Division.class);
+                Discipline curDispCached = acm.getClassObject(Discipline.class);
+                Collection curCollCached = acm.getClassObject(Collection.class);
+                
+                acm.setClassObject(Division.class, null);
+                acm.setClassObject(Discipline.class, null);
+                acm.setClassObject(Collection.class, null);
                 
                 Session session = null;
                 try
@@ -289,6 +302,10 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
                         acm.setClassObject(SpecifyUser.class, specifyAdminUser);
                         Agent.setUserAgent(userAgent);
                     }
+                    
+                    acm.setClassObject(Division.class, curDivCached);
+                    acm.setClassObject(Discipline.class, curDispCached);
+                    acm.setClassObject(Collection.class, curCollCached);
                     
                 } catch (Exception ex)
                 {
@@ -359,15 +376,19 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
                        }
                    }
                    
-                   int curInx = divFVO.getRsController().getCurrentIndex();
-                   divFVO.setDataObj(dataItems);
-                   divFVO.getRsController().setIndex(curInx);
+                   //int curInx = divFVO.getRsController().getCurrentIndex();
+                   //divFVO.setDataObj(dataItems);
+                   //divFVO.getRsController().setIndex(curInx);
          
                } else
                {
                    // error creating
                }
                UIRegistry.clearSimpleGlassPaneMsg();
+               
+               UIRegistry.showLocalizedMsg("Specify.ABT_EXIT");
+               CommandDispatcher.dispatch(new CommandAction(BaseTask.APP_CMD_TYPE, BaseTask.APP_REQ_EXIT));
+
             }
         };
         

@@ -73,7 +73,20 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
     {
         load();
     }
-
+    
+    
+    /**
+     * Resets the Mgr so it gets reloaded.
+     */
+    public static void reset()
+    {
+        if (instance != null)
+        {
+            instance.save();
+        }
+        instance = null;
+    }
+    
     /**
      * Copy constructor.
      * @param source
@@ -82,7 +95,6 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
     {
         setHash(source.getHash());
     }
-
     /**
      * Copies the internal data structures.
      * @param source a format manager
