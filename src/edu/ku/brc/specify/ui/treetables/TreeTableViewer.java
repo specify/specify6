@@ -1246,12 +1246,9 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                 statusBar.setErrorMessage(getResourceString("TTV_PROBLEM_DELETING"));
             }
 
-            if (!treeDefItem.hasTreeEntries())
-            {
-            	this.listCellRenderer.reset();
-                this.listHeaders[0].repaint();
-                this.listHeaders[1].repaint();
-            }
+            this.listCellRenderer.reset();
+            this.listHeaders[0].repaint();
+            this.listHeaders[1].repaint();
             // re-show the children of the parent node
             showChildren(parent);
             
