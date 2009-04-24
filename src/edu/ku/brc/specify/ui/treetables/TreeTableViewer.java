@@ -1249,6 +1249,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             if (!treeDefItem.hasTreeEntries())
             {
             	this.listCellRenderer.reset();
+                this.listHeaders[0].repaint();
+                this.listHeaders[1].repaint();
             }
             // re-show the children of the parent node
             showChildren(parent);
@@ -1313,7 +1315,9 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         TreeNode selectedNode = (TreeNode)list.getSelectedValue();
         
         listCellRenderer.reset();
-        
+        this.listHeaders[0].repaint();
+        this.listHeaders[1].repaint();
+
         TreeNode visibleRoot = listModel.getVisibleRoot();
     	
         if (visibleRoot.hasChildren && 
@@ -1374,6 +1378,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         TreeNode selectedNode = (TreeNode)list.getSelectedValue();
         
         listCellRenderer.reset();
+        this.listHeaders[0].repaint();
+        this.listHeaders[1].repaint();
 
         TreeNode visibleRoot = listModel.getVisibleRoot();
         
@@ -2103,6 +2109,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                             	if (mergedNode.getRankId().compareTo(rank) < 0)
                             	{
                             		TreeTableViewer.this.listCellRenderer.reset();
+                            		TreeTableViewer.this.listHeaders[0].repaint();
+                            		TreeTableViewer.this.listHeaders[1].repaint();
                             		break;
                             	}
                             }
@@ -3025,6 +3033,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         // if the user clicked an expansion handle, expand the child nodes
 		if ( clickIsOnExpansionIcon(e) || (e.getClickCount() == 2 && clickIsOnText(e)) )
 		{
+            treeNode.setHasVisualChildren(null);
             if (listModel.showingChildrenOf(treeNode))
             {
                 hideChildren(treeNode);
@@ -3032,7 +3041,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             }
             else
             {
-                treeNode.setHasVisualChildren(null);
                 List<TreeNode> childrenShown = showChildren(treeNode);
                 if (childrenShown.size() > 0)
                 {
@@ -3042,6 +3050,9 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                     enableSubTreeButtons();
                 }
             }
+            this.listCellRenderer.reset();
+            this.listHeaders[0].repaint();
+            this.listHeaders[1].repaint();
 		}
         // otherwise, ignore the click
 		else

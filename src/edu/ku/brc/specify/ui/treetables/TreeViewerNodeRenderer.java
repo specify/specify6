@@ -645,9 +645,11 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
         {
             Dimension size = getSize();
             boolean sizeChanged = bgImg == null || size.width > bgImg.getWidth() || size.height > bgImg.getHeight();
+            System.err.println("sizeChanged "+sizeChanged+"  "+(model.getVisibleRanks().size() != numVisRanks));
+            
             if (sizeChanged || model.getVisibleRanks().size() != numVisRanks)
             {
-                if (sizeChanged)
+                //if (sizeChanged)
                 {
                     if (bgImg != null)
                     {
