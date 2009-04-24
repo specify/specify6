@@ -1312,6 +1312,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
     {
         TreeNode selectedNode = (TreeNode)list.getSelectedValue();
         
+        listCellRenderer.reset();
+        
         TreeNode visibleRoot = listModel.getVisibleRoot();
     	
         if (visibleRoot.hasChildren && 
@@ -1371,6 +1373,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
     {
         TreeNode selectedNode = (TreeNode)list.getSelectedValue();
         
+        listCellRenderer.reset();
+
         TreeNode visibleRoot = listModel.getVisibleRoot();
         
         TreeNode parentNode = listModel.getNodeById(visibleRoot.getParentId());
