@@ -239,7 +239,7 @@ public class MySQLBackupService extends BackupServiceFactory
         
         errorMsg = null;
         
-        final String databaseName = AppPreferences.getLocalPrefs().get("CURRENT_DB", null);
+        final String databaseName = DBConnection.getInstance().getDatabaseName();
         
         getNumberofTables();
         
@@ -486,7 +486,7 @@ public class MySQLBackupService extends BackupServiceFactory
         final JStatusBar statusBar = UIRegistry.getStatusBar();
         statusBar.setIndeterminate(STATUSBAR_NAME, true);
         
-        final String   databaseName = AppPreferences.getLocalPrefs().get("CURRENT_DB", null);
+        final String   databaseName = DBConnection.getInstance().getDatabaseName();
         UIRegistry.writeSimpleGlassPaneMsg(getLocalizedMessage("MySQLBackupService.RESTORING", databaseName), 24);
 
         doCompareBeforeRestore(path);
@@ -499,7 +499,7 @@ public class MySQLBackupService extends BackupServiceFactory
     {
         AppPreferences remotePrefs  = AppPreferences.getLocalPrefs();
         final String   mysqlLoc     = remotePrefs.get(MYSQL_LOC,     getDefaultMySQLLoc());
-        final String   databaseName = AppPreferences.getLocalPrefs().get("CURRENT_DB", null);
+        final String   databaseName = DBConnection.getInstance().getDatabaseName();
 
         getNumberofTables();
         
