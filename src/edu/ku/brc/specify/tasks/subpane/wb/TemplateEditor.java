@@ -82,6 +82,8 @@ import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.datamodel.Taxon;
+import edu.ku.brc.specify.datamodel.TaxonTreeDef;
+import edu.ku.brc.specify.datamodel.TreeDefItemStandardEntry;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
@@ -103,10 +105,11 @@ import edu.ku.brc.util.Pair;
  * Created Date: Apr 30, 2007
  *
  */
+@SuppressWarnings("serial")
 public class TemplateEditor extends CustomDialog
 {
     private static final Logger log = Logger.getLogger(TemplateEditor.class);
-    
+        
     protected JButton                        mapToBtn;
     protected JButton                        unmapBtn;
     protected JButton                        upBtn;
@@ -122,26 +125,29 @@ public class TemplateEditor extends CustomDialog
     protected JList                          fieldList;
     protected DefaultModifiableListModel<FieldInfo> fieldModel;
     
-    protected Vector<WorkbenchTemplateMappingItem> deletedItems = new Vector<WorkbenchTemplateMappingItem>();
+    protected Vector<WorkbenchTemplateMappingItem>			deletedItems		= new Vector<WorkbenchTemplateMappingItem>();
 
-    
-    protected boolean                        hasChanged        = false;
-    protected boolean                        doingFill         = false;
-    protected Color                          btnPanelColor;
-    protected JPanel                         btnPanel;
-    
-    protected ImportDataFileInfo             dataFileInfo      = null;
-    protected WorkbenchTemplate              workbenchTemplate = null;
-    protected DBTableIdMgr                   databaseSchema;
-    
-    protected boolean                        isMappedToAFile;
-    protected boolean                        isEditMode;
-    protected boolean                        isReadOnly = false;
-    protected boolean                        ignoreMapListUpdate = false;
-    
-    protected ImageIcon                      blankIcon   = IconManager.getIcon("BlankIcon", IconManager.STD_ICON_SIZE);
-    
-    protected TableInfoListRenderer          tableInfoListRenderer;
+	protected boolean										hasChanged			= false;
+	protected boolean										doingFill			= false;
+	protected Color											btnPanelColor;
+	protected JPanel										btnPanel;
+
+	protected ImportDataFileInfo							dataFileInfo		= null;
+	protected WorkbenchTemplate								workbenchTemplate	= null;
+	protected DBTableIdMgr									databaseSchema;
+	protected List<TreeDefItemStandardEntry>				taxRanks			= null;
+
+	protected boolean										isMappedToAFile;
+	protected boolean										isEditMode;
+	protected boolean										isReadOnly			= false;
+	protected boolean										ignoreMapListUpdate	= false;
+
+	protected ImageIcon										blankIcon			= IconManager
+																						.getIcon(
+																								"BlankIcon",
+																								IconManager.STD_ICON_SIZE);
+
+	protected TableInfoListRenderer							tableInfoListRenderer;
     
     /**
      * Constructor.
@@ -671,8 +677,15 @@ public class TemplateEditor extends CustomDialog
             ImportColumnInfo  colInfo = fmp.getColInfo();
             FieldInfo         fi      = (FieldInfo)fieldList.getSelectedValue();
             TableInfo         tblInfo = (TableInfo)tableList.getSelectedValue();
-            
-            map(fmp, colInfo, tblInfo, fi, fmp.getWbtmi());
+            String errMsg = isMappable(fi, fmp);
+            if (errMsg == null)
+            {
+            	map(fmp, colInfo, tblInfo, fi, fmp.getWbtmi());
+            }
+            else
+            {
+            	UIRegistry.displayErrorDlg(errMsg);
+            }
         }
 
         updateEnabledState();
@@ -803,6 +816,131 @@ public class TemplateEditor extends CustomDialog
         return true;
     }
     
+    protected boolean taxonOnlyInUse(final FieldMappingPanel currentMap)
+    {
+    	for (int m = 0; m < mapModel.size(); m++)
+    	{
+    		FieldMappingPanel fmp = (FieldMappingPanel )mapModel.get(m);
+    		if (!fmp.isNew() && fmp != currentMap && fmp.getFieldInfo().getTableinfo().getTableId() == 4000)
+    		{
+    			return true;
+    		}
+    	}
+    	return false;
+    }
+
+    protected boolean onlyTaxonOnlyInUse(final FieldMappingPanel currentMap)
+    {
+    	for (int m = 0; m < mapModel.size(); m++)
+    	{
+    		FieldMappingPanel fmp = (FieldMappingPanel )mapModel.get(m);
+    		if (!fmp.isNew() && fmp != currentMap && fmp.getFieldInfo().getTableinfo().getTableId() != 4000)
+    		{
+    			return false;
+    		}
+    	}
+    	return true;
+    }
+
+    protected int getLowestMappedTaxonRank(final FieldMappingPanel currentMap)
+    {
+    	int low = -1;
+    	for (int m = 0; m < mapModel.size(); m++)
+    	{
+    		FieldMappingPanel fmp = (FieldMappingPanel )mapModel.get(m);
+    		if (!fmp.isNew && fmp != currentMap && fmp.getFieldInfo().getTableinfo().getTableId() == 4)
+    		{
+    			int rank = getRank(fmp.getFieldInfo());
+    			if (rank > low)
+    			{
+    				low = rank;
+    			}
+    		}
+    	}
+    	return low;
+    }
+
+    protected int getHighestMappedDetRank(final FieldMappingPanel currentMap)
+    {
+    	int high = 600000;
+    	for (int m = 0; m < mapModel.size(); m++)
+    	{
+    		FieldMappingPanel fmp = (FieldMappingPanel )mapModel.get(m);
+    		if (!fmp.isNew() && fmp != currentMap && fmp.getFieldInfo().getTableinfo().getClassObj().equals(Determination.class))
+    		{
+    			int rank = getRank(fmp.getFieldInfo());
+    			if (rank < high)
+    			{
+    				high = rank;
+    			}
+    		}
+    	}
+    	return high;
+    }
+
+    protected int getRank(final FieldInfo fi)
+    {
+    	if (taxRanks == null)
+    	{
+    		taxRanks = TaxonTreeDef.getStandardLevelsStatic();
+    	}
+    	String fldName = fi.getFieldInfo().getName();
+    	if (fi.getTableinfo().getClassObj().equals(Determination.class))
+    	{
+    		//strip off trailing 1 or 2
+    		fldName = fldName.substring(0, fldName.length()-1); 
+    	}
+    	for (TreeDefItemStandardEntry rank : taxRanks)
+    	{
+    		if (fldName.equalsIgnoreCase(rank.getName()))
+    		{
+    			return rank.getRank();
+    		}
+    	}
+    	return -1;
+    }
+    
+    /**
+     * @param fi
+     * @return true if fi is mappable
+     * 
+     * Checks for conflicts caused by availability of Taxon ranks in multiple tables.
+     */
+    protected String isMappable(final FieldInfo fi, final FieldMappingPanel currentMap)
+    {
+    	if (taxonOnlyInUse(currentMap) && fi.getTableinfo().getTableId() != 4000)
+    	{
+    		return UIRegistry.getResourceString("TemplateEditor.TaxonOnly"); //XXX i18n
+    	}
+    	if (fi.getTableinfo().getClassObj().equals(Determination.class))
+    	{
+    		int low = getLowestMappedTaxonRank(currentMap);
+    		if (getRank(fi) <= low)
+    		{
+    			return UIRegistry.getResourceString("TemplateEditor.DetRanksLowerThanTaxRanks"); //XXX i18n 
+    		}
+    	}
+    	if (fi.getTableinfo().getClassObj().equals(Taxon.class))
+    	{
+    		if (fi.getTableinfo().getTableId() == 4)
+    		{
+        		int high = getHighestMappedDetRank(currentMap);
+        		if (getRank(fi) >= high)
+        		{
+        			return UIRegistry.getResourceString("TemplateEditor.TaxRanksHigherThanDetRanks"); //XXX i18n 
+        		}
+    		}
+    		if (fi.getTableinfo().getTableId() == 4000)
+    		{
+    			if (!onlyTaxonOnlyInUse(currentMap))
+    			{
+    				return UIRegistry.getResourceString("TemplateEditor.TaxonOnlyOnly"); //XXX i18n
+    			}
+    		}
+    	}
+    	return null;
+    }
+    
     /**
      * Adds one or more items from the Schema List to the mapping list. 
      * If a table is selected it adds all unchecked items.
@@ -812,16 +950,32 @@ public class TemplateEditor extends CustomDialog
         Object[] objs = fieldList.getSelectedValues();
         if (objs != null && objs.length > 0)
         {
-            for (Object obj : objs)
+            Vector<String> errMsgs = new Vector<String>();
+        	for (Object obj : objs)
             {
                 TableListItemIFace item = (TableListItemIFace)obj;
                 if (!item.isChecked())
                 {
-                    FieldMappingPanel fmp = addNewMapItem((FieldInfo)item, null);
-                    fmp.getArrowLabel().setVisible(true);
-                    fmp.getArrowLabel().setIcon(IconManager.getIcon("LinkedRight"));
+                    String errMsg = isMappable((FieldInfo)item, null);
+                    if (errMsg == null)
+                    {
+                    	FieldMappingPanel fmp = addNewMapItem((FieldInfo)item, null);
+                    	fmp.getArrowLabel().setVisible(true);
+                    	fmp.getArrowLabel().setIcon(IconManager.getIcon("LinkedRight"));
+                    }
+                    else
+                    {
+                    	errMsgs.add(errMsg);
+                    }
                 }
             }
+        	if (errMsgs.size() > 0)
+        	{
+        		for (String msg : errMsgs)
+        		{
+        			UIRegistry.displayErrorDlg(msg);
+        		}
+        	}
         }
     }
     
