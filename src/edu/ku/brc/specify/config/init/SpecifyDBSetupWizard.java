@@ -177,7 +177,7 @@ public class SpecifyDBSetupWizard extends JPanel
         
         btnBar = bbpb.getPanel();
 
-        boolean doTesting = false;//AppPreferences.getLocalPrefs().getBoolean("wizard.defaults", false);
+        boolean doTesting = AppPreferences.getLocalPrefs().getBoolean("wizard.defaults", false);
         if (doTesting)
         {
             props.put("hostName",   "localhost");

@@ -934,6 +934,7 @@ public class UIFormatterEditorDlg extends CustomDialog
                 {
                     updateUIEnabled();
                     updateSample();
+                    sampleLabel.setText("");
                 }
                 hasChanged = true;
             }
