@@ -137,6 +137,21 @@ public class MasterUserPanel extends GenericFormPanel
     {
         boolean isValid = super.isUIValid();
         
+        if (properties != null)
+        {
+            String dbUsername = properties.getProperty("dbUserName");
+            String saUserName = ((JTextField)comps.get("saUserName")).getText();
+            
+            if (dbUsername.equals(saUserName))
+            {
+                label.setText(UIRegistry.getResourceString("DB_SA_USRNAME_MATCH"));
+                testBtn.setEnabled(false);
+                return false;
+            }
+            testBtn.setEnabled(true);
+            label.setText("");
+        }
+        
         return isValid && isOK != null && isOK;
     }
     
