@@ -184,6 +184,17 @@ public class UIRegistry
     
     static 
     {
+        // Insurance for non-English Locales
+        try
+        {
+            ResourceBundle.getBundle("resources", Locale.getDefault()); //$NON-NLS-1$
+            
+        } catch (MissingResourceException ex)
+        {
+            Locale.setDefault(Locale.ENGLISH);
+            UIRegistry.setResourceLocale(Locale.ENGLISH);
+        }
+        
         instance.baseFont = new JLabel("").getFont();
         instance.baseFont = instance.baseFont.deriveFont(Font.PLAIN);
     	
