@@ -2424,6 +2424,18 @@
                      <cell type="subview" viewname="LoanItems" id="10" name="loanPreparations" defaulttype="table" colspan="15" rows="4"/>
                 </row>
                 <row>
+                    <cell type="panel" id="17" name="srcPanel" coldef="130px,2px,p:g,5px,130px,2px,p:g" rowdef="p" colspan="15">
+                        <rows>
+                            <row>
+			                    <cell type="label" labelfor="18"/>
+			                    <cell type="field" id="18" name="srcGeography" uitype="text"/>
+			                    <cell type="label" labelfor="19"/>
+			                    <cell type="field" id="19" name="srcTaxonomy" uitype="text"/>
+                            </row>
+                        </rows>
+                    </cell>
+                </row>
+                <row>
                     <cell type="panel" id="16" name="outerPanel" coldef="max(p;100px),f:480px,p,5px,p," rowdef="p,4px,p" colspan="15">
                         <rows>
 			                <row>

@@ -267,7 +267,7 @@ public class ViewFactory
                                       isRequired,
                                       parseValidationType(cellField.getValidationType()),
                                       cellField.getValidationRule(),
-                                      cellField.isChangeListenerOnly());
+                                      cellField.isChangeListenerOnly() && !isRequired);
 
             txtField = textField;
             textField.setEditable(!cellField.isReadOnly());
@@ -1797,7 +1797,8 @@ public class ViewFactory
                                                                 parent.getCreateWithMode(), 
                                                                 cellSubView.getDefaultAltViewType(),
                                                                 options, 
-                                                                bgColor);
+                                                                bgColor,
+                                                                cellSubView);
                             multiView.setClassToCreate(getClassToCreate(parent, cell));
                             setBorder(multiView, cellSubView.getProperties());
                             
@@ -1859,6 +1860,9 @@ public class ViewFactory
             
         } else if (cell.getType() == FormCellIFace.CellType.panel)
         {
+            bi.doRegControl     = false;
+            bi.doAddToValidator = false;
+ 
             FormCellPanel           cellPanel = (FormCellPanel)cell;
             PanelViewable.PanelType panelType = PanelViewable.getType(cellPanel.getPanelType());
             
@@ -1868,7 +1872,11 @@ public class ViewFactory
 
                 processRows(null, parent, formViewDef, validator, panelViewable, mode, labelsForHash, currDataObj, cellPanel.getRows());
 
-                bi.compToAdd = panelViewable;
+                panelViewable.setVisible(cellPanel.getPropertyAsBoolean("visible", true));
+                
+                bi.compToAdd        = panelViewable;
+                bi.doRegControl     = true;
+                bi.compToReg        = panelViewable;
 
             } else if (panelType == PanelViewable.PanelType.ButtonBar)
             {
@@ -1879,9 +1887,7 @@ public class ViewFactory
                 throw new RuntimeException("Panel Type is not implemented.");
             }
 
-            bi.doRegControl     = false;
-            bi.doAddToValidator = false;
-        }
+       }
         
         String visProp = cell.getProperty("vis");
         if (StringUtils.isNotEmpty(visProp) && visProp.equalsIgnoreCase("false") && bi.compToAdd != null)

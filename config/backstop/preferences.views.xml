@@ -74,6 +74,15 @@
             </altviews>
         </view>
         
+        <view
+            name="LoansPrefs"
+            class="java.util.prefs.Preferences">
+            <desc><![CDATA[Loans Preference Form.]]></desc>
+            <altviews>
+                <altview name="LoansPrefs" viewdef="LoansPrefs" label="LOANS_PREF" mode="edit" validated="true"/>
+            </altviews>
+        </view>
+        
     </views>
 
     <!-- ***************************************************************************************** -->
@@ -508,7 +517,7 @@
                     <cell type="field" id="-20" name="Determination.PromptToReplaceSynonym" uitype="checkbox" label="PROMPT_TO_REPLACE_SYNONYM" colspan="3"/>
                 </row>
                 <row>
-	                <cell type="panel" id="16" name="treepanel" coldef="p,2px,p,p:g,f:p:g" rowdef="p,2px,p,2px,p,2px,p,2px,p">
+	                <cell type="panel" id="16tx" name="treepaneltx" coldef="p,2px,p,p:g,f:p:g" rowdef="p,2px,p,2px,p,2px,p,2px,p">
 	                    <rows>
 			                <row>
 			                    <cell type="separator" label="TAXON_TREE" colspan="5"/>
@@ -531,7 +540,7 @@
 			                </row>
 			            </rows>
 			        </cell>
-	                <cell type="panel" id="16" name="treepanel" coldef="p,2px,p,p:g,f:p:g" rowdef="p,2px,p,2px,p,2px,p,2px,p">
+	                <cell type="panel" id="16gt" name="treepanelgt" coldef="p,2px,p,p:g,f:p:g" rowdef="p,2px,p,2px,p,2px,p,2px,p">
 	                    <rows>
 			                <row>
 			                    <cell type="separator" label="GEO_TREE" colspan="5"/>
@@ -557,7 +566,7 @@
 			    </row>
 			                
                 <row>
-	                <cell type="panel" id="16" name="treepanel" coldef="p,2px,p,p:g,f:p:g" rowdef="p,2px,p,2px,p,2px,p,2px,p">
+	                <cell type="panel" id="16lt" name="treepanellt" coldef="p,2px,p,p:g,f:p:g" rowdef="p,2px,p,2px,p,2px,p,2px,p">
 	                    <rows>
 			                <row>
 			                    <cell type="separator" label="LITHO_TREE" colspan="5"/>
@@ -580,7 +589,7 @@
 			                </row>
 			            </rows>
 			        </cell>
-	                <cell type="panel" id="16" name="treepanel" coldef="p,2px,p,p:g,f:p:g" rowdef="p,2px,p,2px,p,2px,p,2px,p">
+	                <cell type="panel" id="16geo" name="treepanelgeo" coldef="p,2px,p,p:g,f:p:g" rowdef="p,2px,p,2px,p,2px,p,2px,p">
 	                    <rows>
 			              <row>
 			                    <cell type="separator" label="GEO_PERIOD_TREE" colspan="5"/>
@@ -605,7 +614,7 @@
 			        </cell>
 			    </row>
                 <row>
-                    <cell type="panel" id="16" name="treepanel" coldef="p,2px,p,p:g,f:p:g" rowdef="p,2px,p,2px,p,2px,p,2px,p">
+                    <cell type="panel" id="16st" name="treepanelst" coldef="p,2px,p,p:g,f:p:g" rowdef="p,2px,p,2px,p,2px,p,2px,p">
                         <rows>
                             <row>
                                 <cell type="separator" label="STORAGE_TREE" colspan="5"/>
@@ -713,6 +722,37 @@
             </rows>
         </viewdef>
         
+        <viewdef
+            type="form"
+            name="LoansPrefs"
+            class="java.util.prefs.Preferences"
+            gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
+            settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
+            useresourcelabels="true">
+            
+            <desc><![CDATA[Loan Preference Form.]]></desc>
+            
+            <columnDef>p,2px,p,p:g,p:g,f:p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+            
+            <rows>
+                <row>
+                    <cell type="separator" label="LOANS_BAR" colspan="5"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="OVERDUETIME" label="OVERDUETIME"/>
+                    <cell type="field" id="OVERDUETIME" name="OVERDUETIME" uitype="spinner" ignore="true" initialize="max=60;min=1"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="SHIPMETH" label="SHIPMETH"/>
+                    <cell type="field" id="SHIPMETH" name="SHIPMETH" uitype="combobox" ignore="true" picklist="ShipmentMethod" colspan="2"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="SHIPPEDBY" label="SHIPPEDBY"/>
+                    <cell type="field" id="SHIPPEDBY" name="SHIPPEDBY" uitype="querycbx" ignore="true" initialize="name=Agent" colspan="3"/>
+                </row>
+            </rows>
+        </viewdef>
         
     </viewdefs>
 </viewset>

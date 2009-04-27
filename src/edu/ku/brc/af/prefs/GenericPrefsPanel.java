@@ -30,6 +30,7 @@ import java.util.Vector;
 
 import javax.swing.JPanel;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.auth.SecurityMgr;
@@ -163,7 +164,15 @@ public class GenericPrefsPanel extends JPanel implements PrefsSavable, PrefsPane
             Component comp = fvo.getCompById(id);
             if (comp instanceof UIValidatable && ((UIValidatable)comp).isChanged())
             {
-                changeHash.put(idToNameHash.get(id), comp instanceof GetSetValueIFace ? ((GetSetValueIFace)comp).getValue() : ""); //$NON-NLS-1$
+                String nameForHash = idToNameHash.get(id);
+                if (StringUtils.isNotEmpty(nameForHash))
+                {
+                    Object value = comp instanceof GetSetValueIFace ? ((GetSetValueIFace)comp).getValue() : "";
+                    if (value != null)
+                    {
+                        changeHash.put(nameForHash, value); //$NON-NLS-1$
+                    }
+                }
             }
             //System.err.println("ID: "+id+"  Name: "+idToNameHash.get(id)+" changed: "+(comp instanceof UIValidatable && ((UIValidatable)comp).isChanged()));
             /*Object newVal = FormViewObj.getValueFromComponent(comp, false, false, id);

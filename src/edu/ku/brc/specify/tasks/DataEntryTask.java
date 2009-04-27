@@ -214,7 +214,7 @@ public class DataEntryTask extends BaseTask
      * @param data the data to fill in , if data is null AND it is a "new" form than a new object is created and filled in
      * @param isNewForm indicates that it is a "new" form for entering in new data
      */
-    public void openView(final Taskable         task, 
+    public FormPane openView(final Taskable         task, 
                          final String           viewSetName, 
                          final String           viewName, 
                          final String           modeArg, 
@@ -230,7 +230,7 @@ public class DataEntryTask extends BaseTask
         if (view == null)
         {
             UIRegistry.showError("Couldn't find default form for ["+viewName+"]");
-            return;
+            return null;
         }
         
         FormLockStatus lockStatus = isLockOK("LockTitle", view, isNewForm, mode == null || mode.equals("edit"));
@@ -242,7 +242,7 @@ public class DataEntryTask extends BaseTask
                 
             } else if (lockStatus == FormLockStatus.Skip)
             {
-                return;
+                return null;
             }
         }
         
@@ -269,7 +269,7 @@ public class DataEntryTask extends BaseTask
                                     if (!perm.canAdd())
                                     {
                                         UIRegistry.showLocalizedMsg("DET_NO_ADD_PERM");
-                                        return;
+                                        return null;
                                     }
                                 }
                             }
@@ -311,7 +311,7 @@ public class DataEntryTask extends BaseTask
         } else
         {
             UIRegistry.showError("Couldn't find default form for ["+viewName+"]");
-            return;
+            return null;
         }
         
         final FormPane formPane = tmpFP;
@@ -349,6 +349,7 @@ public class DataEntryTask extends BaseTask
             }
         });
 
+        return formPane;
     }
     
     /* (non-Javadoc)

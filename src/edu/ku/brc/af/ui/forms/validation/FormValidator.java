@@ -917,7 +917,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
     {
         if (enabled)
         {
-            //log.debug("validateForm ["+name+"] ");
+            log.debug("validateForm ["+name+"] ");
     
             boolean curIgnoreVal = ignoreValidationNotifications; // cache the value in case it has already been set
             ignoreValidationNotifications = true;
@@ -987,7 +987,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
                 formValidationState = kidsValState;
             }
     
-            //log.debug("validateForm ["+name+"] State: "+formValidationState);
+            log.debug("validateForm ["+name+"] State: "+formValidationState);
             
             boolean isValid = isFormValid();
             enableUIItems(hasChanged && isValid, EnableType.ValidAndChangedItems);

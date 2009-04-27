@@ -74,6 +74,7 @@ import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.PreferencesDlg;
+import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.af.ui.db.CommandActionForDB;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayIFace;
@@ -168,7 +169,7 @@ public class InteractionsTask extends BaseTask
     protected static final String ADD_TO_LOAN          = "AddToLoan";
     protected static final String ADD_TO_GIFT          = "AddToGift";
     protected static final String OPEN_NEW_VIEW        = "OpenNewView";
-
+    protected static final String LN_NO_PRP            = "LN_NO_PRP";
     
     protected static final int    loanTableId;
     protected static final int    infoRequestTableId;
@@ -422,9 +423,9 @@ public class InteractionsTask extends BaseTask
             DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoByTableName(entry.getTableName());
             if (!AppContextMgr.isSecurityOn() || tableInfo.getPermissions().canView())
             {
-                //System.err.println(entry.getName()+"  "+entry.isSearchService()+"   "+entry.isOnLeft());
+                //System.err.println(entry.getName()+"\t  "+entry.isSearchService()+"   "+entry.isOnLeft()+"   "+entry.isVisible());
                 entry.setEnabled(true);
-                if (!entry.isSearchService())
+                if (entry.isVisible())
                 {
                     Vector<TaskConfigItemIFace> list = entry.isOnLeft() ? stdList : miscList;
                     // Clone for undo (Cancel)
@@ -495,7 +496,7 @@ public class InteractionsTask extends BaseTask
             for (InteractionEntry entry : entries)
             {
                 DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoByTableName(entry.getTableName());
-                if ( entry.isEnabled())
+                if (entry.isEnabled())
                 {
                     if (entry.isOnLeft())
                     {
@@ -1874,6 +1875,51 @@ public class InteractionsTask extends BaseTask
         }
     }
     
+    /**
+     * 
+     */
+    protected void createLoanNoPreps(final Viewable srcViewable)
+    {
+        Loan loan = new Loan();
+        loan.initialize();
+        
+        Calendar dueDate = Calendar.getInstance();
+        dueDate.add(Calendar.MONTH, 6);                 // XXX PREF Due Date
+        loan.setCurrentDueDate(dueDate);
+        
+        Shipment shipment = new Shipment();
+        shipment.initialize();
+        
+        loan.addReference(shipment, "shipments");
+        
+        if (srcViewable != null)
+        {
+            srcViewable.setNewObject(loan);
+            
+        } else
+        {
+            DataEntryTask dataEntryTask = (DataEntryTask)TaskMgr.getTask(DataEntryTask.DATA_ENTRY);
+            if (dataEntryTask != null)
+            {
+                DBTableInfo loanTableInfo = DBTableIdMgr.getInstance().getInfoById(loan.getTableId());
+                dataEntryTask.openView(this, null, loanTableInfo.getDefaultFormName(), "edit", loan, true);
+                /*if (formPane != null)
+                {
+                    MultiView mv = formPane.getMultiView();
+                    if (mv != null)
+                    {
+                        FormViewObj fvo = mv.getCurrentViewAsFormViewObj();
+                        if (fvo != null)
+                        {
+                            fvo.getControlById("10").setVisible(false);
+                            fvo.getControlByName("srcPanel").setVisible(true);
+                        }
+                    }
+                }*/
+            }
+        }
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.af.tasks.BaseTask#subPaneRemoved(edu.ku.brc.af.core.SubPaneIFace)
      */
@@ -2047,9 +2093,10 @@ public class InteractionsTask extends BaseTask
      */
     protected void processInteractionsCommands(final CommandAction cmdAction)
     {
-        boolean isNewLoan = cmdAction.isAction(NEW_LOAN);
-        boolean isNewGift = cmdAction.isAction(NEW_GIFT);
-        boolean isInfoReq = cmdAction.isAction(INFO_REQ_MESSAGE);
+        boolean isNewLoan        = cmdAction.isAction(NEW_LOAN);
+        boolean isNewLoanNoPreps = cmdAction.isAction(LN_NO_PRP);
+        boolean isNewGift        = cmdAction.isAction(NEW_GIFT);
+        boolean isInfoReq        = cmdAction.isAction(INFO_REQ_MESSAGE);
 
         boolean isOKToAdd;
         if (AppContextMgr.isSecurityOn())
@@ -2058,7 +2105,7 @@ public class InteractionsTask extends BaseTask
             PermissionSettings giftPerms = DBTableIdMgr.getInstance().getInfoById(Gift.getClassTableId()).getPermissions();
             PermissionSettings irPerms   = DBTableIdMgr.getInstance().getInfoById(InfoRequest.getClassTableId()).getPermissions();
             
-            isOKToAdd = (isNewLoan && (loanPerms == null || loanPerms.canAdd())) ||
+            isOKToAdd = ((isNewLoan || isNewLoanNoPreps) && (loanPerms == null || loanPerms.canAdd())) ||
                         (isNewGift && (giftPerms == null || giftPerms.canAdd())) ||
                         (isInfoReq && (irPerms == null || irPerms.canAdd()));
         } else
@@ -2087,7 +2134,7 @@ public class InteractionsTask extends BaseTask
                 }
             }
             
-        } else if (isNewLoan || isNewGift)
+        } else if (isNewLoan || isNewGift || isNewLoanNoPreps)
         {
             if (cmdAction.getData() == cmdAction)
             {
@@ -2097,6 +2144,11 @@ public class InteractionsTask extends BaseTask
                     if (isNewLoan)
                     {
                         loanProcessor.createOrAdd();
+                        
+                    } else if (isNewLoanNoPreps)
+                    {
+                        createLoanNoPreps(null);
+                        
                     } else
                     {
                         giftProcessor.createOrAdd();
@@ -2128,6 +2180,11 @@ public class InteractionsTask extends BaseTask
                 if (isNewLoan)
                 {    
                     loanProcessor.createOrAdd((Viewable)cmdAction.getData());
+                    
+                } else if (isNewLoanNoPreps)
+                {
+                    createLoanNoPreps((Viewable)cmdAction.getData());
+                    
                 } else
                 {
                     giftProcessor.createOrAdd((Viewable)cmdAction.getData());

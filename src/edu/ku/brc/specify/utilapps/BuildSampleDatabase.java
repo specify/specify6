@@ -4746,28 +4746,31 @@ public class BuildSampleDatabase
     {
         TaxonTreeDefItem parent = null;
         Element root = getDOMForDiscpline(disciplineType, "taxon_init.xml");
-        for (Element node : (List<Element>)root.selectNodes("/tree/treedef/level"))
+        if (root != null)
         {
-            String  name       = getAttr(node, "name", null);
-            int     rankId     = getAttr(node, "rank", 0);
-            boolean infullname = getAttr(node, "infullname", false);
-            boolean isEnforced = getAttr(node,  "enforced", false);
-            
-            TaxonTreeDefItem tdi = new TaxonTreeDefItem();
-            tdi.initialize();
-            tdi.setName(name);
-            tdi.setRankId(rankId);
-            tdi.setIsEnforced(isEnforced);
-            tdi.setIsInFullName(infullname);
-            treeDef.getTreeDefItems().add(tdi);
-            tdi.setParent(parent);
-            if (parent != null)
+            for (Element node : (List<Element>)root.selectNodes("/tree/treedef/level"))
             {
-                parent.getChildren().add(tdi);
+                String  name       = getAttr(node, "name", null);
+                int     rankId     = getAttr(node, "rank", 0);
+                boolean infullname = getAttr(node, "infullname", false);
+                boolean isEnforced = getAttr(node,  "enforced", false);
+                
+                TaxonTreeDefItem tdi = new TaxonTreeDefItem();
+                tdi.initialize();
+                tdi.setName(name);
+                tdi.setRankId(rankId);
+                tdi.setIsEnforced(isEnforced);
+                tdi.setIsInFullName(infullname);
+                treeDef.getTreeDefItems().add(tdi);
+                tdi.setParent(parent);
+                if (parent != null)
+                {
+                    parent.getChildren().add(tdi);
+                }
+                tdi.setTreeDef(treeDef);
+                persist(tdi);
+                parent = tdi;
             }
-            tdi.setTreeDef(treeDef);
-            persist(tdi);
-            parent = tdi;
         }
     }
     
@@ -4846,7 +4849,7 @@ public class BuildSampleDatabase
     
     protected Element getDOMForDiscpline(final DisciplineType dType, final String fileName)
     {
-        return XMLHelper.readDOMFromConfigDir(dType.getName()+ File.separator + fileName);
+        return XMLHelper.readDOMFromConfigDir(dType.getFolder()+ File.separator + fileName);
     }
     
     

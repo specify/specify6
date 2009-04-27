@@ -387,6 +387,7 @@ class SetUpBuildDlg extends CustomDialog
             {
                 if (disp != DisciplineType.STD_DISCIPLINES.botany &&
                     disp != DisciplineType.STD_DISCIPLINES.invertpaleo &&
+                    disp != DisciplineType.STD_DISCIPLINES.paleobotany &&
                     disp != DisciplineType.STD_DISCIPLINES.fish)
                 {
                     DisciplineType dType = DisciplineType.getDiscipline(disp);

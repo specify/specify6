@@ -960,7 +960,11 @@ public class ViewLoader
                                                                         getAttr(cellElement, "coldef", "p"),
                                                                         getAttr(cellElement, "rowdef", "p"),
                                                                         colspan, rowspan);
-                            
+                            String initialize = getAttr(cellElement, "initialize", null);
+                            if (StringUtils.isNotEmpty(initialize))
+                            {
+                                cellPanel.setProperties(UIHelper.parseProperties(initialize));
+                            }
                             processRows(cellElement, cellPanel.getRows(), tableinfo);
 
                             fixLabels(cellPanel.getName(), cellPanel.getRows(), tableinfo);

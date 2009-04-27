@@ -45,6 +45,7 @@ public class InteractionEntry implements TaskConfigItemIFace, Comparable<TaskCon
     protected boolean isOnLeft;
     protected boolean isSearchService;
     protected boolean isEnabled;
+    protected boolean isVisible;
     protected int     order;
     
     protected Vector<EntryFlavor> draggableFlavors = new Vector<EntryFlavor>();
@@ -313,7 +314,15 @@ public class InteractionEntry implements TaskConfigItemIFace, Comparable<TaskCon
      */
     public boolean isVisible()
     {
-        return true;
+        return isVisible;
+    }
+
+    /**
+     * @param isVisible the isVisible to set
+     */
+    public void setVisible(boolean isVisible)
+    {
+        this.isVisible = isVisible;
     }
 
     /**
@@ -391,6 +400,7 @@ public class InteractionEntry implements TaskConfigItemIFace, Comparable<TaskCon
         xstream.useAttributeFor(InteractionEntry.class, "isSearchService");
         xstream.useAttributeFor(InteractionEntry.class, "tooltip");
         xstream.useAttributeFor(InteractionEntry.class, "isEnabled");
+        xstream.useAttributeFor(InteractionEntry.class, "isVisible");
         
         xstream.aliasAttribute(InteractionEntry.class, "tableName", "table");
         xstream.aliasAttribute(InteractionEntry.class, "labelKey",  "label");
@@ -400,6 +410,7 @@ public class InteractionEntry implements TaskConfigItemIFace, Comparable<TaskCon
         xstream.aliasAttribute(InteractionEntry.class, "cmdType",   "type");
         xstream.aliasAttribute(InteractionEntry.class, "isSearchService", "issrchsrv");
         xstream.aliasAttribute(InteractionEntry.class, "isEnabled", "enabled");
+        xstream.aliasAttribute(InteractionEntry.class, "isVisible", "visible");
         
         xstream.omitField(InteractionEntry.class, "title");
         xstream.omitField(InteractionEntry.class, "i18NTooltip");

@@ -46,6 +46,8 @@ import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.af.ui.forms.persist.AltViewIFace;
+import edu.ku.brc.af.ui.forms.persist.FormCellIFace;
+import edu.ku.brc.af.ui.forms.persist.FormCellSubViewIFace;
 import edu.ku.brc.af.ui.forms.persist.ViewDefIFace;
 import edu.ku.brc.af.ui.forms.persist.ViewIFace;
 import edu.ku.brc.af.ui.forms.persist.ViewLoader;
@@ -100,6 +102,7 @@ public class MultiView extends JPanel
     protected Viewable                     currentViewable      = null;
     protected FormValidator                currentValidator     = null;
     protected Class<?>                     classToCreate        = null;
+    protected FormCellIFace                cell                 = null;
     
     protected PermissionSettings           permissions;
     
@@ -136,7 +139,7 @@ public class MultiView extends JPanel
                      final AltViewIFace.CreationMode createWithMode,
                      final int       options)
     {
-        this(mvParent, cellName, view, createWithMode, null, options, null);
+        this(mvParent, cellName, view, createWithMode, null, options, null, null);
     }
     
     /**
@@ -155,7 +158,7 @@ public class MultiView extends JPanel
                      final int       options,
                      final Color     bgColor)
     {
-        this(mvParent, cellName, view, createWithMode, null, options, bgColor);
+        this(mvParent, cellName, view, createWithMode, null, options, bgColor, null);
     }
     
     /**
@@ -174,7 +177,7 @@ public class MultiView extends JPanel
                      final String    defaultAltViewType,
                      final int       options)
     {
-        this(mvParent, cellName, view, createWithMode, defaultAltViewType, options, null);
+        this(mvParent, cellName, view, createWithMode, defaultAltViewType, options, null, null);
     }
     
     /**
@@ -186,20 +189,23 @@ public class MultiView extends JPanel
      * @param defaultAltViewType suggestion as to whether to use a form or a grid
      * @param options the options needed for creating the form
      * @param bgColor background color
+     * @param cell  the definition of the MultiView when it is a subview
      */
-    public MultiView(final MultiView mvParent,
-                     final String    cellName,
-                     final ViewIFace view,
+    public MultiView(final MultiView     mvParent,
+                     final String        cellName,
+                     final ViewIFace     view,
                      final AltViewIFace.CreationMode createWithMode,
-                     final String    defaultAltViewType,
-                     final int       options,
-                     final Color     bgColor)
+                     final String        defaultAltViewType,
+                     final int           options,
+                     final Color         bgColor,
+                     final FormCellIFace cell)
     {
         this.mvParent       = mvParent;
         this.cellName       = cellName;
         this.view           = view;
         this.createWithMode = createWithMode;
         this.createOptions  = options | (createWithMode == AltViewIFace.CreationMode.EDIT ? IS_EDITTING : 0);
+        this.cell           = cell;
         
         initializeCardPanel(options);
         
@@ -879,9 +885,9 @@ public class MultiView extends JPanel
             {
                 if (add(viewable, altView.getName()))
                 {
-                    if (viewable instanceof TableViewObj)
+                    if (viewable instanceof TableViewObj && cell instanceof FormCellSubViewIFace)
                     {
-                        ((TableViewObj)viewable).setVisibleRowCount(5);// XXX FIX ME cellSubView.getTableRows());
+                        ((TableViewObj)viewable).setVisibleRowCount(((FormCellSubViewIFace)cell).getTableRows());
                     }
                     
                     if (mvParent != null)

@@ -32,6 +32,7 @@ import javax.swing.JTextField;
 
 import org.apache.commons.lang.StringUtils;
 
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.ui.forms.DraggableRecordIdentifier;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
@@ -67,6 +68,9 @@ public class LoanBusRules extends AttachmentOwnerBaseBusRules
     public static final String DE_CMDS     = "Data_Entry";
     public static final String ADD_TO_LOAN = "AddToLoan";
     public static final String NEW_LOAN    = "NEW_LOAN";
+    
+    public static final String DUEINMONTHS = "loans.dueinmons"; 
+
     
     /**
      * Constructor.
@@ -154,7 +158,13 @@ public class LoanBusRules extends AttachmentOwnerBaseBusRules
     @Override
     public void createNewObj(boolean doSetIntoAndValidateArg, Object oldDataObj)
     {
-        CommandAction cmdAction = new CommandAction(CMDTYPE, NEW_LOAN, viewable);
+        boolean doNewLoanNoPreps = false;
+        if (formViewObj != null)
+        {
+            doNewLoanNoPreps = formViewObj.getControlByName("srcPanel").isVisible();
+        }
+        
+        CommandAction cmdAction = new CommandAction(CMDTYPE, doNewLoanNoPreps ? "LN_NO_PRP" : NEW_LOAN, viewable);
         CommandDispatcher.dispatch(cmdAction);
     }
 
@@ -168,28 +178,41 @@ public class LoanBusRules extends AttachmentOwnerBaseBusRules
         
         if (formViewObj != null && loan != null)
         {
-            if (formViewObj.getSession() == null && loan.getId() != null)
+            DataProviderSessionIFace session = formViewObj.getSession();
+            
+            try
             {
-                DataProviderSessionIFace session = null;
-                try
+                if (session == null)
                 {
-                    session = DataProviderFactory.getInstance().createSession();    
-                    session.attach(loan);
-                    loan.forceLoad();
+                    session = DataProviderFactory.getInstance().createSession();
                 }
-                catch (Exception ex)
+            
+                session.attach(loan);
+                loan.forceLoad();
+                
+            } catch (Exception ex)
+            {
+                //UsageTracker.incrHandledUsageCount();
+                //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataEntryTask.class, ex);
+                //log.error(ex);
+                ex.printStackTrace();
+                
+            } finally
+            {
+                if (session != null && formViewObj.getSession() == null)
                 {
-                    //UsageTracker.incrHandledUsageCount();
-                    //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataEntryTask.class, ex);
-                    //log.error(ex);
-                    ex.printStackTrace();
-                    
-                } finally
+                    session.close();
+                }
+            }
+            
+            if (loan.getId() == null)
+            {
+                Integer dueInMonths = AppPreferences.getRemote().getInt(DUEINMONTHS, 6);
+                if (dueInMonths != null)
                 {
-                    if (session != null)
-                    {
-                        session.close();
-                    }
+                    Calendar date = Calendar.getInstance();
+                    date.add(Calendar.MONTH, dueInMonths);
+                    loan.setCurrentDueDate(date);
                 }
             }
         }
