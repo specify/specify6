@@ -821,7 +821,7 @@ public class TemplateEditor extends CustomDialog
     	for (int m = 0; m < mapModel.size(); m++)
     	{
     		FieldMappingPanel fmp = (FieldMappingPanel )mapModel.get(m);
-    		if (!fmp.isNew() && fmp != currentMap && fmp.getFieldInfo().getTableinfo().getTableId() == 4000)
+    		if (fmp != currentMap && fmp.getFieldInfo() != null && fmp.getFieldInfo().getTableinfo().getTableId() == 4000)
     		{
     			return true;
     		}
@@ -834,7 +834,7 @@ public class TemplateEditor extends CustomDialog
     	for (int m = 0; m < mapModel.size(); m++)
     	{
     		FieldMappingPanel fmp = (FieldMappingPanel )mapModel.get(m);
-    		if (!fmp.isNew() && fmp != currentMap && fmp.getFieldInfo().getTableinfo().getTableId() != 4000)
+    		if (fmp != currentMap && fmp.getFieldInfo() != null && fmp.getFieldInfo().getTableinfo().getTableId() != 4000)
     		{
     			return false;
     		}
@@ -848,7 +848,7 @@ public class TemplateEditor extends CustomDialog
     	for (int m = 0; m < mapModel.size(); m++)
     	{
     		FieldMappingPanel fmp = (FieldMappingPanel )mapModel.get(m);
-    		if (!fmp.isNew && fmp != currentMap && fmp.getFieldInfo().getTableinfo().getTableId() == 4)
+    		if (fmp != currentMap && fmp.getFieldInfo() != null && fmp.getFieldInfo().getTableinfo().getTableId() == 4)
     		{
     			int rank = getRank(fmp.getFieldInfo());
     			if (rank > low)
@@ -866,7 +866,7 @@ public class TemplateEditor extends CustomDialog
     	for (int m = 0; m < mapModel.size(); m++)
     	{
     		FieldMappingPanel fmp = (FieldMappingPanel )mapModel.get(m);
-    		if (!fmp.isNew() && fmp != currentMap && fmp.getFieldInfo().getTableinfo().getClassObj().equals(Determination.class))
+    		if (fmp != currentMap && fmp.getFieldInfo() != null && fmp.getFieldInfo().getTableinfo().getClassObj().equals(Determination.class))
     		{
     			int rank = getRank(fmp.getFieldInfo());
     			if (rank < high)
