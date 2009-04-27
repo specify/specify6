@@ -959,10 +959,7 @@ public class TemplateEditor extends CustomDialog
                     String errMsg = isMappable((FieldInfo)item, null);
                     if (errMsg == null)
                     {
-                    	toAdd.add((FieldInfo )item);
-                    	FieldMappingPanel fmp = addNewMapItem((FieldInfo)item, null);
-                    	fmp.getArrowLabel().setVisible(true);
-                    	fmp.getArrowLabel().setIcon(IconManager.getIcon("LinkedRight"));
+                    	toAdd.add((FieldInfo )item);                    
                     }
                     else
                     {
