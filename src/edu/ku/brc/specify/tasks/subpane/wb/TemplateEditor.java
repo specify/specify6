@@ -950,7 +950,7 @@ public class TemplateEditor extends CustomDialog
         Object[] objs = fieldList.getSelectedValues();
         if (objs != null && objs.length > 0)
         {
-            Vector<String> errMsgs = new Vector<String>();
+            Vector<FieldInfo> toAdd = new Vector<FieldInfo>();
         	for (Object obj : objs)
             {
                 TableListItemIFace item = (TableListItemIFace)obj;
@@ -959,22 +959,24 @@ public class TemplateEditor extends CustomDialog
                     String errMsg = isMappable((FieldInfo)item, null);
                     if (errMsg == null)
                     {
+                    	toAdd.add((FieldInfo )item);
                     	FieldMappingPanel fmp = addNewMapItem((FieldInfo)item, null);
                     	fmp.getArrowLabel().setVisible(true);
                     	fmp.getArrowLabel().setIcon(IconManager.getIcon("LinkedRight"));
                     }
                     else
                     {
-                    	errMsgs.add(errMsg);
+                    	UIRegistry.displayErrorDlg(errMsg);
+                    	toAdd.clear();
+                    	break;
                     }
                 }
             }
-        	if (errMsgs.size() > 0)
+        	for (FieldInfo fld : toAdd)
         	{
-        		for (String msg : errMsgs)
-        		{
-        			UIRegistry.displayErrorDlg(msg);
-        		}
+            	FieldMappingPanel fmp = addNewMapItem(fld, null);
+            	fmp.getArrowLabel().setVisible(true);
+            	fmp.getArrowLabel().setIcon(IconManager.getIcon("LinkedRight"));
         	}
         }
     }
