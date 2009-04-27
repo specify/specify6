@@ -120,6 +120,22 @@ public class LatLonConverter
                                                final FORMAT     type,
                                                final LATLON     latOrLon)
     {
+        return ensureFormattedString(bd, latLonStr, type, latOrLon, DECIMAL_SIZES[type.ordinal()]);
+    }
+ 
+    
+    /**
+     * @param bd
+     * @param latLonStr
+     * @param type
+     * @return
+     */
+    public static String ensureFormattedString(final BigDecimal bd, 
+                                               final String     latLonStr, 
+                                               final FORMAT     type,
+                                               final LATLON     latOrLon,
+                                               final int        decimalSize)
+    {
         if (StringUtils.isEmpty(latLonStr))
         {
             if (bd == null)
@@ -127,7 +143,7 @@ public class LatLonConverter
                 return null;
             }
             
-            String outStr = format(bd, latOrLon, type, DEGREES_FORMAT.Symbol, DECIMAL_SIZES[type.ordinal()]);
+            String outStr = format(bd, latOrLon, type, DEGREES_FORMAT.Symbol, decimalSize);
             if (latOrLon == LATLON.Latitude)
             {
                 outStr += " " + northSouth[bd.doubleValue() < 0.0 ? 1 : 0];
@@ -139,7 +155,7 @@ public class LatLonConverter
         }
         return latLonStr;
     }
-    
+
     /**
      * @param str
      * @param actualFmt
