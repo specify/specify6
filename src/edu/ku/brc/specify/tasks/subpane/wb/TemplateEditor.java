@@ -1123,6 +1123,55 @@ public class TemplateEditor extends CustomDialog
     }
     
     /**
+     * @return list of tables in an order that which result in more 'desirable' auto-mappings.
+     * 
+     */
+    protected Vector<TableInfo> getTablesForAutoMapping()
+    {
+    	//currently just makes sure Determination follows Taxon;
+    	
+    	Vector<TableInfo> result = new Vector<TableInfo>();
+    	Integer detIndex = null;
+    	Integer taxIndex = null;
+    	Integer taxOnlyIndex = null;
+    	for (int t = 0; t < tableModel.size(); t++)
+    	{
+    		TableInfo tbl = (TableInfo )tableModel.get(t);
+    		if (tbl.getTableInfo().getClassObj().equals(Determination.class))
+    		{
+    			detIndex = t;
+    		}
+    		if (tbl.getTableInfo().getTableId() == 4)
+    		{
+    			taxIndex = t;
+    		}
+    		if (tbl.getTableInfo().getTableId() == 4000)
+    		{
+    			taxOnlyIndex = t;
+    		}
+    		result.add(tbl);
+    	}
+    	if (taxOnlyIndex != null && taxOnlyIndex.intValue() != tableModel.size()-1)
+    	{
+    		TableInfo taxOnly = result.remove(taxOnlyIndex.intValue());
+    		result.add(taxOnly);
+    		if (detIndex != null && detIndex.intValue() > taxOnlyIndex)
+    		{
+    			detIndex += 1;
+    		}
+    		if (taxIndex != null && taxIndex.intValue() > taxOnlyIndex)
+    		{
+    			taxIndex += 1;
+    		}
+    	}
+    	if (detIndex != null && taxIndex != null && detIndex.intValue() < taxIndex.intValue())
+    	{
+    		TableInfo det = result.remove(detIndex.intValue());
+    		result.add(taxIndex, det);
+    	}
+    	return result;
+    }
+    /**
      * Automaps a filed name to the Specify Schema
      * @param fieldNameArg the field name
      * @return the Table Field Pair
@@ -1167,9 +1216,9 @@ public class TemplateEditor extends CustomDialog
         // If we had no luck then just loop through everything looking for it.
         if (fieldInfo == null)
         {
-            for (int i = 0; i < tableModel.size(); i++)
+            Vector<TableInfo> tbls = getTablesForAutoMapping(); 
+        	for (TableInfo tblInfo : tbls)
             {
-                TableInfo tblInfo = tableModel.getElementAt(i);
                 for (FieldInfo fi : tblInfo.getFieldItems())
                 {
                     DBFieldInfo dbFieldInfo = fi.getFieldInfo();
