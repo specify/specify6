@@ -113,6 +113,7 @@ import edu.ku.brc.specify.datamodel.RepositoryAgreement;
 import edu.ku.brc.specify.datamodel.Shipment;
 import edu.ku.brc.specify.datamodel.SpAppResource;
 import edu.ku.brc.specify.datamodel.SpReport;
+import edu.ku.brc.specify.datamodel.busrules.LoanBusRules;
 import edu.ku.brc.specify.tasks.subpane.qb.QueryBldrPane;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
 import edu.ku.brc.specify.ui.LoanReturnDlg;
@@ -1902,20 +1903,19 @@ public class InteractionsTask extends BaseTask
             if (dataEntryTask != null)
             {
                 DBTableInfo loanTableInfo = DBTableIdMgr.getInstance().getInfoById(loan.getTableId());
-                dataEntryTask.openView(this, null, loanTableInfo.getDefaultFormName(), "edit", loan, true);
-                /*if (formPane != null)
+                FormPane formPane = dataEntryTask.openView(this, null, loanTableInfo.getDefaultFormName(), "edit", loan, true);
+                if (formPane != null)
                 {
                     MultiView mv = formPane.getMultiView();
                     if (mv != null)
                     {
                         FormViewObj fvo = mv.getCurrentViewAsFormViewObj();
-                        if (fvo != null)
+                        if (fvo != null && fvo.getBusinessRules() != null && fvo.getBusinessRules() instanceof LoanBusRules)
                         {
-                            fvo.getControlById("10").setVisible(false);
-                            fvo.getControlByName("srcPanel").setVisible(true);
+                            ((LoanBusRules)fvo.getBusinessRules()).setDoCreateLoanNoPreps(true);
                         }
                     }
-                }*/
+                }
             }
         }
     }

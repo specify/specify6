@@ -71,6 +71,7 @@ public class LoanBusRules extends AttachmentOwnerBaseBusRules
     
     public static final String DUEINMONTHS = "loans.dueinmons"; 
 
+    protected boolean doCreateLoanNoPreps = false; 
     
     /**
      * Constructor.
@@ -141,7 +142,13 @@ public class LoanBusRules extends AttachmentOwnerBaseBusRules
         }*/
     }
     
-    
+    /**
+     * @param doCreateLoanNoPreps the doCreateLoanNoPreps to set
+     */
+    public void setDoCreateLoanNoPreps(boolean doCreateLoanNoPreps)
+    {
+        this.doCreateLoanNoPreps = doCreateLoanNoPreps;
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.BaseBusRules#canCreateNewDataObject()
@@ -158,13 +165,8 @@ public class LoanBusRules extends AttachmentOwnerBaseBusRules
     @Override
     public void createNewObj(boolean doSetIntoAndValidateArg, Object oldDataObj)
     {
-        boolean doNewLoanNoPreps = false;
-        if (formViewObj != null)
-        {
-            doNewLoanNoPreps = formViewObj.getControlByName("srcPanel").isVisible();
-        }
         
-        CommandAction cmdAction = new CommandAction(CMDTYPE, doNewLoanNoPreps ? "LN_NO_PRP" : NEW_LOAN, viewable);
+        CommandAction cmdAction = new CommandAction(CMDTYPE, doCreateLoanNoPreps ? "LN_NO_PRP" : NEW_LOAN, viewable);
         CommandDispatcher.dispatch(cmdAction);
     }
 
@@ -176,7 +178,7 @@ public class LoanBusRules extends AttachmentOwnerBaseBusRules
     {
         Loan loan = (Loan)formViewObj.getDataObj();
         
-        if (formViewObj != null && loan != null)
+        if (formViewObj != null && loan != null && loan.getId() != null)
         {
             DataProviderSessionIFace session = formViewObj.getSession();
             
