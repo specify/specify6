@@ -915,7 +915,8 @@ public class TemplateEditor extends CustomDialog
     	if (fi.getTableinfo().getClassObj().equals(Determination.class))
     	{
     		int low = getLowestMappedTaxonRank(currentMap);
-    		if (getRank(fi) <= low)
+    		int rank = getRank(fi);
+    		if (rank <= low && rank != -1)
     		{
     			return UIRegistry.getResourceString("TemplateEditor.DetRanksLowerThanTaxRanks"); //XXX i18n 
     		}
@@ -925,7 +926,8 @@ public class TemplateEditor extends CustomDialog
     		if (fi.getTableinfo().getTableId() == 4)
     		{
         		int high = getHighestMappedDetRank(currentMap);
-        		if (getRank(fi) >= high)
+        		int rank = getRank(fi);
+        		if (rank >= high && rank != -1)
         		{
         			return UIRegistry.getResourceString("TemplateEditor.TaxRanksHigherThanDetRanks"); //XXX i18n 
         		}
