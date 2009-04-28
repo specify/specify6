@@ -571,7 +571,7 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
             		}
             	}
             
-            	if (!viewName.equals("TaxonTreeDefItem"))
+            	if (!viewName.endsWith("TreeDefItem"))
             	{
             		return;
             	}
