@@ -1212,7 +1212,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         
         // get the DB record that corresponds to the TreeNode
         T nodeRecord = getRecordForNode(node);
-        I treeDefItem = nodeRecord.getDefinitionItem();
         int numNodesToDelete = dataService.getDescendantCount(nodeRecord)+1;
         int userChoice = JOptionPane.OK_OPTION;
         
@@ -3041,7 +3040,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                 List<TreeNode> childrenShown = showChildren(treeNode);
                 if (childrenShown.size() > 0)
                 {
-                    TreeNode firstChild = childrenShown.get(0);
+                	TreeNode firstChild = childrenShown.get(0);
                     int listIndex = (list == lists[0]) ? 0 : 1;
                     scrollToShowNode(firstChild, listIndex);
                     enableSubTreeButtons();
@@ -3378,15 +3377,18 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
          }*/
         
         // get the node representing the parent DB record
-        TreeNode parentNode = listModel.getNodeById(dbRecord.getTreeId());
+        TreeNode parentNode = listModel.getNodeById(dbRecord.getTreeId());                    
+        
 
         // add the nodes to the model
         if (childNodes.size() == 0)
         {
             parentNode.setHasChildren(false);
+            parentNode.setHasVisualChildren(false);
             listModel.nodeValuesChanged(parentNode);
             return childNodes;
         }
+        parentNode.setHasVisualChildren(true);
         listModel.showChildNodes(childNodes, parentNode);
 
         if (parentNode != null)

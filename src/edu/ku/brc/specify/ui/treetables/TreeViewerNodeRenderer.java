@@ -806,7 +806,7 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
             Boolean hasVisKids = treeNode.hasVisualChildren();
             if (hasVisKids == null)
             {
-                hasVisKids = model.showingChildrenOf(treeNode);
+            	hasVisKids = model.showingChildrenOf(treeNode);
                 treeNode.setHasVisualChildren(hasVisKids);
             }
             
