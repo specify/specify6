@@ -816,6 +816,10 @@ public class TemplateEditor extends CustomDialog
         return true;
     }
     
+    /**
+     * @param currentMap
+     * @return true if a mapping to the 'Taxon Import Only' table exists.
+     */
     protected boolean taxonOnlyInUse(final FieldMappingPanel currentMap)
     {
     	for (int m = 0; m < mapModel.size(); m++)
@@ -829,6 +833,10 @@ public class TemplateEditor extends CustomDialog
     	return false;
     }
 
+    /**
+     * @param currentMap
+     * @return true if all mappings are to the 'Taxon Import Only' table.
+     */
     protected boolean onlyTaxonOnlyInUse(final FieldMappingPanel currentMap)
     {
     	for (int m = 0; m < mapModel.size(); m++)
@@ -842,6 +850,10 @@ public class TemplateEditor extends CustomDialog
     	return true;
     }
 
+    /**
+     * @param currentMap
+     * @return the lowest (i.e. highest numbered) taxon rank mapped from the Taxon table.
+     */
     protected int getLowestMappedTaxonRank(final FieldMappingPanel currentMap)
     {
     	int low = -1;
@@ -860,6 +872,10 @@ public class TemplateEditor extends CustomDialog
     	return low;
     }
 
+    /**
+     * @param currentMap
+     * @return the highest (i.e. lowest numbered) taxon rank mapped from the Determination table.
+     */
     protected int getHighestMappedDetRank(final FieldMappingPanel currentMap)
     {
     	int high = 600000;
@@ -878,6 +894,12 @@ public class TemplateEditor extends CustomDialog
     	return high;
     }
 
+    /**
+     * @param fi 
+     * @return the Taxonomic rank for fi if fi is a Taxonomic rank field (currently only the name for a rank - not Author, CommonName...),
+     * otherwise returns -1
+     *      
+     *      */
     protected int getRank(final FieldInfo fi)
     {
     	if (taxRanks == null)

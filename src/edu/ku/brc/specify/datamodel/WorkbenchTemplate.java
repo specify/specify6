@@ -52,6 +52,7 @@ import edu.ku.brc.util.Pair;
 @org.hibernate.annotations.Entity(dynamicInsert = true, dynamicUpdate = true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "workbenchtemplate")
+@SuppressWarnings("serial")
 public class WorkbenchTemplate extends DataModelObjBase implements java.io.Serializable, Comparable<WorkbenchTemplate>
 {
 
@@ -108,7 +109,12 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
         }
     }
 
-    public void checkMappings(final DBTableIdMgr schema)
+    /**
+     * @param schema
+     * 
+     * Applies applicable remappings for the fields mapped by the Template.
+     */
+    public void checkMappings(final DBTableIdMgr schema) 
     {
     	Element remapDom = XMLHelper.readDOMFromConfigDir("specify_workbench_remappings.xml");
     	HashMap<String, Pair<String,String>> remaps = new HashMap<String, Pair<String,String>>();
