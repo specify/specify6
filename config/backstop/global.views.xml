@@ -522,7 +522,7 @@
             
             <columnDef os="exp">p,2px,190px,5px,100px,2px,p:g</columnDef>
             <columnDef>100px,2px,190px,5px,50px,2px,478px,p,p:g</columnDef>
-            <columnDef os="mac">130px,2px,150px,5px,80px,2px,471px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,175px,5px,80px,2px,638px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
@@ -556,7 +556,7 @@
 
             <columnDef os="exp">p,2px,190px,5px:g,p,2px,190px,5px:g,p,2px,89px,2px,p,p,p:g</columnDef>
             <columnDef>100px,2px,190px,5px,100px,2px,190px,5px,105px,2px,89px,2px,35px,15px,p:g</columnDef>
-            <columnDef os="mac">130px,2px,230px,5px,120px,2px,230px,5px,139px,2px,125px,2px,38px,15px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,230px,5px,121px,2px,230px,5px,140px,2px,125px,2px,38px,15px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
 
             <rows>
@@ -759,7 +759,7 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[Address subform for Acessions.]]></desc>
             
-            <columnDef os="exp">p,2px,113px,5px:g,p,2px,113px,5px:g,p,2px,113px,5px:g,p,2px,113px,p:g</columnDef>
+            <columnDef os="exp">p,2px,120px,5px:g,p,2px,120px,5px:g,p,2px,120px,5px:g,p,2px,120px,p:g</columnDef>
             <columnDef>100px,2px,113px,5px,80px,2px,113px,5px,90px,2px,113px,5px,80px,2px,113px,0px,p:g</columnDef>
             <columnDef os="mac">130px,2px,130px,5px,115px,2px,130px,5px,127px,2px,130px,5px,115px,2px,130px,0px,p:g</columnDef>
             <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
@@ -1005,7 +1005,7 @@
                     <cell type="field" id="7" name="libraryNumber" uitype="text"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="Authors" id="10" name="authors" initialize="name=Agent" colspan="12"/>
+                    <cell type="subview" viewname="Authors" id="10" name="authors" initialize="name=Agent" colspan="12" rows="3"/>
                 </row>
             </rows>
         </viewdef> 

@@ -98,8 +98,8 @@
             <desc><![CDATA[The Collection Object form.]]></desc>
             <enableRules/>
             
-            <columnDef os="exp">p,2px,220px,5px:g,p,2px,255px,5px:g,p,2px,200px,p,p:g</columnDef>
-            <columnDef>100px,2px,200px,5px,100px,2px,210px,5px,100px,2px,101px,15px,p:g</columnDef>
+            <columnDef os="exp">p,2px,220px,5px:g,p,2px,255px,5px:g,p,2px,150px,p,p:g</columnDef>
+            <columnDef>100px,2px,195px,5px,96px,2px,210px,5px,94px,2px,101px,15px,p:g</columnDef>
             <columnDef os="mac">130px,2px,215px,5px,138px,2px,255px,5px,138px,2px,155px,15px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             <rows>
@@ -174,7 +174,7 @@
             <enableRules/>
 
             <columnDef os="exp">p,2px,255px,5px:g,p,2px,220px,5px:g,p,2px,70px,5px:g,p,p:g</columnDef>
-            <columnDef>100px,2px,215px,5px,75px,2px,205px,5px,80px,2px,46px,5px,85px,0px,p:g</columnDef>
+            <columnDef>100px,2px,210px,5px,75px,2px,195px,5px,80px,2px,46px,5px,85px,0px,p:g</columnDef>
             <columnDef os="mac">130px,2px,255px,5px,120px,2px,234px,5px,127px,2px,90px,5px,80px,0px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             <rows>
@@ -207,8 +207,8 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[Form For OtherIdentifier]]></desc>
             
-            <columnDef os="exp">p,2px,120px,5px:g,p,2px,100px,5px:g,p,2px,100px,5px:g,p,2px,120px,p:g</columnDef>
-            <columnDef>100px,2px,115px,5px,90px,2px,92px,5px,100px,2px,93px,5px,99px,2px,115px,0px,p:g</columnDef>
+            <columnDef os="exp">p,2px,130px,5px:g,p,2px,120px,5px:g,p,2px,120px,5px:g,p,2px,130px,p:g</columnDef>
+            <columnDef>100px,2px,115px,5px,85px,2px,92px,5px,95px,2px,93px,5px,94px,2px,115px,0px,p:g</columnDef>
             <columnDef os="mac">130px,2px,140px,5px,100px,2px,140px,5px,125px,2px,140px,5px,109px,2px,150px,0px,p:g</columnDef>
             <rowDef auto="true" sep="2px" cell="p"/>
             <rows>
@@ -247,8 +247,8 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[Collecting Event]]></desc>
             
-            <columnDef os="exp">p,2px,190px,5px:g,p,2px,255px,5px:g,p,2px,110px,p,p:g</columnDef>
-            <columnDef>100px,2px,200px,5px,90px,2px,210px,5px,96px,2px,115px,0px,15px,p:g</columnDef>
+            <columnDef os="exp">p,2px,190px,5px:g,p,2px,255px,5px:g,p,2px,110px,p,p,p:g</columnDef>
+            <columnDef>100px,2px,200px,5px,85px,2px,210px,5px,86px,2px,115px,0px,15px,p:g</columnDef>
             <columnDef os="mac">130px,2px,251px,5px,130px,2px,270px,5px,130px,2px,130px,0px,15px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             
@@ -304,8 +304,8 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[Collecting Event]]></desc>
             
-            <columnDef os="exp">p,2px,100px,5px:g,p,2px,100px,5px:g,p,2px,100px,5px:g,p,2px,175px,p:g</columnDef>
-            <columnDef>100px,2px,108px,5px,80px,2px,108px,5px,80px,2px,108px,5px,80px,2px,140px,0px,p:g</columnDef>
+            <columnDef os="exp">p,2px,130px,5px:g,p,2px,130px,5px:g,p,2px,130px,5px:g,p,2px,175px,p:g</columnDef>
+            <columnDef>100px,2px,108px,5px,75px,2px,108px,5px,75px,2px,108px,5px,75px,2px,140px,0px,p:g</columnDef>
             <columnDef os="mac">130px,2px,150px,5px,98px,2px,150px,5px,98px,2px,130px,5px,99px,2px,179px,0px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             
@@ -349,9 +349,9 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[Locality]]></desc>
             
-            <columnDef os="exp">p,2px,110px,5px:g,p,2px,105px,5px:g,p,2px,131px,p,p:g</columnDef>
-            <columnDef>100px,2px,110px,5px,110px,2px,105px,5px,105px,2px,331px,15px,p:g</columnDef>
-            <columnDef os="mac">130px,2px,140px,5px,127px,2px,140px,5px,147px,2px,140px,15px,p,p:g</columnDef>
+            <columnDef os="exp">p,2px,140px,5px:g,p,2px,140px,5px:g,p,p:g</columnDef>
+            <columnDef>100px,2px,100px,5px,292px,2px,116px,210px,15px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,140px,5px,347px,2px,140px,266px,15px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             <enableRules>
                 <rule id="georef"><![CDATA[localityName.isNotEmpty() && geography.isNotEmpty()]]></rule>
@@ -360,35 +360,33 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="localityName"/>
-                    <cell type="field" id="localityName" name="localityName" uitype="text"  colspan="9"/>
+                    <cell type="field" id="localityName" name="localityName" uitype="text"  colspan="6"/>
                 </row>
-                
                 <row>
                     <cell type="label" labelfor="geography"/>
-                    <cell type="field" id="geography" name="geography" uitype="querycbx" initialize="name=Geography"  colspan="9"/>
+                    <cell type="field" id="geography" name="geography" uitype="querycbx" initialize="name=Geography"  colspan="6"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="5"/>
-                    <cell type="field" id="5" name="this" uitype="plugin" initialize="name=LatLonUI" colspan="9"/>
+                    <cell type="field" id="5" name="this" uitype="plugin" initialize="name=LatLonUI" colspan="5"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="datum" uitype="text"/>
-                    <cell type="label" label="" colspan="3"/>
                     <cell type="label" labelfor="6"/>
                     <cell type="field" id="6" name="latLongMethod" uitype="text"/>
                 </row>
                 <row>  
-                    <cell type="subview" id="7" name="geoCoordDetails" viewname="GeoCoordDetail" colspan="12"/> 
+                    <cell type="subview" id="7" name="geoCoordDetails" viewname="GeoCoordDetail" colspan="9"/> 
                 </row>
                 <row>
-                    <cell type="subview" id="8" name="localityDetails" viewname="LocalityDetail" colspan="12"/> 
+                    <cell type="subview" id="8" name="localityDetails" viewname="LocalityDetail" colspan="9"/> 
                 </row>
                 <row>
-                    <cell type="separator" label="Plugins" colspan="12"/>
+                    <cell type="separator" label="Plugins" colspan="9"/>
                 </row>
                 <row>
-                    <cell type="panel" id="outerPanel" name="outerPanel" coldef="p,f:-163px:g,p,f:-105px:g,p,f:p:g" rowdef="p" colspan="12">
+                    <cell type="panel" id="outerPanel" name="outerPanel" coldef="p,f:-163px:g,p,f:-105px:g,p,f:p:g" rowdef="p" colspan="9">
                         <rows>
                             <row>
                                 <cell type="label" label=" "/>
@@ -400,13 +398,13 @@
                 </row>
                 <!--    
                     <row>
-                    <cell type="subview" id="10" viewname="LocalityCitation" name="localityCitations" colspan="12"/>
+                    <cell type="subview" id="10" viewname="LocalityCitation" name="localityCitations" colspan="9"/>
                     </row> -->
                 <row>
-                    <cell type="separator" label="Attachments" colspan="12"/>
+                    <cell type="separator" label="Attachments" colspan="9"/>
                 </row>
                 <row>
-                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="localityAttachments" colspan="12" initialize="btn=true;icon=LocalityAttachment"/>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="localityAttachments" colspan="9" initialize="btn=true;icon=LocalityAttachment"/>
                 </row>
             </rows>
         </viewdef>
