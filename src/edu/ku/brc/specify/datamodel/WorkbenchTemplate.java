@@ -117,6 +117,11 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
     public void checkMappings(final DBTableIdMgr schema) 
     {
     	Element remapDom = XMLHelper.readDOMFromConfigDir("specify_workbench_remappings.xml");
+    	if (remapDom == null)
+    	{
+    		return;
+    	}
+    	
     	HashMap<String, Pair<String,String>> remaps = new HashMap<String, Pair<String,String>>();
     	for (Iterator<?> i = remapDom.elementIterator("remapping"); i.hasNext();)
     	{
