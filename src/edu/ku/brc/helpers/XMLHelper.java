@@ -208,7 +208,6 @@ public class XMLHelper
      * Reads file from the config directory
      * @param fileName the name of the file to be read
      * @return the root DOM lement
-     * @throws Exception any file io exceptions
      */
    public static org.dom4j.Element readDOMFromConfigDir(final String fileName)
    {

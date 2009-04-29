@@ -59,6 +59,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -497,6 +498,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                 operatorCBX.setSelectedIndex(queryField.getOperStart());
                 setCriteriaText(queryField.getStartValue(), (OperatorType )operatorCBX.getSelectedItem());
                 sortCheckbox.setState(queryField.getSortType());
+                sortCheckbox.setEnabled(queryField.getIsDisplay());
                 if (!ownerQuery.isPromptMode())
                 {
                     isDisplayedCkbx.setSelected(queryField.getIsDisplay());
@@ -1223,6 +1225,27 @@ public class QueryFieldPanel extends JPanel implements ActionListener
             isDisplayedCkbx = createCheckBox("isDisplayedCkbx");
             isDisplayedCkbx.addFocusListener(focusListener);
             isDisplayedCkbx.addKeyListener(enterListener);
+            isDisplayedCkbx.addActionListener(new ActionListener() {
+
+				/* (non-Javadoc)
+				 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+				 */
+				@Override
+				public void actionPerformed(ActionEvent arg0)
+				{
+					SwingUtilities.invokeLater(new Runnable() {
+
+						/* (non-Javadoc)
+						 * @see java.lang.Runnable#run()
+						 */
+						@Override
+						public void run()
+						{
+							sortCheckbox.setEnabled(isDisplayedCkbx.isSelected());
+						}
+					});
+				}
+            });
             isPromptCkbx = createCheckBox("isPromptCkbx");
             isPromptCkbx.addFocusListener(focusListener);
             isPromptCkbx.addKeyListener(enterListener);
