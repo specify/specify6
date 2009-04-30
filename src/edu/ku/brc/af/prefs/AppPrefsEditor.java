@@ -41,6 +41,8 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.ui.BiColorListCellRenderer;
+import edu.ku.brc.ui.BiColorTableCellRenderer;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -93,6 +95,7 @@ public class AppPrefsEditor extends JPanel implements TableModelListener, ListSe
         
         table.setRowSelectionAllowed(true);
         table.setColumnSelectionAllowed(false);
+        table.setDefaultRenderer(String.class, new BiColorTableCellRenderer(false)); // Not Centered
         
         addBtn    = UIHelper.createButton(UIRegistry.getResourceString("AppPrefsEditor.ADD_PROPERTY")); //$NON-NLS-1$
         removeBtn = UIHelper.createButton(UIRegistry.getResourceString("AppPrefsEditor.REMOVE_PROPERTY")); //$NON-NLS-1$

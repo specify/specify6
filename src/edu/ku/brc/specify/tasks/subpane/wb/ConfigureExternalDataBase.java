@@ -210,9 +210,9 @@ public abstract class ConfigureExternalDataBase implements ConfigureExternalData
     {
         log.debug("ConfigureExternalDataBase getProperties()" ); //$NON-NLS-1$
         Properties result = new Properties();
-        addBoolProperty(result, "interactive", interactive); //$NON-NLS-1$
+        addBoolProperty(result, "interactive",        interactive); //$NON-NLS-1$
         addBoolProperty(result, "firstRowHasHeaders", firstRowHasHeaders); //$NON-NLS-1$
-        addBoolProperty(result, "appendData", appendData); //$NON-NLS-1$
+        addBoolProperty(result, "appendData",         appendData); //$NON-NLS-1$
         if (fileName != null)
         {
             result.setProperty("fileName", fileName); //$NON-NLS-1$

@@ -909,6 +909,7 @@ public class BasicSQLUtils
                 str =  clob.getSubString(1, (int) clob.length());
                 str = escapeStringLiterals(str);
                 return '"'+str+'"';
+                
             } catch (SQLException ex)
             {
                 edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
@@ -1063,14 +1064,9 @@ public class BasicSQLUtils
         try
         {
             Statement stmt = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
-            //String sldkfjl = connection.getMetaData().getDriverName();
-            //log.debug("DRIVERNAME: " + sldkfjl);
             String dbName = getDatabaseName(connection) ;
             String str = generateDescribeTableCommand( tableName, dbName, currentServerType) ;
-            //log.debug("Databasename:" + connection.getMetaData().getDriverName());
-            //log.debug("attempting to desribe statement:" + str);
             ResultSet rs = stmt.executeQuery(str);
-            //ResultSet rs   = stmt.executeQuery("describe "+tableName);
             while (rs.next())
             {
                 String s = rs.getString(1);
@@ -1101,18 +1097,11 @@ public class BasicSQLUtils
     {
         try
         {
-            Statement stmt = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
-            //need to address following statment for sQl server
-            
-            
-            String dbName = getDatabaseName(connection) ;
-            String str = generateDescribeTableCommand( tableName, dbName, currentServerType) ;
+            Statement stmt   = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+            String    dbName = getDatabaseName(connection) ;
+            String    str    = generateDescribeTableCommand( tableName, dbName, currentServerType) ;
             //log.debug("Databasename:" + connection.getMetaData().getDriverName());
-            log.debug("attempting to desribe statement:" + str);
             ResultSet rs = stmt.executeQuery(str);
-            
-            
-            //ResultSet rs   = stmt.executeQuery("describe "+tableName);
             while (rs.next())
             {
                 fieldList.add(basicSQLUtils.new FieldMetaData(rs.getString(1), rs.getString(2)));
@@ -1291,6 +1280,19 @@ public class BasicSQLUtils
         return copyTable(fromConn,toConn,sql,fromTableName,toTableName,colNewToOldMap,verbatimDateMapper,null,sourceServerType,destServerType);
     }
 
+    /**
+     * @param fromConn
+     * @param toConn
+     * @param sql
+     * @param fromTableName
+     * @param toTableName
+     * @param colNewToOldMap
+     * @param verbatimDateMapper
+     * @param newColDefValues
+     * @param sourceServerType
+     * @param destServerType
+     * @return
+     */
     public static boolean copyTable(final Connection fromConn,
                                     final Connection toConn,
                                     final String     sql,

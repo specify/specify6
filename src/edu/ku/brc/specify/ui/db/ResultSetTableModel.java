@@ -142,12 +142,18 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
         }
     }
     
+    /**
+     * @param parentERTP
+     * @param results
+     * @param doSequentially
+     */
     public ResultSetTableModel(final ESResultsTablePanelIFace parentERTP,
             final QueryForIdResultsIFace results,
             final boolean doSequentially)
     {
     	this(parentERTP, results, doSequentially, true);
     }
+    
     /**
      * perform initializations which must be performed before startDataAcquisition() is called.
      */

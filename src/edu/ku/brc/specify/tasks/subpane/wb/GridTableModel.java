@@ -60,7 +60,10 @@ public class GridTableModel extends SpreadSheetModel
     protected Vector<WorkbenchTemplateMappingItem> headers          = new Vector<WorkbenchTemplateMappingItem>();
     protected WorkbenchTemplateMappingItem         imageMappingItem = null;
 
-    public GridTableModel(final Workbench    workbench)
+    /**
+     * @param workbench
+     */
+    public GridTableModel(final Workbench workbench)
     {
         super();
         setWorkbench(workbench);
@@ -301,7 +304,6 @@ public class GridTableModel extends SpreadSheetModel
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.tmanfe.SpreadSheetModel#deleteRows(int[])
      */
-    @SuppressWarnings("unchecked")
     @Override
     public void deleteRows(int[] rows)
     {

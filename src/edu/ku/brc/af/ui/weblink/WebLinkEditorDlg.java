@@ -55,6 +55,7 @@ import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.forms.ViewFactory;
+import edu.ku.brc.ui.BiColorTableCellRenderer;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -227,6 +228,7 @@ public class WebLinkEditorDlg extends CustomDialog
         
         model = new WebLinkArgsTableModel();
         table = new JTable(model);
+        table.setDefaultRenderer(String.class, new BiColorTableCellRenderer(true));
         
         CellConstraints cc = new CellConstraints();
         PanelBuilder rightPB = new PanelBuilder(new FormLayout("p,2px,f:p:g",  //$NON-NLS-1$

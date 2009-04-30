@@ -51,6 +51,8 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableRowSorter;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -72,6 +74,7 @@ import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.specify.tasks.RecordSetTask;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
 import edu.ku.brc.specify.ui.db.ResultSetTableModel;
+import edu.ku.brc.ui.BiColorTableCellRenderer;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.DataFlavorTableExt;
@@ -170,10 +173,12 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         this.isEditable    = results.isEditingEnabled();
         
         table = new JTable();
-        
+        //BiColorTableCellRenderer cellRenderer = new BiColorTableCellRenderer();
+        //table.setDefaultRenderer(String.class, cellRenderer);
         table.setShowVerticalLines(false);
         table.setRowSelectionAllowed(true);
         table.setSelectionMode(results.isMultipleSelection() ? ListSelectionModel.MULTIPLE_INTERVAL_SELECTION : ListSelectionModel.SINGLE_SELECTION);
+
         setBackground(table.getBackground());
         
         if (isEditable)
@@ -271,7 +276,9 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
 
         tablePane = new JPanel(new BorderLayout());
         tablePane.add(table.getTableHeader(), BorderLayout.PAGE_START);
-        tablePane.add(table, BorderLayout.CENTER);
+        
+        Component comp = AppPreferences.getLocalPrefs().getBoolean("ss.usescarollbars", false) ? UIHelper.createScrollPane(table) : table;
+        tablePane.add(comp, BorderLayout.CENTER);
         //tablePane.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
         
         if (isEditable)
@@ -400,6 +407,7 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         ResultSetTableModel rsm = createModel();
         rsm.setPropertyListener(this);
         resultSetTableModel = rsm;
+        table.setRowSorter(new TableRowSorter<ResultSetTableModel>(resultSetTableModel));
         
         table.setRowSelectionAllowed(true);
         table.setModel(rsm);
@@ -475,6 +483,14 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
                 }
             }
         });
+        
+        BiColorTableCellRenderer bi = new BiColorTableCellRenderer();
+        table.setDefaultRenderer(String.class, bi);
+        TableColumnModel tableColModel = table.getColumnModel();
+        for (int i=0;i<tableColModel.getColumnCount();i++)
+        {
+            tableColModel.getColumn(i).setCellRenderer(bi);
+        }
     }
     
     /**
@@ -486,7 +502,7 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
     }
     
     /**
-     * @return
+     * @return the list of Services
      */
     protected List<ServiceInfo> getServices()
     {
@@ -507,7 +523,7 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
     }
     
     /**
-     * @return
+     * @return ResultSetTableModel
      */
     protected ResultSetTableModel createModel()
     {
@@ -515,7 +531,7 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
     }
     
     /**
-     * @return creates an action listneer for removing an item from the table.
+     * @return creates an action listener for removing an item from the table.
      */
     protected ActionListener createRemoveItemAL()
     {
@@ -525,7 +541,7 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run()
                     {
-                        removeRows(table.getSelectedRows());
+                        removeRows(getSelectedRows());
                         if (popupMenu != null)
                         {
                             popupMenu.setVisible(false);
@@ -629,6 +645,9 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         }
     } 
     
+    /**
+     * 
+     */
     protected void setTitleBar()
     {
         topTitleBar.setText(rowCount > 0 ? String.format("%s - %d", results.getTitle(), rowCount) : results.getTitle());
@@ -675,32 +694,9 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
      */
     protected void configColumns()
     {
-        /*CenterRenderer centerRenderer = new CenterRenderer();
-
-        TableColumnModel tableColModel = table.getColumnModel();
-        for (int i=0;i<tableColModel.getColumnCount();i++)
-        {
-            tableColModel.getColumn(i).setCellRenderer(centerRenderer);
-        }*/
-        
         UIHelper.makeTableHeadersCentered(table, true);
     }
     
-    /*class CenterRenderer extends DefaultTableCellRenderer
-    {
-        public CenterRenderer()
-        {
-            setHorizontalAlignment( CENTER );
-        }
- 
-        public Component getTableCellRendererComponent(
-            JTable tableArg, Object value, boolean isSelected, boolean hasFocus, int row, int column)
-        {
-            super.getTableCellRendererComponent(tableArg, value, isSelected, hasFocus, row, column);
-            return this;
-        }
-    }*/
-
     /**
      * Builds the "more" panel.
      *
@@ -794,13 +790,14 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
     public RecordSetIFace getRecordSet(final boolean returnAll)
     {
         //log.debug("Indexes: "+table.getSelectedRows().length+" Index["+results.getTableId()+"]");
-        for (int v : table.getSelectedRows())
-        {
-        	log.debug("["+v+"]");
-        }
+        //for (int v : table.getSelectedRows())
+        //{
+        //	log.debug("["+v+"]");
+        //}
 
         boolean doReturnAll = returnAll;
-        int[] rows = table.getSelectedRows();
+        
+        int[] rows = getSelectedRows();
         if (returnAll || rows.length == 0)
         {
             int numRows = table.getModel().getRowCount();
@@ -851,7 +848,12 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
      */
     public int[] getSelectedRows()
     {
-        return table.getSelectedRows();
+        int[] rows = table.getSelectedRows();
+        for (int i = 0; i < rows.length; i++) 
+        {
+            rows[i] = table.convertRowIndexToModel(rows[i]);
+        }
+        return rows;
     }
     
     /* (non-Javadoc)
@@ -894,23 +896,24 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         
         if (rowCount > 0)
         {
-            //SwingUtilities.invokeLater(new Runnable() {
-            //    public void run()
-            //    {
             synchronized (getTreeLock()) 
             {
                 setTitleBar();
                 esrPane.addTable(ESResultsTablePanel.this);
-                
             }
             
             if (propChangeListener != null) 
             {
                 propChangeListener.propertyChange(new PropertyChangeEvent(this, "loaded", rowCount, rowCount));
             }                
-                    
-            //    }
-            //});
+            
+            BiColorTableCellRenderer bi = new BiColorTableCellRenderer();
+            table.setDefaultRenderer(String.class, bi);
+            TableColumnModel tableColModel = table.getColumnModel();
+            for (int i=0;i<tableColModel.getColumnCount();i++)
+            {
+                tableColModel.getColumn(i).setCellRenderer(bi);
+            }
         }
     }
 
@@ -1011,7 +1014,7 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
                     
                     if (table.getSelectedRowCount() > 0)
                     {
-                        for (int inx : table.getSelectedRows())
+                        for (int inx : getSelectedRows())
                         {
                             int id = results.getRecIds().get(inx);
                             rs.addItem(id);

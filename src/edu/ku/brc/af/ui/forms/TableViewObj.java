@@ -112,6 +112,7 @@ import edu.ku.brc.af.ui.forms.validation.ValidationListener;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
+import edu.ku.brc.ui.BiColorTableCellRenderer;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
@@ -712,8 +713,11 @@ public class TableViewObj implements Viewable,
     {
         ((DefaultTableCellRenderer)table.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
         
-        DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-        renderer.setHorizontalAlignment(SwingConstants.CENTER);
+        //DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+        //renderer.setHorizontalAlignment(SwingConstants.CENTER);
+        
+        DefaultTableCellRenderer renderer = new BiColorTableCellRenderer(true); // Centered
+
 
         TableColumnModel tableColModel = table.getColumnModel();
         for (int i=0;i<tableColModel.getColumnCount();i++)

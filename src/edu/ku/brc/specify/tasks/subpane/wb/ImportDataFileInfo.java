@@ -29,7 +29,6 @@ import java.util.Vector;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.WindowConstants;
@@ -37,6 +36,7 @@ import javax.swing.WindowConstants;
 import org.apache.commons.io.FilenameUtils;
 
 import edu.ku.brc.specify.datamodel.Workbench;
+import edu.ku.brc.ui.BiColorTableCellRenderer;
 import edu.ku.brc.ui.CustomFrame;
 import edu.ku.brc.ui.UIHelper;
 
@@ -106,14 +106,16 @@ public class ImportDataFileInfo
         if (importer.getTruncations().size() > 0)
         {
             JPanel mainPane = new JPanel(new BorderLayout());
-            JLabel msg = createLabel(getResourceString("WB_TRUNCATIONS"));
+            JLabel msg      = createLabel(getResourceString("WB_TRUNCATIONS"));
             msg.setFont(msg.getFont().deriveFont(Font.BOLD));
             mainPane.add(msg, BorderLayout.NORTH);
-            String[] heads = new String[3];
+            
+            String[]   heads = new String[3];
             String[][] vals = new String[importer.getTruncations().size()][3];
             heads[0] = getResourceString("WB_ROW");
             heads[1] = getResourceString("WB_COLUMN");
             heads[2] = getResourceString("WB_TRUNCATED");
+            
             int row = 0;
             for (DataImportTruncation trunc : importer.getTruncations())
             {
@@ -127,11 +129,12 @@ public class ImportDataFileInfo
             }
 
             JTable mods = new JTable(vals, heads);
+            mods.setDefaultRenderer(String.class, new BiColorTableCellRenderer(false));
 
-            mainPane.add(new JScrollPane(mods), BorderLayout.CENTER);
+            mainPane.add(UIHelper.createScrollPane(mods), BorderLayout.CENTER);
 
             CustomFrame cwin = new CustomFrame(getResourceString(MODIFIED_IMPORT_DATA),
-                    CustomFrame.OKHELP, mainPane);
+                                               CustomFrame.OKHELP, mainPane);
             cwin.setHelpContext("WorkbenchImportData"); //help context could be more specific
             cwin.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             UIHelper.centerAndShow(cwin);
@@ -148,7 +151,7 @@ public class ImportDataFileInfo
             }
             mainPane.add(msgs, BorderLayout.CENTER);
             CustomFrame cwin = new CustomFrame(getResourceString(MODIFIED_IMPORT_DATA),
-                    CustomFrame.OKHELP, mainPane);
+                                               CustomFrame.OKHELP, mainPane);
             cwin.setHelpContext("WorkbenchImportData"); //help context could be more specific
             cwin.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             UIHelper.centerAndShow(cwin);

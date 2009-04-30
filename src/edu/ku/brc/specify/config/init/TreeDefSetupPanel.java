@@ -65,6 +65,7 @@ import edu.ku.brc.specify.config.DisciplineType.STD_DISCIPLINES;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.StorageTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
+import edu.ku.brc.ui.BiColorTableCellRenderer;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -131,6 +132,8 @@ public class TreeDefSetupPanel extends BaseSetupPanel implements SetupPanelIFace
             
             table.setRowSelectionAllowed(false);
             table.setColumnSelectionAllowed(false);
+            table.setDefaultRenderer(String.class, new BiColorTableCellRenderer(false));
+
             model.addTableModelListener(new TableModelListener() {
                 @Override
                 public void tableChanged(TableModelEvent e)

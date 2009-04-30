@@ -56,8 +56,14 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
 		super();
 		
 		driverInfo = DatabaseDriverInfo.getDriver("MySQL");
-		
-		
+	}
+	
+	/**
+	 * @return
+	 */
+	public Connection getConnection()
+	{
+	    return connection;
 	}
 	
 	/**

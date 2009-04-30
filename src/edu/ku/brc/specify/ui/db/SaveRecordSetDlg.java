@@ -42,6 +42,7 @@ import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.ButtonBarBuilder;
 
+import edu.ku.brc.ui.BiColorTableCellRenderer;
 import edu.ku.brc.ui.IconManager;
 
 /**
@@ -109,12 +110,15 @@ public class SaveRecordSetDlg extends JDialog
         {
             srcTable = new JTable(srcModel);
             srcTable.setRowSelectionAllowed(true);
+            srcTable.setDefaultRenderer(String.class, new BiColorTableCellRenderer(true));
+
             
             // XXXXXXXXXXXXXXXXXXXXXXXXX dstModel = new ResultSetTableModelDM(srcModel.getResultSet());
             dstTable = new JTable(dstModel);
             dstTable.setRowSelectionAllowed(true);
             //dstModel.initializeDisplayIndexes();
-            
+            dstTable.setDefaultRenderer(String.class, new BiColorTableCellRenderer(true));
+
             JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, new JScrollPane(srcTable), new JScrollPane(dstTable));
             splitPane.setDividerLocation(325);
             panel.add(splitPane, BorderLayout.CENTER);

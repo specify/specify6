@@ -45,11 +45,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
-import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 
 import org.apache.log4j.Logger;
@@ -82,6 +80,7 @@ import edu.ku.brc.specify.tasks.TreeTaskMgr;
 import edu.ku.brc.specify.treeutils.TreeDataService;
 import edu.ku.brc.specify.treeutils.TreeDataServiceFactory;
 import edu.ku.brc.specify.treeutils.TreeFactory;
+import edu.ku.brc.ui.BiColorTableCellRenderer;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -309,6 +308,8 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 		Set<I> defItems = treeDef.getTreeDefItems();
 		tableModel    = new TreeDefEditorTableModel<T,D,I>(defItems);
 		defItemsTable = new JTable(tableModel);
+		defItemsTable.setDefaultRenderer(String.class, new BiColorTableCellRenderer(false));
+		
         defItemsTable.addMouseListener(new MouseAdapter()
         {
             @Override
@@ -334,12 +335,13 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 		defItemsTable.setRowHeight(24);
 
 		// Center the boolean Columns
-        DefaultTableCellRenderer dcr = new DefaultTableCellRenderer();
-        dcr.setHorizontalAlignment(SwingConstants.CENTER);
+		BiColorTableCellRenderer centeredRenderer = new BiColorTableCellRenderer();
+		
 		TableColumn tc = defItemsTable.getColumnModel().getColumn(2);
-		tc.setCellRenderer(dcr);
+		tc.setCellRenderer(centeredRenderer);
         tc = defItemsTable.getColumnModel().getColumn(3);
-        tc.setCellRenderer(dcr);
+        tc.setCellRenderer(centeredRenderer);
+        
 		if (isEditMode)
 		{
 		    defItemsTable.setRowSelectionAllowed(true);
@@ -358,7 +360,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 		defNameLabel.setFont(boldF);
 
 		// put everything in the main panel
-		this.add(new JScrollPane(defItemsTable),BorderLayout.CENTER);
+		this.add(UIHelper.createScrollPane(defItemsTable), BorderLayout.CENTER);
 		this.add(titlePanel,BorderLayout.NORTH);
 		
 		// Only add selection listener if the botton panel is there for editing

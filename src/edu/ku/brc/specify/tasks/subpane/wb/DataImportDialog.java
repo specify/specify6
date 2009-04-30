@@ -91,6 +91,7 @@ import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.specify.ui.HelpMgr;
+import edu.ku.brc.ui.BiColorTableCellRenderer;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.IconManager;
@@ -214,10 +215,10 @@ public class DataImportDialog extends JDialog implements ActionListener
      */
     public DataImportDialog(final ConfigureXLS config, boolean doesHaveHeaders)
 	{
-        this.config = config;
+        this.config    = config;
         this.configXLS = config;
-        this.file = config.getFile();
-        this.fileName = file.getAbsolutePath().toString();
+        this.file      = config.getFile();
+        this.fileName  = file.getAbsolutePath().toString();
         this.doesFirstRowHaveHeaders = doesHaveHeaders;
         myDisplayTable = null;
         model = new PreviewTableModel();
@@ -799,13 +800,13 @@ public class DataImportDialog extends JDialog implements ActionListener
      * Preview table, showing the user how the import options effect the way the data will be
      * imported into the spreadsheet.
      * 
-     * @param t - the table to display the data
+     * @param table - the table to display the data
      * @return JTable - the table to display the data
      */
-    private JTable setXLSTableData(JTable t)
+    private JTable setXLSTableData(final JTable table)
     {
-        int numRows = 0;
-        short numCols = 0;
+        int      numRows = 0;
+        short    numCols = 0;
         String[] headers = {};
         Vector<Vector<String>> tableDataVector = new Vector<Vector<String>>();
         Vector<String> rowData = new Vector<String>();
@@ -825,7 +826,7 @@ public class DataImportDialog extends JDialog implements ActionListener
             ((ConfigureXLS)config).checkHeadsAndCols(sheet, badHeads, emptyCols);
             if (badHeads.size() > 0 && doesFirstRowHaveHeaders)
             {
-                if (t != null)
+                if (table != null)
                 {
                     ((ConfigureXLS)config).showBadHeadingsMsg(badHeads, emptyCols, getTitle());
                 }
@@ -839,9 +840,9 @@ public class DataImportDialog extends JDialog implements ActionListener
                 {
                     ignoreActions = false;
                 }
-                if (t != null)
+                if (table != null)
                 {
-                    return t;
+                    return table;
                 }
             }
             boolean firstRow = true;
@@ -995,7 +996,7 @@ public class DataImportDialog extends JDialog implements ActionListener
             log.debug(tableData);
             model = new PreviewTableModel(headers, tableData);
             JTable result = null;
-            if (t == null)
+            if (table == null)
             {
                 result = new JTable();
                 result.setColumnSelectionAllowed(false);
@@ -1006,6 +1007,7 @@ public class DataImportDialog extends JDialog implements ActionListener
                 result.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
             }
             result.setModel(model);
+            result.setDefaultRenderer(String.class, new BiColorTableCellRenderer(false));
             model.fireTableDataChanged();
             model.fireTableStructureChanged();
             return result;
@@ -1016,16 +1018,17 @@ public class DataImportDialog extends JDialog implements ActionListener
         	String[] columnNames = {};
         	String[][] blankData = {{}};
             model = new PreviewTableModel(columnNames, blankData);
-            t.setModel(model);
-            t.setColumnSelectionAllowed(false);
-            t.setRowSelectionAllowed(false);
-            t.setCellSelectionEnabled(false);
-            t.getTableHeader().setReorderingAllowed(false);
-            t.setPreferredScrollableViewportSize(new Dimension(500, 100));
-            t.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+            table.setModel(model);
+            table.setColumnSelectionAllowed(false);
+            table.setRowSelectionAllowed(false);
+            table.setCellSelectionEnabled(false);
+            table.getTableHeader().setReorderingAllowed(false);
+            table.setPreferredScrollableViewportSize(new Dimension(500, 100));
+            table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+            table.setDefaultRenderer(String.class, new BiColorTableCellRenderer(false));
             model.fireTableDataChanged();
             model.fireTableStructureChanged();
-            return t;
+            return table;
             //log.error("Error attempting to parse input xls file:" + ex);
             //ex.printStackTrace();
         }
@@ -1064,17 +1067,18 @@ public class DataImportDialog extends JDialog implements ActionListener
     /**
      * Parses the given import file according to the users selection and creates/updates the Preview table,
      * showing the user how the import options effect the way the data will be imported into the spreadsheet.
-     * @param t - the table to display the data
+     * @param table - the table to display the data
      * @return
      * JTable - the table to display the data
      */
-    private JTable setCSVTableData(JTable t)
+    private JTable setCSVTableData(final JTable table)
 	{
 		try
 		{
 			log.debug("setTableData - file - " + configCSV.getFile().toString());
-			CsvReader csv = new CsvReader(new FileInputStream(configCSV.getFile()), configCSV
-					.getDelimiter(), configCSV.getCharset());
+			CsvReader csv = new CsvReader(new FileInputStream(configCSV.getFile()), 
+			                                                  configCSV.getDelimiter(), 
+			                                                  configCSV.getCharset());
 			csv.setEscapeMode(configCSV.getEscapeMode());
 			csv.setTextQualifier(configCSV.getTextQualifier());
 
@@ -1144,16 +1148,18 @@ public class DataImportDialog extends JDialog implements ActionListener
             	showTooManyRowsErrorDialog();
             }
 			model = new PreviewTableModel(headers, tableData);
-			t.setModel(model);
-			t.setColumnSelectionAllowed(false);
-			t.setRowSelectionAllowed(false);
-			t.setCellSelectionEnabled(false);
-			t.getTableHeader().setReorderingAllowed(false);
-            t.setPreferredScrollableViewportSize(new Dimension(500,100));
-			t.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+			table.setModel(model);
+			table.setColumnSelectionAllowed(false);
+			table.setRowSelectionAllowed(false);
+			table.setCellSelectionEnabled(false);
+			table.getTableHeader().setReorderingAllowed(false);
+            table.setPreferredScrollableViewportSize(new Dimension(500,100));
+			table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+			table.setDefaultRenderer(String.class, new BiColorTableCellRenderer(false));
+			
 			model.fireTableDataChanged();
 			model.fireTableStructureChanged();
-			return t;
+			return table;
 
 		} catch (IOException ex)
 		{
@@ -1533,7 +1539,16 @@ public class DataImportDialog extends JDialog implements ActionListener
 			super();
 		}
 
-		/**
+		/* (non-Javadoc)
+         * @see javax.swing.table.AbstractTableModel#getColumnClass(int)
+         */
+        @Override
+        public Class<?> getColumnClass(int columnIndex)
+        {
+            return String.class;
+        }
+
+        /**
 		 * @param headers
 		 * @param data
 		 */

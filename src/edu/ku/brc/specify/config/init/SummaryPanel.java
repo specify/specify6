@@ -32,6 +32,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.ui.BiColorTableCellRenderer;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.util.Pair;
 
@@ -65,6 +66,8 @@ public class SummaryPanel extends BaseSetupPanel
         
         table = new JTable();
         model = new DefaultTableModel();
+        table.setDefaultRenderer(String.class, new BiColorTableCellRenderer(false));
+
         
         CellConstraints cc = new CellConstraints();
         PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g", "f:p:g"), this);

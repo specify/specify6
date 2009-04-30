@@ -60,10 +60,14 @@ import edu.ku.brc.ui.UIRegistry;
 public class XLSImport extends DataImport implements DataImportIFace
 {
     private static final Logger log = Logger.getLogger(XLSImport.class);
-    private Vector<Integer> cardImageCols = new Vector<Integer>();
-    private int geoCol = -1;
+    
+    private Vector<Integer>              cardImageCols = new Vector<Integer>();
+    private int                          geoCol        = -1;
     protected ConfigureExternalDataIFace config;
     
+    /**
+     * @param headerRow
+     */
     private void getSystemCols(final HSSFRow headerRow)
     {
         for (int c = headerRow.getFirstCellNum(); c <= headerRow.getLastCellNum(); c++)

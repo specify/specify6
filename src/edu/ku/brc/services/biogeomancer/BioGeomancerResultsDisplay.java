@@ -41,6 +41,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.services.mapping.LocalityMapper.MapperListener;
+import edu.ku.brc.ui.BiColorTableCellRenderer;
 import edu.ku.brc.ui.UIHelper;
 
 /**
@@ -123,11 +124,11 @@ public class BioGeomancerResultsDisplay extends JPanel implements MapperListener
         bgResultsTable.setShowVerticalLines(false);
         bgResultsTable.setShowHorizontalLines(false);
         bgResultsTable.setRowSelectionAllowed(true);
+        bgResultsTable.setDefaultRenderer(String.class, new BiColorTableCellRenderer(false));
 
         mapLabel.setText(""); //$NON-NLS-1$
 
-        JScrollPane scrollPane = new JScrollPane(bgResultsTable, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        add(scrollPane, cc.xywh(1,rowIndex, 5, 1));
+        add(UIHelper.createScrollPane(bgResultsTable), cc.xywh(1,rowIndex, 5, 1));
         rowIndex+=2;
     }
     

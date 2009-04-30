@@ -34,6 +34,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
+import edu.ku.brc.ui.BiColorTableCellRenderer;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
 
@@ -78,7 +79,9 @@ public class BackupCompareDlg extends CustomDialog
         
         JTable      table = new JTable(new CompareModel());
         JScrollPane sp    = UIHelper.createScrollPane(table);
-        
+        table.setDefaultRenderer(String.class, new BiColorTableCellRenderer(false)); // Not Centered
+        table.setDefaultRenderer(Integer.class, new BiColorTableCellRenderer(false)); // Not Centered
+
         boolean allOK = true;
         for (Object[] rowVals : rowData)
         {

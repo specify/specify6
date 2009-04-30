@@ -206,6 +206,8 @@ public final class UIHelper
     private static final Color clrGlowOuterHi = new Color(253, 239, 175, 124);
     private static final Color clrGlowOuterLo = new Color(255, 179, 0);
     
+    private static final Color altLineColor;
+    
 
     static {
 
@@ -255,6 +257,7 @@ public final class UIHelper
             buildKeyStrokeForCommandTypes();
         }
 
+        altLineColor = UIHelper.isMacOS() ? new Color(236, 243, 254) : UIHelper.makeDarker(Color.WHITE, 0.1f);
     }
     
     /**
@@ -295,6 +298,14 @@ public final class UIHelper
     public static CONTROLSIZE getControlSize()
     {
         return controlSize;
+    }
+    
+    /**
+     * @return the alternate color for list and tables.
+     */
+    public static Color getAltLineColor()
+    {
+        return altLineColor;
     }
 
     /**
@@ -2773,6 +2784,10 @@ public final class UIHelper
         return btn;
     }
 
+    /**
+     * @param text
+     * @return
+     */
     public static JButton createButton(final String text)
     {
         JButton btn = new JButton(text);
@@ -2780,6 +2795,11 @@ public final class UIHelper
         return btn;
     }
 
+    /**
+     * @param text
+     * @param icon
+     * @return
+     */
     public static JButton createButton(final String text, final ImageIcon icon)
     {
         JButton btn = new JButton(text, icon);
@@ -2787,6 +2807,10 @@ public final class UIHelper
         return btn;
     }
 
+    /**
+     * @param action
+     * @return
+     */
     public static JButton createButton(final Action action)
     {
         JButton btn = new JButton(action);
@@ -2794,6 +2818,10 @@ public final class UIHelper
         return btn;
     }
     
+    /**
+     * @param buttonArray
+     * @return
+     */
     public static JButton[] adjustButtonArray(JButton[] buttonArray)
     {
     	for (JButton btn : buttonArray)
@@ -2803,6 +2831,9 @@ public final class UIHelper
     	return buttonArray;
     }
     
+    /**
+     * @return
+     */
     public static JTextField createTextField()
     {
         JTextField tf = new JTextField();
@@ -2810,6 +2841,10 @@ public final class UIHelper
         return tf;
     }
     
+    /**
+     * @param text
+     * @return
+     */
     public static JTextField createTextField(final String text)
     {
         JTextField tf = new JTextField(text);

@@ -47,6 +47,7 @@ import edu.ku.brc.services.geolocate.client.GeoLocate;
 import edu.ku.brc.services.geolocate.client.GeorefResult;
 import edu.ku.brc.services.geolocate.client.GeorefResultSet;
 import edu.ku.brc.services.mapping.LocalityMapper.MapperListener;
+import edu.ku.brc.ui.BiColorTableCellRenderer;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -105,6 +106,7 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener
         resultsTable.setShowVerticalLines(false);
         resultsTable.setShowHorizontalLines(false);
         resultsTable.setRowSelectionAllowed(true);
+        resultsTable.setDefaultRenderer(String.class, new BiColorTableCellRenderer(false));
 
         // add a cell renderer that uses the tooltip to show the text of the "parse pattern" column in case
         // it is too long to show and gets truncated by the standard cell renderer
