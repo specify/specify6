@@ -67,6 +67,7 @@ import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -2555,19 +2556,58 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                 return false;
             }
             
-            new SwingWorker() {
+            new javax.swing.SwingWorker<Boolean, Object>() {
 
             	boolean result = false;
             	
 				/* (non-Javadoc)
-				 * @see edu.ku.brc.helpers.SwingWorker#construct()
+				 * @see java.lang.Object#finalize()
 				 */
 				@Override
-				public Object construct()
+				protected void finalize() throws Throwable
+				{
+					super.finalize();
+					if (!isDone())
+					{
+						log.error("A background thread for a tree synonymize action did not terminate correctly.");
+						SwingUtilities.invokeLater(new Runnable() {
+
+							/*
+							 * (non-Javadoc)
+							 * 
+							 * @see java.lang.Runnable#run()
+							 */
+							@Override
+							public void run()
+							{
+								//un-lock specify
+								UIRegistry.clearGlassPaneMsg();
+								//probably should display message to user and close treeviewer as in done()
+								//but no idea when or if this will happen so ... later if necessary.
+							}
+
+						});
+					}
+				}
+            	
+            	
+				/* (non-Javadoc)
+				 * @see javax.swing.SwingWorker#doInBackground()
+				 */
+				@Override
+				public Boolean doInBackground()
 				{
 		            try
 					{
-						UIRegistry
+						SwingUtilities.invokeLater(new Runnable(){
+
+							/* (non-Javadoc)
+							 * @see java.lang.Runnable#run()
+							 */
+							@Override
+							public void run()
+							{
+				            	UIRegistry
 								.writeGlassPaneMsg(
 										String
 												.format(
@@ -2575,15 +2615,30 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 																.getResourceString("TreeTableViewer.Synonymizing"),
 														draggedRecord.getName()),
 										24);
-						TreeNode draggedNodeParent = listModel
+							}
+							
+						});
+						final TreeNode draggedNodeParent = listModel
 								.getNodeById(draggedNode.getParentId());
-						TreeNode droppedNodeParent = listModel
+						final TreeNode droppedNodeParent = listModel
 								.getNodeById(droppedOnNode.getParentId());
-						hideChildren(draggedNodeParent);
-						if (droppedNodeParent != draggedNodeParent)
-						{
-							hideChildren(droppedNodeParent);
-						}
+						
+						SwingUtilities.invokeLater(new Runnable() {
+
+							/* (non-Javadoc)
+							 * @see java.lang.Runnable#run()
+							 */
+							@Override
+							public void run()
+							{
+								hideChildren(draggedNodeParent);
+								if (droppedNodeParent != draggedNodeParent)
+								{
+									hideChildren(droppedNodeParent);
+								}
+							}
+							
+						});
 
 						String statusMsg = dataService.synonymize(
 								draggedRecord, droppedRecord);
@@ -2637,35 +2692,56 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 								}
 							}
 
-							draggedNode.getSynonymIdsAndNames().clear();
+							SwingUtilities.invokeLater(new Runnable(){
 
-							draggedNode.setAcceptedParentFullName(droppedOnNode
-									.getFullName());
-							droppedOnNode.getSynonymIdsAndNames()
-									.add(
-											new Pair<Integer, String>(
-													draggedNode.getId(),
-													draggedNode.getFullName()));
+								/* (non-Javadoc)
+								 * @see java.lang.Runnable#run()
+								 */
+								@Override
+								public void run()
+								{
+									draggedNode.getSynonymIdsAndNames().clear();
 
-							Vector<TreeNode> bogusity = new Vector<TreeNode>(1);
-							bogusity.add(draggedNodeParent);
-							draggedNodeParent.setHasCalcCount(false);
-							draggedNodeParent.setHasCalcCount2(false);
-							showCounts(getRecordForNode(draggedNodeParent),
-									bogusity);
-							showChildren(draggedNodeParent);
-							if (droppedNodeParent != draggedNodeParent)
-							{
-								droppedNodeParent.setHasCalcCount(false);
-								droppedNodeParent.setHasCalcCount2(false);
-								bogusity.clear();
-								bogusity.add(droppedNodeParent);
-								showCounts(getRecordForNode(droppedNodeParent),
-										bogusity);
-								showChildren(droppedNodeParent);
-							}
+									draggedNode.setAcceptedParentFullName(droppedOnNode
+											.getFullName());
+									droppedOnNode.getSynonymIdsAndNames()
+											.add(
+													new Pair<Integer, String>(
+															draggedNode.getId(),
+															draggedNode.getFullName()));
+
+									Vector<TreeNode> bogusity = new Vector<TreeNode>(1);
+									bogusity.add(draggedNodeParent);
+									draggedNodeParent.setHasCalcCount(false);
+									draggedNodeParent.setHasCalcCount2(false);
+									showCounts(getRecordForNode(draggedNodeParent),
+											bogusity);
+									showChildren(draggedNodeParent);
+									if (droppedNodeParent != draggedNodeParent)
+									{
+										droppedNodeParent.setHasCalcCount(false);
+										droppedNodeParent.setHasCalcCount2(false);
+										bogusity.clear();
+										bogusity.add(droppedNodeParent);
+										showCounts(getRecordForNode(droppedNodeParent),
+												bogusity);
+										showChildren(droppedNodeParent);
+									}
+								}
+							});
 						}
-						updateAllUI();
+						SwingUtilities.invokeLater(new Runnable(){
+
+							/* (non-Javadoc)
+							 * @see java.lang.Runnable#run()
+							 */
+							@Override
+							public void run()
+							{
+								updateAllUI();
+							}
+							
+						});
 						if (statusMsg != null)
 						{
 							statusBar.setText(statusMsg);
@@ -2685,25 +2761,47 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 				}
 
 				/* (non-Javadoc)
-				 * @see edu.ku.brc.helpers.SwingWorker#finished()
+				 * @see javax.swing.SwingWorker#done()
 				 */
 				@Override
-				public void finished()
+				protected void done()
 				{
-					super.finished();
+					super.done();
 					log.info("Synonymization finished. Clearing glasspane.");
-					UIRegistry.clearGlassPaneMsg();
+					SwingUtilities.invokeLater(new Runnable() {
+
+						/* (non-Javadoc)
+						 * @see java.lang.Runnable#run()
+						 */
+						@Override
+						public void run()
+						{
+							UIRegistry.clearGlassPaneMsg();
+						}
+						
+					});
 					if (!result)
 					{
-						UIRegistry.displayErrorDlgLocalized("TreeTableViewer.TreeOperationFailed", 
-								UIRegistry.getResourceString("TreeTableViewer.SynOp"));
-						SubPaneMgr.getInstance().removePane(TreeTableViewer.this, false);
+						SwingUtilities.invokeLater(new Runnable() {
+
+							/* (non-Javadoc)
+							 * @see java.lang.Runnable#run()
+							 */
+							@Override
+							public void run()
+							{
+								UIRegistry.displayErrorDlgLocalized("TreeTableViewer.TreeOperationFailed", 
+										UIRegistry.getResourceString("TreeTableViewer.SynOp"));
+								SubPaneMgr.getInstance().removePane(TreeTableViewer.this, false);
+							}
+							
+						});
 					}
 				}
 				
 				
             	
-            }.start();
+            }.execute();
 			return true;
 		}
 		else if (nodeDropAction == NODE_DROPTYPE.MOVE_NODE)
@@ -2719,23 +2817,71 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 				return false;
 			}
 			
-			new SwingWorker() {
+			new javax.swing.SwingWorker<Boolean, Object>() {
 
 				Boolean result = false;
+				
 				/* (non-Javadoc)
-				 * @see edu.ku.brc.helpers.SwingWorker#construct()
+				 * @see java.lang.Object#finalize()
 				 */
 				@Override
-				public Object construct()
+				protected void finalize() throws Throwable
+				{
+					super.finalize();
+					if (!isDone())
+					{
+						log.error("A background thread for a tree move action did not terminate correctly.");
+						SwingUtilities.invokeLater(new Runnable() {
+
+							/*
+							 * (non-Javadoc)
+							 * 
+							 * @see java.lang.Runnable#run()
+							 */
+							@Override
+							public void run()
+							{
+								//un-lock specify
+								UIRegistry.clearGlassPaneMsg();
+								//probably should display message to user and close treeviewer as in done()
+								//but no idea when or if this will happen so ... later if necessary.
+							}
+
+						});
+					}
+				}
+				/* (non-Javadoc)
+				 * @see javax.swing.SwingWorker#doInBackground()
+				 */
+				@Override
+				public Boolean doInBackground()
 				{
 		            try
 					{
-						UIRegistry.writeGlassPaneMsg(String.format(UIRegistry
-								.getResourceString("TreeTableViewer.Moving"),
-								child.getName()), 24);
+						SwingUtilities.invokeLater(new Runnable() {
 
-						hideChildren(oldParentNode);
-						hideChildren(droppedOnNode);
+							/*
+							 * (non-Javadoc)
+							 * 
+							 * @see java.lang.Runnable#run()
+							 */
+							@Override
+							public void run()
+							{
+								UIRegistry
+										.writeGlassPaneMsg(
+												String
+														.format(
+																UIRegistry
+																		.getResourceString("TreeTableViewer.Moving"),
+																child.getName()),
+												24);
+								hideChildren(oldParentNode);
+								hideChildren(droppedOnNode);
+							}
+
+						});
+
 						// Removing the children of these nodes may have
 						// resulted in a node being removed from the model.
 						// This happens when one of these nodes is a descendant
@@ -2754,20 +2900,32 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 
 						// reshow the nodes' children, if the nodes are still in
 						// the tree (see comment above in this method)
-						TreeNode oldParentNodeReshow = listModel
+						final TreeNode oldParentNodeReshow = listModel
 								.getNodeById(oldParentNode.getId());
-						TreeNode newParentNodeReshow = listModel
+						final TreeNode newParentNodeReshow = listModel
 								.getNodeById(newParentNode.getId());
 
-						if (oldParentNodeReshow != null)
-						{
-							showChildren(oldParentNodeReshow);
-						}
-						if (newParentNodeReshow != null)
-						{
-							newParentNodeReshow.setHasChildren(true);
-							showChildren(newParentNodeReshow);
-						}
+						SwingUtilities.invokeLater(new Runnable() {
+
+							/*
+							 * (non-Javadoc)
+							 * 
+							 * @see java.lang.Runnable#run()
+							 */
+							@Override
+							public void run()
+							{
+								if (oldParentNodeReshow != null)
+								{
+									showChildren(oldParentNodeReshow);
+								}
+								if (newParentNodeReshow != null)
+								{
+									newParentNodeReshow.setHasChildren(true);
+									showChildren(newParentNodeReshow);
+								}
+							}
+						});
 						result = moveResult != ERROR;
 						return result;
 					} catch (Exception ex)
@@ -2777,23 +2935,51 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 					}
 				}
 				/* (non-Javadoc)
-				 * @see edu.ku.brc.helpers.SwingWorker#finished()
+				 * @see javax.swing.SwingWorker#done()
 				 */
 				@Override
-				public void finished()
+				protected void done()
 				{
-					super.finished();
+					super.done();
 					log.info("Moved Node. Clearing glasspane.");
-					UIRegistry.clearGlassPaneMsg();
+					SwingUtilities.invokeLater(new Runnable() {
+
+						/* (non-Javadoc)
+						 * @see java.lang.Runnable#run()
+						 */
+						@Override
+						public void run()
+						{
+							UIRegistry.clearGlassPaneMsg();
+						}
+						
+					});
 					if (!result)
 					{
-						UIRegistry.displayErrorDlgLocalized("TreeTableViewer.TreeOperationFailed", 
-								UIRegistry.getResourceString("TreeTableViewer.MoveOp"));
-						SubPaneMgr.getInstance().removePane(TreeTableViewer.this, false);
+						SwingUtilities.invokeLater(new Runnable() {
+
+							/*
+							 * (non-Javadoc)
+							 * 
+							 * @see java.lang.Runnable#run()
+							 */
+							@Override
+							public void run()
+							{
+								UIRegistry
+										.displayErrorDlgLocalized(
+												"TreeTableViewer.TreeOperationFailed",
+												UIRegistry
+														.getResourceString("TreeTableViewer.MoveOp"));
+								SubPaneMgr.getInstance().removePane(
+										TreeTableViewer.this, false);
+							}
+
+						});
 					}
 				}
 				
-			}.start();
+			}.execute();
 			return true;
 			
 		}
