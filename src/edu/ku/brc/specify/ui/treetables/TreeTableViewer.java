@@ -2665,6 +2665,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 				public void finished()
 				{
 					super.finished();
+					log.info("Synonymization finished. Clearing glasspane.");
 					UIRegistry.clearGlassPaneMsg();
 					if (!result)
 					{
@@ -2743,15 +2744,12 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 				public void finished()
 				{
 					super.finished();
-					if (result)
-					{
-						UIRegistry.clearGlassPaneMsg();
-					}
-					else
+					log.info("Moved Node. Clearing glasspane.");
+					UIRegistry.clearGlassPaneMsg();
+					if (!result)
 					{
 						UIRegistry.displayErrorDlgLocalized("TreeTableViewer.TreeOperationFailed", 
 								UIRegistry.getResourceString("TreeTableViewer.MoveOp"));
-						UIRegistry.clearGlassPaneMsg();
 						SubPaneMgr.getInstance().removePane(TreeTableViewer.this, false);
 					}
 				}

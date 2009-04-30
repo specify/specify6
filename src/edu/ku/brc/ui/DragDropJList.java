@@ -269,6 +269,17 @@ public class DragDropJList extends JList implements DragSourceListener,
 			return false;
 		}
 		
+		if (dragged == null)
+		{
+			//apparently an exception is occurring in the try-catch block that is not being caught -
+			//stack trace is printed deeper in the call stack.
+			//Presumably when that occurs dragged will be null?
+			//Possibly the stack trace has something to do the Tree Move operation hanging (bug 7285),
+			//though it seems this method should have completed before the move is initiated.
+			setDragCursor(false, dtde.getDropAction());
+			return false;
+		}
+		
 		if (droppedOn == dragged)
 		{
 		    setDragCursor(false, dtde.getDropAction());
