@@ -2754,7 +2754,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 						return false;
 					}
 					// If result is false the tree will be closed in
-					// finished(), but that might be overkill
+					// done(), but that might be overkill
 					// for synonymy since the tree structure (parent/child
 					// relationships) is
 					// not actually changed.
