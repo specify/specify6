@@ -2565,97 +2565,123 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 				@Override
 				public Object construct()
 				{
-		            UIRegistry.writeGlassPaneMsg(String.format(
-		            		UIRegistry.getResourceString("TreeTableViewer.Synonymizing"), draggedRecord.getName()),
-		            		24);
-					TreeNode draggedNodeParent = listModel.getNodeById(draggedNode.getParentId());
-		            TreeNode droppedNodeParent = listModel.getNodeById(droppedOnNode.getParentId());
-		            hideChildren(draggedNodeParent);
-		            if (droppedNodeParent != draggedNodeParent)
-		            {
-		            	hideChildren(droppedNodeParent);
-		            }
-		            
-					String statusMsg = dataService.synonymize(draggedRecord, droppedRecord);
-		            if (statusMsg == null)
+		            try
 					{
-						draggedNode.setAcceptedParentId(droppedOnNode.getId());
-
-						// fix all synonyms of the new synonym to point at the
-						// "final" accepted name in the chain
-						for (Pair<Integer, String> idAndName : draggedNode
-								.getSynonymIdsAndNames())
-						{
-							if (idAndName.first != null)
-							{
-								int synNodeID = idAndName.first;
-								TreeNode synNode = listModel
-										.getNodeById(synNodeID);
-								if (synNode != null)
-								{
-									synNode.setAcceptedParentId(droppedOnNode
-											.getId());
-									synNode
-											.setAcceptedParentFullName(droppedOnNode
-													.getFullName());
-									droppedOnNode.getSynonymIdsAndNames().add(
-											new Pair<Integer, String>(synNode
-													.getId(), synNode
-													.getFullName()));
-
-								} else
-								{
-									// I don't think this is actually an error -
-									// rods 05/21/08
-									// String msg =
-									// "** - JDS - ** synNode was null and shouldn't have been for ID["+synNodeID+"]";
-									// log.error(msg);
-									// UIRegistry.displayErrorDlg(msg);
-								}
-							} else
-							{
-								String msg = "** - JDS - ** idAndName.first was null and shouldn't have been.";
-								log.error(msg);
-								UIRegistry.displayErrorDlg(msg);
-							}
-						}
-
-						draggedNode.getSynonymIdsAndNames().clear();
-
-						draggedNode.setAcceptedParentFullName(droppedOnNode
-								.getFullName());
-						droppedOnNode.getSynonymIdsAndNames().add(
-								new Pair<Integer, String>(draggedNode.getId(),
-										draggedNode.getFullName()));
-
-						Vector<TreeNode> bogusity = new Vector<TreeNode>(1);
-						bogusity.add(draggedNodeParent);
-						draggedNodeParent.setHasCalcCount(false);
-						draggedNodeParent.setHasCalcCount2(false);
-						showCounts(getRecordForNode(draggedNodeParent),
-								bogusity);
-						showChildren(draggedNodeParent);
+						UIRegistry
+								.writeGlassPaneMsg(
+										String
+												.format(
+														UIRegistry
+																.getResourceString("TreeTableViewer.Synonymizing"),
+														draggedRecord.getName()),
+										24);
+						TreeNode draggedNodeParent = listModel
+								.getNodeById(draggedNode.getParentId());
+						TreeNode droppedNodeParent = listModel
+								.getNodeById(droppedOnNode.getParentId());
+						hideChildren(draggedNodeParent);
 						if (droppedNodeParent != draggedNodeParent)
 						{
-							droppedNodeParent.setHasCalcCount(false);
-							droppedNodeParent.setHasCalcCount2(false);
-							bogusity.clear();
-							bogusity.add(droppedNodeParent);
-							showCounts(getRecordForNode(droppedNodeParent),
-									bogusity);
-							showChildren(droppedNodeParent);
+							hideChildren(droppedNodeParent);
 						}
-					}
-		            updateAllUI();
-					if (statusMsg != null)
+
+						String statusMsg = dataService.synonymize(
+								draggedRecord, droppedRecord);
+						if (statusMsg == null)
+						{
+							draggedNode.setAcceptedParentId(droppedOnNode
+									.getId());
+
+							// fix all synonyms of the new synonym to point at
+							// the
+							// "final" accepted name in the chain
+							for (Pair<Integer, String> idAndName : draggedNode
+									.getSynonymIdsAndNames())
+							{
+								if (idAndName.first != null)
+								{
+									int synNodeID = idAndName.first;
+									TreeNode synNode = listModel
+											.getNodeById(synNodeID);
+									if (synNode != null)
+									{
+										synNode
+												.setAcceptedParentId(droppedOnNode
+														.getId());
+										synNode
+												.setAcceptedParentFullName(droppedOnNode
+														.getFullName());
+										droppedOnNode
+												.getSynonymIdsAndNames()
+												.add(
+														new Pair<Integer, String>(
+																synNode.getId(),
+																synNode
+																		.getFullName()));
+
+									} else
+									{
+										// I don't think this is actually an
+										// error -
+										// rods 05/21/08
+										// String msg =
+										// "** - JDS - ** synNode was null and shouldn't have been for ID["+synNodeID+"]";
+										// log.error(msg);
+										// UIRegistry.displayErrorDlg(msg);
+									}
+								} else
+								{
+									String msg = "** - JDS - ** idAndName.first was null and shouldn't have been.";
+									log.error(msg);
+									UIRegistry.displayErrorDlg(msg);
+								}
+							}
+
+							draggedNode.getSynonymIdsAndNames().clear();
+
+							draggedNode.setAcceptedParentFullName(droppedOnNode
+									.getFullName());
+							droppedOnNode.getSynonymIdsAndNames()
+									.add(
+											new Pair<Integer, String>(
+													draggedNode.getId(),
+													draggedNode.getFullName()));
+
+							Vector<TreeNode> bogusity = new Vector<TreeNode>(1);
+							bogusity.add(draggedNodeParent);
+							draggedNodeParent.setHasCalcCount(false);
+							draggedNodeParent.setHasCalcCount2(false);
+							showCounts(getRecordForNode(draggedNodeParent),
+									bogusity);
+							showChildren(draggedNodeParent);
+							if (droppedNodeParent != draggedNodeParent)
+							{
+								droppedNodeParent.setHasCalcCount(false);
+								droppedNodeParent.setHasCalcCount2(false);
+								bogusity.clear();
+								bogusity.add(droppedNodeParent);
+								showCounts(getRecordForNode(droppedNodeParent),
+										bogusity);
+								showChildren(droppedNodeParent);
+							}
+						}
+						updateAllUI();
+						if (statusMsg != null)
+						{
+							statusBar.setText(statusMsg);
+						}
+						result = statusMsg == null;
+						return result;
+					} catch (Exception ex)
 					{
-					    statusBar.setText(statusMsg);
+						log.error(ex);
+						return false;
 					}
-					result = statusMsg == null;
-					//If result is false the tree will be closed in finished(), but that might be overkill
-					//for synonymy since the tree structure (parent/child relationships) is
-					//not actually changed. 
-					return result;
+					// If result is false the tree will be closed in
+					// finished(), but that might be overkill
+					// for synonymy since the tree structure (parent/child
+					// relationships) is
+					// not actually changed.
 				}
 
 				/* (non-Javadoc)
@@ -2702,40 +2728,53 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 				@Override
 				public Object construct()
 				{
-		            UIRegistry.writeGlassPaneMsg(
-		            		String.format(UIRegistry.getResourceString("TreeTableViewer.Moving"), child.getName()), 24);
-		            
-		            hideChildren(oldParentNode);
-		            hideChildren(droppedOnNode);
-		            // Removing the children of these nodes may have resulted in a node being removed from the model.
-		            // This happens when one of these nodes is a descendant of the other.  The lower ranked node will
-		            // no longer be in the model at all.
-					
-		            // do the DB work to reparent the nodes
-		            int moveResult = dataService.moveTreeNode(child, newParent);
-		            if (moveResult == ERROR)
-		            {
-		                String msg = getResourceString("TTV_UNKOWN_MOVE_ERROR");
-		                statusBar.setErrorMessage(msg);
-		                UIRegistry.displayErrorDlg(msg);
-		            }
-		            
-		            // reshow the nodes' children, if the nodes are still in the tree (see comment above in this method)
-		            TreeNode oldParentNodeReshow = listModel.getNodeById(oldParentNode.getId());
-		            TreeNode newParentNodeReshow = listModel.getNodeById(newParentNode.getId());
-		            
-		            if (oldParentNodeReshow != null)
-		            {
-		                showChildren(oldParentNodeReshow);
-		            }
-		            if (newParentNodeReshow != null)
-		            {
-		            	newParentNodeReshow.setHasChildren(true);
-		                showChildren(newParentNodeReshow);
-		            }
-		            
-					result = moveResult != ERROR;
-					return result;
+		            try
+					{
+						UIRegistry.writeGlassPaneMsg(String.format(UIRegistry
+								.getResourceString("TreeTableViewer.Moving"),
+								child.getName()), 24);
+
+						hideChildren(oldParentNode);
+						hideChildren(droppedOnNode);
+						// Removing the children of these nodes may have
+						// resulted in a node being removed from the model.
+						// This happens when one of these nodes is a descendant
+						// of the other. The lower ranked node will
+						// no longer be in the model at all.
+
+						// do the DB work to reparent the nodes
+						int moveResult = dataService.moveTreeNode(child,
+								newParent);
+						if (moveResult == ERROR)
+						{
+							String msg = getResourceString("TTV_UNKOWN_MOVE_ERROR");
+							statusBar.setErrorMessage(msg);
+							UIRegistry.displayErrorDlg(msg);
+						}
+
+						// reshow the nodes' children, if the nodes are still in
+						// the tree (see comment above in this method)
+						TreeNode oldParentNodeReshow = listModel
+								.getNodeById(oldParentNode.getId());
+						TreeNode newParentNodeReshow = listModel
+								.getNodeById(newParentNode.getId());
+
+						if (oldParentNodeReshow != null)
+						{
+							showChildren(oldParentNodeReshow);
+						}
+						if (newParentNodeReshow != null)
+						{
+							newParentNodeReshow.setHasChildren(true);
+							showChildren(newParentNodeReshow);
+						}
+						result = moveResult != ERROR;
+						return result;
+					} catch (Exception ex)
+					{
+						log.error(ex);
+						return false;
+					}
 				}
 				/* (non-Javadoc)
 				 * @see edu.ku.brc.helpers.SwingWorker#finished()
