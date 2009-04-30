@@ -377,8 +377,7 @@ public class SpecifyDBSetupWizard extends JPanel
                         {
                             DisciplineType disciplineType = disciplinePanel.getDisciplineType();
                             if (disciplineType != null && disciplineType.isPaleo() && 
-                                panels.get(step) instanceof TreeDefSetupPanel &&
-                                ((TreeDefSetupPanel)panels.get(step)).getClassType() == TaxonTreeDef.class)
+                                panels.get(step-1) instanceof TaxonLoadSetupPanel)
                             {
                                 step--;
                             }
