@@ -3277,7 +3277,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         if (show && ((QueryTask )task).needToRebuildTableTree() && !reloadMsgShown)
         {
             //It seems that no serious problems will occur so for now just show a message:
-            UIRegistry.showLocalizedMsg("QB_TREEDEF_LOCALIZ_CHANGES_TITLE", "QB_TREEDEF_LOCALIZ_CHANGES_WARN", (Object[] )null);
+            UIRegistry.showLocalizedMsg("QB_TREEDEF_LOCALIZ_CHANGES_TITLE", "QB_TREEDEF_LOCALIZ_CHANGES_WARN");
             reloadMsgShown = true;
         }
     }
