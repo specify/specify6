@@ -538,7 +538,7 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
                 //{
                     if (!isImage)
                     {
-                        JMenuItem mi = pMenu.add(new JMenuItem("Fill Down")); // I18N
+                        JMenuItem mi = pMenu.add(new JMenuItem(UIRegistry.getResourceString("SpreadSheet.FillDown")));
                         mi.addActionListener(new ActionListener() {
                             public void actionPerformed(ActionEvent ae)
                             {
@@ -553,7 +553,7 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
                 //{
                     if (!isImage)
                     {
-                        JMenuItem mi = pMenu.add(new JMenuItem("Fill Up")); // I18N
+                        JMenuItem mi = pMenu.add(new JMenuItem(UIRegistry.getResourceString("Spreadsheet.FillUp"))); 
                         mi.addActionListener(new ActionListener() {
                             public void actionPerformed(ActionEvent ae)
                             {
@@ -568,9 +568,10 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
             }
         }
         
+        
         if (!isImage)
         {        
-            JMenuItem mi = pMenu.add(new JMenuItem("Clear Cell(s)"));// I18N
+            JMenuItem mi = pMenu.add(new JMenuItem(UIRegistry.getResourceString("SpreadSheet.ClearCells")));
             mi.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent ae)
                 {
@@ -585,7 +586,7 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
         
         if (deleteAction != null)
         {
-            JMenuItem mi = pMenu.add(new JMenuItem("Delete Row(s)")); // I18N
+            JMenuItem mi = pMenu.add(new JMenuItem(UIRegistry.getResourceString("SpreadSheet.DeleteRows"))); 
             mi.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent ae)
                 {
@@ -594,6 +595,88 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
                 }
             });
         }
+
+        //add copy, paste, cut
+        if (!isImage) //copy, paste currently only implemented for string data
+        {
+        	boolean isSelection = getSelectedColumnCount() > 0 && getSelectedRowCount() > 0;
+        	if (pMenu.getComponentCount() > 0)
+        	{
+        		pMenu.add(new JPopupMenu.Separator());
+        	}
+        	JMenuItem mi = pMenu.add(new JMenuItem(UIRegistry
+					.getResourceString("CutMenu")));
+			mi.setEnabled(isSelection && !isImage); // copy, paste currently
+													// only implemented for
+													// string data
+			mi.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent ae)
+				{
+					SwingUtilities.invokeLater(new Runnable() {
+
+						/*
+						 * (non-Javadoc)
+						 * 
+						 * @see java.lang.Runnable#run()
+						 */
+						@Override
+						public void run()
+						{
+							cutOrCopy(true);
+
+						}
+
+					});
+				}
+			});
+			mi = pMenu.add(new JMenuItem(UIRegistry.getResourceString("CopyMenu")));
+			mi.setEnabled(isSelection && !isImage);
+			mi.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent ae)
+				{
+					SwingUtilities.invokeLater(new Runnable() {
+
+						/*
+						 * (non-Javadoc)
+						 * 
+						 * @see java.lang.Runnable#run()
+						 */
+						@Override
+						public void run()
+						{
+							cutOrCopy(false);
+
+						}
+
+					});
+				}
+			});
+			mi = pMenu
+					.add(new JMenuItem(UIRegistry.getResourceString("PasteMenu")));
+			mi.setEnabled(isSelection && !isImage && canPasteFromClipboard());
+			mi.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent ae)
+				{
+					SwingUtilities.invokeLater(new Runnable() {
+
+						/*
+						 * (non-Javadoc)
+						 * 
+						 * @see java.lang.Runnable#run()
+						 */
+						@Override
+						public void run()
+						{
+							paste();
+
+						}
+
+					});
+				}
+			});
+        	
+        }
+        
         pMenu.setInvoker(this);
         return pMenu;
     }
@@ -700,6 +783,120 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
         return super.processKeyBinding(ks, e, condition, pressed);
     }
     
+    
+    /**
+     * @param isCut
+     * 
+     * Cut or copy selected cells into the Clipboard
+     */
+    public void cutOrCopy(final boolean isCut)
+    {
+        StringBuffer sbf = new StringBuffer();
+        // Check to ensure we have selected only a contiguous block of
+        // cells
+        int   numcols      = getSelectedColumnCount();
+        int   numrows      = getSelectedRowCount();
+        int[] rowsselected = getSelectedRows();
+        int[] colsselected = getSelectedColumns();
+        if (numcols == 0 || numrows == 0 || !((numrows - 1 == rowsselected[rowsselected.length - 1] - rowsselected[0] && numrows == rowsselected.length) && 
+              (numcols - 1 == colsselected[colsselected.length - 1] - colsselected[0] && numcols == colsselected.length)))
+        {
+            //JOptionPane.showMessageDialog(null, "Invalid Copy Selection",
+            //        "Invalid Copy Selection", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        for (int i = 0; i < numrows; i++)
+        {
+            for (int j = 0; j < numcols; j++)
+            {
+                sbf.append(getValueAt(rowsselected[i], colsselected[j]));
+                if (j < numcols - 1)
+                {
+                    sbf.append("\t");
+                }
+                if (isCut)
+                {
+                    setValueAt("", rowsselected[i], colsselected[j]);
+                }
+            }
+            if (numrows > 1)
+            {
+                sbf.append("\n");
+            }
+        }
+        StringSelection stsel  = new StringSelection(sbf.toString());
+        Clipboard       sysClipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        sysClipboard.setContents(stsel, stsel);
+        
+    }     
+    
+    /**
+     * @return true if pastable data is present in the clipboard
+     */
+    protected boolean canPasteFromClipboard()
+    {
+        Clipboard sysClipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        return sysClipboard.isDataFlavorAvailable(DataFlavor.stringFlavor);
+    }
+    
+    /**
+     * Paste data from clipboard into spreadsheet.
+     * Currently only implemented for string data.
+     */
+    public void paste()
+    {
+        //System.out.println("Trying to Paste");
+        int[] rows = getSelectedRows();
+        int[] cols = getSelectedColumns();
+        if (rows != null && cols != null && rows.length > 0 && cols.length > 0)
+        {
+            int startRow = rows[0];
+            int startCol = cols[0];
+            try
+            {
+                Clipboard sysClipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                if (sysClipboard.isDataFlavorAvailable(DataFlavor.stringFlavor))
+                {
+                	String trstring = (String )sysClipboard.getData(DataFlavor.stringFlavor);
+                	StringTokenizer st1 = new StringTokenizer(trstring, "\n\r");
+                	for (int i = 0; st1.hasMoreTokens(); i++)
+                	{
+                		String   rowstring = st1.nextToken();
+                		//System.out.println("Row [" + rowstring+"]");
+                		String[] tokens    = StringUtils.splitPreserveAllTokens(rowstring, '\t');
+                		for (int j = 0; j < tokens.length; j++)
+                		{
+                			if (startRow + i < getRowCount() && startCol + j < getColumnCount())
+                			{
+                				int colInx = startCol + j;
+                				if (tokens[j].length() <= model.getColDataLen(colInx))
+                				{
+                					setValueAt(tokens[j], startRow + i, colInx);
+                				} else
+                				{
+                					String msg = String.format(getResourceString("UI_NEWDATA_TOO_LONG"), new Object[] { model.getColumnName(startCol + j), model.getColDataLen(colInx) } );
+                					UIRegistry.getStatusBar().setErrorMessage(msg);
+                					Toolkit.getDefaultToolkit().beep();
+                				}
+                			}
+                			//System.out.println("Putting [" + tokens[j] + "] at row=" + startRow + i + "column=" + startCol + j);
+                		}
+                	}
+                }
+            } catch (IllegalStateException ex)
+            {
+            	UIRegistry.displayStatusBarErrMsg(getResourceString("Spreadsheet.ClipboardUnavailable"));
+            }
+            catch (Exception ex)
+            {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpreadSheet.class, ex);
+                ex.printStackTrace();
+            }
+        }
+    }
+    
     /* (non-Javadoc)
      * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
      */
@@ -713,101 +910,38 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
         //
         // The code in this method was tken from a JavaWorld Example
         //
-        boolean isCut = e.getActionCommand().compareTo("Cut") == 0 || e.getActionCommand().equals("x");
+        final boolean isCut = e.getActionCommand().compareTo("Cut") == 0 || e.getActionCommand().equals("x");
         if (e.getActionCommand().compareTo("Copy") == 0 ||
             e.getActionCommand().equals("c")|| 
             isCut)
         {
-            StringBuffer sbf = new StringBuffer();
-            // Check to ensure we have selected only a contiguous block of
-            // cells
-            int   numcols      = getSelectedColumnCount();
-            int   numrows      = getSelectedRowCount();
-            int[] rowsselected = getSelectedRows();
-            int[] colsselected = getSelectedColumns();
-            if (!((numrows - 1 == rowsselected[rowsselected.length - 1] - rowsselected[0] && numrows == rowsselected.length) && 
-                  (numcols - 1 == colsselected[colsselected.length - 1] - colsselected[0] && numcols == colsselected.length)))
-            {
-                //JOptionPane.showMessageDialog(null, "Invalid Copy Selection",
-                //        "Invalid Copy Selection", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            
-            for (int i = 0; i < numrows; i++)
-            {
-                for (int j = 0; j < numcols; j++)
-                {
-                    sbf.append(getValueAt(rowsselected[i], colsselected[j]));
-                    if (j < numcols - 1)
-                    {
-                        sbf.append("\t");
-                    }
-                    if (isCut)
-                    {
-                        setValueAt("", rowsselected[i], colsselected[j]);
-                    }
-                }
-                if (numrows > 1)
-                {
-                    sbf.append("\n");
-                }
-            }
-            StringSelection stsel  = new StringSelection(sbf.toString());
-            Clipboard       sysClipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-            sysClipboard.setContents(stsel, stsel);
-            
+            SwingUtilities.invokeLater(new Runnable(){
+
+				/* (non-Javadoc)
+				 * @see java.lang.Runnable#run()
+				 */
+				@Override
+				public void run()
+				{
+					cutOrCopy(isCut);
+				}
+            	
+            });
         } else if (e.getActionCommand().compareTo("Paste") == 0 ||
                    e.getActionCommand().equals("v"))
         {
-            //System.out.println("Trying to Paste");
-            int[] rows = getSelectedRows();
-            int[] cols = getSelectedColumns();
-            if (rows != null && cols != null && rows.length > 0 && cols.length > 0)
-            {
-                int startRow = rows[0];
-                int startCol = cols[0];
-                try
-                {
-                    Clipboard sysClipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-                    if (sysClipboard.isDataFlavorAvailable(DataFlavor.stringFlavor))
-                    {
-                    	String trstring = (String )sysClipboard.getData(DataFlavor.stringFlavor);
-                    	StringTokenizer st1 = new StringTokenizer(trstring, "\n\r");
-                    	for (int i = 0; st1.hasMoreTokens(); i++)
-                    	{
-                    		String   rowstring = st1.nextToken();
-                    		//System.out.println("Row [" + rowstring+"]");
-                    		String[] tokens    = StringUtils.splitPreserveAllTokens(rowstring, '\t');
-                    		for (int j = 0; j < tokens.length; j++)
-                    		{
-                    			if (startRow + i < getRowCount() && startCol + j < getColumnCount())
-                    			{
-                    				int colInx = startCol + j;
-                    				if (tokens[j].length() <= model.getColDataLen(colInx))
-                    				{
-                    					setValueAt(tokens[j], startRow + i, colInx);
-                    				} else
-                    				{
-                    					String msg = String.format(getResourceString("UI_NEWDATA_TOO_LONG"), new Object[] { model.getColumnName(startCol + j), model.getColDataLen(colInx) } );
-                    					UIRegistry.getStatusBar().setErrorMessage(msg);
-                    					Toolkit.getDefaultToolkit().beep();
-                    				}
-                    			}
-                    			//System.out.println("Putting [" + tokens[j] + "] at row=" + startRow + i + "column=" + startCol + j);
-                    		}
-                    	}
-                    }
-                } catch (IllegalStateException ex)
-                {
-                	UIRegistry.displayStatusBarErrMsg(getResourceString("Spreadsheet.ClipboardUnavailable"));
-                }
-                catch (Exception ex)
-                {
-                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpreadSheet.class, ex);
-                    ex.printStackTrace();
-                }
-            }
+            SwingUtilities.invokeLater(new Runnable(){
+
+				/* (non-Javadoc)
+				 * @see java.lang.Runnable#run()
+				 */
+				@Override
+				public void run()
+				{
+					paste();
+				}
+            	
+            });
         }
     }
     
