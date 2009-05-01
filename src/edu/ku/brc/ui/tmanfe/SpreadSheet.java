@@ -769,30 +769,33 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
                 try
                 {
                     Clipboard sysClipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-                    String trstring = (String )sysClipboard.getData(DataFlavor.stringFlavor);
-                    StringTokenizer st1 = new StringTokenizer(trstring, "\n\r");
-                    for (int i = 0; st1.hasMoreTokens(); i++)
+                    if (sysClipboard.isDataFlavorAvailable(DataFlavor.stringFlavor))
                     {
-                        String   rowstring = st1.nextToken();
-                        //System.out.println("Row [" + rowstring+"]");
-                        String[] tokens    = StringUtils.splitPreserveAllTokens(rowstring, '\t');
-                        for (int j = 0; j < tokens.length; j++)
-                        {
-                            if (startRow + i < getRowCount() && startCol + j < getColumnCount())
-                            {
-                                int colInx = startCol + j;
-                                if (tokens[j].length() <= model.getColDataLen(colInx))
-                                {
-                                    setValueAt(tokens[j], startRow + i, colInx);
-                                } else
-                                {
-                                    String msg = String.format(getResourceString("UI_NEWDATA_TOO_LONG"), new Object[] { model.getColumnName(startCol + j), model.getColDataLen(colInx) } );
-                                    UIRegistry.getStatusBar().setErrorMessage(msg);
-                                    Toolkit.getDefaultToolkit().beep();
-                                }
-                            }
-                            //System.out.println("Putting [" + tokens[j] + "] at row=" + startRow + i + "column=" + startCol + j);
-                        }
+                    	String trstring = (String )sysClipboard.getData(DataFlavor.stringFlavor);
+                    	StringTokenizer st1 = new StringTokenizer(trstring, "\n\r");
+                    	for (int i = 0; st1.hasMoreTokens(); i++)
+                    	{
+                    		String   rowstring = st1.nextToken();
+                    		//System.out.println("Row [" + rowstring+"]");
+                    		String[] tokens    = StringUtils.splitPreserveAllTokens(rowstring, '\t');
+                    		for (int j = 0; j < tokens.length; j++)
+                    		{
+                    			if (startRow + i < getRowCount() && startCol + j < getColumnCount())
+                    			{
+                    				int colInx = startCol + j;
+                    				if (tokens[j].length() <= model.getColDataLen(colInx))
+                    				{
+                    					setValueAt(tokens[j], startRow + i, colInx);
+                    				} else
+                    				{
+                    					String msg = String.format(getResourceString("UI_NEWDATA_TOO_LONG"), new Object[] { model.getColumnName(startCol + j), model.getColDataLen(colInx) } );
+                    					UIRegistry.getStatusBar().setErrorMessage(msg);
+                    					Toolkit.getDefaultToolkit().beep();
+                    				}
+                    			}
+                    			//System.out.println("Putting [" + tokens[j] + "] at row=" + startRow + i + "column=" + startCol + j);
+                    		}
+                    	}
                     }
                 } catch (IllegalStateException ex)
                 {
