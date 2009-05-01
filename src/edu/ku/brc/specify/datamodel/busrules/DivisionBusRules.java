@@ -424,7 +424,7 @@ public class DivisionBusRules extends BaseBusRules implements CommandListener
     {
         reasonList.clear();
         
-        if (!(dataObj instanceof Institution))
+        if (!(dataObj instanceof Division))
         {
             return STATUS.Error;
         }
