@@ -56,6 +56,7 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemStandardEntry;
@@ -1215,23 +1216,16 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
         	Treeable<T, D, I> parent = parentDataObj == null ? node.getParent() : (Treeable<T, D, I> )parentDataObj; 
         	if (parent != null)
         	{
-        		DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        		try
-        		{
-        			session.refresh(parent);
-        			Set<T> siblings = parent.getChildren();
-        			for (T sibling : siblings)
-        			{
-        				if (sibling.getName().equals(node.getName()) && sibling.getIsAccepted() && !sibling.getTreeId().equals(node.getTreeId()))
-        				{
-        					return true;
-        				}
-        			}			
-        		}
-        		finally
-        		{
-        			session.close();
-        		}
+                //XXX the sql below will only work if all Treeable tables use fields named 'isAccepted' and 'name' to store
+        		//the name and isAccepted properties.
+        		String tblName = DBTableIdMgr.getInstance().getInfoById(node.getTableId()).getName();
+        		String sql = "SELECT count(*) FROM " + tblName + " where isAccepted "
+        			+ "and name = '" + BasicSQLUtils.escapeStringLiterals(node.getName()) + "'";
+                if (node.getTreeId() != null)
+                {
+                	sql += " and " + tblName + "id != " + node.getTreeId();
+                }
+                return BasicSQLUtils.getNumRecords(sql) > 0;
         	}
     	}
     	return false;
