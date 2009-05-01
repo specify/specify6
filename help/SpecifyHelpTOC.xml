@@ -64,11 +64,12 @@
             <tocitem text="EMail" target="PrefsEMail"/>
             <tocitem text="Formatting" target="PrefsFormatting"/>
             <tocitem text="GoogleEarth" target="PrefsGoogleEarth"/>
-            <tocitem text="Task Bar" target="PrefsMisc"/>
-            <tocitem text="System" target="PrefsSystem"/>
-            <tocitem text="Tree" target="PrefsTree"/>
+            <tocitem text="Loan" target="PrefsLoan"/>
             <tocitem text="Login" target="PrefsLogin"/>
             <tocitem text="MySQL" target="PrefsMySQL"/>
+            <tocitem text="Task Bar" target="PrefsMisc"/>
+            <tocitem text="Tree" target="PrefsTree"/>
+            <tocitem text="System" target="PrefsSystem"/>
           </tocitem>
 	
 		  
