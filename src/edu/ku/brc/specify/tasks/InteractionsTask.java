@@ -2110,7 +2110,7 @@ public class InteractionsTask extends BaseTask
                         (isInfoReq && (irPerms == null || irPerms.canAdd()));
         } else
         {
-            isOKToAdd = isNewLoan || isNewGift || isInfoReq;
+            isOKToAdd = isNewLoan || isNewGift || isInfoReq || isNewLoanNoPreps;
         }
         
         UsageTracker.incrUsageCount("IN."+cmdAction.getType());
