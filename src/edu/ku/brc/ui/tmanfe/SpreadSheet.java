@@ -36,7 +36,6 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -93,6 +92,7 @@ import edu.ku.brc.ui.UIHelper.OSTYPE;
  * @author Thierry Manf, Rod Spears
  * 
  **************************************************************************************************/
+@SuppressWarnings("serial")
 public class SpreadSheet  extends SearchableJXTable implements ActionListener
 {
     protected static final Logger log = Logger.getLogger(SpreadSheet.class);
@@ -769,10 +769,7 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
                 try
                 {
                     Clipboard sysClipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-                    Transferable contents = sysClipboard.getContents(null);
-                    String trstring = (String)contents.getTransferData(DataFlavor.stringFlavor);
-                    //String trstring = (String) (sysClipboard.getContents(this).getTransferData(DataFlavor.stringFlavor));
-                    //System.out.println("String is: [" + trstring+"]");
+                    String trstring = (String )sysClipboard.getData(DataFlavor.stringFlavor);
                     StringTokenizer st1 = new StringTokenizer(trstring, "\n\r");
                     for (int i = 0; st1.hasMoreTokens(); i++)
                     {
@@ -797,7 +794,11 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
                             //System.out.println("Putting [" + tokens[j] + "] at row=" + startRow + i + "column=" + startCol + j);
                         }
                     }
-                } catch (Exception ex)
+                } catch (IllegalStateException ex)
+                {
+                	UIRegistry.displayStatusBarErrMsg(getResourceString("Spreadsheet.ClipboardUnavailable"));
+                }
+                catch (Exception ex)
                 {
                     edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                     edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpreadSheet.class, ex);
