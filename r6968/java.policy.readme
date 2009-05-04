@@ -1,0 +1,74 @@
+-----------------------------------------
+java.lang.management.ManagementPermission
+-----------------------------------------
+Programmers do not normally create ManagementPermission objects directly. Instead they are created by the security policy code based on reading the security
+
+control
+	allows	- Ability to control the runtime characteristics of the Java virtual machine, for example, setting the -verbose:gc and -verbose:class flag, setting the threshold of a memory pool, and enabling and disabling the thread contention monitoring support. 	
+	risks	- This allows an attacker to control the runtime characteristics of the Java virtual machine and cause the system to misbehave.
+monitor 	
+	allows	- Ability to retrieve runtime information about the Java virtual machine such as thread stack trace, a list of all loaded class names, and input arguments to the Java virtual machine. 	
+	risks	- This allows malicious code to monitor runtime information and uncover vulnerabilities.
+
+-----------------------------------------
+java.util.PropertyPermission
+-----------------------------------------
+This class is for property permissions.
+
+read
+	allows	- read permission. Allows System.getProperty to be called.
+write
+	allows	- write permission. Allows System.setProperty to be called.	
+	
+	risks	- Care should be taken before granting code permission to access certain system properties. For example, granting permission to access the "java.home" system property gives potentially malevolent code sensitive information about the system environment (the Java installation directory). Also, granting permission to access the "user.name" and "user.home" system properties gives potentially malevolent code sensitive information about the user environment (the user's account name and home directory).
+	
+	------------------------------------------------------------------------------------------
+	
+	-Djava.security.manager -Djava.security.policy="C:\Work\workspace\SpecifySecurity\jaasazn.policy" -Djava.security.auth.login.config==sample_jaas.config -Djava.security.debug=access,failure
+	java.security.debug property
+
+This property controls whether the security system of the Java 2 Runtime Environment prints its trace messages during execution. This is usful when a security exception is thrown in an applet or when a signed applet is not working. The following options are supported:
+
+    * access   — print all checkPermission results
+    * jar         — print jar verification information
+    * policy   — print policy information
+    * scl         — print permissions SecureClassLoader assigns
+
+The following options can be used with access:
+
+    * stack     — include stack trace
+    * domain   — dumps all domains in context
+    * failure — before throwing exception, dump the stack and domain that didn't have permission
+
+For example, to print all checkPermission results and dump all domains in context, set -Djava.security.debug=access:stack in the Java Runtime Parameters field in the Advanced Panel of the Java Plug-in Control Panel. 
+	
+	
+	-------------------------------------------------------------------------------
+	>         in my client code I get the following exception:
+>
+> policy: reading
+> file:/C:/Documents%20and%20Settings/Gili/My%20Documents/blueeye/trunk/ninelives/Client/config/jsk-all.policy
+> java.lang.IllegalArgumentException: null KeyStore name
+
+You get this because you turned on JDK security debugging.  It doesn't
+mean anything is wrong.
+
+- Bob
+
+------------------------------------------------------------------------------------------
+
+The exact meaning of a codeBase value depends on the characters at the end. A codeBase with a trailing "/" matches all class files (not JAR files) in the specified directory. A codeBase with a trailing "/*" matches all files (both class and JAR files) contained in that directory. A codeBase with a trailing "/-" matches all files (both class and JAR files) in the directory and recursively all files in subdirectories contained in that directory. The following table illustrates the different cases.
+
+------------------------------------------------------------------------------------------
+
+http://64.233.167.104/search?q=cache:TX-JwSW2FIEJ:www.petrovic.org/blog/%3Fp%3D134+hibernate+policy+file&hl=en&ct=clnk&cd=3&gl=us&client=firefox-a
+
+Realize that if your application calls some codebase that requires a permission then both your app codebase and the other codebase need the permission granted, not just the other codebase. All codebases along the call chain need the permission.
+
+----------------------------------------------------------------------------
+
+Java applets and Java™ Web Start applications are automatically run with a SecurityManager installed.
+However, local applications executed via the java command are by default not run with a SecurityManager
+installed. In order to run local applications with a SecurityManager, either the application itself must
+programmatically set one via the setSecurityManager method (in the java.lang.System class), or
+java must be invoked with a -Djava.security.manager argument on the command line.

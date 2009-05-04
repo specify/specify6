@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tree>
+
+	<treedef>
+		<level name="Institution" enforced="true" infullname="false" rank="0" />
+		<level name="Building" enforced="true" infullname="false" rank="20"/>
+        <level name="Floor"    enforced="true" infullname="false" rank="40"/>
+        <level name="Room"     enforced="true" infullname="true" rank="60"/>
+        <level name="Storage Container" enforced="false" infullname="true" rank="80"/>
+        <level name="Unit"     enforced="false" infullname="true" rank="100"/>
+        <level name="Sub-Unit" enforced="true" infullname="true" rank="120"/>
+    </treedef>
+
+	<nodes>
+		<node name="PSB" rank="20" />
+		<node name="Dyche Hall" rank="20">
+			<node name="Basement" rank="40">
+				<node name="Storage Room #1" rank="60">
+					<node name="Shelf A1" rank="80" />
+					<node name="Shelf A2" rank="80" />
+					<node name="Shelf A3" rank="80" />
+					<node name="Shelf A4" rank="80" />
+					<node name="Shelf A5" rank="80" />
+					<node name="Freezer #1" rank="80">
+						<node name="Rack #1" rank="100">
+							<node name="Box #1" rank="120" />
+							<node name="Box #2" rank="120" />
+							<node name="Box #3" rank="120" />
+							<node name="Box #4" rank="120" />
+							<node name="Box #5" rank="120" />
+							<node name="Box #6" rank="120" />
+						</node>
+						<node name="Rack #2" rank="100">
+							<node name="Box #1" rank="120" />
+							<node name="Box #2" rank="120" />
+							<node name="Box #3" rank="120" />
+							<node name="Box #4" rank="120" />
+							<node name="Box #5" rank="120" />
+							<node name="Box #6" rank="120" />
+						</node>
+						<node name="Rack #3" rank="100">
+							<node name="Box #1" rank="120" />
+							<node name="Box #2" rank="120" />
+							<node name="Box #3" rank="120" />
+							<node name="Box #4" rank="120" />
+							<node name="Box #5" rank="120" />
+							<node name="Box #6" rank="120" />
+						</node>
+						<node name="Rack #4" rank="100">
+							<node name="Box #1" rank="120" />
+							<node name="Box #2" rank="120" />
+							<node name="Box #3" rank="120" />
+							<node name="Box #4" rank="120" />
+							<node name="Box #5" rank="120" />
+							<node name="Box #6" rank="120" />
+						</node>
+					</node>
+					<node name="Freezer #2" rank="80">
+						<node name="Rack #1" rank="100">
+							<node name="Box #1" rank="120" />
+							<node name="Box #2" rank="120" />
+							<node name="Box #3" rank="120" />
+							<node name="Box #4" rank="120" />
+							<node name="Box #5" rank="120" />
+							<node name="Box #6" rank="120" />
+						</node>
+						<node name="Rack #2" rank="100">
+							<node name="Box #1" rank="120" />
+							<node name="Box #2" rank="120" />
+							<node name="Box #3" rank="120" />
+							<node name="Box #4" rank="120" />
+							<node name="Box #5" rank="120" />
+							<node name="Box #6" rank="120" />
+						</node>
+						<node name="Rack #3" rank="100">
+							<node name="Box #1" rank="120" />
+							<node name="Box #2" rank="120" />
+							<node name="Box #3" rank="120" />
+							<node name="Box #4" rank="120" />
+							<node name="Box #5" rank="120" />
+							<node name="Box #6" rank="120" />
+						</node>
+						<node name="Rack #4" rank="100">
+							<node name="Box #1" rank="120" />
+							<node name="Box #2" rank="120" />
+							<node name="Box #3" rank="120" />
+							<node name="Box #4" rank="120" />
+							<node name="Box #5" rank="120" />
+							<node name="Box #6" rank="120" />
+						</node>
+					</node>
+				</node>
+				<node name="Storage Room #2" rank="60">
+					<node name="Shelf A1" rank="80" />
+					<node name="Shelf A2" rank="80" />
+					<node name="Shelf A3" rank="80" />
+					<node name="Shelf A4" rank="80" />
+					<node name="Shelf A5" rank="80" />
+				</node>
+			</node>
+			<node name="6th Floor" rank="40">
+			    <node name="Room 606" rank="60">
+					<node name="Cabinet #1" rank="80">
+						<node name="Drawer #1" rank="100" />
+						<node name="Drawer #2" rank="100" />
+						<node name="Drawer #3" rank="100" />
+						<node name="Drawer #4" rank="100" />
+						<node name="Drawer #5" rank="100" />
+						<node name="Drawer #6" rank="100" />
+					</node>
+					<node name="Cabinet #2" rank="80">
+						<node name="Drawer #1" rank="100" />
+						<node name="Drawer #2" rank="100" />
+						<node name="Drawer #3" rank="100" />
+						<node name="Drawer #4" rank="100" />
+						<node name="Drawer #5" rank="100" />
+						<node name="Drawer #6" rank="100" />
+					</node>
+			    </node>
+			</node>
+		</node>
+	</nodes>
+</tree>

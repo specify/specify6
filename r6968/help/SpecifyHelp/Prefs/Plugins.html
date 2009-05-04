@@ -1,0 +1,75 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<link href="../../main.css" rel="stylesheet" type="text/css" media="screen" />
+<title>Tools</title>
+</head>
+
+<body bgcolor="#ffffff">
+<table width="100%" border="0" background="../../images/topbar.png">
+  <tr>
+    <td>&nbsp;</td>
+  </tr>
+</table>
+<table border="0">
+<tr><td><img src="../../images/plug_in.png" alt=""/></td><td><h2>Plugins</h2></td></tr>
+</table>
+<p>Specify 6 interfaces with  Google Earth and the BioGeomancer and GEOLocate web services. Choose <em>System &gt; Plugins</em>. </p>
+<p>These web services can be launched by </p>
+<ul>
+  <li>Clicking the relevant icon in the Sidebar and choosing a Catalog Number or Record Set.</li><br />
+  <li>Dragging and dropping a Collection Object, Locality or Collecting Event Record Set on the web service icon from within the sidebar. These Records Sets must include the Locality data listed below for each service.</li>
+</ul>
+<p>Plugins that can accept a Record Set   display a colored outline as the Record Set is dragged within the sidebar. An arrow will display within the outline when the Record Set can be dropped onto the plugin.</p>
+<p>Specify is not responsible for the integrity or accuracy of any of the results of these web services. Specify is integrated with these services as a service to the community. For more information about each visit them at their web site by clicking them here: <a href="http://www.biogeomancer.org/">BioGeomancer</a>, <a href="http://www.museum.tulane.edu/geolocate/">GEOLocate</a>, <a href="http://earth.google.com/#utm_campaign=en&utm_medium=ha&utm_source=en-ha-na-us-sk-eargen&utm_term=earth">Google Earth.</a></p>
+<p>&nbsp;</p>
+<p><strong>Google Earth</strong></p>
+<p>The Google Earth Plugin is used as a means of visualizing object records from Specify in Google Earth.</p>
+<p>Google Earth must be installed on the local machine for the Specify Google Earth integration to work.</p>
+<p>Specify  plots locality records (or associated Collection Objects or Collecting Events) in Google Earth based on latitude and longitude data provided in the locality fields. All associated data is stored in a KML file which is launched within Google Earth upon clicking the <em>Google Earth</em> icon on the sidebar, or dropping a Record Set  on Google Earth from within the Plugins Sidebar. </p>
+<p>Collection Object information  is shown within the Google Earth  information balloon. Specify also allows the insertion of two web service links for genus and species within the information balloon by configuring Google Earth with URLs to the web services in <em>Specify &gt; Preferences &gt; Tools</em>. </p>
+<p>Google Earth can also be launched from within a Locality form by clicking the <img src="../../images/GoogleEarth16x16.png" width="16" height="16" /> Display in Google Earth icon.</p>
+<p><u>Locality data Requirements</u></p>
+<ul>
+  <li>Latitude and Longitude</li>
+</ul>
+<p>Google Earth is also available for use in the WorkBench</p>
+<p>&nbsp;</p>
+<p><strong>BioGeomancer and GEOLocate</strong></p>
+<p>BioGeomancer and GEOLocate both use a description of a Locality, and at least three geographic locations to find  Latitude and Longitude data. This is referred to as georeferencing.</p>
+<p>Specify currently interfaces with BioGeomancer classic.</p>
+<p><u>Locality data Requirements</u></p>
+<ul>
+  <li>Geographic Ranks; including county, state and county for US data.</li>
+  <li>Locality Name</li>
+</ul>
+<p>One weblink button is available on the Locality form for a quick link to one of these services. Choose <em>Specify &gt; Preferences &gt; System </em>for the Mac or <em>Edit &gt; Preferences &gt; System </em>for Windows and Linux to select a service.</p>
+<p>Once the required information is entered in the Locality form, the button (at the bottom of the locality form) becomes enabled. Click the button to launch the service. The georeferencing data  displays in a dialog which includes the locality information, count of results, longitude, latitude, and a map of the location. If the web service results represent more than one record each record can be stepped through by using the buttons at the bottom of the dialog:</p>
+<table width="100%" border="1" cellspacing="2" cellpadding="6">
+  <tr>
+    <td width="24%"><u><strong>Button</strong></u></td>
+    <td width="76%"><u><strong>Result</strong></u></td>
+  </tr>
+  <tr>
+    <td><strong>Help</strong></td>
+    <td>Launches Specify Help.</td>
+  </tr>
+  <tr>
+    <td><strong>Accept</strong></td>
+    <td><p>Accepts the locality data from the web service and copies it into the latitude and longitude fields. Specify also writes the name of the web service in the src lat long unit field, then steps to the next record.</p>
+    </td>
+  </tr>
+  <tr>
+    <td><strong>Skip</strong></td>
+    <td>Skips the current record information and steps to the next record.</td>
+  </tr>
+  <tr>
+    <td><strong>Quit</strong></td>
+    <td>Closes the dialog.</td>
+  </tr>
+</table>
+<p>If the web service data is accepted and latitude and longitude information already exists in the locality form the existing information, including the source field, will be overwritten by the web service data.</p>
+<p><em><strong>Note:</strong></em> The results dialog for BioGeomancer displays more information than latitude and longitude but Specify does not keep any other data that is returned by these web services. </p>
+<p>&nbsp;</p>
+</body>
+</html>

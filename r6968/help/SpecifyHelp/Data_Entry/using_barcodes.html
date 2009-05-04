@@ -1,0 +1,87 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<link href="../../main.css" rel="stylesheet" type="text/css" media="screen" />
+<title>Using Barcodes</title>
+</head>
+
+<body bgcolor="#ffffff">
+<table width="100%" border="0" background="../../images/topbar.png">
+  <tr>
+    <td>&nbsp;</td>
+  </tr>
+</table>
+<h2>Using Barcodes</h2>
+<p>As in Specify 5, Specify 6 works with a bar code reader. Specify treats the bar code reader as an ordinary data entry device. No special configuration within Specify is necessary. Refer to your bar code reader documentation for instructions on how to install and configure the bar code reader. Once the bar code reader is successfully installed and configured, it should work automatically in Specify 6. </p>
+<h3>Data Entry</h3>
+<ul>
+  <li>Activate the Catalog Number field within the Collection Object form by clicking in it.</li>
+  <li>Scan the bar code.</li>
+</ul>
+<p>&nbsp;</p>
+<h3>Search</h3>
+<ul>
+  <li>Activate the Search box by clicking in it.</li>
+  <li>Scan the bar code.</li>
+</ul>
+<p>&nbsp;</p>
+<h3>Interactions</h3>
+<ul>
+  <li>Activate a Loan, Gift or Information Request by choosing it in the Interactions Sidebar, this will activate a Catalog Number dialog.</li>
+  <li>Scan the bar code into the resulting Catalog Number dialog.</li>
+</ul>
+<p>&nbsp;</p>
+<h4>Reports</h4>
+<p>When creating or editing a report in SpecifyiReport it is often necessary to include a barcode. A string field that includes a barcode and can be part of a report by following these steps:</p>
+<ol>
+  <li>Click the <img src="../../images/barcode.png" width="14" height="12" /> (barcode) button on the tool bar. </li>
+  <li>Click and drag an outline for the barcode field in the detail band of the report. </li>
+  <li>In the Properties pane, click the <em><strong>...</strong></em> button for the Barcode exp. (at the bottom of the pane under Barcode).</li>
+  <li>The Barcode Expression Editor dialog will appear. </li>
+  <li>Delete anything that appears in the top box. </li>
+  <li>Click Fields in the bottom left pane.</li>
+  <li>Double click on the appropriate field in the middle box. It should appear in the top box.</li>
+  <li>Click the Apply button.</li>
+</ol>
+<p><img src="../../images/barcode_editor.png" width="609" height="372" /></p>
+<p>&nbsp;</p>
+<p>SpecifyiReport supports the following barcodes:</p>
+<table width="100%" border="1" cellspacing="2" cellpadding="6">
+  <tr>
+    <td>2of7</td>
+    <td>Code128B</td>
+    <td>EAN13</td>
+    <td>SCC14Shipping</td>
+    <td>APCA</td>
+  </tr>
+  <tr>
+    <td>3of9</td>
+    <td>Code128C</td>
+    <td>Global Trade</td>
+    <td>Shipment Identifier</td>
+    <td>UPC3</td>
+  </tr>
+  <tr>
+    <td>Bookland</td>
+    <td>Code39</td>
+    <td>Int2of5</td>
+    <td>SSCC18</td>
+    <td>UPC4</td>
+  </tr>
+  <tr>
+    <td>Codabar</td>
+    <td>Code39(extended)</td>
+    <td>Monarch</td>
+    <td>Std2of5</td>
+    <td>USPS</td>
+  </tr>
+  <tr>
+    <td>Code128</td>
+    <td>EAN128</td>
+    <td>PDF417</td>
+    <td>UCC128</td>
+    <td>&nbsp;</td>
+  </tr>
+</table>
+</body>
+</html>

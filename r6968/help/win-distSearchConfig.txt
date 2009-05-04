@@ -1,0 +1,1 @@
+IndexRemove win-dist/Specify/help/

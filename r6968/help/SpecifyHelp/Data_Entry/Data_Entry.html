@@ -1,0 +1,290 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<link href="../../main.css" rel="stylesheet" type="text/css" media="screen"/></link>
+<title>Data Entry Forms</title>
+</head>
+
+
+<body bgcolor="#ffffff">
+<table width="100%" border="0" background="../../images/topbar.png">
+  
+  <tr>
+    <td>&nbsp;</td>
+  </tr>
+</table>
+<table border="0">
+<tr><td width="20"><IMG alt=""  src="../../images/data_entry.png"/></td>
+<td width="267"><h2><a name="data_entry_overview">Data</a> Forms</h2></td></tr>
+</table>
+
+<p>Data  forms are used for entering, editing and viewing collection data. Because Specify uses related fields to link information, most data can be entered using the Collection Object form; however it may be useful to enter background information, such as Agents and Collecting Events before entering Collection Objects. </p>
+<p>Access Data forms by clicking the <IMG height="20" src="../../images/data_entry.png" width="20"> (Data ) button. A list of forms will appear in the Sidebar.</p>
+<p>Each discipline has access to a specific set of forms for viewing, entering and editing data. Specify ships with the most frequently used forms listed on the Sidebar. Less common forms are found by clicking <IMG height="32" alt="more forms" src="../../images/more_forms.png" width="32"> (More Forms)  in the sidebar and choosing a form from the pop-up dialog. </p>
+<p>A <strong><a name="data_entry_configure"></a>Side Bar Data Form Configuration</strong>  tool gives access to less frequently used forms and also allows the Sidebar and More Forms lists to be interchanged and rearranged:</p>
+<p>Right-button-click an open section of the sidebar to activate the <IMG height=27 src="../../images/configure_box.png" width=110> button. The Form Configuration tool can also be accessed from the Tabs menu on the Specify 6 menu bar.</p>
+<ul>
+  <li>Use the <IMG height="16" src="../../images/ReorderUp16x16.png" width="16"/>,and <IMG height="16" src="../../images/ReorderDown16x16.png" width="16"/> (reorder) buttons to change 
+  the order in which the forms appear in the Sidebar and More Forms list. 
+  <li>Use the <IMG height="16" src="../../images/Map16x16.png" width="16"/>, and <IMG height="16" src="../../images/Unmap16x16.png" width="16"/> (move) buttons to move a Sidebar 
+  item to the Extra Forms list and vise versa. 
+  <li>Click the<IMG height="16" src="../../images/add.png" width="16"/>(add) 
+  button for a list of additional forms that can be moved into either the 
+  Sidebar or More Forms list. 
+  <li>Click the <IMG height="16" src="../../images/delete.png" width="16"/>(delete) button to remove forms from either the Sidebar or More Forms list; this will put them back into the master list.</li>
+</ul>
+<p>Deleting a form from the More Forms list also removes the represented table from any searches.</p>
+<p>Deleting a form from either the Sidebar or Extra Forms will place it back in the master list which is accessed by the <IMG height="16" alt=add src="../../images/add.png" width="16"/> (add) button.</p>
+<p>&nbsp;</p>
+<h3><u>Unique Data Forms</u></h3>
+<h4><a name="data_entry_trees"></a>Working with Forms and Trees</h4>
+<p>Specify represents Taxon, Geography, Storage, Lithostratigraphy and Chronostratigraphy  data in both trees and  forms.  When entering data using a form, keep in mind that Carry Forward is not available for the Parent field and entering Child Nodes via the tree  can save time and energy.</p>
+<p>When adding, editing or viewing data as a tree users can also access forms for individual nodes by clicking either the edit (<IMG height="16" alt=edit src="../../images/Edit-2-16x16.png" width="16"/>) button or the add (<IMG height="16" alt=add src="../../images/add.png" width="16"/>) button. Trees are not accessible when using the form system. </p>
+<p><em><strong>Note:</strong></em> Tables can not be edited simultaneously in both the Tree and Form mode, or by multiple users. For example, if a user is editing the Taxon Tree and wants to open a Taxon Form it will open as <em>View Only</em>. In addition, if another user tries to open either the Taxon Tree or Taxon Form a dialog will pop-up stating that the Tree is locked and will open in <em>View Only </em>mode.</p>
+<p>&nbsp;</p>
+<p><strong><a name="data_entry_taxon"></a>Taxon Form</strong></p>
+<p>The Taxon form includes fields from the Taxon table such as Name, Parent, Rank, Common Name, Source (of the Taxa), Author (this is often the person that described the particular taxa), synonym information, Child Taxa and Taxon Citations. </p>
+<p>It also includes information for Hybrids by combining the Hybrid Parent 1 field and the Hybrid Parent 2 field.</p>
+<p>&nbsp;</p>
+<h4><a name="data_entry_determinations"></a>Determinations Form</h4>
+<p>The Determinations form includes many fields that may not be immediately recognizable.</p>
+<table width="100%" border="1" cellspacing="2" cellpadding="6">
+  
+  <tr>
+    <td width="150" align="left" valign="top"><div align="left"><u><strong>Field Label</strong></u></div></td>
+    <td align="left" valign="top"><div align="left"><u><strong>Field Usage</strong></u></div></td>
+  </tr>
+  <tr>
+    <td align="left" valign="top"><div align="left"><strong>Preferred Taxon</strong></div></td>
+    <td align="left" valign="top">This is a view only field that represents the preferred name of any synonym entered into the Determined Taxon field.  If a preferred name is entered into the Determined Taxon Name field then this will represent a duplication of that name.</td>
+  </tr>
+  <tr>
+    <td align="left" valign="top"><div align="left"><strong>Current</strong></div></td>
+    <td align="left" valign="top"><p>A check box to indicate whether a given determination is current for this specimen.</p>
+    <p> Current Determination is a Required Field but only one  can exist for each Collection Object. Therefore;  to change the Current Determination one must first open the old Determination and uncheck the Current box. </p></td>
+  </tr>
+  <tr>
+    <td align="left" valign="top"> <div align="left"><strong>Taxon</strong></div></td>
+    <td align="left" valign="top"><p>This field is the determined name of the specimen in question.</p>
+    <p>Names can be chosen from the existing authority file from a Query Combo Box, or added to the Table. Synonymized names are included in the Query Combo Box, but if chosen a prompt will indicate that the name is a synonym and ask which name to use. This prompt can be turned on by choosing <em>Specify &gt; Preferences &gt; Trees</em> on a Macintosh or <em>Edit &gt; Preferences &gt;Trees</em> on Windows or Linux and checking the <em>Prompt to Replace Taxon with Preferred Taxon</em> box.</p>
+    <p>This field operates as an “either/or” condition with Alternate Name; both cannot be entered in a single Determination. </p></td>
+  </tr>
+  <tr>
+    <td align="left" valign="top"><div align="left"><strong>Qualifier</strong></div></td>
+    <td align="left" valign="top">A term to qualify the identification of the taxon name when doubts have arisen as to its identity or as a comparison to a given name (e.g. "cf." or "aff.").</td>
+  </tr>
+  <tr>
+    <td align="left" valign="top"><div align="left"><strong>Addendum</strong></div></td>
+    <td align="left" valign="top">A Pick List suffix element added to the taxon name to indicate a concept or citation for that name. For example; sensu lato. </td>
+  </tr>
+  
+  <tr>
+    <td align="left" valign="top"><div align="left"><strong>Type Status Name</strong></div></td>
+    <td align="left" valign="top">A  pick list of all available type designations; Holotype, Paratype, Neotype. Specify ships with predetermined values which are editable for users.</td>
+  </tr>
+</table>
+<p>Botany and Entomology Taxon forms will also have these two fields:</p>
+<table width="100%" border="1" cellpadding="6" cellspacing="2">
+  
+  <tr>
+    <td align="left" valign="top"><strong>Alternate Name</strong></td>
+    <td align="left" valign="top">A free text field for insertion of a name (scientific or common) not recognized in the taxon tree authority.  This field operates as an “either/or” condition with Preferred Taxon; both cannot be entered in a single Determination. </td>
+  </tr>
+  <tr>
+    <td align="left" valign="top"><div align="left"><strong>Name Usage</strong></div></td>
+    <td align="left" valign="top">User customizable pick list used to describe the context of the name entered into the taxon or Alternate name fields.  Taxon field - if a synonym name is used, it could denote a “shelved by” name.  Alternate name field - could denote the appropriate authority the alternate name was taken from (e.g. Flora of Nebraska).</td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><strong><a name="data_entry_locality"></a>Locality Form</strong></p>
+<p>The Locality form introduces unique latitude and longitude information represented by a set of buttons.</p>
+<ul>
+  <li>Choose a latitude/longitude format from the Combo Box 
+  
+<br><br>
+<table width="350" border="1" cellspacing="2" cellpadding="6">
+  <tr>
+    <td width="250">Decimal/Degrees</td>
+  </tr>
+  <tr>
+    <td>Degrees/Decimal/Minutes</td>
+  </tr>
+  <tr>
+    <td>Degree/Decimal/Seconds</td>
+  </tr>
+</table><br>
+<li>Click the appropriate button(s) to enter the latitude 
+  and longitude information. 
+<br><br>
+<table border="1" cellspacing="2" cellpadding="6">
+  <tr>
+    <td><u><strong>Top Button</strong></u></td>
+    <td><u><strong>Bottom Button</strong></u></td>
+    <td><u><strong>Explanation</strong></u></td>
+  </tr>
+  <tr>
+    <td><div align="center"><IMG height="16" alt="" src="../../images/Point-2-16x16.png" width="16"/></div></td>
+    <td>&nbsp;</td>
+    <td>Single Point</td>
+  </tr>
+  <tr>
+    <td><div align="center"><IMG height="16" alt="" src="../../images/Two-Points-2-Both-16x16.png" width="16"/></div></td>
+    <td>&nbsp;</td>
+    <td><p>Beginning/Ending Point on a Line </p>
+    <p><em><strong>Note:</strong></em> this requires latitude and longitudes for both points</p></td>
+  </tr>
+  <tr>
+    <td><div align="center"></div></td>
+    <td><div align="center"><IMG height="16" src="../../images/LatLonLineLeft16x16.png" width="16"/></div></td>
+    <td>Beginning Point</td>
+  </tr>
+  <tr>
+    <td><div align="center"></div></td>
+    <td><div align="center"><IMG height="16" src="../../images/LatLonLineRight16x16.png" width="16"/></div></td>
+    <td>End Point</td>
+  </tr>
+  <tr>
+    <td><div align="center"><IMG height="16" alt="" src="../../images/Lat-Lon-Both-3-16x16.png" width="16"/></div></td>
+    <td><div align="center"></div></td>
+    <td><p>Beginning/Ending Point on a Bounding Box</p>
+    <p><em><strong>Note:</strong></em> this requires latitude and longitudes for both points</p></td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td><div align="center"><IMG height="16" src="../../images/LatLonRectLeft16x16.png" width="16"/></div></td>
+    <td>Beginning Point</td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td><div align="center"><IMG height="16" src="../../images/LatLonRectRight16x16.png" width="16"/></div></td>
+    <td>End Point</td>
+  </tr>
+</table><br>
+
+  <li>Type the appropriate degrees for latitude and 
+  longitude 
+  <li>Choose either North (N) or South (S) for latitude 
+  <li>Choose either East (E) or West (W) for longitude</li>
+</ul>
+<p>When a lat/long is entered the format is captured and displayed in the (Source) field. This field remains constant when formats are changed, but if the lat/long numbers are changed then the (Source) field will update to the new lat/long entry.</p>
+<p>Specify  does not track versions of the latitude and longitude and does not keep a verbatim field!</p>
+<p>Other data on the Locality form include a Geo Referencing Determination By and Date. These are for documenting how and when a georeference for the Locality occurred. </p>
+<p>One weblink button is available on the Locality form for a quick link to the  GEOLocate service. GEOLocate uses a description of a Locality, and at least two geographic locations to find  Latitude and Longitude coordinate data. This is referred to as georeferencing. When using the United States as a geographic location GEOLocate will not recognize 'United States of America' or 'U.S.A.' GEOLocate prefers 'United States' but can use 'USA'.</p>
+<p>A weblink button to Google Earth is also included on the Locality form. Localities with Latitude and Longitude data can be plotted on Google Earth by simply clicking this button. Google Earth must be installed on your machine for it to work. </p>
+<p>For more information about  GEOLocate or Google Earth plugins please refer to the <A href="../../Plugins/Plugins.html">Plugins</A> documentation.</p>
+<p>&nbsp;</p>
+<h3><a name="collecting_event"></a>Collecting Event / Time and Place</h3>
+<p>One of the important curatorial decisions to be made early on is the use of “Collecting Events” in a collection. This is also named 'Time and Place' on some Data Type forms. A collecting event is described by the date and time of the collection together with collector names and a number associated either with all specimens collected at that date and time or a number associated with each individual specimen.</p>
+<p>In the first case (traditionally used in lot based collections) the number is associated with the Collecting Event itself (and all its associated data) in the form of a Station or Field Number and is thus associated to one or many specimens or collection objects collected at the same time and place by the same collectors e.g. ACB 09-01. The Station or Field number thus describes all specimens or Collection Objects collected at that time and place. There is a many-to-one relationship between specimens, or Collection Object and "Collecting Events". In this instance, the Collecting Event form is usually expressed as a Query Combo Box on the Collection Object form so that, using the lookup option of this field type, the same collecting event can be used (based on the Station/Field Number) for entering information for multiple specimens without having to enter it over and over each time. The data displayed within the Query Combo Box is then formatted using the Schema Localizer to display a textual string representing the different data elements of the Collecting Event (Field Number, Date, Geography and Locality information). The lookup function of the Query Combo Box will also display this format to aid in selecting the correct Collecting Event for subsequent specimens. </p>
+<p>In the alternate case (used by all other disciplines) the number is associated with each individual specimen or Collection Object in the form of a Collector number - a unique number given to every specimen collected and usually including the Collectors acronym e.g. ACB 12345, while the remaining data is still bound to the Collecting Event table. There is a one-to-one relationship between specimens and "Collecting Events". In this instance the Collector number would be a field on the Collection Object form and all other fields would be associated with the Collecting Event which would not include a Station/Field Number and would be expressed as an embedded sub form on the Collection Object form and would not be able to be reused for subsequent specimens. </p>
+<p>Disciplines traditionally use one or the other of these two methods. </p>
+<p>This decision should be made before data is entered, uploaded, or migrated into your database by our staff. For our convenience in setting up forms for evaluation, we have set defaults for collection types and Specify ships with all Disciplines except Ichthyology using Collection Event as a one-to-one relationship.  If the default form does not represent the way you process collections, and you are unable to change the setting after following the instructions, you should contact us for setup instructions, rather than altering your workflow or introducing a new process or number. </p>
+<p>If forms are changed from a one-to-one relationship to a one-to-many relationship the checkbox for 'Add Collecting Even Automatically' on the Collection form (<em>System &gt; System Setup &gt; Configuration</em>) will need to be unchecked after importing the new form.</p>
+<p>&nbsp;</p>
+<p><strong><a name="data_entry_agent"></a>Agent Form</strong></p>
+<p>An Agent is not limited to single individuals. The <em>Agent Type</em> field on the Agent form allows an agent to be the following:</p>
+<table width="100%" border="1" cellspacing="2" cellpadding="6">
+  
+  <tr>
+    <td width="23%"><div align="center"><u><strong>Agent Type</strong></u></div></td>
+    <td width="77%"><div align="center"><u><strong>Usage</strong></u></div></td>
+  </tr>
+  <tr>
+    <td><div align="center"><strong>Person</strong></div></td>
+    <td>This is an individual with field options of first, middle and last name, abbreviation, email and multiple addresses and attachments. </td>
+  </tr>
+  <tr>
+    <td><div align="center"><strong>Organization</strong></div></td>
+    <td>This is often an Institution with name, abbreviation, email and multiple addresses and attachments.</td>
+  </tr>
+  <tr>
+    <td><div align="center"><strong>Group </strong></div></td>
+    <td>Using a group option allows multiple agents to be associated with one name entity. This type of Agent includes name, abbreviation, email and links to individual Agents that are a part of the group. This option is useful when it is necessary to search by the group name.</td>
+  </tr>
+  <tr>
+    <td><div align="center"><strong>Other</strong></div></td>
+    <td>Other is used when the other three options do not apply. Name and attachments are the only fields for this agent type.</td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<p>It is also important to note that Agents are shared throughout a Discipline. In other words, if a Discipline has two collections (A and B) and collection A creates an Agent,  Collection B will also have access to that agent.</p>
+<p>&nbsp;</p>
+<h4><a name="data_entry_preparations"></a>Preparation Form</h4>
+<p>It is important to note that the <strong>Is on loan</strong> checkbox is for display purposes only. This information is updated when a loan is created or edited.</p>
+<p>The Preparation Type field is a Pick List. To edit the Pick List choose <em>System &gt; Collection Setup &gt; Configuration</em> and click on the <em>Pick List</em> button in the Side Bar.</p>
+<p>&nbsp;</p>
+<h3><strong><u><a name="data_entry_attachments"></a>Attachments</u></strong><u> Form</u></h3>
+<h4>Add Attachment</h4>
+<p>Many tables in Specify 6 allow  Attachments. Specify copies the attached file to the specified Attachment path. To create or alter the Attachment path, go to:</p>
+<ul>
+  <li>For Mac: <em>Specify &gt; Preferences &gt; System &gt; Attachment Storage Location. </em>
+  <li>For PC and Linux: Choose <em>Edit &gt; Preferences &gt; System &gt; Attachment Storage Location</em>.</li>
+</ul>
+<p><em><strong>Note:</strong></em> if the attached file is an image, Specify also creates and stores an icon for the image in the Attachment Storage Location.</p>
+<p>If a path does not exist or Specify is not able to connect to the path the Attachment button will become disabled on the forms.</p>
+<p>Accepted Attachment files include:</p>
+<ul>
+  <li>text 
+  <li>audio 
+  <li>binary 
+  <li>pdf 
+  <li>image 
+    
+  (jpg, png, gif)
+  <li>html 
+  <li>spreadsheet</li>
+</ul>
+<p>Attach files to a record by clicking the Attachment button (<IMG height="20" alt="" src="../../images/collection_object_attachment.png" width=34>) on the form. An Attachment sub form will open.</p>
+<ol>
+  <li>Click the <IMG height="16" src="../../images/add.png" width="16"/> (add) 
+  button. 
+  <li>Click the Browse button and use the file system 
+  dialog to find the path to the file. 
+  <li>Type a name in the Title text box. Specify will use 
+  the file name as a default title if this box is left blank. 
+  <li>Click the Accept button. 
+  <li>Click the <IMG height="16" alt="" src="../../images/add.png" width="16"/> (add) button to add another attachment, or click Done to close the sub form. </li>
+</ol>
+<p><em><strong>Note:</strong></em> If a table does not have an attachment button<span>, i</span>t does not accept attachments.</p>
+<p>&nbsp;</p>
+<h4>View/Edit Attachment</h4>
+<p>Once Attachments have been saved to a record they can be viewed/edited  in  form, grid, or icon mode. Each mode allows different functions.</p>
+<p>Choose a mode by clicking the <IMG height="16" src="../../images/Down16x16.png" width="16"/>(expand) button and selecting a mode. </p>
+<p><IMG height="20" src="../../images/form_editor20x20.png" width="20"> Form Mode </p>
+<ul>
+  <li>Use the Navigation Control to view each Attachment. 
+  <li>Click the<IMG height="16" src="../../images/add.png" width="16"/> (add) 
+  button to add an Attachment. 
+  <li>Click the <IMG height="16" src="../../images/delete.png" width="16"/> (delete) button to delete an 
+  Attachment. 
+  <li>Click the Browse button to change an Attachment path. 
+
+  <li>Edit the Title of an Attachment in the Title text box.</li>
+</ul>
+<p>&nbsp;</p>
+<p><IMG height="20" src="../../images/icon_view.png" width="20"> Icon Mode</p>
+<ul>
+  <li>Click the<IMG height="16" alt=add src="../../images/add.png" width="16"/> (add) button to add an Attachment. 
+  <li>Click the <IMG height="16" alt=delete src="../../images/delete.png" width="16"/> (delete) button to delete an 
+  Attachment. 
+  <li>Click the <IMG height="16" alt=edit src="../../images/Edit-2-16x16.png" width="16"/> (edit) button to edit the 
+  Attachment path in the Form Mode. 
+  <li>Double Click the Attachment button to open the Attachment in its native application.</li>
+</ul>
+<p>&nbsp;</p>
+<p><IMG height="20" src="../../images/grid_editor_20x20.png" width="20"> Grid Mode </p>
+<ul>
+  <li>Click the<IMG height="16" alt=add src="../../images/add.png" width="16"/> (add) button to add an Attachment. 
+  <li>Click the <IMG height="16" alt=delete src="../../images/delete.png" width="16"/> (delete) button to delete an 
+  Attachment. 
+  <li>Click the <IMG height="16" src="../../images/Edit-2-16x16.png" width="16"/> (edit) button to edit the 
+  Attachment path in the Form Mode. 
+  <li>Click the <IMG height="16" src="../../images/ReorderUp16x16.png" width="16"/> <IMG height="16" src="../../images/ReorderDown16x16.png" width="16"/> (reorder) buttons to reorder the Attachments.</li>
+</ul>
+<p>&nbsp;</p>
+
+
+
+</body>
+</html>

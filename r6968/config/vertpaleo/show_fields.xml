@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tables>
+	<table name="Accession">
+		<field name="timestampModified"/>
+	</table>
+	<table name="CollectionObject">
+		<field name="timestampModified"/>
+	</table>
+	<table name="Deaccession">
+		<field name="timestampModified"/>
+	</table>
+	<table name="Determination">
+		<field name="yesNo1"/>
+	</table>
+
+	<!--  ****The datamodel does not distinguish between determination and determination table.
+	<table name="Determination">
+		<field name="yesNo1"/>
+	</table>-->
+
+	<table name="PaleoContext">
+		<field name="text1"/>
+	</table>
+</tables>

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<prefs i18nresname="preferences">
+    <section title="ui">
+        <!--
+            <pref title="ui" icon="Data_Entry" panelClass="edu.ku.brc.af.prefs.UIPrefsPanel"/>
+        -->
+        <pref name="FORMATTING" title="FORMATTING" icon="Formatting"   panelClass="edu.ku.brc.specify.prefs.FormattingPrefsPanel">
+            <defperm name="Manager"       perm="true,true,true,true"/>
+            <defperm name="FullAccess"    perm="true,true,true,true"/>
+            <defperm name="LimitedAccess" perm="true,true,true,true"/>
+            <defperm name="Guest"         perm="true,true,true,true"/>
+        </pref>
+        <pref name="SYSTEM" title="SYSTEM" icon="SystemSetup"  panelClass="edu.ku.brc.specify.prefs.SystemPrefs">
+            <defperm name="Manager"       perm="true,true,true,true"/>
+            <defperm name="FullAccess"    perm="true,true,true,true"/>
+            <defperm name="LimitedAccess" perm="false,false,false,false"/>
+            <defperm name="Guest"         perm="false,false,false,false"/>
+        </pref>
+        <pref name="TREE" title="TREE" icon="TreePref"  panelClass="edu.ku.brc.specify.prefs.TreePrefs">
+            <defperm name="Manager"       perm="true,true,true,true"/>
+            <defperm name="FullAccess"    perm="true,true,true,true"/>
+            <defperm name="LimitedAccess" perm="false,false,false,false"/>
+            <defperm name="Guest"         perm="false,false,false,false"/>
+        </pref>
+     </section>
+    
+    <section title="settings">
+        <pref name="EMAIL" title="EMAIL" icon="EMail" panelClass="edu.ku.brc.specify.prefs.EMailPrefsPanel">
+            <defperm name="Manager"       perm="true,true,true,true"/>
+            <defperm name="FullAccess"    perm="true,true,true,true"/>
+            <defperm name="LimitedAccess" perm="true,true,true,true"/>
+            <defperm name="Guest"         perm="false,false,false,false"/>
+        </pref>
+        
+        <pref name="MISC" title="MISC" icon="Taskbar" panelClass="edu.ku.brc.specify.prefs.MiscPrefsPanel">
+            <defperm name="Manager"       perm="true,true,true,true"/>
+            <defperm name="FullAccess"    perm="true,true,true,true"/>
+            <defperm name="LimitedAccess" perm="true,true,true,true"/>
+            <defperm name="Guest"         perm="false,false,false,false"/>
+        </pref>
+    </section>
+       
+    <section title="GOOGLE_EARTH">
+        <pref name="GOOGLE_EARTH" title="GOOGLE_EARTH" icon="GoogleEarth" panelClass="edu.ku.brc.af.prefs.GenericPrefsPanel" viewsetname="Preferences" viewname="GoogleEarth" help="PrefsGoogleEarth">
+            <defperm name="Manager"       perm="true,true,true,true"/>
+            <defperm name="FullAccess"    perm="true,true,true,true"/>
+            <defperm name="LimitedAccess" perm="true,true,true,true"/>
+            <defperm name="Guest"         perm="false,false,false,false"/>
+        </pref>
+    </section>
+   
+    <section title="MySQL">
+        <pref name="MYSQL" title="MYSQL" icon="MySQL" panelClass="edu.ku.brc.specify.prefs.MySQLPrefs" viewsetname="Preferences" viewname="MySQLBckRstrOptions" help="PrefsMySQLBkRs">
+            <defperm name="Manager"       perm="true,true,true,true"/>
+            <defperm name="FullAccess"    perm="false,false,false,false"/>
+            <defperm name="LimitedAccess" perm="false,false,false,false"/>
+            <defperm name="Guest"         perm="false,false,false,false"/>
+        </pref>
+    </section>
+    
+    <section title="Login">
+        <pref name="LOGIN" title="LOGIN" icon="Login" panelClass="edu.ku.brc.specify.prefs.LoginPrefs" viewsetname="Preferences" viewname="LoginPrefs" help="PrefsLogin">
+            <defperm name="Manager"       perm="true,true,true,true"/>
+            <defperm name="FullAccess"    perm="true,true,true,true"/>
+            <defperm name="LimitedAccess" perm="true,true,true,true"/>
+            <defperm name="Guest"         perm="false,false,false,false"/>
+        </pref>
+    </section>
+    
+    <section title="Loans">
+        <pref name="LOANS" title="LOANS" icon="Loan" panelClass="edu.ku.brc.specify.prefs.LoansPrefsPanel" viewsetname="Preferences" viewname="LoansPrefs" help="PrefsLogin">
+            <defperm name="Manager"       perm="true,true,true,true"/>
+            <defperm name="FullAccess"    perm="true,true,true,true"/>
+            <defperm name="LimitedAccess" perm="true,true,true,true"/>
+            <defperm name="Guest"         perm="false,false,false,false"/>
+        </pref>
+    </section>
+    
+</prefs>

@@ -1,0 +1,232 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<link href="../../main.css" rel="stylesheet" type="text/css" media="screen" />
+<title>Adding Institutional Levels</title>
+<style type="text/css">
+<!--
+.style1 {color: #990066}
+.style2 {color: #000000; }
+.style3 {	color: #990033
+}
+-->
+</style>
+</head>
+
+<body bgcolor="#ffffff">
+<table width="100%" border="0" background="../../images/topbar.png">
+  <tr>
+    <td>&nbsp;</td>
+  </tr>
+</table>
+<h2><a name="institution_levels" id="institution_levels"></a>Adding Institutional Levels</h2>
+<p> The Specify data management levels mimic  the common levels of hierarchy within institutions. Access to information and Specify tools are then set at the various levels both within the application itself and through the User Permissions.</p>
+<ul>
+  <li>Institution</li>
+  <ul>
+    <li>Division</li>
+    <ul>
+      <li>Discipline</li>
+      <ul>
+        <li>Collection</li>
+        <ul>
+          <li>Users</li>
+        </ul>
+      </ul>
+    </ul>
+  </ul>
+  </ul>
+<p>The   Divisions, Disciplines and Collections for each institution are added and edited in the System Configuration module of Specify; <em>System &gt; Collection Setup &gt; Configuration</em>. All tabs need to be closed before opening the Configuration. This tool is available to Administrators only.</p>
+<p>Collections information in Specify 6 databases is also organized at these institution levels to meet requirements for data integrity and data sharing among collections. Some data elements are commonly shared among all collections within an institution, while others are shared only among collections in the same taxonomic discipline, i.e. &quot;at the Discipline level&quot; in Specify. Before creating the institution levels it is imperative that an administrator also understand the data that is held at each level to create the correct setup. </p>
+<p>When using a database that was created using the Wizard any additional Division levels should be added first, then Discipline and then Collection. Each  is added at the level above it. For instance, Divisions are added within the Institution form. </p>
+<p>&nbsp;</p>
+<h3><a name="edit_institution" id="edit_institution"></a>Edit Institution</h3>
+<p><a name="security_on" id="security_on"></a>Information for the Institution is edited in the Configuration tool. Security can be turned on or off on the Institution form by checking the box <em>Is Security On</em>. The status of security is shown on the status bar with an icon; <img src="../../images/security_on_20.png" width="20" height="20" /> (security on), or <img src="../../images/security_off_20.png" width="20" height="20" /> (security off).</p>
+<p>Editing  a Division and Discipline is accomplished on the Discipline form. A Collection can be edited either on the Discipline form or Collection form.</p>
+<p>&nbsp;</p>
+<h4><strong><a name="add_division" id="add_division"></a>Add  Divisions</strong></h4>
+<p>Click the <img src="../../images/institution_16.png" width="16" height="16" /> <em>Institution</em> button on the side bar to edit the Institution or add a Division.</p>
+<p>At least one Division should appear in the Division sub form. </p>
+<p>Click the <img src="../../images/add.png" width="16" height="16" /> (add) button to add a Division.</p>
+<p><strong>Name</strong> is the only required field and is used in any lists of Divisions within Specify as well as in the Institution Hierarchy.</p>
+<p><strong>Abbreviation</strong> refers to an existing abbreviation for the Division.</p>
+<p><strong>Alt Name</strong> provides another field for name. This is often useful when a particular Division has changed names or uses a longer name than is applicable to the Hierarchy list. </p>
+<p><strong>URI</strong> stands for Uniform Resource Identifier and refers to a  resource on the internet (a Division web site).</p>
+<p><strong>Icon URI</strong> This is a field for ABCD field. This is the path to an icon on the website that could be downloaded by another institution and displayed on their website to indicate a partnership.</p>
+<p>&nbsp;</p>
+<h4><strong><a name="add_discipline" id="add_discipline"></a> Add Disciplines</strong></h4>
+<p>Click the <img src="../../images/division_16.png" width="16" height="16" /> <em>Division</em> button on the side bar to edit a Division or add a Discipline.</p>
+<p>The Division form includes information for each of the existing Divisions. The new Discipline will be added in the Division that is currently displayed in the work space. Use the navigation control at the bottom of the window to step to the  Division that will include the new Discipline. </p>
+<p align="center"><img src="../../images/next_bar.png" width="174" height="25" /></p>
+<p align="center" class="imgcaption">Navigation Control</p>
+<p>In the Discipline sub form click the <img src="../../images/add.png" width="16" height="16" /> (add) button to add a Discipline. </p>
+<p>It is important to note that Specify will require users to shut down and reopen the application after adding a Discipline. </p>
+<p>A Discipline Wizard will walk you through adding not only a Discipline, but a Collection within the Discipline as well as Taxon and Geography Tree Definitions and nodes (names of Taxa and Geographical locations) and Catalog and Accession number. Each of these windows is explained below.</p>
+<p>&nbsp;</p>
+<p align="center" class="style1"><img src="../../images/window9.png" width="432" height="362" /></p>
+<p align="center" class="imgcaption">Add a Discipline </p>
+<p align="left"><strong><u>Discipline</u></strong></p>
+<p align="left">Choose a taxonomic <strong>Discipline Type</strong> from the drop-down menu. Specify uses this information to load the correct default data entry Forms, Trees and schema (tables and fields) within Specify.</p>
+<p align="left">The <strong>Name</strong> will display within Specify and can be anything you wish. It can be queried and used in reports. It can also be edited from within Specify.</p>
+<p align="center"><img src="../../images/window10.png" width="432" height="362" /></p>
+<p align="center" class="imgcaption">Create a Tree Definition for the Taxon tree</p>
+<p align="left">This table will create the tree definition for the Taxon tree. The Taxon tree operates at the Discipline level and can be used by all Collections within the Discipline you created in the last window. </p>
+<ul>
+  <li>The <strong>Rank</strong> is the tree level. This name can be edited from within Specify. Click the Include box to place the rank in the tree. </li>
+  <br />
+  <li><strong>Include</strong> places the Level in the tree definition. Levels that are not included can not be Enforced or added to the Full Name.</li>
+  <br />
+  <li><strong align="left">Is Required</strong> is not editable, but an indication of the tree ranks that are required by the Specify system. These are automatically added to the tree and can not be deleted.</li>
+  <br />
+  <li><strong align="left">Is Enforced</strong> ensures that the rank can not be skipped when placing lower nodes on the tree.</li>
+  <br />
+  <li><strong align="left">Is in Full Name</strong> will use the rank when displaying the full name for any associated Collection Objects (which appears in the Taxon Full Name field of the taxon table). The Full Name is also displayed in the Preferred Taxon field on the Determinations form and is useful when  running queries and reports when the full name is desired. Create the full name by checking the desired boxes.<br />
+      <u><br />
+        At least one rank for Full Name must be checked before the <em>Next</em> button will become enabled.<br />
+      </u><br />
+    Once the full name is configured and data is added in the tree the full name configuration is not editable.<br />
+  </li>
+  <br />
+  <li><strong align="left">Separator</strong> refers to the character that separates the ranks when displaying the full name. This can be a comma (,) or a space. To make the separator a space simply double click the comma and hit your spacebar one time.</li>
+  <br />
+  <li><strong align="left">Full Name Order</strong> will reverse the full name as shown in the <strong>Full Name Example</strong>.</li>
+</ul>
+<p align="center"><img src="../../images/window11.png" width="432" height="362" /></p>
+<p align="center" class="imgcaption">Load Taxonanomic authority file</p>
+<p>The Specify Discipline Wizard not only defines the Taxon tree but optionally also loads an authority file for your Discipline. <span class="style2">This authority file was created using data from the </span> Catalog of Life Project. If you choose to load the data into your tree when you open Specify and choose the <em>Tree</em> tab from the task bar, and Taxon tree from your side bar you will see a Taxon tree  with hundreds of taxon nodes included. Then, when adding Collection Objects into your database you can simply choose a taxa from the Taxon field rather than adding each individually as needed.</p>
+<p>&nbsp;</p>
+<p align="center"><img src="../../images/window12.png" width="432" height="362" /></p>
+<p align="center" class="imgcaption">Add Geographical authority file</p>
+<p align="left"> The Geography tree operates at the Discipline level and  is used by all Collections within the Discipline. </p>
+<ul>
+  <li>The <strong>Rank</strong> is the tree level. This name can be edited from within Specify. Click the Include box to place the rank in the tree. </li>
+  <br />
+  <li><strong>Include</strong> places the Level in the tree definition. Levels that are not included can not be Enforced or added to the Full Name.</li>
+  <br />
+  <li><strong align="left">Is Required</strong> is not editable, but an indication of the tree ranks that are required by the Specify system. These are automatically added to the tree and can not be deleted.</li>
+  <br />
+  <li><strong align="left">Is Enforced</strong> ensures that the rank can not be skipped when placing lower nodes on the tree.</li>
+  <br />
+  <li><strong align="left">Is in Full Name </strong>is a field in the Specify database and can be queried and used in reports. Create the full name by checking the desired boxes.<br />
+      <br />
+      <u>At least one rank for Full Name must be checked before the <em>Next</em> button will become enabled.</u><br />
+      <br />
+    Once the full name is configured and data is added in the tree the full name configuration is not editable.<br />
+    <br />
+  </li>
+  <br />
+  <li><strong align="left">Separator</strong> refers to the character that separates the ranks when displaying the full name. This can be a comma (,) or a space. To make the separator a space simply double click the comma and hit your spacebar one time.</li>
+  <br />
+  <li><strong align="left">Full Name Order</strong> will reverse the full name as shown in the <strong>Full Name Example</strong>. </li>
+  <br />
+</ul>
+<p class="style2">The Wizard will automatically load data for the Geography tree, including Continents, Countries, and States throughout the world as well as Counties within the United States. Data for the Geography tree was  converted from the Getty Thesaurus of Geographic Names.</p>
+<p align="center" class="style2"><img src="../../images/window13.png" width="432" height="362" /></p>
+<p align="center" class="imgcaption">Add a Collection</p>
+<p align="left"><u><strong><a name="wizard_collection" id="wizard_collection2"></a>Collection</strong></u><strong> </strong></p>
+<p align="left">Enter the <strong>Name</strong> and internationally recognized Collection <strong>Code</strong> to create a Collection within the Discipline.  This is the name that will appear within Specify on the Collection form and can be queried and used in reports. This name will also appear in the list of collections when users change collections, so it should be an easily recognizable name; i.e. <em>Fish Wet</em>. </p>
+<p align="left">The Code should be your standard collections community assigned code for your collection. This Code will be used in data export and web interfaces in upcoming releases of Specify.</p>
+<p align="left">&nbsp;</p>
+<p align="center"><img src="../../images/window14.png" width="432" height="362" /></p>
+<p align="center" class="imgcaption">Catalog Number format</p>
+<p>Specify is able to accept data for  collection objects or observations without assigning a Catalog Number. But when Catalog Numbers are used, they must be unique for each lot, specimen or observation.  Many collections routinely assign catalog numbers to  incoming specimens, perhaps as part of the accessioning process. These numbers may require a format with specific sections for data such as Institution Code and year or they may simply use an incrementing number.</p>
+<p>Catalog Numbers can either be unique to each Collection, shared by several or be used throughout the Institution. The Catalog Number chosen at this time will not affect where it is used relative to other Collections, this will be configured from within the Specify application.</p>
+<p>Collections that do not use a specific format for their Catalog Number may choose 'None' and the Catalog Number will remain a text field on the forms where it appears. </p>
+<p>Several formats are also available within this drop-down menu list:</p>
+<p><strong>CatalogNumber</strong> (2009-######) The year will appear automatically in the first section (2009) of the format, and can also be manually edited. The '###' section of the format is a number that is six digits in length and automatically incremented when Auto Numbering is turned on in Specify and manually entered when Auto Numbering is turned off. These two sections are separated by a dash.</p>
+<p><strong>CatalogNumberAlphaNumByYear</strong> (2009-######) The year will appear automatically in the first section (2009) of the format, and can also be manually edited. The '###' section of the format is a number that is six digits in length and automatically incremented when Auto Numbering is turned on in Specify and manually entered when Auto Numbering is turned off. These two sections are separated by a dash.</p>
+<p><strong>CatalogNumberNumeric</strong> (#########) This is a nine digit number that is automatically incremented when Auto Numbering is turned on in Specify and manually entered when Auto Numbering is turned off.</p>
+<p><strong>CatalogNumberString</strong> (XXXXXXXXXX) This is a ten digit string that can include numbers, alphabet or characters.</p>
+<p>Specific information for each of these predefined formats can also be found on the window. </p>
+<ul>
+  <li><strong>Is Numeric</strong> will display a 'yes' if the format is numeric.</li>
+  <br/>
+  <li><strong>Pattern</strong> displays the pattern used to create each format (these are explained in further detail above).</li>
+  <br/>
+  <li><strong>Is Auto Incremented</strong> displays a 'yes' if the format is automatically incremented.</li>
+</ul>
+<p>To create your own format choose 'Create'. This will open the Field Formatting Editor. Click <a href="../Security/Field_Format_Editor.html">HERE</a> for the Field Formatting Editor help page. </p>
+<p align="center"><img src="../../images/window5.png" width="432" height="362" /></p>
+<p align="center" class="imgcaption">Acccession Number format </p>
+<p align="left"><strong><em>Note:</em></strong> If you chose to manage your Accessions at the institutional level you will NOT see this window.</p>
+<p align="left">Accession Numbers may require a format or may simply use a number. Choose None to leave the Accession Number as a text field on the Accession form. </p>
+<p align="left">Several formats are offered in the drop-down menu list:</p>
+<p align="left"><strong>AccessionNumber</strong> (2009-AA-###) The year will appear automatically in the first section (2009) of the format, and can also be manually edited. The 'AA' section of the format is alphanumeric and accepts both characters <em>a</em> through <em>z</em> and numbers.  The '###' section of the format is a number that is automatically incremented when Auto Numbering is turned on in Specify and manually entered when Auto Numbering is turned off. This format offers two alphanumeric characters and three incremented numbers. </p>
+<p align="left"><strong>AccessionNumberByYear</strong> (2009-AA-AAA) The year will appear automatically in the first section (2009) of the format, and can also be manually edited. The 'A' sections of the format are alphanumeric and accept both characters <em>a</em> through <em>z</em> and numbers. This format offers two alphanumeric sections, the first is two characters in length and the second is three characters in length.</p>
+<p align="left"><strong>AccessionStringFormatter</strong> (AAAAAA) This is a single alphanumeric format that accepts characters <em>a</em> through <em>z</em> and numbers. The Accession number would be seven characters in length.</p>
+<p>Specific information for each of these predefined formats can also be found on the window. <br/>
+</p>
+<ul>
+  <li><strong>Pattern</strong> displays the pattern used to create each format (these are explained in further detail above).</li>
+  <br/>
+  <li><strong>Is Auto Incremented</strong> displays a 'yes' if the format is automatically incremented.</li>
+</ul>
+<p align="left">To create your own format choose 'Create'. This will open the Field Formatting Editor. Please click <a href="../Security/Field_Format_Editor.html">HERE</a> to open a help page for the Field Formatting Editor. </p>
+<p align="center"><img src="../../images/discipline_summary.png" width="433" height="371" /></p>
+<p align="center" class="imgcaption">Sumary Window</p>
+<p align="left">Congratulations! You have finished the Specify Collection Wizard. This last screen displays all the data that has been created using the information provided in the preceding windows. If  edits are required simply click the <em>Back</em> button until the desired window displays and re-enter the information.</p>
+<div align="left" class="style3"></div>
+<p>&nbsp;</p>
+<p><strong><a name="add_collection" id="add_collection"></a>Add Collections</strong></p>
+<p> Click the <img src="../../images/discipline_16.png" width="16" height="16" /> <em>Discipline</em> button on the side bar to edit a Discipline or add a Collection.</p>
+<p>The Discipline information will appear at the top of the form with a Collections sub form underneath. The new Collection will be added in the Discipline that is currently displayed in the Workspace. Use the navigation control at the bottom of the window to step to the  desired Discipline before adding the new Collection.</p>
+<p align="center"><img src="../../images/next_bar.png" width="174" height="25" /></p>
+<p align="center" class="imgcaption">Navigation Control</p>
+<p>Click the<img src="../../images/add.png" width="16" height="16" />(add) button to add a Collection. </p>
+<p>It is important to note that Specify will require users to shut down and reopen the application after adding a Collection. </p>
+<p>A Collection Wizard will step you through the process of adding a collection as well as a Catalog Number format and Accession format (if applicable).</p>
+<p>&nbsp;</p>
+<p align="center" class="style2"><img src="../../images/window13.png" width="432" height="362" /></p>
+<p align="center" class="imgcaption">Add a Collection</p>
+<p align="left"><u><strong><a name="wizard_collection" id="wizard_collection"></a>Collection</strong></u><strong> </strong></p>
+<p align="left">Enter the <strong>Name</strong> and internationally recognized Collection <strong>Code</strong> to create a Collection within the Discipline.  This is the name that will appear within Specify on the Collection form and can be queried and used in reports. </p>
+<p align="left">The Code should be your standard collections community assigned code for your collection. This Code will be used in data export and web interfaces in upcoming releases of Specify.</p>
+<p align="left">&nbsp;</p>
+<p align="center"><img src="../../images/window14.png" width="432" height="362" /></p>
+<p align="center" class="imgcaption">Catalog Number format</p>
+<p>Specify is able to accept data for  collection objects or observations without assigning a Catalog Number. But when Catalog Numbers are used, they must be unique for each lot, specimen or observation.  Many collections routinely assign catalog numbers to  incoming specimens, perhaps as part of the accessioning process. These numbers may require a format with specific sections for data such as Institution Code and year or they may simply use an incrementing number.</p>
+<p>Catalog Numbers can either be unique to each Collection, shared by several or be used throughout the Institution. The Catalog Number chosen at this time will not affect where it is used relative to other Collections, this will be configured from within the Specify application. The Catalog Number format for this collection can not be edited once it is chosen.</p>
+<p>Several formats are also available within this drop-down menu list:</p>
+<p><strong>CatalogNumber</strong> (2009-######) The year will appear automatically in the first section (2009) of the format, and can also be manually edited. The '###' section of the format is a number that is six digits in length and automatically incremented when Auto Numbering is turned on in Specify and manually entered when Auto Numbering is turned off. These two sections are separated by a dash.</p>
+<p><strong>CatalogNumberAlphaNumByYear</strong> (2009-######) The year will appear automatically in the first section (2009) of the format, and can also be manually edited. The '###' section of the format is a number that is six digits in length and automatically incremented when Auto Numbering is turned on in Specify and manually entered when Auto Numbering is turned off. These two sections are separated by a dash.</p>
+<p><strong>CatalogNumberNumeric</strong> (#########) This is a nine digit number that is automatically incremented when Auto Numbering is turned on in Specify and manually entered when Auto Numbering is turned off.</p>
+<p><strong>CatalogNumberString</strong> (XXXXXXXXXX) This is a ten digit string that can include numbers, alphabet or characters.</p>
+<p>Specific information for each of these predefined formats can also be found on the window. </p>
+<ul>
+  <li><strong>Is Numeric</strong> will display a 'yes' if the format is numeric.</li>
+  <br/>
+  <li><strong>Pattern</strong> displays the pattern used to create each format (these are explained in further detail above).</li>
+  <br/>
+  <li><strong>Is Auto Incremented</strong> displays a 'yes' if the format is automatically incremented.</li>
+</ul>
+<p>Collections that do not use one specific format for their Catalog Number may wish to choose CatalogNumberString from the list, this will allow any format to be entered. </p>
+<p>To create your own format choose 'Create'. This will open the Field Formatting Editor. Please click <a href="../Security/Field_Format_Editor.html">HERE</a> to open a help page for the Field Formatting Editor. </p>
+<p align="center"><img src="../../images/window5.png" width="432" height="362" /></p>
+<p align="center" class="imgcaption">Acccession Number format </p>
+<p align="left"><strong><em>Note:</em></strong> If you chose to manage your Accessions at the institutional level you will NOT see this window.</p>
+<p align="left">Accession Numbers may require a format or may simply use a number. Choose None to leave the Accession Number as a text field on the Accession form. Accession Number formats are not editable once data has been entered in the database.</p>
+<p align="left">Several formats are offered in the drop-down menu list:</p>
+<p align="left"><strong>AccessionNumber</strong> (2009-AA-###) The year will appear automatically in the first section (2009) of the format, and can also be manually edited. The 'AA' section of the format is alphanumeric and accepts both characters <em>a</em> through <em>z</em> and numbers.  The ### section of the format is a number that is automatically incremented when Auto Numbering is turned on in Specify and manually entered when Auto Numbering is turned off. This format offers two alphanumeric characters and three incremented numbers. </p>
+<p align="left"><strong>AccessionNumberByYear</strong> (2009-AA-AAA) The year will appear automatically in the first section (2009) of the format, and can also be manually edited. The 'A' sections of the format are alphanumeric and accept both characters <em>a</em> through <em>z</em> and numbers. This format offers two alphanumeric sections, the first is two characters in length and the second is three characters in length.</p>
+<p align="left"><strong>AccessionStringFormatter</strong> (AAAAAA) This is a single alphanumeric format that accepts characters <em>a</em> through <em>z</em> and numbers. The Accession number would be seven characters in length.</p>
+<ul>
+  <li><strong>Is Numeric</strong> will display a 'yes' if the format is numeric.</li>
+  <br/>
+  <li><strong>Pattern</strong> displays the pattern used to create each format (these are explained in further detail above).</li>
+  <br/>
+  <li><strong>Is Auto Incremented</strong> displays a 'yes' if the format is automatically incremented.</li>
+</ul>
+<p align="left">To create your own format choose 'Create'. This will open the Field Formatting Editor. Please click <a href="../Security/Field_Format_Editor.html">HERE</a> to open a help page for the Field Formatting Editor. </p>
+<p align="center"><img src="../../images/collection_summary.png" width="433" height="371" /></p>
+<p align="center" class="imgcaption">Sumary Window</p>
+<p align="left">Congratulations! You have finished the Specify Collection Wizard. This last screen displays all the data that has been created using the information provided in the preceding windows. If  edits are required simply click the <em>Back</em> button until the desired window displays and re-enter the information.</p>
+<p>&nbsp;</p>
+<p><u>Collection Form</u></p>
+<p>Collections can be edited on the Collection form found by clicking the <em>Collection</em> button on the Configuration side bar.</p>
+<p>The <strong>Collection Name</strong> will be used on any Specify Collection lists as well as in the Institution Hierarchy. </p>
+<p><strong>Add Collecting Event Automatically</strong> creates a new, unique Collecting Event record for each Collection Object. This is required for Collections that include a one-to-one relationship between their Collecting Event and Collection Object on their Collection Object form. When using the default Specify forms all Collections except those in an Ichthyology Discipline will need to check this box.</p>
+<p><strong>ABCD Schema Fields</strong> is a sub form for adding this information to the Collection.</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+</body>
+</html>

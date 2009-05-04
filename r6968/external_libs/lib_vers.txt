@@ -1,0 +1,9 @@
+hibernate-tools-3.1.0.alpha5
+-----------------------------
+hibernate-tools.jar
+hibernateconsole.jar
+
+-----------------------------
+velocity-1.4.jar
+velocity-dep-1.4.jar
+velocity-tools-generic-1.1.jar

@@ -1,0 +1,62 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<link href="../../main.css" rel="stylesheet" type="text/css" media="screen" />
+<title>MySQL Preferences</title>
+</head>
+
+<BODY BGCOLOR=#ffffff>
+<table width="100%" border="0" background="../../images/topbar.png">
+  <tr>
+    <td valign="top">&nbsp;</td>
+  </tr>
+</table>
+<table border="0">
+<tr><td width="32"><img src="../../images/mysql_logo.png" alt=""/></td>
+<td width="267"><h2>MySQL Preferences</h2></td></tr>
+</table>
+<ul>
+  <li>For Mac: Choose<em> Specify &gt; Preferences &gt; MySQL. </em> </li>
+  <li>For Windows and Linux: Choose <em>Edit &gt; Preferences &gt; MySQL</em>.</li>
+</ul>
+<p>Set MySQL information for the backup and restore function. These paths should only be edited by the MySQL administrator.</p>
+<table width="100%" border="0" cellspacing="2" cellpadding="6">
+  <tr>
+    <td width="22%" align="left" valign="top"><div align="left"><u><strong>MySQL Preference</strong></u></div></td>
+    <td width="45%" align="left" valign="top"><div align="left"><u><strong>Result</strong></u></div></td>
+    <td width="33%" align="left" valign="top"><div align="left"><u><strong>Action</strong></u></div></td>
+  </tr>
+  <tr>
+    <td align="left" valign="top"><div align="center" class="MichaelsChanges">
+      <div align="left"><strong>mysqldump</strong></div>
+    </div></td>
+    <td align="left" valign="top">Points Specify to the needed mysqldump (mysqldump.exe on Windows) file for backup purposes. This path will point to a server when accessing Specify from a server, and be local when Specify is run locally.</td>
+    <td align="left" valign="top">Click on the browse button and find the path to the command-line tools for MySQL.</td>
+  </tr>
+  <tr>
+    <td align="left" valign="top"><div align="center" class="MichaelsChanges">
+      <div align="left"><strong>mysql</strong></div>
+    </div></td>
+    <td align="left" valign="top">Points Specify to the needed mysql (mysql.exe on Windows) file for backup purposes.This path will point to a server when accessing Specify from a server, and be local when Specify is run locally.</td>
+    <td align="left" valign="top">Click on the browse button and find the path to the command-line tools for MySQL.</td>
+  </tr>
+  <tr>
+    <td align="left" valign="top"><div align="left"><strong>Backup Location</strong></div></td>
+    <td align="left" valign="top">Specify will write the backup file in the chosen location.</td>
+    <td align="left" valign="top">Click on the browse button and choose a path for backup file(s).</td>
+  </tr>
+  <tr>
+    <td align="left" valign="top"><div align="left"><strong>Backup (button)</strong></div></td>
+    <td align="left" valign="top">The entire database will be backed up to the specified location.</td>
+    <td align="left" valign="top">Click the <em>Backup</em> button.</td>
+  </tr>
+</table>
+<p>The Backup function will back up the entire database; for this reason it requires  a high-level permission to use. In other words, if an institution uses one database for all collection<span class="MichaelsChanges">s in all disciplines, t</span>he backup function will backup all collections. This will be a huge file, and the backup function should be  implemented by a MySQL administrator. </p>
+<p>If collections within the museum maintain their own databases then the backup will be collection-specific. </p>
+<p>To Restore from a backup run the <a href="../restore/backup_restore.html">BackupAndRestore</a> Specify application found in the Specify Bin directory. </p>
+<p>Specify automatically checks for backups every 7 and 30 days. If a backup file is not found Specify gives a prompt to allow or decline a backup. </p>
+<p><em><strong>Note:</strong></em> Specify automatically includes the default MySQL locations for Mac OS X and Linux in the MySQL Preference text boxes, but MySQL locations for Windows  are user-specified and therefore will <span class="MichaelsChanges">need to be provided.</span></p>
+<h2>&nbsp;</h2>
+<p>&nbsp;</p>
+</BODY>
+</html>
