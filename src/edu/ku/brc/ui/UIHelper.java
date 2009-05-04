@@ -2220,7 +2220,19 @@ public final class UIHelper
      * 
      * @param table the table to fix up
      */
-    public static void calcColumnWidths(JTable table)
+    public static void calcColumnWidths(final JTable table)
+    {
+        calcColumnWidths(table, 10);
+    }
+    
+    /**
+     * Calculates and sets the each column to it preferred size.  NOTE: This
+     * method also sets the table height to 10 rows.
+     * 
+     * @param table the table to fix up
+     * @param numRowsHeight the number of rows to make the table height (or null not to set it)
+     */
+    public static void calcColumnWidths(final JTable table, final Integer numRowsHeight)
     {
         JTableHeader header = table.getTableHeader();
 
@@ -2290,7 +2302,10 @@ public final class UIHelper
         Dimension size = table.getPreferredScrollableViewportSize();
         //if (totalWidth > size.width)
         {
-            size.height = Math.min(size.height, table.getRowHeight()*10);
+            if (numRowsHeight != null)
+            {
+                size.height = Math.min(size.height, table.getRowHeight() * numRowsHeight);
+            }
             size.width  = totalWidth;
             table.setPreferredScrollableViewportSize(size);
         }

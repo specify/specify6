@@ -26,8 +26,10 @@ import static edu.ku.brc.specify.conversion.BasicSQLUtils.deleteAllRecordsFromTa
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.getFieldMetaDataFromSchema;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.getFieldNamesFromSchema;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.getStrValue;
+import static edu.ku.brc.ui.UIRegistry.showError;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -64,7 +66,6 @@ import edu.ku.brc.af.ui.db.PickListItemIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.dbsupport.AttributeIFace;
-import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
@@ -147,10 +148,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     protected static Timestamp                              now                    = new Timestamp(System .currentTimeMillis());
     protected static String                                 nowStr                 = dateTimeFormatter.format(now);
 
-    protected String                                        oldDriver              = "";
     protected String                                        oldDBName              = "";
-    protected String                                        oldUserName            = "";
-    protected String                                        oldPassword            = "";
+    protected String                                        newDBName              = "";
 
     protected IdMapperMgr                                   idMapperMgr;
 
@@ -197,10 +196,15 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     // edu.ku.brc.specify.datamodel.Division
     // edu.ku.brc.specify.datamodel.Institution
     protected int                                           globalIdNumber         = 1;
+    
+    protected ConversionLogger                              convLogger = new ConversionLogger();
 
+    /**
+     * 
+     */
     public GenericDBConversion()
     {
-        // no op
+        convLogger.initialize("logs");
     }
 
     /**
@@ -211,21 +215,17 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
      * @param oldUserName old user name
      * @param oldPassword old password
      */
-    public GenericDBConversion(final String oldDriver, 
+    public GenericDBConversion(final Connection oldDBConn, 
+                               final Connection newDBConn,
                                final String oldDBName,
-                               final String connectionStr, 
-                               final String oldUserName, 
-                               final String oldPassword)
+                               final String newDBName)
     {
-        this.oldDriver = oldDriver;
-        this.oldDBName = oldDBName;
-        this.oldUserName = oldUserName;
-        this.oldPassword = oldPassword;
+        this.oldDBConn = oldDBConn;
+        this.newDBConn = newDBConn;
+        
+        convLogger.initialize("logs");
+        
         this.idMapperMgr = IdMapperMgr.getInstance();
-
-        DBConnection oldDB = DBConnection.createInstance(oldDriver, null, oldDBName, connectionStr, oldUserName, oldPassword);
-        oldDBConn = oldDB.createConnection();
-        newDBConn = DBConnection.getInstance().createConnection();
         
         //                      0        1     2     3     4     5    6      7     8     9    10    11   12    13   
         int[]     objTypes  = {10,      14,   17,   18,   15,   9,    12,   13,   16,   19,    0,   0,    0,    0,  };
@@ -582,14 +582,14 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         // }
 
         // Meg had to added conditional for Current field
-        String oldDetermination_Current = "[Current]";
+        String oldDetermination_Current      = "Current";
         String oldDetermination_CurrentValue = "1";
 
-        if (BasicSQLUtils.mySourceServerType == BasicSQLUtils.SERVERTYPE.MySQL)
+        /*if (BasicSQLUtils.mySourceServerType == BasicSQLUtils.SERVERTYPE.MySQL)
         {
             oldDetermination_Current = "IsCurrent";
             oldDetermination_CurrentValue = "-1";
-        }
+        }*/
         // Map all the CollectionObject to its TaxonomyType
         // Meg had to add taxonname.TaxonomyTypeID to the GroupBy clause for SQL Server, ugh.
         // IdHashMapper idHashMapper = idMapperMgr.addHashMapper("ColObjCatToTaxonType", "Select
@@ -1187,7 +1187,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         String oldStratigraphy_Group_FieldName         = "Group";
         String oldBorrowReturnMaterial_Date_FieldName  = "Date";
 
-        if (BasicSQLUtils.mySourceServerType == BasicSQLUtils.SERVERTYPE.MySQL)
+        /*if (BasicSQLUtils.mySourceServerType == BasicSQLUtils.SERVERTYPE.MySQL)
         {
             oldDeaccession_Date_FieldName           = "Date1";
             oldRefWork_Date_FieldName               = "Date1";
@@ -1198,7 +1198,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             oldCollectors_Order_FieldName           = "Order1";
             oldGroupPersons_Order_FieldName         = "Order1";
             oldStratigraphy_Group_FieldName         = "Group1";
-        }
+        }*/
 
         // This maps old column names to new column names, they must be in pairs
         // Ths Table Name is the "TO Table" name
@@ -1258,11 +1258,19 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         BasicSQLUtils.addToValueMapper("DisciplineID",       disciplineValueMapper);
         BasicSQLUtils.addToValueMapper("IsPrimary",          isPrimaryValueMapper);
         BasicSQLUtils.addToValueMapper("SrcLatLongUnit",     srcLatLongUnitValueMapper);
+        
+        ConversionLogger.TableWriter tblWriter = null;
+        try
+        {
+            tblWriter = convLogger.getWriter("CopyTable.html", "Copy Tables");
+        } catch (IOException ex) { ex.printStackTrace(); }
 
         for (String tableName : tablesToMoveOver)
         {
             String fromTableName = tableName.toLowerCase(); 
-            String toTableName = fromTableName;
+            String toTableName   = fromTableName;
+            
+            tblWriter.log("From ["+fromTableName+"]["+toTableName+"]");
 
             BasicSQLUtils.setOneToOneIDHash(null);
 
@@ -1459,7 +1467,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             if (!copyTable(oldDBConn, newDBConn, fromTableName, toTableName, tableMaps.get(toTableName), 
                            null, BasicSQLUtils.mySourceServerType, BasicSQLUtils.myDestinationServerType))
             {
-                log.error("Table [" + tableName + "] didn't copy correctly.");
+                String msg = "Table [" + tableName + "] didn't copy correctly.";
+                log.error(msg);
+                tblWriter.logError(msg);
                 break;
 
             }
@@ -1468,6 +1478,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             tblStats.collectStats();
         }
         BasicSQLUtils.setShowErrors(BasicSQLUtils.SHOW_ALL);
+        
+        tblWriter.close();
     }
 
     /**
@@ -1484,11 +1496,11 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     protected String[] getCollectionObjectAttributeMappings()
     {
         String oldBiologicalObjectAttribute_Condition_FieldName = "Condition";
-        if (BasicSQLUtils.mySourceServerType == BasicSQLUtils.SERVERTYPE.MySQL)
-        {
-            oldBiologicalObjectAttribute_Condition_FieldName = "Condition1";// TODO change when get
-                                                                            // new MySQL dumps, Meg
-        }
+        //if (BasicSQLUtils.mySourceServerType == BasicSQLUtils.SERVERTYPE.MySQL)
+        //{
+        //    oldBiologicalObjectAttribute_Condition_FieldName = "Condition1";// TODO change when get
+        //                                                                    // new MySQL dumps, Meg
+        //}
 
         return new String[] {
                 "CollectionObjectAttributeID",
@@ -1573,18 +1585,23 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         };
     }
 
+    /**
+     * @return
+     */
     protected String[] getHabitatAttributeToIgnore()
     {
         return new String[] { "HabitatTypeId", };
     }
 
+    /**
+     * @return
+     */
     protected String[] getHabitatAttributeMappings()
     {
         String oldHabitatAttribute_Current_FieldName = "Current";
         if (BasicSQLUtils.mySourceServerType == BasicSQLUtils.SERVERTYPE.MySQL)
         {
-            oldHabitatAttribute_Current_FieldName = "IsCurrent";// TODO change when get new MySQL
-                                                                // dumps, Meg
+            //oldHabitatAttribute_Current_FieldName = "IsCurrent";// TODO change when get new MySQL
         }
         return new String[] { "HabitatAttributeID", "HabitatID", "Number9", "airTempC",
                 "Number10", "waterTempC", "Number11", "WaterpH", "Text12", "turbidity", "Text16",
@@ -1675,7 +1692,10 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         if (checkName(new String[] { "Anthro" }, collectionObjTypeName)) { return "Anthropology"; }
 
         if (checkName(new String[] { "Fungi" }, collectionObjTypeName)) { return "Fungi"; }
-        log.error("****** Unable to Map [" + collectionObjTypeName + "] to a standard DataType.");
+        
+        String msg = "****** Unable to Map [" + collectionObjTypeName + "] to a standard DataType.";
+        log.error(msg);
+        showError(msg);
 
         return null;
     }
@@ -1704,7 +1724,10 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         if (checkName(new String[] { "Anthro" }, name)) { return "anthropology"; }
 
         if (checkName(new String[] { "Fungi" }, name)) { return "fungi"; }
-        log.error("****** Unable to Map Name[" + name + "] to a DisciplineType type.");
+        
+        String msg = "****** Unable to Map Name[" + name + "] to a DisciplineType type.";
+        log.error(msg);
+        showError(msg);
 
         return null;
     }
@@ -1773,6 +1796,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         {
             e.printStackTrace();
             log.error(e);
+            showError(e.getMessage());
             throw new RuntimeException(e);
         }
         return dataTypeId;
@@ -2004,6 +2028,11 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             
             boolean isEmbeddedCE = false;
 
+            ConversionLogger.TableWriter tblWriter = null;
+            try
+            {
+                tblWriter = convLogger.getWriter("convertCollectionObjectDefs.html", "Convert Collection Object Defs");
+            } catch (IOException ex) { ex.printStackTrace(); }
             
             while (rs.next())
             {
@@ -2014,17 +2043,23 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 String disciplineName = getStandardDisciplineName(taxonomyTypeName);
                 if (disciplineName == null)
                 {
-                    log.error("**** Had to Skip record because taxonomyTypeName couldn't be found in our DisciplineType lookup in SpecifyAppContextMgr["+ taxonomyTypeName + "]");
+                    String msg = "**** Had to Skip record because taxonomyTypeName couldn't be found in our DisciplineType lookup in SpecifyAppContextMgr["+ taxonomyTypeName + "]";
+                    log.error(msg);
+                    tblWriter.logError(msg);
                     continue;
                 }
 
                 DisciplineType disciplineType = DisciplineType.getDiscipline(disciplineName);
                 if (disciplineType == null)
                 {
-                    log.error("**** disciplineType couldn't be found in our DisciplineType lookup in SpecifyAppContextMgr["+ disciplineName + "]");
+                    String msg = "**** disciplineType couldn't be found in our DisciplineType lookup in SpecifyAppContextMgr["+ disciplineName + "]";
+                    log.error(msg);
+                    tblWriter.logError(msg);
                     continue;
                 }
-                log.info("Creating a new Discipline for taxonomyTypeName[" + taxonomyTypeName + "] disciplineType[" + disciplineName + "]");
+                String msg = "Creating a new Discipline for taxonomyTypeName[" + taxonomyTypeName + "] disciplineType[" + disciplineName + "]";
+                log.info(msg);
+                tblWriter.log(msg);
                 
                 DisciplineType.STD_DISCIPLINES dspType = disciplineType.getDisciplineType();
                 
@@ -2039,7 +2074,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 int dataTypeId = createDataType(taxonomyTypeName);
                 if (dataTypeId == -1)
                 {
-                    log.error("**** Had to Skip record because of DataType mapping error[" + taxonomyTypeName + "]");
+                    msg = "**** Had to Skip record because of DataType mapping error[" + taxonomyTypeName + "]";
+                    log.error(msg);
+                    tblWriter.logError(msg);
                     continue;
                 }
 
@@ -2109,12 +2146,17 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
                 newColObjIDTotaxonomyTypeID.put(disciplineID, taxonomyTypeID);
 
-                log.info("Created new discipline[" + taxonomyTypeName + "] is dataType ["  + dataTypeId + "]");
+                msg = "Created new discipline[" + taxonomyTypeName + "] is dataType ["  + dataTypeId + "]";
+                log.info(msg);
+                tblWriter.log(msg);
             }
 
             rs.close();
             stmt.close();
-            log.info("Discipline Records: " + recordCnt);
+            
+            String msg = "Discipline Records: " + recordCnt;
+            log.info(msg);
+            tblWriter.log(msg);
 
             if (taxonomyTypeMapper.size() > 0)
             {
@@ -2147,7 +2189,10 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     String newSeriesName = seriesName + " " + taxTypeName;
                     if (seriesNameHash.get(newSeriesName) != null)
                     {
-                        log.error("Rebuilt Collection Name [" + newSeriesName + "] is not unique.");
+                        msg = "Rebuilt Collection Name [" + newSeriesName + "] is not unique.";
+                        log.error(msg);
+                        tblWriter.logError(msg);
+
                     } else
                     {
                         seriesNameHash.put(seriesName, true);
@@ -2268,13 +2313,20 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                         prefixHash.put(hashKey, prefix);
                     }
 
-                    log.info("Collection New[" + newCatSeriesID + "] [" + seriesName + "] [" + prefix + "] [" + newColObjdefID + "]");
+                    msg = "Collection New[" + newCatSeriesID + "] [" + seriesName + "] [" + prefix + "] [" + newColObjdefID + "]";
+                    log.info(msg);
+                    tblWriter.log(msg);
 
                     recordCnt++;
 
                 } // while
 
-                log.info("Collection Join Records: " + recordCnt);
+                msg = "Collection Join Records: " + recordCnt;
+                log.info(msg);
+                tblWriter.log(msg);
+
+                tblWriter.close();
+                
                 rs.close();
                 stmt.close();
                 
@@ -2287,7 +2339,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         {
             e.printStackTrace();
             log.error(e);
-            throw new RuntimeException(e);
+            showError(e.toString());
+            System.exit(0);
         }
         
         return false;
@@ -2319,6 +2372,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         } catch (SQLException ex)
         {
             ex.printStackTrace();
+            showError(ex.getMessage());
         }
     }
 
@@ -3296,11 +3350,11 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         String oldDetermination_Current = "Current";
         String oldDetermination_Date    = "Date";
 
-        if (BasicSQLUtils.mySourceServerType == BasicSQLUtils.SERVERTYPE.MySQL)
+        /*if (BasicSQLUtils.mySourceServerType == BasicSQLUtils.SERVERTYPE.MySQL)
         {
             oldDetermination_Date     = "Date1";
             oldDetermination_Current = "IsCurrent";
-        }
+        }*/
 
         Map<String, String> colNewToOldMap = createFieldNameMap(new String[] {
                 "CollectionObjectID", "BiologicalObjectID", // meg is this right?
@@ -4090,11 +4144,11 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         String oldDetermination_Current = "Current";
         String oldDetermination_Date    = "Date";
 
-        if (BasicSQLUtils.mySourceServerType == BasicSQLUtils.SERVERTYPE.MySQL)
+        /*if (BasicSQLUtils.mySourceServerType == BasicSQLUtils.SERVERTYPE.MySQL)
         {
             oldDetermination_Date     = "Date1";
             oldDetermination_Current = "IsCurrent";
-        }
+        }*/
 
         Map<String, String> colNewToOldMap = createFieldNameMap(new String[] {
                 "CollectionObjectID", "BiologicalObjectID", // meg is this right?
@@ -4177,11 +4231,12 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             Pair<String, String> datePair = new Pair<String, String>();
             
             int lastEditedByInx = oldNameIndex.get("LastEditedBy") + 1;
-            Integer detDateInx  = oldNameIndex.get("Date1") + 1;
+            Integer detDateInx  = oldNameIndex.get("Date1");
             if (detDateInx == null)
             {
-                detDateInx = oldNameIndex.get("Date") + 1;
+                detDateInx = oldNameIndex.get("Date");
             }
+            detDateInx++;
             
             int count = 0;
             do
@@ -4529,7 +4584,16 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             fieldsToSkipHash.put(fName, "X");
         }
 
-        log.info("colObjTaxonMapper: " + colObjTaxonMapper.size());
+        ConversionLogger.TableWriter tblWriter = null;
+        try
+        {
+            tblWriter = convLogger.getWriter("convertCollectionObjects.html", "Convert Collection Objects");
+        } catch (IOException ex) { ex.printStackTrace(); }
+
+        String msg = "colObjTaxonMapper: " + colObjTaxonMapper.size();
+        log.info(msg);
+        tblWriter.log(msg);
+        
         BasicSQLUtils.setIdentityInsertONCommandForSQLServer(newDBConn, "collectionobject", BasicSQLUtils.myDestinationServerType);
 
         deleteAllRecordsFromTable(newDBConn, "collectionobject", BasicSQLUtils.myDestinationServerType); // automatically closes the connection
@@ -4618,7 +4682,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             int catNumInx      = oldNameIndex.get("CatalogNumber") + 1;
             int catDateInx     = oldNameIndex.get("CatalogedDate") + 1;
             
-            int     grpPrmtViewInx = -1;
+            int     grpPrmtViewInx    = -1;
             Integer grpPrmtViewInxObj = oldNameIndex.get("GroupPermittedToView");
             if (grpPrmtViewInxObj != null)
             {
@@ -4641,6 +4705,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                         + "where collectionobjectcatalog.CollectionObjectCatalogID = "
                         + rs.getInt(1);
                 // log.info(catIdTaxIdStr);
+                
                 ResultSet rs2 = stmt2.executeQuery(catIdTaxIdStr);
                 rs2.first();
                 Integer catalogSeriesID = rs2.getInt(2);
@@ -4651,7 +4716,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
                 if (newCatSeriesId == null)
                 {
-                    log.error("Can't find " + catalogSeriesID + "_" + taxonomyTypeID);
+                    msg = "Can't find " + catalogSeriesID + "_" + taxonomyTypeID;
+                    log.info(msg);
+                    tblWriter.logError(msg);
                     continue;
                 }
 
@@ -4714,7 +4781,10 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                         
                         if (newColObjId == null)
                         {
-                            throw new RuntimeException("Couldn't find new ColObj Id for old ["+oldColObjId+"]");
+                            msg = "Couldn't find new ColObj Id for old ["+oldColObjId+"]";
+                            tblWriter.logError(msg);
+                            showError(msg);
+                            throw new RuntimeException(msg);
                         }
                         
                         colObjId = getStrValue(newColObjId);
@@ -4724,7 +4794,22 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                         {
                             catalogNumber = rs.getString(catNumInx);
                             
-                            catalogNumber = "\"" + ZEROES.substring(catalogNumber.length()) + catalogNumber + "\"";
+                            if (catalogNumber != null)
+                            {
+                                if (catalogNumber.length() > 0 && catalogNumber.length() < ZEROES.length())
+                                {
+                                    catalogNumber = "\"" + ZEROES.substring(catalogNumber.length()) + catalogNumber + "\"";
+                                    
+                                } else if (catalogNumber.length() > ZEROES.length())
+                                {
+                                    showError("Catalog Number["+catalogNumber+"] is too long for formatter of 9");
+                                }
+                                
+                            } else
+                            {
+                                log.debug("Empty catalog number.");
+                                showError("Empty catalog number.");
+                            }
 
                         } else
                         {
@@ -4737,7 +4822,10 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                         if (subNumber < 0)
                         {
                             skipRecord = true;
-                            log.error("Collection Object is being skipped because SubNumber is less than zero CatalogNumber["+ catalogNumber + "]");
+                            msg = "Collection Object is being skipped because SubNumber is less than zero CatalogNumber["+ catalogNumber + "]";
+                            log.error(msg);
+                            tblWriter.logError(msg);
+                            showError(msg);
                             break;
                         }
 
@@ -4841,9 +4929,11 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                         Integer index = oldNameIndex.get(newFieldName);
                         if (index == null)
                         {
-                            String msg = "Couldn't find new field name[" + newFieldName + "] in old field name in index Map";
-                            System.err.println(msg);
+                            msg = "Couldn't find new field name[" + newFieldName + "] in old field name in index Map";
                             log.error(msg);
+                            tblWriter.logError(msg);
+                            showError(msg);
+                            
                             // for (String key : oldNameIndex.keySet())
                             // {
                             // log.info("["+key+"]["+oldNameIndex.get(key)+"]");
@@ -4858,18 +4948,6 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                             int idInx = newFieldName.lastIndexOf("ID");
                             if (idMapperMgr != null && idInx > -1)
                             {
-                                // log.debug(newFieldName+" "+(index.intValue()+1)+"
-                                // "+rs.getInt(index+1));
-                                /*if (catalogNumber.equals("000023421"))
-                                {
-                                    log.debug(newFieldName);
-                                    if (newFieldName.equals("CatalogerID"))
-                                    {
-                                        int x= 0;
-                                        x++;
-                                    }
-                                }*/
-
                                 IdMapperIFace idMapper = idMapperMgr.get(tableName, newFieldName);
                                 if (idMapper != null)
                                 {
@@ -4877,11 +4955,16 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                                     data = idMapper.get(origValue);
                                     if (data == null)
                                     {
-                                        log.error("No value ["+origValue+"] in map  [" + tableName + "][" + newFieldName + "]");
+                                        msg = "No value ["+origValue+"] in map  [" + tableName + "][" + newFieldName + "]";
+                                        log.error(msg);
+                                        //showError(msg);
                                     }
                                 } else
                                 {
-                                    log.error("No Map for [" + tableName + "][" + newFieldName + "]");
+                                    msg = "No Map for [" + tableName + "][" + newFieldName + "]";
+                                    log.error(msg);
+                                    tblWriter.logError(msg);
+                                    //showError(msg);
                                 }
                             }
                         }
@@ -4934,6 +5017,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                         log.error("SQL: " + str.toString());
                         e.printStackTrace();
                         log.error(e);
+                        showError(e.getMessage());
                         rs.close();
                         stmt.close();
                         throw new RuntimeException(e);
@@ -4957,14 +5041,20 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             }
             rs.close();
             stmt.close();
+            
         } catch (SQLException e)
         {
             BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer(newDBConn, "collectionobject", BasicSQLUtils.myDestinationServerType);
             e.printStackTrace();
             log.error(e);
+            tblWriter.logError(e.getMessage());
+            showError(e.getMessage());
             throw new RuntimeException(e);
         }
         BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer(newDBConn, "collectionobject", BasicSQLUtils.myDestinationServerType);
+        
+        tblWriter.close();
+        
         return true;
     }
 
@@ -4995,6 +5085,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     {
         BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer(newDBConn, "determination", BasicSQLUtils.myDestinationServerType);
         BasicSQLUtils.setIdentityInsertONCommandForSQLServer(newDBConn, "loanpreparation", BasicSQLUtils.myDestinationServerType);
+        
         deleteAllRecordsFromTable(newDBConn, "loanpreparation", BasicSQLUtils.myDestinationServerType); // automatically closes the connection
 
         if (BasicSQLUtils.getNumRecords(oldDBConn, "loanphysicalobject") == 0)
@@ -5002,18 +5093,15 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer(newDBConn, "loanpreparation", BasicSQLUtils.myDestinationServerType);
             return true;
         }
+        
+        ConversionLogger.TableWriter tblWriter = null;
+        try
+        {
+            tblWriter = convLogger.getWriter("convertLoanPreparations.html", "Convert Loan Preps");
+        } catch (IOException ex) { ex.printStackTrace(); }
 
         try
         {
-            // MEG ADDED????
-            // Map all the Physical IDs
-            /*IdTableMapper idMapper2 = idMapperMgr.addTableMapper("preparation", "PreparationID");
-            if (shouldCreateMapTables)
-            {
-                idMapper2
-                        .mapAllIds("select CollectionObjectID from collectionobject Where not (collectionobject.DerivedFromID Is Null) order by CollectionObjectID");
-            }*/
-
             Map<String, String> colNewToOldMap = createFieldNameMap(new String[] { "PreparationID", "PhysicalObjectID"});
 
             Statement     stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
@@ -5021,14 +5109,14 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
             List<String> oldFieldNames = new ArrayList<String>();
 
-            StringBuilder sql = new StringBuilder("SELECT ");
-            List<String> names = new ArrayList<String>();
+            StringBuilder sql   = new StringBuilder("SELECT ");
+            List<String>  names = new ArrayList<String>();
             getFieldNamesFromSchema(oldDBConn, "loanphysicalobject", names, BasicSQLUtils.mySourceServerType);
 
             sql.append(buildSelectFieldList(names, "loanphysicalobject"));
             oldFieldNames.addAll(names);
 
-            sql.append(" FROM loanphysicalobject");
+            sql.append(" FROM loanphysicalobject INNER JOIN loan ON loanphysicalobject.LoanID = loan.LoanID WHERE loan.Category = 0");
 
             log.info(sql);
 
@@ -5050,7 +5138,6 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             int quantityIndex         = oldNameIndex.get("Quantity") + 1;
             int quantityReturnedIndex = oldNameIndex.get("QuantityReturned") + 1;
             int lastEditedByInx       = oldNameIndex.get("LastEditedBy") + 1;
-            // int quantityResolvedIndex = oldNameIndex.get("QuantityResolved") + 1;
 
             log.info(sqlStr);
             ResultSet rs = stmt.executeQuery(sqlStr);
@@ -5081,11 +5168,10 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             int count = 0;
             do
             {
-                int quantity = getIntValue(rs, quantityIndex);
+                int quantity         = getIntValue(rs, quantityIndex);
                 int quantityReturned = getIntValue(rs, quantityReturnedIndex);
-                // int quantityResolved = getIntValue(rs, quantityResolvedIndex);
-                Boolean isResolved = quantityReturned == quantity;
-                String lastEditedBy = rs.getString(lastEditedByInx);
+                Boolean isResolved   = quantityReturned == quantity;
+                String lastEditedBy  = rs.getString(lastEditedByInx);
 
                 str.setLength(0);
                 StringBuffer fieldList = new StringBuffer();
@@ -5139,6 +5225,262 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
                     } else
                     {
+                        Integer index            = null;
+                        String  oldMappedColName = colNewToOldMap.get(newFieldName);
+                        if (oldMappedColName != null)
+                        {
+                            index = oldNameIndex.get(oldMappedColName);
+
+                        } else
+                        {
+                            index = oldNameIndex.get(newFieldName);
+                            oldMappedColName = newFieldName;
+                        }
+
+                        if (index == null)
+                        {
+                            String msg = "Couldn't find new field name[" + newFieldName + "] in old field name in index Map";
+                            log.error(msg);
+                            stmt.close();
+                            tblWriter.logError(msg);
+                            showError(msg);
+                            throw new RuntimeException(msg);
+                        }
+                        
+                        Object data = rs.getObject(index + 1);
+                        if (data != null)
+                        {
+                            int idInx = newFieldName.lastIndexOf("ID");
+                            if (idMapperMgr != null && idInx > -1)
+                            {
+                                IdMapperIFace idMapper = idMapperMgr.get(tableName, oldMappedColName);
+                                if (idMapper != null)
+                                {
+                                    data = idMapper.get(rs.getInt(index + 1));
+                                } else
+                                {
+                                    log.error("No Map for [" + tableName + "][" + oldMappedColName + "]");
+                                }
+                            }
+                        }
+                        str.append(getStrValue(data, newFieldMetaData.get(i).getType()));
+                    }
+                }
+                str.append(")");
+
+                if (hasFrame)
+                {
+                    if (count % 100 == 0)
+                    {
+                        setProcess(count);
+                    }
+
+                } else
+                {
+                    if (count % 2000 == 0)
+                    {
+                        log.info("LoanPreparation Records: " + count);
+                    }
+                }
+
+                try
+                {
+                    Statement updateStatement = newDBConn.createStatement();
+                    if (BasicSQLUtils.myDestinationServerType != BasicSQLUtils.SERVERTYPE.MS_SQLServer)
+                    {
+                        BasicSQLUtils.removeForeignKeyConstraints(newDBConn, BasicSQLUtils.myDestinationServerType);
+                    }
+                    // log.debug("executring: " + str.toString());
+                    // updateStatement.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
+                    updateStatement.executeUpdate(str.toString());
+                    updateStatement.clearBatch();
+                    updateStatement.close();
+                    updateStatement = null;
+
+                } catch (SQLException e)
+                {
+                    log.error("Count: " + count);
+                    e.printStackTrace();
+                    log.error(e);
+                    rs.close();
+                    stmt.close();
+                    throw new RuntimeException(e);
+                }
+
+                count++;
+                // if (count > 10) break;
+            } while (rs.next());
+
+            if (hasFrame)
+            {
+                setProcess(count);
+                log.info("Processed LoanPreparation " + count + " records.");
+            } else
+            {
+                log.info("Processed LoanPreparation " + count + " records.");
+            }
+            rs.close();
+
+            stmt.close();
+
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+            log.error(e);
+            BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer(newDBConn, "LoanPreparation", BasicSQLUtils.myDestinationServerType);
+            throw new RuntimeException(e);
+        }
+        log.info("Done processing LoanPhysicalObject");
+        BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer(newDBConn, "LoanPreparation", BasicSQLUtils.myDestinationServerType);
+        
+        tblWriter.close();
+        
+        return true;
+
+    }
+
+
+    /**
+     * Converts all the LoanPhysicalObjects.
+     * @return true if no errors
+     */
+    public boolean convertGiftPreparations()
+    {
+        BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer(newDBConn, "determination", BasicSQLUtils.myDestinationServerType);
+        BasicSQLUtils.setIdentityInsertONCommandForSQLServer(newDBConn, "giftpreparation", BasicSQLUtils.myDestinationServerType);
+        
+        deleteAllRecordsFromTable(newDBConn, "giftpreparation", BasicSQLUtils.myDestinationServerType); // automatically closes the connection
+
+        if (BasicSQLUtils.getNumRecords(oldDBConn, "loanphysicalobject") == 0)
+        {
+            BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer(newDBConn, "giftpreparation", BasicSQLUtils.myDestinationServerType);
+            return true;
+        }
+        
+        ConversionLogger.TableWriter tblWriter = null;
+        try
+        {
+            tblWriter = convLogger.getWriter("convertGiftPreparations.html", "Convert Gift Preps");
+        } catch (IOException ex) { ex.printStackTrace(); }
+
+        try
+        {
+            Map<String, String> colNewToOldMap = createFieldNameMap(new String[] { "PreparationID", "PhysicalObjectID"});
+
+            Statement     stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            StringBuilder str  = new StringBuilder();
+
+            List<String> oldFieldNames = new ArrayList<String>();
+
+            StringBuilder sql = new StringBuilder("SELECT ");
+            List<String> names = new ArrayList<String>();
+            getFieldNamesFromSchema(oldDBConn, "loanphysicalobject", names, BasicSQLUtils.mySourceServerType);
+
+            sql.append(buildSelectFieldList(names, "loanphysicalobject"));
+            oldFieldNames.addAll(names);
+
+            sql.append(" FROM loanphysicalobject INNER JOIN loan ON loanphysicalobject.LoanID = loan.LoanID WHERE loan.Category = 1");
+
+            log.info(sql);
+
+            List<BasicSQLUtils.FieldMetaData> newFieldMetaData = new ArrayList<BasicSQLUtils.FieldMetaData>();
+            getFieldMetaDataFromSchema(newDBConn, "giftpreparation", newFieldMetaData, BasicSQLUtils.myDestinationServerType);
+
+            log.info("Number of Fields in New giftpreparation " + newFieldMetaData.size());
+            String sqlStr = sql.toString();
+
+            Map<String, Integer> oldNameIndex = new Hashtable<String, Integer>();
+            int inx = 0;
+            for (String name : oldFieldNames)
+            {
+                oldNameIndex.put(name, inx++);
+            }
+
+            String tableName = "loanphysicalobject";
+
+            int quantityIndex         = oldNameIndex.get("Quantity") + 1;
+            int lastEditedByInx       = oldNameIndex.get("LastEditedBy") + 1;
+
+            log.info(sqlStr);
+            ResultSet rs = stmt.executeQuery(sqlStr);
+
+            if (hasFrame)
+            {
+                if (rs.last())
+                {
+                    setProcess(0, rs.getRow());
+                    rs.first();
+
+                } else
+                {
+                    rs.close();
+                    stmt.close();
+                    return true;
+                }
+            } else
+            {
+                if (!rs.first())
+                {
+                    rs.close();
+                    stmt.close();
+                    return true;
+                }
+            }
+
+            int count = 0;
+            do
+            {
+                int quantity         = getIntValue(rs, quantityIndex);
+                String lastEditedBy  = rs.getString(lastEditedByInx);
+
+                str.setLength(0);
+                StringBuffer fieldList = new StringBuffer();
+                fieldList.append("( ");
+                for (int i = 0; i < newFieldMetaData.size(); i++)
+                {
+                    if ((i > 0) && (i < newFieldMetaData.size()))
+                    {
+                        fieldList.append(", ");
+                    }
+                    String newFieldName = newFieldMetaData.get(i).getName();
+                    fieldList.append(newFieldName + " ");
+                }
+                fieldList.append(")");
+                str.append("INSERT INTO giftpreparation " + fieldList + " VALUES (");
+                for (int i = 0; i < newFieldMetaData.size(); i++)
+                {
+                    if (i > 0)
+                        str.append(", ");
+
+                    String newFieldName = newFieldMetaData.get(i).getName();
+
+                    if (i == 0)
+                    {
+                        Integer recId = count + 1;
+                        str.append(getStrValue(recId));
+
+                    } else if (newFieldName.equals("ReceivedComments"))
+                    {
+                        str.append("NULL");
+
+                    } else if (newFieldName.equalsIgnoreCase("Version"))
+                    {
+                        str.append("0");
+
+                    } else if (newFieldName.equalsIgnoreCase("CollectionMemberID"))
+                    {
+                        str.append(getCollectionMemberId());
+
+                    } else if (newFieldName.equalsIgnoreCase("ModifiedByAgentID"))
+                    {
+                        str.append(getModifiedByAgentId(lastEditedBy));
+
+                    } else if (newFieldName.equalsIgnoreCase("CreatedByAgentID"))
+                    {
+                        str.append(getCreatorAgentId(null));
+
+                    } else
+                    {
                         Integer index = null;
                         String oldMappedColName = colNewToOldMap.get(newFieldName);
                         if (oldMappedColName != null)
@@ -5153,10 +5495,11 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
                         if (index == null)
                         {
-                            String msg = "Couldn't find new field name[" + newFieldName
-                                    + "] in old field name in index Map";
+                            String msg = "Couldn't find new field name[" + newFieldName + "] in old field name in index Map";
                             log.error(msg);
                             stmt.close();
+                            tblWriter.logError(msg);
+                            showError(msg);
                             throw new RuntimeException(msg);
                         }
                         Object data = rs.getObject(index + 1);
@@ -5173,8 +5516,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                                     data = idMapper.get(rs.getInt(index + 1));
                                 } else
                                 {
-                                    log.error("No Map for [" + tableName + "][" + oldMappedColName
-                                            + "]");
+                                    log.error("No Map for [" + tableName + "][" + oldMappedColName + "]");
                                 }
                             }
                         }
@@ -6117,7 +6459,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 "ShortName", 
                 "DisciplineID",
                 "GUID",
-                "SrcLatLongUnit"};
+                "SrcLatLongUnit",
+                "Visibility",
+                "VisibilitySetByID"};
         BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(fieldsToIgnore);
 
         errorsToShow &= ~BasicSQLUtils.SHOW_NULL_FK; // Turn off this error for LocalityID
@@ -6133,8 +6477,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         }
         
         sql = "SELECT * FROM locality WHERE locality.GeographyID IS null";
-        if (copyTable(oldDBConn, newDBConn, sql, "locality", "locality", null, null,
-                BasicSQLUtils.mySourceServerType, BasicSQLUtils.myDestinationServerType))
+        if (copyTable(oldDBConn, newDBConn, sql, "locality", "locality", null, null, BasicSQLUtils.mySourceServerType, BasicSQLUtils.myDestinationServerType))
         {
             log.info("Locality/Geography copied ok.");
         } else
@@ -7545,8 +7888,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         BasicSQLUtils.removeForeignKeyConstraints(newDBConn, BasicSQLUtils.myDestinationServerType);
 
         // Create the mappers here, but fill them in during the AgentAddress Process
-        IdTableMapper agentIDMapper     = idMapperMgr.addTableMapper("agent", "AgentID");
-        IdTableMapper addrIDMapper      = idMapperMgr.addTableMapper("address", "AddressID");
+        IdTableMapper agentIDMapper     = idMapperMgr.addTableMapper("agent",        "AgentID");
+        IdTableMapper addrIDMapper      = idMapperMgr.addTableMapper("address",      "AddressID");
         IdTableMapper agentAddrIDMapper = idMapperMgr.addTableMapper("agentaddress", "AgentAddressID");
 
         agentIDMapper.setInitialIndex(4);
@@ -7619,30 +7962,26 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         {
             log.info("Hashing Address Ids");
 
+            Integer agentCnt = BasicSQLUtils.getCount(oldDBConn, "select count(AddressID) from address order by AddressID");
+            
             // So first we hash each AddressID and the value is set to 0 (false)
             Statement stmtX = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            ResultSet rsX = stmtX.executeQuery("select AddressID from address order by AddressID");
+            ResultSet rsX   = stmtX.executeQuery("select AddressID from address order by AddressID");
 
+            setProcess(0, agentCnt);
+            
             int cnt = 0;
-            if (rsX.last())
-            {
-                setProcess(0, rsX.getRow());
-                rsX.first();
-            }
             // Needed to add in case AgentAddress table wasn't used.
-            if (rsX.first())
+            while (rsX.next())
             {
-                do
-                {
-                    int addrId = rsX.getInt(1);
-                    addressHash.put(addrId, new AddressInfo(addrId, addrIDMapper.get(addrId)));
+                int addrId = rsX.getInt(1);
+                addressHash.put(addrId, new AddressInfo(addrId, addrIDMapper.get(addrId)));
 
-                    if (cnt % 100 == 0)
-                    {
-                        setProcess(0, cnt);
-                    }
-                    cnt++;
-                } while (rsX.next());
+                if (cnt % 100 == 0)
+                {
+                    setProcess(0, cnt);
+                }
+                cnt++;
             }
             rsX.close();
             stmtX.close();
@@ -7651,17 +7990,14 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
             // Next we hash all the Agents and set their values to 0 (false)
             log.info("Hashing Agent Ids");
-            stmtX = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            rsX = stmtX.executeQuery("select AgentID from agent order by AgentID");
+            stmtX    = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            agentCnt = BasicSQLUtils.getCount(oldDBConn, "select count(*) from agent order by AgentID");
+            rsX      = stmtX.executeQuery("select AgentID from agent order by AgentID");
 
+            setProcess(0, agentCnt);
+            
             cnt = 0;
-            if (rsX.last())
-            {
-                setProcess(0, rsX.getRow());
-                rsX.first();
-            }
-
-            do
+            while (rsX.next())
             {
                 int agentId = rsX.getInt(1);
                 agentHash.put(agentId, new AgentInfo(agentId, agentIDMapper.get(agentId)));
@@ -7670,7 +8006,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     setProcess(0, cnt);
                 }
                 cnt++;
-            } while (rsX.next());
+            }
 
             rsX.close();
             stmtX.close();
@@ -7685,48 +8021,41 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             //
             log.info("Cross Mapping Agents and Addresses");
 
-            stmtX = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            rsX = stmtX.executeQuery("SELECT AgentAddressID, AddressID, AgentID FROM agentaddress a where AddressID is not null and AgentID is not null");
+            agentCnt = BasicSQLUtils.getCount(oldDBConn, "SELECT count(AgentAddressID) FROM agentaddress a where AddressID is not null and AgentID is not null");
+            stmtX    = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            rsX      = stmtX.executeQuery("SELECT AgentAddressID, AddressID, AgentID FROM agentaddress a where AddressID is not null and AgentID is not null");
 
+            setProcess(0, agentCnt);
             cnt = 0;
-            if (rsX.last())
-            {
-                setProcess(0, rsX.getRow());
-                rsX.first();
-            }
             // Needed to add in case AgentAddress table wasn't used.
-            if (rsX.first())
+            while (rsX.next())
             {
-                do
+                int agentAddrId = rsX.getInt(1);
+                int addrId      = rsX.getInt(2);
+                int agentId     = rsX.getInt(3);
+
+                // ///////////////////////
+                // Add Address to Agent
+                // ///////////////////////
+                AgentInfo agentInfo = agentHash.get(agentId);
+                if (agentInfo == null) 
+                { 
+                    throw new RuntimeException("The AgentID [" + agentId + "]in AgentAddress table id[" + agentAddrId + "] desn't exist");
+                }
+                agentInfo.getAddrs().put(addrId, true);
+
+                AddressInfo addrInfo = addressHash.get(addrId);
+                if (addrInfo == null) 
+                { 
+                    throw new RuntimeException("The AddressID [" + addrId + "] in AgentAddress table id[" + agentAddrId + "] desn't exist");
+                }
+                agentInfo.getAddrs().put(addrId, true);
+
+                if (cnt % 100 == 0)
                 {
-                    int agentAddrId = rsX.getInt(1);
-                    int addrId = rsX.getInt(2);
-                    int agentId = rsX.getInt(3);
-
-                    // ///////////////////////
-                    // Add Address to Agent
-                    // ///////////////////////
-                    AgentInfo agentInfo = agentHash.get(agentId);
-                    if (agentInfo == null) 
-                    { 
-                        throw new RuntimeException("The AgentID [" + agentId + "]in AgentAddress table id[" + agentAddrId + "] desn't exist");
-                    }
-                    agentInfo.getAddrs().put(addrId, true);
-
-                    AddressInfo addrInfo = addressHash.get(addrId);
-                    if (addrInfo == null) 
-                    { 
-                        throw new RuntimeException("The AddressID [" + addrId + "] in AgentAddress table id[" + agentAddrId + "] desn't exist");
-                    }
-                    agentInfo.getAddrs().put(addrId, true);
-
-                    if (cnt % 100 == 0)
-                    {
-                        setProcess(0, cnt);
-                    }
-                    cnt++;
-
-                } while (rsX.next());
+                    setProcess(0, cnt);
+                }
+                cnt++;
             }
             rsX.close();
             stmtX.close();
@@ -7736,23 +8065,12 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             // It OK if the address is NULL, but the Agent CANNOT be NULL
             log.info("Checking for null Agents");
 
-            stmtX = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            rsX = stmtX.executeQuery("SELECT count(AgentAddressID) FROM agentaddress a where AddressID is not null and AgentID is null");
-            if (rsX.last())
-            {
-                setProcess(0, rsX.getRow());
-                rsX.first();
-            }
-
+            agentCnt = BasicSQLUtils.getCount(oldDBConn, "SELECT count(AgentAddressID) FROM agentaddress a where AddressID is not null and AgentID is null");
             // If there is a Single Record With a NULL Agent this would be BAD!
-            int count = rsX.getInt(1);
-            if (count > 0)
+            if (agentCnt != null && agentCnt > 0)
             {
-                // throw new RuntimeException("There are "+count+" AgentAddress Records where the
-                // AgentID is null and the AddressId is not null!");
+                showError("There are "+agentCnt+" AgentAddress Records where the AgentID is null and the AddressId is not null!");
             }
-            rsX.close();
-            stmtX.close();
 
             nextAddressId = BasicSQLUtils.getNumRecords(oldDBConn, "address") + 1;
 
@@ -8377,10 +8695,10 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         {
             ex.printStackTrace();
         }
-
     }
+    
     // --------------------------------------------------------------------
-    // -- IdMapperIndexIncrementerIFac
+    // -- IdMapperIndexIncrementerIFace
     // --------------------------------------------------------------------
 
     /* (non-Javadoc)

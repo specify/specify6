@@ -25,26 +25,31 @@ import static edu.ku.brc.specify.config.init.DataBuilder.createStandardGroups;
 import static edu.ku.brc.specify.config.init.DataBuilder.getSession;
 import static edu.ku.brc.specify.config.init.DataBuilder.setSession;
 
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
@@ -69,13 +74,13 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.prefs.AppPreferences;
-import edu.ku.brc.af.ui.db.DatabaseConnectionProperties;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.dbsupport.CustomQueryFactory;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DBMSUserMgr;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.HibernateUtil;
+import edu.ku.brc.dbsupport.MySQLDMBSUserMgr;
 import edu.ku.brc.dbsupport.ResultsPager;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.helpers.SwingWorker;
@@ -102,7 +107,6 @@ import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
 import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.ProgressFrame;
-import edu.ku.brc.ui.ToggleButtonChooserPanel;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
@@ -123,17 +127,16 @@ public class SpecifyDBConverter
     protected static StringBuffer               strBuf            = new StringBuffer("");
     protected static Calendar                   calendar          = Calendar.getInstance();
     
-    protected static List<String>               dbNamesToConvert  = null;
-    protected static int                        currentIndex      = 0;
-    protected static Hashtable<String, String>  old2NewDBNames    = null;
+    protected Pair<String, String>              namePairToConvert = null;
     
     protected static ProgressFrame              frame             = null;
     
-    protected Pair<String, String> srcUsrPwd = new Pair<String, String>(null, null);
-    protected Pair<String, String> dstUsrPwd = new Pair<String, String>(null, null);
-    protected Pair<String, String> saUser    = new Pair<String, String>("Master", "Master");
+    protected Pair<String, String> itUsrPwd     = new Pair<String, String>(null, null);
+    protected Pair<String, String> masterUsrPwd = new Pair<String, String>("Master", "Master");
+    protected String               hostName     = "localhost";
     
-
+    protected ConversionLogger convLogger = new ConversionLogger();
+    
     /**
      * Constructor.
      */
@@ -216,72 +219,118 @@ public class SpecifyDBConverter
                     log.error("Can't change L&F: ", e);
                 }
                 
-                frame = new ProgressFrame("Converting");
-                old2NewDBNames = new Hashtable<String, String>();
-                String[] names = {
-                        "Custom", "",
-                        //"Fish", "sp4_fish", 
-                        //"Accessions", "sp4_accessions", 
-                        //"Cranbrook", "sp4_cranbrook", 
-                        //"Ento", "sp4_ento", 
-                        "Bird_Deleware", "sp5_dmnhbird",
-                        "Ento_CAS", "sp5_cas_ento",
-                        "Fish_Kansas", "sp5_kufish",                        
-                        "Herbarium_NewHampshire","sp5_unhnhaherbarium",
-                        "Herps_Guatemala","sp5_uvgherps",
-                        "Invert_Alabama", "sp5_uamc_invert",
-                        "Mammals_SAfrica", "sp5_mmpemammals",
-                        "Multi_ChicagoAS", "sp5_chias_multi",
-                        "Paleo_Colorado", "sp5_cupaleo",
-                        };
-                for (int i=0;i<names.length;i++)
+                Pair<String, String> namePair = null;
+                try
                 {
-                    old2NewDBNames.put(names[i], names[++i]);
+                    if (converter.selectedDBsToConvert())
+                    {
+                        namePair = converter.chooseTable();
+                    }
+                       
+                } catch (SQLException ex)
+                {
+                    ex.printStackTrace();
                 }
-                UIRegistry.setAppName("Specify");
                 
-                dbNamesToConvert = converter.selectedDBsToConvert(names);
-                log.debug("size of name to conver: " + dbNamesToConvert.size());
-                
-                if ((dbNamesToConvert.size() >= 1) && (dbNamesToConvert.get(0).equals("Custom")))
+                if (namePair != null)
                 {
-                    log.debug("Running custom converter");
-                    CustomDBConverterDlg dlg = converter.runCustomConverter();
-                    CustomDBConverterPanel panel = dlg.getCustomDBConverterPanel();
-                    dbNamesToConvert = panel.getSelectedObjects();
-                    log.debug("Source db: " + dbNamesToConvert.get(0));
-                    log.debug("Dest db: " + dbNamesToConvert.get(1));
-                    log.debug(panel.getSourceDriverType());
-                    log.debug(panel.getSourceServerName());
-                    log.debug(panel.getSourceUserName());
-                    log.debug(panel.getSourcePassword());
-                    log.debug(panel.getDestDriverType());
-                    log.debug(panel.getDestServerName());
-                    log.debug(panel.getDestUserName());
-                    log.debug(panel.getDestPassword());
+                    frame = new ProgressFrame("Converting");
                     
-                    //String driverType, String host, String userName, String password)
-                    //dlg.setVisible(false);
-                    currentIndex = 0;
-                    converter.processDB(true, 
-                            new DatabaseConnectionProperties(
-                                    panel.getSourceDriverType(),
-                                    panel.getSourceServerName(),
-                                    panel.getSourceUserName(),
-                                    panel.getSourcePassword()),
-                            new DatabaseConnectionProperties(
-                                    panel.getDestDriverType(),
-                                    panel.getDestServerName(),
-                                    panel.getDestUserName(),
-                                    panel.getDestPassword()));
-                }
-                else {
-                    log.debug("Running test case converter");
-                    currentIndex = 0;
-                    converter.processDB(false, null, null);
+                    UIRegistry.setAppName("Specify");
+                    
+                    converter.processDB(); 
                 }
             }
         });
+    }
+    
+    /**
+     * @return
+     * @throws SQLException
+     */
+    protected Pair<String, String> chooseTable() throws SQLException
+    {
+        MySQLDMBSUserMgr mgr = new MySQLDMBSUserMgr();
+        
+        Vector<DBNamePair> availPairs = new Vector<DBNamePair>();
+        
+        if (mgr.connectToDBMS(itUsrPwd.first, itUsrPwd.second, hostName))
+        {
+            BasicSQLUtils.setSkipTrackExceptions(true);
+            
+            Connection conn = mgr.getConnection();
+            Vector<Object[]> dbNames = BasicSQLUtils.query(conn, "show databases");
+            for (Object[] row : dbNames)
+            {
+                System.err.println("Setting ["+row[0].toString()+"]");
+                conn.setCatalog(row[0].toString());
+                
+                Vector<Object[]> version = BasicSQLUtils.query(conn, "select VersionNumber FROM usysversion");
+                if (version == null || version.size() == 0)
+                {
+                    continue;
+                }
+                
+                Vector<Object[]> tableDesc = BasicSQLUtils.query(conn, "select CollectionName FROM collection");
+                if (tableDesc.size() > 0)
+                {
+                    String collName =  tableDesc.get(0)[0].toString();
+                    availPairs.add(new DBNamePair(collName, row[0].toString()));
+                }
+            }
+            
+            Collections.sort(availPairs, new Comparator<Pair<String, String>>() {
+                @Override
+                public int compare(Pair<String, String> o1, Pair<String, String> o2)
+                {
+                    return o1.first.compareTo(o2.first);
+                }
+            });
+            
+            mgr.close();
+            BasicSQLUtils.setSkipTrackExceptions(false);
+            
+            final JList     list = new JList(availPairs);
+            CellConstraints cc   = new CellConstraints();
+            PanelBuilder    pb   = new PanelBuilder(new FormLayout("f:p:g", "f:p:g"));
+            pb.add(UIHelper.createScrollPane(list), cc.xy(1,1));
+            pb.setDefaultDialogBorder();
+            
+            final CustomDialog dlg = new CustomDialog(null, "Select a DB to Convert", true, pb.getPanel());
+            list.addListSelectionListener(new ListSelectionListener() {
+                @Override
+                public void valueChanged(ListSelectionEvent e)
+                {
+                    if (!e.getValueIsAdjusting())
+                    {
+                        dlg.getOkBtn().setEnabled(list.getSelectedIndex() > -1);
+                    }
+                }
+            });
+            
+            list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            list.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e)
+                {
+                    if (e.getClickCount() == 2)
+                    {
+                        dlg.getOkBtn().setEnabled(list.getSelectedIndex() > -1);
+                        dlg.getOkBtn().doClick();
+                    }
+                }
+            });
+            
+            dlg.createUI();
+            dlg.pack();
+            dlg.setSize(300, 500);
+            //dlg.pack();
+            dlg.setVisible(true);
+            
+            return namePairToConvert = (DBNamePair)list.getSelectedValue();
+        }
+        
+        return null;
     }
     
     /**
@@ -289,14 +338,21 @@ public class SpecifyDBConverter
      * @param sourceDbProps
      * @param destDbProps
      */
-    protected  void processDB(final boolean isCustomConvert, 
-                              final DatabaseConnectionProperties sourceDbProps, 
-                              final DatabaseConnectionProperties destDbProps)
+    protected  void processDB()
     {
-        
-        if (!(isCustomConvert) && (dbNamesToConvert.size() > 0 && currentIndex < dbNamesToConvert.size()))
+        String inputName = null;
+        if (namePairToConvert.second != null && namePairToConvert.second.startsWith("sp5_"))
         {
-            
+            inputName = namePairToConvert.second.substring(4);
+        } else
+        {
+            //inputName = JOptionPane.showInputDialog("Enter new DB Name:");
+            inputName = namePairToConvert.second +"_6";
+        }
+        
+        if (inputName != null)
+        {
+            final String      destName = inputName;
             final SwingWorker worker = new SwingWorker()
             {
                 @Override
@@ -304,14 +360,14 @@ public class SpecifyDBConverter
                 {
                     try
                     {
-                        String currentDBName = dbNamesToConvert.get(currentIndex++);
-                        frame.setTitle("Converting "+currentDBName+"...");
-                        convertDB(old2NewDBNames.get(currentDBName),  currentDBName.toLowerCase());
+                        frame.setTitle("Converting "+namePairToConvert.toString()+"...");
+                        
+                        convertDB(namePairToConvert.second,  destName);
                         
                     } catch (Exception ex)
                     {
                         ex.printStackTrace();
-                        System.exit(1);
+                        //System.exit(1);
                     }
                     return null;
                 }
@@ -320,54 +376,11 @@ public class SpecifyDBConverter
                 @Override
                 public void finished()
                 {
-                    processDB(isCustomConvert, sourceDbProps, destDbProps);
+                    System.exit(0);
                 }
             };
             worker.start();
         }
-        else if (isCustomConvert)
-        {
-            final SwingWorker worker = new SwingWorker()
-            {
-                @Override
-                public Object construct()
-                {
-                    try
-                    {
-                        //String currentDBName = dbNamesToConvert.get(currentIndex++);
-                        frame.setTitle("Converting "+dbNamesToConvert.get(0)+"...");
-                        convertDB(  dbNamesToConvert.get(0), 
-                                    dbNamesToConvert.get(1), 
-                                    isCustomConvert,
-                                    sourceDbProps,
-                                    destDbProps);
-                        
-                    } catch (Exception ex)
-                    {
-                        ex.printStackTrace();
-                    }
-                    return null;
-                }
-
-                //Runs on the event-dispatching thread.
-                @Override
-                public void finished()
-                {
-                    //processDB(isCustomConvert, sourceDbProps, destDbProps);
-                }
-            };
-            worker.start();        
-        }
-    }
-    
-    /**
-     * @param sourceDatabaseName
-     * @param destDatabaseName
-     * @throws Exception
-     */
-    protected void convertDB(final String sourceDatabaseName, final String destDatabaseName) throws Exception
-    {
-        convertDB(sourceDatabaseName, destDatabaseName, false, null,  null);
     }
     
     /**
@@ -391,6 +404,9 @@ public class SpecifyDBConverter
 
         AppContextMgr.getInstance().setHasContext(true);
     }
+    
+    
+    
 
     /**
      * Convert old Database to New 
@@ -398,11 +414,8 @@ public class SpecifyDBConverter
      * @param databaseNameDest name of new DB
      * @throws Exception xx
      */
-    protected  void convertDB(final String                       databaseNameSource, 
-                              final String                       databaseNameDest, 
-                              final boolean                      isCustomConvert,
-                              final DatabaseConnectionProperties sourceDbProps,
-                              final DatabaseConnectionProperties destDbProps) throws Exception
+    protected  void convertDB(final String dbNameSource, 
+                              final String dbNameDest) throws Exception
     {
         System.setProperty(DBMSUserMgr.factoryName, "edu.ku.brc.dbsupport.MySQLDMBSUserMgr");
 
@@ -413,136 +426,57 @@ public class SpecifyDBConverter
         boolean deleteMappingTables = true;
         
         System.out.println("************************************************************");
-        System.out.println("From "+databaseNameSource+" to "+databaseNameDest);
+        System.out.println("From "+dbNameSource+" to "+dbNameDest);
         System.out.println("************************************************************");
 
         HibernateUtil.shutdown(); 
         
-        Properties initPrefs = BuildSampleDatabase.getInitializePrefs(databaseNameDest);
+        DatabaseDriverInfo driverInfo = DatabaseDriverInfo.getDriver("MySQL");
         
-        String userNameSource     = "";
-        String passwordSource     = "";
-        String driverNameSource   = "";
-        String databaseHostSource = "";
-        DatabaseDriverInfo driverInfoSource = null;
+        String oldConnStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostName, dbNameSource, 
+                itUsrPwd.first, itUsrPwd.second, driverInfo.getName());
+
+        String newConnStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostName, dbNameDest, 
+                itUsrPwd.first, itUsrPwd.second, driverInfo.getName());
         
-        String userNameDest     = "";
-        String passwordDest     = "";
-        String driverNameDest   = "";
-        String databaseHostDest = "";
-        DatabaseDriverInfo driverInfoDest = null;
-        
-        if (isCustomConvert)
+        MySQLDMBSUserMgr mysqlMgr = new MySQLDMBSUserMgr();
+        if (mysqlMgr.connectToDBMS(itUsrPwd.first, itUsrPwd.second, hostName))
         {
-            log.debug("Running a custom convert");
-            userNameSource      = sourceDbProps.getUserName();
-            passwordSource      = sourceDbProps.getPassword();
-            driverNameSource    = sourceDbProps.getDriverType();
-            databaseHostSource  = sourceDbProps.getHost();
-            
-            userNameDest        = destDbProps.getUserName();
-            passwordDest        = destDbProps.getPassword();
-            driverNameDest      = destDbProps.getDriverType();
-            databaseHostDest    = destDbProps.getHost();
+            if (!mysqlMgr.doesDBExists(dbNameDest))
+            {
+                mysqlMgr.createDatabase(dbNameDest);
+            }
         }
-        else
-        {
-            log.debug("Running an non-custom MySQL convert, using old default login creds");
-            userNameSource      = initPrefs.getProperty("initializer.username", srcUsrPwd.first);
-            passwordSource      = initPrefs.getProperty("initializer.password", srcUsrPwd.second);
-            driverNameSource    = initPrefs.getProperty("initializer.driver",   "MySQL");
-            databaseHostSource  = initPrefs.getProperty("initializer.host",     "localhost"); 
-            
-            userNameDest        = initPrefs.getProperty("initializer.username", dstUsrPwd.first);
-            passwordDest        = initPrefs.getProperty("initializer.password", dstUsrPwd.second);
-            driverNameDest      = initPrefs.getProperty("initializer.driver",   "MySQL");
-            databaseHostDest    = initPrefs.getProperty("initializer.host",     "localhost");  
-        }
-        
-        log.debug("Custom Convert Source Properties ----------------------");
-        log.debug("databaseNameSource: " + databaseNameSource);        
-        log.debug("userNameSource: "     + userNameSource);
-        log.debug("passwordSource: "     + passwordSource);
-        log.debug("driverNameSource: "   + driverNameSource);
-        log.debug("databaseHostSource: " + databaseHostSource);
-        
-        log.debug("Custom Convert Destination Properties ----------------------");
-        log.debug("databaseNameDest: " + databaseNameDest);
-        log.debug("userNameDest: "     + userNameDest);
-        log.debug("passwordDest: "     + passwordDest);
-        log.debug("driverNameDest: "   + driverNameDest);
-        log.debug("databaseHostDest: " + databaseHostDest);
-        
-        driverInfoSource = DatabaseDriverInfo.getDriver(driverNameSource);
-        driverInfoDest   = DatabaseDriverInfo.getDriver(driverNameDest);
-        
-        if (driverInfoSource == null)
-        {
-            throw new RuntimeException("Couldn't find Source DB driver by name ["+driverInfoSource+"] in driver list.");
-        }
-        
-        if (driverInfoDest == null)
-        {
-            throw new RuntimeException("Couldn't find Destination driver by name ["+driverInfoDest+"] in driver list.");
-        }
-        
-        if (driverNameDest.equals("MySQL"))BasicSQLUtils.myDestinationServerType = BasicSQLUtils.SERVERTYPE.MySQL;
-        else if (driverNameDest.equals("Derby"))BasicSQLUtils.myDestinationServerType = BasicSQLUtils.SERVERTYPE.Derby;
-        else if (driverNameDest.equals("SQLServer"))BasicSQLUtils.myDestinationServerType = BasicSQLUtils.SERVERTYPE.MS_SQLServer;
-        
-        if (driverNameSource.equals("MySQL"))BasicSQLUtils.mySourceServerType = BasicSQLUtils.SERVERTYPE.MySQL;
-        else if (driverNameSource.equals("Derby"))BasicSQLUtils.mySourceServerType = BasicSQLUtils.SERVERTYPE.Derby;
-        else if (driverNameSource.equals("SQLServer"))BasicSQLUtils.mySourceServerType = BasicSQLUtils.SERVERTYPE.MS_SQLServer;
-        
-        else 
-        {
-            log.error("Error setting ServerType for destination database for conversion.  Could affect the"
-                    + " way that SQL string are generated and executed on differetn DB egnines");
-        }
-        
-        String destConnectionString = driverInfoDest.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, databaseHostDest, "", 
-                                                                      userNameDest, passwordDest, driverNameDest);
-        log.debug("attempting login to destination: " + destConnectionString);
+        mysqlMgr.close();   
+
         // This will log us in and return true/false
         // This will connect without specifying a DB, which allows us to create the DB
-        if (!UIHelper.tryLogin(driverInfoDest.getDriverClassName(), 
-                driverInfoDest.getDialectClassName(), 
-                databaseNameDest, 
-                destConnectionString,
-                dstUsrPwd.first, 
-                dstUsrPwd.second))
+        if (!UIHelper.tryLogin(driverInfo.getDriverClassName(), 
+                driverInfo.getDialectClassName(), 
+                dbNameDest, 
+                newConnStr,
+                itUsrPwd.first, 
+                itUsrPwd.second))
         {
-            log.error("Failed connection string: "  +driverInfoSource.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, databaseHostDest, databaseNameDest, userNameDest, passwordDest, driverNameDest) );
-            throw new RuntimeException("Couldn't login into ["+databaseNameDest+"] "+DBConnection.getInstance().getErrorMsg());
+            log.error("Failed connection string: "  +driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostName, dbNameDest, itUsrPwd.first, itUsrPwd.second, driverInfo.getName()) );
+            throw new RuntimeException("Couldn't login into ["+dbNameDest+"] "+DBConnection.getInstance().getErrorMsg());
         }
-        
-        //MEG WHY IS THIS COMMENTED OUT???
-        //setSession(HibernateUtil.getNewSession());
         
         log.debug("Preparing new database");
         
         if (startfromScratch)
         {
             log.debug("Starting from scratch and generating the schema");
-            SpecifySchemaGenerator.generateSchema(driverInfoDest, databaseHostDest, databaseNameDest, userNameDest, passwordDest);
+            SpecifySchemaGenerator.generateSchema(driverInfo, hostName, dbNameDest, itUsrPwd.first, itUsrPwd.second);
         }
+
+        DBConnection oldDB = DBConnection.createInstance(driverInfo.getDriverClassName(), driverInfo.getDialectClassName(), dbNameDest, oldConnStr, itUsrPwd.first, itUsrPwd.second);
         
+        Connection oldDBConn = oldDB.createConnection();
+        Connection newDBConn = DBConnection.getInstance().createConnection();
+
         log.debug("Preparing new database: completed");
 
-        log.debug("DESTINATION driver class: " + driverInfoDest.getDriverClassName());
-        log.debug("DESTINATION dialect class: " + driverInfoDest.getDialectClassName());               
-        log.debug("DESTINATION Connection String: " + driverInfoDest.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, databaseHostDest, databaseNameDest, userNameDest, passwordDest, driverNameDest)); 
-        
-        // This will log us in and return true/false
-        if (!UIHelper.tryLogin(driverInfoDest.getDriverClassName(), 
-                driverInfoDest.getDialectClassName(), 
-                databaseNameDest, 
-                driverInfoDest.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, databaseHostDest, databaseNameDest, userNameDest, passwordDest, driverNameDest),                 
-                dstUsrPwd.first, 
-                dstUsrPwd.second))
-        {
-            throw new RuntimeException("Couldn't login into ["+databaseNameDest+"] "+DBConnection.getInstance().getErrorMsg());
-        }
         setSession(HibernateUtil.getNewSession());
         IdMapperMgr idMapperMgr = null;
         SpecifyUser specifyUser = null;
@@ -563,26 +497,9 @@ public class SpecifyDBConverter
             boolean doConvert = true;
             if (doConvert)
             {
-                BuildSampleDatabase.createSpecifySAUser(databaseHostDest,
-                        userNameSource, 
-                        passwordSource,
-                        "Master",
-                        "Master",
-                        databaseNameDest);
+                BuildSampleDatabase.createSpecifySAUser(hostName, itUsrPwd.first, itUsrPwd.second, masterUsrPwd.first, masterUsrPwd.second, dbNameDest);
 
-
-                log.debug("SOURCE driver class: "      + driverInfoSource.getDriverClassName());
-                log.debug("SOURCE dialect class: "     + driverInfoSource.getDialectClassName());       
-                log.debug("SOURCE Connection String: " + driverInfoSource.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, databaseHostSource, databaseNameSource, userNameSource, passwordSource, driverNameSource));
-                
-                //BuildSampleDatabase.createSpecifySAUser(databaseHostSource, saUser.first, saUser.second, saUser.first, saUser.second, databaseNameDest);
-          
-                GenericDBConversion conversion = new GenericDBConversion(driverInfoSource.getDriverClassName(),
-                                                                         databaseNameSource,
-                                                                        // "jdbc:mysql://"+databaseHostSource+ "/"+databaseNameSource,
-                                                                         driverInfoSource.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, databaseHostSource, databaseNameSource, userNameSource, passwordSource, driverNameSource),                                                                                          
-                                                                         userNameSource,
-                                                                         passwordSource);
+                GenericDBConversion conversion = new GenericDBConversion(oldDBConn, newDBConn, dbNameSource, dbNameDest);
 
                 conversion.setFrame(frame);
 
@@ -594,6 +511,7 @@ public class SpecifyDBConverter
                 	log.error("One of the DB connections is null.  Cannot proceed.  Check your DB install to make sure both DBs exist.");
                 	System.exit(-1);
                 }
+                
                 idMapperMgr.setDBs(oldConn, newConn);
 
                 // NOTE: Within BasicSQLUtils the connection is for removing tables and records
@@ -640,8 +558,13 @@ public class SpecifyDBConverter
                 Integer institutionId = conversion.createInstitution("Natural History Museum");
                 if (institutionId == null)
                 {
-                    throw new RuntimeException("Problem with creating institution, the Id came back null");
+                    UIRegistry.showError("Problem with creating institution, the Id came back null");
+                    System.exit(0);
                 }
+                
+                // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                // Need to ask for Discipline here or get it from the Sp5 DB
+                
                 conversion.convertDivision("fish", institutionId);
                 frame.incOverall();
                 
@@ -654,15 +577,15 @@ public class SpecifyDBConverter
                 boolean convertDiscipline = true;
                 if (convertDiscipline || doAll)
                 {
-                    String           username         = initPrefs.getProperty("initializer.username", "testuser");
-                    String           title            = initPrefs.getProperty("useragent.title",      "Mr.");
-                    String           firstName        = initPrefs.getProperty("useragent.firstname",  "Test");
-                    String           lastName         = initPrefs.getProperty("useragent.lastname",   "User");
-                    String           midInit          = initPrefs.getProperty("useragent.midinit",    "C");
-                    String           abbrev           = initPrefs.getProperty("useragent.abbrev",     "tcu");
-                    String           email            = initPrefs.getProperty("useragent.email",      "testuser@ku.edu");
-                    String           userType         = initPrefs.getProperty("useragent.usertype",   SpecifyUserTypes.UserType.Manager.toString());   
-                    String           password         = initPrefs.getProperty("useragent.password",   "testuser");
+                    String           username         = "testuser";
+                    String           title            = "Mr.";
+                    String           firstName        = "Test";
+                    String           lastName         = "User";
+                    String           midInit          = "C";
+                    String           abbrev           = "tcu";
+                    String           email            = "testuser@ku.edu";
+                    String           userType         = SpecifyUserTypes.UserType.Manager.toString();   
+                    String           password         = "testuser";
                     
                     Agent userAgent   = null;
                     
@@ -726,7 +649,7 @@ public class SpecifyDBConverter
                 } else
                 {
                     idMapperMgr.addTableMapper("CatalogSeriesDefinition", "CatalogSeriesDefinitionID");
-                    idMapperMgr.addTableMapper("CollectionObjectType", "CollectionObjectTypeID");
+                    idMapperMgr.addTableMapper("CollectionObjectType",    "CollectionObjectTypeID");
                 }
                 frame.incOverall();
 
@@ -874,6 +797,7 @@ public class SpecifyDBConverter
                     if (doLoanPreparations || doAll)
                     {
                         conversion.convertLoanPreparations();
+                        conversion.convertGiftPreparations();
                         frame.incOverall();
                         
                     } else
@@ -896,7 +820,7 @@ public class SpecifyDBConverter
                 frame.setDesc("Converting Geography");
                 log.info("Converting Geography");
                 boolean doGeography = false;
-                if (!databaseNameDest.startsWith("accessions") && (doGeography || doAll))
+                if (!dbNameDest.startsWith("accessions") && (doGeography || doAll))
                 {
                     GeographyTreeDef treeDef = conversion.createStandardGeographyDefinitionAndItems();
                     conversion.convertGeography(treeDef);
@@ -1140,19 +1064,6 @@ public class SpecifyDBConverter
                 System.setProperty(AppPreferences.factoryName, "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");    // Needed by AppReferences
                 System.setProperty("edu.ku.brc.dbsupport.DataProvider",         "edu.ku.brc.specify.dbsupport.HibernateDataProvider");  // Needed By the Form System and any Data Get/Set
                 
-                // Initialize the Prefs
-                AppPreferences remoteProps = AppPreferences.getRemote();
-                
-                for (Object key : initPrefs.keySet())
-                {
-                    String keyStr = (String)key;
-                    if (!keyStr.startsWith("initializer.") && !keyStr.startsWith("useragent."))
-                    {
-                        remoteProps.put(keyStr, (String)initPrefs.get(key)); 
-                    }
-                }
-                AppPreferences.getRemote().flush();
-                
                 boolean doFurtherTesting = false;
                 if (doFurtherTesting)
                 {
@@ -1237,9 +1148,9 @@ public class SpecifyDBConverter
             {
                 idMapperMgr.cleanup();
             }
-            log.info("Done - " + databaseNameDest);
-            frame.setDesc("Done - " + databaseNameDest);
-            frame.setTitle("Done - " + databaseNameDest);
+            log.info("Done - " + dbNameDest);
+            frame.setDesc("Done - " + dbNameDest);
+            frame.setTitle("Done - " + dbNameDest);
             frame.incOverall();
             frame.processDone();
 
@@ -1437,150 +1348,91 @@ public class SpecifyDBConverter
      * @param hashNames every other one is the new name
      * @return the list of selected DBs
      */
-    protected List<String> selectedDBsToConvert(final String[] hashNames)
+    protected boolean selectedDBsToConvert()
     {
-        String initStr = "";
-        String selKey  = "Database_Selected";
+        final JTextField     itUserNameTF = UIHelper.createTextField("root", 15);
+        final JPasswordField itPasswordTF = UIHelper.createPasswordField("", 15);
         
-        for (int i=0;i<hashNames.length;i++)
-        {
-            initStr += hashNames[i++];
-        }
+        final JTextField     masterUserNameTF = UIHelper.createTextField("Master", 15);
+        final JPasswordField masterPasswordTF = UIHelper.createPasswordField("Master", 15);
         
-        boolean isNew = false;
-        Properties props = new Properties();
-        File propsFile = new File(UIRegistry.getDefaultWorkingPath() + File.separator + "convert.properties");
-        if (!propsFile.exists())
-        {
-             isNew = true;
-            
-        } else
-        {
-            try
-            {
-                props.loadFromXML(new FileInputStream(propsFile));
+        final JTextField     hostNameTF = UIHelper.createTextField("localhost", 15);
 
-            } catch (Exception ex)
-            {
-                log.error(ex);
-            }
-        } 
-        
-        List<String> list = new ArrayList<String>();
-        for (int i=0;i<hashNames.length;i++)
-        {
-            list.add(hashNames[i++]);
-        }
-        
-        Vector<Integer> indices = new Vector<Integer>();
-        if (!isNew)
-        {
-            for (String token : props.getProperty(selKey).split(","))
-            {
-                if (StringUtils.isNotEmpty(token) && StringUtils.isNumeric(token))
-                {
-                    indices.add(Integer.parseInt(token));
-                }
-            }
-        }
-        
-        
-        final JTextField     srcUserNameTF = UIHelper.createTextField("Specify", 15);
-        final JPasswordField srcPasswordTF = UIHelper.createPasswordField("Specify", 15);
-        
-        final JTextField     dstUserNameTF = UIHelper.createTextField("Specify", 15);
-        final JPasswordField dstPasswordTF = UIHelper.createPasswordField("Specify", 15);
-        
-        /*DocumentListener dl = new DocumentListener()
-        {
-            protected void enableOK()
-            {
-                if ((!keyTxt.getText().isEmpty()) || 
-                    (isNetworkRB.isSelected() && !urlTxt.getText().isEmpty()))
-                {
-                    dlg.getOkBtn().setEnabled(true);
-                }
-            }
-            @Override
-            public void changedUpdate(DocumentEvent e) { enableOK(); }
-            @Override
-            public void insertUpdate(DocumentEvent e) { enableOK(); }
-            @Override
-            public void removeUpdate(DocumentEvent e) { enableOK(); }
-        };
-        
-        keyTxt.getDocument().addDocumentListener(dl);
-        urlTxt.getDocument().addDocumentListener(dl);*/
-
-        ToggleButtonChooserPanel<String> chosePanel = new ToggleButtonChooserPanel<String>(list, ToggleButtonChooserPanel.Type.Checkbox);
-        chosePanel.setUseScrollPane(true);
-        chosePanel.createUI();
-        for (Integer inx : indices)
-        {
-            chosePanel.setSelectedIndex(inx);
-        }
-        
         CellConstraints cc = new CellConstraints();
         PanelBuilder pb = new PanelBuilder(new FormLayout("p,2px,p,f:p:g", "p,2px,p,2px,p,4px,p,2px,p,2px,p,8px,p,4px"));
         
         int y = 1;
-        pb.addSeparator("Source Database", cc.xyw(1, y, 4)); y += 2;
+        pb.addSeparator("IT User", cc.xyw(1, y, 4)); y += 2;
         pb.add(UIHelper.createLabel("Username:", SwingConstants.RIGHT), cc.xy(1, y));
-        pb.add(srcUserNameTF, cc.xy(3, y)); y += 2;
+        pb.add(itUserNameTF, cc.xy(3, y)); y += 2;
 
         pb.add(UIHelper.createLabel("Password:", SwingConstants.RIGHT), cc.xy(1, y));
-        pb.add(srcPasswordTF, cc.xy(3, y)); y += 2;
+        pb.add(itPasswordTF, cc.xy(3, y)); y += 2;
 
-        pb.addSeparator("Destination Database", cc.xyw(1, y, 4)); y += 2;
+        pb.addSeparator("Master User", cc.xyw(1, y, 4)); y += 2;
         pb.add(UIHelper.createLabel("Username:", SwingConstants.RIGHT), cc.xy(1, y));
-        pb.add(dstUserNameTF, cc.xy(3, y)); y += 2;
+        pb.add(masterUserNameTF, cc.xy(3, y)); y += 2;
 
         pb.add(UIHelper.createLabel("Password:", SwingConstants.RIGHT), cc.xy(1, y));
-        pb.add(dstPasswordTF, cc.xy(3, y)); y += 2;
+        pb.add(masterPasswordTF, cc.xy(3, y)); y += 2;
 
-        pb.add(chosePanel, cc.xyw(1, y, 4)); y += 2;
-         
-        CustomDialog dlg = new CustomDialog(null, "Choose Database(s) to Convert", true, pb.getPanel());
+        pb.add(UIHelper.createLabel("Host Name:", SwingConstants.RIGHT), cc.xy(1, y));
+        pb.add(hostNameTF, cc.xy(3, y)); y += 2;
+
+        CustomDialog dlg = new CustomDialog(null, "Database Info", true, pb.getPanel());
         ((JPanel)dlg.getContentPanel()).setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         UIHelper.centerAndShow(dlg);
         
         dlg.dispose();
         if (dlg.isCancelled())
         {           
-            return new ArrayList<String>();
+           return false;
         }
         
-        list = new Vector<String>();
+        hostName        = hostNameTF.getText();
+        itUsrPwd.first  = itUserNameTF.getText();
+        itUsrPwd.second = ((JTextField)itPasswordTF).getText();
         
-        StringBuilder sb = new StringBuilder();
-        for (String sObj : chosePanel.getSelectedObjects())
-        {
-            if (sb.length() > 0) sb.append(",");
-            sb.append(Integer.toString(list.indexOf(sObj)));
-            list.add(sObj);
-        }
-        props.put(selKey, sb.toString());
+        masterUsrPwd.first  = masterUserNameTF.getText();
+        masterUsrPwd.second = ((JTextField)masterPasswordTF).getText();
         
-        srcUsrPwd.first  = srcUserNameTF.getText();
-        srcUsrPwd.second = ((JTextField)srcPasswordTF).getText();
-        
-        dstUsrPwd.first  = dstUserNameTF.getText();
-        dstUsrPwd.second = ((JTextField)dstPasswordTF).getText();
-        
-        try
-        {
-            props.storeToXML(new FileOutputStream(propsFile), "Databases to Convert");
-            
-        } catch (Exception ex)
-        {
-            log.error(ex);
-        }
-        
-        return list;
+        return true;
     }
     
     public CustomDBConverterDlg runCustomConverter()
     {       
         return UIHelper.doSpecifyConvert();
+    }
+    
+    //----------------------------------------
+    class DBNamePair extends Pair<String, String>
+    {
+        
+        /**
+         * 
+         */
+        public DBNamePair()
+        {
+            super();
+        }
+
+        /**
+         * @param first
+         * @param second
+         */
+        public DBNamePair(String first, String second)
+        {
+            super(first, second);
+        }
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.util.Pair#toString()
+         */
+        @Override
+        public String toString()
+        {
+            return first + "   ("+ second + ")";
+        }
+        
     }
 }

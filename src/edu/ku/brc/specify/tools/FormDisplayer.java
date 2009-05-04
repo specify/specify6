@@ -610,7 +610,10 @@ public class FormDisplayer
                             for (AltViewIFace av : view.getAltViews())
                             {
                                 if (sb.length() > 0) sb.append(", "); //$NON-NLS-1$
-                                sb.append(av.getViewDef().getType().toString()+" ("+av.getMode().toString().toLowerCase() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+                                if (av.getViewDef() != null)
+                                {
+                                    sb.append(av.getViewDef().getType().toString()+" ("+av.getMode().toString().toLowerCase() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+                                }
                             }
                             pw.println("<td><center>"+view.isInternal()+"</center></td>"); //$NON-NLS-1$ //$NON-NLS-2$
                             pw.println("<td>"+sb.toString()+"</td></tr>"); //$NON-NLS-1$ //$NON-NLS-2$

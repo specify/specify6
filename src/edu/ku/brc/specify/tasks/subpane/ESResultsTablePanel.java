@@ -277,7 +277,7 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         tablePane = new JPanel(new BorderLayout());
         tablePane.add(table.getTableHeader(), BorderLayout.PAGE_START);
         
-        Component comp = AppPreferences.getLocalPrefs().getBoolean("ss.usescarollbars", false) ? UIHelper.createScrollPane(table) : table;
+        Component comp = AppPreferences.getLocalPrefs().getBoolean("ss.usescrollbars", false) ? UIHelper.createScrollPane(table) : table;
         tablePane.add(comp, BorderLayout.CENTER);
         //tablePane.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
         

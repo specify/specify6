@@ -2684,18 +2684,8 @@ public class FormViewObj implements Viewable,
     /**
      * Save any changes to the current object
      */
-    @SuppressWarnings("unchecked")
     public boolean saveObject()
     {
-        /*if (formValidator != null)
-        {
-            formValidator.wasValidated(null);
-            if (!formValidator.isFormValid())
-            {
-                return false;
-            }
-        }*/
-        
         if (mvParent != null && mvParent.isTopLevel())
         {
             collectionViewState();

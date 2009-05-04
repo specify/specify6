@@ -19,18 +19,12 @@
 */
 package edu.ku.brc.specify.datamodel.busrules;
 
-import java.awt.Component;
-
-import javax.swing.JTextField;
-
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.MultiView;
-import edu.ku.brc.af.ui.forms.validation.ValFormattedTextField;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Agent;
@@ -155,7 +149,7 @@ public class LoanGiftShipmentBusRules extends BaseBusRules
                             shipment.setShipmentNumber(borrow.getInvoiceNumber());
                         }
                         controlName = "invoiceNumber";
-                    }*/
+                    }
                     
                     if (controlName != null)
                     {
@@ -181,7 +175,7 @@ public class LoanGiftShipmentBusRules extends BaseBusRules
                         {
                             log.error("Couldn't find UI control 'loanNumber' on the Loan Form");
                         }
-                    }
+                    }*/
                 }
             }
         }

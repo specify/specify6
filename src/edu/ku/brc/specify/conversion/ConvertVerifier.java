@@ -1030,6 +1030,7 @@ public class ConvertVerifier
                 }
                 UIRegistry.setAppName("Specify");
                 
+                /*
                 dbNamesToConvert = converter.selectedDBsToConvert(names);
                 if (dbNamesToConvert.size() == 1)
                 {
@@ -1053,7 +1054,7 @@ public class ConvertVerifier
                             ex.printStackTrace();
                         }
                     }
-                }
+                }*/
                 System.exit(0);
             }
         });
