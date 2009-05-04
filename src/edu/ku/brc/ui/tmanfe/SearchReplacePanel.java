@@ -336,7 +336,7 @@ public class SearchReplacePanel extends JPanel
             }
         });
 
-        searchSelectionButton.setEnabled(false);
+        searchSelectionButton.setVisible(false);
         
         builder.add(cancelButton, cc.xy(1, 1));
 		builder.add(findLabel, cc.xy(3, 1));
