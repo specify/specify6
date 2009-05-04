@@ -1,2 +1,0 @@
-IndexRemove mac-dist/Specify.app/Contents/Resources/Java/help
-
