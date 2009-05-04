@@ -64,6 +64,7 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.border.AbstractBorder;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
@@ -81,6 +82,7 @@ import edu.ku.brc.ui.SearchableJXTable;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper.OSTYPE;
+import edu.ku.brc.util.Pair;
 
 
 /***************************************************************************************************
@@ -117,11 +119,13 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
     protected Font               cellFont;
     
     // Cell Selection
-    protected boolean            mouseDown           = false;
-    private boolean              rowSelectionStarted = false;
-
-    protected SearchReplacePanel findPanel = null;
+	protected boolean				mouseDown			= false;
+	private boolean					rowSelectionStarted	= false;
+	private Pair<Integer, Integer>	emphasizedCell		= null;
+	protected SearchReplacePanel	findPanel			= null;
     
+	protected CellRenderer          customCellRenderer = new CellRenderer();
+	
     // XXX Fix for Mac OS X Java 5 Bug
     protected int prevRowSelInx = -1;
     protected int prevColSelInx = -1;
@@ -154,7 +158,42 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
         return findPanel;
     }
 
-    /**
+    
+    /* (non-Javadoc)
+	 * @see javax.swing.JTable#changeSelection(int, int, boolean, boolean)
+	 */
+	@Override
+	public void changeSelection(int rowIndex, int columnIndex, boolean toggle,
+			boolean extend)
+	{
+		super.changeSelection(rowIndex, columnIndex, toggle, extend);
+		clearEmphasis();
+	}
+
+	/* (non-Javadoc)
+	 * @see javax.swing.JTable#clearSelection()
+	 */
+	@Override
+	public void clearSelection()
+	{
+		super.clearSelection();
+		clearEmphasis();
+	}
+
+	/**
+	 * Sets emphasized cell to null and updates ui.
+	 */
+	protected void clearEmphasis()
+	{
+		Pair<Integer, Integer> ec = emphasizedCell;
+		setEmphasizedCell(null);
+		if (ec != null)
+		{
+			getModel().fireTableCellUpdated(ec.getFirst(), ec.getSecond());
+		}
+		
+	}
+	/**
      * 
      */
     protected void buildSpreadsheet()
@@ -259,7 +298,6 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
         TableCellRenderer renderer = getTableHeader().getDefaultRenderer();
         if (renderer == null)
         {
-            column = getColumnModel().getColumn(0);
             renderer = column.getHeaderRenderer();
         }
         
@@ -325,7 +363,7 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
         });
 
         resizeAndRepaint();
-        
+
         // Taken from a JavaWorld Example (But it works)
         KeyStroke cut   = KeyStroke.getKeyStroke(KeyEvent.VK_X, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(), false);
         KeyStroke copy  = KeyStroke.getKeyStroke(KeyEvent.VK_C, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(), false);
@@ -1041,7 +1079,62 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
         return super.getScrollableUnitIncrement(visibleRect, orientation, direction);
     }
 
-    /*
+
+    /**
+     * @param row
+     * @param column
+     * 
+     * Set emphasis at row and column
+     */
+    public void setEmphasizedCell(int row, int column)
+    {
+    	if (emphasizedCell == null)
+    	{
+    		emphasizedCell = new Pair<Integer, Integer>(row, column);
+    	}
+    	else
+    	{
+    		emphasizedCell.setFirst(row);
+    		emphasizedCell.setSecond(column);
+    	}
+    }
+    
+    /**
+     * 
+     * @param cell
+     * 
+     * Set the emphasized cell
+     */
+    public void setEmphasizedCell(final Pair<Integer, Integer> cell)
+    {
+    	emphasizedCell = cell;
+    }
+    
+    public boolean isEmphasizedCell(int row, int column)
+    {
+    	return emphasizedCell == null ? false :
+        	emphasizedCell.getFirst().equals(row)  && emphasizedCell.getSecond().equals(column) ?
+        			true : false;
+    }
+    
+    /* (non-Javadoc)
+	 * @see org.jdesktop.swingx.JXTable#getCellRenderer(int, int)
+	 */
+	@Override
+	public TableCellRenderer getCellRenderer(int row, int column)
+	{
+		if (isEmphasizedCell(row, column))
+		{
+			return customCellRenderer;
+		}
+		return super.getCellRenderer(row, column);
+	}
+
+	//------------------------------------------------------------------------------
+    //-- Inner Classes
+    //------------------------------------------------------------------------------
+
+	/*
      * This class is used to customize the cells rendering.
      */
     public class CellRenderer extends JLabel implements TableCellRenderer
@@ -1049,6 +1142,7 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
 
         private Border      _selectBorder;
         private EmptyBorder _emptyBorder;
+        private Border      _emphasizedBorder;
         //private Dimension   _dim;
 
         public CellRenderer()
@@ -1056,9 +1150,10 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
             super();
             _emptyBorder  = new EmptyBorder(2, 2, 2, 2);
             _selectBorder = new LineBorder(Color.BLUE);
+            _emphasizedBorder = new LineBorder(Color.RED);
             //_selectBorder = BorderFactory.createBevelBorder(BevelBorder.LOWERED);
-            setOpaque(true);
-            setHorizontalAlignment(SwingConstants.CENTER);
+            //setOpaque(true);
+            //setHorizontalAlignment(SwingConstants.CENTER);
             //_dim = new Dimension();
             //_dim.height = 22;
             //_dim.width = 100;
@@ -1078,7 +1173,20 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
                                                        int row,
                                                        int column)
         {
-            setBorder(isSelected ? _selectBorder : _emptyBorder);
+        	boolean isEmphasized = emphasizedCell == null ? false :
+            	emphasizedCell.getFirst().equals(row)  && emphasizedCell.getSecond().equals(column) ?
+            			true : false;
+        	Border border = null;
+        	if (isEmphasized)
+        	{
+        		border = _emphasizedBorder;
+        		System.out.println("Emphasized Cell: " + emphasizedCell.getFirst() + ", " + emphasizedCell.getSecond());
+        	}
+        	else
+        	{
+        		border = isSelected ? _selectBorder : _emptyBorder;
+        	}
+        	setBorder(border);
             setText(value.toString());
 
             return this;
@@ -1087,11 +1195,8 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
 
     }
 
-    
-    //------------------------------------------------------------------------------
-    //-- Inner Classes
-    //------------------------------------------------------------------------------
-    class RowHeaderLabel extends JComponent
+	
+	class RowHeaderLabel extends JComponent
     {
         protected String rowNumStr;
         protected int    rowNum;
