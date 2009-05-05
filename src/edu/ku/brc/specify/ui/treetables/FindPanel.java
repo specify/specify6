@@ -136,6 +136,31 @@ public class FindPanel extends JPanel implements TimingTarget
 
         whereToggleButton = new MultiStateToggleButton(up,down,both);
         whereToggleButton.setStateIndex(0);
+        whereToggleButton.setToolTipText(UIRegistry.getResourceString("FindPanel.WhereBtnTTUp"));
+        whereToggleButton.addActionListener(new ActionListener(){
+
+			/* (non-Javadoc)
+			 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+			 */
+			@Override
+			public void actionPerformed(ActionEvent arg0)
+			{
+				switch (whereToggleButton.getStateIndex()) {
+				case 0:
+					whereToggleButton.setToolTipText(UIRegistry.getResourceString("FindPanel.WhereBtnTTLow"));
+					break;
+				case 1:
+					whereToggleButton.setToolTipText(UIRegistry.getResourceString("FindPanel.WhereBtnTTBoth"));
+					break;
+				case 2:
+					whereToggleButton.setToolTipText(UIRegistry.getResourceString("FindPanel.WhereBtnTTUp"));
+					break;
+				default:
+					whereToggleButton.setToolTipText(null);
+				}
+			}
+        	
+        });
         
         exactChk = UIHelper.createCheckBox(getResourceString("FindPanel.Exact"));
         exactChk.setSelected(AppPreferences.getLocalPrefs().getBoolean("FindPanel.Exact", true));
@@ -151,6 +176,7 @@ public class FindPanel extends JPanel implements TimingTarget
 			}
         	
         });
+        exactChk.setToolTipText(UIRegistry.getResourceString("FindPanel.ExactChkTT"));
         
         add(closeButton);
         add(Box.createRigidArea(closeButton.getPreferredSize()));
