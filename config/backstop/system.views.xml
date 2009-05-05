@@ -260,7 +260,7 @@
             gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
-            <desc><![CDATA[Form for editing an Info Request]]></desc>
+            <desc><![CDATA[Form for editing an PickList]]></desc>
             <enableRules>
                 <rule id="sizeLimit"><![CDATA[readOnly.isSelected() == false]]></rule>
                 <rule id="RemoveItem"><![CDATA[items.getSelectedIndex() != -1]]></rule>
