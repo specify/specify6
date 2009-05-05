@@ -21,6 +21,7 @@ package edu.ku.brc.specify.treeutils;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
@@ -295,9 +296,14 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         {
             for( I defItem: treeDef.getTreeDefItems() )
             {
-                if (defItem.getRankId()==0)
+                if (defItem.getParent() == null)
                 {
-                    root = defItem.getTreeEntries().iterator().next();
+                    Iterator<T> entries = defItem.getTreeEntries().iterator();
+                    if (entries.hasNext())
+                    {
+                    	root = defItem.getTreeEntries().iterator().next();
+                    	break;
+                    }
                 }
             }
             

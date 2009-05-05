@@ -32,6 +32,7 @@ import javax.swing.AbstractListModel;
  * @author jstewart
  * @code_status Alpha
  */
+@SuppressWarnings("serial")
 public class TreeViewerListModel extends AbstractListModel
 {
     /** Logger for all messages emitted. */
@@ -52,9 +53,16 @@ public class TreeViewerListModel extends AbstractListModel
      */
     public TreeViewerListModel(TreeNode rootNode)
     {
-        nodes.add(rootNode);
-        visibleRoot = rootNode;
-        visibleSize = 1;
+    	visibleRoot = rootNode;
+        if (rootNode != null)
+        {
+        	nodes.add(rootNode);
+        	visibleSize = 1;
+        }
+        else
+        {
+        	visibleSize = 0;
+        }
     }
     
     /* (non-Javadoc)

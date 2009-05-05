@@ -427,15 +427,24 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
     protected void initTreeLists()
     {
         T rootRecord = dataService.getRootNode(treeDef);
-        TreeNode rootNode = createNode(rootRecord);
+        TreeNode rootNode = rootRecord == null ? null : createNode(rootRecord);
         listModel = new TreeViewerListModel(rootNode);
-        idsToReexpand.add(rootNode.getId());
+        if (rootNode != null)
+        {
+        	idsToReexpand.add(rootNode.getId());
 
-        List<TreeNode> childNodes = showChildren(rootRecord);
+        	List<TreeNode> childNodes = showChildren(rootRecord);
 
-        showTree();
+        	showTree();
         
-        showCounts(rootRecord, childNodes);
+        	showCounts(rootRecord, childNodes);
+        }
+        else
+        {
+        	//No root for the tree. This should never happen for properly initialized trees - i.e. trees created
+        	//by Specify code.
+        	UIRegistry.displayErrorDlg(UIRegistry.getResourceString("TreeTableViewer.NoRootNodeForTree"));
+        }
     }
     
 	/**
@@ -3347,29 +3356,34 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	@Override
 	public boolean aboutToShutdown()
 	{
-        try
-        {
-            T selectedNode = getSelectedNode(lists[0]);
-            AppPreferences appPrefs = AppPreferences.getRemote();
-            if (appPrefs != null)
-            {
-                if (selectedNode != null)
-                {
-                    appPrefs.put(selNodePrefName, selectedNode.getTreeId().toString());
-                }
-                else
-                {
-                    appPrefs.remove(selNodePrefName);
-                }
-            }
-        }
-        catch (Exception e)
-        {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TreeTableViewer.class, e);
-            log.error("Unknown error when trying to store the selected node id during tree viewer shutdown.", e);
-        }
-		
+        if (lists != null)
+		{
+			try
+			{
+				T selectedNode = getSelectedNode(lists[0]);
+				AppPreferences appPrefs = AppPreferences.getRemote();
+				if (appPrefs != null)
+				{
+					if (selectedNode != null)
+					{
+						appPrefs.put(selNodePrefName, selectedNode.getTreeId()
+								.toString());
+					} else
+					{
+						appPrefs.remove(selNodePrefName);
+					}
+				}
+			} catch (Exception e)
+			{
+				edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+				edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(
+						TreeTableViewer.class, e);
+				log
+						.error(
+								"Unknown error when trying to store the selected node id during tree viewer shutdown.",
+								e);
+			}
+		}
 		return true;
 	}
 
