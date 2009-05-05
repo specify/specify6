@@ -35,8 +35,6 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
 
-import edu.ku.brc.ui.UIRegistry;
-
 /**
  * Helper that converts a Swing TableModel to an MS-Excel Spreadsheet, HTML Table.
  * 
@@ -122,14 +120,10 @@ public class TableModel2Excel
      * @param tableModel the table model
      * @return a file to a spreadsheet
      */
-    public static File convertToExcel(final File toFile, final String title, final TableModel tableModel)
+    public static File convertToExcel(final File toFile, 
+                                      final String title, 
+                                      final TableModel tableModel)
     {
-        if (toFile == null || !toFile.exists())
-        {
-            UIRegistry.showLocalizedMsg("FILE_NO_EXISTS", toFile != null ? toFile.getAbsolutePath() : "");
-            return null;
-        }
-        
         if (tableModel != null && tableModel.getRowCount() > 0)
         {
             try
