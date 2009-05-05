@@ -34,7 +34,7 @@ public class ImportColumnInfo  implements Comparable<ImportColumnInfo>
 {
     public enum ColumnType {Integer, Float, Double, Short, Boolean, Date, String}
     
-    protected final Short      colInx;
+    protected final Integer      colInx;
     protected final ColumnType disciplinee;
     protected final String     colName; // the name of the column (this may include the table name in parens)
     protected final String     colTitle; // name without parens
@@ -43,7 +43,7 @@ public class ImportColumnInfo  implements Comparable<ImportColumnInfo>
     protected String     mapToFld = null; //mappint read from XLS document properties
     protected final boolean    isSystemCol;
     
-    public ImportColumnInfo(final short      colInx, 
+    public ImportColumnInfo(final int      colInx, 
                             final ColumnType disciplinee, 
                             final String     colName,
                             final String     colTitle,
@@ -88,7 +88,7 @@ public class ImportColumnInfo  implements Comparable<ImportColumnInfo>
         this.data = data;
     }
 
-    public Short getColInx()
+    public Integer getColInx()
     {
         return colInx;
     }

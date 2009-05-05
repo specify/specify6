@@ -1534,7 +1534,7 @@ public class TemplateEditor extends CustomDialog
             {
                 WorkbenchTemplateMappingItem item;
                 FieldInfo                    fieldInfo  = fmp.getFieldInfo();
-                short                        origColNum = -1;
+                Integer                      origColNum = -1;
                 if (fmp.getWbtmi() == null)
                 {
                     ImportColumnInfo colInfo = fmp.getColInfo();
@@ -1560,7 +1560,7 @@ public class TemplateEditor extends CustomDialog
                 item.setDataFieldLength(len == -1 ? 15 : len);
                 
                 item.setViewOrder(fmp.getViewOrder());
-                item.setOrigImportColumnIndex(origColNum);
+                item.setOrigImportColumnIndex(origColNum.shortValue());
                 
             }
         }
