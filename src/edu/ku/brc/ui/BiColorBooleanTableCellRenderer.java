@@ -24,6 +24,7 @@ import java.awt.Component;
 
 import javax.swing.JCheckBox;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.table.TableCellRenderer;
 
 /**
@@ -57,7 +58,9 @@ public class BiColorBooleanTableCellRenderer extends JCheckBox implements TableC
                                                    int column)
     {
         setSelected(value != null && value instanceof Boolean ? (Boolean)value : false);
-        setBackground(lineColor[row % 2]);
+        setBackground(isSelected ? table.getSelectionBackground() : lineColor[row % 2]);
+        setHorizontalAlignment(SwingConstants.CENTER);
+        
         return this;
     }
 

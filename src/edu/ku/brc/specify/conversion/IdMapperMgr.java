@@ -220,10 +220,10 @@ public class IdMapperMgr
      */
     public void cleanup()
     {
-        for (String key : idMappers.keySet())
+        /*for (String key : idMappers.keySet())
         {
             System.out.println("["+key+"]");
-        }
+        }*/
 
         for (IdHashMapper mapper : idMappers.values())
         {

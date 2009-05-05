@@ -44,11 +44,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.Timestamp;
-import java.util.Collections;
-import java.util.Hashtable;
-import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.NoSuchElementException;
@@ -133,13 +129,6 @@ import edu.ku.brc.af.ui.forms.ResultSetController;
 import edu.ku.brc.af.ui.forms.ViewFactory;
 import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
-import edu.ku.brc.af.ui.forms.persist.AltViewIFace;
-import edu.ku.brc.af.ui.forms.persist.FormCellIFace;
-import edu.ku.brc.af.ui.forms.persist.FormRow;
-import edu.ku.brc.af.ui.forms.persist.FormRowIFace;
-import edu.ku.brc.af.ui.forms.persist.FormViewDef;
-import edu.ku.brc.af.ui.forms.persist.ViewDefIFace;
-import edu.ku.brc.af.ui.forms.persist.ViewIFace;
 import edu.ku.brc.af.ui.forms.persist.ViewLoader;
 import edu.ku.brc.af.ui.forms.validation.TypeSearchForQueryFactory;
 import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
@@ -189,6 +178,7 @@ import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Storage;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonAttachment;
+import edu.ku.brc.specify.extras.ViewToSchemaReview;
 import edu.ku.brc.specify.prefs.SystemPrefs;
 import edu.ku.brc.specify.tasks.subpane.JasperReportsCache;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
@@ -1266,7 +1256,20 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                         @SuppressWarnings("synthetic-access") //$NON-NLS-1$
                         public void actionPerformed(ActionEvent ae)
                         {
-                            dumpFormFieldList();
+                            ViewToSchemaReview.dumpFormFieldList();
+                        }
+                    });
+            
+            ttle = "Specify.VIEW_REVIEW_LIST";//$NON-NLS-1$ 
+            mneu = "Specify.VIEW_REVIEW_LIST_MNEU";//$NON-NLS-1$ 
+            desc = "Specify.VIEW_REVIEW_LIST";//$NON-NLS-1$ 
+            mi = UIHelper.createLocalizedMenuItem(menu, ttle , mneu, desc, true, null);  
+            mi.addActionListener(new ActionListener()
+                    {
+                        @SuppressWarnings("synthetic-access") //$NON-NLS-1$
+                        public void actionPerformed(ActionEvent ae)
+                        {
+                            (new ViewToSchemaReview()).checkSchemaAndViews();
                         }
                     });
             menu.addSeparator();
@@ -1463,96 +1466,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         return mb;
     }
     
-    
-    /**
-     * 
-     */
-    private void dumpFormFieldList()
-    {
-        List<ViewIFace> viewList = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getEntirelyAllViews();
-        Hashtable<String, ViewIFace> hash = new Hashtable<String, ViewIFace>();
-        
-        for (ViewIFace view : viewList)
-        {
-            hash.put(view.getName(), view);
-        }
-        Vector<String> names = new Vector<String>(hash.keySet());
-        Collections.sort(names);
-        
-        try
-        {
-            PrintWriter pw = new PrintWriter(new File("FormFields.html"));
-            
-            pw.println("<HTML><HEAD><TITLE>Form Fields</TITLE><link rel=\"stylesheet\" href=\"http://specify6.specifysoftware.org/schema/specify6.css\" type=\"text/css\"/></HEAD><BODY>");
-            pw.println("<center>");
-            pw.println("<H2>Forms and Fields</H2>");
-            pw.println("<center><table class=\"brdr\" border=\"0\" cellspacing=\"0\">");
-            
-            int formCnt  = 0;
-            int fieldCnt = 0;
-            for (String name : names)
-            {
-                ViewIFace view = hash.get(name);
-                boolean hasEdit = false;
-                for (AltViewIFace altView : view.getAltViews())
-                {
-                    if (altView.getMode() != AltViewIFace.CreationMode.EDIT)
-                    {
-                        hasEdit = true;
-                        break;
-                    }
-                }
-    
-                //int numViews = view.getAltViews().size();
-                for (AltViewIFace altView : view.getAltViews())
-                {
-                    //AltView av = (AltView)altView;
-                    if ((hasEdit && altView.getMode() == AltViewIFace.CreationMode.VIEW))
-                    {
-                        ViewDefIFace vd = altView.getViewDef();
-                       if (vd instanceof FormViewDef)
-                       {
-                           formCnt++;
-                           FormViewDef fvd = (FormViewDef)vd;
-                           pw.println("<tr><td class=\"brdrodd\">");
-                           pw.println(fvd.getName());
-                           pw.println("</td></tr>");
-                           int r = 1;
-                           for (FormRowIFace fri :fvd.getRows())
-                           {
-                               FormRow fr = (FormRow)fri;
-                               for (FormCellIFace cell : fr.getCells())
-                               {
-                                   if (StringUtils.isNotEmpty(cell.getName()))
-                                   {
-                                       if (cell.getType() == FormCellIFace.CellType.field ||
-                                           cell.getType() == FormCellIFace.CellType.subview)
-                                       {
-                                           pw.print("<tr><td ");
-                                           pw.print("class=\"");
-                                           pw.print(r % 2 == 0 ? "brdrodd" : "brdreven");
-                                           pw.print("\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + cell.getName());
-                                           pw.println("</td></tr>");
-                                           fieldCnt++;
-                                       }
-                                   }
-                               }
-                           }
-                       }
-                    }
-                }
-            }
-            pw.println("</table></center><br>");
-            pw.println("Number of Forms: "+formCnt+"<br>");
-            pw.println("Number of Fields: "+fieldCnt+"<br>");
-            pw.println("</body></html>");
-            pw.close();
-            
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
-    }
     
     /**
      * 
@@ -1910,6 +1823,10 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             StatsTrackerTask statsTrackerTask = (StatsTrackerTask)TaskMgr.getTask(StatsTrackerTask.STATS_TRACKER);
             statsTrackerTask.sendStats(false, false); // false means don't do it silently
             return;
+        }
+        if (true)
+        {
+            ViewToSchemaReview.checkViews();
         }
         
         AppContextMgr acm        = AppContextMgr.getInstance();
