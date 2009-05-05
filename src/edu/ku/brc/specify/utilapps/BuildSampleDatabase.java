@@ -445,7 +445,6 @@ public class BuildSampleDatabase
      * @param disciplineName the disciplineType name
      * @return the entire list of DB object to be persisted
      */
-    @SuppressWarnings("unchecked")
     public boolean createEmptyInstitution(final Properties props, final boolean doCreateDiv, final boolean doCreateDisp)
     {
         AppContextMgr.getInstance().setHasContext(true);
@@ -788,7 +787,7 @@ public class BuildSampleDatabase
         {
             startTx();
             
-            LithoStratTreeDefItem earth     = createLithoStratTreeDefItem(lithoStratTreeDef, "Earth", 0, false);
+            LithoStratTreeDefItem earth     = createLithoStratTreeDefItem(lithoStratTreeDef, "Surface", 0, false);
             LithoStratTreeDefItem superGrp  = createLithoStratTreeDefItem(earth,     "Super Group", 100, false);
             LithoStratTreeDefItem lithoGrp  = createLithoStratTreeDefItem(superGrp,  "Litho Group", 200, false);
             LithoStratTreeDefItem formation = createLithoStratTreeDefItem(lithoGrp,  "Formation",   300, false);
@@ -2895,13 +2894,13 @@ public class BuildSampleDatabase
         persist(userAgent);
         persist(user);
         
-        LithoStratTreeDefItem earth     = createLithoStratTreeDefItem(lithoStratTreeDef, "Earth", 0, false);
-        LithoStratTreeDefItem superGrp  = createLithoStratTreeDefItem(earth,     "Super Group", 100, false);
-        LithoStratTreeDefItem lithoGrp  = createLithoStratTreeDefItem(superGrp,  "Litho Group", 200, false);
-        LithoStratTreeDefItem formation = createLithoStratTreeDefItem(lithoGrp,  "Formation",   300, false);
-        LithoStratTreeDefItem member    = createLithoStratTreeDefItem(formation, "Member",      400, false);
-        @SuppressWarnings("unused")
-        LithoStratTreeDefItem bed       = createLithoStratTreeDefItem(member,    "Bed",         500, true);
+//        LithoStratTreeDefItem earth     = createLithoStratTreeDefItem(lithoStratTreeDef, "Earth", 0, false);
+//        LithoStratTreeDefItem superGrp  = createLithoStratTreeDefItem(earth,     "Super Group", 100, false);
+//        LithoStratTreeDefItem lithoGrp  = createLithoStratTreeDefItem(superGrp,  "Litho Group", 200, false);
+//        LithoStratTreeDefItem formation = createLithoStratTreeDefItem(lithoGrp,  "Formation",   300, false);
+//        LithoStratTreeDefItem member    = createLithoStratTreeDefItem(formation, "Member",      400, false);
+//        @SuppressWarnings("unused")
+//        LithoStratTreeDefItem bed       = createLithoStratTreeDefItem(member,    "Bed",         500, true);
         
         frame.setProcess(++createStep);
         
@@ -2911,7 +2910,7 @@ public class BuildSampleDatabase
         
         persist(cns);
         persist(accessionNS);
-        persist(earth);
+        //persist(earth);
         
         commitTx();
         
@@ -3589,7 +3588,6 @@ public class BuildSampleDatabase
      * @param treeDef
      * @return
      */
-    @SuppressWarnings("unchecked")
     public Geography convertGeographyFromXLS(final GeographyTreeDef treeDef)
     {
         frame.setDesc("Building Geography Tree...");
@@ -4103,14 +4101,14 @@ public class BuildSampleDatabase
         
         if (isPaleo)
         {
-            LithoStratTreeDefItem earth     = createLithoStratTreeDefItem(lithoStratTreeDef, "Earth", 0, false);
-            LithoStratTreeDefItem superGrp  = createLithoStratTreeDefItem(earth,     "Super Group", 100, false);
-            LithoStratTreeDefItem lithoGrp  = createLithoStratTreeDefItem(superGrp,  "Litho Group", 200, false);
-            LithoStratTreeDefItem formation = createLithoStratTreeDefItem(lithoGrp,  "Formation",   300, false);
-            LithoStratTreeDefItem member    = createLithoStratTreeDefItem(formation, "Member",      400, false);
-            @SuppressWarnings("unused")
-            LithoStratTreeDefItem bed       = createLithoStratTreeDefItem(member,    "Bed",         500, true);
-            persist(earth);
+//            LithoStratTreeDefItem earth     = createLithoStratTreeDefItem(lithoStratTreeDef, "Earth", 0, false);
+//            LithoStratTreeDefItem superGrp  = createLithoStratTreeDefItem(earth,     "Super Group", 100, false);
+//            LithoStratTreeDefItem lithoGrp  = createLithoStratTreeDefItem(superGrp,  "Litho Group", 200, false);
+//            LithoStratTreeDefItem formation = createLithoStratTreeDefItem(lithoGrp,  "Formation",   300, false);
+//            LithoStratTreeDefItem member    = createLithoStratTreeDefItem(formation, "Member",      400, false);
+//            @SuppressWarnings("unused")
+//            LithoStratTreeDefItem bed       = createLithoStratTreeDefItem(member,    "Bed",         500, true);
+//            persist(earth);
         }
         
         List<Object> geos        = createSimpleGeography(geoTreeDef, true);
@@ -5048,7 +5046,6 @@ public class BuildSampleDatabase
     /**
      * @return returns a list of preptypes read in from preptype.xml
      */
-    @SuppressWarnings("unchecked")
     protected Vector<PrepType> loadPrepTypes(final String discipline)
     {
         return loadPrepTypes(discipline, null, null);
@@ -8379,7 +8376,6 @@ public class BuildSampleDatabase
      * @param fileName
      * @return
      */
-    @SuppressWarnings("unchecked")
     public Taxon convertTaxonFromXLS(final TaxonTreeDef treeDef, final String fileName, final boolean usingOtherTxnFile)
     {
         Hashtable<String, Taxon> taxonHash = new Hashtable<String, Taxon>();
@@ -8820,7 +8816,6 @@ public class BuildSampleDatabase
      * @param treeDef
      * @return
      */
-    @SuppressWarnings("unchecked")
     public GeologicTimePeriod convertChronoStratFromXLS(final GeologicTimePeriodTreeDef treeDef)
     {
         startTx();
