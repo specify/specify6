@@ -19,6 +19,8 @@
 */
 package edu.ku.brc.af.ui;
 
+import org.apache.commons.lang.StringUtils;
+
 
 /**
  * @author rod
@@ -49,7 +51,7 @@ public class SearchTermField
     public SearchTermField(final String term)
     {
         super();
-        this.term = term;
+        this.term = StringUtils.replace(term, "'", "''");
         this.options = NO_OPTIONS;
     }
     
