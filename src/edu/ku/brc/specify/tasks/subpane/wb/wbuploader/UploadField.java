@@ -253,7 +253,9 @@ public class UploadField
         
         if (field != null && field.getFieldInfo() != null)
         {
-            return field.getFieldInfo().isRequired();
+            return field.getFieldInfo().isRequired() || 
+            	//force CollectionObject.CatalogNumber to be required
+            	(field.getFieldInfo().getTableInfo().getTableId() == 1 && field.getFieldInfo().getName().equalsIgnoreCase("catalogNumber"));
         }
         
         return false;

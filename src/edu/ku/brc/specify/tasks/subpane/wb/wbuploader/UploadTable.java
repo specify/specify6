@@ -1197,7 +1197,7 @@ public class UploadTable implements Comparable<UploadTable>
             else
             {
                 UIFieldFormatterIFace formatter = ufld.getField().getFieldInfo().getFormatter();
-                if (StringUtils.isBlank(fldStr) && (formatter == null || !formatter.isIncrementer()))
+                if (StringUtils.isBlank(fldStr) && (formatter == null || !formatter.isIncrementer() || !formatter.isNumeric()))
                 {
                     arg[0] = null;
                 }
@@ -1935,7 +1935,7 @@ public class UploadTable implements Comparable<UploadTable>
     {
         boolean blankButRequired = fld.isRequired() && (fld.getValue() == null || fld.getValue().trim().equals(""));
         boolean isAutoAssignable = fld.getField().getFieldInfo() != null && fld.getField().getFieldInfo().getFormatter() != null
-            && fld.getField().getFieldInfo().getFormatter().isIncrementer();
+            && fld.getField().getFieldInfo().getFormatter().isIncrementer() && fld.getField().getFieldInfo().getFormatter().isNumeric();
         return blankButRequired && !isAutoAssignable;
     }
 
