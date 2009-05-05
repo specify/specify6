@@ -2224,7 +2224,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         
         Properties props = new Properties();
 
-        if (!((WorkbenchTask) task).getExportInfo(props))
+        if (!((WorkbenchTask) task).getExportInfo(props, workbench.getName()))
         {
             return;
         }

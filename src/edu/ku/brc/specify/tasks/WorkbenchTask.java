@@ -1010,7 +1010,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
      * @param props the properties object to be filled in.
      * @return true if everything was asked for and received.
      */
-    public boolean getExportInfo(final Properties props)
+    public boolean getExportInfo(final Properties props, final String defaultFileName)
     {
         String extension = "";
         //String fileTypeCaption = "";
@@ -1061,6 +1061,10 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         chooser.setMultiSelectionEnabled(false);
         chooser.setFileFilter(new UIFileFilter("xls", getResourceString("WB_EXCELFILES")));
+        if (defaultFileName != null)
+        {
+        	chooser.setSelectedFile(new File(chooser.getCurrentDirectory().getPath() + File.separator + defaultFileName + ".xls"));
+        }
         
         if (chooser.showSaveDialog(UIRegistry.get(UIRegistry.FRAME)) != JFileChooser.APPROVE_OPTION)
         {
@@ -1075,8 +1079,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             return false;
         }
         
-        //String path = fileDialog.getDirectory();
-        String path = FilenameUtils.getPath(file.getPath());
+        String path = chooser.getCurrentDirectory().getPath();
+        //String path = FilenameUtils.getPath(file.getPath());
         if (StringUtils.isNotEmpty(path))
         {
             AppPreferences localPrefs = AppPreferences.getLocalPrefs();
@@ -1123,8 +1127,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 return false;
             }
         }
-        //props.setProperty("fileName", path + File.separator + fileName);
-        props.setProperty("fileName", File.separator + path + fileName);
+        props.setProperty("fileName", path + File.separator + fileName);
+        //props.setProperty("fileName", File.separator + path + fileName);
         return true;
     }
     
@@ -1172,7 +1176,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
 
                Properties props = new Properties();
 
-               if (!getExportInfo(props))
+               if (!getExportInfo(props, workbench.getName()))
                {
                    return;
                }
@@ -1248,7 +1252,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
 
                 Properties props = new Properties();
 
-                if (!getExportInfo(props))
+                if (!getExportInfo(props, null))
                 {
                     return;
                 }
