@@ -3034,6 +3034,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
     /**
      * @return true if security is on
      */
+    @Override
     public boolean isSecurity()
     {
         if (isSecurityOn == null)
@@ -3053,8 +3054,11 @@ public class SpecifyAppContextMgr extends AppContextMgr
     /**
      * @param secVal
      */
+    @Override
     public boolean setSecurity(final boolean secVal)
     {
+        isSecurityOn = secVal;
+        
         boolean status = true;
         DataProviderSessionIFace session = null;
         try
