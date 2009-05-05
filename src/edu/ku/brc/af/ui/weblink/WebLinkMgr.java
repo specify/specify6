@@ -221,10 +221,12 @@ public class WebLinkMgr
         XStream xstream = new XStream(
                 new XppDriver() 
                 {
+                    @Override
                     public HierarchicalStreamWriter createWriter(Writer out) 
                     {
                         return new PrettyPrintWriter(out) 
                         {
+                            @Override
                             protected void writeText(QuickWriter writer, String text) 
                             {
                                 writer.write("<![CDATA[");

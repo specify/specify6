@@ -266,13 +266,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
      */
     public Specify()
     {
-        // XXX RELEASE
-        boolean isRelease = true;
-        UIRegistry.setRelease(isRelease);
-        UIRegistry.setTesting(!isRelease);
-
-        boolean doCheckSum = false;
-        XMLHelper.setUseChecksum(isRelease && doCheckSum); 
+        
     }
     
     /**
@@ -2708,6 +2702,15 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
 
   public static void startApp(final boolean doConfig)
   {
+      
+      // XXX RELEASE
+      boolean isRelease = true;
+      UIRegistry.setRelease(isRelease);
+      UIRegistry.setTesting(!isRelease);
+
+      boolean doCheckSum = false;
+      XMLHelper.setUseChecksum(isRelease && doCheckSum); 
+
       // Then set this
       IconManager.setApplicationClass(Specify.class);
       IconManager.loadIcons(XMLHelper.getConfigDir("icons_datamodel.xml")); //$NON-NLS-1$

@@ -127,6 +127,19 @@ public class SpecifyWebLinkMgr extends WebLinkMgr implements CommandListener
                         
                         xml = AppContextMgr.getInstance().getResourceAsXML(appRes);
                     }
+                } else
+                {
+                    File file = XMLHelper.getConfigDir(DISKLOC);
+                    try
+                    {
+                        xml = FileUtils.readFileToString(file);
+                        
+                    } catch (IOException ex)
+                    {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyWebLinkMgr.class, ex);
+                        ex.printStackTrace();
+                    }
                 }
                 
             } catch (Exception ex)

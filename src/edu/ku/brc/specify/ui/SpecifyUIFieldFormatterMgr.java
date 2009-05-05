@@ -128,6 +128,7 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr implements C
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr#getDOM()
      */
+    @Override
     protected Element getDOM() throws Exception
     {
         if (doingLocal)
@@ -268,6 +269,7 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr implements C
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr#saveXML(java.lang.String)
      */
+    @Override
     public void saveXML(final String xml) 
     {
         if (doingLocal)
