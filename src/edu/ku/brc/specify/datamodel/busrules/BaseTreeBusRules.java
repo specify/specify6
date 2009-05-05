@@ -1221,6 +1221,10 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
         		String tblName = DBTableIdMgr.getInstance().getInfoById(node.getTableId()).getName();
         		String sql = "SELECT count(*) FROM " + tblName + " where isAccepted "
         			+ "and name = '" + BasicSQLUtils.escapeStringLiterals(node.getName()) + "'";
+        		if (parent.getTreeId() != null)
+        		{
+        			sql +=  " and parentid = " + parent.getTreeId();
+        		}
                 if (node.getTreeId() != null)
                 {
                 	sql += " and " + tblName + "id != " + node.getTreeId();
