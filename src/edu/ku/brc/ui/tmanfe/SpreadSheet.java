@@ -42,6 +42,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Comparator;
 import java.util.EventObject;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
@@ -64,7 +65,6 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import javax.swing.border.AbstractBorder;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
@@ -75,6 +75,10 @@ import javax.swing.text.JTextComponent;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.jdesktop.swingx.decorator.Filter;
+import org.jdesktop.swingx.decorator.FilterPipeline;
+import org.jdesktop.swingx.decorator.SortController;
+import org.jdesktop.swingx.decorator.Sorter;
 
 import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.ui.IconManager;
@@ -223,7 +227,7 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
 
         setRowSelectionAllowed(true);
         setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-        
+                
         addMouseListener(new MouseAdapter() {
             /* (non-Javadoc)
              * @see java.awt.event.MouseAdapter#mousePressed(java.awt.event.MouseEvent)
@@ -390,6 +394,9 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
         ((JMenuItem)UIRegistry.get(UIRegistry.COPY)).addActionListener(this);
         ((JMenuItem)UIRegistry.get(UIRegistry.CUT)).addActionListener(this);
         ((JMenuItem)UIRegistry.get(UIRegistry.PASTE)).addActionListener(this);
+        
+        //add 3-state sort toggle
+        setFilters(new CustomToggleSortOrderFP());
     }
     
     /**
@@ -1130,10 +1137,95 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
 		return super.getCellRenderer(row, column);
 	}
 
+
+
+    /**
+     * @return the isReadOnly
+     */
+    public boolean isReadOnly()
+    {
+        return isReadOnly;
+    }
+
+    /**
+     * @param isReadOnly the isReadOnly to set
+     */
+    public void setReadOnly(boolean isReadOnly)
+    {
+        this.isReadOnly = isReadOnly;
+    }
+
+    
+    
 	//------------------------------------------------------------------------------
     //-- Inner Classes
     //------------------------------------------------------------------------------
 
+    /**
+     * @author timbo
+     * 
+     * Makes a three-state toggle for column sort state - ascending, descending, and unsorted
+     *
+     *Copied directly from example at API documentation for org.jdesktop.swingx.JXTable
+     */
+    public class CustomToggleSortOrderFP extends FilterPipeline
+	{
+
+		/**
+		 * 
+		 */
+		public CustomToggleSortOrderFP()
+		{
+			super();
+		}
+
+		/**
+		 * @param inList
+		 */
+		public CustomToggleSortOrderFP(Filter[] inList)
+		{
+			super(inList);
+		}
+
+		/* (non-Javadoc)
+		 * @see org.jdesktop.swingx.decorator.FilterPipeline#createDefaultSortController()
+		 */
+		@Override
+		protected SortController createDefaultSortController()
+		{
+			return new CustomSortController();
+		}
+
+		/**
+		 * @author timbo
+		 *
+		 */
+		protected class CustomSortController extends SorterBasedSortController
+		{
+
+			/* (non-Javadoc)
+			 * @see org.jdesktop.swingx.decorator.FilterPipeline.SorterBasedSortController#toggleSortOrder(int, java.util.Comparator)
+			 */
+			@Override
+			@SuppressWarnings("unchecked")
+			public void toggleSortOrder(int column, Comparator comparator)
+			{
+				Sorter currentSorter = getSorter();
+				if ((currentSorter != null)
+						&& (currentSorter.getColumnIndex() == column)
+						&& !currentSorter.isAscending())
+				{
+					setSorter(null);
+				} else
+				{
+					super.toggleSortOrder(column, comparator);
+				}
+			}
+
+		}
+	}
+
+    
 	/*
      * This class is used to customize the cells rendering.
      */
@@ -1180,7 +1272,7 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
         	if (isEmphasized)
         	{
         		border = _emphasizedBorder;
-        		System.out.println("Emphasized Cell: " + emphasizedCell.getFirst() + ", " + emphasizedCell.getSecond());
+        		log.info("Emphasized Cell: " + emphasizedCell.getFirst() + ", " + emphasizedCell.getSecond());
         	}
         	else
         	{
@@ -1478,22 +1570,5 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
             this.table = null;
         }
     }
-
-
-    /**
-     * @return the isReadOnly
-     */
-    public boolean isReadOnly()
-    {
-        return isReadOnly;
-    }
-
-    /**
-     * @param isReadOnly the isReadOnly to set
-     */
-    public void setReadOnly(boolean isReadOnly)
-    {
-        this.isReadOnly = isReadOnly;
-    }
-
+    
 }
