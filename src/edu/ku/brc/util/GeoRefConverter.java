@@ -130,6 +130,14 @@ public class GeoRefConverter implements StringConverter
     			LatLonConverter.DEGREES_FORMAT.None);
     }
 
+    /**
+     * @param original
+     * @param destFormat
+     * @param llType
+     * @param degFmt
+     * @return
+     * @throws Exception
+     */
     public String convert(final String original, final String destFormat,
     		final LatLonConverter.LATLON llType, final LatLonConverter.DEGREES_FORMAT degFmt) 
     	throws Exception

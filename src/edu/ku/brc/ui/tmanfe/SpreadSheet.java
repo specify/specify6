@@ -128,7 +128,8 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
 	private Pair<Integer, Integer>	emphasizedCell		= null;
 	protected SearchReplacePanel	findPanel			= null;
     
-	protected CellRenderer          customCellRenderer = new CellRenderer();
+	protected CellRenderer          customCellRenderer  = new CellRenderer();
+	
 	
     // XXX Fix for Mac OS X Java 5 Bug
     protected int prevRowSelInx = -1;
@@ -397,9 +398,12 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
         
         //add 3-state sort toggle
         setFilters(new CustomToggleSortOrderFP());
+        
     }
     
-    /**
+    
+
+	/**
      * Appends a new Row onto the spreadsheet.
      * @param rowInx the last index
      * @param adjustPanelSize whether to resize the header panel
@@ -1157,9 +1161,6 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
 
     
     
-	//------------------------------------------------------------------------------
-    //-- Inner Classes
-    //------------------------------------------------------------------------------
 
     /**
      * @author timbo

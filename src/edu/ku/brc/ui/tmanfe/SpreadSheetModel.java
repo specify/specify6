@@ -30,6 +30,7 @@ import javax.swing.table.AbstractTableModel;
  * Mar 8, 2007
  *
  */
+@SuppressWarnings("serial")
 public abstract class SpreadSheetModel extends AbstractTableModel
 {
     protected SpreadSheet spreadSheet = null;
@@ -55,7 +56,7 @@ public abstract class SpreadSheetModel extends AbstractTableModel
     public abstract void appendRow();
     
     public abstract int getColDataLen(final int column);
-    
+        
     /**
      * Cleans up references.
      */

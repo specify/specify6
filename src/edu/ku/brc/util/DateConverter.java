@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
+package edu.ku.brc.util;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -41,11 +41,7 @@ import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
  * 
  * Mostly copied from Josh's GeoRefConverter class.
  * 
- * Needs more formats.
- * Also problems with conversion, for example 5-42-1999 gets converted to june 11, 1999, which is probably not desirable?
- * Also, error handling is not thought out at all.
- * Oh, and, how to tell if 7/6/2007 means july 6 or june 7?? 
- *
+ * 
  */
 public class DateConverter
 {

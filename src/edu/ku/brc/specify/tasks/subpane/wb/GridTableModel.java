@@ -47,6 +47,7 @@ import edu.ku.brc.ui.tmanfe.SpreadSheetModel;
  * Mar 8, 2007
  *
  */
+@SuppressWarnings("serial")
 public class GridTableModel extends SpreadSheetModel
 {
     private static final Logger log = Logger.getLogger(GridTableModel.class);
@@ -254,6 +255,12 @@ public class GridTableModel extends SpreadSheetModel
         }
     }
 
+    /**
+     * @param value
+     * @param row
+     * @param column
+     * @param isUserEdit
+     */
     public void setValueAt(Object value, int row, int column, boolean isUserEdit)
     {
         //Right now, isUserEdit is only false if a GeoRefConversion is responsible for the setValueAt() call.
@@ -449,4 +456,12 @@ public class GridTableModel extends SpreadSheetModel
         imageMappingItem = null;
     }
     
+    /**
+     * @param column
+     * @return mapping for column
+     */
+    public WorkbenchTemplateMappingItem getColMapping(int column)
+    {
+    	return headers.get(column);
+    }
 }

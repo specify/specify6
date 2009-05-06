@@ -98,7 +98,7 @@ public class SearchReplacePanel extends JPanel
     private JTextField            replaceField            = createTextField();
     private JCheckBox             matchCaseButton;
     private JCheckBox             wrapSearchButton;
-    private JCheckBox             searchSelectionButton;
+    private JCheckBox             searchSelectionChkBx;
     private JLabel                statusInfo;
 
     private HideFindPanelAction   hideFindPanelAction     = new HideFindPanelAction();
@@ -327,8 +327,8 @@ public class SearchReplacePanel extends JPanel
             }
         });
                
-        searchSelectionButton = createCheckBox(getResourceString("SS_SR_SELECTED"));
-        searchSelectionButton.addItemListener(new ItemListener()
+        searchSelectionChkBx = createCheckBox(getResourceString("SS_SR_SELECTED"));
+        searchSelectionChkBx.addItemListener(new ItemListener()
         {
             public void itemStateChanged(ItemEvent e)
             {
@@ -337,7 +337,7 @@ public class SearchReplacePanel extends JPanel
             }
         });
 
-        searchSelectionButton.setEnabled(false);
+        //searchSelectionChkBx.setEnabled(false);
         
         builder.add(cancelButton, cc.xy(1, 1));
 		builder.add(findLabel, cc.xy(3, 1));
@@ -346,7 +346,7 @@ public class SearchReplacePanel extends JPanel
 		builder.add(previousButton, cc.xy(9, 1));
 		builder.add(matchCaseButton, cc.xy(11, 1));
 		builder.add(wrapSearchButton, cc.xy(13, 1));
-		builder.add(searchSelectionButton, cc.xy(15, 1));
+		builder.add(searchSelectionChkBx, cc.xy(15, 1));
         
        // statusInfo = createLabel("");
        // builder.add(statusInfo,          cc.xy(15,1));
@@ -490,7 +490,7 @@ public class SearchReplacePanel extends JPanel
      */
     public void setSearchSelectionOption()
     {
-    	searchSelection = searchSelectionButton.isSelected();
+    	searchSelection = searchSelectionChkBx.isSelected();
     	//XXX need to clear current state??????????
     }
     
