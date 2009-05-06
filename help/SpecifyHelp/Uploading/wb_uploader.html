@@ -23,7 +23,7 @@
 <p>The WorkBench is both a stand alone tool and an integrate part of the Specify platform. The Upload function is only available in the Specify WorkBench, not the stand alone WorkBench. Data Sets created using the stand alone version will need to be exported and reimported into the Specify 6 WorkBench  for uploading. The current version of the stand alone WorkBench is not able to export Data Sets along with their mapping information, but a future release of the WorkBench will have this capability.</p>
 <p>Data Sets in the Specify WorkBench can be uploaded into Specify 6 with the Uploader tool. This makes the uploader a fast and easy way to transfer data from an MS Excel or CSV file into Specify by first <a href="../Workbench/ImportData.html">importing</a> the data into the WorkBench. Before uploading the Data Set please note the following:</p>
 <ul>
-  <li>Check  Data Set mapping and verify that Data Set fields are being mapped to the correct fields in Specify 6.</li><br />
+  <li>Check  Data Set mapping and verify that Data Set fields are being mapped to the correct fields in Specify 6. When importing MS Excel and CSV files the automapping does not always find the correct fields (especially when using latitude 1, Genus, Species and Author fields) and require some remapping.</li><br />
   <li>Check existing data in Specify to verify that data being uploaded will not add a duplicate record because of a typo or abbreviation. One example is Geography. If you have run the Wizard and uploaded the Geography data the United States exists within the Geography table (and tree) as 'United States'. If your Data Set includes the United States as anything other than 'United States' (for example, 'US' or 'USA') the Upload function will create a new Geography record (and node on the Geography tree). </li><br />
   
   <li>Columns in imported files that do not map to a specific Specify  field should be mapped to a Text or Number field. These fields will then need to be renamed accordingly within Specify to display correctly on forms and become searchable in queries. This can be accomplished by changing the field caption in the <a href="../../SchemaConfig/schema_config.html#change_caption">Schema Configuration tool</a>. </li>
@@ -78,8 +78,9 @@
         <td><blockquote>
           <p><u>Catalog Number</u><br />
            Collecting Event and Taxon (not the Taxon Only table) data must be associated with a Catalog Number.          </p>
-          <p>The Catalog Number format in the Data Set must match the field format for Catalog Number in Specify. </p>
-          <p>Catalog Numbers that are formatted to be auto incremented in Specify can be left blank in the Data Set and will be created automatically when Uploading into Specify. </p>
+          <p>The Catalog Number format in the Data Set must match the field format (including the length) for Catalog Number in Specify. </p>
+          <p>Catalog Numbers that are numeric only and auto incremented in Specify can be left blank in the Data Set and will be created automatically when Uploading into Specify. The new numbers will begin their numbering sequence based on the last number in the database.</p>
+          <p>Catalog Number that are not formatted as an incremented number must contain data to upload.</p>
           <p><u>Accession</u><br />
             The format of the accession number in the Data Set must match the field format for Accession Number in Specify.          </p>
           <p><u><a name="lat_long_formats" id="lat_long_formats"></a>Locality</u><br />
@@ -89,20 +90,22 @@
              DD MM SS.SS (32 45 42.84)<br />
              DD.DDDD N/S/E/W (32.7619 N)<br />
              DD MM.MM N/S/E/W (32 45.714 N)<br />
-             DD MM SS.SS N/S/E/W (32 45 42.84 N) 
-          </p>
+             DD MM SS.SS N/S/E/W (32 45 42.84 N)          </p>
           <p> Formats can be changed using the <a href="LatLongConvert.html"> Lat/Long Converter</a>.</p>
+          <p>Double quotes must be used for seconds (not single quotes).</p>
           <p><u>Taxon, Geography, Lithostratigraphy, Chronostratigraphy and Storage </u><br />
-              All required ranks must be present and contain data.<br />
+            All required ranks must be present and contain data.</p>
+          <p><br />
             Tree levels (ranks) being uploaded must be present in the <a href="../../Trees/editing_tree_def.html">Tree Definition</a> in Specify.</p>
-            <p>When uploading only Taxon data  (to add to the Taxon tree) use the mapping fields from the  Taxon Only data types.</p>
-            <p>When uploading Taxon data along with other data the Genus, Species, Subspecies and Variety fields need to come from the Determinations data type (mapping).<br />
+          <p>When uploading only Taxon data  (to add to the Taxon tree) use the mapping fields from the  Taxon Only data types.</p>
+            <p>When uploading Taxon data along with other data the Genus, Species, Subspecies and Variety fields need to come from the Determinations data type (mapping).</p>
+            <p>If the highest rank in the Data Set does not match with a rank in the taxon tree new ranks will be created with the name of the Data Set being uploaded.<br />
             </p>
             <p><u>Collection Objects, Accessions, Loan</u><br />
             Any formats used in the Data Set must match the format specified for the mapped field in Specify. </p>
-            <p>Any preset values for Pick Lists in Specify must match the values in the data set or the data will not upload.</p>
-            <p><u>Dates</u><br />
-            Partial Dates are allowed for Collecting Event Start, Collecting Event End, Cataloged Date, Determination Date and Preparation Date in both the uploader and in the Specify database. Dates are uploaded in the US format (month, day, year) and allow zeros or dashes for unknown month or day. Any dashes or zeros for month or day are stored as '01' in the Specify database, which is used for search results. </p>
+            <p>Any preset values for Pick Lists in Specify must match the values (and format) in the data set or the data will not upload.</p>
+            <p><u>Dates</u><br />Dates will upload using the format set in the Specify System Preferences. </p>
+            <p>Partial Dates are allowed for Collecting Event Start, Collecting Event End, Cataloged Date, Determination Date and Preparation Date in both the uploader and in the Specify database. Dates are uploaded in the US format (month, day, year) and allow zeros or dashes for unknown month or day. Any dashes or zeros for month or day are stored as '01' in the Specify database, which is used for search results. </p>
             <p>00 --- 1968 (= 1968 in the form but 01 01 1968 in the database)<br />
               00-----1968 (= 1968 in the form but 01/01/1968 in the database)<br />
               00 00 1999  (= 1999 in the form but 01/01/1999 in the database)<br />
@@ -119,7 +122,8 @@
               1999 00 00 (= 1999 in the form but 01/01/1999 in the database)<br />
             1999 02 00 (= 02/1999 in the form but 01/01/1989 in the database)</p>
             <p>Valid separators are '.' (period), '/' (forward slash), ' ' (space),and '-' (dash).</p>
-            <p>&nbsp;</p>
+            <p>Preparations</p>
+            <p>If the Data Set does not include a Prep Type field one will not be created automatically (for disciplines that use </p>
         </blockquote></td>
       </tr>
       </table>
@@ -130,24 +134,24 @@
   <br />
   <br /><strong>Tables</strong> lists the tables that are included in the upload.<br />
     <br />
-    <strong>Messages</strong> is used by the Uploader to present progress and other information to the user.<br />
-    <br />
     <strong>Match Action </strong>configures the Uploader response when more than one matching record is found.<br />
     <br /><ul>
       <li>
     <u>Prompt</u> will display the matching records in a dialog and require the user to choose which of the matching records to use. A choice to add a new record is also provided.</li>
     <br />
     <br />
-    <li><u>Prompt and Remember</u> will treat the first record with matches exactly as a 'Prompt' above, but will remember the choice and automatically use it again when identical values are found for succeeding records.</li>
-    <br />
-    <br />
     <li><u>Add New Record</u> will simply add a new record and not search for matches. This may cause duplicate records in the database.</li>
     <br />
     <br />
     <li><u>Pick First</u> will choose the first match found and not prompt the user. A message indicating these will appear in the message portion of the Uploader.</li>
-    <br /><br />
-     <li><u>Skip Row</u> will skip the matching Data Set record.<br /><br />
-    </li></ul><br />
+    <br />
+    <br />
+     <li><u>Skip Row</u> will skip the matching Data Set record.</li>
+     <li><u>Remember Choices </u>will treat the first record with matches exactly as a 'Prompt' above, but will remember the choice and automatically use it again when identical values are found for succeeding records.<br />
+       <br />
+       </li>
+    </ul>
+<br />
     <strong>Match Empty Cells</strong> will search empty fields as part of the search criteria and require a match when set to <em>True</em> and disregard empty fields when set to <em>False</em>.<br />
     <br /><br />
   <li>Click Upload.  While the upload is processing, each Table in the Affected Tables window keeps a tally of the number of records updated. The individual records that are updated are listed in the Messages window. The Upload can be paused at any time by clicking the <em>Pause</em> button on the status bar, or stopped by clicking the <em>Pause</em> button and then the <em>Close</em> button. Click the <em>Upload</em> button to start the upload process again. Any uploaded records can be discarded by clicking the <em>Undo</em> button on the Workspace.  </li>

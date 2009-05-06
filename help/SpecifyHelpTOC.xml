@@ -3,7 +3,7 @@
   PUBLIC "-//Sun Microsystems Inc.//DTD JavaHelp TOC Version 1.0//EN"
          "http://java.sun.com/products/javahelp/toc_1_0.dtd">
 <toc version="1.0">
-    <tocitem text="Specify" target="specify">
+    <tocitem text="Specify" target="About">
 <!--
       <tocitem text="Configuring a Database" target="ConfiguringDatabase"/>
       <tocitem text="Logging In" target="login"/>
