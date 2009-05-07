@@ -167,7 +167,17 @@ public class WorkbenchTask extends BaseTask
     public static final String     IMAGES_FILE_PATH      = "wb.imagepath";
     public static final String     IMPORT_FILE_PATH      = "wb.importfilepath";
     public static final String     EXPORT_FILE_PATH      = "wb.exportfilepath";
-       
+
+    /**
+     * internationalized boolean string representations for validation.
+     */
+    public static String[]                           boolStrings                  = {
+            getResourceString("WB_TRUE"), getResourceString("WB_FALSE"),
+            getResourceString("WB_TRUE_ABBR"), getResourceString("WB_FALSE_ABBR"),
+            getResourceString("WB_YES"), getResourceString("WB_NO"),
+            getResourceString("WB_YES_ABBR"), getResourceString("WB_NO_ABBR"), "1", "0" };
+
+    
     protected static SoftReference<DBTableIdMgr> databasechema = null;
 
     // Data Members

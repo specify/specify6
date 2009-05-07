@@ -81,6 +81,7 @@ import edu.ku.brc.specify.datamodel.PreparationAttribute;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.dbsupport.RecordTypeCodeBuilder;
+import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Field;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Relationship;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Table;
@@ -207,14 +208,6 @@ public class UploadTable implements Comparable<UploadTable>
      */
     protected Vector<MatchRestriction>              restrictedValsForAddNewMatch = null;
 
-    /**
-     * internationalized boolean string representations for validation.
-     */
-    protected static String[]                           boolStrings                  = {
-            getResourceString("WB_TRUE"), getResourceString("WB_FALSE"),
-            getResourceString("WB_TRUE_ABBR"), getResourceString("WB_FALSE_ABBR"),
-            getResourceString("WB_YES"), getResourceString("WB_NO"),
-            getResourceString("WB_YES_ABBR"), getResourceString("WB_NO_ABBR"), "1", "0" };
 
     protected boolean                                   validatingValues             = false;
     protected Object                                    autoAssignedVal              = null; //Assuming only one per table.
@@ -1149,12 +1142,12 @@ public class UploadTable implements Comparable<UploadTable>
                 else
                 {
                     int i;
-                    for (i = 0; i < boolStrings.length; i++)
+                    for (i = 0; i < WorkbenchTask.boolStrings.length; i++)
                     {
-                        if (fldStr.equalsIgnoreCase(boolStrings[i]))
+                        if (fldStr.equalsIgnoreCase(WorkbenchTask.boolStrings[i]))
                             break;
                     }
-                    if (i == boolStrings.length) { throw new UploaderException(
+                    if (i == WorkbenchTask.boolStrings.length) { throw new UploaderException(
                             getResourceString("WB_INVALID_BOOL_CELL_VALUE"),
                             UploaderException.INVALID_DATA); }
                     arg[0] = i % 2 == 0 ? true : false;

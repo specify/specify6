@@ -1243,7 +1243,7 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
             super();
             _emptyBorder  = new EmptyBorder(2, 2, 2, 2);
             _selectBorder = new LineBorder(Color.BLUE);
-            _emphasizedBorder = new LineBorder(Color.RED);
+            _emphasizedBorder = new LineBorder(Color.BLUE);
             //_selectBorder = BorderFactory.createBevelBorder(BevelBorder.LOWERED);
             //setOpaque(true);
             //setHorizontalAlignment(SwingConstants.CENTER);

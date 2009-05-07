@@ -27,6 +27,7 @@ import java.util.Vector;
 import javax.swing.ImageIcon;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.datamodel.Workbench;
@@ -53,6 +54,7 @@ public class GridTableModel extends SpreadSheetModel
     private static final Logger log = Logger.getLogger(GridTableModel.class);
             
     protected Workbench          workbench;
+    protected boolean            batchMode        = false;
     protected boolean            isInImageMode    = false;
     protected boolean            isUserEdit       = true;
     protected ImageIcon          blankIcon = IconManager.getIcon("Blank", IconManager.IconSize.Std16);
@@ -250,12 +252,21 @@ public class GridTableModel extends SpreadSheetModel
         
         if (getRowCount() >= 0)
         {
-            workbench.getWorkbenchRowsAsList().get(row).setData(value.toString(), (short)column, isUserEdit);
-            fireDataChanged();
+            String currentValue = workbench.getWorkbenchRowsAsList().get(row).getData(column);
+            boolean changed = !StringUtils.equals(currentValue, value.toString());
+            if (changed)
+            {
+            	workbench.getWorkbenchRowsAsList().get(row).setData(value.toString(), (short)column, isUserEdit);
+            	if (!batchMode)
+            	{
+            		fireTableCellUpdated(row, column);
+            	}
+            }
         }
     }
 
-    /**
+    
+	/**
      * @param value
      * @param row
      * @param column
@@ -464,4 +475,27 @@ public class GridTableModel extends SpreadSheetModel
     {
     	return headers.get(column);
     }
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.ui.tmanfe.SpreadSheetModel#isBatchMode()
+	 */
+	@Override
+	public boolean isBatchMode()
+	{
+		return batchMode;
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.ui.tmanfe.SpreadSheetModel#setBatchMode(boolean)
+	 */
+    /**
+     * Caller must take responsibility clearing this flag and
+     * calling fireTableChanged or other necessary methods
+     * when batch operation is completed.
+     */
+	@Override
+	public void setBatchMode(boolean value)
+	{
+		batchMode = value;
+	}
 }

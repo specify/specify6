@@ -73,6 +73,10 @@ public class WorkbenchSpreadSheet extends SpreadSheet
     	{
     		return new DateColumnComparator();
     	}
+    	if (dataClass.equals(Boolean.class))
+    	{
+    		return new BooleanColumnComparator();
+    	}
     	if (isGeoRefMapping(mapping))
     	{
     		return new GeoRefColumnComparator();
@@ -301,7 +305,76 @@ public class WorkbenchSpreadSheet extends SpreadSheet
 			//this seems a little dubious...
 			return new Double(n0.doubleValue()).compareTo(n1.doubleValue());
 		}
-    	
+    }
+    
+	     /**
+	      * @author timbo
+	      *
+	      *Compares values in boolean columns.
+	      *
+	      *Non booleans are less than booleans.
+	      *false is less than true.
+	      */
+	    public class BooleanColumnComparator implements Comparator<String>
+	    {
+	    	
+	    	/**
+	    	 * @param fldStr
+	    	 * @return a Boolean value for fldStr, null if Bool val cannot be determined.
+	    	 */
+	    	protected Boolean getBool(final String fldStr)
+	    	{
+                
+	    		if (fldStr == null || fldStr.equals(""))
+                {
+                    return null;
+                }
+                else
+                {
+                    int i;
+                    for (i = 0; i < WorkbenchTask.boolStrings.length; i++)
+                    {
+                        if (fldStr.equalsIgnoreCase(WorkbenchTask.boolStrings[i]))
+                            break;
+                    }
+                    if (i == WorkbenchTask.boolStrings.length) 
+                    { 
+                    	return null;
+                    }
+                   return i % 2 == 0 ? true : false;
+                }
+	    		
+	    	}
+	    	
+			/* (non-Javadoc)
+			 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+			 */
+			@Override
+			public int compare(String arg0, String arg1)
+			{
+				Boolean b0 = getBool(arg0);
+				Boolean b1 = getBool(arg1);
+
+				
+				//if both are invalid just sort by string value
+				if (b0 == null && b1 == null)
+				{
+					return arg0.compareTo(arg1);
+				}
+				
+				//non-bools are less than bools
+				if (b0 == null && b1 != null)
+				{
+					return -1;
+				}
+				if (b0 != null && b1 == null)
+				{
+					return 1;
+				}
+				
+				return (b0.compareTo(b1));
+			}
+
     }
 
 }
