@@ -119,9 +119,10 @@
             <desc><![CDATA[The Collection Object form.]]></desc>
             <enableRules/>
             
-            <columnDef os="exp">p,2px,220px,5px:g,p,2px,255px,5px:g,p,2px,200px,p,p:g</columnDef>
             <columnDef>100px,2px,195px,5px,96px,2px,210px,5px,94px,2px,101px,15px,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,195px,5px,125px,2px,210px,5px,125px,2px,131px,15px,p:g</columnDef>
             <columnDef os="mac">130px,2px,215px,5px,138px,2px,255px,5px,138px,2px,155px,15px,p:g</columnDef>
+            <columnDef os="exp">p,2px,min(p;220px),5px:g,p,2px,p,5px:g,p,2px,200px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             <rows>
                 <row>
@@ -199,9 +200,10 @@
             <enableRules/>
 
 
-            <columnDef os="exp">p,2px,255px,5px:g,p,2px,220px,5px:g,p,2px,70px,5px:g,p,p:g</columnDef>
             <columnDef>100px,2px,210px,5px,75px,2px,195px,5px,80px,2px,46px,5px,85px,0px,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,215px,5px,110px,2px,200px,5px,105px,2px,56px,5px,95px,0px,p:g</columnDef>
             <columnDef os="mac">130px,2px,255px,5px,120px,2px,234px,5px,127px,2px,90px,5px,80px,0px,p:g</columnDef>
+            <columnDef os="exp">p,2px,p,5px:g,p,2px,p,5px:g,p,2px,70px,5px:g,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             <rows>
                 <row>
@@ -237,9 +239,10 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[Collecting Event]]></desc>
 
-            <columnDef os="exp">p,2px,255px,5px:g,p,2px,255px,5px:g,p,2px,p:g,0px</columnDef>
             <columnDef>100px,2px,210px,5px,75px,2px,210px,5px,90px,2px,111px,0px,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,210px,5px,105px,2px,210px,5px,125px,2px,136px,0px,p:g</columnDef>
             <columnDef os="mac">130px,2px,255px,5px,95px,2px,255px,5px,125px,2px,181px,0px,p:g</columnDef>
+            <columnDef os="exp">p,2px,p,5px:g,p,2px,255px,5px:g,p,2px,p:g,0px</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             
             <rows>
@@ -287,9 +290,10 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[Collecting Event]]></desc>
             
-            <columnDef os="exp">p,2px,190px,5px:g,p,2px,255px,5px:g,p,2px,110px,p,p,p:g</columnDef>
             <columnDef>100px,2px,200px,5px,90px,2px,210px,5px,96px,2px,115px,0px,15px,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,240px,5px,100px,2px,215px,5px,106px,2px,125px,0px,15px,p:g</columnDef>
             <columnDef os="mac">130px,2px,251px,5px,130px,2px,270px,5px,130px,2px,130px,0px,15px,p:g</columnDef>
+            <columnDef os="exp">p,2px,max(p;190px),5px:g,p,2px,p,5px:g,p,2px,110px,p,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             
             <rows>
@@ -341,9 +345,10 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[Form For CollectionObjectCitation]]></desc>
 
-            <columnDef os="exp">p,2px,220px,p:g</columnDef>
             <columnDef>100px,2px,210px,500px,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,215px,585px,p:g</columnDef>
             <columnDef os="mac">130px,2px,241px,684px,p:g</columnDef>
+            <columnDef os="exp">p,2px,p,p:g</columnDef>
             <rowDef auto="true" sep="2px" cell="p"/>
             <rows>
 
@@ -398,9 +403,10 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[Locality]]></desc>
             
-            <columnDef os="exp">p,2px,85px,5px:g,p,2px,85px,5px:g,p,2px,116px,5px:g,p,2px,88px,0px,p,p:g</columnDef>
             <columnDef>100px,2px,85px,5px,100px,2px,85px,5px,115px,2px,116px,5px,115px,2px,88px,0px,15px,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,105px,5px,105px,2px,105px,5px,119px,2px,125px,5px,120px,2px,105px,0px,15px,p:g</columnDef>
             <columnDef os="mac">130px,2px,120px,5px,116px,2px,120px,5px,137px,2px,120px,5px,146px,2px,120px,0px,15px,p:g</columnDef>
+            <columnDef os="exp">p,2px,85px,5px:g,p,2px,85px,5px:g,p,2px,116px,5px:g,p,2px,88px,0px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             <enableRules>
                 <rule id="georef"><![CDATA[localityName.isNotEmpty() && geography.isNotEmpty()]]></rule>
@@ -479,9 +485,10 @@
             <desc><![CDATA[Stratigraphy subform within Collection Object form.]]></desc>
             <enableRules/>
             
-            <columnDef os="exp">p,2px,220px,5px:g,p,2px,220px,5px:g,p,2px,220px,p:g</columnDef>
             <columnDef>100px,2px,200px,5px,49px,2px,200px,5px,58px,2px,200px,0px,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,210px,5px,74px,2px,210px,5px,82px,2px,210px,0px,p:g</columnDef>
             <columnDef os="mac">130px,2px,241px,5px,87px,2px,241px,5px,101px,2px,241px,0px,p:g</columnDef>
+            <columnDef os="exp">p,2px,p,5px:g,p,2px,p,5px:g,p,2px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
