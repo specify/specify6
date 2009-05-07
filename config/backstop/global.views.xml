@@ -520,9 +520,11 @@
             <desc><![CDATA[The AgentVariant form.]]></desc>
             <enableRules/>
             
-            <columnDef os="exp">p,2px,190px,5px,100px,2px,p:g</columnDef>
             <columnDef>100px,2px,190px,5px,50px,2px,478px,p,p:g</columnDef>
-            <columnDef os="mac">130px,2px,175px,5px,80px,2px,638px,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,200px,5px,70px,2px,523px,p,p:g</columnDef>
+            <columnDef os="mac">130px,2px,150px,5px,80px,2px,663
+            <columnDef os="exp">p,2px,max(p;190px),5px,100px,2px,p:g</columnDef>
+            px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
@@ -554,9 +556,10 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[Agent subform for Acessions.]]></desc>
 
-            <columnDef os="exp">p,2px,190px,5px:g,p,2px,190px,5px:g,p,2px,89px,2px,p,p,p:g</columnDef>
             <columnDef>100px,2px,190px,5px,100px,2px,190px,5px,105px,2px,89px,2px,35px,15px,p:g</columnDef>
-            <columnDef os="mac">130px,2px,230px,5px,121px,2px,230px,5px,140px,2px,125px,2px,38px,15px,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,200px,5px,115px,2px,200px,5px,119px,2px,115px,2px,35px,15px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,230px,5px,120px,2px,230px,5px,139px,2px,125px,2px,38px,15px,p:g</columnDef>
+            <columnDef os="exp">p,2px,max(p;190px),5px:g,p,2px,max(p;190px),5px:g,p,2px,89px,2px,p,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
 
             <rows>
@@ -759,9 +762,10 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[Address subform for Acessions.]]></desc>
             
-            <columnDef os="exp">p,2px,120px,5px:g,p,2px,120px,5px:g,p,2px,120px,5px:g,p,2px,120px,p:g</columnDef>
             <columnDef>100px,2px,113px,5px,80px,2px,113px,5px,90px,2px,113px,5px,80px,2px,113px,0px,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,125px,5px,90px,2px,125px,5px,99px,2px,125px,5px,90px,2px,125px,0px,p:g</columnDef>
             <columnDef os="mac">130px,2px,130px,5px,115px,2px,130px,5px,127px,2px,130px,5px,115px,2px,130px,0px,p:g</columnDef>
+            <columnDef os="exp">p,2px,113px,5px:g,p,2px,113px,5px:g,p,2px,113px,5px:g,p,2px,113px,p:g</columnDef>
             <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
             
             <rows>
@@ -878,9 +882,10 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[Author subform for Reference Work]]></desc>
             
-            <columnDef os="exp">p,2px,102px,10px,86px,2px,102px,10px,86px,2px,150px,3px,p,p:g</columnDef>
             <columnDef>100px,2px,102px,10px,86px,2px,102px,10px,86px,2px,150px,3px,p,p:g</columnDef>
+            <columnDef os="lnx">100px,2px,102px,10px,86px,2px,102px,10px,86px,2px,150px,3px,p,p:g</columnDef>
             <columnDef os="mac">130px,2px,102px,10px,p,2px,102px,10px,p,2px,150px,3px,p,p:g</columnDef>
+            <columnDef os="exp">p,2px,102px,10px,86px,2px,102px,10px,86px,2px,150px,3px,p,p:g</columnDef>
             <rowDef auto="true" sep="2px" cell="p"/>
             <rows>
                 <row>
@@ -903,9 +908,10 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[Author subform for Reference Work]]></desc>
             
-            <columnDef os="exp">p,2px,240px,p:g</columnDef>
             <columnDef>100px,2px,240px,485px,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,265px,535px,p:g</columnDef>
             <columnDef os="mac">130px,2px,250px,650px,p:g</columnDef>
+            <columnDef os="exp">p,2px,p,p:g</columnDef>
             <rowDef auto="true" sep="2px" cell="p"/>
             <rows>
                 <row>
@@ -927,9 +933,10 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The Journal form]]></desc>
 
-            <columnDef os="exp">p,2px,473px,5px:g,p,2px,125px,p,p:g</columnDef>
             <columnDef>100px,2px,473px,5px,120px,2px,125px,15px,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,460px,5px,150px,2px,183px,15px,p:g</columnDef>
             <columnDef os="mac">130px,2px,518px,5px,180px,2px,195px,15px,p:g</columnDef>
+            <columnDef os="exp">p,2px,473px,5px:g,p,2px,125px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             <rows>
                 <row>
@@ -971,9 +978,10 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The ReferenceWork form]]></desc>
 
-            <columnDef os="exp">p,2px,160px,5px:g,p,2px,150px,5px:g,p,2px,151px,p,p:g</columnDef>
             <columnDef>100px,2px,160px,5px,100px,2px,150px,5px,150px,2px,151px,15px,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,176px,5px,100px,2px,175px,5px,160px,2px,175px,15px,p:g</columnDef>
             <columnDef os="mac">130px,2px,203px,5px,100px,2px,203px,5px,185px,2px,195px,15px,p:g</columnDef>
+            <columnDef os="exp">p,2px,max(p;160px),5px:g,p,2px,150px,5px:g,p,2px,151px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             <rows>
                 <row>
@@ -1018,9 +1026,10 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The ReferenceWork form]]></desc>
 
-            <columnDef os="exp">p,2px,160px,5px:g,p,2px,150px,5px:g,p,2px,151px:g</columnDef>
             <columnDef>100px,2px,160px,5px,100px,2px,150px,5px,150px,2px,151px,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,166px,5px,100px,2px,165px,5px,175px,2px,180px,p:g</columnDef>
             <columnDef os="mac">130px,2px,203px,5px,100px,2px,203px,5px,185px,2px,195px,p:g</columnDef>
+            <columnDef os="exp">p,2px,max(p;160px),5px:g,p,2px,150px,5px:g,p,2px,151px:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             <rows>
                 <row>
@@ -1161,9 +1170,10 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The ReferenceWork form]]></desc>
 
-            <columnDef os="exp">p,2px,300px,p:g</columnDef>
-            <columnDef>100px,2px,390px,325px,p:g</columnDef>
+            <columnDef>110px,2px,390px,325px,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,425px,385px,p:g</columnDef>
             <columnDef os="mac">130px,2px,492px,408px,p:g</columnDef>
+            <columnDef os="exp">p,2px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             <rows>
                 <row>
@@ -1192,9 +1202,10 @@
                 <rule id="definitionItem"><![CDATA[parent.getValue() != null]]></rule>
             </enableRules> 
             
-            <columnDef os="exp">p,2px,390px,5px:g,p,2px,95px,10px,p,p,p:g</columnDef>
-            <columnDef>100px,2px,375px,5px,133px,2px,95px,10px,95px,15px,p:g</columnDef>
+            <columnDef>100px,2px,385px,5px,133px,2px,95px,10px,95px,15px,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,425px,5px,143px,2px,110px,10px,105px,15px,p:g</columnDef>
             <columnDef os="mac">130px,2px,492px,5px,141px,2px,150px,5px,105px,15px,p:g</columnDef>
+            <columnDef os="exp">p,2px,max(p;390px),5px:g,p,2px,max(p;95px),10px,p,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
@@ -1309,9 +1320,10 @@
                 <rule id="definitionItem"><![CDATA[parent.getValue() != null]]></rule>
             </enableRules>
 
-            <columnDef os="exp">p,2px,323px,5px:g,p,2px,150px,25px,p,0px,p,p:g</columnDef>
             <columnDef>100px,2px,323px,5px,135px,2px,150px,25px,85px,0px,15px,p,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,370px,5px,135px,2px,168px,25px,95px,0px,15px,p,p:g</columnDef>
             <columnDef os="mac">130px,2px,488px,5px,140px,2px,150px,10px,105px,0px,15px,p:g</columnDef>
+            <columnDef os="exp">p,2px,max(p;323px),5px:g,p,2px,max(p;150px),25px,p,0px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
 
             <rows>
@@ -1354,9 +1366,10 @@
              <!--   <rule id="acceptedParent"><![CDATA[!isAccepted.isSelected()]]></rule> -->
             </enableRules>
 
-            <columnDef os="exp">p,2px,445px,5px:g,p,2px,213px,0px,p,p:g</columnDef>
             <columnDef>100px,2px,445px,5px,60px,2px,213px,0px,15px,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,475px,5px,80px,2px,238px,0px,15px,p:g</columnDef>
             <columnDef os="mac">130px,2px,568px,5px,75px,2px,250px,0px,15px,p:g</columnDef>
+            <columnDef os="exp">p,2px,445px,5px:g,p,2px,p,0px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
 
             <rows>
@@ -1394,9 +1407,10 @@
                 <rule id="acceptedGeologicTimePeriod"><![CDATA[!isAccepted.isSelected()]]></rule>
             </enableRules>
 
-            <columnDef os="exp">p,2px,299px,5px:g,p,2px,56px:g,2px,243px,0px,p,p:g</columnDef>
             <columnDef>100px,2px,299px,5px,118px,2px,56px,2px,243px,0px,15px,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,335px,5px,125px,2px,65px,2px,266px,0px,15px,p:g</columnDef>
             <columnDef os="mac">130px,2px,391px,5px,130px,2px,60px,2px,310px,0px,15px,p:g</columnDef>
+            <columnDef os="exp">p,2px,max(p;299px),5px:g,p,2px,56px:g,2px,max(p;243px),0px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
 
             <rows>
@@ -1505,9 +1519,10 @@
                 <rule id="acceptedLithoStrat"><![CDATA[!isAccepted.isSelected()]]></rule>
             </enableRules>
 
-            <columnDef os="exp">p,2px,445px,5px:g,p,2px,213px,0px,p,p:g</columnDef>
             <columnDef>100px,2px,445px,5px,60px,2px,213px,0px,15px,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,460px,5px,80px,2px,253px,0px,15px,p:g</columnDef>
             <columnDef os="mac">130px,2px,568px,5px,75px,2px,250px,0px,15px,p:g</columnDef>
+            <columnDef os="exp">p,2px,max(445px;p),5px:g,p,2px,max(p;213px),0px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
 
             <rows>
@@ -1541,9 +1556,10 @@
             <enableRules>
             </enableRules>
             
-            <columnDef os="exp">p,2px,390px,5px:g,p,2px,190px:g</columnDef>
-            <columnDef>100px,2px,390px,5px,118px,2px,190px,p:g</columnDef>
+            <columnDef>100px,2px,390px,5px,118px,2px,210px,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,425px,5px,110px,2px,261px,p:g</columnDef>
             <columnDef os="mac">130px,2px,492px,5px,140px,2px,268px,p:g</columnDef>
+            <columnDef os="exp">p,2px,390px,5px:g,p,2px,190px:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
@@ -1566,9 +1582,10 @@
             <enableRules>
             </enableRules>
             
-            <columnDef os="exp">p,2px,725px,p:g</columnDef>
             <columnDef>100px,2px,725px,0px,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,800px,0px,p:g</columnDef>
             <columnDef os="mac">130px,2px,900px,0px,p:g</columnDef>
+            <columnDef os="exp">p,2px,725px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
@@ -1589,9 +1606,10 @@
             <enableRules>
             </enableRules>
             
-            <columnDef os="exp">p,2px,725px,p:g</columnDef>
             <columnDef>100px,2px,725px,0px,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,800px,0px,p:g</columnDef>
             <columnDef os="mac">130px,2px,900px,0px,p:g</columnDef>
+            <columnDef os="exp">p,2px,725px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
@@ -1612,9 +1630,10 @@
             <enableRules>
             </enableRules>
 
-            <columnDef os="exp">p,2px,725px,p:g</columnDef>
             <columnDef>100px,2px,725px,0px,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,800px,0px,p:g</columnDef>
             <columnDef os="mac">130px,2px,900px,0px,p:g</columnDef>
+            <columnDef os="exp">p,2px,725px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
@@ -1635,9 +1654,10 @@
             <enableRules>
             </enableRules>
             
-            <columnDef os="exp">p,2px,725px,p:g</columnDef>
             <columnDef>100px,2px,725px,0px,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,800px,0px,p:g</columnDef>
             <columnDef os="mac">130px,2px,900px,0px,p:g</columnDef>
+            <columnDef os="exp">p,2px,725px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
