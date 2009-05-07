@@ -532,4 +532,31 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
         }
 		return false;
 	}
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.DBMSUserMgr#verifyEngineAndCharSet()
+     */
+    @Override
+    public boolean verifyEngineAndCharSet(final String dbName)
+    {
+        errMsg = null;
+        Vector<Object[]> rows = BasicSQLUtils.query(connection, "select ENGINE,TABLE_COLLATION FROM information_schema.tables WHERE table_schema = '"+dbName+"'");
+        if (rows != null && rows.size() > 0)
+        {
+            Object[] row = rows.get(0);
+            if (row[0] != null && !row[0].toString().equalsIgnoreCase("InnoDB"))
+            {
+                errMsg = "The engine is not InnoDB.";
+            }
+            if (row[1] != null && !StringUtils.contains(row[1].toString(), "utf8"))
+            {
+                errMsg = (errMsg == null ? "" : errMsg + "\n") + "The character set is not UTF-8."; 
+            }
+        } else
+        {
+            errMsg = "Error checking the database engine and character set.";
+        }
+        return errMsg == null;
+    }
+    
 }

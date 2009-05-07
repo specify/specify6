@@ -131,6 +131,13 @@ public abstract class DBMSUserMgr
 	 * @return true if is at least one table, false if not.
 	 */
 	public abstract boolean doesDBHaveTables();
+	
+    /**
+     * Some databases require a specific engine and also the charset needs to be checked (UTF-8).
+     * @param dbName the database to check.
+     * @return true if ok
+     */
+    public abstract boolean verifyEngineAndCharSet(final String dbName);
 
 	/**
 	 * @return a localized test message describing the error when a method fails

@@ -287,6 +287,11 @@ public class DatabasePanel extends BaseSetupPanel
                                                     dbUserName, 
                                                     dbPwd))
                             {
+                                
+                                if (!checkEngineCharSet(properties))
+                                {
+                                    return false;
+                                }
                                 isOK = true;
                                 
                                 firePropertyChange(PROPNAME, 0, 3);
@@ -379,6 +384,7 @@ public class DatabasePanel extends BaseSetupPanel
      * Checks all the textfields to see if they have text
      * @return true of all fields have text
      */
+    @Override
     public void updateBtnUI()
     {
         boolean isValid = isUIValid();
@@ -401,6 +407,7 @@ public class DatabasePanel extends BaseSetupPanel
      * Checks all the textfields to see if they have text
      * @return true of all fields have text
      */
+    @Override
     public boolean isUIValid()
     {
         JTextField[] txtFields = {usernameTxt, passwordTxt, dbNameTxt};
@@ -495,7 +502,6 @@ public class DatabasePanel extends BaseSetupPanel
         DBMSUserMgr mgr = null;
         try
         {
-            
             String itUsername = props.getProperty(DBUSERNAME);
             String itPassword = props.getProperty(DBPWD);
             String hostName   = props.getProperty(HOSTNAME);
@@ -514,6 +520,60 @@ public class DatabasePanel extends BaseSetupPanel
                     }
                     
                 }
+            }
+            
+        } catch (Exception ex)
+        {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyDBSetupWizard.class, ex);
+            
+        } finally
+        {
+            if (mgr != null)
+            {
+                mgr.close();
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Check the engine and charset.
+     * @param props the props
+     * @return true if it exists
+     */
+    protected boolean checkEngineCharSet(final Properties props)
+    {
+        final String dbName = props.getProperty(DBNAME);
+        
+        DBMSUserMgr mgr = null;
+        try
+        {
+            String itUsername = props.getProperty(DBUSERNAME);
+            String itPassword = props.getProperty(DBPWD);
+            String hostName   = props.getProperty(HOSTNAME);
+            
+            mgr = DBMSUserMgr.getInstance();
+            
+            if (mgr.connectToDBMS(itUsername, itPassword, hostName))
+            {
+                if (!mgr.verifyEngineAndCharSet(dbName))
+                {
+                    String errMsg = mgr.getErrorMsg();
+                    if (errMsg != null)
+                    {
+                        Object[] options = { 
+                                getResourceString("CLOSE")
+                              };
+                        JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
+                                                                     errMsg, 
+                                                                     getResourceString("DEL_CUR_DB_TITLE"), 
+                                                                     JOptionPane.OK_OPTION,
+                                                                     JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+                    } 
+                    return false;
+                }
+                return true;
             }
             
         } catch (Exception ex)

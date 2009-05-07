@@ -799,6 +799,7 @@ public class SpecifyDBSetupWizard extends JPanel
         {
             protected boolean isOK = false;
             
+            @Override
             public Object construct()
             {
                 try
@@ -850,7 +851,6 @@ public class SpecifyDBSetupWizard extends JPanel
                     
                     bsd.setDataType(dataType);
                     
-                    @SuppressWarnings("unused")
                     Division division = bsd.createEmptyDivision(institution, disciplineType, user, props, true, true);
                     isOK = division != null;
                     
@@ -878,6 +878,7 @@ public class SpecifyDBSetupWizard extends JPanel
             }
     
             //Runs on the event-dispatching thread.
+            @Override
             public void finished()
             {
                 if (isOK)

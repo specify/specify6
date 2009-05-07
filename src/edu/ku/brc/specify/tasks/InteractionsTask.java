@@ -2293,7 +2293,6 @@ public class InteractionsTask extends BaseTask
      * @see edu.ku.brc.af.tasks.BaseTask#doCommand(edu.ku.brc.ui.CommandAction)
      */
     @Override
-    @SuppressWarnings("unchecked")
     public void doCommand(final CommandAction cmdAction)
     {
         super.doCommand(cmdAction);

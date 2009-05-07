@@ -179,6 +179,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.Taskable#initialize()
      */
+    @Override
     public void initialize()
     {
         if (!isInitialized)
@@ -786,6 +787,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
      *  (non-Javadoc)
      * @see edu.ku.brc.af.core.Taskable#getNavBoxes()
      */
+    @Override
     public java.util.List<NavBoxIFace> getNavBoxes()
     {
         initialize();
@@ -847,6 +849,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
         searchText.addActionListener(doQuery);
         searchText.addKeyListener(new KeyAdapter()
         {
+            @Override
             public void keyPressed(KeyEvent e)
             {
                 if (searchText.getBackground() != textBGColor)

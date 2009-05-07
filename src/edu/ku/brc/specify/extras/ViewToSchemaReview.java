@@ -19,6 +19,8 @@
 */
 package edu.ku.brc.specify.extras;
 
+import java.awt.Color;
+import java.awt.Component;
 import java.io.File;
 import java.io.PrintWriter;
 import java.util.Collections;
@@ -26,8 +28,13 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.JLabel;
 import javax.swing.JTable;
+import javax.swing.RowFilter;
+import javax.swing.event.DocumentEvent;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -40,6 +47,8 @@ import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.ui.SearchBox;
+import edu.ku.brc.af.ui.db.JAutoCompTextField;
 import edu.ku.brc.af.ui.forms.persist.AltViewIFace;
 import edu.ku.brc.af.ui.forms.persist.FormCellFieldIFace;
 import edu.ku.brc.af.ui.forms.persist.FormCellIFace;
@@ -53,6 +62,7 @@ import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.ui.BiColorBooleanTableCellRenderer;
 import edu.ku.brc.ui.BiColorTableCellRenderer;
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.ui.UIHelper;
 
 /**
@@ -65,7 +75,10 @@ import edu.ku.brc.ui.UIHelper;
  */
 public class ViewToSchemaReview
 {
-    Vector<Object[]> modelList = new Vector<Object[]>();
+    protected Vector<Object[]>           modelList     = new Vector<Object[]>();
+    protected Hashtable<String, String>  tblTitle2Name = new Hashtable<String, String>();
+    protected TableRowSorter<TableModel> sorter        = null;
+    protected JAutoCompTextField         searchTF      = null;
 
     /**
      * 
@@ -131,14 +144,20 @@ public class ViewToSchemaReview
         }
     }
     
-    private Object[] createRow(final String tblName, final String fldName, final String fldTitle, final Boolean isOnForm)
+    private Object[] createRow(final String tblName, 
+                               final String fldName, 
+                               final String fldTitle, 
+                               final Boolean isOnForm,
+                               final Integer index)
     {
-        Object[] row = new Object[5];
+        Object[] row = new Object[7];
         row[0] = tblName;
         row[1] = fldName;
         row[2] = fldTitle;
         row[3] = isOnForm;
         row[4] = !isOnForm;
+        row[5] = !isOnForm;
+        row[6] = index;
         return row;
     }
     
@@ -216,10 +235,11 @@ public class ViewToSchemaReview
             Hashtable<String, Boolean> tiHash = viewFieldHash.get(ti.getName());
             if (tiHash != null)
             {
+                tblTitle2Name.put(ti.getTitle(), ti.getName());
+                
                 System.err.println(ti.getName() + " ----------------------");
                 for (DBFieldInfo fi : ti.getFields())
                 {
-                    String title = cnt == 0 ? ti.getTitle() : "";
                     Boolean isInForm = tiHash.get(fi.getName()) != null;
                     
                     if (fi.isHidden())
@@ -227,15 +247,14 @@ public class ViewToSchemaReview
                         if (isInForm)
                         {
                             System.err.println("    ["+fi.getName()+"] is hidden but is on a form.");
-                            modelList.add(createRow(title, fi.getName(), fi.getTitle(), isInForm));
-                            cnt++;
+                            modelList.add(createRow(ti.getTitle(), fi.getName(), fi.getTitle(), isInForm, cnt++));
                         }
                     } else
                     {
                         if (!isInForm)
                         {
                             System.err.println("    ["+fi.getName()+"] is visible but is NOT on a form.");
-                            modelList.add(createRow(title, fi.getName(), fi.getTitle(), isInForm));
+                            modelList.add(createRow(ti.getTitle(), fi.getName(), fi.getTitle(), isInForm, cnt++));
                             cnt++;
                         }
                     }
@@ -243,8 +262,6 @@ public class ViewToSchemaReview
                 
                 for (DBRelationshipInfo ri : ti.getRelationships())
                 {
-                    String title = cnt == 0 ? ti.getTitle() : "";
-
                     Boolean isInForm = tiHash.get(ri.getName()) != null;
                     
                     if (ri.isHidden())
@@ -252,7 +269,7 @@ public class ViewToSchemaReview
                         if (isInForm)
                         {
                             System.err.println("    ["+ri.getName()+"] is hidden but is on a form.");
-                            modelList.add(createRow(title, ri.getName(), ri.getTitle(), isInForm));
+                            modelList.add(createRow(ti.getTitle(), ri.getName(), ri.getTitle(), isInForm, cnt++));
                             cnt++;
                         }
                     } else
@@ -260,7 +277,7 @@ public class ViewToSchemaReview
                         if (!isInForm)
                         {
                             System.err.println("    ["+ri.getName()+"] is visible but is NOT on a form.");
-                            modelList.add(createRow(title,  ri.getName(), ri.getTitle(), isInForm));
+                            modelList.add(createRow(ti.getTitle(),  ri.getName(), ri.getTitle(), isInForm, cnt++));
                             cnt++;
                         }
                     }  
@@ -268,14 +285,43 @@ public class ViewToSchemaReview
             }
         }
         
-        JTable table = new JTable(new ViewModel());
-        PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g", "f:p:g"));
-        pb.add(UIHelper.createScrollPane(table), (new CellConstraints()).xy(1, 1));
+        ViewModel viewModel = new ViewModel();
+        JTable    table     = new JTable(viewModel);
+        
+        sorter   = new TableRowSorter<TableModel>(viewModel);
+        searchTF = new JAutoCompTextField(20);
+        
+        table.setRowSorter(sorter);
+        
+        CellConstraints cc        = new CellConstraints();
+        PanelBuilder    pb        = new PanelBuilder(new FormLayout("p,2px,p,f:p:g", "p,4px,f:p:g"));
+        SearchBox       searchBox = new SearchBox(searchTF, null);
+        
+        pb.add(UIHelper.createI18NFormLabel("SEARCH"), cc.xy(1, 1));
+        pb.add(searchBox,                              cc.xy(3, 1));
+        pb.add(UIHelper.createScrollPane(table),       cc.xyw(1, 3, 4));
         pb.setDefaultDialogBorder();
+        
+        
+        sorter.setRowFilter(null);
+        
+        searchTF.getDocument().addDocumentListener(new DocumentAdaptor() {
+            @Override
+            protected void changed(DocumentEvent e)
+            {
+                String text = searchTF.getText();
+                System.out.println("["+text+"]");
+                //rowFilter.include(entry)
+                //sorter.setRowFilter(text.isEmpty() ? null : RowFilter.regexFilter("^"+text, 0, 1));
+                sorter.setRowFilter(text.isEmpty() ? null : RowFilter.regexFilter("^(?i)" + text, 0, 1));
+
+            }
+        });
         
         table.setDefaultRenderer(String.class, new BiColorTableCellRenderer(false));
         table.setDefaultRenderer(Boolean.class, new BiColorBooleanTableCellRenderer());
-        
+        table.getColumnModel().getColumn(0).setCellRenderer(new TitleCellFadeRenderer());
+
         //UIHelper.makeTableHeadersCentered(table, false);
         UIHelper.calcColumnWidths(table, null);
         
@@ -373,6 +419,18 @@ public class ViewToSchemaReview
         }
     }
     
+    protected void updateSchema()
+    {
+        for (Object[] row : modelList)
+        {
+            DBTableInfo ti = DBTableIdMgr.getInstance().getInfoByTableName(tblTitle2Name.get(row[0]));
+            DBFieldInfo fi = ti.getFieldByName(row[1].toString());
+            fi.setHidden((Boolean)row[3]);
+        }
+        
+        
+    }
+    
     class ViewModel extends AbstractTableModel
     {
         protected String[] header = {"Table", "Field Name", "Field Title", "On Form But Hidden", "Not on Form Visible"};
@@ -437,9 +495,67 @@ public class ViewToSchemaReview
         public Object getValueAt(int rowIndex, int columnIndex)
         {
             Object[] row = modelList.get(rowIndex);
+            if (columnIndex == 2)
+            {
+                return row[2] + (row[4].equals(row[5]) ? "" : " *");
+            }
             return row[columnIndex];
+        }
+
+        /* (non-Javadoc)
+         * @see javax.swing.table.AbstractTableModel#setValueAt(java.lang.Object, int, int)
+         */
+        @Override
+        public void setValueAt(Object value, int rowIndex, int columnIndex)
+        {
+            super.setValueAt(value, rowIndex, columnIndex);
+            
+            Boolean isChecked = (Boolean)value;
+            Object[] row = modelList.get(rowIndex);
+            if (columnIndex == 4)
+            {
+                row[3] = !isChecked;
+                row[4] = isChecked;
+                
+                fireTableCellUpdated(rowIndex, 3);
+            } else
+            {
+                row[3] = isChecked;
+                row[4] = !isChecked;
+                
+                fireTableCellUpdated(rowIndex, 4);
+            }
+            fireTableCellUpdated(rowIndex, 2);
         }
         
     }
 
+    class TitleCellFadeRenderer extends BiColorTableCellRenderer
+    {
+        /* (non-Javadoc)
+         * @see javax.swing.table.DefaultTableCellRenderer#getTableCellRendererComponent(javax.swing.JTable, java.lang.Object, boolean, boolean, int, int)
+         */
+        @Override
+        public Component getTableCellRendererComponent(JTable table,
+                                                       Object value,
+                                                       boolean isSelected,
+                                                       boolean hasFocus,
+                                                       int row,
+                                                       int column)
+        {
+            JLabel lbl = (JLabel)super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            Object[] rowData = modelList.get(row);
+            if (row > 0)
+            {
+                Object[] prevRowData = modelList.get(row-1);
+                lbl.setForeground(prevRowData[0].equals(rowData[0]) ? Color.LIGHT_GRAY : Color.BLACK);
+            } else
+            {
+                lbl.setForeground(Color.BLACK);
+            }
+            lbl.setText(rowData[0].toString());
+            return lbl;
+        }
+        
+    }
 }

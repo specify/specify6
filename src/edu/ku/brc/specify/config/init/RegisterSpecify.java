@@ -319,7 +319,6 @@ public class RegisterSpecify
                 }
             }
             
-            @SuppressWarnings("unchecked") //$NON-NLS-1$
             @Override
             public void finished()
             {

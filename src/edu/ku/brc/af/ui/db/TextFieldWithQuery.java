@@ -440,6 +440,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     /* (non-Javadoc)
      * @see javax.swing.JComponent#setEnabled(boolean)
      */
+    @Override
     public void setEnabled(final boolean enabled)
     {
         super.setEnabled(enabled);
@@ -1322,6 +1323,10 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         this.wasCleared = true;
     }
 
+    /* (non-Javadoc)
+     * @see javax.swing.JComponent#requestFocus()
+     */
+    @Override
     public void requestFocus()
     {
         textField.requestFocus();
@@ -1421,6 +1426,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         /* (non-Javadoc)
          * @see javax.swing.JComponent#paint(java.awt.Graphics)
          */
+        @Override
         public void paint(Graphics g)
         {
             super.paint(g);
