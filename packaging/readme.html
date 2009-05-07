@@ -7,37 +7,72 @@ body {
     font-size: 10px;
     }
 
-ul {
-    list-style-type: circle;
-    }
-
 </style>
 
 </head>
 <body>
-<h2>Specify 6.0 Release Notes (readme.html):</h2>
+<h2>Specify 6.0.06 Release Notes</h2>
+<h3>Specify Software Project</h3>
+<h3>7 May 2009</h3>
 
-<p>&nbsp;</p>
+<p>Bugs fixed since release 6.0.03</p>
 
+<ol>
+<li>Could not put new field names onto column names in data set mapping editor. Report Date 4/27 Bugzilla 7265</li>
+<li>Taxon data entry was impossible when Life was the only tree node. Report Date 4/16 Bugzilla 7219</li>
+<li>Saving Collection Object data object caused exception. Report Date 4/23  Bugzilla 7239</li>
+<li>Setting the path of mysqldump and then pressing "backup" was resulting in null pointer warning and error.log.  Report Date 4/16 Bugzilla 7220</li>
+<li>For vertebrate and invertebrate paleontology, Specify would lock up when attempting to view the Taxon Tree. Report Date 4/29  Bugzilla 7278</li>
+<li>An exception was showing up in Query Builder Pane. Report Date 5/1  Bugzilla 7289</li>
+<li>Double-clicking a row in tree-definition editor display would cause Specify to hang. Report Date 4/14 Bugzilla 7209</li>
+<li>Uploaded multiple determinations were mistakenly all being set to current.  Report Date 4/13  Bugzilla 7251</li>
+<li>Could not perform a query combo box search (using magnifying glass)  for collection objects when format Catalog Number [yyyy-######] was being used.  Report Date 4/23  Bugzilla 7250</li>
+<li>Specify Wizard Catalog Number field formatting editor had a lockup problem when attempting to create a new format. The save button would not enable.  Report Date 4/21  Bugzilla 7170</li>
+<li>Attempting to update a tree when the tree was in use caused 'Node Numbers out of date' exceptions. Report Date 4/15 Bugzilla 7218</li>
+<li>Wizard was creating null Fullnames in the taxonomy trees.  Report Date 4/14  Bugzilla 7192</li>
+<li>An error would occur when attempting to save a collection object with Accession format 2009-##### and when there were two divisions with different accession formatting. Report Date 4/15 Bugzilla 7215</li>
+<li>Form improvements across all platforms. Report Date varies Bugzilla varies</li>
+<li>Move and Synonymize operations were very slow on large trees and lacked UI feedback while in progress.  Report Date 4/22  Bugzilla 7238</li>
+<li>After adding a user-defined picklist, attempting to edit the picklist, and then deleting the user-defined picklist caused an exception.  Report Date 4/21  Bugzilla 7232</li>
+<li>Default report name had underbars which are not valid character for reports. Report Date 4/16  Bugzilla 7221</li>
+<li>Invalid path in export of record sets caused an exception.  Report Date 4/29 Bugzilla 7275</li>
+<li>Standard rank names for Geography incorrectly appeared to be editable.  Report Date 4/27 Bugzilla 7262</li>
+<li>Exceptions were occurring when editing collection objects in entomology and mammology databases.  Report Date  4/22  Bugzilla 7237</li>
+<li>Save and New were only functioning for the form they were enabled on.  Report Date 04/21  Bugzilla 7231</li>
+<li>Specify issued an incorrect error message when attempted to change isInFullName.  The error message is now correct.  Report Date 4/28  Bugzilla 7272</li>
+<li>An exception was issued when a Taxon attachment was added. Report Date 04/27 Bugzilla 7260</li>
+<li>When creating a discipline in the wizard, the next button was activated prior to anything being selected. Report Date 4/22  Bugzilla 7236</li>
+<li>Within security tools, checkbox choices were not sticking until save, so if the user reviews their tool changes, they were all reset.  Report date 4/17  Bugzilla 7226</li>
+<li>Apostrophe in simple searches caused an exception. Report date 4/28 Bugzilla 7271</li>
+<li>Uploader was uploading collection records with null catalog numbers.  Report date 5/5 Bugzilla 7310</li>
+<li>Query/Report results were showing the value of the Agent Titles picklist, not the title.  Report Date 4/16 Bugzilla 7222</li>
+<li>Sending an Information Request to email, caused a message saying the file did not exist, but the attachment was in fact sent properly in email.  Report Date 5/5 Bugzilla 7302</li>
+<li>Specify allowed deletion of the Administrator user.  Report Date 4/23  Bugzilla 7248</li>
+<li>The creation of a new discipline with a yet-unused catalog number format disrupted the functioning of the catalog number format in the original discipline.  Report Date 4/24 Bugzilla 7257</li>
+<li>Right-click menu in the Workbench did not have cut, copy, and paste functions. Reported Date 05/01 Bugzilla 7293</li>
+<li>The Workbench did not have keyboard shortcuts (Ctrl-x, Ctrl-c, Ctrl-v) for cut, copy, and paste.  Reported Date 05/01 Bugzilla 7292</li>
+<li>Non-shown query builder fields could have user-configured sorts that were not applied:  the sort feature is now disabled for fields that are not shown.  Reported Date 09/26/2008 Bugzilla 6026</li>
+<li>Queries with aggregated results now return more rapidly.  Reported Date 10/02/2008 Bugzilla 6061</li>
+<li>An exception was generated upon importing a dataset into the Workbench.  Reported Date 04/24 Bugzilla 7259</li>
+<li>The node-arrows for remembered tree expansion states were oriented as though they were not expanded when they actually were.  Reported Date 04/28 Bugzilla 7269</li>
+<li>Reports generated from record sets had an extra, blank page. Reported Date 07/18/2008 Bugzilla 5716</li>
+<li>Added user feedback (indicating Specify is not frozen) for move and synonymize actions within large trees. Date Reported 04/22 Bugzilla 7238</li>
+<li>A blank taxon-parent search within taxon form caused an error.  Date Reported 4/17  Bugzilla 4/17 7224</li>
+<li>Low memory warning used for debugging had not been removed. Date Reported 05/05  Bugzilla 7300</li>
+<li>Added use of * as a wildcard in tree viewer find panel.  Date Reported 04/21 Bugzilla 7235</li>
+<li>The size of the form of the edit dialog for nodes in the taxon tree prevented seeing child taxa and synonyms. Date Reported 04/07 Bugzilla 7129</li>
+<li>The standard rank names for Geography tree definition items were editable and should not have been.  Date Reported 04/27 Bugzilla 7263</li>
+<li>Datasets with records identified to non-uniform levels of taxonomic specification only uploaded the set of most specific records.  Date Reported 04/23 Bugzilla 7247</li>
+<li>Added an "exact" check box to find panel for tree editor (exact means wildcards are not appended to the term automatically).  Reported Date 04/21 Bugzilla 7234</li>
+<li>Users could not revert report resources.  Reported Date 2/11 Bugzilla 6717</li>
+<li>The same credentials could be used for both the MySQL IT and Specify Master user accounts in the Specify Wizard, which caused problems in creating the institution.  Reported Date 04/24 Bugzilla 7252</li>
+<li>System configuration or changing collections sometimes caused the Query Builder to return incorrect results.  Reported Date 04/21 Bugzilla 7233</li>
+<li>Adding a child node to a tree level that was spanned/skipped by the pre-loaded taxon but still enforced caused the node to render in the wrong tree level temporarily.  Reported Date 4/23  Bugzilla 7240</li>
+<li>Additional checks were added to prevent exceptions when logging into Specify. Reported Date 05/01  Bugzilla 7291</li>
+<li>Saving a Collection Object in an Entomology database caused an exception.  Reported Date 4/22 Bugzilla 7237</li>
+	
+	
+</ol>
 
-
-<ul>
-    <li>Specify 6.0 is a wholly new implementation of Specify written in Java as a cross-platform application for managing biological collections data.</li>
-    <li>Released 10 April 2009</li>
-    <li>Licensed under GNU GPL2.</li>
-	<li>Installation packages are available for Windows, MacOS X 10.5+ and Linux. To run Specify 6, JRE 6.0+ and the MySQL 5.1 data manager are required, see the documentation files on the Specify web site for instructions on how to install Java and MySQL prior to installing Specify.</li>
-	<li>The Specify wizard (SpWizard.exe) installed in the Specify  /bin directory is used for creating an initial biological collection in a Specify installation. See the embedded help file in the Wizard for assistance in configuring the first Specify collection.</li>
-	<li>Additional installation documentation will be available soon on the Specify Software web site (specifysoftware.org).</li>
-</ul>
-
-<hr />
-<h2>Description of Changes:</h2>
-<blockquote>
-  <p>The Specify Web site will have complete documentation of the changes to Specify and a description of its many features soon.</p>
-  <p>See the embedded Specify help file, which will be available online on the Specify web site.</p>
-  <p>For additional information, please visit the project website at <a href="http://www.specifysoftware.org">www.specifysoftware.org</a></p>
-  <p>Post Mortem, We sort 'em.</p>
-  <p>(C) 2009, University of Kansas Center for Research</p>
-</blockquote>
 </body>
 </html>
