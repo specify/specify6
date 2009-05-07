@@ -1277,7 +1277,9 @@ public class BasicSQLUtils
                                     final SERVERTYPE sourceServerType,
                                     final SERVERTYPE destServerType)
     {
-        return copyTable(fromConn,toConn,sql,fromTableName,toTableName,colNewToOldMap,verbatimDateMapper,null,sourceServerType,destServerType);
+    	String sqlStr = sql == null ? "select * from " + fromTableName : sql;
+    	
+        return copyTable(fromConn,toConn,sqlStr,fromTableName,toTableName,colNewToOldMap,verbatimDateMapper,null,sourceServerType,destServerType);
     }
 
     /**

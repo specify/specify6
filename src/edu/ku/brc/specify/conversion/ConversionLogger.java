@@ -66,11 +66,18 @@ public class ConversionLogger
      * @return
      * @throws IOException
      */
-    public TableWriter getWriter(final String tableName, final String title) throws IOException
+    public TableWriter getWriter(final String tableName, final String title)
     {
-        String path = dir.getAbsolutePath() + File.separator + tableName;
-        TableWriter tblWriter = new TableWriter(path, title);
-        printWriters.put(tableName, path);
+    	
+    	ConversionLogger.TableWriter tblWriter = null;
+        try
+        {
+            String path = dir.getAbsolutePath() + File.separator + tableName;
+            tblWriter = new TableWriter(path, title);
+            printWriters.put(tableName, path);
+            
+        } catch (IOException ex) { ex.printStackTrace(); }
+
         return tblWriter;
     }
     

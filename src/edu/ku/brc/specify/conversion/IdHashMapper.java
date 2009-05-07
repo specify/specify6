@@ -227,11 +227,11 @@ public class IdHashMapper implements IdMapperIFace
 
         } catch (SQLException ex)
         {
+            ex.printStackTrace();
             edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(IdHashMapper.class, ex);
             log.error("trying to execute:" + sql);
             log.error(ex);
-            ex.printStackTrace();
             
             throw new RuntimeException(ex);
         }

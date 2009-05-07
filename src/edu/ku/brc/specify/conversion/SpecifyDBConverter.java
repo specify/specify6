@@ -482,13 +482,7 @@ public class SpecifyDBConverter
         
         log.debug("Preparing new database");
         
-        if (startfromScratch)
-        {
-            log.debug("Starting from scratch and generating the schema");
-            SpecifySchemaGenerator.generateSchema(driverInfo, hostName, dbNameDest, itUsrPwd.first, itUsrPwd.second);
-        }
-
-        DBConnection oldDB = DBConnection.createInstance(driverInfo.getDriverClassName(), driverInfo.getDialectClassName(), dbNameDest, oldConnStr, itUsrPwd.first, itUsrPwd.second);
+         DBConnection oldDB = DBConnection.createInstance(driverInfo.getDriverClassName(), driverInfo.getDialectClassName(), dbNameDest, oldConnStr, itUsrPwd.first, itUsrPwd.second);
         
         Connection oldDBConn = oldDB.createConnection();
         Connection newDBConn = DBConnection.getInstance().createConnection();
@@ -496,6 +490,12 @@ public class SpecifyDBConverter
         if (!isOldDBOK(oldDBConn))
         {
             return;
+        }
+        
+        if (startfromScratch)
+        {
+            log.debug("Starting from scratch and generating the schema");
+            SpecifySchemaGenerator.generateSchema(driverInfo, hostName, dbNameDest, itUsrPwd.first, itUsrPwd.second);
         }
 
         log.debug("Preparing new database: completed");
@@ -819,6 +819,10 @@ public class SpecifyDBConverter
                     boolean doLoanPreparations = false;
                     if (doLoanPreparations || doAll)
                     {
+                    	conversion.convertLoanRecords(false);     // Loans
+                    	conversion.convertLoanRecords(true);      // Gifts
+                    	conversion.convertLoanAgentRecords(false);// Loans
+                    	conversion.convertLoanAgentRecords(true); // Gifts
                         conversion.convertLoanPreparations();
                         conversion.convertGiftPreparations();
                         frame.incOverall();
@@ -1197,7 +1201,9 @@ public class SpecifyDBConverter
     
     protected boolean isOldDBOK(final Connection conn)
     {
-        int coInnerCnt = BasicSQLUtils.getCount(conn, "SELECT count(*) FROM collectionobject co INNER JOIN collectionobjectcatalog coc ON co.CollectionObjectID = coc.CollectionObjectCatalogID");
+    	StringBuilder errMsgs = new StringBuilder();
+    	
+        /*int coInnerCnt = BasicSQLUtils.getCount(conn, "SELECT count(*) FROM collectionobject co INNER JOIN collectionobjectcatalog coc ON co.CollectionObjectID = coc.CollectionObjectCatalogID");
         int coLeftCnt1 = BasicSQLUtils.getCount(conn, "SELECT count(*) FROM collectionobject co LEFT JOIN collectionobjectcatalog coc ON co.CollectionObjectID = coc.CollectionObjectCatalogID");
         int coLeftCnt2 = BasicSQLUtils.getCount(conn, "SELECT count(*) FROM collectionobjectcatalog coc LEFT JOIN collectionobject co ON co.CollectionObjectID = coc.CollectionObjectCatalogID");
         
@@ -1206,17 +1212,15 @@ public class SpecifyDBConverter
         
         if (cntCO != cntCOC || coInnerCnt != coLeftCnt1 || coInnerCnt != coLeftCnt2)
         {
-            UIRegistry.showError("There is a mismatch between CollectionObjects and CollectionObjectCatalogs");
-            return false;
-        }
+        	errMsgs.append("There is a mismatch between CollectionObjects and CollectionObjectCatalogs\n");
+        }*/
         
         int cntACInnerCO = BasicSQLUtils.getCount(conn, "SELECT count(*) FROM accession INNER JOIN collectionobjectcatalog ON accession.AccessionID = collectionobjectcatalog.AccessionID WHERE CollectionObjectTypeID = 10");
         int cntACLeftCO  = BasicSQLUtils.getCount(conn, "SELECT count(*) FROM accession LEFT JOIN collectionobjectcatalog ON accession.AccessionID = collectionobjectcatalog.AccessionID WHERE CollectionObjectTypeID = 10");
         
         if (cntACInnerCO != cntACLeftCO)
         {
-            UIRegistry.showError("There is a mismatch between Accessions and its CollectionObject references.");
-            return false;
+        	errMsgs.append("There is a mismatch between Accessions and its CollectionObject references.\n");
         }
         
         int cntDTInnerCO = BasicSQLUtils.getCount(conn, "SELECT count(*) FROM determination INNER JOIN collectionobject ON determination.BiologicalObjectID = collectionobject.CollectionObjectID WHERE CollectionObjectTypeID = 10");
@@ -1224,19 +1228,22 @@ public class SpecifyDBConverter
         
         if (cntDTInnerCO != cntDTLeftCO)
         {
-            UIRegistry.showError("There is a mismatch between Determinations and its CollectionObject references.");
-            return false;
+        	errMsgs.append("There is a mismatch between Determinations and its CollectionObject references.\n");
         }
         
-        int cntPPInnerCO = BasicSQLUtils.getCount(conn, "SELECT count(*) FROM collectionobjectcatalog INNER JOIN collectionobject ON collectionobjectcatalog.CollectionObjectCatalogID = collectionobject.CollectionObjectID");
+        /*int cntPPInnerCO = BasicSQLUtils.getCount(conn, "SELECT count(*) FROM collectionobjectcatalog INNER JOIN collectionobject ON collectionobjectcatalog.CollectionObjectCatalogID = collectionobject.CollectionObjectID");
         int cntPPLeftCO  = BasicSQLUtils.getCount(conn, "SELECT count(*) FROM collectionobjectcatalog LEFT JOIN collectionobject ON collectionobjectcatalog.CollectionObjectCatalogID = collectionobject.CollectionObjectID");
         
         if (cntPPInnerCO != cntPPLeftCO)
         {
-            UIRegistry.showError("There is a mismatch between Preparations and its CollectionObject references.");
-            return false;
-        }
+        	errMsgs.append("There is a mismatch between Preparations and its CollectionObject references.\n");
+        }*/
         
+        if (errMsgs.length() > 0)
+        {
+        	UIRegistry.showError(errMsgs.toString());
+        	return false;
+        }
         return true;
     }
     

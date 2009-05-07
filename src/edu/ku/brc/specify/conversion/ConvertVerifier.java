@@ -758,7 +758,6 @@ public class ConvertVerifier
      * @return
      * @throws SQLException
      */
-    @SuppressWarnings("deprecation")
     protected boolean compareRecords(final String desc, 
                                      final int    oldCatNum, 
                                      final String newCatNum, 
