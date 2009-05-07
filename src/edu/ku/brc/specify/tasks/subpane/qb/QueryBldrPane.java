@@ -201,6 +201,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     protected ExpressSearchResultsPaneIFace                  esrp        = null;
     protected boolean                                        isHeadless  = false; 
     
+    protected boolean                                        mapMode     = false;
+    
     /**
      * True if warning to reload after schema/treeDef changes has been shown.
      */
@@ -235,11 +237,26 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                          final SpQuery query,
                          final boolean isHeadless)
     {
+    	this(name, task, query, isHeadless, false);
+    }
+    /**
+     * Constructor.
+     * 
+     * @param name name of subpanel
+     * @param task the owning task
+     */
+    public QueryBldrPane(final String name, 
+                         final Taskable task, 
+                         final SpQuery query,
+                         final boolean isHeadless,
+                         final boolean mapMode)
+    {
         super(name, task);
 
         this.query      = query;
         this.isHeadless = isHeadless;
-
+        this.mapMode    = mapMode;
+        
         String[] skipItems = { "TimestampCreated", "LastEditedBy", "TimestampModified" };
         for (String nameStr : skipItems)
         {
@@ -399,10 +416,16 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         queryFieldsScroll.setBorder(null);
-        add(queryFieldsScroll);
-
+        if (!mapMode)
+        {
+        	add(queryFieldsScroll);
+        }
+        
         final JPanel mover = buildMoverPanel(false);
-        add(mover, BorderLayout.EAST);
+        if (!mapMode)
+        {
+        	add(mover, BorderLayout.EAST);
+        }
         
         searchBtn   = createButton(UIRegistry.getResourceString("QB_SEARCH"));
         searchBtn.addActionListener(new ActionListener()
@@ -524,18 +547,43 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         });
 
         PanelBuilder outer = new PanelBuilder(new FormLayout("p, 2dlu, p, 2dlu, p, 2dlu, p, 6dlu, p", "p"));
+        //PanelBuilder outer = new PanelBuilder(new FormLayout("p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 6dlu, p", "p"));
         CellConstraints cc = new CellConstraints();
         outer.add(searchSynonymyChk, cc.xy(1, 1));
         outer.add(distinctChk, cc.xy(3, 1));
         outer.add(countOnlyChk, cc.xy(5, 1));
         outer.add(searchBtn, cc.xy(7, 1));
-        outer.add(saveBtn, cc.xy(9, 1));
+//        JButton junkBtn = new JButton("ExportMapper!");
+//        junkBtn.addActionListener(new ActionListener(){
+//
+//			/* (non-Javadoc)
+//			 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+//			 */
+//			@Override
+//			public void actionPerformed(ActionEvent arg0)
+//			{
+//				ExportSchemaMapEditor esme = new ExportSchemaMapEditor((Frame )UIRegistry.getTopWindow(), 
+//						QueryBldrPane.this.task, null);
+//				esme.setModal(true);
+//				UIHelper.centerAndShow(esme);
+//				
+//			}
+//        	
+//        });
+//        outer.add(junkBtn, cc.xy(9, 1));
+//        outer.add(saveBtn, cc.xy(11, 1));
+        
+        outer.add(saveBtn, cc.xy(9, 1));   
+        
         JPanel bottom = new JPanel(new BorderLayout());
         bottom.add(outer.getPanel(), BorderLayout.EAST);
         
         JButton helpBtn = UIHelper.createHelpIconButton("QB");
         bottom.add(helpBtn, BorderLayout.WEST);
-        add(bottom, BorderLayout.SOUTH);
+        if (!mapMode)
+        {
+        	add(bottom, BorderLayout.SOUTH);
+        }
 
         setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
     }
@@ -3313,6 +3361,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     	}
     	return false;
     }
+    
 }
 
 
