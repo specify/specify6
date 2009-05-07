@@ -21,8 +21,11 @@ package edu.ku.brc.specify.extras;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Frame;
 import java.io.File;
 import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.Statement;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
@@ -31,6 +34,7 @@ import java.util.Vector;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.RowFilter;
+import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
@@ -52,13 +56,18 @@ import edu.ku.brc.af.ui.db.JAutoCompTextField;
 import edu.ku.brc.af.ui.forms.persist.AltViewIFace;
 import edu.ku.brc.af.ui.forms.persist.FormCellFieldIFace;
 import edu.ku.brc.af.ui.forms.persist.FormCellIFace;
+import edu.ku.brc.af.ui.forms.persist.FormCellPanelIFace;
+import edu.ku.brc.af.ui.forms.persist.FormCellSubViewIFace;
 import edu.ku.brc.af.ui.forms.persist.FormRow;
 import edu.ku.brc.af.ui.forms.persist.FormRowIFace;
 import edu.ku.brc.af.ui.forms.persist.FormViewDef;
 import edu.ku.brc.af.ui.forms.persist.ViewDefIFace;
 import edu.ku.brc.af.ui.forms.persist.ViewIFace;
 import edu.ku.brc.af.ui.forms.persist.ViewDefIFace.ViewType;
+import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.ui.BiColorBooleanTableCellRenderer;
 import edu.ku.brc.ui.BiColorTableCellRenderer;
 import edu.ku.brc.ui.CustomDialog;
@@ -79,7 +88,7 @@ public class ViewToSchemaReview
     protected Hashtable<String, String>  tblTitle2Name = new Hashtable<String, String>();
     protected TableRowSorter<TableModel> sorter        = null;
     protected JAutoCompTextField         searchTF      = null;
-
+    protected ViewModel                  viewModel;
     /**
      * 
      */
@@ -144,10 +153,19 @@ public class ViewToSchemaReview
         }
     }
     
+    /**
+     * @param tblName
+     * @param fldName
+     * @param fldTitle
+     * @param isOnForm
+     * @param index
+     * @return
+     */
     private Object[] createRow(final String tblName, 
                                final String fldName, 
                                final String fldTitle, 
                                final Boolean isOnForm,
+                               final Boolean isHidden,
                                final Integer index)
     {
         Object[] row = new Object[7];
@@ -155,8 +173,8 @@ public class ViewToSchemaReview
         row[1] = fldName;
         row[2] = fldTitle;
         row[3] = isOnForm;
-        row[4] = !isOnForm;
-        row[5] = !isOnForm;
+        row[4] = isHidden;
+        row[5] = isHidden;
         row[6] = index;
         return row;
     }
@@ -173,7 +191,7 @@ public class ViewToSchemaReview
         
         for (ViewIFace view : sacm.getEntirelyAllViews())
         {
-            System.err.println(view.getName() + " ----------------------");
+            //System.err.println(view.getName() + " ----------------------");
             for (AltViewIFace av : view.getAltViews())
             {
                 ViewDefIFace vd = av.getViewDef();
@@ -196,7 +214,11 @@ public class ViewToSchemaReview
                             {
                                 if (cell.getType() == FormCellIFace.CellType.panel)
                                 {
-                                    
+                                    FormCellPanelIFace panelCell = (FormCellPanelIFace)cell;
+                                    for (String fieldName : panelCell.getFieldNames())
+                                    {
+                                        tiHash.put(fieldName, true);
+                                    }
                                 } else if (cell.getType() == FormCellIFace.CellType.field)
                                 {
                                     FormCellFieldIFace fcf       = (FormCellFieldIFace)cell;
@@ -213,7 +235,7 @@ public class ViewToSchemaReview
                                             DBRelationshipInfo ri = ti.getRelationshipByName(fieldName);
                                             if (ri == null)
                                             {
-                                                System.err.println("Form Field["+fieldName+"] not in table.");
+                                                //System.err.println("Form Field["+fieldName+"] not in table.");
                                             } else
                                             {
                                                 tiHash.put(fieldName, true);
@@ -237,55 +259,22 @@ public class ViewToSchemaReview
             {
                 tblTitle2Name.put(ti.getTitle(), ti.getName());
                 
-                System.err.println(ti.getName() + " ----------------------");
+                //System.err.println(ti.getName() + " ----------------------");
                 for (DBFieldInfo fi : ti.getFields())
                 {
                     Boolean isInForm = tiHash.get(fi.getName()) != null;
-                    
-                    if (fi.isHidden())
-                    {
-                        if (isInForm)
-                        {
-                            System.err.println("    ["+fi.getName()+"] is hidden but is on a form.");
-                            modelList.add(createRow(ti.getTitle(), fi.getName(), fi.getTitle(), isInForm, cnt++));
-                        }
-                    } else
-                    {
-                        if (!isInForm)
-                        {
-                            System.err.println("    ["+fi.getName()+"] is visible but is NOT on a form.");
-                            modelList.add(createRow(ti.getTitle(), fi.getName(), fi.getTitle(), isInForm, cnt++));
-                            cnt++;
-                        }
-                    }
+                    modelList.add(createRow(ti.getTitle(), fi.getName(), fi.getTitle(), isInForm, fi.isHidden(), cnt++));
                 }
                 
                 for (DBRelationshipInfo ri : ti.getRelationships())
                 {
                     Boolean isInForm = tiHash.get(ri.getName()) != null;
-                    
-                    if (ri.isHidden())
-                    {
-                        if (isInForm)
-                        {
-                            System.err.println("    ["+ri.getName()+"] is hidden but is on a form.");
-                            modelList.add(createRow(ti.getTitle(), ri.getName(), ri.getTitle(), isInForm, cnt++));
-                            cnt++;
-                        }
-                    } else
-                    {
-                        if (!isInForm)
-                        {
-                            System.err.println("    ["+ri.getName()+"] is visible but is NOT on a form.");
-                            modelList.add(createRow(ti.getTitle(),  ri.getName(), ri.getTitle(), isInForm, cnt++));
-                            cnt++;
-                        }
-                    }  
+                    modelList.add(createRow(ti.getTitle(), ri.getName(), ri.getTitle(), isInForm, ri.isHidden(), cnt++));
                 }
             }
         }
         
-        ViewModel viewModel = new ViewModel();
+        viewModel = new ViewModel();
         JTable    table     = new JTable(viewModel);
         
         sorter   = new TableRowSorter<TableModel>(viewModel);
@@ -309,24 +298,98 @@ public class ViewToSchemaReview
             @Override
             protected void changed(DocumentEvent e)
             {
-                String text = searchTF.getText();
-                System.out.println("["+text+"]");
-                //rowFilter.include(entry)
-                //sorter.setRowFilter(text.isEmpty() ? null : RowFilter.regexFilter("^"+text, 0, 1));
-                sorter.setRowFilter(text.isEmpty() ? null : RowFilter.regexFilter("^(?i)" + text, 0, 1));
+                SwingUtilities.invokeLater(new Runnable() {
 
+                    /* (non-Javadoc)
+                     * @see java.lang.Runnable#run()
+                     */
+                    @Override
+                    public void run()
+                    {
+                        String text = searchTF.getText();
+                        sorter.setRowFilter(text.isEmpty() ? null : RowFilter.regexFilter("^(?i)" + text, 0, 1));
+                    }
+                    
+                });
+                
             }
         });
         
         table.setDefaultRenderer(String.class, new BiColorTableCellRenderer(false));
         table.setDefaultRenderer(Boolean.class, new BiColorBooleanTableCellRenderer());
         table.getColumnModel().getColumn(0).setCellRenderer(new TitleCellFadeRenderer());
+        table.getColumnModel().getColumn(3).setCellRenderer(new BiColorTableCellRenderer(true));
+        table.getColumnModel().getColumn(2).setCellRenderer(new BiColorTableCellRenderer(false) {
+            @Override
+            public Component getTableCellRendererComponent(JTable tableArg,
+                                                           Object value,
+                                                           boolean isSelected,
+                                                           boolean hasFocus,
+                                                           int row,
+                                                           int column)
+            {
+                JLabel lbl = (JLabel)super.getTableCellRendererComponent(tableArg, value, isSelected, hasFocus, row, column);
+                Object[] rowData = modelList.get(row);
+                if (column == 2)
+                {
+                    boolean isOnForm = (Boolean)rowData[3];
+                    boolean isHidden = (Boolean)rowData[4];
+                    if (!isOnForm && !isHidden)
+                    {
+                        lbl.setForeground(Color.RED);
+                        
+                    } else if (isOnForm && isHidden)
+                    {
+                        lbl.setForeground(Color.MAGENTA);
+                    } else
+                    {
+                        lbl.setForeground(Color.BLACK);
+                    }
+                }
+                return lbl;
+            }
+            
+        });
 
         //UIHelper.makeTableHeadersCentered(table, false);
         UIHelper.calcColumnWidths(table, null);
         
-        CustomDialog dlg = new CustomDialog(null, "", true, pb.getPanel());
+        CustomDialog dlg = new CustomDialog((Frame)null, "", true, CustomDialog.OKCANCELAPPLY, pb.getPanel()) {
+            @Override
+            protected void applyButtonPressed()
+            {
+                fix();
+            }
+            
+        };
+        dlg.setApplyLabel("Fix All");
         dlg.setVisible(true);
+        
+        if (!dlg.isCancelled())
+        {
+            updateSchema();
+        }
+    }
+    
+    /**
+     * 
+     */
+    protected void fix()
+    {
+        for (Object[] rowData : modelList)
+        {
+            boolean isOnForm = (Boolean)rowData[3];
+            boolean isHidden = (Boolean)rowData[4];
+            if (!isOnForm && !isHidden)
+            {
+                rowData[4] = true;
+                
+            } else if (isOnForm && isHidden)
+            {
+                rowData[4] = false;
+            }
+        }
+        viewModel.fireTableRowsUpdated(0, modelList.size()-1);
     }
     
     /**
@@ -419,21 +482,71 @@ public class ViewToSchemaReview
         }
     }
     
+    /**
+     * 
+     */
     protected void updateSchema()
     {
-        for (Object[] row : modelList)
-        {
-            DBTableInfo ti = DBTableIdMgr.getInstance().getInfoByTableName(tblTitle2Name.get(row[0]));
-            DBFieldInfo fi = ti.getFieldByName(row[1].toString());
-            fi.setHidden((Boolean)row[3]);
-        }
+        Connection conn = DBConnection.getInstance().getConnection();
+        Statement  stmt = null;
         
+        try
+        {
+            stmt = conn.createStatement();
+
+            for (Object[] row : modelList)
+            {
+                Boolean isChanged = !row[4].equals(row[5]);
+                if (isChanged)
+                {
+                    String fieldName = row[1].toString();
+                    Boolean isHidden = (Boolean)row[4];
+                    
+                    DBTableInfo ti = DBTableIdMgr.getInstance().getInfoByTableName(tblTitle2Name.get(row[0]));
+                    DBFieldInfo fi = ti.getFieldByName(fieldName);
+                    if (fi != null)
+                    {
+                        fi.setHidden(isHidden);
+                    } else
+                    {
+                        DBRelationshipInfo ri = ti.getRelationshipByName(fieldName);
+                        if (ri != null)
+                        {
+                            ri.setHidden(isHidden);
+                        } else
+                        {
+                            continue;
+                        }
+                    }
+                    
+                    //System.out.println(row[0]+"  "+fieldName);
+                    
+                    Discipline discipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
+                    String     srchSQL    = "SELECT SpLocaleContainerID FROM splocalecontainer WHERE Name = '"+ti.getName()+"' AND DisciplineID = " + discipline.getId();
+                    Integer    id         = BasicSQLUtils.getCount(conn, srchSQL);
+                    if (id != null)
+                    {
+                        String sql = "UPDATE splocalecontaineritem SET IsHidden="+isHidden.toString().toUpperCase()+" WHERE Name = '" + fieldName +"' AND SpLocaleContainerID = " + id;
+                        if (stmt.executeUpdate(sql) == 1)
+                        {
+                            //System.out.println("Saved.");
+                        }
+                    }
+                }
+            }
+            
+            stmt.close();
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
         
     }
     
     class ViewModel extends AbstractTableModel
     {
-        protected String[] header = {"Table", "Field Name", "Field Title", "On Form But Hidden", "Not on Form Visible"};
+        protected String[] header = {"Table", "Field Name", "Field Title", "Is On Form", "Is Hidden"};
         
         /**
          * 
@@ -449,7 +562,7 @@ public class ViewToSchemaReview
         @Override
         public Class<?> getColumnClass(int columnIndex)
         {
-            return columnIndex > 2 ? Boolean.class : String.class;
+            return columnIndex == 4 ? Boolean.class : String.class;
         }
 
         /* (non-Javadoc)
@@ -467,7 +580,7 @@ public class ViewToSchemaReview
         @Override
         public boolean isCellEditable(int rowIndex, int columnIndex)
         {
-            return columnIndex == 3 || columnIndex == 4;
+            return columnIndex == 4;
         }
 
         /* (non-Javadoc)
@@ -498,6 +611,10 @@ public class ViewToSchemaReview
             if (columnIndex == 2)
             {
                 return row[2] + (row[4].equals(row[5]) ? "" : " *");
+                
+            } else if (columnIndex == 3)
+            {
+                return ((Boolean)row[3]) ? "Yes" : "";
             }
             return row[columnIndex];
         }
@@ -514,15 +631,7 @@ public class ViewToSchemaReview
             Object[] row = modelList.get(rowIndex);
             if (columnIndex == 4)
             {
-                row[3] = !isChecked;
                 row[4] = isChecked;
-                
-                fireTableCellUpdated(rowIndex, 3);
-            } else
-            {
-                row[3] = isChecked;
-                row[4] = !isChecked;
-                
                 fireTableCellUpdated(rowIndex, 4);
             }
             fireTableCellUpdated(rowIndex, 2);
@@ -553,6 +662,7 @@ public class ViewToSchemaReview
             {
                 lbl.setForeground(Color.BLACK);
             }
+            
             lbl.setText(rowData[0].toString());
             return lbl;
         }
