@@ -72,6 +72,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
+import javax.swing.ListModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
@@ -166,9 +167,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 
     protected JPanel                                         listBoxPanel;
     protected Vector<JList>                                  listBoxList      = new Vector<JList>();
-    protected Vector<TableTree>                              nodeList         = new Vector<TableTree>();
     protected JScrollPane                                    scrollPane;
     protected Vector<JScrollPane>                            spList           = new Vector<JScrollPane>();
+    protected Vector<TableTree>                              tableTreeList    = new Vector<TableTree>();
     protected JPanel                                         contextPanel;
     protected DropDownButton                                 saveBtn;
     protected JButton                                        searchBtn;
@@ -366,8 +367,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             {
                 if (!e.getValueIsAdjusting())
                 {
-                    nodeList.clear();
-
                     int inx = tableList.getSelectedIndex();
                     if (inx > -1)
                     {
@@ -2442,12 +2441,17 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             for (int i = curInx + 1; i < listBoxList.size(); i++)
             {
                 listBoxPanel.remove(spList.get(i));
+                if (tableTreeList.size() > 0)
+                {
+                	tableTreeList.remove(tableTreeList.size()-1);
+                }
             }
 
         }
         else
         {
             listBoxPanel.removeAll();
+            tableTreeList.clear();
         }
 
         QryListRendererIFace item = (QryListRendererIFace) parentList.getSelectedValue();
@@ -2518,7 +2522,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 sp.setColumnHeaderView(colHeader);
                 
                 spList.add(sp);
-
+                tableTreeList.add(((ExpandableQRI )item).getTableTree());
+                
                 newList.getSelectionModel().addListSelectionListener(new ListSelectionListener()
                 {
                     public void valueChanged(ListSelectionEvent e)
@@ -2540,18 +2545,16 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 if (item instanceof TableQRI)
                 {
                     colHeaderLbl.setText(((TableQRI)item).getTitle());
+                    tableTreeList.add(((TableQRI )item).getTableTree());
                 }
                 else
                 {
-                    colHeaderLbl.setText("Query Fields"); // I18N
+                    colHeaderLbl.setText(getResourceString("QueryBldrPane.QueryFields")); 
                 }
             }
 
-            if (item instanceof ExpandableQRI)
-            {
-                createNewList((TableQRI)item, model);
+            createNewList((TableQRI)item, model);
 
-            }
             listBoxPanel.remove(addBtn);
             listBoxPanel.add(sp);
             listBoxPanel.add(addBtn);
@@ -2586,6 +2589,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 
         processingLists = false;
         currentInx = curInx;
+        
     }
 
     
@@ -2716,6 +2720,109 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     }
 
     /**
+     * @return path from root treeTable to treeTable for rightmost displayed list.
+     */
+    protected List<TableTreePathPoint> getCurrentDisplayPath()
+    {
+    	if (tableTreeList.size() > 0)
+    	{
+    		return tableTreeList.get(tableTreeList.size() - 1).getPathFromRoot();
+    	}
+    	return new Vector<TableTreePathPoint>();
+    }
+    
+    /**
+     * Updates lists in list panel to display field as the current selection.
+     * 
+     * @param field
+     */
+    protected void displayField(final FieldQRI field)
+    {
+    	List<TableTreePathPoint> displayedPath = getCurrentDisplayPath();
+    	List<TableTreePathPoint> fieldPath = field.getTableTree().getPathFromRoot();
+
+    	if (tableTreeList.size() != spList.size())
+        {
+        	//XXX fix tableTreeList (though it is not even strictly necessary)
+    		System.out.println("tableTreeList and spList are out of sync");
+        }
+    	
+    	int p = 0;
+    	while (p < displayedPath.size() && p < fieldPath.size())
+    	{
+    		if (!displayedPath.get(p).equals(fieldPath.get(p)))
+    		{
+    			break;
+    		}
+    		p++;
+    	}
+    	if (!(p == fieldPath.size() && fieldPath.size() == displayedPath.size()))
+		{
+			if (p == fieldPath.size())
+			{
+				if (p == 1)
+				{
+					fillNextList(tableList);
+				} else
+				{
+					fillNextList(listBoxList.get(p - 2));
+				}
+			} else
+			{
+				p--;
+				while (p < fieldPath.size() - 1)
+				{
+					JList currList = p < 0 ? tableList : listBoxList.get(p);
+					ListModel model = currList.getModel();
+					// find and select item in path
+					int i = 0;
+					boolean foundPathItem = false;
+					while (i < model.getSize() && !foundPathItem)
+					{
+						QryListRendererIFace item = (BaseQRI) model
+								.getElementAt(i);
+						if (item.hasChildren())
+						{
+							TableTree tt = ((BaseQRI) item).getTableTree();
+							if (fieldPath.get(p + 1).equals(
+									new TableTreePathPoint(tt)))
+							{
+								currList.setSelectedIndex(i);
+								foundPathItem = true;
+							}
+						}
+						i++;
+					}
+					if (foundPathItem)
+					{
+						// fillNextList(currList);
+						p++;
+					} else
+					{
+						log.error("unable to locate field: "
+								+ field.getFieldName());
+						return;
+					}
+				}
+			}
+		}
+    	ListModel model = listBoxList.get(fieldPath.size()-1).getModel();
+    	for (int f = 0; f < model.getSize(); f++)
+    	{
+    		BaseQRI item = (BaseQRI )model.getElementAt(f);
+    		if (item.getTitle().equals(field.getTitle()))
+    		{
+    			processingLists = true;
+    			listBoxList.get(fieldPath.size()-1).setSelectedIndex(f);
+    			listBoxList.get(fieldPath.size()-1).ensureIndexIsVisible(f);
+    			processingLists = false;
+    			break;
+    		}
+    	}
+
+    }
+    
+    /**
      * @param kids
      * @param field
      * @param tableIds
@@ -2732,14 +2839,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         for (int k=0; k<tbl.getKids(); k++)
         {
             TableTree kid = tbl.getKid(k);
-            boolean checkKid = true;
-            if (kid.isAlias()) 
-            {
-                checkKid = fixAliases(kid, ttHash);
-            }
+            boolean checkKid = kid.isAlias() ? fixAliases(kid, ttHash) : true;
             if (checkKid)
             {
-//                if (kid.getTableInfo().getTableId() == id)
             	if (id.equals(new TableTreePathPoint(kid)))
                 {
                     if (level == (tableIds.size() - 1))
@@ -2762,7 +2864,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     else
                     {
                         FieldQRI fi = getFieldQRI(kid, field, tableIds, level + 1, ttHash);
-                        if (fi != null) { return fi; }
+                        if (fi != null) 
+                        { 
+                        	return fi; 
+                        }
                     }
                 }
             }
@@ -2960,6 +3065,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 scrollQueryFieldsToRect(selectedQFP.getBounds());
             }
             updateMoverBtns();
+            //displayField(qfp.getFieldQRI());
         }
     }
     

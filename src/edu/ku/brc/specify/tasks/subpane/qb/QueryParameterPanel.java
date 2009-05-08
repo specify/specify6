@@ -34,6 +34,7 @@ import edu.ku.brc.specify.datamodel.SpQuery;
  * @code_status Alpha
  *
  */
+@SuppressWarnings("serial")
 public class QueryParameterPanel extends JPanel implements QueryFieldPanelContainerIFace
 {
     protected boolean hasPrompts = false;
@@ -149,6 +150,5 @@ public class QueryParameterPanel extends JPanel implements QueryFieldPanelContai
 	{
 		//do nothing
 	}
-    
-    
+
 }

@@ -67,4 +67,5 @@ public interface QueryFieldPanelContainerIFace
      * run the query.
      */
     void doSearch();
+    
 }
