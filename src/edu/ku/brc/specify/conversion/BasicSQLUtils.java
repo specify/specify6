@@ -1820,12 +1820,17 @@ public class BasicSQLUtils
     {
         try
         {
-            int count = 0;
+        	int x= 0;
+            Integer count = 0;
             Statement cntStmt = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
             ResultSet rs      = cntStmt.executeQuery("select count(*) from "+tableName);
             if (rs.first())
             {
                 count = rs.getInt(1);
+                if (count == null)
+                {
+                	return -1;
+                }
             }
             rs.close();
             cntStmt.close();

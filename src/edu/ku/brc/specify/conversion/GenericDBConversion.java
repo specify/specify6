@@ -3381,7 +3381,10 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 					                "DateReceived", "ReceivedComments", "PurposeOfLoan", "OverdueNotiSetDate",
 					                "IsFinancialResponsibility", "Version", "CreatedByAgentID",
 					                "IsFinancialResponsibility", "SrcTaxonomy", "SrcGeography",
-					                "ModifiedByAgentID", "CollectionMemberID", "DisciplineID", "DivisionID"};
+					                "ModifiedByAgentID", "CollectionMemberID", 
+					                "PurposeOfGift", "IsFinancialResponsibility", "SpecialConditions", 
+					                "ReceivedComments", "AddressOfRecordID"
+					             };
         
         Hashtable<String, Boolean> fieldToSkip = new Hashtable<String, Boolean>();
         for (String nm : ignoredFields)
@@ -3418,8 +3421,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 oldNameIndex.put(name, inx++);
             }
             
-            Map<String, String> colNewToOldMap = doingGifts ? createFieldNameMap(new String[] { "LoanNumber", "GiftNumber", "LoanDate", "GiftDate", "Current", "IsCurrent"}) :
-                                                              createFieldNameMap(new String[] { "Current", "IsCurrent"});
+            Map<String, String> colNewToOldMap = doingGifts ? createFieldNameMap(new String[] { "GiftNumber", "LoanNumber", "GiftDate", "LoanDate", "IsCurrent", "Current"}) :
+                                                              createFieldNameMap(new String[] { "IsCurrent", "Current", });
 
 
 
@@ -3452,11 +3455,6 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             Pair<String, String> datePair = new Pair<String, String>();
             
             int lastEditedByInx = oldNameIndex.get("LastEditedBy") + 1;
-            Integer detDateInx  = oldNameIndex.get("Date1") + 1;
-            if (detDateInx == null)
-            {
-                detDateInx = oldNameIndex.get("Date") + 1;
-            }
             
             int count = 0;
             do
@@ -3510,6 +3508,10 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     } else if (fieldToSkip.get(newFieldName) != null)
                     {
                         str.append("NULL");
+
+                    } else if (newFieldName.equals("DisciplineID")) // User/Security changes
+                    {
+                        str.append(curDisciplineID);
 
                     } else if (newFieldName.equals("DivisionID")) // User/Security changes
                     {
@@ -3593,7 +3595,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 {
                     if (count % 2000 == 0)
                     {
-                        log.info("Determination Records: " + count);
+                        log.info("Loan/Gifts Records: " + count);
                     }
                 }
 
@@ -3626,7 +3628,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 setProcess(count);
             } else
             {
-                log.info("Processed Determination " + count + " records.");
+                log.info("Processed Loan/Gift " + count + " records.");
             }
             rs.close();
 
@@ -3663,7 +3665,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
         deleteAllRecordsFromTable(newDBConn, newTableName, BasicSQLUtils.myDestinationServerType); // automatically closes the connection
 
-        if (BasicSQLUtils.getNumRecords(oldDBConn, "loanagentd") == 0) 
+        if (BasicSQLUtils.getNumRecords(oldDBConn, "loanagents") == 0) 
         { 
             return true; 
         }
