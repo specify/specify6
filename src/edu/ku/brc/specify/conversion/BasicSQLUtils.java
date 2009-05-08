@@ -61,6 +61,8 @@ public class BasicSQLUtils
 {
     protected static final Logger           log               = Logger.getLogger(BasicSQLUtils.class);
     
+    protected static ConversionLogger.TableWriter tblWriter = null;
+    
     public static enum SERVERTYPE {MySQL, Derby, MS_SQLServer}
     public static SERVERTYPE myDestinationServerType = SERVERTYPE.MySQL;
     public static SERVERTYPE mySourceServerType = SERVERTYPE.MySQL;
@@ -178,6 +180,16 @@ public class BasicSQLUtils
     }
     
     
+    public static ConversionLogger.TableWriter getTblWriter() 
+    {
+        return tblWriter;
+    }
+
+    public static void setTblWriter(ConversionLogger.TableWriter tblWriter) 
+    {
+        BasicSQLUtils.tblWriter = tblWriter;
+    }
+
     /**
      * @param oneToOneIDHash the oneToOneIDHash to set
      */
@@ -640,18 +652,12 @@ public class BasicSQLUtils
     {
         try
         {
-            int count = 0;
-            //REQUIRED for SQL SERVER to use rs.first();
-            //ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY
-            Statement cntStmt = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
-            ResultSet rs      = cntStmt.executeQuery("select count(*) from "+tableName);
-            if (rs.first())//MEG CHANGED b/c first not supported by sql server driver
+            Integer count = getCount("select count(*) from "+tableName);
+            if (count == null || count == 0)
             {
-                count = rs.getInt(1);
+                return 0;
             }
-            rs.close();
-            cntStmt.close();
-
+            
             Statement stmt = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
             //exeUpdateCmd(stmt, "SET FOREIGN_KEY_CHECKS = 0");
             if (currentServerType != SERVERTYPE.MS_SQLServer)
@@ -1190,6 +1196,23 @@ public class BasicSQLUtils
 
         return calendar.getTime();
     }
+    
+    /**
+     * @param msg
+     */
+    protected static void writeErrLog(final String msg)
+    { 
+    	if (tblWriter != null)
+        {
+        	tblWriter.logError(msg);
+        	tblWriter.flush();
+        	
+        } else
+        {
+        	missingPW.println(msg);
+        	missingPW.flush();
+        }
+    }
 
     /**
      * Copies a table from one DB to another
@@ -1277,8 +1300,8 @@ public class BasicSQLUtils
                                     final SERVERTYPE sourceServerType,
                                     final SERVERTYPE destServerType)
     {
-    	String sqlStr = sql == null ? "select * from " + fromTableName : sql;
-    	
+        String sqlStr = sql == null ? "select * from " + fromTableName : sql;
+        
         return copyTable(fromConn,toConn,sqlStr,fromTableName,toTableName,colNewToOldMap,verbatimDateMapper,null,sourceServerType,destServerType);
     }
 
@@ -1356,6 +1379,8 @@ public class BasicSQLUtils
             int           count           = 0;
             while (rs.next())
             {
+            	boolean skipRecord = false;
+            	
                 if (verbatimDateMapper != null)
                 {
                     // Start by going through the resultset and converting all dates from Integers
@@ -1477,8 +1502,7 @@ public class BasicSQLUtils
                             String msg = "No Map for table ["+fromTableName+"] from New Name[" + colName + "] to Old Name["+oldMappedColName+"]";
                             log.error(msg);
                             
-                            missingPW.println(msg);
-                            missingPW.flush();
+                            writeErrLog(msg);
                             
                         }
                     } else
@@ -1517,7 +1541,10 @@ public class BasicSQLUtils
                                     
                                     if (isOptionOn(SHOW_NULL_FK))
                                     {
-                                        log.error("Unable to Map Primary Id[NULL] old Name["+oldMappedColName+"] ["+columnIndex+"]");
+                                    	String msg = "Unable to Map Primary Id[NULL] old Name["+oldMappedColName+"] ["+columnIndex+"]";
+                                        log.error(msg);
+                                        writeErrLog(msg);
+                                        skipRecord = true;
                                     }
                                 }
                                 else
@@ -1526,7 +1553,10 @@ public class BasicSQLUtils
                                     
                                     if (dataObj == null && isOptionOn(SHOW_FK_LOOKUP))
                                     {
-                                        log.error("Unable to Map Primary Id["+oldPrimaryKeyId+"] old Name["+oldMappedColName+"]");
+                                        String msg = "Unable to Map Primary Id["+oldPrimaryKeyId+"] old Name["+oldMappedColName+"]";
+                                        log.error(msg);
+                                        writeErrLog(msg);
+                                        skipRecord = true;
                                     }
                                 }
 
@@ -1542,7 +1572,10 @@ public class BasicSQLUtils
                                     if (!oldMappedColName.equals("RankID"))
                                     {
                                         idMapperMgr.dumpKeys();
-                                        log.error("No ID Map for ["+fromTableName+"] Old Column Name["+oldMappedColName+"]");
+                                        String msg = "No ID Map for ["+fromTableName+"] Old Column Name["+oldMappedColName+"]";
+                                        log.error(msg);
+                                        writeErrLog(msg);
+                                        skipRecord = true;
                                     }
                                 }
                             }
@@ -1630,7 +1663,10 @@ public class BasicSQLUtils
                                 
                                 if (isOptionOn(SHOW_VAL_MAPPING_ERROR))
                                 {
-                                    log.error("For Table[" + fromTableName + "] mapping new Column Name[" + colName + "] ID["+id+"] was not mapped");
+                                    String msg = "For Table[" + fromTableName + "] mapping new Column Name[" + colName + "] ID["+id+"] was not mapped";
+                                    log.error(msg);
+                                    writeErrLog(msg);
+                                    skipRecord = true;
                                 }
                             }
                         }
@@ -1651,16 +1687,13 @@ public class BasicSQLUtils
                             if (isOptionOn(SHOW_NAME_MAPPING_ERROR) &&
                                 (ignoreMappingFieldNames == null || ignoreMappingFieldNames.get(colName) == null))
                             {
-                                log.error("For Table[" + fromTableName + "] mapping new Column Name[" + colName + "] was not mapped");
+                                String msg = "For Table[" + fromTableName + "] mapping new Column Name[" + colName + "] was not mapped";
+                                log.error(msg);
+                                writeErrLog(msg);
+                                skipRecord = true;
                             }
                         }
                         if (i > 0) str.append(", ");
-                        
-                        if (newFieldName.getName().equals("IsPrimary"))
-                        {
-                            int x= 0;
-                            x++;
-                        }
                         
                         BasicSQLUtilsMapValueIFace valueMapper = columnValueMapper.get(newFieldName.getName());
                         if (valueMapper != null)
@@ -1705,17 +1738,20 @@ public class BasicSQLUtils
                 //log.debug("executing: " + str);
                 //updateStatement.execute(str2);
                // updateStatement.close();
-                
-                int retVal = exeUpdateCmd(updateStatement, str.toString());
-                updateStatement.clearBatch();
-                updateStatement.close();
-
-                if (retVal == -1)
+                if (!skipRecord)
                 {
-                    rs.close();
-                    stmt.clearBatch();
-                    stmt.close();
-                    return false;
+                
+	                int retVal = exeUpdateCmd(updateStatement, str.toString());
+	                updateStatement.clearBatch();
+	                updateStatement.close();
+	
+	                if (retVal == -1)
+	                {
+	                    rs.close();
+	                    stmt.clearBatch();
+	                    stmt.close();
+	                    return false;
+	                }
                 }
                 count++;
                 // if (count == 1) break;
@@ -1820,7 +1856,7 @@ public class BasicSQLUtils
     {
         try
         {
-        	int x= 0;
+            int x= 0;
             Integer count = 0;
             Statement cntStmt = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
             ResultSet rs      = cntStmt.executeQuery("select count(*) from "+tableName);
@@ -1829,7 +1865,7 @@ public class BasicSQLUtils
                 count = rs.getInt(1);
                 if (count == null)
                 {
-                	return -1;
+                    return -1;
                 }
             }
             rs.close();

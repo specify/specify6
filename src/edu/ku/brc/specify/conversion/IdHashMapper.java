@@ -24,6 +24,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.ui.ProgressFrame;
@@ -43,6 +44,7 @@ public class IdHashMapper implements IdMapperIFace
     protected static final Logger log = Logger.getLogger(IdHashMapper.class);
 
     protected String          sql           = null;
+    protected boolean         isUsingSQL    = false;
     protected String          tableName;
     protected Connection      newConn;
     protected Connection      oldConn;
@@ -83,7 +85,8 @@ public class IdHashMapper implements IdMapperIFace
     {
         this(tableName);
         
-        this.sql = sql;
+        this.sql   = sql;
+        isUsingSQL = StringUtils.isNotEmpty(sql);
     }
 
     /**
@@ -93,11 +96,11 @@ public class IdHashMapper implements IdMapperIFace
     {
         oldConn = IdMapperMgr.getInstance().getOldConnection();
         newConn = IdMapperMgr.getInstance().getNewConnection();
-
+        
         int numRecs = checkOldDB ? BasicSQLUtils.getNumRecords(oldConn, tableName) : 0;
         
         log.info(numRecs+" Records in "+tableName);
-
+        
         try
         {
 
@@ -161,7 +164,10 @@ public class IdHashMapper implements IdMapperIFace
             
         }
 
-        BasicSQLUtils.deleteAllRecordsFromTable(mapTableName, BasicSQLUtils.myDestinationServerType);
+        if (!isUsingSQL)
+        {
+        	BasicSQLUtils.deleteAllRecordsFromTable(mapTableName, BasicSQLUtils.myDestinationServerType);
+        }
         
         
         if (frame != null)
@@ -317,9 +323,10 @@ public class IdHashMapper implements IdMapperIFace
             
         } catch (SQLException ex)
         {
+            ex.printStackTrace();
             edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(IdHashMapper.class, ex);
-            ex.printStackTrace();
+
             log.error(ex);
         }
     }

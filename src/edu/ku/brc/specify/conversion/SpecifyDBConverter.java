@@ -820,10 +820,11 @@ public class SpecifyDBConverter
                     if (doLoanPreparations || doAll)
                     {
                     	conversion.convertLoanRecords(false);     // Loans
-                    	conversion.convertLoanRecords(true);      // Gifts
                     	conversion.convertLoanAgentRecords(false);// Loans
-                    	conversion.convertLoanAgentRecords(true); // Gifts
                         conversion.convertLoanPreparations();
+                        
+                    	conversion.convertLoanAgentRecords(true); // Gifts
+                    	conversion.convertLoanRecords(true);      // Gifts
                         conversion.convertGiftPreparations();
                         frame.incOverall();
                         

@@ -155,9 +155,9 @@ public class IdTableMapper extends IdHashMapper
 
         } catch (SQLException ex)
         {
+            ex.printStackTrace();
             edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(IdTableMapper.class, ex);
-            ex.printStackTrace();
             log.error(ex);
             throw new RuntimeException(ex);
         }
