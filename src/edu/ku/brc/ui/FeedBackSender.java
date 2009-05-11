@@ -229,35 +229,37 @@ public abstract class FeedBackSender
      */
     protected void connectToServerNow(final FeedBackSenderItem item)
     {
-        // Create a SwingWorker to connect to the server in the background, then show results on the Swing thread
-        SwingWorker workerThread = new SwingWorker()
+        if (item != null)
         {
-            @Override
-            public Object construct()
+            // Create a SwingWorker to connect to the server in the background, then show results on the Swing thread
+            SwingWorker workerThread = new SwingWorker()
             {
-                // connect to the server, sending usage stats if allowed, and gathering the latest modules version info
-                try
+                @Override
+                public Object construct()
                 {
-                    send(item);
-                    return null;
+                    // connect to the server, sending usage stats if allowed, and gathering the latest modules version info
+                    try
+                    {
+                        send(item);
+                        return null;
+                    }
+                    catch (Exception e)
+                    {
+                        UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FeedBackSender.class, e);
+                        // if any exceptions occur, return them so the finished() method can have them
+                        return e;
+                    }
                 }
-                catch (Exception e)
+                
+                @Override
+                public void finished()
                 {
-                    UsageTracker.incrHandledUsageCount();
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FeedBackSender.class, e);
-                    // if any exceptions occur, return them so the finished() method can have them
-                    return e;
                 }
-            }
+            };
             
-            @SuppressWarnings("unchecked") //$NON-NLS-1$
-            @Override
-            public void finished()
-            {
-            }
-        };
-        
-        // start the background task
-        workerThread.start();
+            // start the background task
+            workerThread.start();
+        }
     }
 }

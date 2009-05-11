@@ -67,6 +67,14 @@ public class DisciplineType implements Comparable<DisciplineType>
     
     protected STD_DISCIPLINES disciplineType;
     
+    /**
+     * @param name
+     * @param title
+     * @param abbrev
+     * @param folder
+     * @param type
+     * @param isEmbeddedCollecingEvent
+     */
     public DisciplineType(final String name, 
                           final String title, 
                           final String abbrev,

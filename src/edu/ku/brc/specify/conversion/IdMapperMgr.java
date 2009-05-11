@@ -177,6 +177,10 @@ public class IdMapperMgr
      */
     public IdMapperIFace get(final String tableName, final String idName)
     {
+        if (tableName.toLowerCase().equals("loanreturnphysicalobject") && idName.equals("LoanReturnPhysicalObjectID"))
+        {
+            System.out.println(tableName.toLowerCase()+"_"+idName);
+        }
         return idMappers.get(tableName.toLowerCase()+"_"+idName);
     }
     

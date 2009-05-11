@@ -446,8 +446,11 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
                 return adjSQL;
                 
             }
+            throw new RuntimeException("The SpecifyUser ID cannot be null!");
+            
+        } else
+        {
             throw new RuntimeException("The SpecifyUser cannot be null!");
         }
-        return super.adjustSQL(sql);
     }
 }

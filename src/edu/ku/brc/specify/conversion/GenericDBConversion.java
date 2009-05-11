@@ -92,7 +92,6 @@ import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem;
 import edu.ku.brc.specify.datamodel.LithoStrat;
 import edu.ku.brc.specify.datamodel.LithoStratTreeDef;
 import edu.ku.brc.specify.datamodel.LithoStratTreeDefItem;
-import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.PickListItem;
 import edu.ku.brc.specify.datamodel.PrepType;
@@ -370,7 +369,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         columnValueMapper.put("Version",            versionValueMapper);
         columnValueMapper.put("DivisionID",         divisionValueMapper);
 
-        String[] tableNames = { "locality", "accession", "accessionagents",
+        /*String[] tableNames = { "locality", "accession", "accessionagents",
                 "accessionauthorizations", "address", "agent", "agentaddress", "authors",
                 "biologicalobjectattributes", "biologicalobjectrelation",
                 "biologicalobjectrelationtype", "borrow", "borrowagents", "borrowmaterial",
@@ -408,7 +407,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 "usysspecifylimitedaccessuser", "usysspecifymanager", "usysstatistics",
                 "usystaxonnamegrouppermittedtov", "usystemprequired", "usysuserpreferences",
                 "usysversion", "usyswebqueryform", "usyswebquerylog", "usyswebquerytemplate",
-                "webadmin" };
+                "webadmin" };*/
     }
 
     /**
@@ -518,7 +517,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 "Locality", "LocalityCitation",
                 "Observation", "OtherIdentifier",
                 "Permit",
-                "Preparation", // Turn back on when datamodel checked in
+                "Preparation", 
                 "Project", "ProjectCollectionObjects", "ReferenceWork", "Shipment", "Sound",
                 "SoundEventStorage", "Stratigraphy", "TaxonCitation", "TaxonName",
                 "TaxonomicUnitType", "TaxonomyType" };
@@ -619,7 +618,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         // group by collectionobjectcatalog.CollectionObjectCatalogID, taxonname.TaxonomyTypeID");
         IdHashMapper idHashMapper = idMapperMgr.addHashMapper(
                         "ColObjCatToTaxonType",
-                        "Select collectionobjectcatalog.CollectionObjectCatalogID, taxonname.TaxonomyTypeID From collectionobjectcatalog Inner Join determination ON determination.BiologicalObjectID = collectionobjectcatalog.CollectionObjectCatalogID Inner Join taxonname ON taxonname.TaxonNameID = determination.TaxonNameID Where determination."
+                        "Select collectionobjectcatalog.CollectionObjectCatalogID, taxonname.TaxonomyTypeID From collectionobjectcatalog " +
+                        "Inner Join determination ON determination.BiologicalObjectID = collectionobjectcatalog.CollectionObjectCatalogID " +
+                        "Inner Join taxonname ON taxonname.TaxonNameID = determination.TaxonNameID Where determination."
                                 + oldDetermination_Current
                                 + " = '"
                                 + oldDetermination_CurrentValue
@@ -3429,9 +3430,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 oldNameIndex.put(name, inx++);
             }
             
-            Map<String, String> colNewToOldMap = doingGifts ? createFieldNameMap(new String[] { "GiftNumber", "LoanNumber", "GiftDate", "LoanDate", 
-            		                                                                            "IsCurrent", "Current"}) :
-                                                              createFieldNameMap(new String[] { "IsCurrent", "Current", "IsClosed", "Closed" });
+            Map<String, String> colNewToOldMap = doingGifts ? createFieldNameMap(new String[] { "GiftNumber", "LoanNumber", "GiftDate", "LoanDate", "IsCurrent", "Current", "IsClosed", "Closed"}) :
+                                                              createFieldNameMap(new String[] { "IsCurrent", "Current", "IsClosed", "Closed", });
 
             log.info(sqlStr);
             ResultSet rs = stmt.executeQuery(sqlStr);
@@ -3679,11 +3679,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
         try
         {
-    		/*IdTableMapper loanAgentMapperMapper = new IdTableMapper("loanagents", "LoanAgentsID", "SELECT loanagents.LoanAgentsID FROM loanagents INNER JOIN loan ON loanagents.LoanID = loan.LoanID WHERE loan.Category = " + (doingGifts ? "1" : "0") + " ORDER BY loan.LoanID");
-            if (shouldCreateMapTables)
-            {
-            	loanAgentMapperMapper.mapAllIdsWithSQL();
-            }*/
+            IdTableMapper agentAddrIDMapper = idMapperMgr.addTableMapper("agentaddress", "AgentAddressID");
 
         	IdMapperIFace loanMapper  = null;
         	if (doingGifts)
@@ -3701,8 +3697,6 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         		loanMapper = idMapperMgr.get("Loan", "LoanID"); // Loans
         	}
         	
-        	IdTableMapper agentAddrIDMapper = idMapperMgr.addTableMapper("agentaddress", "AgentAddressID");
-
             Statement stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             StringBuilder str = new StringBuilder();
 
@@ -3737,17 +3731,16 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     return true;
                 }
             }
-            
 
             Statement updateStatement = newDBConn.createStatement();
 
             int count = 0;
             do
             {
-            	//Integer id      = rs.getInt(1);
-                String  role    = rs.getString(2);
-                String  remarks = rs.getString(3);
-            	Integer loadId  = rs.getInt(4);
+            	Integer id          = rs.getInt(1);
+                String  role        = rs.getString(2);
+                String  remarks     = rs.getString(3);
+            	Integer loadId      = rs.getInt(4);
             	Integer agentAddrId = rs.getInt(5);
             	
             	Integer newId      = count+1;
@@ -3756,13 +3749,13 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             	
             	if (newLoanId == null)
             	{
-            		tblWriter.logError("The new Loan Id mapped from ["+newLoanId+"] was not found in the mappers.");
+            		tblWriter.logError("The new Loan Id mapped from ["+newLoanId+"] was not found in the mappers. Skipping LoanAgent Record: "+id);
             		continue;
             	}
             	
             	if (newAgentId == null)
             	{
-            		tblWriter.logError("The new Agent Id mapped from ["+agentAddrId+"] was not found in the mapper.");
+            		tblWriter.logError("The new Agent Id mapped from ["+agentAddrId+"] was not found in the mapper. Skipping LoanAgent Record: "+id);
             		continue;
             	}
             	
@@ -3813,7 +3806,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 setProcess(count);
             } else
             {
-                log.info("Processed Determination " + count + " records.");
+                log.info("Processed LoanAgents " + count + " records.");
             }
             rs.close();
 
@@ -3826,7 +3819,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             throw new RuntimeException(e);
         }
 
-        BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer(newDBConn, "determination", BasicSQLUtils.myDestinationServerType);
+        BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer(newDBConn, "loanagents", BasicSQLUtils.myDestinationServerType);
 
         return true;
     }

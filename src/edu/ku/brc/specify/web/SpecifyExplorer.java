@@ -68,9 +68,11 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 
-import edu.ku.brc.af.auth.UserAndMasterPasswordMgr;
+import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.RecordSetFactory;
 import edu.ku.brc.af.core.SchemaI18NService;
+import edu.ku.brc.af.core.db.BackupServiceFactory;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableChildIFace;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
@@ -79,6 +81,7 @@ import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.forms.DataGetterForObj;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
+import edu.ku.brc.af.ui.forms.ViewFactory;
 import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterField;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
@@ -90,6 +93,7 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.HibernateUtil;
+import edu.ku.brc.exceptions.ExceptionTracker;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.config.DisciplineType;
@@ -123,7 +127,6 @@ import edu.ku.brc.specify.ui.SpecifyUIFieldFormatterMgr;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.util.Pair;
 
 /**
  * @author rod
@@ -138,11 +141,11 @@ public class SpecifyExplorer extends HttpServlet
     private final Logger         log      = Logger.getLogger(SpecifyExplorer.class);
     private Hashtable<Class<?>, Boolean> baseClassHash = new Hashtable<Class<?>, Boolean>();
     
-    protected String DATABASE_NAME = "fish_kansas";
+    protected String DATABASE_NAME = "testfish";//"fish_kansas";
     
     public static String contentTag  = "<!-- Content -->";
-    public static String servletURL  = "http://localhost:8080/examples/servlets/servlet/SpecifyExplorer";
-    public static String baseURLSite = "http://localhost/specifyexplorer";
+    public static String servletURL  = "http://localhost:8080/specify/SpecifyExplorer";
+    public static String baseURLSite = "http://localhost:8080/specify";
     
     protected String packageName = "edu.ku.brc.specify.datamodel.";
     
@@ -173,7 +176,11 @@ public class SpecifyExplorer extends HttpServlet
      */
     public SpecifyExplorer()
     {
-        UIRegistry.setDefaultWorkingPath(new File("../webapps/examples/WEB-INF").getAbsolutePath());
+        System.out.println((new File(".")).getAbsolutePath());
+        
+        UIRegistry.setDefaultWorkingPath(new File("/Users/rods/workspace/Specify/webapp/WEB-INF").getAbsolutePath());
+        
+        System.out.println("["+UIRegistry.getDefaultWorkingPath()+"]");
         
         File dir = new File("site");
         if (!dir.exists())
@@ -376,19 +383,26 @@ public class SpecifyExplorer extends HttpServlet
     protected void setUpSystemProperties()
     {
         // Name factories
-        System.setProperty(AppContextMgr.factoryName,                   "edu.ku.brc.specify.config.SpecifyAppContextMgr");      // Needed by AppContextMgr
-        System.setProperty(AppPreferences.factoryName,                  "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");         // Needed by AppReferences
-        System.setProperty("edu.ku.brc.ui.ViewBasedDialogFactoryIFace", "edu.ku.brc.specify.ui.DBObjDialogFactory");            // Needed By UIRegistry
-        System.setProperty("edu.ku.brc.ui.forms.DraggableRecordIdentifierFactory", "edu.ku.brc.specify.ui.SpecifyDraggableRecordIdentiferFactory"); // Needed By the Form System
-        System.setProperty("edu.ku.brc.dbsupport.AuditInterceptor",     "edu.ku.brc.specify.dbsupport.AuditInterceptor");       // Needed By the Form System for updating Lucene and logging transactions
-        System.setProperty("edu.ku.brc.dbsupport.DataProvider",         "edu.ku.brc.specify.dbsupport.HibernateDataProvider");  // Needed By the Form System and any Data Get/Set
-        System.setProperty("edu.ku.brc.ui.db.PickListDBAdapterFactory", "edu.ku.brc.specify.ui.db.PickListDBAdapterFactory");   // Needed By the Auto Cosmplete UI
-        System.setProperty(CustomQueryFactory.factoryName,              "edu.ku.brc.specify.dbsupport.SpecifyCustomQueryFactory");
-        System.setProperty(UIFieldFormatterMgr.factoryName,             "edu.ku.brc.specify.ui.SpecifyUIFieldFormatterMgr");           // Needed for CatalogNumberign
-        System.setProperty(QueryAdjusterForDomain.factoryName,          "edu.ku.brc.specify.dbsupport.SpecifyQueryAdjusterForDomain"); // Needed for ExpressSearch
-        System.setProperty(SchemaI18NService.factoryName,               "edu.ku.brc.specify.config.SpecifySchemaI18NService");         // Needed for Localization and Schema
-        System.setProperty(WebLinkMgr.factoryName,                      "edu.ku.brc.specify.config.SpecifyWebLinkMgr");                // Needed for WebLnkButton
-        System.setProperty(DataObjFieldFormatMgr.factoryName,           "edu.ku.brc.specify.config.SpecifyDataObjFieldFormatMgr");                // Needed for WebLnkButton //$NON-NLS-1$
+        System.setProperty(ViewFactory.factoryName,                     "edu.ku.brc.specify.config.SpecifyViewFactory");        // Needed by ViewFactory //$NON-NLS-1$
+        System.setProperty(AppContextMgr.factoryName,                   "edu.ku.brc.specify.config.SpecifyAppContextMgr");      // Needed by AppContextMgr //$NON-NLS-1$
+        System.setProperty(AppPreferences.factoryName,                  "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");         // Needed by AppReferences //$NON-NLS-1$
+        System.setProperty("edu.ku.brc.ui.ViewBasedDialogFactoryIFace", "edu.ku.brc.specify.ui.DBObjDialogFactory");            // Needed By UIRegistry //$NON-NLS-1$ //$NON-NLS-2$
+        System.setProperty("edu.ku.brc.ui.forms.DraggableRecordIdentifierFactory", "edu.ku.brc.specify.ui.SpecifyDraggableRecordIdentiferFactory"); // Needed By the Form System //$NON-NLS-1$ //$NON-NLS-2$
+        System.setProperty("edu.ku.brc.dbsupport.AuditInterceptor",     "edu.ku.brc.specify.dbsupport.AuditInterceptor");       // Needed By the Form System for updating Lucene and logging transactions //$NON-NLS-1$ //$NON-NLS-2$
+        System.setProperty(DataProviderFactory.factoryName,             "edu.ku.brc.specify.dbsupport.HibernateDataProvider");  // Needed By the Form System and any Data Get/Set //$NON-NLS-1$ //$NON-NLS-2$
+        System.setProperty("edu.ku.brc.ui.db.PickListDBAdapterFactory", "edu.ku.brc.specify.ui.db.PickListDBAdapterFactory");   // Needed By the Auto Cosmplete UI //$NON-NLS-1$ //$NON-NLS-2$
+        System.setProperty(CustomQueryFactory.factoryName,              "edu.ku.brc.specify.dbsupport.SpecifyCustomQueryFactory"); //$NON-NLS-1$
+        System.setProperty(UIFieldFormatterMgr.factoryName,             "edu.ku.brc.specify.ui.SpecifyUIFieldFormatterMgr");           // Needed for CatalogNumberign //$NON-NLS-1$
+        System.setProperty(QueryAdjusterForDomain.factoryName,          "edu.ku.brc.specify.dbsupport.SpecifyQueryAdjusterForDomain"); // Needed for ExpressSearch //$NON-NLS-1$
+        System.setProperty(SchemaI18NService.factoryName,               "edu.ku.brc.specify.config.SpecifySchemaI18NService");         // Needed for Localization and Schema //$NON-NLS-1$
+        System.setProperty(WebLinkMgr.factoryName,                      "edu.ku.brc.specify.config.SpecifyWebLinkMgr");                // Needed for WebLnkButton //$NON-NLS-1$
+        System.setProperty(DataObjFieldFormatMgr.factoryName,           "edu.ku.brc.specify.config.SpecifyDataObjFieldFormatMgr");         // Needed for WebLnkButton //$NON-NLS-1$
+        System.setProperty(RecordSetFactory.factoryName,                "edu.ku.brc.specify.config.SpecifyRecordSetFactory");          // Needed for Searching //$NON-NLS-1$
+        System.setProperty(DBTableIdMgr.factoryName,                    "edu.ku.brc.specify.config.SpecifyDBTableIdMgr");              // Needed for Tree Field Names //$NON-NLS-1$
+        System.setProperty(SecurityMgr.factoryName,                     "edu.ku.brc.af.auth.specify.SpecifySecurityMgr");              // Needed for Tree Field Names //$NON-NLS-1$
+        //System.setProperty(UserAndMasterPasswordMgr.factoryName,               "edu.ku.brc.af.auth.specify.SpecifySecurityMgr");              // Needed for Tree Field Names //$NON-NLS-1$
+        System.setProperty(BackupServiceFactory.factoryName,            "edu.ku.brc.af.core.db.MySQLBackupService");                   // Needed for Backup and Restore //$NON-NLS-1$
+        System.setProperty(ExceptionTracker.factoryName,                "edu.ku.brc.specify.web.SpecifyExplorerExceptionTracker");                   // Needed for Backup and Restore //$NON-NLS-1$
     }
     
     /**
@@ -498,16 +512,17 @@ public class SpecifyExplorer extends HttpServlet
             
         log.info(connStr);  
         
-        Pair<String, String> usernamePassword = UserAndMasterPasswordMgr.getInstance().getUserNamePasswordForDB();
+        //Pair<String, String> usernamePassword = UserAndMasterPasswordMgr.getInstance().getUserNamePasswordForDB();
         if (!UIHelper.tryLogin(driverInfo.getDriverClassName(), 
                 driverInfo.getDialectClassName(), 
                 dbName, 
                 connStr, 
-                usernamePassword.first, 
-                usernamePassword.second))
+                username, 
+                password))
         {
             log.info("Login Failed!");
-            return false;
+            throw new RuntimeException("Login failed.");
+            //return false;
         }         
         
         queryHandler = new QueryReportHandler();
@@ -537,7 +552,7 @@ public class SpecifyExplorer extends HttpServlet
             AppPreferences localPrefs = AppPreferences.getLocalPrefs();
             localPrefs.setDirPath(UIRegistry.getAppDataDir());
             
-            AppContextMgr.CONTEXT_STATUS status = AppContextMgr.getInstance().setContext(DATABASE_NAME, "rods", false);
+            AppContextMgr.CONTEXT_STATUS status = AppContextMgr.getInstance().setContext(DATABASE_NAME, "testuser", false);
             if (status == AppContextMgr.CONTEXT_STATUS.OK)
             {
                 if (AppContextMgr.getInstance().getClassObject(Discipline.class) != null)
@@ -545,6 +560,9 @@ public class SpecifyExplorer extends HttpServlet
                     int disciplineeId = AppContextMgr.getInstance().getClassObject(Discipline.class).getDisciplineId();
                     SchemaI18NService.getInstance().loadWithLocale(SpLocaleContainer.CORE_SCHEMA, disciplineeId, DBTableIdMgr.getInstance(), Locale.getDefault());
                 }
+            } else
+            {
+                throw new RuntimeException("setContext was NOT OK!");
             }
             
         } else
@@ -637,8 +655,8 @@ public class SpecifyExplorer extends HttpServlet
         
         setUpSystemProperties();
         
-        DisciplineType         disciplineType = DisciplineType.getDiscipline("fish");
-        DatabaseDriverInfo driverInfo = DatabaseDriverInfo.getDriver("MySQL");
+        DisciplineType     disciplineType = DisciplineType.getDiscipline("fish");
+        DatabaseDriverInfo driverInfo     = DatabaseDriverInfo.getDriver("MySQL");
         
         setupDatabase(driverInfo, "localhost", DATABASE_NAME, "rods", "rods", "rods", "rods", "guest@ku.edu", disciplineType);
     }
@@ -2700,12 +2718,16 @@ public class SpecifyExplorer extends HttpServlet
      */
     protected String getRelativeImagePath(final String path)
     {
-        String key = "WEB-INF/classes/edu/ku/brc/specify/";
+        System.out.println("getRelativeImagePath -> ["+path+"]");
+        String key = "specify.jar!/edu/ku/brc/specify/";
         int inx = path.indexOf(key);
         if (inx > -1)
         {
             inx += key.length();
-            return baseURLSite + "/" + path.substring(inx);
+            String urlStr = baseURLSite + "/" + path.substring(inx);
+            //String urlStr = "classes/" + path.substring(inx);
+            System.out.println("getRelativeImagePath -> ["+urlStr+"]");
+            return urlStr;
         }
         return null;
     }
@@ -2722,7 +2744,7 @@ public class SpecifyExplorer extends HttpServlet
                 out.println("The template file is empty!");
             }
             
-            int inx = template.indexOf(contentTag);
+            int    inx        = template.indexOf(contentTag);
             String subContent = template.substring(0, inx);
             out.println(StringUtils.replace(subContent, "<!-- Title -->", "Search Forms"));
             
@@ -2738,7 +2760,7 @@ public class SpecifyExplorer extends HttpServlet
             
             String formIconPath  = getRelativeImagePath(IconManager.getIconEntryByName("Search").getUrl().toString());
             String statsIconPath = getRelativeImagePath(IconManager.getIconEntryByName("Statistics").getUrl().toString());
-            String indexIcon     = baseURLSite + "/index.png";
+            String indexIcon     = baseURLSite + "/images/Search32x32.png";//index.png";
             
             int cnt = 1;
             for (ClassDisplayInfo cdi : sortedClassList)
