@@ -1262,7 +1262,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         //tableMaps.put("loanpreparation",       createFieldNameMap(new String[] { "PreparationID", "PhysicalObjectID" }));
         tableMaps.put("loanreturnpreparation", createFieldNameMap(new String[] {"DeaccessionPreparationID", "DeaccessionPhysicalObjectID", "LoanPreparationID",
                                                                                 "LoanPhysicalObjectID", "LoanReturnPreparationID", "LoanReturnPhysicalObjectID",
-                                                                                "ReturnedDate", oldLoanReturnPhysicalObj_Date_FieldName, "Quantity", "QuantityReturned" }));
+                                                                                "ReturnedDate", oldLoanReturnPhysicalObj_Date_FieldName, "Quantity", "QuantityResolved" }));
         
         tableMaps.put("permit",                   createFieldNameMap(new String[] { "IssuedByID", "IssuerID", "IssuedToID", "IssueeID" }));
         tableMaps.put("projectcollectionobjects", createFieldNameMap(new String[] { "ProjectCollectionObjectID", "ProjectCollectionObjectsID" }));
@@ -3661,7 +3661,6 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
      */
     public boolean convertLoanAgentRecords(final boolean doingGifts)
     {
-    	
         ConversionLogger.TableWriter tblWriter = convLogger.getWriter("convert"+(doingGifts ? "Gift" : "Loan")+".html", "Convert "+(doingGifts ? "Gift" : "Loan"));
 
     	String newTableName = doingGifts ? "giftagent"   : "loanagent";
@@ -3679,12 +3678,12 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
         try
         {
-            IdTableMapper agentAddrIDMapper = idMapperMgr.addTableMapper("agentaddress", "AgentAddressID");
+            IdMapperIFace agentAddrIDMapper = idMapperMgr.get("agentaddress", "AgentAddressID");
 
         	IdMapperIFace loanMapper  = null;
         	if (doingGifts)
         	{
-        		IdTableMapper idMapper = new IdTableMapper("Loan", "LoanID", "SELECT LoanID FROM loan WHERE Category = 1 ORDER BY LoanID"); // Gifts
+        		IdTableMapper idMapper = new IdTableMapper("loan", "LoanID", "SELECT LoanID FROM loan WHERE Category = 1 ORDER BY LoanID"); // Gifts
                 if (shouldCreateMapTables)
                 {
                     idMapper.mapAllIdsWithSQL();
@@ -3694,7 +3693,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 
         	} else
         	{
-        		loanMapper = idMapperMgr.get("Loan", "LoanID"); // Loans
+        		loanMapper = idMapperMgr.get("loan", "LoanID"); // Loans
         	}
         	
             Statement stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
@@ -6329,7 +6328,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         // "in" function on the result of subquery so the order should not matter
         // String sql = "SELECT * FROM taxonname where taxonname.TaxonomyTypeId in (SELECT DISTINCT
         // t.TaxonomyTypeId FROM taxonname t WHERE t.RankId <> 0 ORDER BY TaxonomyTypeId)";
-        String sql = "SELECT * FROM taxonname where taxonname.TaxonomyTypeId in (SELECT DISTINCT t.TaxonomyTypeId FROM taxonname t WHERE t.RankId <> 0 )";
+        String sql = "SELECT * FROM taxonname WHERE TaxonName IS NOT NULL AND taxonname.TaxonomyTypeId IN (SELECT DISTINCT t.TaxonomyTypeId FROM taxonname t WHERE t.RankId <> 0 )";
 
 
         Hashtable<String, String> newToOldColMap = new Hashtable<String, String>();
@@ -6768,6 +6767,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 "SrcLatLongUnit",
                 "Visibility",
                 "VisibilitySetByID"};
+        
         BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(fieldsToIgnore);
 
         errorsToShow &= ~BasicSQLUtils.SHOW_NULL_FK; // Turn off this error for LocalityID

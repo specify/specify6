@@ -1856,8 +1856,7 @@ public class BasicSQLUtils
     {
         try
         {
-            int x= 0;
-            Integer count = 0;
+            Integer   count = 0;
             Statement cntStmt = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
             ResultSet rs      = cntStmt.executeQuery("select count(*) from "+tableName);
             if (rs.first())
@@ -1875,9 +1874,10 @@ public class BasicSQLUtils
 
         } catch (SQLException ex)
         {
+            log.error(ex);
+        	ex.printStackTrace();
             edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BasicSQLUtils.class, ex);
-            log.error(ex);
         }
         return -1;
     }
