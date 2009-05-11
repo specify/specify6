@@ -30,15 +30,26 @@ import java.awt.RenderingHints;
 import java.awt.Stroke;
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBuffer;
+import java.awt.image.renderable.ParameterBlock;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import javax.imageio.ImageIO;
+import javax.media.jai.JAI;
+import javax.media.jai.LookupTableJAI;
+import javax.media.jai.RenderedOp;
 import javax.swing.ImageIcon;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.tools.ant.util.UUEncoder;
+
+import com.sun.media.jai.codec.FileSeekableStream;
+import com.sun.media.jai.codec.TIFFDecodeParam;
 
 import sun.misc.UUDecoder;
 
@@ -478,6 +489,131 @@ public class GraphicsUtils
         }
         return null;
     }
+    
+    /**
+     * Reads an image to a byte array (Tiff, Png, JPeg). 
+     * @param srcFile the file
+     * @return byte array
+     */
+    public static byte[] readImage(final String srcFile)
+    {
+        return readImage(new File(srcFile));
+    }
+    
+    /**
+     * Reads an image to a byte array (Tiff, Png, JPeg). 
+     * @param srcFile the file
+     * @return byte array
+     */
+    public static byte[] readImage(final File srcFile)
+    {
+        if (srcFile != null && srcFile.exists())
+        {
+            try
+            {
+                String ext = FilenameUtils.getExtension(srcFile.getName());
+                if (ext.equals("tif") || ext.equals("tiff"))
+                {
+                    return GraphicsUtils.readTiffImage(srcFile);
+                } 
+                return FileUtils.readFileToByteArray(srcFile);
+                
+            } catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * @param fileName
+     * @return
+     */
+    public static byte[] readTiffImage(final String fileName)
+    {
+        return readTiffImage(new File(fileName));
+    }
+    
+    /**
+     * Taken from:
+     * http://java.sun.com/products/java-media/jai/forDevelopers/jai1_0_1guide-unc/Examples.doc.html
+     * 
+     * @param fileName
+     * @return
+     */
+    public static byte[] readTiffImage(final File fileName)
+    {
+        try
+        {
+            FileSeekableStream stream = new FileSeekableStream(fileName);
+
+            // Store the input stream in a ParameterBlock to be sent to
+            // the operation registry, and eventually to the TIFF
+            // decoder.
+            ParameterBlock params = new ParameterBlock();
+            params.add(stream);
+
+            // Specify to TIFF decoder to decode images as they are and
+            // not to convert unsigned short images to byte images.
+            TIFFDecodeParam decodeParam = new TIFFDecodeParam();
+            decodeParam.setDecodePaletteAsShorts(true);
+
+            // Create an operator to decode the TIFF file.
+            RenderedOp image1 = JAI.create("tiff", params);
+
+            // Find out the first image's data type.
+            int        dataType = image1.getSampleModel().getDataType();
+            RenderedOp image2   = null;
+            if (dataType == DataBuffer.TYPE_BYTE)
+            {
+                // Display the byte image as it is.
+                //System.out.println("TIFF image is type byte.");
+                image2 = image1;
+                
+            } else if (dataType == DataBuffer.TYPE_USHORT)
+            {
+
+                // Convert the unsigned short image to byte image.
+                //System.out.println("TIFF image is type ushort.");
+
+                // Setup a standard window-level lookup table. */
+                byte[] tableData = new byte[0x10000];
+                for (int i = 0; i < 0x10000; i++)
+                {
+                    tableData[i] = (byte) (i >> 8);
+                }
+
+                // Create a LookupTableJAI object to be used with the
+                // "lookup" operator.
+                LookupTableJAI table = new LookupTableJAI(tableData);
+
+                // Create an operator to lookup image1.
+                image2 = JAI.create("lookup", image1, table);
+
+            } else
+            {
+                //System.out.println("TIFF image is type " + dataType + ", and will not be displayed.");
+                return null;
+            }
+
+            ByteArrayOutputStream output = new ByteArrayOutputStream(8192);
+            
+            ImageIO.write(image2, "png", output);
+
+            byte[] outputBytes = output.toByteArray();
+            output.close();
+
+            return outputBytes;
+            
+        } catch (IOException ex) 
+        {
+            ex.printStackTrace();
+        }
+        return null;
+    }
+    
+    
 
     
     /**

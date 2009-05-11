@@ -71,7 +71,6 @@ import javax.swing.WindowConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
@@ -89,6 +88,7 @@ import edu.ku.brc.specify.datamodel.WorkbenchRowImage;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.DefaultModifiableListModel;
+import edu.ku.brc.ui.GraphicsUtils;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIHelper;
@@ -597,15 +597,30 @@ public class ImageFrame extends JFrame implements PropertyChangeListener
         reduceMI.setEnabled(enable);
     }
     
-    public static boolean testImageFile(String fullPath)
+    /**
+     * Makes sure the image can be read and it is not corrupted.
+     * @param srcFile the full path to the image
+     * @return true if ok
+     */
+    public static boolean testImageFile(final String srcFile)
     {
-        ImageIcon testIcon = new ImageIcon(fullPath);
-        if (testIcon.getIconHeight() == -1 || testIcon.getIconWidth() == -1)
+        try
         {
-            // this image file is corrupted or a format that we cannot display
-            return false;
+            byte[] bytes = GraphicsUtils.readImage(srcFile);
+            if (bytes != null)
+            {
+                ImageIcon testIcon = new ImageIcon(bytes);
+                
+                System.err.println(testIcon.getIconHeight()+"  "+testIcon.getIconWidth());
+                
+                // this image file is corrupted or a format that we cannot display
+                return testIcon.getIconHeight() > 0 && testIcon.getIconWidth() > 0;
+            }
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
         }
-        return true;
+        return false;
     }
 
     /**
@@ -880,9 +895,12 @@ public class ImageFrame extends JFrame implements PropertyChangeListener
         if (thumbnailer != null)
         {
             File orig = new File(rowImage.getCardImageFullPath());
-            byte[] origData = FileUtils.readFileToByteArray(orig);
-            byte[] thumbData = thumbnailer.generateThumbnail(origData, true);
-            return new ImageIcon(thumbData);
+            byte[] origData = GraphicsUtils.readImage(orig);
+            if (origData != null)
+            {
+                byte[] thumbData = thumbnailer.generateThumbnail(origData, true);
+                return new ImageIcon(thumbData);
+            }
         }
         return null;
     }

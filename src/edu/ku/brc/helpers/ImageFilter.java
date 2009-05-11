@@ -44,12 +44,12 @@ public class ImageFilter extends FileFilter implements java.io.FilenameFilter
     public final static String jpg  = "jpg"; //$NON-NLS-1$
     public final static String gif  = "gif"; //$NON-NLS-1$
     public final static String png  = "png"; //$NON-NLS-1$
-    
-    protected static String[] types = {jpeg, jpg, gif, png};
-    
-    // Unsupported at this time
     public final static String tiff = "tiff"; //$NON-NLS-1$
     public final static String tif  = "tif"; //$NON-NLS-1$
+    
+    protected static String[] types = {jpeg, jpg, gif, png, tif, tiff};
+    
+    // Unsupported at this time
     public final static String bmp  = "bmp"; //$NON-NLS-1$
     
     protected Hashtable<String, Boolean> hash = new Hashtable<String, Boolean>();
@@ -68,6 +68,7 @@ public class ImageFilter extends FileFilter implements java.io.FilenameFilter
     /* (non-Javadoc)
      * @see javax.swing.filechooser.FileFilter#accept(java.io.File)
      */
+    @Override
     public boolean accept(File f)
     {
         if (f.isDirectory()) { return true; }
@@ -78,6 +79,7 @@ public class ImageFilter extends FileFilter implements java.io.FilenameFilter
     /* (non-Javadoc)
      * @see java.io.FilenameFilter#accept(java.io.File, java.lang.String)
      */
+    @Override
     public boolean accept(File dir, String filename)
     {
         return isImageFile(filename);
@@ -99,6 +101,7 @@ public class ImageFilter extends FileFilter implements java.io.FilenameFilter
     }
 
     //The description of this filter
+    @Override
     public String getDescription()
     {
         return getResourceString("ImageFilter.IMAGES"); //$NON-NLS-1$

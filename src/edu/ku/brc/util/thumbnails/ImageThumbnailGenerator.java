@@ -119,15 +119,25 @@ public class ImageThumbnailGenerator implements ThumbnailGeneratorIFace
         }
         return null;
     }
+    
+    /**
+     * @param tiffImageFile
+     * @return
+     */
+    public byte[] generateTiffThumbnail(final File tiffImageFile)
+    {
+  
+        return null;
+    }
 	
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.util.thumbnails.ThumbnailGenerator#generateThumbnail(java.lang.String, java.lang.String, boolean)
 	 */
 	public boolean generateThumbnail(final String originalFile, 
-	                              final String thumbnailFile,
-	                              final boolean doHighQuality) throws IOException
+	                                 final String thumbnailFile,
+	                                 final boolean doHighQuality) throws IOException
 	{
-        byte[] origData = FileUtils.readFileToByteArray(new File(originalFile));
+	    byte[] origData = GraphicsUtils.readImage(originalFile);
         if (origData != null)
         {
             byte[] thumb = generateThumbnail(origData, doHighQuality);
@@ -137,6 +147,7 @@ public class ImageThumbnailGenerator implements ThumbnailGeneratorIFace
                 return true;
             }
         }
+	    
         return false;
 	}
 
