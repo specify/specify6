@@ -2438,14 +2438,16 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         final int curInx = listBoxList.indexOf(parentList);
         if (curInx > -1)
         {
-            for (int i = curInx + 1; i < listBoxList.size(); i++)
+            int startSize = listBoxPanel.getComponentCount();
+        	for (int i = curInx + 1; i < listBoxList.size(); i++)
             {
                 listBoxPanel.remove(spList.get(i));
-                if (tableTreeList.size() > 0)
-                {
-                	tableTreeList.remove(tableTreeList.size()-1);
-                }
             }
+        	int removed = startSize - listBoxPanel.getComponentCount();
+        	for (int i = 0; i < removed; i++)
+        	{
+        		tableTreeList.remove(tableTreeList.size() - 1);
+        	}
 
         }
         else
@@ -2522,7 +2524,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 sp.setColumnHeaderView(colHeader);
                 
                 spList.add(sp);
-                tableTreeList.add(((ExpandableQRI )item).getTableTree());
                 
                 newList.getSelectionModel().addListSelectionListener(new ListSelectionListener()
                 {
@@ -2545,7 +2546,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 if (item instanceof TableQRI)
                 {
                     colHeaderLbl.setText(((TableQRI)item).getTitle());
-                    tableTreeList.add(((TableQRI )item).getTableTree());
                 }
                 else
                 {
@@ -2557,6 +2557,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 
             listBoxPanel.remove(addBtn);
             listBoxPanel.add(sp);
+            tableTreeList.add(((ExpandableQRI )item).getTableTree());
             listBoxPanel.add(addBtn);
             currentInx = -1;
 
@@ -2741,10 +2742,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     	List<TableTreePathPoint> displayedPath = getCurrentDisplayPath();
     	List<TableTreePathPoint> fieldPath = field.getTableTree().getPathFromRoot();
 
-    	if (tableTreeList.size() != spList.size())
+    	if (tableTreeList.size() != listBoxPanel.getComponentCount()-1)
         {
-        	//XXX fix tableTreeList (though it is not even strictly necessary)
-    		System.out.println("tableTreeList and spList are out of sync");
+    		log.error("tableTreeList and listBoxPanel are out of sync");
         }
     	
     	int p = 0;
@@ -3065,7 +3065,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 scrollQueryFieldsToRect(selectedQFP.getBounds());
             }
             updateMoverBtns();
-            //displayField(qfp.getFieldQRI());
+            displayField(qfp.getFieldQRI());
         }
     }
     
