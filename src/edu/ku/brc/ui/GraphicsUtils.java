@@ -39,17 +39,17 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import javax.imageio.ImageIO;
-import javax.media.jai.JAI;
-import javax.media.jai.LookupTableJAI;
-import javax.media.jai.RenderedOp;
+//import javax.media.jai.JAI;
+//import javax.media.jai.LookupTableJAI;
+//import javax.media.jai.RenderedOp;
 import javax.swing.ImageIcon;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.tools.ant.util.UUEncoder;
 
-import com.sun.media.jai.codec.FileSeekableStream;
-import com.sun.media.jai.codec.TIFFDecodeParam;
+//import com.sun.media.jai.codec.FileSeekableStream;
+//import com.sun.media.jai.codec.TIFFDecodeParam;
 
 import sun.misc.UUDecoder;
 
@@ -544,8 +544,10 @@ public class GraphicsUtils
      */
     public static byte[] readTiffImage(final File fileName)
     {
+    	/*
         try
         {
+        	
             FileSeekableStream stream = new FileSeekableStream(fileName);
 
             // Store the input stream in a ParameterBlock to be sent to
@@ -577,7 +579,7 @@ public class GraphicsUtils
                 // Convert the unsigned short image to byte image.
                 //System.out.println("TIFF image is type ushort.");
 
-                // Setup a standard window-level lookup table. */
+                // Setup a standard window-level lookup table. 
                 byte[] tableData = new byte[0x10000];
                 for (int i = 0; i < 0x10000; i++)
                 {
@@ -609,7 +611,7 @@ public class GraphicsUtils
         } catch (IOException ex) 
         {
             ex.printStackTrace();
-        }
+        }*/
         return null;
     }
     

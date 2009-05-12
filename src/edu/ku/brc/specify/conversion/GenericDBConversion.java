@@ -3696,52 +3696,47 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         		loanMapper = idMapperMgr.get("loan", "LoanID"); // Loans
         	}
         	
-            Statement stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             StringBuilder str = new StringBuilder();
+            
+            StringBuilder cntSQL = new StringBuilder("SELECT count(*) FROM loanagents la INNER JOIN loan l ON la.LoanID = l.LoanID WHERE l.Category = ");
+            cntSQL.append(doingGifts ? "1" : "0");
+            
+            Integer totalCnt = BasicSQLUtils.getCount(oldDBConn, cntSQL.toString());
+            if (totalCnt == null || totalCnt == 0)
+            {
+            	return true;
+            }
 
-            StringBuilder sql = new StringBuilder("SELECT la.LoanAgentsID, la.Role, la.Remarks, la.LoanID, la.AgentAddressID ");
+            StringBuilder sql = new StringBuilder("SELECT la.LoanAgentsID, la.Role, la.Remarks, la.LoanID, la.AgentAddressID, la.TimestampCreated, la.TimestampModified ");
             sql.append("FROM loanagents la INNER JOIN loan l ON la.LoanID = l.LoanID WHERE l.Category = ");
             sql.append(doingGifts ? "1" : "0");
             sql.append(" ORDER BY l.LoanID");
             
             String sqlStr = sql.toString();
             log.info(sqlStr);
-            ResultSet rs = stmt.executeQuery(sqlStr);
+            
+            Statement stmt = oldDBConn.createStatement();//ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            ResultSet rs   = stmt.executeQuery(sqlStr);
 
             if (hasFrame)
             {
-                if (rs.last())
-                {
-                    setProcess(0, rs.getRow());
-                    rs.first();
-
-                } else
-                {
-                    rs.close();
-                    stmt.close();
-                    return true;
-                }
-            } else
-            {
-                if (!rs.first())
-                {
-                    rs.close();
-                    stmt.close();
-                    return true;
-                }
+            	setProcess(0, totalCnt);
             }
 
             Statement updateStatement = newDBConn.createStatement();
 
             int count = 0;
-            do
+            while (rs.next())
             {
-            	Integer id          = rs.getInt(1);
-                String  role        = rs.getString(2);
-                String  remarks     = rs.getString(3);
-            	Integer loadId      = rs.getInt(4);
-            	Integer agentAddrId = rs.getInt(5);
-            	
+            	System.out.println(count);
+            	Integer   id          = rs.getInt(1);
+                String    role        = rs.getString(2);
+                String    remarks     = rs.getString(3);
+            	Integer   loadId      = rs.getInt(4);
+            	Integer   agentAddrId = rs.getInt(5);
+               	Timestamp timestampCr = rs.getTimestamp(6);
+               	Timestamp timestampMd = rs.getTimestamp(7);
+                           	
             	Integer newId      = count+1;
             	Integer newLoanId  = loanMapper.get(loadId);
             	Integer newAgentId = agentAddrIDMapper.get(agentAddrId);
@@ -3759,8 +3754,11 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             	}
             	
             	
-            	String insertSQLFmt = "INSERT INTO %s (%s, Role, Remarks, %s, AgentID) VALUES(%d, '%s', '%s', %d, %d)";
-            	String insertSql    = String.format(insertSQLFmt, newTableName, idName, refName, newId, role, remarks, newLoanId, newAgentId);
+            	String tsStr = timestampCr == null ? nowStr : dateTimeFormatter.format(timestampMd);
+            	String tmStr = timestampMd == null ? nowStr : dateTimeFormatter.format(timestampCr);
+            	
+            	String insertSQLFmt = "INSERT INTO %s (%s, Role, Remarks, %s, AgentID, TimestampCreated, TimestampModified, Version, CollectionMemberID) VALUES(%d, '%s', '%s', %d, %d, '%s', '%s', 0, %d)";
+            	String insertSql    = String.format(insertSQLFmt, newTableName, idName, refName, newId, role, remarks, newLoanId, newAgentId, tsStr, tmStr, getCollectionMemberId());
 
                 if (hasFrame)
                 {
@@ -3788,17 +3786,14 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     e.printStackTrace();
                     log.error(e);
                     rs.close();
-                    throw new RuntimeException(e);
-                    
-                } finally
-                {
                 	updateStatement.close();
                     stmt.close();
+                    throw new RuntimeException(e);
+                    
                 }
 
                 count++;
-                
-            } while (rs.next());
+            }
 
             if (hasFrame)
             {
@@ -3808,8 +3803,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 log.info("Processed LoanAgents " + count + " records.");
             }
             rs.close();
-
             stmt.close();
+        	updateStatement.close();
 
         } catch (SQLException e)
         {
@@ -6011,6 +6006,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         {
             convertTaxonTreeDefinition(id);
         }
+        rs.close();
+        st.close();
     }
 
     /**
