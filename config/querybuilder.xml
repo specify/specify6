@@ -336,6 +336,7 @@
         <alias name="CollectionObject"/>
         <alias name="LoanPreparation" field="loanPreparations"/>
         <alias name="Storage"/>
+        <alias name="Agent" field="preparedByAgent" />
       	<alias name="Agent" field="createdByAgent" />
       	<alias name="Agent" field="modifiedByAgent" />
     </table>
