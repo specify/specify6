@@ -742,8 +742,8 @@
             <enableRules/>
 
             <columnDef>p,0px,max(p;175px),5px,130px,2px,141px,5px,110px,2px,140px,0px,15px,p:g</columnDef>
-            <columnDef os="lnx">p,2px,max(p;155px),5px,165px,2px,156px,5px,155px,2px,150px,0px,15px,p:g</columnDef>
-            <columnDef os="mac">p,2px,max(p;208px),5px,160px,2px,189px,5px,140px,2px,189px,0px,15px,p:g</columnDef>
+            <columnDef os="lnx">max(115px;p),2px,max(p;155px),5px,165px,2px,156px,5px,155px,2px,150px,0px,15px,p:g</columnDef>
+            <columnDef os="mac">max(130px;p),2px,max(p;208px),5px,160px,2px,189px,5px,140px,2px,189px,0px,15px,p:g</columnDef>
             <columnDef os="exp">p,0px,max(p;175px),5px:g,p,2px,max(p;150px),5px:g,p,2px,max(p;150px),0px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="1px"/>
 
@@ -3175,7 +3175,7 @@
             
             <columnDef>105px,2px,135px,5px,105px,2px,136px,5px,110px,2px,200px,0px,15px,p:g</columnDef>
             <columnDef os="lnx">115px,2px,150px,5px,120px,2px,156px,5px,150px,2px,210px,0px,15px,p:g</columnDef>
-            <columnDef os="mac">130px,2px,120px,5px,90px,2px,150px,5px,119px,2px,215px,0px,15px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,181px,5px,140px,2px,180px,5px,160px,2px,225px,0px,15px,p:g</columnDef>
             <columnDef os="exp">p,2px,max(p;150px),5px:g,p,2px,max(p;150px),5px:g,p,2px,p,0px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="1px"/>
             
@@ -3239,7 +3239,7 @@
 
             <columnDef>105px,2px,200px,5px,48px,2px,136px,319px,p:g</columnDef>
             <columnDef os="lnx">115px,2px,240px,5px,53px,2px,166px,334px,p:g</columnDef>
-            <columnDef os="mac">130px,2px,215px,5px,271px,2px,215px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,255px,5px,171px,2px,215px,252px,p:g</columnDef>
             <columnDef os="exp">p,2px,p,5px,60px,2px,max(p;150px),p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
 
@@ -3271,7 +3271,7 @@
 
             <columnDef>105px,2px,200px,511px,p:g</columnDef>
             <columnDef os="lnx">115px,2px,240px,560px,p:g</columnDef>
-            <columnDef os="mac">130px,2px,215px,493px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,255px,645px,p:g</columnDef>
             <columnDef os="exp">p,2px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             <rows>
