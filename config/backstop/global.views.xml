@@ -1582,16 +1582,16 @@
             <enableRules>
             </enableRules>
             
-            <columnDef>100px,2px,725px,0px,p:g</columnDef>
-            <columnDef os="lnx">115px,2px,800px,0px,p:g</columnDef>
-            <columnDef os="mac">130px,2px,900px,0px,p:g</columnDef>
-            <columnDef os="exp">p,2px,725px,p:g</columnDef>
+            <columnDef>100px,2px,725px,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,800px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,900px,p:g</columnDef>
+            <columnDef os="exp">p,2px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
                 <row>
                     <cell type="label" labelfor="fullName"/>
-                    <cell type="field" id="fullName" uitype="text" cols="16" name="fullName" colspan="2"/> 
+                    <cell type="field" id="fullName" uitype="text" cols="16" name="fullName"/> 
                 </row>
             </rows>
         </viewdef>
@@ -2086,7 +2086,7 @@
                     <cell type="field" id="origFilename" name="attachment.origFilename" initialize="editoncreate=true" cols="30" uitype="browse" />
                 </row>
                 <row>
-                	<cell type="label" labelfor="title"/>
+                	<cell type="label" labelfor="title"  label="TITLE"/>
                 	<cell type="field" id="title" name="attachment.title" cols="30"/>
                 </row>
     		 <!--   <row>
