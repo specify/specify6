@@ -21,6 +21,7 @@ package edu.ku.brc.af.core.db;
 
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -101,6 +102,11 @@ public abstract class BackupServiceFactory
      * 
      */
     public abstract void doBackUp();
+
+    /**
+     * 
+     */
+    public abstract void doBackUp(PropertyChangeListener pcl);
 
     /**
      * 

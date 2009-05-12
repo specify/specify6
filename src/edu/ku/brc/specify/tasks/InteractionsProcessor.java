@@ -706,7 +706,6 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
         /* (non-Javadoc)
          * @see javax.swing.SwingWorker#doInBackground()
          */
-        @SuppressWarnings("unchecked")
         @Override
         protected Integer doInBackground() throws Exception
         {

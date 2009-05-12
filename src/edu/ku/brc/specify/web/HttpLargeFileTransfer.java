@@ -28,25 +28,28 @@ import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.swing.SwingWorker;
-import javax.swing.event.ChangeListener;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.core.db.MySQLBackupService;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -62,6 +65,7 @@ public class HttpLargeFileTransfer
     public static final int    BUFFER_SIZE             = 4096;
 
     public static final int    MAX_CHUNK_SIZE          = 1000 * BUFFER_SIZE;         // ~4.1MB
+    public static final String SERVICE_NUMBER          = "Transfer-Server-Number";
     public static final String FILE_NAME_HEADER        = "Transfer-File-Name";
     public static final String CLIENT_ID_HEADER        = "Transfer-Client-ID";
     public static final String FILE_CHUNK_HEADER       = "Transfer-File-Chunk";
@@ -75,7 +79,7 @@ public class HttpLargeFileTransfer
      */
     public boolean compressFile(final String infileName,
                                 final String outFileName,
-                                final ChangeListener changeListener)
+                                final PropertyChangeListener propChgListener)
     {
         final File file = new File(infileName);
         if (file.exists())
@@ -163,6 +167,11 @@ public class HttpLargeFileTransfer
                         {
                             UIRegistry.showError(errorMsg);
                         }
+                        
+                        if (propChgListener != null)
+                        {
+                            propChgListener.propertyChange(new PropertyChangeEvent(HttpLargeFileTransfer.this, "Done", 0, 1));
+                        }
                     }
                 };
                 
@@ -176,7 +185,7 @@ public class HttpLargeFileTransfer
                             public  void propertyChange(final PropertyChangeEvent evt) {
                                 if ("MEGS".equals(evt.getPropertyName())) 
                                 {
-                                    long value = (Long)evt.getNewValue();
+                                    Integer value = (Integer)evt.getNewValue();
                                     double val = value / 10.0;
                                     statusBar.setText(UIRegistry.getLocalizedMessage("MySQLBackupService.BACKUP_MEGS", val));
                                 }
@@ -203,8 +212,7 @@ public class HttpLargeFileTransfer
      * @return
      */
     public static boolean uncompressFile(final String infileName,
-                                         final String outFileName,
-                                         final ChangeListener changeListener)
+                                         final String outFileName)
     {
        File file = new File(infileName);
        if (file.exists())
@@ -214,8 +222,8 @@ public class HttpLargeFileTransfer
            {
                try
                {
-                   FileInputStream      fis = new FileInputStream(infileName);
-                   BufferedOutputStream fos = new BufferedOutputStream(new GZIPOutputStream(new FileOutputStream(outFileName)));
+                   GZIPInputStream      fis = new GZIPInputStream(new FileInputStream(infileName));
+                   BufferedOutputStream fos = new BufferedOutputStream(new FileOutputStream(outFileName));
                    
                    byte[] bytes = new byte[BUFFER_SIZE*10];
                    
@@ -250,8 +258,6 @@ public class HttpLargeFileTransfer
        }
        return false;
     }
-    
-
     
     /**
      * @param fileName
@@ -300,6 +306,7 @@ public class HttpLargeFileTransfer
                         conn.setRequestProperty(FILE_NAME_HEADER, fileName);
                         conn.setRequestProperty(FILE_CHUNK_COUNT_HEADER, String.valueOf(nChunks));
                         conn.setRequestProperty(FILE_CHUNK_HEADER, String.valueOf(i));
+                        conn.setRequestProperty(SERVICE_NUMBER, "10");
         
                         OutputStream out       = conn.getOutputStream();
                         int          bytesRead = 0;
@@ -317,12 +324,25 @@ public class HttpLargeFileTransfer
                             }
                         }
                         out.close();
-        
+                        
                         if (conn.getResponseCode() != HttpServletResponse.SC_OK)
                         {
-                            System.err.println(conn.getResponseMessage());
+                            System.err.println(conn.getResponseMessage() +" "+conn.getResponseCode()+" ");
+                            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+                            String line = null;
+                            StringBuilder sb = new StringBuilder();
+                            while ((line = in.readLine()) != null)
+                            {
+                                    sb.append(line);
+                                    sb.append("\n");
+                            }
+                            System.out.println(sb.toString());
+                            in.close();
+                            
+                        } else
+                        {
+                            System.err.println("OK ");
                         }
-        
                     }
                 } else
                 {
@@ -346,24 +366,37 @@ public class HttpLargeFileTransfer
      */
     public void doPut(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException
     {
+        System.out.println("=================================");
+        
         String fileName = req.getHeader(HttpLargeFileTransfer.FILE_NAME_HEADER);
         if (fileName == null)
         {
             resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Filename not specified");
+            return;
         }
 
         String clientID = req.getHeader(HttpLargeFileTransfer.CLIENT_ID_HEADER);
         if (null == clientID)
         {
             resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Missing Client ID");
+            return;
         }
+        
+        String serviceNumber = req.getHeader(HttpLargeFileTransfer.SERVICE_NUMBER);
+        if (null == serviceNumber)
+        {
+            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Missing Service Number");
+            return;
+        }
+        String databaseName = StringUtils.replace(serviceNumber, ".", "_");
 
         int numChunks = req.getIntHeader(HttpLargeFileTransfer.FILE_CHUNK_COUNT_HEADER);
-        int chunkCnt     = req.getIntHeader(HttpLargeFileTransfer.FILE_CHUNK_HEADER);
+        int chunkCnt   = req.getIntHeader(HttpLargeFileTransfer.FILE_CHUNK_HEADER);
 
         if (numChunks == -1 || chunkCnt == -1)
         {
             resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Missing chunk information");
+            return;
         }
 
         if (chunkCnt == 0)
@@ -400,24 +433,53 @@ public class HttpLargeFileTransfer
         fis.close();
         fos.close();
 
+        File    destFile = new File(fileName);
+        boolean isOK     = true;
         if (numChunks > 1 && chunkCnt == numChunks - 1)
         {
             File tmpFile  = new File(getTempFile(clientID));
-            File destFile = new File(fileName);
             if (destFile.exists())
             {
                 destFile.delete();
             }
             if (!tmpFile.renameTo(destFile))
             {
+                isOK = false;
                 resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Unable to create file");
+                return;
+            }
+        }
+        
+        System.out.println("2 ================================= "+isOK);
+        
+        if (isOK)
+        {
+            String fullDestPath = destFile+".sql";
+            if (uncompressFile(destFile.getAbsolutePath(),  fullDestPath))
+            {
+                File newFile = new File(fullDestPath);
+                databaseName = "db";
+                System.out.println("Uncompressed:["+fullDestPath+"] size: ["+newFile.length()+"] database["+databaseName+"]");
+                
+                MySQLBackupService backupService = new MySQLBackupService();
+                if (backupService.doRestore(fullDestPath, "/usr/local/mysql/bin/mysql", databaseName, "root", "root"))
+                {
+                    System.out.println("Sending OK");
+                    resp.setStatus(HttpServletResponse.SC_OK);
+                } else
+                {
+                    resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "error restoring");
+                    System.out.println("Sending error 1");
+                }
             } else
             {
-                resp.setStatus(HttpServletResponse.SC_OK);
+                resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                System.out.println("Sending error 2");
             }
         } else
         {
-            resp.setStatus(HttpServletResponse.SC_OK);
+            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "error decompressing");
+            System.out.println("Sending error 3");
         }
     }
 
@@ -428,14 +490,5 @@ public class HttpLargeFileTransfer
     private static String getTempFile(final String clientID)
     {
         return clientID + ".tmp";
-    }
-
-
-    /**
-     * @param args
-     */
-    public static void main(String[] args)
-    {
-        transferFile(args[0], args[1]);
     }
 }
