@@ -2424,9 +2424,9 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Loan viewing form.]]></desc>
-            <columnDef>105px,2px,max(p;105px),5px,90px,2px,105px,5px,120px,5px,156px,2px,105px,0px,15px,p,p:g</columnDef>
-            <columnDef os="lnx">115px,2px,max(p;137px),5px,125px,2px,110px,15px,148px,5px,141px,2px,110px,0px,15px,p,p:g</columnDef>
-            <columnDef os="mac">130px,2px,max(p;150px),5px,105px,2px,150px,5px,155px,5px,170px,2px,150,0px,15px,p,p:g</columnDef>
+            <columnDef>105px,2px,105px,5px,90px,2px,105px,5px,120px,5px,156px,2px,105px,0px,15px,p,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,137px,5px,125px,2px,110px,15px,148px,5px,141px,2px,110px,0px,15px,p,p:g</columnDef>
+            <columnDef os="mac">130px,2px,150px,5px,105px,2px,150px,5px,155px,5px,170px,2px,150,0px,15px,p,p:g</columnDef>
             <columnDef os="exp">p,2px,150px,5px:g,p,2px,120px,5px,p,5px:g,p,2px,120px,0px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="1dlu"/>
             
