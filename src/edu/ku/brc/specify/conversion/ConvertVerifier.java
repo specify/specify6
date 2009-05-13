@@ -28,6 +28,8 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -124,8 +126,14 @@ public class ConvertVerifier
     
     protected PrintWriter                                   out;
     protected int                                           numErrors = 0;
-
-
+    protected static SimpleDateFormat                       dateFormatter          = new SimpleDateFormat("yyyy-MM-dd");
+    
+    
+    /**
+     * @param databaseNameSource
+     * @param databaseNameDest
+     * @throws Exception
+     */
     public void verifyDB(final String databaseNameSource, 
                          final String databaseNameDest) throws Exception
     {
@@ -385,6 +393,11 @@ public class ConvertVerifier
         out.close();
     }
     
+    public void compareDate(final Integer sp5Date, final Calendar sp6Date, final Byte partialType)
+    {
+        
+    }
+    
     protected void printVerifyHeader(final String name)
     {
         out.println("<tr><td colspan=\"2\">"+name+"</td></tr>");
@@ -397,11 +410,11 @@ public class ConvertVerifier
      */
     protected boolean verifyTaxon(final int oldCatNum, final String newCatNum) throws SQLException
     {
-        newSQL = "SELECT collectionobject.CatalogedDate, determination.DeterminedDate, taxon.FullName " + 
+        newSQL = "SELECT collectionobject.CatalogedDate, collectionobject.CatalogedDatePrecision, determination.DeterminedDate, determination.DeterminedDatePrecision, taxon.FullName " + 
                         "FROM determination INNER JOIN collectionobject ON determination.CollectionObjectID = collectionobject.CollectionObjectID "+
                         "INNER JOIN taxon ON determination.TaxonID = taxon.TaxonID WHERE CatalogNumber = '"+ newCatNum + "'";
 
-        oldSQL = "SELECT collectionobjectcatalog.CatalogedDate,determination.Date,taxonname.FullTaxonName " + 
+        oldSQL = "SELECT collectionobjectcatalog.CatalogedDate, determination.Date,taxonname.FullTaxonName " + 
                         "FROM determination INNER JOIN taxonname ON determination.TaxonNameID = taxonname.TaxonNameID " + 
                         "INNER JOIN collectionobjectcatalog ON collectionobjectcatalog.CollectionObjectCatalogID = determination.BiologicalObjectID " + 
                         "WHERE CatalogNumber = " + oldCatNum;
@@ -498,7 +511,7 @@ public class ConvertVerifier
     
     protected boolean verifyCOToLocality(final int oldCatNum, final String newCatNum) throws SQLException
     {
-         newSQL = "SELECT collectingevent.StartDate, locality.LocalityName " +
+         newSQL = "SELECT collectingevent.StartDate, collectingevent.StartDatePrecision, locality.LocalityName " +
                         "FROM collectionobject INNER JOIN collectingevent ON collectionobject.CollectingEventID = collectingevent.CollectingEventID " +
                         "INNER JOIN locality ON collectingevent.LocalityID = locality.LocalityID " +
                         "WHERE CatalogNumber = '"+ newCatNum + "'";
@@ -655,7 +668,7 @@ public class ConvertVerifier
                          
     protected boolean verifyCollectingEvent(final int oldCatNum, final String newCatNum) throws SQLException
     {
-         newSQL = "SELECT collectingevent.StartDate, collectingevent.StationFieldNumber " +
+         newSQL = "SELECT collectingevent.StartDate, collectingevent.StartDatePrecision, collectingevent.StationFieldNumber " +
                         "FROM collectionobject INNER JOIN collectingevent ON collectionobject.CollectingEventID = collectingevent.CollectingEventID " +
                         "WHERE CatalogNumber = '"+ newCatNum + "'";
 
@@ -808,7 +821,6 @@ public class ConvertVerifier
      * @return
      * @throws SQLException
      */
-    @SuppressWarnings("deprecation")
     protected boolean compareRecords(final String desc, 
                                      final String oldCatNum, 
                                      final String newCatNum, 
@@ -846,21 +858,34 @@ public class ConvertVerifier
             
             ResultSetMetaData oldRsmd = oldDBRS.getMetaData();
             ResultSetMetaData newRsmd = newDBRS.getMetaData();
+            
+            Pair<String, String> datePair = new Pair<String, String>();
+            Calendar             cal      = Calendar.getInstance();
+            StringBuilder        errSB    = new StringBuilder();
+            
             while (hasNewRec && hasOldRec)
             {
-                for (int col=1;col<=newRsmd.getColumnCount();col++)
+                errSB.setLength(0);
+                
+                int oldColInx = 0;
+                int newColInx = 0;
+                
+                for (int col=0;col<newRsmd.getColumnCount();col++)
                 {
+                    newColInx++;
+                    oldColInx++;
+
                     //System.out.println(newRsmd.getColumnName(col));
                     
-                    Object newObj = newDBRS.getObject(col);
-                    Object oldObj = oldDBRS.getObject(col);
+                    Object newObj = newDBRS.getObject(newColInx);
+                    Object oldObj = oldDBRS.getObject(oldColInx);
                     
                     if (oldObj == null && newObj == null)
                     {
                         continue;
                     }
                     
-                    String oldColName = oldRsmd.getColumnName(col);
+                    String oldColName = oldRsmd.getColumnName(oldColInx);
                     if (oldObj == null && !StringUtils.contains(oldColName, "LastName"))
                     {
                         String msg = "Old Value was null and shouldn't have been for Key Value ["+oldCatNum+"] Field ["+oldColName+"]";
@@ -872,10 +897,10 @@ public class ConvertVerifier
                     
                     if (newObj == null)
                     {
-                        String clsName = newRsmd.getColumnClassName(col);
+                        String clsName = newRsmd.getColumnClassName(newColInx);
                         if (!clsName.equals("java.sql.Date") || ((Integer)oldObj) != 0)
                         {
-                            String msg = "New Value was null and shouldn't have been for Key Value ["+newCatNum+"] Field ["+newRsmd.getColumnName(col)+"] ["+oldObj+"]";
+                            String msg = "New Value was null and shouldn't have been for Key Value ["+newCatNum+"] Field ["+newRsmd.getColumnName(newColInx)+"] ["+oldObj+"]";
                             log.error(desc+ " - "+msg);
                             printRowError(msg);
                             return false;
@@ -887,22 +912,60 @@ public class ConvertVerifier
                     
                     if (newObj instanceof java.sql.Date)
                     {
-                        int  oldIntDate = oldDBRS.getInt(col);
+                        Byte partialDateType = null;
+                        if (StringUtils.contains(newRsmd.getColumnName(newColInx), "DatePrecision"))
+                        {
+                            newColInx++;
+                            partialDateType =  newDBRS.getByte(newColInx);
+                        }
+                        
+                        int  oldIntDate = oldDBRS.getInt(oldColInx);
                         if (oldIntDate == 0)
                         {
                             continue;
                         }
-                        Date oldDate = UIHelper.convertIntToDate(oldIntDate);
-                        Date newDate = newDBRS.getDate(col);
                         
-                        int newYear = newDate.getYear();
-                        int oldYear = oldDate.getYear();
+                        GenericDBConversion.getPartialDate(oldDBRS.getInt(oldColInx), datePair, false);
                         
-                        if (newYear != oldYear)
+                        if (partialDateType != null)
                         {
-                            String msg = "Dates don't compare["+oldDate+"]["+newDate+"] Years["+oldYear+"]["+newYear+"]";
-                            log.error(desc+ " - "+msg);
-                            printRowError(oldCatNum + " / "+newCatNum, msg);
+                            if (Byte.parseByte(datePair.second) == partialDateType.byteValue())
+                            {
+                                errSB.append("Partial Dates Type do not match.Old["+datePair.second+"]  New ["+partialDateType.byteValue()+"]");
+                                // error partial dates don't match
+                            }
+                        } 
+                        
+                        cal.setTime((Date)newObj);
+                        
+                        int year = Integer.parseInt(datePair.first.substring(0, 4));
+                        int mon  = Integer.parseInt(datePair.first.substring(5, 7));
+                        int day  = Integer.parseInt(datePair.first.substring(8, 10));
+                        
+                        if (year != cal.get(Calendar.YEAR))
+                        {
+                            errSB.append("Year mismatch Old["+year+"]  New ["+cal.get(Calendar.YEAR)+"] ");
+                        }
+                        
+                        if (mon != cal.get(Calendar.MONTH))
+                        {
+                            errSB.append("Month mismatch Old["+mon+"]  New ["+cal.get(Calendar.MONTH)+"] ");
+                        }
+                        
+                        if (day != cal.get(Calendar.DAY_OF_MONTH))
+                        {
+                            errSB.append("Day mismatch Old["+day+"]  New ["+cal.get(Calendar.DAY_OF_MONTH)+"] ");
+                        }
+                        
+                        if (errSB.length() > 0)
+                        {
+                            errSB.append("[");
+                            errSB.append(datePair);
+                            errSB.append("][");
+                            errSB.append(dateFormatter.format((Date)newObj));
+                            errSB.append("]");
+                            log.error(errSB.toString());
+                            printRowError(oldCatNum + " / "+newCatNum, errSB.toString());
                             return false;
                         }
                         
@@ -912,7 +975,7 @@ public class ConvertVerifier
                         String s2 = String.format("%10.5f", oldObj instanceof Float ? (Float)oldObj : (Double)oldObj);
                         if (!s1.equals(s2))
                         {
-                            String msg = "Columns don't compare["+s1+"]["+s2+"]  ["+newRsmd.getColumnName(col)+"]["+oldRsmd.getColumnName(col)+"]";
+                            String msg = "Columns don't compare["+s1+"]["+s2+"]  ["+newRsmd.getColumnName(col)+"]["+oldRsmd.getColumnName(oldColInx)+"]";
                             log.error(desc+ " - "+msg);
                             printRowError(msg);
                             return true;
@@ -920,12 +983,12 @@ public class ConvertVerifier
                         
                     } else
                     {
-                        String newColName = newRsmd.getColumnName(col);
+                        String newColName = newRsmd.getColumnName(newColInx);
                         if (checkForAgent && StringUtils.contains(newColName, "LastName"))
                         {
-                            String lastName    = oldDBRS.getString(col);
-                            String agentName   = oldDBRS.getString(col+1); // The 'Name' Column
-                            String newLastName = newDBRS.getString(col);
+                            String lastName    = oldDBRS.getString(oldColInx);
+                            String agentName   = oldDBRS.getString(oldColInx+1); // The 'Name' Column
+                            String newLastName = newDBRS.getString(newColInx);
                             if (!newLastName.equals(lastName) &&!newLastName.equals(agentName))
                             {
                                 String msg = "Columns don't compare["+newObj+"]["+oldObj+"]  ["+newColName+"]["+oldColName+"]";
@@ -959,7 +1022,7 @@ public class ConvertVerifier
                             }
                             if (!isOK)
                             {
-                                log.error(desc+ " - Columns don't compare["+newObj+"]["+oldObj+"]  ["+newRsmd.getColumnName(col)+"]["+oldRsmd.getColumnName(col)+"]");
+                                log.error(desc+ " - Columns don't compare["+newObj+"]["+oldObj+"]  ["+newRsmd.getColumnName(newColInx)+"]["+oldRsmd.getColumnName(oldColInx)+"]");
                                 return false;
                             }*/
                         }
@@ -1000,8 +1063,6 @@ public class ConvertVerifier
      */
     public static void main(String[] args)
     {
-        final SpecifyDBConverter converter = new  SpecifyDBConverter();
-        
         // Create Specify Application
         SwingUtilities.invokeLater(new Runnable() {
             public void run()
@@ -1125,8 +1186,6 @@ public class ConvertVerifier
             {
                 System.err.println("Setting ["+row[0].toString()+"]");
                 conn.setCatalog(row[0].toString());
-                
-                boolean fnd = false;
                 
                 boolean isSp5 = false;
                 boolean isSp6 = false;

@@ -2171,6 +2171,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 // strBuf2.append("NULL)");// UserPermissionID//User/Security changes
                 log.info(strBuf2.toString());
 
+                BasicSQLUtils.removeForeignKeyConstraints(newDBConn, BasicSQLUtils.myDestinationServerType);
                 updateStatement.executeUpdate(strBuf2.toString());
                 
                 addAgentDisciplineJoin(userAgent.getAgentId(), curDisciplineID);
@@ -4704,7 +4705,20 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
      * @param newFieldType
      * @param datePair
      */
-    protected void getPartialDate(final Object data, final Pair<String, String> datePair)
+    public static void getPartialDate(final Object data, 
+                                      final Pair<String, String> datePair)
+    {
+        getPartialDate(data, datePair, false);
+    }
+    
+    /**
+     * @param data
+     * @param newFieldType
+     * @param datePair
+     */
+    public static void getPartialDate(final Object data, 
+                                      final Pair<String, String> datePair,
+                                      final boolean includeQuotes)
     {
         datePair.first  = "NULL";
         datePair.second = "NULL";
@@ -4743,7 +4757,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     dateObj = UIHelper.convertIntToDate((Integer)data); 
                     datePair.second = "1";
                 }
-                datePair.first = dateObj == null ? "NULL" : '"'+dateFormatter.format(dateObj) + '"';
+                datePair.first = dateObj == null ? "NULL" : (includeQuotes ? "\"" : "") + dateFormatter.format(dateObj) + (includeQuotes ? "\"" : "");
                 
             } else 
             {
