@@ -178,7 +178,7 @@ public class SpecifyDBSetupWizard extends JPanel
         btnBar = bbpb.getPanel();
 
         boolean doTesting = AppPreferences.getLocalPrefs().getBoolean("wizard.defaults", false);
-        if (doTesting)
+        if (doTesting && wizardType == WizardType.Institution)
         {
             props.put("hostName",   "localhost");
             props.put("dbName",     "testfish");

@@ -263,98 +263,175 @@ public class HttpLargeFileTransfer
      * @param fileName
      * @param urlStr
      */
-    public static void transferFile(final String fileName, 
-                                    final String urlStr)
+    /**
+     * @param fileName
+     * @param urlStr
+     * @param propChgListener
+     */
+    public void transferFile(final String fileName, 
+                             final String urlStr,
+                             final PropertyChangeListener propChgListener)
     {
-        try
+        
+        final String prgName = HttpLargeFileTransfer.class.toString();
+        
+        final File file = new File(fileName);
+        if (file.exists())
         {
-            URL url   = new URL(urlStr);
-            File file = new File(fileName);
-            if (file.exists())
+            final long fileSize = file.length();
+            if (fileSize > 0)
             {
-                long fileSize = file.length();
-                if (fileSize > 0)
+                SwingWorker<Integer, Integer> backupWorker = new SwingWorker<Integer, Integer>()
                 {
-                    FileInputStream fileIS = new FileInputStream(file);
-        
-                    int nChunks = (int) (fileSize / MAX_CHUNK_SIZE);
-                    if (fileSize % MAX_CHUNK_SIZE > 0)
+                    protected String           errorMsg = null;
+                    protected FileInputStream  fis      = null;
+                    protected OutputStream     fos      = null;
+                    
+                    /* (non-Javadoc)
+                     * @see javax.swing.SwingWorker#doInBackground()
+                     */
+                    @Override
+                    protected Integer doInBackground() throws Exception
                     {
-                        nChunks++;
-                    }
-        
-                    byte[] buf = new byte[BUFFER_SIZE];
-                    long bytesRemaining = fileSize;
-        
-                    String clientID = String.valueOf((long) (Long.MIN_VALUE * Math.random()));
-        
-                    for (int i = 0; i < nChunks; i++)
-                    {
-                        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                        conn.setRequestMethod("PUT");
-                        conn.setDoOutput(true);
-                        conn.setDoInput(true);
-                        conn.setUseCaches(false);
-        
-                        int chunkSize = (int) ((bytesRemaining > MAX_CHUNK_SIZE) ? MAX_CHUNK_SIZE : bytesRemaining);
-                        bytesRemaining -= chunkSize;
-        
-                        conn.setRequestProperty("Content-Type", "application/octet-stream");
-                        conn.setRequestProperty("Content-Length", String.valueOf(chunkSize));
-        
-                        conn.setRequestProperty(CLIENT_ID_HEADER, clientID);
-                        conn.setRequestProperty(FILE_NAME_HEADER, fileName);
-                        conn.setRequestProperty(FILE_CHUNK_COUNT_HEADER, String.valueOf(nChunks));
-                        conn.setRequestProperty(FILE_CHUNK_HEADER, String.valueOf(i));
-                        conn.setRequestProperty(SERVICE_NUMBER, "10");
-        
-                        OutputStream out       = conn.getOutputStream();
-                        int          bytesRead = 0;
-                        while (bytesRead < chunkSize)
+                        try
                         {
-                            int read = fileIS.read(buf);
-                            if (read == -1)
+                            Thread.sleep(100);
+                            fis = new FileInputStream(file);
+                
+                            int nChunks = (int) (fileSize / MAX_CHUNK_SIZE);
+                            if (fileSize % MAX_CHUNK_SIZE > 0)
                             {
-                                break;
-                                
-                            } else if (read > 0)
-                            {
-                                bytesRead += read;
-                                out.write(buf, 0, read);
+                                nChunks++;
                             }
-                        }
-                        out.close();
-                        
-                        if (conn.getResponseCode() != HttpServletResponse.SC_OK)
-                        {
-                            System.err.println(conn.getResponseMessage() +" "+conn.getResponseCode()+" ");
-                            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
-                            String line = null;
-                            StringBuilder sb = new StringBuilder();
-                            while ((line = in.readLine()) != null)
-                            {
-                                    sb.append(line);
-                                    sb.append("\n");
-                            }
-                            System.out.println(sb.toString());
-                            in.close();
+                
+                            byte[] buf = new byte[BUFFER_SIZE];
+                            long bytesRemaining = fileSize;
+                
+                            String clientID = String.valueOf((long) (Long.MIN_VALUE * Math.random()));
+                
+                            URL url = new URL(urlStr);
                             
-                        } else
+                            UIRegistry.getStatusBar().setProgressRange(prgName, 0, nChunks);
+
+                            for (int i = 0; i < nChunks; i++)
+                            {
+                                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                                conn.setRequestMethod("PUT");
+                                conn.setDoOutput(true);
+                                conn.setDoInput(true);
+                                conn.setUseCaches(false);
+                
+                                int chunkSize = (int) ((bytesRemaining > MAX_CHUNK_SIZE) ? MAX_CHUNK_SIZE : bytesRemaining);
+                                bytesRemaining -= chunkSize;
+                
+                                conn.setRequestProperty("Content-Type", "application/octet-stream");
+                                conn.setRequestProperty("Content-Length", String.valueOf(chunkSize));
+                
+                                conn.setRequestProperty(CLIENT_ID_HEADER, clientID);
+                                conn.setRequestProperty(FILE_NAME_HEADER, fileName);
+                                conn.setRequestProperty(FILE_CHUNK_COUNT_HEADER, String.valueOf(nChunks));
+                                conn.setRequestProperty(FILE_CHUNK_HEADER, String.valueOf(i));
+                                conn.setRequestProperty(SERVICE_NUMBER, "10");
+                
+                                fos = conn.getOutputStream();
+                                
+                                UIRegistry.getStatusBar().setProgressRange(prgName, 0, (int)((double)chunkSize / BUFFER_SIZE));
+                                int cnt = 0;
+                                int bytesRead = 0;
+                                while (bytesRead < chunkSize)
+                                {
+                                    int read = fis.read(buf);
+                                    if (read == -1)
+                                    {
+                                        break;
+                                        
+                                    } else if (read > 0)
+                                    {
+                                        bytesRead += read;
+                                        fos.write(buf, 0, read);
+                                    }
+                                    cnt++;
+                                    firePropertyChange(prgName, cnt-1, cnt);
+                                }
+                                fos.close();
+                                
+                                if (conn.getResponseCode() != HttpServletResponse.SC_OK)
+                                {
+                                    System.err.println(conn.getResponseMessage() +" "+conn.getResponseCode()+" ");
+                                    BufferedReader in = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+                                    String line = null;
+                                    StringBuilder sb = new StringBuilder();
+                                    while ((line = in.readLine()) != null)
+                                    {
+                                            sb.append(line);
+                                            sb.append("\n");
+                                    }
+                                    System.out.println(sb.toString());
+                                    in.close();
+                                    
+                                } else
+                                {
+                                    System.err.println("OK ");
+                                }
+                                UIRegistry.getStatusBar().setProgressRange(prgName, 0, nChunks);
+                                firePropertyChange(prgName, i-1, i);
+                            }
+                        } catch (IOException ex)
                         {
-                            System.err.println("OK ");
+                            errorMsg = ex.toString();   
+                        }
+                        
+                        firePropertyChange(prgName, 0, 100);
+                        return null;
+                    }
+
+                    @Override
+                    protected void done()
+                    {
+                        super.done();
+                        
+                        UIRegistry.getStatusBar().setProgressDone(prgName);
+                        
+                        UIRegistry.clearSimpleGlassPaneMsg();
+                        
+                        if (StringUtils.isNotEmpty(errorMsg))
+                        {
+                            UIRegistry.showError(errorMsg);
+                        }
+                        
+                        if (propChgListener != null)
+                        {
+                            propChgListener.propertyChange(new PropertyChangeEvent(HttpLargeFileTransfer.this, "Done", 0, 1));
                         }
                     }
-                } else
-                {
-                    // file doesn't exist
-                }
+                };
+                
+                final JStatusBar statusBar = UIRegistry.getStatusBar();
+                statusBar.setIndeterminate(HttpLargeFileTransfer.class.toString(), true);
+                
+                UIRegistry.writeSimpleGlassPaneMsg(getLocalizedMessage("Transmitting..."), 24);
+                
+                backupWorker.addPropertyChangeListener(
+                        new PropertyChangeListener() {
+                            public  void propertyChange(final PropertyChangeEvent evt) {
+                                System.out.println(evt.getPropertyName()+"  "+evt.getNewValue());
+                                if (prgName.equals(evt.getPropertyName())) 
+                                {
+                                    Integer value = (Integer)evt.getNewValue();
+                                    //statusBar.setText(UIRegistry.getLocalizedMessage("MySQLBackupService.BACKUP_MEGS", (double)value));
+                                    statusBar.setValue(prgName, value);
+                                }
+                            }
+                        });
+                backupWorker.execute();
+            
             } else
             {
                 // file doesn't exist
             }
-        } catch (IOException e)
+        } else
         {
-            e.printStackTrace();
+            // file doesn't exist
         }
     }
     
@@ -450,36 +527,30 @@ public class HttpLargeFileTransfer
             }
         }
         
-        System.out.println("2 ================================= "+isOK);
-        
         if (isOK)
         {
             String fullDestPath = destFile+".sql";
             if (uncompressFile(destFile.getAbsolutePath(),  fullDestPath))
             {
-                File newFile = new File(fullDestPath);
+                //File newFile = new File(fullDestPath);
                 databaseName = "db";
-                System.out.println("Uncompressed:["+fullDestPath+"] size: ["+newFile.length()+"] database["+databaseName+"]");
+                //System.out.println("Uncompressed:["+fullDestPath+"] size: ["+newFile.length()+"] database["+databaseName+"]");
                 
                 MySQLBackupService backupService = new MySQLBackupService();
                 if (backupService.doRestore(fullDestPath, "/usr/local/mysql/bin/mysql", databaseName, "root", "root"))
                 {
-                    System.out.println("Sending OK");
                     resp.setStatus(HttpServletResponse.SC_OK);
                 } else
                 {
                     resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "error restoring");
-                    System.out.println("Sending error 1");
                 }
             } else
             {
                 resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                System.out.println("Sending error 2");
             }
         } else
         {
             resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "error decompressing");
-            System.out.println("Sending error 3");
         }
     }
 

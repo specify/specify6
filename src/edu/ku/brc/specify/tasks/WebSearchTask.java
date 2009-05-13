@@ -168,7 +168,7 @@ public class WebSearchTask extends BaseTask
     private void startUpload(final HttpLargeFileTransfer httpFileTransfer, 
                              final File compressedFile)
     {
-        HttpLargeFileTransfer.transferFile(compressedFile.getAbsolutePath(), "http://localhost:8080/uploader/UploaderServlet");
+        httpFileTransfer.transferFile(compressedFile.getAbsolutePath(), "http://localhost:8080/uploader/UploaderServlet", null);
     }
 
     /*

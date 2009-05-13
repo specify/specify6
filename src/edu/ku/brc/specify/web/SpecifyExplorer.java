@@ -141,7 +141,7 @@ public class SpecifyExplorer extends HttpServlet
     private final Logger         log      = Logger.getLogger(SpecifyExplorer.class);
     private Hashtable<Class<?>, Boolean> baseClassHash = new Hashtable<Class<?>, Boolean>();
     
-    protected String DATABASE_NAME = "testfish";//"fish_kansas";
+    protected String DATABASE_NAME = "db";//"fish_kansas";
     
     public static String contentTag  = "<!-- Content -->";
     public static String servletURL  = "http://localhost:8080/specify/SpecifyExplorer";
@@ -523,7 +523,39 @@ public class SpecifyExplorer extends HttpServlet
             log.info("Login Failed!");
             throw new RuntimeException("Login failed.");
             //return false;
-        }         
+        }  
+        
+        if (false)
+        {
+            try
+            {
+                Connection conn = DBConnection.getInstance().createConnection();
+                conn.setCatalog("webmember");
+                WebMemberDAO wm = new WebMemberDAO(conn);
+                wm.createTable();
+                conn.close();  
+                
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
+        }
+        
+        if (false)
+        {
+            try
+            {
+                Connection conn = DBConnection.getInstance().createConnection();
+                conn.setCatalog("webmember");
+                WebMemberDAO wm = new WebMemberDAO(conn);
+                wm.addWebMember("Test", "db", "10");
+                conn.close();  
+                
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
+        }
         
         queryHandler = new QueryReportHandler();
 
