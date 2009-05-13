@@ -25,6 +25,7 @@ import static edu.ku.brc.specify.conversion.BasicSQLUtils.createFieldNameMap;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.deleteAllRecordsFromTable;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.getFieldMetaDataFromSchema;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.getFieldNamesFromSchema;
+import static edu.ku.brc.specify.conversion.BasicSQLUtils.getPartialDate;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.getStrValue;
 import static edu.ku.brc.ui.UIRegistry.showError;
 
@@ -107,7 +108,6 @@ import edu.ku.brc.specify.treeutils.TreeFactory;
 import edu.ku.brc.specify.treeutils.TreeHelper;
 import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
 import edu.ku.brc.ui.ProgressFrame;
-import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -2884,8 +2884,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 {
                     return rs.getFloat(index);
 
-                } else if (oldType == AttributeIFace.FieldType.DoubleType) { return rs
-                        .getFloat(index); }
+                } else if (oldType == AttributeIFace.FieldType.DoubleType) { return rs.getFloat(index); }
                 log.error("Error maping from schema[" + metaData.getType() + "] to ["
                         + type.toString() + "]");
                 return 0.0f;
@@ -3425,7 +3424,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             String sqlStr = sql.toString();
 
             Map<String, Integer> oldNameIndex = new Hashtable<String, Integer>();
-            int inx = 0;
+            int inx = 1;
             for (String name : oldFieldNames)
             {
                 oldNameIndex.put(name, inx++);
@@ -3462,7 +3461,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
             Pair<String, String> datePair = new Pair<String, String>();
             
-            int lastEditedByInx = oldNameIndex.get("LastEditedBy") + 1;
+            int lastEditedByInx = oldNameIndex.get("LastEditedBy");
             
             int count = 0;
             do
@@ -3547,7 +3546,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                             throw new RuntimeException(msg);
                         }
 
-                        Object data = rs.getObject(index + 1);
+                        Object data = rs.getObject(index);
 
                         if (data != null)
                         {
@@ -3557,7 +3556,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                             	IdMapperIFace idMapper = idMapperMgr.get("loan", oldMappedColName);
                                 if (idMapper != null)
                                 {
-                                    data = idMapper.get(rs.getInt(index + 1));
+                                    data = idMapper.get(rs.getInt(index));
                                 } else
                                 {
                                     log.error("No Map for [" + "loan" + "][" + oldMappedColName + "]");
@@ -3906,15 +3905,15 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 collection = AppContextMgr.getInstance().getClassObject(Collection.class);
             }
             
-            log.debug("------------------------ Old Names");
+            //log.debug("------------------------ Old Names");
             Map<String, Integer> oldNameIndex = new Hashtable<String, Integer>();
-            int inx = 0;
+            int inx = 1;
             for (String name : oldFieldNames)
             {
                 oldNameIndex.put(name, inx++);
-                log.debug(name + " " + (inx - 1));
+                //log.debug(name + " " + (inx - 1));
             }
-            log.debug("------------------------");
+            //log.debug("------------------------");
             
             Hashtable<String, String> newToOld = new Hashtable<String, String>();
             newToOld.put("PreparationID",      "CollectionObjectID");
@@ -3961,7 +3960,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             prepIdMapper.setShowLogErrors(false);
 
             //int     prepDateInx     = oldNameIndex.get("CatalogedDate") + 1;
-            int     lastEditedByInx = oldNameIndex.get("LastEditedBy") + 1;
+            int     lastEditedByInx = oldNameIndex.get("LastEditedBy");
             Integer idIndex         = oldNameIndex.get("CollectionObjectID");
             int     count           = 0;
             do
@@ -4003,7 +4002,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                  * log.debug("CollectionObjectID
                  * "+rs.getInt(oldNameIndex.get("CollectionObjectID")+1));
                  * log.debug("DerivedFromID
-                 * "+rs.getInt(oldNameIndex.get("DerivedFromID")+1)); }
+                 * "+rs.getInt(oldNameIndex.get("DerivedFromID"))); }
                  */
 
                 str.setLength(0);
@@ -4133,7 +4132,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
                     } else if (newFieldName.equals("PrepTypeID"))
                     {
-                        String value = rs.getString(oldNameIndex.get("PreparationMethod") + 1);
+                        String value = rs.getString(oldNameIndex.get("PreparationMethod"));
                         if (value == null || value.length() == 0)
                         {
                             value = "n/a";
@@ -4200,7 +4199,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                             stmt.close();
                             throw new RuntimeException(msg);
                         }
-                        Object data = rs.getObject(index + 1);
+                        Object data = rs.getObject(index);
 
                         if (idMapperMgr != null && mappedName.endsWith("ID"))
                         {
@@ -4389,7 +4388,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             String sqlStr = sql.toString();
 
             Map<String, Integer> oldNameIndex = new Hashtable<String, Integer>();
-            int inx = 0;
+            int inx = 1;
             for (String name : oldFieldNames)
             {
                 oldNameIndex.put(name, inx++);
@@ -4428,14 +4427,13 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
             Pair<String, String> datePair = new Pair<String, String>();
             
-            Integer oldRecIDInx      = oldNameIndex.get("DeterminationID") + 1;
-            int     lastEditedByInx = oldNameIndex.get("LastEditedBy") + 1;
+            Integer oldRecIDInx      = oldNameIndex.get("DeterminationID");
+            int     lastEditedByInx = oldNameIndex.get("LastEditedBy");
             Integer detDateInx      = oldNameIndex.get("Date1");
             if (detDateInx == null)
             {
                 detDateInx = oldNameIndex.get("Date");
             }
-            detDateInx++;
             
             int count = 0;
             do
@@ -4539,7 +4537,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                             throw new RuntimeException(msg);
                         }
 
-                        Object data = rs.getObject(index + 1);
+                        Object data = rs.getObject(index);
 
                         if (data != null)
                         {
@@ -4701,72 +4699,6 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     }
     
     /**
-     * @param data
-     * @param newFieldType
-     * @param datePair
-     */
-    public static void getPartialDate(final Object data, 
-                                      final Pair<String, String> datePair)
-    {
-        getPartialDate(data, datePair, false);
-    }
-    
-    /**
-     * @param data
-     * @param newFieldType
-     * @param datePair
-     */
-    public static void getPartialDate(final Object data, 
-                                      final Pair<String, String> datePair,
-                                      final boolean includeQuotes)
-    {
-        datePair.first  = "NULL";
-        datePair.second = "NULL";
-        
-        if (data != null && ((Integer)data) > 0)
-        {
-            // 012345678     012345678
-            // 20051314      19800307
-            Date   dateObj = null;
-            String dateStr = ((Integer)data).toString();
-            if (dateStr.length() == 8)
-            {
-                //System.out.println("["+dateStr+"]["+data+"]");//["+(dateStr.length() >)+"]");
-                int fndInx  = dateStr.substring(4, 8).indexOf("00");
-                if (fndInx > -1)
-                {
-                    if (fndInx == 0)
-                    {
-                        dateStr = dateStr.substring(0, 4) + "0101";
-                        dateObj = UIHelper.convertIntToDate(Integer.parseInt(dateStr)); 
-                        datePair.second = "3";
-                        
-                    } else if (fndInx == 2)
-                    {
-                        dateStr = dateStr.substring(0, 6) + "01";
-                        dateObj = UIHelper.convertIntToDate(Integer.parseInt(dateStr)); 
-                        datePair.second = "2";
-                        
-                    } else
-                    {
-                        dateObj = UIHelper.convertIntToDate((Integer)data);
-                        datePair.second = "1";
-                    }
-                } else
-                {
-                    dateObj = UIHelper.convertIntToDate((Integer)data); 
-                    datePair.second = "1";
-                }
-                datePair.first = dateObj == null ? "NULL" : (includeQuotes ? "\"" : "") + dateFormatter.format(dateObj) + (includeQuotes ? "\"" : "");
-                
-            } else 
-            {
-                log.error("Partial Date was't 8 digits! ["+dateStr+"]");
-            }
-        }
-    }
-
-    /**
      * Converts all the CollectionObject and CollectionObjectCatalog Records into the new schema
      * CollectionObject table. All "logical" records are moved to the CollectionObject table and all
      * "physical" records are moved to the Preparation table.
@@ -4896,7 +4828,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             String sqlStr = sql.toString();
 
             Map<String, Integer> oldNameIndex = new Hashtable<String, Integer>();
-            int inx = 0;
+            int inx = 1;
             log.info("---- Old Names ----");
             for (String name : oldFieldNames)
             {
@@ -4941,8 +4873,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             
             Statement stmt2 = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 
-            int catNumInx      = oldNameIndex.get("CatalogNumber") + 1;
-            int catDateInx     = oldNameIndex.get("CatalogedDate") + 1;
+            int catNumInx      = oldNameIndex.get("CatalogNumber");
+            int catDateInx     = oldNameIndex.get("CatalogedDate");
             
             int     grpPrmtViewInx    = -1;
             Integer grpPrmtViewInxObj = oldNameIndex.get("GroupPermittedToView");
@@ -5080,7 +5012,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                                             + String.format("%9.0f", catNum).trim() + "\"";
                         }
 
-                        int subNumber = rs.getInt(oldNameIndex.get("SubNumber") + 1);
+                        int subNumber = rs.getInt(oldNameIndex.get("SubNumber"));
                         if (subNumber < 0)
                         {
                             skipRecord = true;
@@ -5177,7 +5109,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                         {
                             index = oldNameIndex.get("Count");
                         }
-                        Object countObj = rs.getObject(index + 1);
+                        Object countObj = rs.getObject(index);
                         if (countObj != null)
                         {
                             str.append(getStrValue(countObj, newFieldMetaData.get(i).getType()));
@@ -5203,7 +5135,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                             stmt.close();
                             throw new RuntimeException(msg);
                         }
-                        Object data = rs.getObject(index + 1);
+                        Object data = rs.getObject(index);
 
                         if (data != null)
                         {
@@ -5213,7 +5145,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                                 IdMapperIFace idMapper = idMapperMgr.get(tableName, newFieldName);
                                 if (idMapper != null)
                                 {
-                                    Integer origValue = rs.getInt(index + 1);
+                                    Integer origValue = rs.getInt(index);
                                     data = idMapper.get(origValue);
                                     if (data == null)
                                     {
@@ -5391,7 +5323,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             String sqlStr = sql.toString();
 
             Map<String, Integer> oldNameIndex = new Hashtable<String, Integer>();
-            int inx = 0;
+            int inx = 1;
             for (String name : oldFieldNames)
             {
                 oldNameIndex.put(name, inx++);
@@ -5399,8 +5331,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
             String tableName = "loanphysicalobject";
 
-            int quantityIndex   = oldNameIndex.get("Quantity") + 1;
-            int lastEditedByInx = oldNameIndex.get("LastEditedBy") + 1;
+            int quantityIndex   = oldNameIndex.get("Quantity");
+            int lastEditedByInx = oldNameIndex.get("LastEditedBy");
 
             log.info(sqlStr);
             ResultSet rs = stmt.executeQuery(sqlStr);
@@ -5516,7 +5448,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                             throw new RuntimeException(msg);
                         }
                         
-                        Object data = rs.getObject(index + 1);
+                        Object data = rs.getObject(index);
                         if (data != null)
                         {
                             int idInx = newFieldName.lastIndexOf("ID");
@@ -5525,7 +5457,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                                 IdMapperIFace idMapper = idMapperMgr.get(tableName, oldMappedColName);
                                 if (idMapper != null)
                                 {
-                                	Integer oldId = rs.getInt(index + 1);
+                                	Integer oldId = rs.getInt(index);
                                     data = idMapper.get(oldId);
                                     if (data == null)
                                     {
@@ -5692,7 +5624,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             colNewToOldMap.put("GiftID", "LoanID");
 
             Map<String, Integer> oldNameIndex = new Hashtable<String, Integer>();
-            int inx = 0;
+            int inx = 1;
             for (String name : oldFieldNames)
             {
                 oldNameIndex.put(name, inx++);
@@ -5700,8 +5632,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
             String tableName = "loanphysicalobject";
 
-            int quantityIndex   = oldNameIndex.get("Quantity") + 1;
-            int lastEditedByInx = oldNameIndex.get("LastEditedBy") + 1;
+            int quantityIndex   = oldNameIndex.get("Quantity");
+            int lastEditedByInx = oldNameIndex.get("LastEditedBy");
 
             log.info(sqlStr);
             ResultSet rs = stmt.executeQuery(sqlStr);
@@ -5803,7 +5735,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                             showError(msg);
                             throw new RuntimeException(msg);
                         }
-                        Object data = rs.getObject(index + 1);
+                        Object data = rs.getObject(index);
 
                         if (data != null)
                         {
@@ -5819,7 +5751,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 	                                IdMapperIFace idMapper = idMapperMgr.get(tableName, oldMappedColName);
 	                                if (idMapper != null)
 	                                {
-	                                	Integer oldId = rs.getInt(index + 1);
+	                                	Integer oldId = rs.getInt(index);
 	                                    data = idMapper.get(oldId);
 	                                    if (data == null)
 	                                    {
@@ -6784,8 +6716,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         errorsToShow &= ~BasicSQLUtils.SHOW_NULL_FK; // Turn off this error for LocalityID
         BasicSQLUtils.setShowErrors(errorsToShow);
 
-        if (copyTable(oldDBConn, newDBConn, sql, "locality", "locality", null, null,
-                      BasicSQLUtils.mySourceServerType, BasicSQLUtils.myDestinationServerType))
+        if (copyTable(oldDBConn, newDBConn, sql, "locality", "locality", null, null, BasicSQLUtils.mySourceServerType, BasicSQLUtils.myDestinationServerType))
         {
             log.info("Locality/Geography copied ok.");
         } else

@@ -41,6 +41,7 @@ import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
@@ -230,6 +231,7 @@ public class SpecifyDBConverter
                 } catch (SQLException ex)
                 {
                     ex.printStackTrace();
+                	JOptionPane.showConfirmDialog(null, "The Converter was unable to login.");
                 }
                 
                 if (namePair != null)

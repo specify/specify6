@@ -828,6 +828,8 @@ public class ConvertVerifier
                                      final String newSQLArg) throws SQLException
     {
         getResultSets(oldSQLArg, newSQLArg);
+        //System.out.println(oldSQLArg);
+        //System.out.println(newSQLArg);
         
         try
         {
@@ -870,12 +872,19 @@ public class ConvertVerifier
                 int oldColInx = 0;
                 int newColInx = 0;
                 
-                for (int col=0;col<newRsmd.getColumnCount();col++)
+                int numCols = newRsmd.getColumnCount();
+                
+                for (int col=0;col<numCols;col++)
                 {
                     newColInx++;
                     oldColInx++;
 
-                    //System.out.println(newRsmd.getColumnName(col));
+                    /*System.out.println("col       "+col+" / "+oldRsmd.getColumnCount());
+                    System.out.println("newColInx "+newColInx);
+                    System.out.println("oldColInx "+oldColInx);
+                    System.out.println(oldRsmd.getColumnName(oldColInx));
+                    System.out.println(newRsmd.getColumnName(newColInx));
+                    */
                     
                     Object newObj = newDBRS.getObject(newColInx);
                     Object oldObj = oldDBRS.getObject(oldColInx);
@@ -898,12 +907,20 @@ public class ConvertVerifier
                     if (newObj == null)
                     {
                         String clsName = newRsmd.getColumnClassName(newColInx);
-                        if (!clsName.equals("java.sql.Date") || ((Integer)oldObj) != 0)
+                        String colName = newRsmd.getColumnName(newColInx);
+                        
+                        if (!clsName.equals("java.sql.Date") || (!(oldObj instanceof String) && ((Number)oldObj).intValue() != 0))
                         {
-                            String msg = "New Value was null and shouldn't have been for Key Value ["+newCatNum+"] Field ["+newRsmd.getColumnName(newColInx)+"] ["+oldObj+"]";
+                            String msg = "New Value was null and shouldn't have been for Key Value CatNo["+newCatNum+"] Field ["+colName+"] ["+oldObj+"]";
                             log.error(desc+ " - "+msg);
                             printRowError(msg);
                             return false;
+                        }
+                        
+                        if (StringUtils.contains(colName, "Date") && StringUtils.contains(newRsmd.getColumnName(newColInx+1), "DatePrecision"))
+                        {
+                            newColInx++;
+                            numCols--;
                         }
                         continue;
                     }
@@ -913,25 +930,26 @@ public class ConvertVerifier
                     if (newObj instanceof java.sql.Date)
                     {
                         Byte partialDateType = null;
-                        if (StringUtils.contains(newRsmd.getColumnName(newColInx), "DatePrecision"))
+                        if (StringUtils.contains(newRsmd.getColumnName(newColInx+1), "DatePrecision"))
                         {
                             newColInx++;
+                            numCols--;
                             partialDateType =  newDBRS.getByte(newColInx);
                         }
                         
-                        int  oldIntDate = oldDBRS.getInt(oldColInx);
+                        int oldIntDate = oldDBRS.getInt(oldColInx);
                         if (oldIntDate == 0)
                         {
                             continue;
                         }
                         
-                        GenericDBConversion.getPartialDate(oldDBRS.getInt(oldColInx), datePair, false);
+                        BasicSQLUtils.getPartialDate(oldDBRS.getInt(oldColInx), datePair, false);
                         
                         if (partialDateType != null)
                         {
-                            if (Byte.parseByte(datePair.second) == partialDateType.byteValue())
+                            if (Byte.parseByte(datePair.second) != partialDateType.byteValue())
                             {
-                                errSB.append("Partial Dates Type do not match.Old["+datePair.second+"]  New ["+partialDateType.byteValue()+"]");
+                                errSB.append("Partial Dates Type do not match. Old["+datePair.second+"]  New ["+partialDateType.byteValue()+"]");
                                 // error partial dates don't match
                             }
                         } 
@@ -941,6 +959,8 @@ public class ConvertVerifier
                         int year = Integer.parseInt(datePair.first.substring(0, 4));
                         int mon  = Integer.parseInt(datePair.first.substring(5, 7));
                         int day  = Integer.parseInt(datePair.first.substring(8, 10));
+                        
+                        if (mon > 0) mon--;
                         
                         if (year != cal.get(Calendar.YEAR))
                         {

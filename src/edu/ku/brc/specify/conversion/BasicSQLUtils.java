@@ -48,6 +48,7 @@ import com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.util.Pair;
 
 /**
  * A set of basic utilities that used almost exclusively for converting old Database schemas to the new schema
@@ -1353,20 +1354,42 @@ public class BasicSQLUtils
             getFieldMetaDataFromSchema(toConn, toTableName, newFieldMetaData,destServerType);
 
             Statement         stmt = fromConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+            System.out.println(sqlStr);
             ResultSet         rs   = stmt.executeQuery(sqlStr);
             ResultSetMetaData rsmd = rs.getMetaData();
+            
+            Vector<Integer> dateColumns = new Vector<Integer>();
             
             System.out.println(toTableName);
             Hashtable<String, Integer> fromHash = new Hashtable<String, Integer>();
             for (int i = 1; i <= rsmd.getColumnCount(); i++)
             {
-                System.out.println(rsmd.getColumnName(i));
-                fromHash.put(rsmd.getColumnName(i), i);
+            	String colName = rsmd.getColumnName(i);
+                
+                fromHash.put(colName, i);
+                //System.out.println(rsmd.getColumnName(i)+" -> "+i);
+                
+                if (colName.toLowerCase().endsWith("date"))
+                {
+                	//System.out.println("Date: "+rsmd.getColumnName(i)+" -> "+i);
+                	dateColumns.add(i);
+                }
             }
+            
+            Hashtable<String, String> oldNameToNewNameHash = new Hashtable<String, String>();
+            if (colNewToOldMap != null)
+            {
+	            for (String newName : colNewToOldMap.keySet())
+	            {
+	            	String oldName = colNewToOldMap.get(newName);
+	            	oldNameToNewNameHash.put(oldName == null ? newName : oldName, newName);
+	            }
+            }
+            
             // System.out.println("Num Cols: "+rsmd.getColumnCount());
 
-            Map<String, String>  vertbatimDateMap = UIHelper.createMap();
-            Map<String, Date>    dateMap          = new Hashtable<String, Date>();
+            Map<String, String>               vertbatimDateMap = UIHelper.createMap();
+            Map<String, Pair<String, String>> dateMap          = new Hashtable<String, Pair<String, String>>();
 
             // Get the columns that have dates in case we get a TimestampCreated date that is null
             // and then we can go looking for an older date to try to figure it out
@@ -1381,36 +1404,48 @@ public class BasicSQLUtils
             {
             	boolean skipRecord = false;
             	
-                if (verbatimDateMapper != null)
+                
+                // Start by going through the resultset and converting all dates from Integers
+                // to real dates and keep the verbatium date information if it is a partial date
+                for (int i : dateColumns)
                 {
-                    // Start by going through the resultset and converting all dates from Integers
-                    // to real dates and keep the verbatium date information if it is a partial date
-                    for (int i = 1; i <= rsmd.getColumnCount(); i++)
+                    String  oldColName  = rsmd.getColumnName(i);
+                    Integer oldColIndex = fromHash.get(oldColName);
+
+                    if (oldColIndex == null)
                     {
-                        String  oldColName  = rsmd.getColumnName(i);
-                        Integer columnIndex = fromHash.get(oldColName);
+                        log.error("Couldn't find new column for old column for date for Table[" + fromTableName + "] Col Name[" + newFieldMetaData.get(i).getName() + "]");
+                        continue;
+                    }
 
-                        if (columnIndex == null)
+                    if (oldColIndex > newFieldMetaData.size())
+                    {
+                    	int x=0;
+                    	x++;
+                    	continue;
+                    }
+                    String newColName = colNewToOldMap != null ? oldNameToNewNameHash.get(oldColName) : newFieldMetaData.get(oldColIndex).getName();
+                    if (newColName == null)
+                    {
+                    	newColName = oldColName;
+                    }
+                    Object dataObj    = rs.getObject(i);
+                    
+                    if (dataObj instanceof Integer)
+                    {
+                    	Pair<String, String> datep = new Pair<String, String>();
+                    	getPartialDate((Integer)dataObj, datep);
+                        dateMap.put(newColName, datep);
+
+                        if (verbatimDateMapper != null)
                         {
-                            log.error("Couldn't find new column for old column for date for Table[" + fromTableName + "] Col Name[" + newFieldMetaData.get(i).getName() + "]");
-                            continue;
-                        }
-
-                        String newColName = newFieldMetaData.get(columnIndex).getName();
-
-                        Object dataObj = rs.getObject(i);
-                        if (dataObj instanceof Integer && newColName.toLowerCase().indexOf("date") ==  0)
-                        {
-                            Date date = convertIntToDate((Integer)dataObj, verbatimDateStr);
-                            dateMap.put(newColName, date);
-
-                            if (verbatimDateStr.length() > 0)
-                            {
-                                vertbatimDateMap.put(newColName, verbatimDateStr.toString());
-                            } else
-                            {
-                                log.error("No Verbatim Date Mapper for Table[" + fromTableName + "] Col Name[" + newFieldMetaData.get(i).getName() + "]");
-                            }
+	                        if (verbatimDateStr.length() > 0)
+	                        {
+	                            vertbatimDateMap.put(newColName, dataObj.toString());
+	                        } else
+	                        {
+	                            log.error("No Verbatim Date Mapper for Table[" + fromTableName + "] Col Name[" + newFieldMetaData.get(i).getName() + "]");
+	                        }
                         }
                     }
                 }
@@ -1480,26 +1515,27 @@ public class BasicSQLUtils
                 for (int i = 0; i < newFieldMetaData.size(); i++)
                 {
                     FieldMetaData newFieldName     = newFieldMetaData.get(i);
-                    String        colName          = newFieldName.getName();
+                    String        newColName       = newFieldName.getName();
                     String        oldMappedColName = null;
                     
                     //System.out.println("["+newFieldName.getName()+"]");
 
                     // Get the Old Column Index from the New Name
-                    Integer columnIndex = fromHash.get(colName);
+                   // String  oldName     = colNewToOldMap != null ? colNewToOldMap.get(newColName) : newColName;
+                    Integer columnIndex = fromHash.get(newColName);
                     
                     if (columnIndex == null && colNewToOldMap != null)
                     {
-                        oldMappedColName = colNewToOldMap.get(colName);
+                        oldMappedColName = colNewToOldMap.get(newColName);
                         if (oldMappedColName != null)
                         {
                             columnIndex = fromHash.get(oldMappedColName);
 
                         } else if (isOptionOn(SHOW_NAME_MAPPING_ERROR) &&
                                    (ignoreMappingFieldNames == null || 
-                                    ignoreMappingFieldNames.get(colName) == null))
+                                    ignoreMappingFieldNames.get(newColName) == null))
                         {
-                            String msg = "No Map for table ["+fromTableName+"] from New Name[" + colName + "] to Old Name["+oldMappedColName+"]";
+                            String msg = "No Map for table ["+fromTableName+"] from New Name[" + newColName + "] to Old Name["+oldMappedColName+"]";
                             log.error(msg);
                             
                             writeErrLog(msg);
@@ -1507,7 +1543,7 @@ public class BasicSQLUtils
                         }
                     } else
                     {
-                        oldMappedColName = colName;
+                        oldMappedColName = newColName;
                     }
 
                     if (columnIndex != null)
@@ -1625,29 +1661,56 @@ public class BasicSQLUtils
                             }
                                 
 
-                        } else if (dataObj instanceof Integer && colName.toLowerCase().indexOf("date") ==  0 && verbatimDateMapper != null)
+                        } else if (dataObj instanceof Integer && newColName.toLowerCase().endsWith("date"))
                         {
-                            // First check to see if the current column name is that of the verbatim field
-                            // it will return the new schema's date field name that this verbatim field is associated with
-                            String dateFieldName = verbatimDateMapper.get(colName); // from verbatim to associated date field
-                            if (dateFieldName != null)
-                            {
-                                str.append(getStrValue(vertbatimDateMap.get(colName)));
-
-                            } else
-                            {
-                                str.append(getStrValue(dateMap.get(colName)));
-                            }
+                        	//if (i > 0) str.append(", ");
+                        	
+                        	Pair<String, String> datePr = dateMap.get(newColName);
+                        	if (datePr != null)
+                        	{
+                        		str.append(datePr.first);
+                        		
+                        	} else if (verbatimDateMapper != null)
+                        	{
+	                            // First check to see if the current column name is that of the verbatim field
+	                            // it will return the new schema's date field name that this verbatim field is associated with
+	                            String dateFieldName = verbatimDateMapper.get(newColName); // from verbatim to associated date field
+	                            if (dateFieldName != null)
+	                            {
+	                                str.append(getStrValue(vertbatimDateMap.get(newColName)));
+	
+	                            } else
+	                            {
+	                                str.append(getStrValue(dateMap.get(newColName)));
+	                            }
+                        	} else
+                        	{
+                        		str.append("NULL");
+                        	}
 
                         } else 
                         {
                             str.append(getStrValue(dataObj, newFieldName.getType()));
                         }
 
-                    } else if (idMapperMgr != null && colName.endsWith("ID") && oneToOneIDHash != null && oneToOneIDHash.get(colName) != null)
+                    } else if (newColName.endsWith("DatePrecision"))
+                    {
+                    	if (i > 0) str.append(", ");
+                    	
+                    	String cName = newColName.substring(0, newColName.length()-9);
+                    	Pair<String, String> datePr = dateMap.get(cName);
+                    	if (datePr != null)
+                    	{
+                    		str.append(datePr.second);
+                    	} else
+                    	{
+                    		str.append("NULL");
+                    	}
+                    	
+                    } else if (idMapperMgr != null && newColName.endsWith("ID") && oneToOneIDHash != null && oneToOneIDHash.get(newColName) != null)
                     {
                         
-                        IdMapperIFace idMapper = idMapperMgr.get(toTableName, colName);
+                        IdMapperIFace idMapper = idMapperMgr.get(toTableName, newColName);
                         if (idMapper != null)
                         {
                             idMapper.setShowLogErrors(false);
@@ -1663,7 +1726,7 @@ public class BasicSQLUtils
                                 
                                 if (isOptionOn(SHOW_VAL_MAPPING_ERROR))
                                 {
-                                    String msg = "For Table[" + fromTableName + "] mapping new Column Name[" + colName + "] ID["+id+"] was not mapped";
+                                    String msg = "For Table[" + fromTableName + "] mapping new Column Name[" + newColName + "] ID["+id+"] was not mapped";
                                     log.error(msg);
                                     writeErrLog(msg);
                                     skipRecord = true;
@@ -1676,7 +1739,7 @@ public class BasicSQLUtils
                         String newColValue = null;
                         if (newColDefValues != null)
                         {
-                            newColValue = newColDefValues.get(colName);
+                            newColValue = newColDefValues.get(newColName);
                         }
                         
                         if (newColValue == null)
@@ -1685,9 +1748,9 @@ public class BasicSQLUtils
                             //System.out.println("ignoreMappingFieldNames" + ignoreMappingFieldNames);
                             //System.out.println("ignoreMappingFieldNames.get(colName)" + ignoreMappingFieldNames.get(colName));
                             if (isOptionOn(SHOW_NAME_MAPPING_ERROR) &&
-                                (ignoreMappingFieldNames == null || ignoreMappingFieldNames.get(colName) == null))
+                                (ignoreMappingFieldNames == null || ignoreMappingFieldNames.get(newColName) == null))
                             {
-                                String msg = "For Table[" + fromTableName + "] mapping new Column Name[" + colName + "] was not mapped";
+                                String msg = "For Table[" + fromTableName + "] mapping new Column Name[" + newColName + "] was not mapped";
                                 log.error(msg);
                                 writeErrLog(msg);
                                 skipRecord = true;
@@ -1782,6 +1845,73 @@ public class BasicSQLUtils
         BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(null);//meg added
         return true;
     }
+    
+    /**
+     * @param data
+     * @param newFieldType
+     * @param datePair
+     */
+    public static void getPartialDate(final Object data, 
+                                      final Pair<String, String> datePair)
+    {
+        getPartialDate(data, datePair, true);
+    }
+    
+    /**
+     * @param data
+     * @param newFieldType
+     * @param datePair
+     */
+    public static void getPartialDate(final Object data, 
+                                      final Pair<String, String> datePair,
+                                      final boolean includeQuotes)
+    {
+        datePair.first  = "NULL";
+        datePair.second = "NULL";
+        
+        if (data != null && ((Integer)data) > 0)
+        {
+            // 012345678     012345678
+            // 20051314      19800307
+            Date   dateObj = null;
+            String dateStr = ((Integer)data).toString();
+            if (dateStr.length() == 8)
+            {
+                //System.out.println("["+dateStr+"]["+data+"]");//["+(dateStr.length() >)+"]");
+                int fndInx  = dateStr.substring(4, 8).indexOf("00");
+                if (fndInx > -1)
+                {
+                    if (fndInx == 0)
+                    {
+                        dateStr = dateStr.substring(0, 4) + "0101";
+                        dateObj = UIHelper.convertIntToDate(Integer.parseInt(dateStr)); 
+                        datePair.second = "3";
+                        
+                    } else if (fndInx == 2)
+                    {
+                        dateStr = dateStr.substring(0, 6) + "01";
+                        dateObj = UIHelper.convertIntToDate(Integer.parseInt(dateStr)); 
+                        datePair.second = "2";
+                        
+                    } else
+                    {
+                        dateObj = UIHelper.convertIntToDate((Integer)data);
+                        datePair.second = "1";
+                    }
+                } else
+                {
+                    dateObj = UIHelper.convertIntToDate((Integer)data); 
+                    datePair.second = "1";
+                }
+                datePair.first = dateObj == null ? "NULL" : (includeQuotes ? "\"" : "") + dateFormatter.format(dateObj) + (includeQuotes ? "\"" : "");
+                
+            } else 
+            {
+                log.error("Partial Date was't 8 digits! ["+dateStr+"]");
+            }
+        }
+    }
+
     
     /**
      * Takes a list of names and creates a string with the names comma separated
