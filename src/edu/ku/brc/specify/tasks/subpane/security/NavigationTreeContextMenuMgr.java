@@ -53,7 +53,7 @@ public class NavigationTreeContextMenuMgr extends MouseAdapter implements TreeSe
     private JButton           addUserBtn;
     private JButton           addExtUserBtn;
     private JButton           delUserBtn;
-    private JButton           rmvUserBtn;
+    //private JButton           rmvUserBtn;
     
     private DefaultMutableTreeNode lastClickComp = null;
 
@@ -77,13 +77,11 @@ public class NavigationTreeContextMenuMgr extends MouseAdapter implements TreeSe
      */
     public void setBtn(final JButton addBtn, 
                        final JButton addExtBtn, 
-                       final JButton delBtn, 
-                       final JButton rmvBtn)
+                       final JButton delBtn)
     {
         this.addUserBtn    = addBtn;
         this.addExtUserBtn = addExtBtn;
         this.delUserBtn    = delBtn;
-        this.rmvUserBtn    = rmvBtn;
         
         addUserBtn.addActionListener(new ActionListener() {
             @Override
@@ -107,16 +105,14 @@ public class NavigationTreeContextMenuMgr extends MouseAdapter implements TreeSe
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                getTreeMgr().deleteUser(lastClickComp);
-                updateBtnUI();
-            }
-        });
-        
-        rmvUserBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                getTreeMgr().removeUserFromGroup(lastClickComp);
+                if (getTreeMgr().canDeleteUser(lastClickComp))
+                {
+                    getTreeMgr().deleteUser(lastClickComp);
+                    
+                } else if (getTreeMgr().canRemoveUserFromGroup(lastClickComp))
+                {
+                    getTreeMgr().removeUserFromGroup(lastClickComp);
+                }
                 updateBtnUI();
             }
         });
@@ -130,8 +126,6 @@ public class NavigationTreeContextMenuMgr extends MouseAdapter implements TreeSe
          addUserBtn.setEnabled(false);
          addExtUserBtn.setEnabled(false);
          delUserBtn.setEnabled(false);
-         rmvUserBtn.setEnabled(false);
-
     }
 
     /**
@@ -173,8 +167,20 @@ public class NavigationTreeContextMenuMgr extends MouseAdapter implements TreeSe
             {
                 addUserBtn.setEnabled(false);
                 addExtUserBtn.setEnabled(false);
-                delUserBtn.setEnabled(getTreeMgr().canDeleteUser(lastClickComp));
-                rmvUserBtn.setEnabled(getTreeMgr().canRemoveUserFromGroup(lastClickComp));
+                
+                String toolTip = "";
+                boolean canDelUser = getTreeMgr().canDeleteUser(lastClickComp);
+                boolean canRemUser = getTreeMgr().canRemoveUserFromGroup(lastClickComp);
+                if (canDelUser)
+                {
+                    toolTip = "Delete User from Group";
+                    
+                } else if (canRemUser)
+                {
+                    toolTip = "Remove User from Group (does not delete the user)";
+                }
+                delUserBtn.setEnabled(canDelUser || canRemUser);
+                delUserBtn.setToolTipText(toolTip);
                 
             }
             else if (dmObject instanceof SpPrincipal)
@@ -183,7 +189,6 @@ public class NavigationTreeContextMenuMgr extends MouseAdapter implements TreeSe
                 addUserBtn.setEnabled(enable);
                 addExtUserBtn.setEnabled(enable);
                 delUserBtn.setEnabled(false);
-                rmvUserBtn.setEnabled(false);
                 
             } else if (dmObject instanceof Collection)
             {
@@ -268,7 +273,7 @@ public class NavigationTreeContextMenuMgr extends MouseAdapter implements TreeSe
         if (dmObject instanceof SpecifyUser)
         {
             // object is a user: offer to delete or block the user
-            return getUserNodeContextMenu(clickedElement);
+            return null;//getUserNodeContextMenu(clickedElement);
         }
         else if (dmObject instanceof SpPrincipal)
         {
@@ -289,25 +294,21 @@ public class NavigationTreeContextMenuMgr extends MouseAdapter implements TreeSe
      * @param clickedElement
      * @return
      */
-    private JPopupMenu getUserNodeContextMenu(final TreePath clickedElement)
+    /*private JPopupMenu getUserNodeContextMenu(final TreePath clickedElement)
     {
 
         JPopupMenu groupNodeContextMenu = new JPopupMenu("Group Context Menu");
         DeleteUserAction deleteUserAction = new DeleteUserAction("User", clickedElement, getTreeMgr());
         deleteUserAction.setEnabled(getTreeMgr().canDeleteUser((DefaultMutableTreeNode) clickedElement.getLastPathComponent()));
-        //groupNodeContextMenu.add(deleteUserAction);
         
         delUserBtn.setAction(deleteUserAction);
-        //delUserBtn.setEnabled(getTreeMgr().canDeleteUser((DefaultMutableTreeNode) clickedElement.getLastPathComponent()));
-        //rmvUserBtn.setEnabled(getTreeMgr().canRemoveUserFromGroup((DefaultMutableTreeNode) clickedElement.getLastPathComponent()));
 
         RemoveUserFromGroupAction action = new RemoveUserFromGroupAction("User", clickedElement, getTreeMgr());
         action.setEnabled(getTreeMgr().canRemoveUserFromGroup((DefaultMutableTreeNode) clickedElement.getLastPathComponent()));
-        //groupNodeContextMenu.add(action);
         rmvUserBtn.setAction(action);
 
         return groupNodeContextMenu;
-    }
+    }*/
 
     /**
      * @param clickedElement

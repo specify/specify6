@@ -26,6 +26,7 @@ import java.awt.Frame;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Vector;
 
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -170,13 +171,21 @@ public class NavigationTreeMgr
             session = DataProviderFactory.getInstance().createSession();
             session.beginTransaction();
             
-            session.update(user);
-            user.getSpPrincipals().remove(group);
+            for (SpPrincipal p : new Vector<SpPrincipal>(user.getSpPrincipals()))
+            {
+                if (p.getId().equals(group.getId()))
+                {
+                    user.getSpPrincipals().remove(p);        
+                }
+            }
+            
+            session.saveOrUpdate(user);
             session.commit();
             
             // remove child from tree
             DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
             model.removeNodeFromParent(userNode);
+            tree.clearSelection();
             
         } catch (final Exception e1)
         {
@@ -306,7 +315,8 @@ public class NavigationTreeMgr
             // remove user from the group in the tree
             DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
             model.removeNodeFromParent(userNode);
-            
+            tree.clearSelection();
+
         } catch (final Exception e1)
         {
             e1.printStackTrace();
