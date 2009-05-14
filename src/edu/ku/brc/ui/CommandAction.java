@@ -156,6 +156,28 @@ public class CommandAction implements Cloneable
         this.dstObj  = null;
     }
     
+    
+    /**
+     * Sets all the values (replaces) from the incoming CommandAction.
+     * @param ca the source of the values
+     */
+    public void set(final CommandAction ca)
+    {
+        this.type    = ca.type;
+        this.action  = ca.action;
+        this.tableId = ca.tableId;
+        this.srcObj  = ca.srcObj;
+        this.dstObj  = ca.dstObj;
+        this.data    = ca.data;
+        
+        if (this.properties != null && ca.properties != null)
+        {
+            this.properties.clear();
+            this.properties.putAll(ca.properties);
+        }
+    }
+
+    
     /**
      * Return true if the type is equals the value (case sensitive).
      * @param typ the type in question

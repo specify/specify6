@@ -52,14 +52,17 @@ public class CommandActionWrapper implements ActionListener
     {
         try
         {
-            CommandAction cmdAction = (CommandAction)commandAction.clone();
+            CommandAction cmdAction = (CommandAction)commandAction.clone(); // cache a copy
+            
             if (e instanceof DataActionEvent)
             {
-                cmdAction.setConsumed(false);
+                commandAction.setConsumed(false);
                 DataActionEvent dataActionEv = (DataActionEvent)e;
-                cmdAction.setData(dataActionEv.getSourceObj() != null ? dataActionEv.getSourceObj().getData() : null); // Source shouldn't ever be null
+                commandAction.setData(dataActionEv.getSourceObj() != null ? dataActionEv.getSourceObj().getData() : null); // Source shouldn't ever be null
             }
-            CommandDispatcher.dispatch(cmdAction);
+            CommandDispatcher.dispatch(commandAction);
+            
+            commandAction.set(cmdAction);
             
         } catch (CloneNotSupportedException ex) {}
     }

@@ -2272,20 +2272,21 @@ public class InteractionsTask extends BaseTask
         {
             try
             {
-                final CommandAction cmd = (CommandAction)cmdAction.clone();
-                cmd.setType("Data_Entry");
-                cmd.setProperty(NavBoxAction.ORGINATING_TASK, this);
+                final CommandAction cachedCmdAction = (CommandAction)cmdAction.clone();
+                
+                cmdAction.setType("Data_Entry");
+                cmdAction.setProperty(NavBoxAction.ORGINATING_TASK, this);
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run()
                     {
-                        CommandDispatcher.dispatch(cmd);
+                        CommandDispatcher.dispatch(cmdAction);
+                        cmdAction.set(cachedCmdAction);
                     }
                 });
             } catch (CloneNotSupportedException ex)
             {
                 //ignore
             }
-            
         }
     }
     
