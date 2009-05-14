@@ -990,13 +990,20 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
             // if the node doesn't have any assigned node number, it must be new
             boolean added = (node.getNodeNumber() == null);
 
-            if (added && node.getDefinition().getDoNodeNumberUpdates() && node.getDefinition().getNodeNumbersAreUpToDate())
+            if (node.getDefinition().getDoNodeNumberUpdates() && node.getDefinition().getNodeNumbersAreUpToDate())
             {
                 log.info("Saved tree node was added.  Updating node numbers appropriately.");
                 TreeDataService dataServ = TreeDataServiceFactory.createService();
-                success = dataServ.updateNodeNumbersAfterNodeAddition(node, session);
+                if (added)
+                {
+                	success = dataServ.updateNodeNumbersAfterNodeAddition(node, session);
+                }
+                else
+                {
+                	success = dataServ.updateNodeNumbersAfterNodeEdit(node, session);
+                }
             }
-            else if (added)
+            else 
             {
                 node.getDefinition().setNodeNumbersAreUpToDate(false);
             }

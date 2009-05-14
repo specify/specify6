@@ -637,6 +637,24 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         return 0;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.treeutils.TreeDataService#updateNodeNumbersAfterNodeEdit(edu.ku.brc.specify.datamodel.Treeable, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    public synchronized boolean updateNodeNumbersAfterNodeEdit(final T node, final DataProviderSessionIFace session) throws Exception
+    {
+    	//basically just makes sure NodeNumbers are refreshed from the db
+    	QueryIFace q = session.createQuery("select nodeNumber, highestChildNodeNumber from " + node.getClass().getSimpleName().toLowerCase() + 
+    			" where " + node.getClass().getSimpleName() + "ID = " + node.getTreeId(), true);
+    	Object resObj = q.uniqueResult();
+    	Object[] result = (Object[] )resObj;
+    	node.setNodeNumber((Integer )result[0]);
+    	node.setHighestChildNodeNumber((Integer )result[1]);
+    	return true;		
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.treeutils.TreeDataService#updateNodeNumbersAfterNodeAddition(edu.ku.brc.specify.datamodel.Treeable, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
     public synchronized boolean updateNodeNumbersAfterNodeAddition(final T newNode, final DataProviderSessionIFace session) throws Exception
     {
         // update the nodeNumber and highestChildNodeNumber fields for all effected nodes
@@ -712,6 +730,9 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         return true;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.treeutils.TreeDataService#updateNodeNumbersAfterNodeDeletion(edu.ku.brc.specify.datamodel.Treeable, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
     public boolean updateNodeNumbersAfterNodeDeletion(final T deletedNode, final DataProviderSessionIFace session) throws Exception
     {
         boolean success = true;
@@ -762,6 +783,9 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         return success;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.treeutils.TreeDataService#moveTreeNode(edu.ku.brc.specify.datamodel.Treeable, edu.ku.brc.specify.datamodel.Treeable)
+     */
     @SuppressWarnings("unchecked")
     public synchronized int moveTreeNode(final T node, final T newParent)
     {

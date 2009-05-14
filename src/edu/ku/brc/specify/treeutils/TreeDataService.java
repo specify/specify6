@@ -154,6 +154,15 @@ public interface TreeDataService <T extends Treeable<T,D,I>,
      */
     public boolean updateNodeNumbersAfterNodeAddition(T newNode, DataProviderSessionIFace session) throws Exception;
     
+    
+    /**
+     * @param node
+     * @param session
+     * @return
+     * @throws Exception
+     */
+    public boolean updateNodeNumbersAfterNodeEdit(final T node, final DataProviderSessionIFace session) throws Exception;
+
     /**
      * @param deletedNode
      * @param session
