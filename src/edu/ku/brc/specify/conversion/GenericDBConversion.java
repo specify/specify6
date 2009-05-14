@@ -202,14 +202,6 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     protected ConversionLogger                              convLogger = new ConversionLogger();
 
     /**
-     * 
-     */
-    public GenericDBConversion()
-    {
-        convLogger.initialize("logs");
-    }
-
-    /**
      * "Old" means the database you want to copy "from"
      * @param oldDriver old driver
      * @param oldDBName old database name
@@ -225,7 +217,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         this.oldDBConn = oldDBConn;
         this.newDBConn = newDBConn;
         
-        convLogger.initialize("logs");
+        convLogger.initialize(newDBName);
         
         this.idMapperMgr = IdMapperMgr.getInstance();
         
@@ -5003,6 +4995,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                             {
                                 log.debug("Empty catalog number.");
                                 showError("Empty catalog number.");
+                                tblWriter.logError("Empty catalog number.");
                             }
 
                         } else
@@ -5152,6 +5145,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                                     {
                                         msg = "No value ["+origValue+"] in map  [" + tableName + "][" + newFieldName + "]";
                                         log.error(msg);
+                                        tblWriter.logError(msg);
                                         //showError(msg);
                                     }
                                 } else
@@ -5234,6 +5228,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             {
                 log.info("Processed CollectionObject " + count + " records.");
             }
+            
+            tblWriter.log("Processed CollectionObject " + count + " records.");
             rs.close();
             stmt.close();
             
@@ -5245,10 +5241,14 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             tblWriter.logError(e.getMessage());
             showError(e.getMessage());
             throw new RuntimeException(e);
+            
+        } finally
+        {
+        	 tblWriter.close();
         }
         BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer(newDBConn, "collectionobject", BasicSQLUtils.myDestinationServerType);
         
-        tblWriter.close();
+       
         
         return true;
     }
@@ -8876,6 +8876,18 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         }
     }
     
+    /**
+     * 
+     */
+    public void cleanUp()
+    {
+    	convLogger.closeAll();
+    }
+    
+    /**
+     * @param agentId
+     * @param disciplineID
+     */
     public void addAgentDisciplineJoin(final int agentId, final int disciplineID)
     {
         String sql = "";

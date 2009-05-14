@@ -96,6 +96,8 @@ public class BasicSQLUtils
     protected static boolean       ignoreMySQLduplicates = true;
     protected static boolean       skipTrackExceptions   = false;
     
+    protected static Pair<String, String> datePair = new Pair<String, String>();
+    
     // Missing Mapping File
     protected static PrintWriter missingPW;
     
@@ -816,7 +818,7 @@ public class BasicSQLUtils
      * @param obj the object to convert
      * @return the string representation
      */
-    public static String getStrValue(Object obj)
+    public static String getStrValue(final Object obj)
     {
         return getStrValue(obj, null);
     }
@@ -827,7 +829,7 @@ public class BasicSQLUtils
      * @param Boolean value to convert
      * @return the string representation
      */
-    public static String getStrValue(Boolean val)
+    public static String getStrValue(final Boolean val)
     {
         return Integer.toString(val == false? 0 : 1);
         //return getStrValue(obj, null);
@@ -954,8 +956,8 @@ public class BasicSQLUtils
             {
                 if (newFieldType.indexOf("date") ==  0)
                 {
-                    Date dateObj = UIHelper.convertIntToDate((Integer)obj);                   
-                    return dateObj == null ? "NULL" : '"'+dateFormatter.format(dateObj) + '"';
+                	getPartialDate(obj, datePair);
+                    return datePair.first;
 
                 }
                 //Meg dropped the (1) from the newFieldType check, field metadata didn't include the (1) values
@@ -1890,9 +1892,9 @@ public class BasicSQLUtils
      * @param datePair
      */
     public static void getPartialDate(final Object data, 
-                                      final Pair<String, String> datePair)
+                                      final Pair<String, String> datePairArg)
     {
-        getPartialDate(data, datePair, true);
+        getPartialDate(data, datePairArg, true);
     }
     
     /**
@@ -1901,11 +1903,11 @@ public class BasicSQLUtils
      * @param datePair
      */
     public static void getPartialDate(final Object data, 
-                                      final Pair<String, String> datePair,
+                                      final Pair<String, String> datePairArg,
                                       final boolean includeQuotes)
     {
-        datePair.first  = "NULL";
-        datePair.second = "NULL";
+        datePairArg.first  = "NULL";
+        datePairArg.second = "NULL";
         
         if (data != null && ((Integer)data) > 0)
         {
@@ -1923,25 +1925,25 @@ public class BasicSQLUtils
                     {
                         dateStr = dateStr.substring(0, 4) + "0101";
                         dateObj = UIHelper.convertIntToDate(Integer.parseInt(dateStr)); 
-                        datePair.second = "3";
+                        datePairArg.second = "3";
                         
                     } else if (fndInx == 2)
                     {
                         dateStr = dateStr.substring(0, 6) + "01";
                         dateObj = UIHelper.convertIntToDate(Integer.parseInt(dateStr)); 
-                        datePair.second = "2";
+                        datePairArg.second = "2";
                         
                     } else
                     {
                         dateObj = UIHelper.convertIntToDate((Integer)data);
-                        datePair.second = "1";
+                        datePairArg.second = "1";
                     }
                 } else
                 {
                     dateObj = UIHelper.convertIntToDate((Integer)data); 
-                    datePair.second = "1";
+                    datePairArg.second = "1";
                 }
-                datePair.first = dateObj == null ? "NULL" : (includeQuotes ? "\"" : "") + dateFormatter.format(dateObj) + (includeQuotes ? "\"" : "");
+                datePairArg.first = dateObj == null ? "NULL" : (includeQuotes ? "\"" : "") + dateFormatter.format(dateObj) + (includeQuotes ? "\"" : "");
                 
             } else 
             {

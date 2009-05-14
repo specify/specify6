@@ -254,7 +254,7 @@ public class ConvertVerifier
         out.println("<H3>Collection Objects</H3>");
         out.println("<table border=\"1\">");
         
-        coOptions = NO_OPTIONS;//DO_CO_TAXON;//DO_CO_ALL;
+        coOptions = DO_CO_TAXON;//DO_CO_ALL;
         acOptions = DO_AC_ALL;
 
         if (coOptions > NO_OPTIONS)

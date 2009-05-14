@@ -1172,6 +1172,8 @@ public class SpecifyDBConverter
                     conversion.convertBiologicalAttrs(discipline, null, null);*/
                 }
                 //conversion.showStats();
+                
+                conversion.cleanUp();
             }
 
             if (idMapperMgr != null && GenericDBConversion.shouldDeleteMapTables())

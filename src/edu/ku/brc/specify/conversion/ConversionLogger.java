@@ -40,7 +40,9 @@ public class ConversionLogger
     public static String TD ="<td>";
     public static String TD_ ="</td>";
     
-    protected Hashtable<String, String> printWriters = new Hashtable<String, String>();
+    protected Hashtable<String, String>      printWritersNameHash  = new Hashtable<String, String>();
+    protected Hashtable<String, TableWriter> printWritersHash      = new Hashtable<String, TableWriter>();
+    
     protected File dir;
     
     public ConversionLogger()
@@ -66,19 +68,38 @@ public class ConversionLogger
      * @return
      * @throws IOException
      */
-    public TableWriter getWriter(final String tableName, final String title)
+    public TableWriter getWriter(final String fileName, final String title)
     {
     	
     	ConversionLogger.TableWriter tblWriter = null;
         try
         {
-            String path = dir.getAbsolutePath() + File.separator + tableName;
+            String path = dir.getAbsolutePath() + File.separator + fileName;
             tblWriter = new TableWriter(path, title);
-            printWriters.put(tableName, path);
+            printWritersNameHash.put(fileName, path);
+            printWritersHash.put(fileName, tblWriter);
             
         } catch (IOException ex) { ex.printStackTrace(); }
 
         return tblWriter;
+    }
+    
+    /**
+     * 
+     */
+    public void closeAll()
+    {
+    	for (TableWriter tw : printWritersHash.values())
+    	{
+    		try
+    		{
+    			tw.close();
+    			
+    		} catch (Exception ex)
+    		{
+    			
+    		}
+    	}
     }
     
     //-------------------------------------------------------------
@@ -96,6 +117,7 @@ public class ConversionLogger
         {
             print(msg);
             println("<BR>");
+            flush();
         }
         
         public void logError(final String msg)
@@ -103,16 +125,19 @@ public class ConversionLogger
             println("<span class=\"err\">");
             print(msg);
             println("</span><BR>");
+            flush();
         }
         
         public void startTable()
         {
             println("<table>");
+            flush();
         }
         
         public void endTable()
         {
             println("</table>");
+            flush();
         }
         
         public void log(final String id, final String value, final String desc)
@@ -128,6 +153,7 @@ public class ConversionLogger
             print(desc);
             print(TD_);
             println(TR_);
+            flush();
         }
         
         /* (non-Javadoc)
