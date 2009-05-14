@@ -44,13 +44,19 @@ import edu.ku.brc.specify.datamodel.Treeable;
 public abstract class TreeTraversalWorker<T extends Treeable<T, D, I>, D extends TreeDefIface<T, D, I>, I extends TreeDefItemIface<T, D, I>>
         extends SwingWorker<Boolean, Object>
 {
-    
+	
+	/**
+	 * The number of db operations that can occur before the session should be flushed.
+	 */
+	protected static int               writesPerFlush = 2000;
+	
     protected QueryIFace               childrenQuery     = null;
     protected QueryIFace               ancestorQuery     = null;
 
     long                               progressChunk;
     int                                progressIncr;
     int                                progressPerCent;
+    int								   writeCount;
     protected final D                  treeDef;
 
     protected DataProviderSessionIFace traversalSession = null;
@@ -83,6 +89,15 @@ public abstract class TreeTraversalWorker<T extends Treeable<T, D, I>, D extends
     }
 
     /**
+     * Initializes members required for session flushing within transactions.
+     * Workers that use transactions should call this method.
+     */
+    protected void initCacheInfo()
+    {
+    	writeCount = 0;
+    }
+    
+    /**
      *  increments  progress.
      */
     protected void incrementProgress()
@@ -94,6 +109,28 @@ public abstract class TreeTraversalWorker<T extends Treeable<T, D, I>, D extends
         }
     }
 
+    /**
+     * Updates members required for session flushing within transactions.
+     * Workers that use transactions should call this method after each write - or periodically.
+     */
+    protected void checkCache()
+    {
+        if (++writeCount == writesPerFlush)
+        {
+            clearCache();
+            writeCount = 0;
+        }
+    }
+    
+    /**
+     * Flush the traversal session.
+     * Thus clearing the "first-level cache" and releasing memory.
+     */
+    protected void clearCache()
+    {
+        traversalSession.flush();
+    }
+    
     /**
      * updates progress and notifies progress listeners.  
      */

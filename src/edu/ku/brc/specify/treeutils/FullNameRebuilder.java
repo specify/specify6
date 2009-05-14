@@ -71,6 +71,7 @@ public class FullNameRebuilder<T extends Treeable<T, D, I>, D extends TreeDefIfa
             buildQueries();
             T root = getTreeRoot();
             initProgress();
+            initCacheInfo();
             fullNameBuilder = new FullNameBuilder<T,D,I>(treeDef);
             rebuildFullNames(new NodeInfo(root.getTreeId(), root.getRankId(), root.getName()), new LinkedList<NodeInfo>());
             if (ownsSession)
@@ -117,6 +118,7 @@ public class FullNameRebuilder<T extends Treeable<T, D, I>, D extends TreeDefIfa
         }
         parents.removeLast();
         incrementProgress();
+        checkCache();
     }
     /**
      * @param parentId

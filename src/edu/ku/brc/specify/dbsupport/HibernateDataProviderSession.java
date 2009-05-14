@@ -638,11 +638,15 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#flush()
      */
+    /*
+     * NOTE: the session is also cleared.
+     */
     public void flush()
     {
         if (session != null)
         {
             session.flush();
+            session.clear();
             
         } else
         {

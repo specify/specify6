@@ -88,6 +88,7 @@ public class NodeNumberer<T extends Treeable<T, D, I>, D extends TreeDefIface<T,
             buildReNumberingQueries();
             T root = getTreeRoot();
             initProgress();
+            initCacheInfo();
             reNumberNodesFaster(root.getTreeId(), 1);
             traversalSession.commit();
             return true;
@@ -122,6 +123,7 @@ public class NodeNumberer<T extends Treeable<T, D, I>, D extends TreeDefIface<T,
         }
         writeNode(nodeId, nodeNumber, nn);
         incrementProgress();
+        checkCache();
         return nn;
     }
 
