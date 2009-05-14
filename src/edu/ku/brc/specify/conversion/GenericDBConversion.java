@@ -5096,8 +5096,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
                     } else if (newFieldName.equals("Visibility")) // User/Security changes
                     {
-                        str.append(grpPrmtViewInx > -1 ? rs.getObject(grpPrmtViewInx) : "NULL");
-
+                        //str.append(grpPrmtViewInx > -1 ? rs.getObject(grpPrmtViewInx) : "NULL");
+                        str.append("0");
+                        
                     } else if (newFieldName.equals("VisibilitySetByID")) // User/Security changes
                     {
                         str.append("NULL");

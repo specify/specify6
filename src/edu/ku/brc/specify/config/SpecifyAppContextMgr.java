@@ -2048,7 +2048,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         try
         {
             String xmlStr = getResourceAsXML(appRes);
-            log.debug(xmlStr);
+            //log.debug(xmlStr);
             if (StringUtils.isNotEmpty(xmlStr))
             {
                 return XMLHelper.readStrToDOM4J(xmlStr);

@@ -254,7 +254,7 @@ public class ConvertVerifier
         out.println("<H3>Collection Objects</H3>");
         out.println("<table border=\"1\">");
         
-        coOptions = DO_CO_ALL;
+        coOptions = NO_OPTIONS;//DO_CO_TAXON;//DO_CO_ALL;
         acOptions = DO_AC_ALL;
 
         if (coOptions > NO_OPTIONS)
@@ -511,12 +511,12 @@ public class ConvertVerifier
     
     protected boolean verifyCOToLocality(final int oldCatNum, final String newCatNum) throws SQLException
     {
-         newSQL = "SELECT collectingevent.StartDate, collectingevent.StartDatePrecision, locality.LocalityName " +
+         newSQL = "SELECT locality.LocalityName " +
                         "FROM collectionobject INNER JOIN collectingevent ON collectionobject.CollectingEventID = collectingevent.CollectingEventID " +
                         "INNER JOIN locality ON collectingevent.LocalityID = locality.LocalityID " +
                         "WHERE CatalogNumber = '"+ newCatNum + "'";
 
-         oldSQL = "SELECT collectingevent.StartDate, locality.LocalityName  " +
+         oldSQL = "SELECT locality.LocalityName  " +
                         "FROM collectionobjectcatalog INNER JOIN collectionobject ON collectionobjectcatalog.CollectionObjectCatalogID = collectionobject.CollectionObjectID " +
                         "INNER JOIN collectingevent ON collectionobject.CollectingEventID = collectingevent.CollectingEventID " +
                         "INNER JOIN locality ON collectingevent.LocalityID = locality.LocalityID " +
@@ -827,9 +827,14 @@ public class ConvertVerifier
                                      final String oldSQLArg, 
                                      final String newSQLArg) throws SQLException
     {
+        boolean dbg = false;
+        
         getResultSets(oldSQLArg, newSQLArg);
-        //System.out.println(oldSQLArg);
-        //System.out.println(newSQLArg);
+        if (dbg)
+        {
+            System.out.println(oldSQLArg);
+            System.out.println(newSQLArg);
+        }
         
         try
         {
@@ -879,18 +884,27 @@ public class ConvertVerifier
                     newColInx++;
                     oldColInx++;
 
-                    /*System.out.println("col       "+col+" / "+oldRsmd.getColumnCount());
-                    System.out.println("newColInx "+newColInx);
-                    System.out.println("oldColInx "+oldColInx);
-                    System.out.println(oldRsmd.getColumnName(oldColInx));
-                    System.out.println(newRsmd.getColumnName(newColInx));
-                    */
+                    if (dbg)
+                    {
+                        System.out.println("col       "+col+" / "+oldRsmd.getColumnCount());
+                        System.out.println("newColInx "+newColInx);
+                        System.out.println("oldColInx "+oldColInx);
+                        System.out.println(oldRsmd.getColumnName(oldColInx));
+                        System.out.println(newRsmd.getColumnName(newColInx));
+                    }
                     
                     Object newObj = newDBRS.getObject(newColInx);
                     Object oldObj = oldDBRS.getObject(oldColInx);
                     
                     if (oldObj == null && newObj == null)
                     {
+                        String colName = newRsmd.getColumnName(newColInx);
+
+                        if (StringUtils.contains(colName, "Date") && StringUtils.contains(newRsmd.getColumnName(newColInx+1), "DatePrecision"))
+                        {
+                            newColInx++;
+                            numCols--;
+                        }
                         continue;
                     }
                     
@@ -908,7 +922,7 @@ public class ConvertVerifier
                     {
                         String clsName = newRsmd.getColumnClassName(newColInx);
                         String colName = newRsmd.getColumnName(newColInx);
-                        
+
                         if (!clsName.equals("java.sql.Date") || (!(oldObj instanceof String) && ((Number)oldObj).intValue() != 0))
                         {
                             String msg = "New Value was null and shouldn't have been for Key Value CatNo["+newCatNum+"] Field ["+colName+"] ["+oldObj+"]";
@@ -929,12 +943,14 @@ public class ConvertVerifier
                     
                     if (newObj instanceof java.sql.Date)
                     {
+                        boolean isPartialDate = false;
                         Byte partialDateType = null;
                         if (StringUtils.contains(newRsmd.getColumnName(newColInx+1), "DatePrecision"))
                         {
                             newColInx++;
                             numCols--;
                             partialDateType =  newDBRS.getByte(newColInx);
+                            isPartialDate   = true;
                         }
                         
                         int oldIntDate = oldDBRS.getInt(oldColInx);
@@ -943,7 +959,7 @@ public class ConvertVerifier
                             continue;
                         }
                         
-                        BasicSQLUtils.getPartialDate(oldDBRS.getInt(oldColInx), datePair, false);
+                        BasicSQLUtils.getPartialDate(oldIntDate, datePair, false);
                         
                         if (partialDateType != null)
                         {
@@ -962,9 +978,13 @@ public class ConvertVerifier
                         
                         if (mon > 0) mon--;
                         
-                        if (year != cal.get(Calendar.YEAR))
+                        boolean isYearOK = true;
+                        
+                        int yr = cal.get(Calendar.YEAR);
+                        if (year != yr)
                         {
-                            errSB.append("Year mismatch Old["+year+"]  New ["+cal.get(Calendar.YEAR)+"] ");
+                            errSB.append("Year mismatch Old["+year+"]  New ["+yr+"] ");
+                            isYearOK = false;
                         }
                         
                         if (mon != cal.get(Calendar.MONTH))
@@ -977,8 +997,9 @@ public class ConvertVerifier
                             errSB.append("Day mismatch Old["+day+"]  New ["+cal.get(Calendar.DAY_OF_MONTH)+"] ");
                         }
                         
-                        if (errSB.length() > 0)
+                        if (errSB.length() > 0 && (!isYearOK || !isPartialDate))
                         {
+                            errSB.insert(0, oldColName+"  ");
                             errSB.append("[");
                             errSB.append(datePair);
                             errSB.append("][");
@@ -1083,6 +1104,19 @@ public class ConvertVerifier
      */
     public static void main(String[] args)
     {
+        Pair<String, String> datePair = new Pair<String, String>();
+        BasicSQLUtils.getPartialDate(19800000, datePair, false);
+        System.out.println(datePair);
+        
+        BasicSQLUtils.getPartialDate(19801200, datePair, false);
+        System.out.println(datePair);
+        
+        BasicSQLUtils.getPartialDate(19801231, datePair, false);
+        System.out.println(datePair);
+        
+        BasicSQLUtils.getPartialDate(19590000, datePair, false);
+        System.out.println(datePair);
+        
         // Create Specify Application
         SwingUtilities.invokeLater(new Runnable() {
             public void run()

@@ -1108,11 +1108,28 @@ public class BasicSQLUtils
             String    dbName = getDatabaseName(connection) ;
             String    str    = generateDescribeTableCommand( tableName, dbName, currentServerType) ;
             //log.debug("Databasename:" + connection.getMetaData().getDriverName());
+            
+            Hashtable<String, Boolean> hash = new Hashtable<String, Boolean>();
             ResultSet rs = stmt.executeQuery(str);
             while (rs.next())
             {
-                fieldList.add(basicSQLUtils.new FieldMetaData(rs.getString(1), rs.getString(2)));
+                FieldMetaData fmd = basicSQLUtils.new FieldMetaData(rs.getString(1), rs.getString(2), false, false);
+                fieldList.add(fmd);
+                hash.put(fmd.getName(), true);
             }
+            
+            for (FieldMetaData fmd : fieldList)
+            {
+                if (fmd.getName().endsWith("Date"))
+                {
+                    fmd.setDate(true);
+                    if (hash.get(fmd.getName() + "DatePrecision") != null)
+                    {
+                        fmd.setPrecision(true);
+                    }
+                }
+            }
+            
             rs.close();
             stmt.close();
 
@@ -1135,6 +1152,8 @@ public class BasicSQLUtils
     {
         try
         {
+            Hashtable<String, Boolean> hash = new Hashtable<String, Boolean>();
+            
             StringBuilder strBuf = new StringBuilder(128);
             for (int i=1;i<=rsmd.getColumnCount();i++)
             {
@@ -1146,8 +1165,24 @@ public class BasicSQLUtils
                     strBuf.append(".");
                 }
                 strBuf.append(rsmd.getColumnName(i));
-                fieldList.add(basicSQLUtils.new FieldMetaData(strBuf.toString(), rsmd.getColumnClassName(i)));
+                
+                FieldMetaData fmd = basicSQLUtils.new FieldMetaData(strBuf.toString(), rsmd.getColumnClassName(i), false, false);
+                fieldList.add(fmd);
+                hash.put(fmd.getName(), true);
             }
+            
+            for (FieldMetaData fmd : fieldList)
+            {
+                if (fmd.getName().endsWith("Date"))
+                {
+                    fmd.setDate(true);
+                    if (hash.get(fmd.getName() + "DatePrecision") != null)
+                    {
+                        fmd.setPrecision(true);
+                    }
+                }
+            }
+
 
         } catch (SQLException ex)
         {
@@ -1351,7 +1386,7 @@ public class BasicSQLUtils
         try
         {
             List<FieldMetaData> newFieldMetaData = new ArrayList<FieldMetaData>();
-            getFieldMetaDataFromSchema(toConn, toTableName, newFieldMetaData,destServerType);
+            getFieldMetaDataFromSchema(toConn, toTableName, newFieldMetaData, destServerType);
 
             Statement         stmt = fromConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
             System.out.println(sqlStr);
@@ -1404,7 +1439,6 @@ public class BasicSQLUtils
             {
             	boolean skipRecord = false;
             	
-                
                 // Start by going through the resultset and converting all dates from Integers
                 // to real dates and keep the verbatium date information if it is a partial date
                 for (int i : dateColumns)
@@ -1420,19 +1454,24 @@ public class BasicSQLUtils
 
                     if (oldColIndex > newFieldMetaData.size())
                     {
-                    	int x=0;
-                    	x++;
                     	continue;
                     }
+                    
                     String newColName = colNewToOldMap != null ? oldNameToNewNameHash.get(oldColName) : newFieldMetaData.get(oldColIndex).getName();
                     if (newColName == null)
                     {
                     	newColName = oldColName;
                     }
-                    Object dataObj    = rs.getObject(i);
+                    
+                    Object dataObj = rs.getObject(i);
                     
                     if (dataObj instanceof Integer)
                     {
+                        if ((Integer)dataObj == 19590000)
+                        {
+                            int x = 0;
+                            x++;
+                        }
                     	Pair<String, String> datep = new Pair<String, String>();
                     	getPartialDate((Integer)dataObj, datep);
                         dateMap.put(newColName, datep);
@@ -1559,15 +1598,16 @@ public class BasicSQLUtils
 
                                 int oldPrimaryKeyId = rs.getInt(columnIndex);
                                 
-                                /*if (toTableName.equalsIgnoreCase("AccessionAgent"))
+                                if (toTableName.equalsIgnoreCase("Accession"))
                                 {
                                     System.err.println(oldMappedColName+"  "+oldPrimaryKeyId);
+                                    if (oldPrimaryKeyId == 278)
+                                    {
+                                        int x = 0;
+                                        x++;
+                                    }
                                 }
-                                if (oldPrimaryKeyId == 1333898773)
-                                {
-                                    int x = 0;
-                                    x++;
-                                }*/
+
 
                                 // if the value was null, getInt() returns 0
                                 // use wasNull() to distinguish real 0 from a null return
@@ -1663,8 +1703,6 @@ public class BasicSQLUtils
 
                         } else if (dataObj instanceof Integer && newColName.toLowerCase().endsWith("date"))
                         {
-                        	//if (i > 0) str.append(", ");
-                        	
                         	Pair<String, String> datePr = dateMap.get(newColName);
                         	if (datePr != null)
                         	{
@@ -2336,8 +2374,13 @@ public class BasicSQLUtils
     {
         protected String name;
         protected String type;
+        protected boolean isDate;
+        protected boolean isPrecision;
 
-        public FieldMetaData(String name, String type)
+        public FieldMetaData(String name, 
+                             String type,
+                             boolean isDate,
+                             boolean isPrecision)
         {
             this.name = name;
             this.type = type;
@@ -2352,5 +2395,38 @@ public class BasicSQLUtils
         {
             return type;
         }
+
+        /**
+         * @return the isDate
+         */
+        public boolean isDate()
+        {
+            return isDate;
+        }
+
+        /**
+         * @return the hasPrecision
+         */
+        public boolean isPrecision()
+        {
+            return isPrecision;
+        }
+
+        /**
+         * @param isDate the isDate to set
+         */
+        public void setDate(boolean isDate)
+        {
+            this.isDate = isDate;
+        }
+
+        /**
+         * @param isPrecision the isPrecision to set
+         */
+        public void setPrecision(boolean isPrecision)
+        {
+            this.isPrecision = isPrecision;
+        }
+        
     }
 }
