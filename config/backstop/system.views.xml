@@ -455,11 +455,11 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="type" uitype="combobox" isrequired="true" colspan="2" readonly="true" initialize="editoncreate=true"/> 
+                    <cell type="field" id="2" name="type" uitype="combobox" isrequired="true" readonly="true" initialize="editoncreate=true"/> 
                 </row>
                 <row>
                     <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="name" uitype="text" colspan="2" isrequired="true"/>
+                    <cell type="field" id="3" name="name" uitype="text" isrequired="true"/>
                 </row>
                 <row>
                     <cell type="subview" viewname="CollectionSub" id="5" name="collections" colspan="5"/>
@@ -800,35 +800,35 @@
             <desc><![CDATA[Division Form.]]></desc>
             <enableRules/>
             
-            <columnDef>100px,2px,309px,5px,100px,2px,309px,p:g</columnDef>
-            <columnDef os="lnx">115px,2px,347px,5px,100px,2px,346px,p:g</columnDef>
-            <columnDef os="mac">130px,2px,397px,5px,100px,2px,396px,p:g</columnDef>
-            <columnDef os="exp">100px,2px,225px:g,5px,100px,2px,225px:g,p:g</columnDef>
+            <columnDef>100px,2px,361px,5px,70px,2px,80px,5px,80px,2px,120px,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,347px,5px,100px,2px,80px,5px,80px,2px,120px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,396px,5px,100px,2px,120px,5px,120px,2px,150px,p:g</columnDef>
+            <columnDef os="exp">100px,2px,361px,5px,70px,2px,80px,5px,80px,2px,120px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             
             <rows>
                 <row>
                     <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="name" uitype="text" isrequired="true"/>
+                    <cell type="field" id="1" name="name" uitype="text" isrequired="true" colspan="5"/>
                     <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="abbrev" uitype="text"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="altName" uitype="text"/>
+                    <cell type="field" id="3" name="altName" uitype="text" colspan="9"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="4"/>
-                    <cell type="field" id="4" name="uri" uitype="text" cols="30"/>
+                    <cell type="field" id="4" name="uri" uitype="text"/>
                     <cell type="label" labelfor="5"/>
-                    <cell type="field" id="5" name="iconURI" uitype="text" cols="30"/>
+                    <cell type="field" id="5" name="iconURI" uitype="text" colspan="5"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="6"/>
-                    <cell type="field" id="6" name="description" uitype="textareabrief" rows="2" colspan="5"/>
+                    <cell type="field" id="6" name="description" uitype="textareabrief" rows="2" colspan="9"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="AddressSingle" id="10" name="address" colspan="5" initialize="btn=true"/>
+                    <cell type="subview" viewname="AddressSingle" id="10" name="address" colspan="12" initialize="btn=true"/>
                 </row>
             </rows>
         </viewdef>
@@ -870,23 +870,23 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="4"/>
-                    <cell type="field" id="4" name="ipr" uitype="textareabrief" cols="40" rows="2" colspan="2"/>
+                    <cell type="field" id="4" name="ipr" uitype="textareabrief" cols="40" rows="2"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="5"/>
-                    <cell type="field" id="5" name="copyright" uitype="textareabrief" rows="2" colspan="2"/>
+                    <cell type="field" id="5" name="copyright" uitype="textareabrief" rows="2"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="6"/>
-                    <cell type="field" id="6" name="termsOfUse" uitype="textareabrief" rows="2" colspan="2"/>
+                    <cell type="field" id="6" name="termsOfUse" uitype="textareabrief" rows="2"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="7"/>
-                    <cell type="field" id="7" name="disclaimer" uitype="textareabrief" rows="2" colspan="2"/>
+                    <cell type="field" id="7" name="disclaimer" uitype="textareabrief" rows="2"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="8"/>
-                    <cell type="field" id="8" name="remarks" uitype="textareabrief" rows="2" colspan="2"/>
+                    <cell type="field" id="8" name="remarks" uitype="textareabrief" rows="2"/>
                 </row>
                 <row>
                     <cell type="subview" viewname="DivisionOnly" id="9" name="divisions" colspan="4"/>
