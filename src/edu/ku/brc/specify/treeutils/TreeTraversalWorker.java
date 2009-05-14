@@ -123,12 +123,14 @@ public abstract class TreeTraversalWorker<T extends Treeable<T, D, I>, D extends
     }
     
     /**
-     * Flush the traversal session.
-     * Thus clearing the "first-level cache" and releasing memory.
+      * clear the session cache.
+      * 
+      * flush too, just in case.
      */
     protected void clearCache()
     {
         traversalSession.flush();
+    	traversalSession.clear();
     }
     
     /**

@@ -123,6 +123,8 @@ public interface DataProviderSessionIFace
     
     public abstract void close();
     
+    public abstract void clear();
+    
     public static interface QueryIFace
     {
         public void setParameter(String name, Object value);
