@@ -1337,10 +1337,16 @@ public class ConvertVerifier
 
             MouseAdapter ma = new MouseAdapter()
             {
+
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					// TODO Auto-generated method stub
+					super.mouseClicked(e);
+				}
                 
-            }
+            };
             
-            ChangeListener cl = new ChangeListener() {
+            /*ChangeListener cl = new ChangeListener() {
                 @Override
                 public void stateChanged(ChangeEvent e)
                 {
@@ -1367,7 +1373,7 @@ public class ConvertVerifier
                 }
             };
             chkPanel.getButtons().get(0).addChangeListener(cl);
-            chkPanel.getButtons().get(chkPanel.getButtons().size()-1).addChangeListener(cl);
+            chkPanel.getButtons().get(chkPanel.getButtons().size()-1).addChangeListener(cl);*/
             
             pb.setDefaultDialogBorder();
             
@@ -1389,7 +1395,7 @@ public class ConvertVerifier
             oldlist.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             newList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             
-            MouseAdapter ma = new MouseAdapter() {
+            MouseAdapter listMA = new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e)
                 {
@@ -1400,8 +1406,8 @@ public class ConvertVerifier
                     }
                 }
             };
-            oldlist.addMouseListener(ma);
-            newList.addMouseListener(ma);
+            oldlist.addMouseListener(listMA);
+            newList.addMouseListener(listMA);
             
             dlg.createUI();
             dlg.pack();
