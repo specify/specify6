@@ -50,20 +50,12 @@ public class CommandActionWrapper implements ActionListener
      */
     public void actionPerformed(final ActionEvent e) 
     {
-        try
+        if (e instanceof DataActionEvent)
         {
-            CommandAction cmdAction = (CommandAction)commandAction.clone(); // cache a copy
-            
-            if (e instanceof DataActionEvent)
-            {
-                commandAction.setConsumed(false);
-                DataActionEvent dataActionEv = (DataActionEvent)e;
-                commandAction.setData(dataActionEv.getSourceObj() != null ? dataActionEv.getSourceObj().getData() : null); // Source shouldn't ever be null
-            }
-            CommandDispatcher.dispatch(commandAction);
-            
-            commandAction.set(cmdAction);
-            
-        } catch (CloneNotSupportedException ex) {}
+            commandAction.setConsumed(false);
+            DataActionEvent dataActionEv = (DataActionEvent)e;
+            commandAction.setData(dataActionEv.getSourceObj() != null ? dataActionEv.getSourceObj().getData() : null); // Source shouldn't ever be null
+        }
+        CommandDispatcher.dispatch(commandAction);
     }
 }

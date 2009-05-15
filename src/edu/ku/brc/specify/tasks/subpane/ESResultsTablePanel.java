@@ -961,18 +961,21 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
             SwingUtilities.invokeLater(new Runnable() {
                 public void run()
                 {
-                    try
+                    boolean setCmdData = cmd.getData() == null;
+                    if (setCmdData)
                     {
-                        CommandAction cmdAction = (CommandAction)cmd.clone();
-                        boolean setCmdData = cmdAction.getData() == null;
-                        if (setCmdData)
-                        {
-                            cmdAction.setData(getRecordSet(false));
-                        }
-                        cmdAction.addProperties(props);
-                        CommandDispatcher.dispatch(cmdAction);
-                        
-                    } catch (CloneNotSupportedException ex) {}
+                        cmd.setData(getRecordSet(false));
+                    }
+                    cmd.addProperties(props);
+                    CommandDispatcher.dispatch(cmd);
+
+                    // always reset the consumed flag and set the data to null
+                    // so the command can be used again
+                    cmd.setConsumed(false);
+                    if (setCmdData)
+                    {
+                        cmd.setData(null);
+                    }
                 }
             });
         }
