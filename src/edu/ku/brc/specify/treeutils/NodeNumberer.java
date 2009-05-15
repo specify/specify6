@@ -118,7 +118,6 @@ public class NodeNumberer<T extends Treeable<T, D, I>, D extends TreeDefIface<T,
         List<?> children = getChildIds(nodeId);
         int nn = nodeNumber;
         while (children.size() > 0)
-        //for (Object child : children)
         {
             Object child = children.get(0);
         	nn = reNumberNodesFaster((Integer) child, nn + 1);
@@ -178,6 +177,7 @@ public class NodeNumberer<T extends Treeable<T, D, I>, D extends TreeDefIface<T,
 	@Override
 	protected void clearCache() throws Exception
 	{
+		super.clearCache(); 
 		/* Every time updateNodeQuery.executeUpdate() is executed, an entry
 		 * is added to the hibernate session.actionQueue.executions data structure.
 		 * For large trees, out of memory errors occur.
