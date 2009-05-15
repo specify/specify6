@@ -51,8 +51,6 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -138,6 +136,7 @@ public class ConvertVerifier
     protected PrintWriter                                   out;
     protected int                                           numErrors = 0;
     protected static SimpleDateFormat                       dateFormatter          = new SimpleDateFormat("yyyy-MM-dd");
+    protected boolean                                       debug = false;
     
     
     /**
@@ -283,58 +282,58 @@ public class ConvertVerifier
                 {
                     printVerifyHeader("Determiner");
                     log.error("Cat Num: "+oldCatNum);
-                    //log.error("New SQL: "+newSQL);
-                    //log.error("Old SQL: "+oldSQL);
+                    log.error("New SQL: "+newSQL);
+                    log.error("Old SQL: "+oldSQL);
                     //break;
                 }            
                 if (isCOOn(DO_CO_CATLOGER) && !verifyCataloger(oldCatNum, newCatNum))
                 {
                     printVerifyHeader("Cataloger");
                     log.error("Cat Num: "+oldCatNum);
-                    //log.error("New SQL: "+newSQL);
-                    //log.error("Old SQL: "+oldSQL);
+                    log.error("New SQL: "+newSQL);
+                    log.error("Old SQL: "+oldSQL);
                     //break;
                 }
                 if (isCOOn(DO_CO_GEO) && !verifyGeography(oldCatNum, newCatNum))
                 {
                     printVerifyHeader("Geography");
-                    //log.error("New SQL: "+newSQL);
-                    //log.error("Old SQL: "+oldSQL);
+                    log.error("New SQL: "+newSQL);
+                    log.error("Old SQL: "+oldSQL);
                     //break;
                 }
                 if (isCOOn(DO_CO_CE) && !verifyCollectingEvent(oldCatNum, newCatNum))
                 {
                     printVerifyHeader("Collecting Event");
-                    //log.error("New SQL: "+newSQL);
-                    //log.error("Old SQL: "+oldSQL);
+                    log.error("New SQL: "+newSQL);
+                    log.error("Old SQL: "+oldSQL);
                     //break;
                 }
                 if (isCOOn(DO_CO_TAXON) && !verifyTaxon(oldCatNum, newCatNum))
                 {
                     printVerifyHeader("Taxon");
-                    //log.error("New SQL: "+newSQL);
-                    //log.error("Old SQL: "+oldSQL);
+                    log.error("New SQL: "+newSQL);
+                    log.error("Old SQL: "+oldSQL);
                     //break;
                 }
                 if (isCOOn(DO_CO_LOCALITY) && !verifyCOToLocality(oldCatNum, newCatNum))
                 {
                     printVerifyHeader("Locality");
-                    //log.error("New SQL: "+newSQL);
-                    //log.error("Old SQL: "+oldSQL);
+                    log.error("New SQL: "+newSQL);
+                    log.error("Old SQL: "+oldSQL);
                     //break;
                 }
                 if (isCOOn(DO_CO_PREPARATION) && !verifyPreparation(oldCatNum, newCatNum))
                 {
                     printVerifyHeader("Preparations");
-                    //log.error("New SQL: "+newSQL);
-                    //log.error("Old SQL: "+oldSQL);
+                    log.error("New SQL: "+newSQL);
+                    log.error("Old SQL: "+oldSQL);
                     //break;
                 }
                 if (isCOOn(DO_CO_PREPARER) && !verifyPreparer(oldCatNum, newCatNum))
                 {
                     printVerifyHeader("Preparer");
-                    //log.error("New SQL: "+newSQL);
-                    //log.error("Old SQL: "+oldSQL);
+                    log.error("New SQL: "+newSQL);
+                    log.error("Old SQL: "+oldSQL);
                     //break;
                 }
                 
@@ -430,8 +429,11 @@ public class ConvertVerifier
                         "FROM determination INNER JOIN taxonname ON determination.TaxonNameID = taxonname.TaxonNameID " + 
                         "INNER JOIN collectionobjectcatalog ON collectionobjectcatalog.CollectionObjectCatalogID = determination.BiologicalObjectID " + 
                         "WHERE CatalogNumber = " + oldCatNum;
-        //log.error("New SQL: "+newSQL);
-        //log.error("Old SQL: "+oldSQL);
+        if (debug)
+        {
+	         log.debug("New SQL: "+newSQL);
+	         log.debug("Old SQL: "+oldSQL);
+        }
         return compareRecords("Taxon", oldCatNum, newCatNum, oldSQL, newSQL);
     }
                          
@@ -455,6 +457,12 @@ public class ConvertVerifier
             "INNER JOIN locality ON collectingevent.LocalityID = locality.LocalityID " +
             "INNER JOIN geography ON locality.GeographyID = geography.GeographyID " +
             "WHERE CatalogNumber = " + oldCatNum;
+        
+        if (debug)
+        {
+	         log.debug("New SQL: "+newSQL);
+	         log.debug("Old SQL: "+oldSQL);
+        }
         
         try
         {
@@ -508,6 +516,11 @@ public class ConvertVerifier
         }
     }
     
+    /**
+     * @param newTableName
+     * @param oldTableName
+     * @return
+     */
     protected boolean verifyTableCounts(final String newTableName, final String oldTableName)
     {
         int newCnt = BasicSQLUtils.getNumRecords(newDBConn, newTableName);
@@ -520,7 +533,7 @@ public class ConvertVerifier
         }
         return true;
     }
-    
+
     protected boolean verifyCOToLocality(final int oldCatNum, final String newCatNum) throws SQLException
     {
          newSQL = "SELECT locality.LocalityName " +
@@ -533,7 +546,12 @@ public class ConvertVerifier
                         "INNER JOIN collectingevent ON collectionobject.CollectingEventID = collectingevent.CollectingEventID " +
                         "INNER JOIN locality ON collectingevent.LocalityID = locality.LocalityID " +
                         "WHERE CatalogNumber = " + oldCatNum;
-        
+         if (debug)
+         {
+	         log.debug("New SQL: "+newSQL);
+	         log.debug("Old SQL: "+oldSQL);
+         }
+         
         return compareRecords("Locality", oldCatNum, newCatNum, oldSQL, newSQL);
     }
       
@@ -555,7 +573,11 @@ public class ConvertVerifier
 
          oldSQL = "SELECT agent.FirstName, agent.MiddleInitial, agent.LastName, agent.Name  " +
                   "FROM collectionobjectcatalog INNER JOIN agent ON collectionobjectcatalog.CatalogerID = agent.AgentID WHERE CatalogNumber = " + oldCatNum;
-        
+         if (debug)
+         {
+	         log.debug("New SQL: "+newSQL);
+	         log.debug("Old SQL: "+oldSQL);
+         }
         return compareRecords("Cataloger", oldCatNum, newCatNum, oldSQL, newSQL);
     }
     
@@ -571,8 +593,11 @@ public class ConvertVerifier
                   "INNER JOIN determination ON determination.BiologicalObjectID = collectionobject.CollectionObjectID " + 
                   "INNER JOIN agent ON determination.DeterminerID = agent.AgentID WHERE CatalogNumber = " + oldCatNum;
         
-         //log.debug("New SQL: "+newSQL);
-         //log.debug("Old SQL: "+oldSQL);
+         if (debug)
+         {
+	         log.debug("New SQL: "+newSQL);
+	         log.debug("Old SQL: "+oldSQL);
+         }
          
         return compareRecords("Determiner", oldCatNum, newCatNum, oldSQL, newSQL);
     }
@@ -589,8 +614,11 @@ public class ConvertVerifier
                   "INNER JOIN agent ON preparation.PreparedByID = agent.AgentID " +
                   "WHERE CatalogNumber = " + oldCatNum;
         
-         //log.error("New SQL: "+newSQL);
-         //log.error("Old SQL: "+oldSQL);
+         if (debug)
+         {
+	         log.debug("New SQL: "+newSQL);
+	         log.debug("Old SQL: "+oldSQL);
+         }
         return compareRecords("Preparer", oldCatNum, newCatNum, oldSQL, newSQL);
     }
 
@@ -608,8 +636,8 @@ public class ConvertVerifier
                  "FROM locality " +
                  "INNER JOIN geography ON locality.GeographyID = geography.GeographyID ";
     
-        System.out.println(newSQL);
-        System.out.println(oldSQL);
+        //System.out.println(newSQL);
+        //System.out.println(oldSQL);
 
         try
         {
@@ -839,7 +867,7 @@ public class ConvertVerifier
                                      final String oldSQLArg, 
                                      final String newSQLArg) throws SQLException
     {
-        boolean dbg = true;
+        boolean dbg = false;
         
         getResultSets(oldSQLArg, newSQLArg);
         if (dbg)
@@ -896,7 +924,7 @@ public class ConvertVerifier
                     newColInx++;
                     oldColInx++;
 
-                    if (dbg && false)
+                    if (dbg)
                     {
                         System.out.println("col       "+col+" / "+oldRsmd.getColumnCount());
                         System.out.println("newColInx "+newColInx);
@@ -1109,6 +1137,17 @@ public class ConvertVerifier
         }
             
         return true;
+    }
+    
+    protected void verifyCollectors()
+    {
+    	String oldSQL = "SELECT collectingevent.CollectingEventID, collectingevent.StartDate, agent.FirstName,  agent.LastName, collectors.Order  " + 
+         "FROM collectingevent INNER JOIN collectors ON collectingevent.CollectingEventID = collectors.CollectingEventID " + 
+         "INNER JOIN agent ON collectors.AgentID = agent.AgentID ORDER BY collectingevent.CollectingEventID, collectors.Order";
+    	
+    	String newSQL = "SELECT collectingevent.CollectingEventID, collectingevent.StartDate, agent.FirstName, agent.LastName, collector.OrderNumber   " + 
+    	 "FROM collectingevent INNER JOIN collector ON collectingevent.CollectingEventID = collector.CollectingEventID  " + 
+    	 "INNER JOIN agent ON collector.AgentID = agent.AgentID ORDER BY collectingevent.CollectingEventID, collectors.OrderNumber";
     }
     
     /**
@@ -1337,15 +1376,33 @@ public class ConvertVerifier
 
             MouseAdapter ma = new MouseAdapter()
             {
-
 				@Override
 				public void mouseClicked(MouseEvent e) {
-					// TODO Auto-generated method stub
 					super.mouseClicked(e);
+					
+					Vector<JToggleButton> btns = chkPanel.getButtons();
+                    if (e.getSource() == btns.get(0))
+                    {
+                        boolean isSelected = btns.get(0).isSelected();
+                        
+                        for (int i=1;i<btns.size();i++)
+                        {
+                            btns.get(i).setEnabled(!isSelected);
+                        }
+                    } else if (e.getSource() == btns.get(btns.size()-1))
+                    {
+                        boolean isSelected = btns.get(btns.size()-1).isSelected();
+                        for (int i=0;i<btns.size()-1;i++)
+                        {
+                        	if (i > 0)  btns.get(i).setSelected(!isSelected);
+                            btns.get(i).setEnabled(!isSelected);
+                        }
+                    }
 				}
-                
             };
-            
+            chkPanel.getButtons().get(0).addMouseListener(ma);
+            chkPanel.getButtons().get(chkPanel.getButtons().size()-1).addMouseListener(ma);
+
             /*ChangeListener cl = new ChangeListener() {
                 @Override
                 public void stateChanged(ChangeEvent e)

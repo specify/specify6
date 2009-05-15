@@ -500,14 +500,17 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 "GroupPersons",
                 "Habitat", // Turn back on when datamodel checked in
                 // XXX "ImageAgents",
-                "ImageCollectionObjects", "ImageLocalities",
+                "ImageCollectionObjects", 
+                "ImageLocalities",
                 "Journal",
                 //"Loan",
                 // XXX "LoanAgents",
                 //"LoanPhysicalObject", 
                 "LoanReturnPhysicalObject", 
-                "Locality", "LocalityCitation",
-                "Observation", "OtherIdentifier",
+                "Locality", 
+                "LocalityCitation",
+                "Observation", 
+                "OtherIdentifier",
                 "Permit",
                 "Preparation", 
                 "Project", "ProjectCollectionObjects", "ReferenceWork", "Shipment", "Sound",
@@ -562,7 +565,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         idMapper = idMapperMgr.addTableMapper("collectionobjectcatalog", "CollectionObjectCatalogID");
         if (shouldCreateMapTables)
         {
-            idMapper.mapAllIds("select CollectionObjectCatalogID From collectionobject co Inner Join collectionobjectcatalog coa ON co.CollectionObjectID = coa.CollectionObjectCatalogID WHERE co.DerivedFromID IS NOT NULL");
+            idMapper.mapAllIds("select CollectionObjectCatalogID From collectionobject co Inner Join collectionobjectcatalog coa ON co.CollectionObjectID = coa.CollectionObjectCatalogID WHERE co.DerivedFromID IS NULL ORDER BY CollectionObjectCatalogID");
         }
 
         // meg commented out because it was blowing away map table created above
@@ -1182,7 +1185,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         String[] tablesToMoveOver;
         if (!doBrief)
         {
-            tablesToMoveOver = new String[] { "AccessionAgent", "Accession", "AccessionAuthorization",
+            tablesToMoveOver = new String[] { 
+                "AccessionAgent", "Accession", "AccessionAuthorization",
                 "Author", "BiologicalObjectAttributes", "Borrow", "BorrowAgent", "BorrowMaterial",
                 "BorrowReturnMaterial", "CollectingEvent", "CollectionObjectCitation", "Collector",
                 "Deaccession", "DeaccessionAgent", "DeterminationCitation", "ExchangeIn",
@@ -4210,7 +4214,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                             IdMapperIFace idMapper;
                             if (mappedName.equals("DerivedFromID"))
                             {
-                                idMapper = idMapperMgr.get("collectionobjectcatalog", "CollectionObjectCatalogID");
+                                idMapper = idMapperMgr.get("collectionobject", "CollectionObjectID");
 
                             } else
                             {
@@ -4549,14 +4553,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                             	Integer       oldId = (Integer)data;
                             	IdMapperIFace idMapper;
                             	
-                            	if (oldId == -989864370 || oldId == -990883735 || oldId == -375364793)
-                            	{
-                            	   int x = 0;
-                            	   x++;
-                            	}
                                 if (oldMappedColName.equals("BiologicalObjectID"))
                                 {
-                                    idMapper = idMapperMgr.get("collectionobjectcatalog", "CollectionObjectCatalogID");
+                                    idMapper = idMapperMgr.get("collectionobject", "CollectionObjectID");
 
                                 } else
                                 {
@@ -4860,7 +4859,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             String tableName = "collectionobject";
 
             Statement newStmt   = newDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            ResultSet rsLooping = newStmt.executeQuery("SELECT OldID, NewID FROM collectionobjectcatalog_CollectionObjectCatalogID ORDER BY OldID");
+            ResultSet rsLooping = newStmt.executeQuery("SELECT  OldID, NewID FROM collectionobjectcatalog_CollectionObjectCatalogID ORDER BY OldID");
 
             if (hasFrame)
             {
@@ -4909,7 +4908,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 ResultSet rs = stmt.executeQuery(catSQL);
                 if (!rs.next())
                 {
-                    //log.error("Couldn't find CO with old id["+rsLooping.getInt(1)+"]");
+                    log.error("Couldn't find CO with old  id["+rsLooping.getInt(1)+"] "+catSQL);
                     continue;
                 }
                 
@@ -6595,7 +6594,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             }
             rs.close();
 
-            rs = stmt.executeQuery("select locality.*, geography.* from locality,geography where locality.GeographyID = geography.GeographyID");
+            rs = stmt.executeQuery("select locality.*,geography.*  from locality LEFT JOIN geography on locality.GeographyID = geography.GeographyID ");
 
             StringBuilder colSQL    = new StringBuilder();
             StringBuilder valuesSQL = new StringBuilder();
@@ -6637,7 +6636,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     String value;
                     if (colName.equals("LocalityID"))
                     {
-                        Integer newId = locIdMapper.get(rs.getInt(i));
+                    	Integer oldId = rs.getInt(i);
+                        Integer newId = locIdMapper.get(oldId);
                         if (newId != null)
                         {
                             value = Integer.toString(newId);
@@ -6733,7 +6733,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         BasicSQLUtils.setIdentityInsertONCommandForSQLServer(newDBConn, "locality", BasicSQLUtils.myDestinationServerType);
         BasicSQLUtils.deleteAllRecordsFromTable("locality", BasicSQLUtils.myDestinationServerType);
 
-        String sql = "select locality.*, geography.* from locality,geography where locality.GeographyID = geography.GeographyID";
+        String sql = "select locality.*,geography.* FROM locality LEFT JOIN geography on locality.GeographyID = geography.GeographyID ";
 
         Hashtable<String, String> newToOldColMap = new Hashtable<String, String>();
         newToOldColMap.put("Visibility", "GroupPermittedToView");
