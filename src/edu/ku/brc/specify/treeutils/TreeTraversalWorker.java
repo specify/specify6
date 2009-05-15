@@ -113,7 +113,7 @@ public abstract class TreeTraversalWorker<T extends Treeable<T, D, I>, D extends
      * Updates members required for session flushing within transactions.
      * Workers that use transactions should call this method after each write - or periodically.
      */
-    protected void checkCache()
+    protected void checkCache() throws Exception
     {
         if (++writeCount == writesPerFlush)
         {
@@ -127,7 +127,7 @@ public abstract class TreeTraversalWorker<T extends Treeable<T, D, I>, D extends
       * 
       * flush too, just in case.
      */
-    protected void clearCache()
+    protected void clearCache() throws Exception
     {
         traversalSession.flush();
     	traversalSession.clear();
