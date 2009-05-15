@@ -170,29 +170,5 @@ public class NodeNumberer<T extends Treeable<T, D, I>, D extends TreeDefIface<T,
 				+ getNodeKeyFldName() + "=:keyArg";
 		updateNodeQuery = traversalSession.createQuery(updateSQL, true);
 	}
-
-	/* (non-Javadoc)
-	 * @see edu.ku.brc.specify.treeutils.TreeTraversalWorker#clearCache()
-	 */
-	@Override
-	protected void clearCache() throws Exception
-	{
-		super.clearCache(); 
-		/* Every time updateNodeQuery.executeUpdate() is executed, an entry
-		 * is added to the hibernate session.actionQueue.executions data structure.
-		 * For large trees, out of memory errors occur.
-		 * 
-		 * Attempts to combine multiple node updates into one updateNodeQuery.executeUpdate() failed.
-		 *
-		 * Even when a transaction was not opened, the executions structure was filled (besides, with hibernate,
-		 * session updates MUST be in a transaction or they do not actually get written to the db).
-		 * 
-		 * So, periodic commits are required. This means that an entire tree update cannot be rolled back, but
-		 * in theory, the tree was not in correct shape before the rebuild began, so this is not so serious an issue.
-		 */
-		traversalSession.commit();
-		traversalSession.beginTransaction();
-	}
-    
     
 }
