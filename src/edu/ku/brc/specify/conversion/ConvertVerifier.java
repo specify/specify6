@@ -19,6 +19,8 @@
 */
 package edu.ku.brc.specify.conversion;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -29,6 +31,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -43,10 +46,13 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.swing.JToggleButton;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -67,7 +73,9 @@ import edu.ku.brc.dbsupport.MySQLDMBSUserMgr;
 import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.ProgressFrame;
+import edu.ku.brc.ui.ToggleButtonChooserPanel;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.ToggleButtonChooserPanel.Type;
 import edu.ku.brc.util.Pair;
 
 public class ConvertVerifier
@@ -89,6 +97,9 @@ public class ConvertVerifier
     public static final long DO_CO_TAXON            =  64; 
     public static final long DO_CO_GEO              = 128; 
     public static final long DO_CO_ALL              = 1023; 
+    
+    protected String[] labels = {"None", "Preparations", "Collecting Events", "Localities", "Preparers", "Catalogers", "Determiners", "Taxon", "Geographies", "All"};
+    protected ToggleButtonChooserPanel<String> chkPanel;
     
     //public static final long DONT_ADD_ALL_ALTVIEWS  = 256; 
     //public static final long USE_ONLY_CREATION_MODE = 512;
@@ -254,11 +265,12 @@ public class ConvertVerifier
         out.println("<H3>Collection Objects</H3>");
         out.println("<table border=\"1\">");
         
-        coOptions = DO_CO_TAXON;//DO_CO_ALL;
+        coOptions = DO_CO_ALL;
         acOptions = DO_AC_ALL;
 
         if (coOptions > NO_OPTIONS)
         {
+            
             int i = 0;
             Statement stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             ResultSet rs = stmt.executeQuery("SELECT CatalogNumber FROM collectionobjectcatalog WHERE CollectionObjectTypeID = 10 ORDER BY CatalogNumber ASC");
@@ -827,7 +839,7 @@ public class ConvertVerifier
                                      final String oldSQLArg, 
                                      final String newSQLArg) throws SQLException
     {
-        boolean dbg = false;
+        boolean dbg = true;
         
         getResultSets(oldSQLArg, newSQLArg);
         if (dbg)
@@ -884,7 +896,7 @@ public class ConvertVerifier
                     newColInx++;
                     oldColInx++;
 
-                    if (dbg)
+                    if (dbg && false)
                     {
                         System.out.println("col       "+col+" / "+oldRsmd.getColumnCount());
                         System.out.println("newColInx "+newColInx);
@@ -1104,19 +1116,6 @@ public class ConvertVerifier
      */
     public static void main(String[] args)
     {
-        Pair<String, String> datePair = new Pair<String, String>();
-        BasicSQLUtils.getPartialDate(19800000, datePair, false);
-        System.out.println(datePair);
-        
-        BasicSQLUtils.getPartialDate(19801200, datePair, false);
-        System.out.println(datePair);
-        
-        BasicSQLUtils.getPartialDate(19801231, datePair, false);
-        System.out.println(datePair);
-        
-        BasicSQLUtils.getPartialDate(19590000, datePair, false);
-        System.out.println(datePair);
-        
         // Create Specify Application
         SwingUtilities.invokeLater(new Runnable() {
             public void run()
@@ -1299,11 +1298,77 @@ public class ConvertVerifier
             final JList     oldlist = new JList(availOldPairs);
             final JList     newList = new JList(availNewPairs);
             CellConstraints cc   = new CellConstraints();
-            PanelBuilder    pb   = new PanelBuilder(new FormLayout("f:p:g", "p,2px,f:p:g,4px,p,2px,f:p:g"));
+            PanelBuilder    pb   = new PanelBuilder(new FormLayout("f:p:g,10px,f:p:g", "p,2px,f:p:g,4px,p"));
             pb.addSeparator("Specify 5 Databases",     cc.xy(1,1));
             pb.add(UIHelper.createScrollPane(oldlist), cc.xy(1,3));
-            pb.addSeparator("Specify 6 Databases",     cc.xy(1,5));
-            pb.add(UIHelper.createScrollPane(newList), cc.xy(1,7));
+            
+            pb.addSeparator("Specify 6 Databases",     cc.xy(3,1));
+            pb.add(UIHelper.createScrollPane(newList), cc.xy(3,3));
+            
+            ArrayList<String> list = new ArrayList<String>(labels.length);
+            for (String s : labels)
+            {
+                list.add(s);
+            }
+            chkPanel = new ToggleButtonChooserPanel<String>(list, Type.Checkbox);
+            chkPanel.setUseScrollPane(true);
+            chkPanel.createUI();
+            pb.add(chkPanel, cc.xyw(1, 5, 3));
+            
+            ActionListener al = new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    boolean isSelected = chkPanel.getButtons().get(0).isSelected();
+                    int inx = chkPanel.getSelectedIndex();
+                    if (inx == 0)
+                    {
+                        Vector<JToggleButton> btns = chkPanel.getButtons();
+                        for (int i=1;i<btns.size();i++)
+                        {
+                            btns.get(i).setEnabled(!isSelected);
+                        }
+                    } 
+                }
+            };
+            
+            //chkPanel.getButtons().get(0).addActionListener(al);
+            //chkPanel.getButtons().get(chkPanel.getButtons().size()-1).addActionListener(al);
+
+            MouseAdapter ma = new MouseAdapter()
+            {
+                
+            }
+            
+            ChangeListener cl = new ChangeListener() {
+                @Override
+                public void stateChanged(ChangeEvent e)
+                {
+                    Vector<JToggleButton> btns = chkPanel.getButtons();
+                    if (e.getSource() == btns.get(0))
+                    {
+                        boolean isSelected = btns.get(0).isSelected();
+                        System.out.println(isSelected);
+                        
+                        for (int i=1;i<btns.size();i++)
+                        {
+                            btns.get(i).setEnabled(!isSelected);
+                        }
+                    } else if (e.getSource() == btns.get(btns.size()-1))
+                    {
+                        boolean isSelected = btns.get(0).isSelected();
+                        System.out.println(isSelected);
+                        
+                        for (int i=0;i<btns.size()-1;i++)
+                        {
+                            btns.get(i).setEnabled(!isSelected);
+                        }
+                    }
+                }
+            };
+            chkPanel.getButtons().get(0).addChangeListener(cl);
+            chkPanel.getButtons().get(chkPanel.getButtons().size()-1).addChangeListener(cl);
+            
             pb.setDefaultDialogBorder();
             
             final CustomDialog dlg = new CustomDialog(null, "Select a DB to Convert", true, pb.getPanel());
@@ -1340,8 +1405,8 @@ public class ConvertVerifier
             
             dlg.createUI();
             dlg.pack();
-            dlg.setSize(300, 800);
-            //dlg.pack();
+            //dlg.setSize(300, 800);
+            dlg.pack();
             dlg.setVisible(true);
             if (dlg.isCancelled())
             {

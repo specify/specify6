@@ -481,8 +481,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 "CatalogSeriesDefinition",
                 "CollectingEvent",
                 // "Collection",
-                "CollectionObject",
-                "CollectionObjectCatalog",
+                //"CollectionObject",
+                //"CollectionObjectCatalog",
                 "CollectionObjectCitation",
                 "CollectionObjectType",
                 "CollectionTaxonomyTypes",
@@ -556,6 +556,13 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         if (shouldCreateMapTables)
         {
             idMapper.mapAllIds("select CollectionObjectID from collectionobject Where collectionobject.DerivedFromID Is Null order by CollectionObjectID");
+        }
+
+        // Map all the Logical IDs
+        idMapper = idMapperMgr.addTableMapper("collectionobjectcatalog", "CollectionObjectCatalogID");
+        if (shouldCreateMapTables)
+        {
+            idMapper.mapAllIds("select CollectionObjectCatalogID From collectionobject co Inner Join collectionobjectcatalog coa ON co.CollectionObjectID = coa.CollectionObjectCatalogID WHERE co.DerivedFromID IS NOT NULL");
         }
 
         // meg commented out because it was blowing away map table created above
@@ -1252,9 +1259,11 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         //tableMaps.put("loan",                  createFieldNameMap(new String[] { "IsClosed", "Closed" }));
         //tableMaps.put("loanagent",             createFieldNameMap(new String[] { "AgentID", "AgentAddressID", "LoanAgentID", "LoanAgentsID" }));
         //tableMaps.put("loanpreparation",       createFieldNameMap(new String[] { "PreparationID", "PhysicalObjectID" }));
-        tableMaps.put("loanreturnpreparation", createFieldNameMap(new String[] {"DeaccessionPreparationID", "DeaccessionPhysicalObjectID", "LoanPreparationID",
-                                                                                "LoanPhysicalObjectID", "LoanReturnPreparationID", "LoanReturnPhysicalObjectID",
-                                                                                "ReturnedDate", oldLoanReturnPhysicalObj_Date_FieldName, "Quantity", "QuantityResolved" }));
+        tableMaps.put("loanreturnpreparation", createFieldNameMap(new String[] {"DeaccessionPreparationID", "DeaccessionPhysicalObjectID", 
+                                                                                "LoanPreparationID", "LoanPhysicalObjectID", 
+                                                                                "LoanReturnPreparationID", "LoanReturnPhysicalObjectID",
+                                                                                "ReturnedDate", oldLoanReturnPhysicalObj_Date_FieldName, 
+                                                                                "QuantityResolved", "Quantity", }));
         
         tableMaps.put("permit",                   createFieldNameMap(new String[] { "IssuedByID", "IssuerID", "IssuedToID", "IssueeID" }));
         tableMaps.put("projectcollectionobjects", createFieldNameMap(new String[] { "ProjectCollectionObjectID", "ProjectCollectionObjectsID" }));
@@ -3859,6 +3868,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             }
             
             String sqlStr = sql.toString();
+            log.debug(sql);
             
             Collection collection = null;
             
@@ -4200,7 +4210,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                             IdMapperIFace idMapper;
                             if (mappedName.equals("DerivedFromID"))
                             {
-                                idMapper = idMapperMgr.get("collectionobject", "CollectionObjectID");
+                                idMapper = idMapperMgr.get("collectionobjectcatalog", "CollectionObjectCatalogID");
 
                             } else
                             {
@@ -4213,7 +4223,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                                 data = idMapper.get((Integer)data);
                                 if (data == null)
                                 {
-                                    String msg = "The mapped value came back null for old record Id ["+oldId+"] for field ["+mappedName+"]";
+                                    String msg = "The mapped value came back null for old record Id ["+oldId+"] field ["+mappedName+"] => ["+data+"]";
                                     log.error(msg);
                                     tblWriter.logError(msg);
                                     isError = true;
@@ -4221,7 +4231,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                                 }
                             } else
                             {
-                                String msg = "The could find mapper collectionobject_"+mappedName+" for old record Id ["+oldId+"]";
+                                String msg = "The could find mapper collectionobject_"+mappedName+" for old record Id ["+oldId+"] field=["+data+"]";
                                 log.error(msg);
                                 tblWriter.logError(msg);
                                 isError = true;
@@ -4358,7 +4368,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             sql.append(buildSelectFieldList(names, "determination"));
             oldFieldNames.addAll(names);
 
-            sql.append(" FROM determination");
+            sql.append(" FROM determination ORDER BY DeterminationID");
 
             log.info(sql);
 
@@ -4536,9 +4546,23 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                             int idInx = newFieldName.lastIndexOf("ID");
                             if (idMapperMgr != null && idInx > -1)
                             {
-                            	Integer oldId = (Integer)data;
+                            	Integer       oldId = (Integer)data;
+                            	IdMapperIFace idMapper;
                             	
-                                IdMapperIFace idMapper = idMapperMgr.get(tableName, oldMappedColName);
+                            	if (oldId == -989864370 || oldId == -990883735 || oldId == -375364793)
+                            	{
+                            	   int x = 0;
+                            	   x++;
+                            	}
+                                if (oldMappedColName.equals("BiologicalObjectID"))
+                                {
+                                    idMapper = idMapperMgr.get("collectionobjectcatalog", "CollectionObjectCatalogID");
+
+                                } else
+                                {
+                                    idMapper = idMapperMgr.get(tableName, oldMappedColName);
+                                }
+                                
                                 if (idMapper != null)
                                 {
                                     data = idMapper.get(oldId);
@@ -4553,7 +4577,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                                 
                                 if (data == null)
                                 {
-                                	String msg = "The detemination with recordID["+rs.getInt(oldRecIDInx)+"] could find a mapping for record ID["+oldId+"] for Old Field["+oldMappedColName+"]";
+                                	String msg = "The determination with recordID["+rs.getInt(oldRecIDInx)+"] could not find a mapping for record ID["+oldId+"] for Old Field["+oldMappedColName+"]";
                                 	log.debug(msg);
                                 	tblWriter.logError(msg);
                                 	
@@ -4624,7 +4648,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 	
 	                } catch (SQLException e)
 	                {
-	                    log.error("Count: " + count);
+	                    log.error("Count:  " + count);
 	                    log.error("Exception on insert: " + str.toString());
 	                    e.printStackTrace();
 	                    log.error(e);
@@ -4805,10 +4829,11 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
             String fromClause = " From collectionobject Inner Join collectionobjectcatalog ON " +
                                 "collectionobject.CollectionObjectID = collectionobjectcatalog.CollectionObjectCatalogID " +
-                                "WHERE collectionobject.CollectionObjectTypeID = " + objTypeId;
+                                "WHERE (collectionobject.DerivedFromID IS NULL) AND collectionobjectcatalog.CollectionObjectCatalogID = ";
             sql.append(fromClause);
 
             log.info(sql);
+            String sqlStr = sql.toString();
 
             // List<String> newFieldNames = new ArrayList<String>();
             // getFieldNamesFromSchema(newDBConn, "collectionobject", newFieldNames);
@@ -4817,7 +4842,6 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             getFieldMetaDataFromSchema(newDBConn, "collectionobject", newFieldMetaData, BasicSQLUtils.myDestinationServerType);
 
             log.info("Number of Fields in New CollectionObject " + newFieldMetaData.size());
-            String sqlStr = sql.toString();
 
             Map<String, Integer> oldNameIndex = new Hashtable<String, Integer>();
             int inx = 1;
@@ -4835,27 +4859,27 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             }
             String tableName = "collectionobject";
 
-            log.info(sqlStr);
-            ResultSet rs = stmt.executeQuery(sqlStr);
+            Statement newStmt   = newDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            ResultSet rsLooping = newStmt.executeQuery("SELECT OldID, NewID FROM collectionobjectcatalog_CollectionObjectCatalogID ORDER BY OldID");
 
             if (hasFrame)
             {
-                if (rs.last())
+                if (rsLooping.last())
                 {
-                    setProcess(0, rs.getRow());
-                    rs.first();
+                    setProcess(0, rsLooping.getRow());
+                    rsLooping.first();
 
                 } else
                 {
-                    rs.close();
+                    rsLooping.close();
                     stmt.close();
                     return true;
                 }
             } else
             {
-                if (!rs.first())
+                if (!rsLooping.first())
                 {
-                    rs.close();
+                    rsLooping.close();
                     stmt.close();
                     return true;
                 }
@@ -4880,6 +4904,15 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             boolean skipRecord           = false;
             do
             {
+                String catSQL = sqlStr + rsLooping.getInt(1);
+                //log.debug(catSQL);
+                ResultSet rs = stmt.executeQuery(catSQL);
+                if (!rs.next())
+                {
+                    //log.error("Couldn't find CO with old id["+rsLooping.getInt(1)+"]");
+                    continue;
+                }
+                
                 datePair.first  = null;
                 datePair.second = null;
                 
@@ -4890,10 +4923,14 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                         + "Inner Join collectiontaxonomytypes ON collectionobject.CollectionObjectTypeID = collectiontaxonomytypes.BiologicalObjectTypeID "
                         + "where collectionobjectcatalog.CollectionObjectCatalogID = "
                         + rs.getInt(1);
-                // log.info(catIdTaxIdStr);
+                //log.info(catIdTaxIdStr);
                 
                 ResultSet rs2 = stmt2.executeQuery(catIdTaxIdStr);
-                rs2.first();
+                if (!rs2.next())
+                {
+                    log.info("QUERY failed to return results:\n"+catIdTaxIdStr+"\n");
+                    continue;
+                }
                 Integer catalogSeriesID = rs2.getInt(2);
                 Integer taxonomyTypeID  = rs2.getInt(3);
                 Integer newCatSeriesId  = collectionHash.get(catalogSeriesID + "_" + taxonomyTypeID);
@@ -5012,7 +5049,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                             msg = "Collection Object is being skipped because SubNumber is less than zero CatalogNumber["+ catalogNumber + "]";
                             log.error(msg);
                             tblWriter.logError(msg);
-                            showError(msg);
+                            //showError(msg);
                             break;
                         }
 
@@ -5049,7 +5086,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                         Object idObj = rs.getObject(1);
                         if (idObj != null)
                         {
-                            Integer newId = colObjAttrMapper.get(rs.getInt(1));
+                            Integer coId = rs.getInt(1);
+                            Integer newId = colObjAttrMapper.get(coId);
                             if (newId != null)
                             {
                                 str.append(getStrValue(newId));
@@ -5213,12 +5251,20 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     }
 
                     count++;
+                } else
+                {
+                    tblWriter.logError("Skipping - CatNo:"+catalogNumber);
                 }
                 // if (count > 10) break;
-            } while (rs.next());
+                
+                rs.close();
+                
+            } while (rsLooping.next());
 
-            log.info("CollectionObjectAttributes not mapped: " + colObjAttrsNotMapped);
-
+            msg = "CollectionObjectAttributes not mapped: " + colObjAttrsNotMapped;
+            log.info(msg);
+            tblWriter.logError(msg);
+            
             stmt2.close();
 
             if (hasFrame)
@@ -5230,7 +5276,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             }
             
             tblWriter.log("Processed CollectionObject " + count + " records.");
-            rs.close();
+            rsLooping.close();
+            newStmt.close();
             stmt.close();
             
         } catch (SQLException e)
@@ -5247,8 +5294,6 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         	 tblWriter.close();
         }
         BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer(newDBConn, "collectionobject", BasicSQLUtils.myDestinationServerType);
-        
-       
         
         return true;
     }
@@ -8146,10 +8191,10 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         if (shouldCreateMapTables)
         {
             log.info("Mapping Agent Ids");
-            agentIDMapper.mapAllIds();// .mapAllIds("select AgentID from agent order by AgentID");
+            agentIDMapper.mapAllIds("select AgentID from agent order by AgentID");
 
             log.info("Mapping Address Ids");
-            addrIDMapper.mapAllIds();// .mapAllIds("select AddressID from address order by ddressID");
+            addrIDMapper.mapAllIds("select AddressID from address order by AddressID");
         }
 
         // Just like in the conversion of the CollectionObjects we
