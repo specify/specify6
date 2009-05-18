@@ -32,6 +32,7 @@ import org.hibernate.LockMode;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.exception.LockAcquisitionException;
 
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
@@ -688,6 +689,11 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         String className = mergedParent.getClass().getName();
         TreeDefIface<T,D,I> def = mergedParent.getDefinition();
 
+        //quick attempt to see if there is any value in re-trying in case of lock acquisition exception 
+        int attempts = 5;
+        boolean success = false;
+        while (!success)
+        {
         try
         {
             String updateNodeNumbersQueryStr = "UPDATE " + className + " SET nodeNumber=nodeNumber+1 WHERE nodeNumber>:parentNN AND definition=:def";
@@ -719,14 +725,19 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
             setChildHCQuery.setParameter("parentID", parent.getTreeId());
             setChildHCQuery.executeUpdate();
             //session.clear();
-            
-        } catch (Exception ex)
+            success = true;
+        } catch (LockAcquisitionException ex)
         {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(HibernateTreeDataServiceImpl.class, ex);
-            ex.printStackTrace();
+            if (attempts == 0)
+            {
+            	throw ex;
+            }
+            attempts--;
+        	//edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(HibernateTreeDataServiceImpl.class, ex);
+            //ex.printStackTrace();
         }
-
+        }
         return true;
     }
     
