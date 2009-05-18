@@ -690,7 +690,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         TreeDefIface<T,D,I> def = mergedParent.getDefinition();
 
         //quick attempt to see if there is any value in re-trying in case of lock acquisition exception 
-        int attempts = 5;
+        int attempts = 20;
         boolean success = false;
         while (!success)
         {
