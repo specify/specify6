@@ -51,6 +51,7 @@ public class SpTaskSemaphore extends DataModelObjBase implements java.io.Seriali
     protected SpecifyUser       owner; 
     protected Discipline        discipline;
     protected Collection        collection;
+    protected Integer			usageCount;
 
     protected Boolean           isLocked;
     protected Timestamp         lockedTime;
@@ -83,7 +84,7 @@ public class SpTaskSemaphore extends DataModelObjBase implements java.io.Seriali
         lockedTime      = null;
         discipline      = null;
         collection      = null;
-        
+        usageCount		= null;
     }
     // End Initializer
 
@@ -140,7 +141,25 @@ public class SpTaskSemaphore extends DataModelObjBase implements java.io.Seriali
         this.taskName = taskName;
     }
 
+    
     /**
+	 * @return the usageCount
+	 */
+    @Column(name = "UsageCount", unique = false, nullable = true, insertable = true, updatable = true)
+	public Integer getUsageCount()
+	{
+		return usageCount;
+	}
+
+	/**
+	 * @param usageCount the usageCount to set
+	 */
+	public void setUsageCount(Integer usageCount)
+	{
+		this.usageCount = usageCount;
+	}
+
+	/**
      * @return the isLocked
      */
     @Column(name = "IsLocked", unique = false, nullable = true, insertable = true, updatable = true)
