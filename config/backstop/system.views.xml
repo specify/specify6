@@ -443,9 +443,9 @@
             
             <desc><![CDATA[Discipline Data Entry Form]]></desc>
             <columnDef>100px,2px,225px,500px,15px,p:g</columnDef>
-            <columnDef os="lnx">115px,2px,200px,15px,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,200px,600px,15px,p:g</columnDef>
             <columnDef os="mac">130px,2px,300px,600px,15px,p:g</columnDef>
-            <columnDef os="exp">100px,2px,200px,400px,15px,p:g,p</columnDef>
+            <columnDef os="exp">100px,2px,150px:g,200px:g,15px,p:g,p</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>            
             
             <rows>
@@ -476,9 +476,9 @@
             
             <desc><![CDATA[Discipline Data Entry Form]]></desc>
             <columnDef>100px,2px,225px,500px,p:g</columnDef>
-            <columnDef os="lnx">115px,2px,200px,5px,55px,2px,200px,5px,56px,2px,200px,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,200px,600px,p:g</columnDef>
             <columnDef os="mac">130px,2px,300px,600px,p:g</columnDef>
-            <columnDef os="exp">100px,2px,200px,5px,55px,2px,200px,5px,56px,2px,200px,p:g</columnDef>
+            <columnDef os="exp">100px,2px,200px:g,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>            
             
             <rows>
@@ -592,72 +592,72 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Collection Data Entry Form]]></desc>
-            <columnDef>p,2px,150px,546px,15px,p:g</columnDef>
-            <columnDef os="lnx">115px,2px,800px,15px,p:g</columnDef>
-            <columnDef os="mac">p,2px,300px,565px,15px,p:g</columnDef>
-            <columnDef os="exp">p,2px,200px:g,5px,100px,2px,300px,p,p,p,15px,p:g</columnDef>
+            <columnDef>100px,2px,225px,15px,485px,15px,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,200px,15px,585px,15px,p:g</columnDef>
+            <columnDef os="mac">130px,2px,300px,15px,585px,15px,p:g</columnDef>
+            <columnDef os="exp">p,2px,200px:g,15px,200px:g,15px,p:g,p</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>            
             
             <rows>
                 <row>
                     <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="discipline" uitype="text" readonly="true" colspan="2"/>
+                    <cell type="field" id="3" name="discipline" uitype="text" readonly="true" colspan="3"/>
                 </row>
                 <row>
                     <cell type="label" label="Numbering Scheme:" initialize="align=right;"/>
-                    <cell type="field" id="4" name="catalogNumberingSchemeLbl" uitype="text" readonly="true" ignore="true" colspan="2"/>
+                    <cell type="field" id="4" name="catalogNumberingSchemeLbl" uitype="text" readonly="true" ignore="true" colspan="3"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="collectionName" uitype="text" isrequired="true" colspan="2"/> 
-                    <cell type="field" id="6" name="isEmbeddedCollectingEvent" label="Add Collecting Event Automatically" uitype="checkbox"/> 
+                    <cell type="field" id="1" name="collectionName" uitype="text" isrequired="true" colspan="3"/> 
                 </row>
                 <row>
                     <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="code" uitype="text" isrequired="false"/>
+                    <cell type="field" id="6" name="isEmbeddedCollectingEvent" label="Add Collecting Event Automatically" uitype="checkbox"/> 
                 </row>
                 <row>
                     <cell type="label" labelfor="5"/>
-                    <cell type="field" id="5" name="description" uitype="textarea" colspan="2"/>
+                    <cell type="field" id="5" name="description" uitype="textarea" colspan="3"/>
                 </row>
                 <row>
-                    <cell type="separator" label="ABCD Schema Fields (Optional)" colspan="5"/>
+                    <cell type="separator" label="ABCD Schema Fields (Optional)" colspan="6"/>
                 </row>
                  <row>
                     <cell type="label" labelfor="8"/>
-                    <cell type="field" id="8" name="kingdomCoverage" uitype="text" isrequired="false" colspan="2"/>
+                    <cell type="field" id="8" name="kingdomCoverage" uitype="text" isrequired="false" colspan="3"/>
                 </row>
                  <row>
                     <cell type="label" labelfor="9"/>
-                    <cell type="field" id="9" name="primaryFocus" uitype="text" isrequired="false" colspan="2"/>
+                    <cell type="field" id="9" name="primaryFocus" uitype="text" isrequired="false" colspan="3"/>
                 </row>
                  <row>
                     <cell type="label" labelfor="10"/>
-                    <cell type="field" id="10" name="collectionType" uitype="text" isrequired="false" colspan="2"/>
+                    <cell type="field" id="10" name="collectionType" uitype="text" isrequired="false" colspan="3"/>
                 </row>
                  <row>
                     <cell type="label" labelfor="11"/>
-                    <cell type="field" id="11" name="primaryPurpose" uitype="text" isrequired="false" colspan="2"/>
+                    <cell type="field" id="11" name="primaryPurpose" uitype="text" isrequired="false" colspan="3"/>
                 </row>
                  <row>
                     <cell type="label" labelfor="12"/>
-                    <cell type="field" id="12" name="preservationMethodType" uitype="text" isrequired="false" colspan="2"/>
+                    <cell type="field" id="12" name="preservationMethodType" uitype="text" isrequired="false" colspan="3"/>
                 </row>
                  <row>
                     <cell type="label" labelfor="13"/>
-                    <cell type="field" id="13" name="developmentStatus" uitype="text" isrequired="false" colspan="2"/>
+                    <cell type="field" id="13" name="developmentStatus" uitype="text" isrequired="false" colspan="3"/>
                 </row>
                  <row>
                     <cell type="label" labelfor="14"/>
-                    <cell type="field" id="14" name="institutionType" uitype="text" isrequired="false" colspan="2"/>
+                    <cell type="field" id="14" name="institutionType" uitype="text" isrequired="false" colspan="3"/>
                 </row>
                  <row>
                     <cell type="label" labelfor="15"/>
-                    <cell type="field" id="15" name="scope" uitype="text" isrequired="false" colspan="2"/>
+                    <cell type="field" id="15" name="scope" uitype="text" isrequired="false" colspan="3"/>
                 </row>
                  <row>
                     <cell type="label" labelfor="16"/>
-                    <cell type="field" id="16" name="dbContentVersion" uitype="text" isrequired="false" colspan="2"/>
+                    <cell type="field" id="16" name="dbContentVersion" uitype="text" isrequired="false" colspan="3"/>
                 </row>                
             </rows>
         </viewdef>
@@ -670,72 +670,72 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Collection Data Entry Form]]></desc>
-            <columnDef>p,2px,150px,531px,15px,p:g</columnDef>
-            <columnDef os="lnx">115px,2px,800px,15px,p:g</columnDef>
-            <columnDef os="mac">p,2px,300px,550px,15px,p:g</columnDef>
-            <columnDef os="exp">p,2px,200px:g,5px,100px,2px,300px,p,p,p,15px,p:g</columnDef>
+            <columnDef>p,2px,150px,15px,516px,15px,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,200,15px,570px,15px,p:g</columnDef>
+            <columnDef os="mac">p,2px,300px,15px,535px,15px,p:g</columnDef>
+            <columnDef os="exp">p,2px,200px:g,15px,200px:g,15px</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>            
             
             <rows>
                 <row>
                     <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="discipline" uitype="text" readonly="true" colspan="2"/>
+                    <cell type="field" id="3" name="discipline" uitype="text" readonly="true" colspan="3"/>
                 </row>
                 <row>
                     <cell type="label" label="Numbering Scheme:" initialize="align=right;"/>
-                    <cell type="field" id="4" name="catalogNumberingSchemeLbl" uitype="text" readonly="true" ignore="true" colspan="2"/>
+                    <cell type="field" id="4" name="catalogNumberingSchemeLbl" uitype="text" readonly="true" ignore="true" colspan="3"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="collectionName" uitype="text" isrequired="true" colspan="2"/> 
-                    <cell type="field" id="6" name="isEmbeddedCollectingEvent" label="Add Collecting Event Automatically" uitype="checkbox"/> 
+                    <cell type="field" id="1" name="collectionName" uitype="text" isrequired="true" colspan="3"/> 
                 </row>
                 <row>
                     <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="code" uitype="text" isrequired="false"/>
+                    <cell type="field" id="6" name="isEmbeddedCollectingEvent" label="Add Collecting Event Automatically" uitype="checkbox"/> 
                 </row>
                 <row>
                     <cell type="label" labelfor="5"/>
-                    <cell type="field" id="5" name="description" uitype="textareabrief" rows="2" colspan="2"/>
+                    <cell type="field" id="5" name="description" uitype="textareabrief" rows="2" colspan="3"/>
                 </row>
                 <row>
-                    <cell type="separator" label="ABCD Schema Fields (Optional)" colspan="5"/>
+                    <cell type="separator" label="ABCD Schema Fields (Optional)" colspan="6"/>
                 </row>
                  <row>
                     <cell type="label" labelfor="8"/>
-                    <cell type="field" id="8" name="kingdomCoverage" uitype="text" isrequired="false" colspan="2"/>
+                    <cell type="field" id="8" name="kingdomCoverage" uitype="text" isrequired="false" colspan="3"/>
                 </row>
                  <row>
                     <cell type="label" labelfor="9"/>
-                    <cell type="field" id="9" name="primaryFocus" uitype="text" isrequired="false" colspan="2"/>
+                    <cell type="field" id="9" name="primaryFocus" uitype="text" isrequired="false" colspan="3"/>
                 </row>
                  <row>
                     <cell type="label" labelfor="10"/>
-                    <cell type="field" id="10" name="collectionType" uitype="text" isrequired="false" colspan="2"/>
+                    <cell type="field" id="10" name="collectionType" uitype="text" isrequired="false" colspan="3"/>
                 </row>
                  <row>
                     <cell type="label" labelfor="11"/>
-                    <cell type="field" id="11" name="primaryPurpose" uitype="text" isrequired="false" colspan="2"/>
+                    <cell type="field" id="11" name="primaryPurpose" uitype="text" isrequired="false" colspan="3"/>
                 </row>
                  <row>
                     <cell type="label" labelfor="12"/>
-                    <cell type="field" id="12" name="preservationMethodType" uitype="text" isrequired="false" colspan="2"/>
+                    <cell type="field" id="12" name="preservationMethodType" uitype="text" isrequired="false" colspan="3"/>
                 </row>
                  <row>
                     <cell type="label" labelfor="13"/>
-                    <cell type="field" id="13" name="developmentStatus" uitype="text" isrequired="false" colspan="2"/>
+                    <cell type="field" id="13" name="developmentStatus" uitype="text" isrequired="false" colspan="3"/>
                 </row>
                  <row>
                     <cell type="label" labelfor="14"/>
-                    <cell type="field" id="14" name="institutionType" uitype="text" isrequired="false" colspan="2"/>
+                    <cell type="field" id="14" name="institutionType" uitype="text" isrequired="false" colspan="3"/>
                 </row>
                  <row>
                     <cell type="label" labelfor="15"/>
-                    <cell type="field" id="15" name="scope" uitype="text" isrequired="false" colspan="2"/>
+                    <cell type="field" id="15" name="scope" uitype="text" isrequired="false" colspan="3"/>
                 </row>
                  <row>
                     <cell type="label" labelfor="16"/>
-                    <cell type="field" id="16" name="dbContentVersion" uitype="text" isrequired="false" colspan="2"/>
+                    <cell type="field" id="16" name="dbContentVersion" uitype="text" isrequired="false" colspan="3"/>
                 </row>                
             </rows>
         </viewdef>
@@ -751,9 +751,9 @@
             <enableRules/>
             
             <columnDef>100px,2px,361px,5px,70px,2px,80px,5px,80px,2px,120px,15px,p:g</columnDef>
-            <columnDef os="lnx">115px,2px,347px,5px,100px,2px,80px,5px,80px,2px,120px,15px,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,377px,5px,100px,2px,80px,5px,100px,2px,129px,15px,p:g</columnDef>
             <columnDef os="mac">130px,2px,396px,5px,100px,2px,120px,5px,120px,2px,150px,15px,p:g</columnDef>
-            <columnDef os="exp">100px,2px,361px,5px,70px,2px,80px,5px,80px,2px,120px,15px,p:g</columnDef>
+            <columnDef os="exp">100px,2px,250px:g,5px,70px,2px,50px,5px,p,2px,120px:g,15px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             
             <rows>
@@ -801,9 +801,9 @@
             <enableRules/>
             
             <columnDef>100px,2px,361px,5px,70px,2px,80px,5px,80px,2px,120px,p:g</columnDef>
-            <columnDef os="lnx">115px,2px,347px,5px,100px,2px,80px,5px,80px,2px,120px,p:g</columnDef>
+            <columnDef os="lnx">115px,2px,377px,5px,100px,2px,80px,5px,100px,2px,129px,p:g</columnDef>
             <columnDef os="mac">130px,2px,396px,5px,100px,2px,120px,5px,120px,2px,150px,p:g</columnDef>
-            <columnDef os="exp">100px,2px,361px,5px,70px,2px,80px,5px,80px,2px,120px,p:g</columnDef>
+            <columnDef os="exp">100px,2px,250px:g,5px,70px,2px,50px,5px,p,2px,120px:g,0px</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             
             <rows>
