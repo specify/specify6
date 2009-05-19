@@ -93,7 +93,7 @@ public class UIFieldFormatterSampler implements SQLExecutionListener
     			if (obj == null || !formatter.isValid(obj.toString()))
     			{
     				throw new UIFieldFormatterInvalidatesExistingValueException(
-    						"Format invalidates existing field value.", formatter.toPattern(), obj.toString());
+    						"Format invalidates existing field value.", formatter.toPattern(), obj == null ? "NULL" : obj.toString());
     			}
     		}
     		return true;
