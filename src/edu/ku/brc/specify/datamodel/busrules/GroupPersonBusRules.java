@@ -67,26 +67,34 @@ public class GroupPersonBusRules extends BaseBusRules
             parentDataObj instanceof Agent &&
             dataObj instanceof GroupPerson)
         {
-            Agent       agent       = (Agent)parentDataObj;
-            GroupPerson groupPerson = (GroupPerson)dataObj;
+            Agent       agentContainer  = (Agent)parentDataObj;
+            GroupPerson groupPerson     = (GroupPerson)dataObj;
+            Agent       agentBeingAdded = groupPerson.getMember();
             
-            if (agent.getId() != null && 
-                groupPerson.getMember() != null && 
-                groupPerson.getMember().getId() != null &&
-                agent.getId().equals(groupPerson.getMember().getId()))
+            if (agentContainer.getId() != null && 
+                agentBeingAdded != null && 
+                agentBeingAdded.getId() != null &&
+                agentContainer.getId().equals(agentBeingAdded.getId()))
             {
                 reasonList.add(String.format(getResourceString("GP_SELF_GRPPER"), groupPerson.getIdentityTitle()));
                 return STATUS.Error;
             }
             
-            for (GroupPerson gp : agent.getGroups())
+            int cnt = 0;
+            for (GroupPerson gp : agentContainer.getGroups())
             {
-               if (gp.getMember() != null && 
-                   groupPerson.getMember() != null && 
-                   gp.getMember().getAgentId().equals(groupPerson.getMember().getAgentId())) 
+                Agent agentInGroup = gp.getMember();
+                
+               if (agentInGroup != null && 
+                   agentBeingAdded != null && 
+                   gp.getMember().getAgentId().equals(agentBeingAdded.getAgentId())) 
                {
-                   reasonList.add(String.format(getResourceString("GP_DUPLICATE_GRPPER"), groupPerson.getIdentityTitle()));
-                   return STATUS.Error;
+                   if (cnt == 1)
+                   {
+                       reasonList.add(String.format(getResourceString("GP_DUPLICATE_GRPPER"), groupPerson.getIdentityTitle()));
+                       return STATUS.Error;
+                   }
+                   cnt++;
                }
             }
         }
