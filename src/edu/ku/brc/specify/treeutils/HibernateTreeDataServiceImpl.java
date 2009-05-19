@@ -642,13 +642,23 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
      */
     public synchronized boolean updateNodeNumbersAfterNodeEdit(final T node, final DataProviderSessionIFace session) throws Exception
     {
-    	//basically just makes sure NodeNumbers are refreshed from the db
-    	QueryIFace q = session.createQuery("select nodeNumber, highestChildNodeNumber from " + node.getClass().getSimpleName().toLowerCase() + 
+    	if (BaseTreeBusRules.ALLOW_CONCURRENT_FORM_ACCESS)
+    	{
+    		/*XXX.
+    		 * (this seems to work, but node has actually already been saved...apparently the commit or
+    		 * a merge saves these changes...
+    		 * 
+    		 * Should be moved to a point before the save occurs.
+        	 */
+
+    		//basically just makes sure NodeNumbers are refreshed from the db
+    		QueryIFace q = session.createQuery("select nodeNumber, highestChildNodeNumber from " + node.getClass().getSimpleName().toLowerCase() + 
     			" where " + node.getClass().getSimpleName() + "ID = " + node.getTreeId(), true);
-    	Object resObj = q.uniqueResult();
-    	Object[] result = (Object[] )resObj;
-    	node.setNodeNumber((Integer )result[0]);
-    	node.setHighestChildNodeNumber((Integer )result[1]);
+    		Object resObj = q.uniqueResult();
+    		Object[] result = (Object[] )resObj;
+    		node.setNodeNumber((Integer )result[0]);
+    		node.setHighestChildNodeNumber((Integer )result[1]);
+    	}
     	return true;		
     }
     
@@ -689,7 +699,8 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         TreeDefIface<T, D, I> def = mergedParent.getDefinition();
 
 		//Now update the node numbers.
-        //This assumes that the caller has locked the "TreeFormSave" semaphore for the tree.
+        //This assumes that the if BaseTreeBusRules.ALLOW_CONCURRENT_FORM_ACCESS is true, 
+        //then caller has locked the "TreeFormSave" semaphore for the tree.
         String updateNodeNumbersQueryStr = "UPDATE "
 				+ className
 				+ " SET nodeNumber=nodeNumber+1 WHERE nodeNumber>:parentNN AND definition=:def";
@@ -713,31 +724,37 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
 		// now set the initial values of the nodeNumber and
 		// highestChildNodeNumber fields for the new node
 		
-		int newChildNN = parentNN + 1;
-    	newNode.setNodeNumber(newChildNN);
-    	newNode.setHighestChildNodeNumber(newChildNN);
+		 int newChildNN = parentNN + 1;
+		
+		/*Begin flakey code block...
+		 * (this seems to work, but newNode has actually already been saved...apparently the commit or
+		 * a merge saves these changes...
+    	 *newNode.setNodeNumber(newChildNN);
+    	 *newNode.setHighestChildNodeNumber(newChildNN);
+    	 *...end flakey code block
+    	 */
+		
+    	//use queries instead of flakey code
     	
-    	//not necessary to use queries
-    	
-//		String setChildNNQueryStr = "UPDATE "
-//				+ className
-//				+ " SET nodeNumber=:newChildNN WHERE nodeNumber IS NULL AND parentID=:parentID";
-//		QueryIFace setChildNNQuery = session.createQuery(setChildNNQueryStr,
-//				false);
-//		setChildNNQuery.setParameter("newChildNN", newChildNN);
-//		setChildNNQuery.setParameter("parentID", parent.getTreeId());
-//		setChildNNQuery.executeUpdate();
-//		// session.clear();
-//
-//		String setChildHCQueryStr = "UPDATE "
-//				+ className
-//				+ " SET highestChildNodeNumber=:newChildNN WHERE highestChildNodeNumber IS NULL AND parentID=:parentID";
-//		QueryIFace setChildHCQuery = session.createQuery(setChildHCQueryStr,
-//				false);
-//		setChildHCQuery.setParameter("newChildNN", newChildNN);
-//		setChildHCQuery.setParameter("parentID", parent.getTreeId());
-//		setChildHCQuery.executeUpdate();
-//		// session.clear();
+		String setChildNNQueryStr = "UPDATE "
+				+ className
+				+ " SET nodeNumber=:newChildNN WHERE nodeNumber IS NULL AND parentID=:parentID";
+		QueryIFace setChildNNQuery = session.createQuery(setChildNNQueryStr,
+				false);
+		setChildNNQuery.setParameter("newChildNN", newChildNN);
+		setChildNNQuery.setParameter("parentID", parent.getTreeId());
+		setChildNNQuery.executeUpdate();
+		// session.clear();
+
+		String setChildHCQueryStr = "UPDATE "
+				+ className
+				+ " SET highestChildNodeNumber=:newChildNN WHERE highestChildNodeNumber IS NULL AND parentID=:parentID";
+		QueryIFace setChildHCQuery = session.createQuery(setChildHCQueryStr,
+				false);
+		setChildHCQuery.setParameter("newChildNN", newChildNN);
+		setChildHCQuery.setParameter("parentID", parent.getTreeId());
+		setChildHCQuery.executeUpdate();
+		// session.clear();
 
 		return true;
     }

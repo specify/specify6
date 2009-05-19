@@ -86,7 +86,9 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
                                        I extends TreeDefItemIface<T,D,I>>
                                        extends BaseBusRules
 {
-    private static final Logger log = Logger.getLogger(BaseTreeBusRules.class);
+    public static final boolean ALLOW_CONCURRENT_FORM_ACCESS = false;
+	
+	private static final Logger log = Logger.getLogger(BaseTreeBusRules.class);
     
     private boolean processedRules = false;
     
@@ -1031,7 +1033,14 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
 		{
 			return false;
 		}
-		return getRequiredLocks();
+		if (BaseTreeBusRules.ALLOW_CONCURRENT_FORM_ACCESS)
+		{
+			return getRequiredLocks();
+		}
+		else
+		{
+			return true;
+		}
 	}
 
 	/* (non-Javadoc)
@@ -1104,7 +1113,10 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
 			}
 		} finally
 		{
-			this.freeLocks();
+			if (BaseTreeBusRules.ALLOW_CONCURRENT_FORM_ACCESS)
+			{
+				this.freeLocks();
+			}
 		}
     }
 
@@ -1392,7 +1404,7 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
 	public boolean isOkToSave(Object dataObj, DataProviderSessionIFace session)
 	{
 		boolean result = super.isOkToSave(dataObj, session);
-		if (result)
+		if (result && BaseTreeBusRules.ALLOW_CONCURRENT_FORM_ACCESS)
 		{
 			if (!getRequiredLocks())
 			{
@@ -1403,29 +1415,50 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
 		return result;
 	}
 
+	/**
+	 * @return true if locks were aquired.
+	 * 
+	 * Locks necessary tables prior to a save.
+	 * Only used when ALLOW_CONCURRENT_FORM_ACCESS is true.
+	 */
 	protected boolean getRequiredLocks()
 	{
 		TaskSemaphoreMgr.USER_ACTION result = TaskSemaphoreMgr.lock(getFormSaveLockTitle(), getFormSaveLockName(), "save", TaskSemaphoreMgr.SCOPE.Discipline, false, null);
 		return result == TaskSemaphoreMgr.USER_ACTION.OK;
 	}
 	
+	/**
+	 * @return the class for the generic parameter <T>
+	 */
 	protected abstract Class<?> getNodeClass();
 	
+	/**
+	 * @return the title for the form save lock.
+	 */
 	protected String getFormSaveLockTitle()
 	{
 		return String.format(UIRegistry.getResourceString("BaseTreeBusRules.SaveLockTitle"), getNodeClass().getSimpleName());
 	}
 	
+	/**
+	 * @return the name for the form save lock.
+	 */
 	protected String getFormSaveLockName()
 	{
 		return getNodeClass().getSimpleName() + "Save";
 	}
 	
+	/**
+	 * @return localized message to display in case of failure to lock for saving.
+	 */
 	protected String getUnableToLockMsg()
 	{
-		return "patience";
+		return UIRegistry.getResourceString("BaseTreeBusRules.UnableToLockForSave");
 	}
 	
+	/**
+	 * Free locks acquired for saving.
+	 */
 	protected void freeLocks()
 	{
 		TaskSemaphoreMgr.unlock(getFormSaveLockTitle(), getFormSaveLockName(), TaskSemaphoreMgr.SCOPE.Discipline);
@@ -1444,7 +1477,10 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
 		{
 			return false;
 		}
-		freeLocks();
+		if (BaseTreeBusRules.ALLOW_CONCURRENT_FORM_ACCESS)
+		{
+			freeLocks();
+		}
 		return true;
 	}
 
@@ -1458,7 +1494,10 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
 			DataProviderSessionIFace session)
 	{
 		super.afterSaveFailure(dataObj, session);
-		freeLocks();
+		if (BaseTreeBusRules.ALLOW_CONCURRENT_FORM_ACCESS)
+		{
+			freeLocks();
+		}
 	}
 
 	/* (non-Javadoc)

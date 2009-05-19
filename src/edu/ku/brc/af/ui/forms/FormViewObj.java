@@ -2484,12 +2484,7 @@ public class FormViewObj implements Viewable,
                 // XXX FINAL RELEASE - Need to walk the form tree and set them manually
                 //FormHelper.updateLastEdittedInfo(dataObjArg);
                 traverseToSetModified(getMVParent());
-                
-//                if (businessRules != null)
-//                {
-//                	busRuleInError = businessRules.beforeBeginTransaction();
-//                }
-                
+                                
                 session.beginTransaction();
                 
                 if (numTries == 1 && deletedItems != null)
