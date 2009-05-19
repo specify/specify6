@@ -76,6 +76,14 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
     }
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.busrules.BaseTreeBusRules#getNodeClass()
+     */
+    protected Class<?> getNodeClass()
+    {
+    	return Taxon.class;
+    }
+    
+    /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BaseBusRules#initialize(edu.ku.brc.ui.forms.Viewable)
      */
     @Override
@@ -214,7 +222,7 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
      * 
      * @param taxon the {@link Taxon} being saved
      */
-    protected void beforeSaveTaxon(Taxon taxon, @SuppressWarnings("unused") DataProviderSessionIFace session)
+    protected void beforeSaveTaxon(Taxon taxon, DataProviderSessionIFace session)
     {
         // if this node is "accepted" then make sure it doesn't point to an accepted parent
         if (taxon.getIsAccepted() == null || taxon.getIsAccepted().booleanValue() == true)

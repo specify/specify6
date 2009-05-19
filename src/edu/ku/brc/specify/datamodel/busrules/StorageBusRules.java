@@ -98,7 +98,7 @@ public class StorageBusRules extends BaseTreeBusRules<Storage, StorageTreeDef, S
      * 
      * @param stor the {@link Storage} being saved
      */
-    protected void beforeSaveStorage(@SuppressWarnings("unused") Storage stor)
+    protected void beforeSaveStorage(Storage stor)
     {
         // nothing specific to Storage
     }
@@ -172,4 +172,15 @@ public class StorageBusRules extends BaseTreeBusRules<Storage, StorageTreeDef, S
         
         TreeTaskMgr.checkLocks();
     }
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.datamodel.busrules.BaseTreeBusRules#getNodeClass()
+	 */
+	@Override
+	protected Class<?> getNodeClass()
+	{
+		return Storage.class;
+	}
+    
+    
 }

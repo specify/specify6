@@ -2485,6 +2485,11 @@ public class FormViewObj implements Viewable,
                 //FormHelper.updateLastEdittedInfo(dataObjArg);
                 traverseToSetModified(getMVParent());
                 
+//                if (businessRules != null)
+//                {
+//                	busRuleInError = businessRules.beforeBeginTransaction();
+//                }
+                
                 session.beginTransaction();
                 
                 if (numTries == 1 && deletedItems != null)
@@ -2786,6 +2791,10 @@ public class FormViewObj implements Viewable,
             //log.debug("Form     Val: "+(formValidator != null && formValidator.hasChanged()));
             //log.debug("mvParent Val: "+(mvParent != null && mvParent.isTopLevel() && mvParent.hasChanged()));
             return true;
+        }
+        if (businessRules != null)
+        {
+            businessRules.afterSaveFailure(dataObj, session);
         }
         
         return false;

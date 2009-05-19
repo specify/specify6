@@ -187,6 +187,17 @@ public interface BusinessRulesIFace
     public abstract boolean afterSaveCommit(Object dataObj, DataProviderSessionIFace session);
     
     /**
+     * Called AFTER a failed attempt to save the data object.  This can be called on newly created objects or existing data
+     * objects that have been edited. 
+     * 
+     * @param dataObj the object that was not saved
+     * @param session the data provider session (it might be null)
+     * 
+     */
+    public abstract void afterSaveFailure(Object dataObj, DataProviderSessionIFace session);
+    
+    
+    /**
      * Called BEFORE deleting an object from the DB.  This is called before the object is even
      * slated for deletion within the DB access code (e.g. Hibernate, etc).
      * 

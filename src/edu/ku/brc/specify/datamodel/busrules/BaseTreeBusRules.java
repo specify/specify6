@@ -61,6 +61,7 @@ import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemStandardEntry;
 import edu.ku.brc.specify.datamodel.Treeable;
+import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
 import edu.ku.brc.specify.treeutils.TreeDataService;
 import edu.ku.brc.specify.treeutils.TreeDataServiceFactory;
 import edu.ku.brc.specify.treeutils.TreeHelper;
@@ -1012,60 +1013,99 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
         return success;
     }
     
+    
+    
     /* (non-Javadoc)
+	 * @see edu.ku.brc.af.ui.forms.BaseBusRules#beforeDeleteCommit(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+	 */
+    /*
+     * NOTE: If this method is overridden, freeLocks() MUST be called when result is false
+     * !!
+     * 
+     */
+	@Override
+	public boolean beforeDeleteCommit(Object dataObj,
+			DataProviderSessionIFace session) throws Exception
+	{
+		if (!super.beforeDeleteCommit(dataObj, session))
+		{
+			return false;
+		}
+		return getRequiredLocks();
+	}
+
+	/* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BaseBusRules#afterDeleteCommit(java.lang.Object)
      */
     @SuppressWarnings("unchecked")
     @Override
     public void afterDeleteCommit(Object dataObj)
     {
-        if (dataObj instanceof Treeable)
-        {
-            // NOTE: the instanceof check can't check against 'T' since T isn't a class
-            //       this has a SMALL amount of risk to it
-            T node = (T)dataObj;
+        try
+		{
+			if (dataObj instanceof Treeable)
+			{
+				// NOTE: the instanceof check can't check against 'T' since T
+				// isn't a class
+				// this has a SMALL amount of risk to it
+				T node = (T) dataObj;
 
-            if (!node.getDefinition().getNodeNumbersAreUpToDate() && !node.getDefinition().isUploadInProgress())
-            {
-                //Scary. If nodes are not up to date, tree rules may not work.
-                //The application should prevent edits to items/trees whose tree numbers are not up to date except while uploading
-                //workbenches.
-                throw new RuntimeException(node.getDefinition().getName() + " has out of date node numbers.");
-            }
+				if (!node.getDefinition().getNodeNumbersAreUpToDate()
+						&& !node.getDefinition().isUploadInProgress())
+				{
+					// Scary. If nodes are not up to date, tree rules may not
+					// work.
+					// The application should prevent edits to items/trees whose
+					// tree numbers are not up to date except while uploading
+					// workbenches.
+					throw new RuntimeException(node.getDefinition().getName()
+							+ " has out of date node numbers.");
+				}
 
-            if (node.getDefinition().getDoNodeNumberUpdates() && node.getDefinition().getNodeNumbersAreUpToDate())
-            {
-                log.info("A tree node was deleted.  Updating node numbers appropriately.");
-                TreeDataService<T,D,I> dataServ = TreeDataServiceFactory.createService();
-                //apparently a refresh() is necessary. node can hold obsolete values otherwise.
-                //Possibly needs to be done for all business rules??
-                DataProviderSessionIFace session = null;
-                try
-                {
-                    session = DataProviderFactory.getInstance().createSession();
-                    // rods - 07/28/08 commented out because the node is already deleted
-                    //session.refresh(node);
-                    dataServ.updateNodeNumbersAfterNodeDeletion(node,session);
-                    
-                } catch (Exception ex)
-                {
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(BaseTreeBusRules.class, ex);
-                    ex.printStackTrace();
-                    
-                } finally
-                {
-                    if (session != null)
-                    {
-                        session.close();
-                    }
-                }
-                
-            }
-            else
-            {
-                node.getDefinition().setNodeNumbersAreUpToDate(false);
-            }
-        }
+				if (node.getDefinition().getDoNodeNumberUpdates()
+						&& node.getDefinition().getNodeNumbersAreUpToDate())
+				{
+					log
+							.info("A tree node was deleted.  Updating node numbers appropriately.");
+					TreeDataService<T, D, I> dataServ = TreeDataServiceFactory
+							.createService();
+					// apparently a refresh() is necessary. node can hold
+					// obsolete values otherwise.
+					// Possibly needs to be done for all business rules??
+					DataProviderSessionIFace session = null;
+					try
+					{
+						session = DataProviderFactory.getInstance()
+								.createSession();
+						// rods - 07/28/08 commented out because the node is
+						// already deleted
+						// session.refresh(node);
+						dataServ.updateNodeNumbersAfterNodeDeletion(node,
+								session);
+
+					} catch (Exception ex)
+					{
+						edu.ku.brc.exceptions.ExceptionTracker.getInstance()
+								.capture(BaseTreeBusRules.class, ex);
+						ex.printStackTrace();
+
+					} finally
+					{
+						if (session != null)
+						{
+							session.close();
+						}
+					}
+
+				} else
+				{
+					node.getDefinition().setNodeNumbersAreUpToDate(false);
+				}
+			}
+		} finally
+		{
+			this.freeLocks();
+		}
     }
 
     /**
@@ -1209,6 +1249,7 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
         }
     }
 
+    
     /**
      * @param parentDataObj
      * @param dataObj
@@ -1322,9 +1363,10 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
 	public STATUS processBusinessRules(Object parentDataObj, Object dataObj,
 			boolean isExistingObject) {
 		reasonList.clear();
+		STATUS result = STATUS.OK;
 		if (!processedRules && dataObj instanceof Treeable)
 		{	
-			STATUS result = checkForSiblingWithSameName(parentDataObj, dataObj, isExistingObject);
+			result = checkForSiblingWithSameName(parentDataObj, dataObj, isExistingObject);
 			if (result == STATUS.OK)
 			{
 				result = checkForRequiredFields(dataObj);
@@ -1333,12 +1375,90 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
 			{
 				processedRules = true;
 			}
-			return result;
 		}
-		else
+		return result;
+	}
+
+	
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.af.ui.forms.BaseBusRules#isOkToSave(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+	 */
+    /*
+     * NOTE: If this method is overridden, freeLocks() MUST be called when result is false
+     * !!
+     * 
+     */
+	@Override
+	public boolean isOkToSave(Object dataObj, DataProviderSessionIFace session)
+	{
+		boolean result = super.isOkToSave(dataObj, session);
+		if (result)
 		{
-			return STATUS.OK;
+			if (!getRequiredLocks())
+			{
+				result = false;
+				reasonList.add(getUnableToLockMsg());
+			}
 		}
+		return result;
+	}
+
+	protected boolean getRequiredLocks()
+	{
+		TaskSemaphoreMgr.USER_ACTION result = TaskSemaphoreMgr.lock(getFormSaveLockTitle(), getFormSaveLockName(), "save", TaskSemaphoreMgr.SCOPE.Discipline, false, null);
+		return result == TaskSemaphoreMgr.USER_ACTION.OK;
+	}
+	
+	protected abstract Class<?> getNodeClass();
+	
+	protected String getFormSaveLockTitle()
+	{
+		return String.format(UIRegistry.getResourceString("BaseTreeBusRules.SaveLockTitle"), getNodeClass().getSimpleName());
+	}
+	
+	protected String getFormSaveLockName()
+	{
+		return getNodeClass().getSimpleName() + "Save";
+	}
+	
+	protected String getUnableToLockMsg()
+	{
+		return "patience";
+	}
+	
+	protected void freeLocks()
+	{
+		TaskSemaphoreMgr.unlock(getFormSaveLockTitle(), getFormSaveLockName(), TaskSemaphoreMgr.SCOPE.Discipline);
+	}
+	
+	
+	
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.af.ui.forms.BaseBusRules#afterSaveCommit(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+	 */
+	@Override
+	public boolean afterSaveCommit(Object dataObj,
+			DataProviderSessionIFace session)
+	{
+		if (!super.afterSaveCommit(dataObj, session))
+		{
+			return false;
+		}
+		freeLocks();
+		return true;
+	}
+
+	
+	
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.af.ui.forms.BaseBusRules#afterSaveFailure(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+	 */
+	@Override
+	public void afterSaveFailure(Object dataObj,
+			DataProviderSessionIFace session)
+	{
+		super.afterSaveFailure(dataObj, session);
+		freeLocks();
 	}
 
 	/* (non-Javadoc)

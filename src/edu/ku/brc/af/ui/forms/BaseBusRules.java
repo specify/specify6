@@ -613,7 +613,18 @@ public class BaseBusRules implements BusinessRulesIFace
         return true;
     }
 
+    
     /* (non-Javadoc)
+	 * @see edu.ku.brc.af.ui.forms.BusinessRulesIFace#afterSaveFailure(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+	 */
+	@Override
+	public void afterSaveFailure(Object dataObj,
+			DataProviderSessionIFace session)
+	{
+		// do nothing
+	}
+
+	/* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#beforeMerge(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
      */
     @Override
@@ -925,5 +936,4 @@ public class BaseBusRules implements BusinessRulesIFace
     {
         // no op
     }
-
 }

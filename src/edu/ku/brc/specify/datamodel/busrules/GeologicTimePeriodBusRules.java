@@ -154,7 +154,7 @@ public class GeologicTimePeriodBusRules extends BaseTreeBusRules<GeologicTimePer
      * 
      * @param gtp the {@link GeologicTimePeriod} being saved
      */
-    protected void beforeSaveGeologicTimePeriod(@SuppressWarnings("unused") GeologicTimePeriod gtp)
+    protected void beforeSaveGeologicTimePeriod(GeologicTimePeriod gtp)
     {
         // nothing specific to GeologicTimePeriod
     }
@@ -227,4 +227,16 @@ public class GeologicTimePeriodBusRules extends BaseTreeBusRules<GeologicTimePer
         
         TreeTaskMgr.checkLocks();
     }
+
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.datamodel.busrules.BaseTreeBusRules#getNodeClass()
+	 */
+	@Override
+	protected Class<?> getNodeClass()
+	{
+		return GeologicTimePeriod.class;
+	}
+    
+    
 }

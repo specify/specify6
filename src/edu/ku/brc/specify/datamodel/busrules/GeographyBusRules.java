@@ -166,4 +166,15 @@ public class GeographyBusRules extends BaseTreeBusRules<Geography, GeographyTree
         
         TreeTaskMgr.checkLocks();
     }
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.datamodel.busrules.BaseTreeBusRules#getNodeClass()
+	 */
+	@Override
+	protected Class<?> getNodeClass()
+	{
+		return Geography.class;
+	}
+    
+    
 }

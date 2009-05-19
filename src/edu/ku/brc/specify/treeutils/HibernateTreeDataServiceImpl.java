@@ -32,7 +32,6 @@ import org.hibernate.LockMode;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.hibernate.exception.LockAcquisitionException;
 
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
@@ -687,58 +686,60 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         parentNN = mergedParent.getNodeNumber();
         
         String className = mergedParent.getClass().getName();
-        TreeDefIface<T,D,I> def = mergedParent.getDefinition();
+        TreeDefIface<T, D, I> def = mergedParent.getDefinition();
 
-        //quick attempt to see if there is any value in re-trying in case of lock acquisition exception 
-        int attempts = 20;
-        boolean success = false;
-        while (!success)
-        {
-        try
-        {
-            String updateNodeNumbersQueryStr = "UPDATE " + className + " SET nodeNumber=nodeNumber+1 WHERE nodeNumber>:parentNN AND definition=:def";
-            QueryIFace fixNodeNumQuery = session.createQuery(updateNodeNumbersQueryStr, false);
-            fixNodeNumQuery.setParameter("parentNN", parentNN);
-            fixNodeNumQuery.setParameter("def", def);
-            fixNodeNumQuery.executeUpdate();
-            //session.clear();
-            
-            String updateHighChildQueryStr = "UPDATE " + className + " SET highestChildNodeNumber=highestChildNodeNumber+1 WHERE highestChildNodeNumber>=:parentNN AND definition=:def";
-            QueryIFace fixHighChildQuery = session.createQuery(updateHighChildQueryStr, false);
-            fixHighChildQuery.setParameter("parentNN", parentNN);
-            fixHighChildQuery.setParameter("def", def);
-            fixHighChildQuery.executeUpdate();
-            //session.clear();
-            
-            // now set the initial values of the nodeNumber and highestChildNodeNumber fields for the new node
-            int newChildNN = parentNN+1;
-            String setChildNNQueryStr = "UPDATE " + className + " SET nodeNumber=:newChildNN WHERE nodeNumber IS NULL AND parentID=:parentID";
-            QueryIFace setChildNNQuery = session.createQuery(setChildNNQueryStr, false);
-            setChildNNQuery.setParameter("newChildNN", newChildNN);
-            setChildNNQuery.setParameter("parentID", parent.getTreeId());
-            setChildNNQuery.executeUpdate();
-            //session.clear();
-            
-            String setChildHCQueryStr = "UPDATE " + className + " SET highestChildNodeNumber=:newChildNN WHERE highestChildNodeNumber IS NULL AND parentID=:parentID";
-            QueryIFace setChildHCQuery = session.createQuery(setChildHCQueryStr, false);
-            setChildHCQuery.setParameter("newChildNN", newChildNN);
-            setChildHCQuery.setParameter("parentID", parent.getTreeId());
-            setChildHCQuery.executeUpdate();
-            //session.clear();
-            success = true;
-        } catch (LockAcquisitionException ex)
-        {
-            if (attempts == 0)
-            {
-            	throw ex;
-            }
-            attempts--;
-        	//edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(HibernateTreeDataServiceImpl.class, ex);
-            //ex.printStackTrace();
-        }
-        }
-        return true;
+		//Now update the node numbers.
+        //This assumes that the caller has locked the "TreeFormSave" semaphore for the tree.
+        String updateNodeNumbersQueryStr = "UPDATE "
+				+ className
+				+ " SET nodeNumber=nodeNumber+1 WHERE nodeNumber>:parentNN AND definition=:def";
+		QueryIFace fixNodeNumQuery = session.createQuery(
+				updateNodeNumbersQueryStr, false);
+		fixNodeNumQuery.setParameter("parentNN", parentNN);
+		fixNodeNumQuery.setParameter("def", def);
+		fixNodeNumQuery.executeUpdate();
+		// session.clear();
+
+		String updateHighChildQueryStr = "UPDATE "
+				+ className
+				+ " SET highestChildNodeNumber=highestChildNodeNumber+1 WHERE highestChildNodeNumber>=:parentNN AND definition=:def";
+		QueryIFace fixHighChildQuery = session.createQuery(
+				updateHighChildQueryStr, false);
+		fixHighChildQuery.setParameter("parentNN", parentNN);
+		fixHighChildQuery.setParameter("def", def);
+		fixHighChildQuery.executeUpdate();
+		// session.clear();
+
+		// now set the initial values of the nodeNumber and
+		// highestChildNodeNumber fields for the new node
+		
+		int newChildNN = parentNN + 1;
+    	newNode.setNodeNumber(newChildNN);
+    	newNode.setHighestChildNodeNumber(newChildNN);
+    	
+    	//not necessary to use queries
+    	
+//		String setChildNNQueryStr = "UPDATE "
+//				+ className
+//				+ " SET nodeNumber=:newChildNN WHERE nodeNumber IS NULL AND parentID=:parentID";
+//		QueryIFace setChildNNQuery = session.createQuery(setChildNNQueryStr,
+//				false);
+//		setChildNNQuery.setParameter("newChildNN", newChildNN);
+//		setChildNNQuery.setParameter("parentID", parent.getTreeId());
+//		setChildNNQuery.executeUpdate();
+//		// session.clear();
+//
+//		String setChildHCQueryStr = "UPDATE "
+//				+ className
+//				+ " SET highestChildNodeNumber=:newChildNN WHERE highestChildNodeNumber IS NULL AND parentID=:parentID";
+//		QueryIFace setChildHCQuery = session.createQuery(setChildHCQueryStr,
+//				false);
+//		setChildHCQuery.setParameter("newChildNN", newChildNN);
+//		setChildHCQuery.setParameter("parentID", parent.getTreeId());
+//		setChildHCQuery.executeUpdate();
+//		// session.clear();
+
+		return true;
     }
     
     /* (non-Javadoc)
