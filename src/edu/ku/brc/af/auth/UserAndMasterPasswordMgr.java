@@ -186,7 +186,7 @@ public class UserAndMasterPasswordMgr
      */
     public boolean hasMasterUsernameAndPassword()
     {
-        Boolean isLocal = AppPreferences.getLocalPrefs().getBoolean(usersUserName+"_"+MASTER_LOCAL, false);
+        Boolean isLocal = AppPreferences.getLocalPrefs().getBoolean(usersUserName+"_"+MASTER_LOCAL, true);
         if (isLocal)
         {
             return AppPreferences.getLocalPrefs().get(usersUserName+"_"+MASTER_PATH, null) != null;
@@ -399,7 +399,7 @@ public class UserAndMasterPasswordMgr
         isNetworkRB.addChangeListener(chgListener);
         isPrefBasedRB.addChangeListener(chgListener);
         
-        boolean isPref = AppPreferences.getLocalPrefs().getBoolean(usersUserName+"_"+MASTER_LOCAL, false);
+        boolean isPref = AppPreferences.getLocalPrefs().getBoolean(usersUserName+"_"+MASTER_LOCAL, true);
         isNetworkRB.setSelected(!isPref);
         isPrefBasedRB.setSelected(isPref);
         
