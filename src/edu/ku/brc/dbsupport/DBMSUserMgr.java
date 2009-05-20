@@ -39,7 +39,9 @@ public abstract class DBMSUserMgr
     public static final int PERM_UPDATE = 2;
     public static final int PERM_DELETE = 4;
     public static final int PERM_INSERT = 8;
-    public static final int PERM_ALL    = 15;
+    public static final int PERM_BASIC  = 15;
+    
+    public static final int PERM_ALL    = 16;
     
     private static DBMSUserMgr instance = null;
    
@@ -125,13 +127,20 @@ public abstract class DBMSUserMgr
 	 */
 	public abstract boolean createUser(String username, String password, String dbName, int permissions);
 	
-	/**
-	 * The database exists, but does it have any tables?
-	 * @param dbName the database name
-	 * @return true if is at least one table, false if not.
-	 */
-	public abstract boolean doesDBHaveTables();
-	
+    /**
+     * The database exists, but does it have any tables?
+     * @param dbName the database name
+     * @return true if is at least one table, false if not.
+     */
+    public abstract boolean doesDBHaveTables();
+    
+    /**
+     * Check to see if the table is in the schema
+     * @param dbName the database name
+     * @return true if the table exists, false if not.
+     */
+    public abstract boolean doesDBHaveTable(final String tableName);
+    
     /**
      * Some databases require a specific engine and also the charset needs to be checked (UTF-8).
      * @param dbName the database to check.

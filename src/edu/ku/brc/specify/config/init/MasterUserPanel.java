@@ -239,7 +239,7 @@ public class MasterUserPanel extends GenericFormPanel
                         {
                             firePropertyChange(propName, 0, 1);
                             
-                            isOK = mgr.createUser(saUserName, saPassword, dbName, DBMSUserMgr.PERM_ALL);
+                            isOK = mgr.createUser(saUserName, saPassword, dbName, DBMSUserMgr.PERM_BASIC);
                             if (!isOK)
                             {
                                 errorKey = "ERR_CRE_MASTER";

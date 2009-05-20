@@ -128,7 +128,7 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
                                           connStr, 
                                           driverInfo.getDriverClassName(), 
                                           driverInfo.getDialectClassName(), dbName);
-        if (connection != null)
+        if (connection == null)
         {
             connection = dbConnection.createConnection();
         }
@@ -337,8 +337,6 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
         return PERM_NONE;
     }
 
-    
-
 	/* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.DBMSUserMgr#doesDBHaveTables(java.lang.String)
      */
@@ -347,8 +345,7 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
     {
         try
         {
-            for (@SuppressWarnings("unused")
-            Object[] row : BasicSQLUtils.query(connection, "show tables"))
+            for (@SuppressWarnings("unused")Object[] row : BasicSQLUtils.query(connection, "show tables"))
             {
                 return true;
             }
@@ -361,10 +358,32 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
     }
 
     /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.DBMSUserMgr#doesDBHaveTable(java.lang.String)
+     */
+    @Override
+    public boolean doesDBHaveTable(String tableName)
+    {
+        try
+        {
+            for (Object[] row : BasicSQLUtils.query(connection, "show tables"))
+            {
+                if (row[0].toString().equalsIgnoreCase(tableName))
+                {
+                    return true;
+                }
+            }
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return false;
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.DBMSUserMgr#setPermissions(java.lang.String, java.lang.String, int)
      */
     @Override
-    public boolean setPermissions(String username, String dbName, int permissions)
+    public boolean setPermissions(final String username, final String dbName, final int permissions)
     {
         Statement stmt = null;
         try
