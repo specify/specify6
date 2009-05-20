@@ -19,6 +19,8 @@
 */
 package edu.ku.brc.specify.config.init;
 
+import static edu.ku.brc.ui.UIHelper.createDuplicateJGoodiesDef;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -40,6 +42,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.dbsupport.DBMSUserMgr;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.Pair;
 
 /**
  * @author rod
@@ -53,9 +56,15 @@ public class MasterUserPanel extends GenericFormPanel
 {
     protected String                  propName = "next";
     protected Boolean                 isOK     = null;
-    protected JButton                 testBtn;
+    protected JButton                 createMUBtn;
     protected JLabel                  label;
     protected String                  errorKey = null;
+    
+    // Advanced Part
+    protected JButton                 skipStepBtn;
+    protected boolean                 manualLoginOK = false;
+    protected JLabel                  advLabel;
+
 
     /**
      * @param name
@@ -88,12 +97,12 @@ public class MasterUserPanel extends GenericFormPanel
         super.init(title, fields, required, types);
         
         label   = UIHelper.createLabel(" ", SwingConstants.CENTER);
-        testBtn = UIHelper.createI18NButton("CREATE_MASTER_BTN");
+        createMUBtn = UIHelper.createI18NButton("CREATE_MASTER_BTN");
         
         PanelBuilder tstPB = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g", "p"));
-        tstPB.add(testBtn,            cc.xy(2, 1));
+        tstPB.add(createMUBtn,            cc.xy(2, 1));
         
-        PanelBuilder panelPB = new PanelBuilder(new FormLayout("f:p:g", "20px,p,2px,p,2px,p,f:p:g"));
+        PanelBuilder panelPB = new PanelBuilder(new FormLayout("f:p:g", "20px,p,2px,p,2px,p"));
         panelPB.add(tstPB.getPanel(), cc.xy(1, 2));
         panelPB.add(getProgressBar(), cc.xy(1, 4));
         panelPB.add(label,            cc.xy(1, 6));
@@ -101,14 +110,71 @@ public class MasterUserPanel extends GenericFormPanel
         builder.add(panelPB.getPanel(), cc.xyw(3, row, 2));
         row += 2;
         
-        testBtn.addActionListener(new ActionListener() {
+        // Advance part of pane
+        advLabel    = UIHelper.createI18NLabel("ADV_MU_DESC", SwingConstants.CENTER);
+        skipStepBtn = UIHelper.createI18NButton("ADV_MU_TEST");
+        builder.addSeparator(UIRegistry.getResourceString("ADV_TITLE"), cc.xyw(3, row, 2)); row += 2;
+        builder.add(advLabel, cc.xyw(3, row, 2)); row += 2;
+        
+        tstPB = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g", "p"));
+        tstPB.add(skipStepBtn,          cc.xy(2, 1));
+        builder.add(tstPB.getPanel(),   cc.xyw(3, row, 2)); row += 2;
+        
+        skipStepBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                testCreateMU();
+                createMUBtn.setEnabled(false);
+                skipStepBtn.setEnabled(false);
+                boolean ok = skipDBCreate();
+                createMUBtn.setEnabled(true);
+                skipStepBtn.setEnabled(true);
+                 advLabel.setText(UIRegistry.getResourceString(ok ? "ADV_DB_OK" : "ADV_DB_ERR"));
+            }
+        });
+
+        
+        createMUBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                createMU();
             }
         });
         progressBar.setVisible(false);
+    }
+    
+    /**
+     * @return the Row and Column JGoodies definitions
+     */
+    protected Pair<String, String> getRowColDefs()
+    {
+        String rowDef = "p,5px" + (fieldsNames.length > 0 ? ","+createDuplicateJGoodiesDef("p", "2px", fieldsNames.length) : "") + getAdditionalRowDefs() + ",2px,p,2px,p,8px,p";
+        return new Pair<String, String>("p,2px,p,f:p:g", rowDef);
+    }
+    
+    /**
+     * 
+     */
+    protected boolean skipDBCreate()
+    {
+        getValues(properties);
+        DBMSUserMgr mgr   = DBMSUserMgr.getInstance();
+        
+        String dbName     = properties.getProperty("dbName");
+        String hostName   = properties.getProperty("hostName");
+        
+        String saUserName = ((JTextField)comps.get("saUserName")).getText();
+        String saPassword = ((JTextField)comps.get("saPassword")).getText();
+
+        
+        if (mgr.connect(saUserName, saPassword, hostName, dbName))
+        {
+            nextBtn.setEnabled(true);
+            mgr.close();
+            return true;
+        }
+        return false;
     }
     
     /* (non-Javadoc)
@@ -145,10 +211,10 @@ public class MasterUserPanel extends GenericFormPanel
             if (dbUsername.equals(saUserName))
             {
                 label.setText(UIRegistry.getResourceString("DB_SA_USRNAME_MATCH"));
-                testBtn.setEnabled(false);
+                createMUBtn.setEnabled(false);
                 return false;
             }
-            testBtn.setEnabled(true);
+            createMUBtn.setEnabled(true);
             label.setText("");
         }
         
@@ -164,7 +230,7 @@ public class MasterUserPanel extends GenericFormPanel
         {
             c.setEnabled(enable);
         }
-        testBtn.setEnabled(enable);
+        createMUBtn.setEnabled(enable);
     }
 
     /* (non-Javadoc)
@@ -178,7 +244,7 @@ public class MasterUserPanel extends GenericFormPanel
         if (isOK != null && !isOK)
         {
             isOK = null;
-            testBtn.setVisible(true);
+            createMUBtn.setVisible(true);
             label.setText(" ");
             properties.put("masterChanged", true);
         }
@@ -187,7 +253,7 @@ public class MasterUserPanel extends GenericFormPanel
     /**
      * 
      */
-    protected void testCreateMU()
+    protected void createMU()
     {
         String saUsrNm = ((JTextField)comps.get("saUserName")).getText();
         if (StringUtils.isNotEmpty(saUsrNm) && saUsrNm.equalsIgnoreCase("root"))
@@ -206,7 +272,7 @@ public class MasterUserPanel extends GenericFormPanel
             
             label.setText(UIRegistry.getResourceString("CONN_DB"));
             
-            testBtn.setVisible(false);
+            createMUBtn.setVisible(false);
             
             SwingWorker<Object, Object> worker = new SwingWorker<Object, Object>()
             {
@@ -273,7 +339,7 @@ public class MasterUserPanel extends GenericFormPanel
                     
                     updateBtnUI();
                     
-                    testBtn.setVisible(!isOK);
+                    createMUBtn.setVisible(!isOK);
                     
                     if (isOK)
                     {

@@ -91,9 +91,13 @@ public class DatabasePanel extends BaseSetupPanel
     protected boolean                    doSetDefaultValues;
     
     protected Boolean                 isOK = null;
-    protected JButton                 testBtn;
+    protected JButton                 createBTN;
     protected JLabel                  label;
     protected String                  errorKey = null;
+    
+    protected JButton                 skipStepBtn;
+    protected boolean                 manualLoginOK = false;
+    protected JLabel                  advLabel;
 
     /**
      * Creates a dialog for entering database name and selecting the appropriate driver.
@@ -111,7 +115,7 @@ public class DatabasePanel extends BaseSetupPanel
 
         CellConstraints cc = new CellConstraints();
         
-        String rowDef = "p,2px," + UIHelper.createDuplicateJGoodiesDef("p", "2px", 5) + ",10px,p,p:g";
+        String rowDef = "p,2px," + UIHelper.createDuplicateJGoodiesDef("p", "2px", 5) + ",10px,p,10px,p,4px,p,4px,p";
         PanelBuilder builder = new PanelBuilder(new FormLayout("p,2px,p:g", rowDef), this);
         int row = 1;
         
@@ -134,13 +138,13 @@ public class DatabasePanel extends BaseSetupPanel
         builder.add(drivers, cc.xy(3, row));
         row += 2;
         
-        label   = UIHelper.createLabel("", SwingConstants.CENTER);
-        testBtn = UIHelper.createI18NButton("CREATE_DB");
+        label     = UIHelper.createLabel("", SwingConstants.CENTER);
+        createBTN = UIHelper.createI18NButton("CREATE_DB");
         
         PanelBuilder tstPB = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g", "p"));
-        tstPB.add(testBtn,            cc.xy(2, 1));
+        tstPB.add(createBTN,          cc.xy(2, 1));
         
-        PanelBuilder panelPB = new PanelBuilder(new FormLayout("f:p:g", "20px,p,2px,p,2px,p:g,f:p:g"));
+        PanelBuilder panelPB = new PanelBuilder(new FormLayout("f:p:g", "20px,p,2px,p,8px,p"));
         panelPB.add(tstPB.getPanel(), cc.xy(1, 2));
         panelPB.add(getProgressBar(), cc.xy(1, 4));
         panelPB.add(label,            cc.xy(1, 6));
@@ -148,7 +152,30 @@ public class DatabasePanel extends BaseSetupPanel
         builder.add(panelPB.getPanel(), cc.xy(3, row));
         row += 2;
         
-        testBtn.addActionListener(new ActionListener() {
+        // Advance part of pane
+        advLabel    = UIHelper.createI18NLabel("ADV_DB_DESC", SwingConstants.CENTER);
+        skipStepBtn = UIHelper.createI18NButton("ADV_DB_TEST");
+        builder.addSeparator(UIRegistry.getResourceString("ADV_TITLE"), cc.xyw(3, row, 1)); row += 2;
+        builder.add(advLabel, cc.xyw(3, row, 1)); row += 2;
+        
+        tstPB = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g", "p"));
+        tstPB.add(skipStepBtn,          cc.xy(2, 1));
+        builder.add(tstPB.getPanel(), cc.xyw(3, row, 1)); row += 2;
+        
+        skipStepBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                createBTN.setEnabled(false);
+                skipStepBtn.setEnabled(false);
+                boolean ok = skipDBCreate();
+                createBTN.setEnabled(true);
+                skipStepBtn.setEnabled(true);
+                advLabel.setText(UIRegistry.getResourceString(ok ? "ADV_DB_OK" : "ADV_DB_ERR"));
+            }
+        });
+        
+        createBTN.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e)
             {
@@ -186,7 +213,7 @@ public class DatabasePanel extends BaseSetupPanel
         if (isOK != null && !isOK)
         {
             isOK = null;
-            testBtn.setVisible(true);
+            createBTN.setVisible(true);
             label.setText(" ");
         }
     }
@@ -201,7 +228,8 @@ public class DatabasePanel extends BaseSetupPanel
         dbNameTxt.setEnabled(enable);
         hostNameTxt.setEnabled(enable);
         drivers.setEnabled(enable);
-        testBtn.setEnabled(enable);
+        createBTN.setEnabled(enable);
+        skipStepBtn.setEnabled(enable);
     }
 
     /* (non-Javadoc)
@@ -226,6 +254,26 @@ public class DatabasePanel extends BaseSetupPanel
     /**
      * 
      */
+    protected boolean skipDBCreate()
+    {
+        getValues(properties);
+        DBMSUserMgr mgr   = DBMSUserMgr.getInstance();
+        String dbUserName = usernameTxt.getText();
+        String dbPwd      = passwordTxt.getText();
+        String hostName   = hostNameTxt.getText();
+        
+        if (mgr.connectToDBMS(dbUserName, dbPwd, hostName))
+        {
+            nextBtn.setEnabled(isOK == null || isOK || manualLoginOK);
+            mgr.close();
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * 
+     */
     public void createDB()
     {
         getValues(properties);
@@ -236,7 +284,7 @@ public class DatabasePanel extends BaseSetupPanel
             progressBar.setVisible(true);
             
             label.setText(getResourceString("CONN_DB"));
-            testBtn.setVisible(false);
+            createBTN.setVisible(false);
             
             setUIEnabled(false);
             
@@ -269,7 +317,7 @@ public class DatabasePanel extends BaseSetupPanel
                                     hostName,
                                     dbName,
                                     dbUserName, 
-                                    dbPwd);
+                                    dbPwd); // false means create new database, true means update
                             
                             String connStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Create, hostName, dbName);
                             if (connStr == null)
@@ -339,7 +387,7 @@ public class DatabasePanel extends BaseSetupPanel
                     progressBar.setVisible(false);
                     
                     updateBtnUI();
-                    testBtn.setVisible(!isOK);
+                    createBTN.setVisible(!isOK);
                     
                     if (isOK)
                     {
@@ -390,7 +438,7 @@ public class DatabasePanel extends BaseSetupPanel
         boolean isValid = isUIValid();
         if (nextBtn != null)
         {
-            nextBtn.setEnabled(isValid);
+            nextBtn.setEnabled(isValid && (isOK == null || isOK || manualLoginOK));
         }
     }
     
@@ -419,7 +467,7 @@ public class DatabasePanel extends BaseSetupPanel
             }
         }
         
-        return isOK != null && isOK;
+        return (isOK != null && isOK) || manualLoginOK;
     }
     
     // Getters 
