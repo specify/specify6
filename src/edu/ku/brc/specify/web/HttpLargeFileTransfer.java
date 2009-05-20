@@ -70,6 +70,8 @@ public class HttpLargeFileTransfer
     public static final String CLIENT_ID_HEADER        = "Transfer-Client-ID";
     public static final String FILE_CHUNK_HEADER       = "Transfer-File-Chunk";
     public static final String FILE_CHUNK_COUNT_HEADER = "Transfer-File-Chunk-Count";
+    public static final String IS_SITE_FILE            = "Transfer-File-IS-SITE-FILE";
+    
 
     /**
      * @param infileName
@@ -161,7 +163,7 @@ public class HttpLargeFileTransfer
                         
                         UIRegistry.getStatusBar().setProgressDone(HttpLargeFileTransfer.class.toString());
                         
-                        UIRegistry.clearSimpleGlassPaneMsg();
+                        //UIRegistry.clearSimpleGlassPaneMsg();
                         
                         if (StringUtils.isNotEmpty(errorMsg))
                         {
@@ -262,14 +264,12 @@ public class HttpLargeFileTransfer
     /**
      * @param fileName
      * @param urlStr
-     */
-    /**
-     * @param fileName
-     * @param urlStr
+     * @param isSiteFile
      * @param propChgListener
      */
     public void transferFile(final String fileName, 
                              final String urlStr,
+                             final boolean isSiteFile,
                              final PropertyChangeListener propChgListener)
     {
         
@@ -286,6 +286,7 @@ public class HttpLargeFileTransfer
                     protected String           errorMsg = null;
                     protected FileInputStream  fis      = null;
                     protected OutputStream     fos      = null;
+                    protected int              nChunks  = 0;
                     
                     /* (non-Javadoc)
                      * @see javax.swing.SwingWorker#doInBackground()
@@ -298,7 +299,7 @@ public class HttpLargeFileTransfer
                             Thread.sleep(100);
                             fis = new FileInputStream(file);
                 
-                            int nChunks = (int) (fileSize / MAX_CHUNK_SIZE);
+                            nChunks = (int) (fileSize / MAX_CHUNK_SIZE);
                             if (fileSize % MAX_CHUNK_SIZE > 0)
                             {
                                 nChunks++;
@@ -315,6 +316,14 @@ public class HttpLargeFileTransfer
 
                             for (int i = 0; i < nChunks; i++)
                             {
+                                firePropertyChange(prgName, i-1, i == nChunks-1 ? Integer.MAX_VALUE : i);
+                                if (i == nChunks-1)
+                                {
+                                    Thread.sleep(500);
+                                    int x = 0;
+                                    x++;
+                                }
+                                
                                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                                 conn.setRequestMethod("PUT");
                                 conn.setDoOutput(true);
@@ -332,10 +341,12 @@ public class HttpLargeFileTransfer
                                 conn.setRequestProperty(FILE_CHUNK_COUNT_HEADER, String.valueOf(nChunks));
                                 conn.setRequestProperty(FILE_CHUNK_HEADER, String.valueOf(i));
                                 conn.setRequestProperty(SERVICE_NUMBER, "10");
+                                conn.setRequestProperty(IS_SITE_FILE, Boolean.toString(isSiteFile));
+                                
                 
                                 fos = conn.getOutputStream();
                                 
-                                UIRegistry.getStatusBar().setProgressRange(prgName, 0, (int)((double)chunkSize / BUFFER_SIZE));
+                                //UIRegistry.getStatusBar().setProgressRange(prgName, 0, (int)((double)chunkSize / BUFFER_SIZE));
                                 int cnt = 0;
                                 int bytesRead = 0;
                                 while (bytesRead < chunkSize)
@@ -351,7 +362,7 @@ public class HttpLargeFileTransfer
                                         fos.write(buf, 0, read);
                                     }
                                     cnt++;
-                                    firePropertyChange(prgName, cnt-1, cnt);
+                                    //firePropertyChange(prgName, cnt-1, cnt);
                                 }
                                 fos.close();
                                 
@@ -363,25 +374,26 @@ public class HttpLargeFileTransfer
                                     StringBuilder sb = new StringBuilder();
                                     while ((line = in.readLine()) != null)
                                     {
-                                            sb.append(line);
-                                            sb.append("\n");
+                                        sb.append(line);
+                                        sb.append("\n");
                                     }
                                     System.out.println(sb.toString());
                                     in.close();
                                     
                                 } else
                                 {
-                                    System.err.println("OK ");
+                                    System.err.println("OK");
                                 }
-                                UIRegistry.getStatusBar().setProgressRange(prgName, 0, nChunks);
-                                firePropertyChange(prgName, i-1, i);
+                                //UIRegistry.getStatusBar().setProgressRange(prgName, 0, nChunks);
+                                firePropertyChange(prgName, i-1, i == nChunks-1 ? Integer.MAX_VALUE : i);
                             }
+                            
                         } catch (IOException ex)
                         {
                             errorMsg = ex.toString();   
                         }
                         
-                        firePropertyChange(prgName, 0, 100);
+                        //firePropertyChange(prgName, 0, 100);
                         return null;
                     }
 
@@ -418,8 +430,15 @@ public class HttpLargeFileTransfer
                                 if (prgName.equals(evt.getPropertyName())) 
                                 {
                                     Integer value = (Integer)evt.getNewValue();
-                                    //statusBar.setText(UIRegistry.getLocalizedMessage("MySQLBackupService.BACKUP_MEGS", (double)value));
-                                    statusBar.setValue(prgName, value);
+                                    if (value == Integer.MAX_VALUE)
+                                    {
+                                        statusBar.setIndeterminate(prgName, true);
+                                        UIRegistry.writeSimpleGlassPaneMsg(getLocalizedMessage("Transfering data into the database."), 24);
+                                        
+                                    } else
+                                    {
+                                        statusBar.setValue(prgName, value);
+                                    }
                                 }
                             }
                         });

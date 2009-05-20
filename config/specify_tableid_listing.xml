@@ -2,7 +2,7 @@
 
 <!-- 
 
-    Last used ID is 135 or 526
+    Last used ID is 135 or 527
     
     126 are available
     
@@ -350,7 +350,8 @@
         <table name="edu.ku.brc.specify.datamodel.SpPermission"  abbrev="spper" id="521"/>
         <table name="edu.ku.brc.specify.datamodel.SpPrincipal" abbrev="spprin" id="522"/>
 		<table name="edu.ku.brc.specify.datamodel.SpPrincipalSpPermissionType" abbrev="spspt" id="523"/>
-		<table name="edu.ku.brc.specify.datamodel.SpTaskSemaphore" abbrev="spts" id="526"/>
+        <table name="edu.ku.brc.specify.datamodel.SpTaskSemaphore" abbrev="spts" id="526"/>
+      <!--  <table name="edu.ku.brc.specify.datamodel.SpVersion" abbrev="spvrn" id="527"/>  --> 
 		
         <!--  Done Internal Specify Tables -->
         

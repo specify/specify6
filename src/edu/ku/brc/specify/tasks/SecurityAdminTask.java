@@ -391,7 +391,6 @@ public class SecurityAdminTask extends BaseTask
     /* (non-Javadoc)
      * @see edu.ku.brc.af.tasks.BaseTask#doCommand(edu.ku.brc.ui.CommandAction)
      */
-    @SuppressWarnings("unchecked")  //$NON-NLS-1$
     public void doCommand(CommandAction cmdAction)
     {
         if (cmdAction.isType(SECURITY_ADMIN))

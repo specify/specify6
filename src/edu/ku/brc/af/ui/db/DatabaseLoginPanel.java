@@ -936,37 +936,17 @@ public class DatabaseLoginPanel extends JTiledPanel
                     if (drvInfo != null)
                     {
                         DBConnection.getInstance().setDbCloseConnectionStr(drvInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Close, getServerName(), getDatabaseName()));
+                        DBConnection.getInstance().setServerName(getServerName());
+                        DBConnection.getInstance().setDriverName(((DatabaseDriverInfo)dbDriverCBX.getSelectedItem()).getName());
+                        
+                        // Extremely Temporary Code.
+                        /*String version = UIHelper.getInstall4JInstallString();
+                        if (version == null || version.equals("Unknown"))
+                        {
+                            SchemaUpdateService.getInstance().updateSchema();
+                        }*/
                     }
-                    
-                    // Note: this doesn't happen on the GUI thread
-                    /*DataProviderFactory.getInstance().shutdown();
-
-                    // This restarts the System
-                    try
-                    {
-                        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-                        session.close();
-
-                    } catch (Exception ex)
-                    {
-                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DatabaseLoginPanel.class, ex);
-                        log.warn(ex);
-                        finished();
-                    }*/
-                    return null;
                 }
-                
-                /*SwingUtilities.invokeLater(new Runnable(){
-                    @Override
-                    public void run()
-                    {
-                        //Not exactly true yet, but make sure users know that this is NOT Specify starting up. 
-                        setMessage(getResourceString("INVALID_LOGIN"), true); //$NON-NLS-1$
-                    }
-                });*/
-
-                
                 return null;
             }
 
@@ -1009,10 +989,9 @@ public class DatabaseLoginPanel extends JTiledPanel
                         if (loginCount < 1000)
                         {
                             String basePrefNameStr = getDatabaseName() + "." + getUserName() + "."; //$NON-NLS-1$ //$NON-NLS-2$
-                            AppPreferences.getLocalPrefs().putLong(basePrefNameStr + "logincount", //$NON-NLS-1$
-                                    ++loginCount);
-                            AppPreferences.getLocalPrefs().putLong(basePrefNameStr + "loginaccumtime", //$NON-NLS-1$
-                                    loginAccumTime);
+                            AppPreferences.getLocalPrefs().putLong(basePrefNameStr + "logincount", ++loginCount);//$NON-NLS-1$
+                            AppPreferences.getLocalPrefs().putLong(basePrefNameStr + "loginaccumtime", loginAccumTime);//$NON-NLS-1$
+                                    
                         }
                     }
                     

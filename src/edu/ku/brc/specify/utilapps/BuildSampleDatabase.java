@@ -7422,7 +7422,7 @@ public class BuildSampleDatabase
         {
             if (!mgr.doesUserExists(saUsername))
             {
-                isOK = mgr.createUser(saUsername, saPassword, databaseName, DBMSUserMgr.PERM_ALL);
+                isOK = mgr.createUser(saUsername, saPassword, databaseName, DBMSUserMgr.PERM_BASIC);
             } else
             {
                 isOK = true;

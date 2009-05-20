@@ -50,6 +50,8 @@ public class DBConnection
     protected String dbDriver;
     protected String dbDialect;                   // needed for Hibernate
     protected String dbName;
+    protected String serverName;                  // Hostname
+    protected String dbDriverName;                // Hostname
     
     protected boolean argHaveBeenChecked = false;
     protected boolean skipDBNameCheck    = false;
@@ -254,6 +256,38 @@ public class DBConnection
         argHaveBeenChecked = false;
     }
     
+    /**
+     * @return the serverName
+     */
+    public String getServerName()
+    {
+        return serverName;
+    }
+
+    /**
+     * @param server the server to set
+     */
+    public void setServerName(String serverName)
+    {
+        this.serverName = serverName;
+    }
+
+    /**
+     * @return the dbDriverName
+     */
+    public String getDriverName()
+    {
+        return dbDriverName;
+    }
+
+    /**
+     * @param dbDriverName the dbDriverName to set
+     */
+    public void setDriverName(String dbDriverName)
+    {
+        this.dbDriverName = dbDriverName;
+    }
+
     /**
      * Sets the fully specified path to connect to the database.
      * i.e. jdbc:mysql://localhost/fish<br>Some databases may need to construct their fully specified path.

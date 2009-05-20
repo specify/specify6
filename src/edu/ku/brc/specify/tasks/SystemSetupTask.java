@@ -318,12 +318,15 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
         }
         roc.setData(pickList.getPickListId());
         addPopMenu(roc, pickList);
-        if (isNew)
+        if (navBox != null)
         {
-            navBox.insertSorted((NavBoxItemIFace)roc);
-        } else
-        {
-            navBox.add((NavBoxItemIFace)roc);
+            if (isNew)
+            {
+                navBox.insertSorted((NavBoxItemIFace)roc);
+            } else
+            {
+                navBox.add((NavBoxItemIFace)roc);
+            }
         }
     }
     
@@ -1138,18 +1141,21 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
     {
         boolean fnd = false;
         boolean resort = false;
-        for (NavBoxItemIFace nbi : navBox.getItems())
+        if (navBox != null)
         {
-            if (nbi.getData() != null && ((Integer)nbi.getData()).intValue() == pickList.getPickListId().intValue())
+            for (NavBoxItemIFace nbi : navBox.getItems())
             {
-                fnd = true;
-                String oldName = ((RolloverCommand)nbi).getLabelText();
-                if (!oldName.equals(pickList.getName()))
+                if (nbi.getData() != null && ((Integer)nbi.getData()).intValue() == pickList.getPickListId().intValue())
                 {
-                    ((RolloverCommand)nbi).setLabelText(pickList.getName());
-                    resort = true;
+                    fnd = true;
+                    String oldName = ((RolloverCommand)nbi).getLabelText();
+                    if (!oldName.equals(pickList.getName()))
+                    {
+                        ((RolloverCommand)nbi).setLabelText(pickList.getName());
+                        resort = true;
+                    }
+                    break;
                 }
-                break;
             }
         }
         

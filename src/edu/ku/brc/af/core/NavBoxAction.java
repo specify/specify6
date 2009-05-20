@@ -174,9 +174,10 @@ public class NavBoxAction implements ActionListener
             {
                 try
                 {
-                    CommandAction ca = (CommandAction)cmdAction.clone();
-                    ca.setData(((DataActionEvent)e).getData());
-                    CommandDispatcher.dispatch(ca);
+                    CommandAction cachedCA = (CommandAction)cmdAction.clone();
+                    cmdAction.setData(((DataActionEvent)e).getData());
+                    CommandDispatcher.dispatch(cmdAction);
+                    cmdAction.set(cachedCA);
                     
                 } catch (CloneNotSupportedException ex)
                 {

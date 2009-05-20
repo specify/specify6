@@ -33,13 +33,14 @@ import java.util.Vector;
 import javax.swing.JMenuItem;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.SubPaneIFace;
+import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.db.BackupServiceFactory;
+import edu.ku.brc.specify.tasks.subpane.WebServiceSubPane;
 import edu.ku.brc.specify.web.HttpLargeFileTransfer;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -62,7 +63,7 @@ public class WebSearchTask extends BaseTask
     public static final String     WS_BK_SEND       = "WS_BK_SEND";
     public static final String     WEBSRCH_MSG      = "WEBSRCH_MSG";
     
-    protected static final String WEBSEARCH_ICON   = "Plugins";
+    protected static final String WEBSEARCH_ICON    = "Plugins";
     
     // Data Members
     protected NavBox navBox = null;
@@ -91,11 +92,11 @@ public class WebSearchTask extends BaseTask
         {
             super.initialize(); // sets isInitialized to false
             
-            navBox = new NavBox(getResourceString("Commands"));
+            /*navBox = new NavBox(getResourceString("Commands"));
             CommandAction cmdAction = new CommandAction(WEBSEARCH, WS_BK_SEND, null);
             makeDnDNavBtn(navBox, "Send Backup", "MySQL", cmdAction, null, false, false);
             
-            navBoxes.add(navBox);
+            navBoxes.add(navBox);*/
         }
     }
     
@@ -105,7 +106,29 @@ public class WebSearchTask extends BaseTask
     @Override
     public SubPaneIFace getStarterPane()
     {
-        return StartUpTask.createFullImageSplashPanel(WEBSEARCH, this);
+        if (starterPane != null)
+        {
+            return starterPane;
+        }
+        return starterPane = new WebServiceSubPane(WEBSEARCH, this, false);
+    }
+    
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.SubPaneMgrListener#subPaneRemoved(edu.ku.brc.af.ui.SubPaneIFace)
+     */
+    @Override
+    public void subPaneRemoved(final SubPaneIFace subPane)
+    {
+        super.subPaneRemoved(subPane);
+        
+        if (starterPane != null && (starterPane == subPane || subPanes.size() == 0))
+        {
+            starterPane.shutdown();
+            starterPane = null;
+            TaskMgr.reenableAllDisabledTasks();
+            TaskMgr.getTask("Startup").requestContext();
+        }
     }
     
     /* (non-Javadoc)
@@ -119,7 +142,7 @@ public class WebSearchTask extends BaseTask
     /**
      * 
      */
-    protected void createAndSendBackup()
+    public void createAndSendBackup()
     {
         BackupServiceFactory.getInstance().doBackUp(new PropertyChangeListener() {
             @Override
@@ -151,7 +174,7 @@ public class WebSearchTask extends BaseTask
                     {
                         if (evt.getPropertyName().equals("Done"))
                         {
-                            startUpload(httpFileTransfer, file);
+                            startUpload(httpFileTransfer, false, file);
                         }
                     }
                 });
@@ -165,10 +188,11 @@ public class WebSearchTask extends BaseTask
     /**
      * @param compressedFile
      */
-    private void startUpload(final HttpLargeFileTransfer httpFileTransfer, 
+    private void startUpload(final HttpLargeFileTransfer httpFileTransfer,
+                             final boolean isSiteFile, 
                              final File compressedFile)
     {
-        httpFileTransfer.transferFile(compressedFile.getAbsolutePath(), "http://localhost:8080/uploader/UploaderServlet", null);
+        httpFileTransfer.transferFile(compressedFile.getAbsolutePath(), "http://localhost:8080/uploader/UploaderServlet", isSiteFile, null);
     }
 
     /*

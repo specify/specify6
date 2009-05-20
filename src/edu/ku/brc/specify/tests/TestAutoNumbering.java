@@ -138,7 +138,7 @@ public class TestAutoNumbering extends TestCase
                                  final String firstName, 
                                  final String lastName, 
                                  final String email,
-                                 final DisciplineType  disciplineType)
+                                 final DisciplineType disciplineType)
     {
         String actionStr = fillDB ? "Creating" : "Initializing";
         log.info(actionStr + " Specify Database Username["+username+"]");
