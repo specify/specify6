@@ -144,6 +144,7 @@ public class SpecifyDBConverter
     public SpecifyDBConverter()
     {
         setUpSystemProperties();
+        
     }
 
     /**
@@ -524,7 +525,9 @@ public class SpecifyDBConverter
             {
                 BuildSampleDatabase.createSpecifySAUser(hostName, itUsrPwd.first, itUsrPwd.second, masterUsrPwd.first, masterUsrPwd.second, dbNameDest);
 
-                GenericDBConversion conversion = new GenericDBConversion(oldDBConn, newDBConn, dbNameSource, dbNameDest);
+                convLogger.initialize(dbNameDest);
+                
+                GenericDBConversion conversion = new GenericDBConversion(oldDBConn, newDBConn, dbNameSource, dbNameDest, convLogger);
 
                 conversion.setFrame(frame);
 
@@ -869,8 +872,11 @@ public class SpecifyDBConverter
                 boolean doTaxonomy = false;
                 if (doTaxonomy || doAll )
                 {
-                	conversion.copyTaxonTreeDefs();
-                	conversion.convertTaxonTreeDefItems();
+                	 ConversionLogger.TableWriter tblWriter = convLogger.getWriter("FullTaxon.html", "Taxon Conversion");
+                	
+                	conversion.copyTaxonTreeDefs(tblWriter);
+                	conversion.convertTaxonTreeDefItems(tblWriter);
+                	BasicSQLUtils.setTblWriter(tblWriter);
                     
                     // fix the fullNameDirection field in each of the converted tree defs
                     Session session = HibernateUtil.getCurrentSession();
@@ -912,7 +918,9 @@ public class SpecifyDBConverter
                         log.error("Error while setting the fullname separator of taxonomy tree definition items.");
                     }
                     
-                	conversion.convertTaxonRecords();
+                	conversion.convertTaxonRecords(tblWriter);
+                	
+                	BasicSQLUtils.setTblWriter(null);
                 }
                 frame.incOverall();
                 

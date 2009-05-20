@@ -27,6 +27,7 @@ import java.sql.Statement;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.specify.conversion.ConversionLogger.TableWriter;
 import edu.ku.brc.ui.ProgressFrame;
 
 
@@ -54,6 +55,8 @@ public class IdHashMapper implements IdMapperIFace
     
     protected ProgressFrame   frame         = null;
     protected int             initialIndex  = 1;
+    
+    protected static TableWriter tblWriter = null;
     
     /**
      * Default Constructor for those creating derived classes.
@@ -166,7 +169,7 @@ public class IdHashMapper implements IdMapperIFace
 
         if (!isUsingSQL)
         {
-        	BasicSQLUtils.deleteAllRecordsFromTable(mapTableName, BasicSQLUtils.myDestinationServerType);
+            BasicSQLUtils.deleteAllRecordsFromTable(mapTableName, BasicSQLUtils.myDestinationServerType);
         }
         
         
@@ -272,26 +275,26 @@ public class IdHashMapper implements IdMapperIFace
      */
     public void cleanup()
     {
-    	if (mapTableName != null)
-    	{
-	        try
-	        {
-	            Statement stmtNew = newConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
-	            stmtNew.executeUpdate("DROP TABLE `"+mapTableName+"`");
-	            stmtNew.close();
-	            
-	        } catch (com.mysql.jdbc.exceptions.MySQLSyntaxErrorException ex)
-	        {
-	            log.error(ex);
-	            
-	        } catch (Exception ex)
-	        {
-	            //ex.printStackTrace();
-	            log.error(ex);
-	        }
-	
-	        mapTableName = null;
-    	}
+        if (mapTableName != null)
+        {
+            try
+            {
+                Statement stmtNew = newConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+                stmtNew.executeUpdate("DROP TABLE `"+mapTableName+"`");
+                stmtNew.close();
+                
+            } catch (com.mysql.jdbc.exceptions.MySQLSyntaxErrorException ex)
+            {
+                log.error(ex);
+                
+            } catch (Exception ex)
+            {
+                //ex.printStackTrace();
+                log.error(ex);
+            }
+    
+            mapTableName = null;
+        }
 
     }
     
@@ -353,9 +356,11 @@ public class IdHashMapper implements IdMapperIFace
             } else
             {
                 if (showLogErrors) 
-                    {
-                    log.error("********** Couldn't find old index ["+oldId+"] for "+mapTableName);
-                    }
+                {
+                	String msg = "********** Couldn't find old index ["+oldId+"] for "+mapTableName;
+                    log.error(msg);
+                    if (tblWriter != null) tblWriter.logError(msg);
+                }
                 rs.close();
                 return null;
             }
@@ -366,13 +371,15 @@ public class IdHashMapper implements IdMapperIFace
 
         } catch (SQLException ex)
         {
+            String msg = "Couldn't find old index ["+oldId+"] for "+mapTableName;
+            if (tblWriter != null) tblWriter.logError(msg);
+            
             edu.ku.brc.af.core.UsageTracker.incrSQLUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(IdHashMapper.class, ex);
             ex.printStackTrace();
             log.error(ex);
-            throw new RuntimeException("Couldn't find old index ["+oldId+"] for "+mapTableName);
+            throw new RuntimeException(msg);
         }
-
     }
     
     /* (non-Javadoc)
@@ -402,6 +409,20 @@ public class IdHashMapper implements IdMapperIFace
     public void setInitialIndex(int initialIndex)
     {
         this.initialIndex = initialIndex;
+    }
+
+    /**
+     * @return the tblWriter
+     */
+    public static TableWriter getTblWriter() {
+        return tblWriter;
+    }
+
+    /**
+     * @param tblWriter the tblWriter to set
+     */
+    public static void setTblWriter(TableWriter tblWriter) {
+        IdHashMapper.tblWriter = tblWriter;
     }
     
 }

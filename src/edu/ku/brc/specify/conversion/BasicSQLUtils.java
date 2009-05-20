@@ -1619,7 +1619,7 @@ public class BasicSQLUtils
                                     
                                     if (isOptionOn(SHOW_NULL_FK))
                                     {
-                                    	String msg = "Unable to Map Primary Id[NULL] old Name["+oldMappedColName+"] ["+columnIndex+"]";
+                                    	String msg = "Unable to Map Primary Id[NULL] old Name["+oldMappedColName+"]   colInx["+columnIndex+"]   newColName["+newColName+"]";
                                         log.error(msg);
                                         writeErrLog(msg);
                                         skipRecord = true;

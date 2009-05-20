@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Hashtable;
 
+import org.apache.commons.io.FilenameUtils;
+
 /**
  * @author rod
  *
@@ -70,8 +72,8 @@ public class ConversionLogger
      */
     public TableWriter getWriter(final String fileName, final String title)
     {
-    	
-    	ConversionLogger.TableWriter tblWriter = null;
+        
+        ConversionLogger.TableWriter tblWriter = null;
         try
         {
             String path = dir.getAbsolutePath() + File.separator + fileName;
@@ -89,30 +91,66 @@ public class ConversionLogger
      */
     public void closeAll()
     {
-    	for (TableWriter tw : printWritersHash.values())
-    	{
-    		try
-    		{
-    			tw.close();
-    			
-    		} catch (Exception ex)
-    		{
-    			
-    		}
-    	}
+        try 
+        {
+            String path = dir.getAbsolutePath() + File.separator + "index.html";
+            TableWriter indexWriter = new TableWriter(path, "Index");
+            indexWriter.startTable();
+            for (TableWriter tw : printWritersHash.values())
+            {
+                try
+                {
+                    indexWriter.log(null, "<a href=\""+ FilenameUtils.getName(tw.getFileName())+"\">"+tw.getTitle()+"</a>", null);
+                    
+                    tw.close();
+                    
+                } catch (Exception ex)
+                {
+                    
+                }
+            }
+            indexWriter.endTable();
+            indexWriter.close();
+            
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
+
     }
     
     //-------------------------------------------------------------
     public class TableWriter extends PrintWriter
     {
+        private String fName;
+        private String title;
         
         public TableWriter(final String fileName, final String title) throws FileNotFoundException
         {
             super(fileName);
+            this.fName = fileName;
+            this.title = title;
+            
             println("<html><head><title>"+title+"</title>\n<style>\n  span.err { color: red; }\n</style>\n</head><body>");
             println("<h2>"+title+"</h2>");
         }
         
+        /**
+         * @return the fName
+         */
+        public String getFileName() 
+        {
+            return fName;
+        }
+
+        /**
+         * @return the title
+         */
+        public String getTitle() {
+            return title;
+        }
+
         public void log(final String msg)
         {
             print(msg);
@@ -143,15 +181,21 @@ public class ConversionLogger
         public void log(final String id, final String value, final String desc)
         {
             print(TR);
-            print(TD);
-            print(id);
-            print(TD_);
+            if (id != null)
+            {
+                print(TD);
+                print(id);
+                print(TD_);
+            }
             print(TD);
             print(value);
             print(TD_);
-            print(TD);
-            print(desc);
-            print(TD_);
+            if (desc != null)
+            {
+                print(TD);
+                print(desc);
+                print(TD_);
+            }
             println(TR_);
             flush();
         }

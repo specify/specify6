@@ -199,7 +199,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     // edu.ku.brc.specify.datamodel.Institution
     protected int                                           globalIdNumber         = 1;
     
-    protected ConversionLogger                              convLogger = new ConversionLogger();
+    protected ConversionLogger                              convLogger = null;
 
     /**
      * "Old" means the database you want to copy "from"
@@ -212,12 +212,12 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     public GenericDBConversion(final Connection oldDBConn, 
                                final Connection newDBConn,
                                final String oldDBName,
-                               final String newDBName)
+                               final String newDBName,
+                               final ConversionLogger convLogger)
     {
         this.oldDBConn = oldDBConn;
         this.newDBConn = newDBConn;
-        
-        convLogger.initialize(newDBName);
+        this.convLogger = convLogger;
         
         this.idMapperMgr = IdMapperMgr.getInstance();
         
@@ -6079,7 +6079,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     /**
      * 
      */
-    public void copyTaxonTreeDefs()
+    public void copyTaxonTreeDefs(final ConversionLogger.TableWriter tblWriter)
     {
         log.debug("copyTaxonTreeDefs");
         BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "taxontreedef", BasicSQLUtils.myDestinationServerType);
@@ -6113,7 +6113,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                        null, timestampValues, BasicSQLUtils.mySourceServerType,
                        BasicSQLUtils.myDestinationServerType))
         {
-            log.error("Table 'taxonomytype' didn't copy correctly");
+        	String msg = "Table 'taxonomytype' didn't copy correctly";
+            log.error(msg);
+            tblWriter.logError(msg);
         }
 
         BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(null);
@@ -6129,7 +6131,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
      *
      * @throws SQLException
      */
-    public void convertTaxonTreeDefItems() throws SQLException
+    public void convertTaxonTreeDefItems(final ConversionLogger.TableWriter tblWriter) throws SQLException
     {
         log.debug("convertTaxonTreeDefItems");
         
@@ -6173,7 +6175,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 null, 
                 timestampValues, BasicSQLUtils.mySourceServerType, BasicSQLUtils.myDestinationServerType))
         {
-            log.error("Table 'taxonomicunittype' didn't copy correctly");
+            String msg = "Table 'taxonomicunittype' didn't copy correctly";
+            log.error(msg);
+            tblWriter.logError(msg);
         }
 
         BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(null);
@@ -6296,9 +6300,13 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             {
                 sqlStr = "UPDATE taxontreedefitem SET ParentItemID=" + idPair.second + " WHERE TaxonTreeDefItemID=" + idPair.first;
                 rowsUpdated += newDbStmt.executeUpdate(sqlStr);
+                
+                tblWriter.log(sqlStr);
             }
 
-            log.info("Fixed parent pointers on " + rowsUpdated + " rows");
+            String msg = "Fixed parent pointers on " + rowsUpdated + " rows";
+            log.info(msg);
+            tblWriter.log(msg);
         }
         BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer(newDBConn, "taxontreedefitem", BasicSQLUtils.myDestinationServerType);
     }
@@ -6306,7 +6314,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     /**
      * 
      */
-    public void convertTaxonRecords()
+    public void convertTaxonRecords(final ConversionLogger.TableWriter tblWriter)
     {
         BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "taxon", BasicSQLUtils.myDestinationServerType);
         BasicSQLUtils.setIdentityInsertONCommandForSQLServer(newDBConn, "taxon", BasicSQLUtils.myDestinationServerType);
@@ -6339,39 +6347,30 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);
 
         // AcceptedID is typically NULL unless they are using synonimies
-        boolean showMappingErrors = false;
-        try
-        {
-
-            Statement stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            ResultSet rs = stmt .executeQuery("SELECT count(AcceptedID) FROM taxonname where AcceptedID <> null");
-            if (rs.first())
-            {
-                showMappingErrors = rs.getInt(1) > 0;
-            }
-            rs.close();
-            stmt.close();
-
-        } catch (SQLException ex)
-        {
-            ex.printStackTrace();
-        }
+        Integer cnt               = BasicSQLUtils.getCount(oldDBConn, "SELECT count(AcceptedID) FROM taxonname where AcceptedID IS NOT null");
+        boolean showMappingErrors = cnt != null && cnt > 0;
 
         int errorsToShow = (BasicSQLUtils.SHOW_NAME_MAPPING_ERROR | BasicSQLUtils.SHOW_VAL_MAPPING_ERROR);
         if (showMappingErrors)
         {
-            errorsToShow = errorsToShow | (BasicSQLUtils.SHOW_FK_LOOKUP | BasicSQLUtils.SHOW_NULL_FK);
+            errorsToShow = errorsToShow | BasicSQLUtils.SHOW_FK_LOOKUP;// | BasicSQLUtils.SHOW_NULL_FK);
         }
         BasicSQLUtils.setShowErrors(errorsToShow);
+        
+        IdHashMapper.setTblWriter(tblWriter);
 
         log.info("Copying taxon records from 'taxonname' table");
         if (!copyTable(oldDBConn, newDBConn, sql, "taxonname", "taxon", newToOldColMap, null, BasicSQLUtils.mySourceServerType, BasicSQLUtils.myDestinationServerType))
         {
-            log.error("Table 'taxonname' didn't copy correctly");
+            String msg = "Table 'taxonname' didn't copy correctly";
+            log.error(msg);
+            tblWriter.logError(msg);
         }
 
         BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(null);
         BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer(newDBConn, "taxon", BasicSQLUtils.myDestinationServerType);
+        
+        IdHashMapper.setTblWriter(null);
     }
 
     /**
@@ -8039,17 +8038,18 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
         List<String> oldAgentFieldNames = new ArrayList<String>();
         getFieldNamesFromSchema(oldDBConn, "agent", oldAgentFieldNames, BasicSQLUtils.mySourceServerType);
+        
         String oldFieldListStr = buildSelectFieldList(oldAgentFieldNames, "agent");
         sql.append(oldFieldListStr);
-        sql.append(" from agent where AgentID = " + oldAgentId);
+        sql.append(" FROM agent WHERE AgentID = " + oldAgentId);
 
-        // log.info(oldFieldListStr);
+        log.info(oldFieldListStr);
 
         List<String> newAgentFieldNames = new ArrayList<String>();
         getFieldNamesFromSchema(newDBConn, "agent", newAgentFieldNames, BasicSQLUtils.myDestinationServerType);
         String newFieldListStr = buildSelectFieldList(newAgentFieldNames, "agent");
 
-        // log.info(newFieldListStr);
+        log.info(newFieldListStr);
 
         Hashtable<String, Integer> oldIndexFromNameMap = new Hashtable<String, Integer>();
         int inx = 1;
@@ -8069,7 +8069,11 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         {
             // So first we hash each AddressID and the value is set to 0 (false)
             Statement stmtX = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            ResultSet rsX = stmtX.executeQuery(sql.toString());
+            ResultSet rsX   = stmtX.executeQuery(sql.toString());
+            
+            int agentTypeInx = oldIndexFromNameMap.get("AgentType");
+            int nameInx      = oldIndexFromNameMap.get("Name");
+            int lastNameInx  = oldIndexFromNameMap.get("LastName");
 
             // log.debug(sql.toString());
 
@@ -8093,6 +8097,12 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     if (StringUtils.contains(fieldName.toLowerCase(), "disciplineid"))
                     {
                         sqlStr.append(getDisciplineId());
+
+                    } else if (StringUtils.contains(fieldName, "LastName"))
+                    {
+                        int    srcColInx = rsX.getInt(agentTypeInx) != 1 ? nameInx : lastNameInx;
+                        String lName     = BasicSQLUtils.getStrValue(rsX.getObject(srcColInx));
+                        sqlStr.append(lName);
 
                     } else
                     {
@@ -8497,11 +8507,11 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                                 sqlStr.append("NULL");
                             }
 
-                        } else if (agentColumns[i].equals("agent.LastName"))
+                        } else if (agentColumns[i].equals("agent.LastName") || agentColumns[i].equals("LastName"))
                         {
                             if (debugAgents)log.info("Adding: "+agentColumns[i]);
                             
-                            int    srcColInx = agentType == 1 ? lastNameInx : nameInx;
+                            int    srcColInx = agentType != 1 ? nameInx : lastNameInx;
                             String lName     = BasicSQLUtils.getStrValue(rs.getObject(srcColInx));
                             sqlStr.append(lName);
 
@@ -8679,8 +8689,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             sql.append(buildSelectFieldList(agentAddrFieldNames, "agentaddress"));
             sql.append(", ");
 
-            getFieldNamesFromSchema(oldDBConn, "agent", agentFieldNames,
-                    BasicSQLUtils.mySourceServerType);
+            getFieldNamesFromSchema(oldDBConn, "agent", agentFieldNames, BasicSQLUtils.mySourceServerType);
             sql.append(buildSelectFieldList(agentFieldNames, "agent"));
 
             sql.append(" FROM agent Inner Join agentaddress ON agentaddress.AgentID = agent.AgentID where agentaddress.AddressID is null Order By agentaddress.AgentAddressID Asc");
@@ -8770,8 +8779,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     sqlStr.append(" VALUES (");
                     for (int i = 0; i < agentColumns.length; i++)
                     {
-                        if (i > 0)
-                            sqlStr.append(",");
+                        if (i > 0) sqlStr.append(",");
+                        
                         if (i == 0)
                         {
                             if (debugAgents) log.info(agentColumns[i]);
@@ -8786,7 +8795,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                         } else if (agentColumns[i].equals("agent.LastName"))
                         {
                             if (debugAgents) log.info(agentColumns[i]);
-                            int    srcColInx = agentType == 1 ? lastNameInx : nameInx;
+                            int    srcColInx = agentType != 1 ? nameInx : lastNameInx;
                             String lName     = BasicSQLUtils.getStrValue(rs.getObject(srcColInx));
                             sqlStr.append(lName);
 
@@ -8858,6 +8867,40 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 if (agentInfo == null || !agentInfo.wasAdded())
                 {
                     copyAgentFromOldToNew(agentId, agentIDMapper);
+                }
+                recordCnt++;
+                if (recordCnt % 50 == 0)
+                {
+                    setProcess(recordCnt);
+                }
+            }
+            
+            setProcess(recordCnt);
+            BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer(newDBConn, "agent", BasicSQLUtils.myDestinationServerType);
+            
+            ConversionLogger.TableWriter  tblWriter = convLogger.getWriter("AgentConv.html", "Agents");
+            
+            //------------------------------------------------------------
+            // Now Copy all the Agents that where missed
+            //------------------------------------------------------------
+            setProcess(0);
+            stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            rs   = stmt.executeQuery("SELECT AgentID from agent");
+            recordCnt = 0;
+            while (rs.next())
+            {
+                Integer   agentId = rs.getInt(1);
+                Integer   newId   = agentIDMapper.get(agentId);
+                if (newId != null)
+                {
+	                Integer isThere = BasicSQLUtils.getCount(newDBConn, "SELECT COUNT(*) FROM agent WHERE AgentID = "+ newId);
+	                if (isThere == null || isThere == 0)
+	                {
+	                    copyAgentFromOldToNew(agentId, agentIDMapper);
+	                }
+                } else
+                {
+                	tblWriter.logError("Mapping missing for old Agent id["+agentId+"]");
                 }
                 recordCnt++;
                 if (recordCnt % 50 == 0)
