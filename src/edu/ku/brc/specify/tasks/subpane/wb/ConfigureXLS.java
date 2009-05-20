@@ -53,6 +53,7 @@ import org.apache.poi.poifs.filesystem.DocumentInputStream;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 
 import edu.ku.brc.specify.rstools.ExportFileConfigurationFactory;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -160,7 +161,8 @@ public class ConfigureXLS extends ConfigureExternalDataBase
     {
         //firstRowHasHeaders = determineFirstRowHasHeaders();
         DataImportDialog dlg = new DataImportDialog(this,  firstRowHasHeaders);
-        
+        UIHelper.centerAndShow(dlg);
+
         if (!dlg.isCancelled())
         {
             firstRowHasHeaders = dlg.getDoesFirstRowHaveHeaders();

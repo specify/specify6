@@ -65,6 +65,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.text.AttributeSet;
@@ -167,8 +168,8 @@ public class DataImportDialog extends JDialog implements ActionListener
     
     protected boolean ignoreActions = false;
     
-    protected short geoDataCol = -1;
-    protected Vector<Short> imageDataCols = new Vector<Short>();
+    protected int geoDataCol = -1;
+    protected Vector<Integer> imageDataCols = new Vector<Integer>();
 
     /**
      * Constructor for Import Dialog for a csv
@@ -252,7 +253,6 @@ public class DataImportDialog extends JDialog implements ActionListener
      * 
      * void
      */
-    @SuppressWarnings("unused")
     private void createUiForXLS()
     {
     	JPanel p = createConfigPanelForXLS();
@@ -275,7 +275,6 @@ public class DataImportDialog extends JDialog implements ActionListener
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         pack();
         setModal(true);
-        UIHelper.centerAndShow(this);
     }
     
     /**
@@ -616,6 +615,18 @@ public class DataImportDialog extends JDialog implements ActionListener
         {
             setXLSTableData(myDisplayTable);
         }
+        SwingUtilities.invokeLater(new Runnable() {
+
+			/* (non-Javadoc)
+			 * @see java.lang.Runnable#run()
+			 */
+			@Override
+			public void run()
+			{
+				okBtn.setEnabled(!hasTooManyRows);
+			}
+        	
+        });
     }
 
     /**
@@ -777,7 +788,7 @@ public class DataImportDialog extends JDialog implements ActionListener
         return false;
     }
     
-    private void checkUserColInfo(final String value, short colNum)
+    private void checkUserColInfo(final String value, int colNum)
     {
         if (value.equals(DataImport.GEO_DATA_HEADING))
         {
@@ -789,7 +800,7 @@ public class DataImportDialog extends JDialog implements ActionListener
         }
     }
     
-    private boolean isUserCol(short colNum)
+    private boolean isUserCol(int colNum)
     {
         return geoDataCol != colNum && !imageDataCols.contains(colNum);
     }
@@ -806,7 +817,7 @@ public class DataImportDialog extends JDialog implements ActionListener
     private JTable setXLSTableData(final JTable table)
     {
         int      numRows = 0;
-        short    numCols = 0;
+        int    numCols = 0;
         String[] headers = {};
         Vector<Vector<String>> tableDataVector = new Vector<Vector<String>>();
         Vector<String> rowData = new Vector<String>();
@@ -988,9 +999,14 @@ public class DataImportDialog extends JDialog implements ActionListener
                 errorPanel.showDataImportStatusPanel(false);
             }
             
-            if(numRows > WorkbenchTask.MAX_ROWS)
+            if((doesFirstRowHaveHeaders ? numRows-1 : numRows) > WorkbenchTask.MAX_ROWS)
             {
+            	hasTooManyRows = true;
             	showTooManyRowsErrorDialog();
+            }
+            else
+            {
+            	hasTooManyRows = false;
             }
             log.debug(headers);
             log.debug(tableData);
@@ -1005,6 +1021,10 @@ public class DataImportDialog extends JDialog implements ActionListener
                 result.getTableHeader().setReorderingAllowed(false);
                 result.setPreferredScrollableViewportSize(new Dimension(500, 100));
                 result.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+            }
+            else
+            {
+            	result = table;
             }
             result.setModel(model);
             result.setDefaultRenderer(String.class, new BiColorTableCellRenderer(false));
@@ -1041,27 +1061,11 @@ public class DataImportDialog extends JDialog implements ActionListener
         PanelBuilder    builder = new PanelBuilder(new FormLayout("p:g", "c:p:g"));
         CellConstraints cc      = new CellConstraints();
 
-        //builder.add(createLabel(IconManager.getIcon("SpecifyLargeIcon")), cc.xy(1,1));
-        // XXX I18N 
-        
         //The Specify 6 Workbench can only import 2000 rows of data.  The file you tried to import had more than that.  Please reduce the record account and try again.
-        builder.add(createLabel("<html>"
-        		+"<p>The Specify 6 Workbench can only import "+WorkbenchTask.getMaxRows()+" rows of data."
-        		//+"<br>"
-        		+"<br>The file you tried to import had more than that."
-        		//+"<br>"
-        		+"<br><br>Please reduce the record account and try again.<br><br>"
-        		+"</p></html>"), cc.xy(1,1)); //TODO i8n
+        builder.add(createLabel(String.format(UIRegistry.getResourceString("DataImportDialog.TooManyRows"), WorkbenchTask.getMaxRows())), cc.xy(1,1));
         builder.setBorder(BorderFactory.createEmptyBorder(4, 4, 0, 4));
         CustomDialog maxRowExceededDlg = new CustomDialog((Frame)UIRegistry.get(UIRegistry.FRAME), getResourceString("WB_MAXROWS") , true, CustomDialog.OK_BTN, builder.getPanel());
-        //maxRowExceededDlg.createUI();
         UIHelper.centerAndShow(maxRowExceededDlg);
-        //Dimension size = maxRowExceededDlg.getPreferredSize();
-        //maxRowExceededDlg.setSize(Math.min(size.width, 300), size.height+20);
-    	//maxRowExceededDlg.setVisible(true);
-        hasTooManyRows = true;
-
-        //okBtn.setEnabled(false);   	
     }
     
     /**
@@ -1143,9 +1147,14 @@ public class DataImportDialog extends JDialog implements ActionListener
                 errorPanel.showDataImportStatusPanel(false);
             }
             
-            if(tableDataVector.size() > WorkbenchTask.MAX_ROWS)
+            if((doesFirstRowHaveHeaders ? tableDataVector.size()-1 : tableDataVector.size())  > WorkbenchTask.MAX_ROWS)
             {
+            	hasTooManyRows = true;
             	showTooManyRowsErrorDialog();
+            }
+            else
+            {
+            	hasTooManyRows = false;
             }
 			model = new PreviewTableModel(headers, tableData);
 			table.setModel(model);

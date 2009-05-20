@@ -232,5 +232,8 @@
     <icon name="Login"                 file="login.png" sizes="all"/>
     <icon name="MySQL"                 file="mysql_logo.png" sizes="all"/>
     
+    <!-- ImportFileSlicer -->
+    <icon name="Splicer"              file="data_split.png" sizes="all"/>
+    
     
 </icons>

@@ -38,8 +38,8 @@ import com.csvreader.CsvReader;
 
 import edu.ku.brc.specify.rstools.ExportFileConfigurationFactory;
 import edu.ku.brc.ui.ChooseFromListDlg;
-import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author timbo
@@ -220,6 +220,9 @@ public class ConfigureCSV extends ConfigureExternalDataBase
         return getResourceString("DEFAULT_COLUMN_NAME");
     }
     
+    /**
+     * @return true if default text qualifier should be used?
+     */
     private boolean getDefaultUserTextQualifer()
     {
         return true;
@@ -314,10 +317,17 @@ public class ConfigureCSV extends ConfigureExternalDataBase
         if (delim == "\'"){ return '\"'; }
         return ' ';
     }
+    
+    /**
+     * @return default delimiter
+     */
     private char getDefaultDelimiter()
     {
         return ',';
     }
+    /**
+     * @return default text qualifier.
+     */
     private char getDefaultTextQualifier()
     {
         return '\'';
@@ -355,6 +365,9 @@ public class ConfigureCSV extends ConfigureExternalDataBase
 
     }
 
+    /**
+     * @return the default char set
+     */
     private Charset getDefaultCharset()
     {
         return Charset.defaultCharset();
@@ -388,12 +401,19 @@ public class ConfigureCSV extends ConfigureExternalDataBase
         return CsvReader.ESCAPE_MODE_DOUBLED;
     }
 
+    /**
+     * @return default escape mode
+     */
     private int getDefaultEscapeMode()
     {
         return CsvReader.ESCAPE_MODE_DOUBLED;
     }
 
-    private ImportColumnInfo.ColumnType getCellType(@SuppressWarnings("unused") final int colIndex)
+    /**
+     * @param colIndex
+     * @return the ColumnType for the cell at colIndex
+     */
+    private ImportColumnInfo.ColumnType getCellType(final int colIndex)
     {
         return ImportColumnInfo.ColumnType.String; // hmmmm....
     }
@@ -416,7 +436,8 @@ public class ConfigureCSV extends ConfigureExternalDataBase
 		 
 		DataImportDialog dlg = new DataImportDialog(this, delimiter,
                 textQualifier, charset, escapeMode, firstRowHasHeaders, shouldUseTextQualifier);
-
+		UIHelper.centerAndShow(dlg);
+		
 		if (!dlg.isCancelled())
         {
             delimiter = dlg.getDelimChar();

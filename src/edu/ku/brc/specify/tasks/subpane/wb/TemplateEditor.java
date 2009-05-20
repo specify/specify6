@@ -185,14 +185,16 @@ public class TemplateEditor extends CustomDialog
         createUI();
     }
     
-    /* (non-Javadoc)
+    
+    
+	/* (non-Javadoc)
      * @see edu.ku.brc.ui.CustomDialog#createUI()
      */
     @Override
     public void createUI()
     {
         super.createUI();
-        
+                
         databaseSchema = WorkbenchTask.getDatabaseSchema();
         
         int disciplineeId = AppContextMgr.getInstance().getClassObject(Discipline.class).getDisciplineId();
@@ -447,7 +449,6 @@ public class TemplateEditor extends CustomDialog
         {
             autoMapFromDataFile(dataFileInfo.getColInfo());
         }
-        
         if (workbenchTemplate != null)
         {
             fillFromTemplate();
@@ -1474,6 +1475,69 @@ public class TemplateEditor extends CustomDialog
         }
     }
     
+    protected WorkbenchTemplateMappingItem getMappingByDataColIdx(final Vector<WorkbenchTemplateMappingItem> items, final int dataColIdx)
+    {
+    	for (WorkbenchTemplateMappingItem item : items)
+    	{
+    		if (item.getOrigImportColumnIndex().intValue() == dataColIdx)
+    		{
+    			return item;
+    		}
+    	}
+    	return null;
+    }
+    
+//    protected void mapDataFileToTemplate()
+//    {
+//        doingFill = true;
+//        
+//        // Map the TableInfo's Table ID to it's index in the Vector
+//        Hashtable<Integer, Integer> tblIdToListIndex = new Hashtable<Integer, Integer>();
+//        for (int i=0;i<tableModel.size();i++)
+//        {
+//            TableListItemIFace ti = tableModel.getElementAt(i);
+//            if (ti.isExpandable())
+//            {
+//                tblIdToListIndex.put(((TableInfo)ti).getTableInfo().getTableId(), i);
+//            }
+//        }
+//
+//        // Get and Sort the list of WBTMIs
+//        Vector<WorkbenchTemplateMappingItem> items = new Vector<WorkbenchTemplateMappingItem>(workbenchTemplate.getWorkbenchTemplateMappingItems());
+//        
+//        //Hashtable<TableInfo, Boolean> tablesInUse = new Hashtable<TableInfo, Boolean>();
+//        
+//        for (ImportColumnInfo colInfo : dataFileInfo.getColInfo())
+//        {
+//        	WorkbenchTemplateMappingItem item = getMappingByDataColIdx(items, colInfo.getColInx());
+//        	if (item != null)
+//        	{
+//                int       inx = tblIdToListIndex.get(item.getSrcTableId());
+//                TableInfo tblInfo  = tableModel.getElementAt(inx);
+//                
+//                 for (FieldInfo fieldInfo : tblInfo.getFieldItems())
+//                {
+//                    if (item.getFieldName().equals(fieldInfo.getFieldInfo().getName()))
+//                    {
+//                    	map(null, colInfo, tblInfo, fieldInfo, null);
+//                    	break;
+//                    }
+//                }
+//        	}
+//        	else
+//        	{
+//                FieldMappingPanel fmp = new FieldMappingPanel(colInfo, blankIcon);
+//                fmp.getArrowLabel().setVisible(false);
+//                mapModel.add(fmp);
+//        	}
+//        }
+//        doingFill = false;
+//        
+//        mapList.getSelectionModel().clearSelection();
+//        tableList.getSelectionModel().clearSelection();
+//
+//    }
+    
     /**
      * Fill the UI from a WorkbenchTemplate. 
      */
@@ -1496,22 +1560,18 @@ public class TemplateEditor extends CustomDialog
         Vector<WorkbenchTemplateMappingItem> items = new Vector<WorkbenchTemplateMappingItem>(workbenchTemplate.getWorkbenchTemplateMappingItems());
         Collections.sort(items);
         
-        Hashtable<TableInfo, Boolean> tablesInUse = new Hashtable<TableInfo, Boolean>();
         for (WorkbenchTemplateMappingItem  wbtmi : items)
         {
             int       inx = tblIdToListIndex.get(wbtmi.getSrcTableId());
             TableInfo ti  = tableModel.getElementAt(inx);
             
-            int fieldNum = 0;
             for (FieldInfo fi : ti.getFieldItems())
             {
                 if (wbtmi.getFieldName().equals(fi.getFieldInfo().getName()))
                 {
                     addNewMapItem(fi, wbtmi);
-                    tablesInUse.put(ti, true);
                     break;
                 }
-                fieldNum++;
             }
         }
         doingFill = false;

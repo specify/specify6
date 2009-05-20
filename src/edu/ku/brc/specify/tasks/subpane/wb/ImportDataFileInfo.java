@@ -36,6 +36,7 @@ import javax.swing.WindowConstants;
 import org.apache.commons.io.FilenameUtils;
 
 import edu.ku.brc.specify.datamodel.Workbench;
+import edu.ku.brc.specify.rstools.ExportFileConfigurationFactory;
 import edu.ku.brc.ui.BiColorTableCellRenderer;
 import edu.ku.brc.ui.CustomFrame;
 import edu.ku.brc.ui.UIHelper;
@@ -49,8 +50,6 @@ import edu.ku.brc.ui.UIHelper;
  */
 public class ImportDataFileInfo
 {
-    protected static String XLS_MIME_TYPE = "bindary/xls";
-    protected static String CSV_MIME_TYPE = "text/csv";
     protected static String MODIFIED_IMPORT_DATA = "WB_MODIFIED_IMPORT_DATA";
     
     protected DataImportIFace importer;
@@ -73,7 +72,7 @@ public class ImportDataFileInfo
         
         boolean isValid = false;
         String mimeType = getMimeType(file);
-        if (mimeType == XLS_MIME_TYPE)
+        if (mimeType == ExportFileConfigurationFactory.XLS_MIME_TYPE)
         {
              config = new ConfigureXLS(file);
             if (config.getStatus() == ConfigureExternalDataIFace.Status.Valid)
@@ -82,7 +81,7 @@ public class ImportDataFileInfo
                 isValid = true;
             }
             
-        } else if (mimeType == CSV_MIME_TYPE)
+        } else if (mimeType == ExportFileConfigurationFactory.CSV_MIME_TYPE)
         {
              config = new ConfigureCSV(file);
             if (config.getStatus() == ConfigureExternalDataIFace.Status.Valid)
@@ -191,11 +190,11 @@ public class ImportDataFileInfo
         String extension = FilenameUtils.getExtension(file.getName()).toLowerCase();
         if (extension.equalsIgnoreCase("xls"))
         {
-            return XLS_MIME_TYPE;
+            return ExportFileConfigurationFactory.XLS_MIME_TYPE;
             
         } else if (extension.equalsIgnoreCase("csv") || extension.equalsIgnoreCase("txt"))
         {
-            return CSV_MIME_TYPE;
+            return ExportFileConfigurationFactory.CSV_MIME_TYPE;
         }
         return "";
     }
