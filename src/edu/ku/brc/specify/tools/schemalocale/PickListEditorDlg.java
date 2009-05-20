@@ -474,7 +474,8 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
         if (dlg.getBtnPressed() == ViewBasedDisplayIFace.OK_BTN)
         {
             dlg.getMultiView().getCurrentViewAsFormViewObj().traverseToGetDataFromForms();
-            boolean isOK = PickList.save(true, pickList);
+            //boolean isOK = PickList.save(true, pickList);
+            boolean isOK = multiView.getCurrentViewAsFormViewObj().saveObject();
             if (isOK)
             {
                 isChanged = true;
