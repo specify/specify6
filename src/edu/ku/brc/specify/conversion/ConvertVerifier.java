@@ -19,6 +19,7 @@
 */
 package edu.ku.brc.specify.conversion;
 
+import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -42,7 +43,9 @@ import java.util.Properties;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
+import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
@@ -64,16 +67,21 @@ import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.DesertBlue;
 
+import edu.ku.brc.af.core.UsageTracker;
+import edu.ku.brc.af.tasks.StatsTrackerTask;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.dbsupport.MySQLDMBSUserMgr;
+import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.ToggleButtonChooserPanel;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.ToggleButtonChooserPanel.Type;
+import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.Pair;
 
 public class ConvertVerifier
@@ -115,7 +123,6 @@ public class ConvertVerifier
 
     protected static long                                   coOptions         = NO_OPTIONS;
     protected static long                                   acOptions         = NO_OPTIONS;
-    protected static ProgressFrame                          frame             = null;
     protected static List<String>                           dbNamesToConvert  = null;
     protected static int                                    currentIndex      = 0;
     protected static Hashtable<String, String>              old2NewDBNames    = null;
@@ -146,8 +153,19 @@ public class ConvertVerifier
     protected int                                           numErrors = 0;
     protected static SimpleDateFormat                       dateFormatter          = new SimpleDateFormat("yyyy-MM-dd");
     protected boolean                                       debug = false;
+    protected static ProgressFrame                          progressFrame;
     
     
+    /**
+     * 
+     */
+    public ConvertVerifier()
+    {
+        super();
+        
+        UIRegistry.setAppName("Specify");
+    }
+
     /**
      * @param databaseNameSource
      * @param databaseNameDest
@@ -156,7 +174,9 @@ public class ConvertVerifier
     public void verifyDB(final String databaseNameSource, 
                          final String databaseNameDest) throws Exception
     {
-        out = new PrintWriter(new File("conversions" + File.separator + databaseNameDest + File.separator + "verify.html"));
+        
+        File verifyFile = new File("conversions" + File.separator + databaseNameDest + File.separator + "verify.html");
+        out = new PrintWriter(verifyFile);
         
         String title = "From "+databaseNameSource+" to "+databaseNameDest;
         System.out.println("************************************************************");
@@ -272,6 +292,26 @@ public class ConvertVerifier
             verifyTableCounts(tableNames[i].toLowerCase(), tableNames[i+1].toLowerCase());
         }
         
+        progressFrame = new ProgressFrame("Checking Catalog Objects....");
+        progressFrame.adjustProgressFrame();
+        
+        Integer total = BasicSQLUtils.getCount(oldDBConn, "SELECT COUNT(CatalogNumber) FROM collectionobjectcatalog WHERE CollectionObjectTypeID = 10 ORDER BY CatalogNumber ASC");
+        progressFrame.setProcess(0, total);
+        //progressFrame.setDesc("Checking Catalog Objects....");
+        
+        progressFrame.setOverall(0, total*4);
+        progressFrame.setOverall(0);
+        progressFrame.setDesc("");
+
+        UIHelper.centerAndShow(progressFrame);
+        
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run()
+            {
+                UIHelper.centerAndShow(progressFrame);
+            }
+        });
+        
         out.println("<H3>Collection Objects</H3>");
         out.println("<table class=\"o\" cellspacing=\"0\" border=\"0\">");
         
@@ -280,7 +320,6 @@ public class ConvertVerifier
 
         if (coOptions > NO_OPTIONS)
         {
-            
             int i = 0;
             Statement stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             ResultSet rs = stmt.executeQuery("SELECT CatalogNumber FROM collectionobjectcatalog WHERE CollectionObjectTypeID = 10 ORDER BY CatalogNumber ASC");
@@ -333,6 +372,8 @@ public class ConvertVerifier
                 if ((i % 100) == 0)
                 {
                     System.out.println(i+"  "+oldCatNum);
+                    progressFrame.setProcess(i);
+                    progressFrame.setOverall(i);
                 }
                 i++;
             }
@@ -341,16 +382,19 @@ public class ConvertVerifier
             stmt.close();
         }
         
+        progressFrame.setProcess(total);
+        
         if (isCOOn(DO_COLLECTORS))
         {
             verifyCollectors();
         }
-        
+        progressFrame.setOverall(total*2);
         if (isCOOn(DO_COLLEVENTS))
         {
             verifyCEs();
         }
-
+        progressFrame.setOverall(total*3);
+        
         printTotal();
         out.println("</table>");
         
@@ -365,7 +409,7 @@ public class ConvertVerifier
         out.println("<BR>");
         
         out.println("<H3>Accessions</H3>");
-        out.println("<table border=\"1\">");
+        out.println("<table class=\"o\" cellspacing=\"0\" border=\"0\">");
         
         if (acOptions > NO_OPTIONS)
         {
@@ -405,7 +449,7 @@ public class ConvertVerifier
             rs.close();
             stmt.close();
         }
-        
+        progressFrame.setOverall(total*4);
         newDBConn.close();
         oldDBConn.close();
         
@@ -417,6 +461,10 @@ public class ConvertVerifier
         
         out.flush();
         out.close();
+        
+        progressFrame.setVisible(false);
+        
+        AttachmentUtils.openURI(verifyFile.toURI());
     }
     
     /**
@@ -425,10 +473,10 @@ public class ConvertVerifier
     protected void writeStyle(final PrintWriter out)
     {
         out.println("<style>");
-        out.println(" table.o { border-top: rgb(128, 128, 128); border-left: rgb(128, 128, 128); }");
-        out.println(" table.o td { border-bottom: rgb(128, 128, 128); border-right: rgb(128, 128, 128); }");
-        out.println(" table.i { border-top: rgb(192, 192, 192); border-left: rgb(192, 192, 192); }");
-        out.println(" table.i td { border-bottom: rgb(192, 192, 192); border-right: rgb(192, 192, 192); }");
+        out.println(" table.o { border-top: solid 1px rgb(128, 128, 128); border-left: solid 1px rgb(128, 128, 128); }");
+        out.println(" table.o td { border-bottom: solid 1px rgb(128, 128, 128); border-right: solid 1px rgb(128, 128, 128); }");
+        out.println(" table.i { border-top: solid 1px rgb(192, 192, 192); border-left: solid 1px rgb(192, 192, 192); }");
+        out.println(" table.i td { border-bottom: solid 1px rgb(192, 192, 192); border-right: solid 1px rgb(192, 192, 192); }");
         out.println("</style>");
     }
     
@@ -478,14 +526,14 @@ public class ConvertVerifier
                 out.println(dumpSQL(newDBConn, newSQL));
                 out.println(dumpSQL(oldDBConn, oldSQL));
                 out.println("<BR>");
-                out.println("</td></tr>");
+                out.println("</td></tr><!-- 4 -->");
                 break;
                 
             case NO_OLD_REC:
                 out.print("<tr><td colspan=\"2\">");
                 out.println(dumpSQL(newDBConn, newSQL));
                 out.println("<BR>");
-                out.println("</td></tr>");
+                out.println("</td></tr><!-- 4 -->");
                 break;
                 
             case NEW_VAL_NULL:
@@ -493,14 +541,14 @@ public class ConvertVerifier
                 out.println(dumpSQL(newDBConn, newSQL));
                 out.println(dumpSQL(oldDBConn, oldSQL));
                 out.println("<BR>");
-                out.println("</td></tr>");
+                out.println("</td></tr><!-- 4 -->");
                 break;
                 
             case NO_NEW_REC:
                 out.print("<tr><td colspan=\"2\">");
                 out.println(dumpSQL(oldDBConn, oldSQL));
                 out.println("<BR>");
-                out.println("</td></tr>");
+                out.println("</td></tr><!-- 4 -->");
                 break;
         }
         out.flush();
@@ -591,7 +639,7 @@ public class ConvertVerifier
      */
     public static String dumpSQL(final Connection conn, final String sql)
     {
-        StringBuilder sb = new StringBuilder("<table class=\"i\" cellspacing=\"0\" border=\"o\" width=\"100%\">");
+        StringBuilder sb = new StringBuilder("<table class=\"i\" cellspacing=\"0\" border=\"0\" width=\"100%\">\n");
         Vector<Object[]> list = BasicSQLUtils.query(conn, sql, true);
         for (Object[] row : list)
         {
@@ -963,7 +1011,7 @@ public class ConvertVerifier
      */
     protected void printRowError(final String msg)
     {
-        out.println("<tr><td>&nbsp;</td><td>"+msg+"</td></tr>");
+        out.println("<!-- 1s --> <tr><td>&nbsp;</td><td>"+msg+"</td></tr> <!-- 1e -->");
         numErrors++;
     }
     
@@ -972,7 +1020,7 @@ public class ConvertVerifier
      */
     protected void printRowError(final String tbl, final String msg)
     {
-        out.println("<tr><td>" + (tbl != null ? tbl : "&nbsp;") + "</td><td>"+msg+"</td></tr>");
+        out.println("<!-- 2s --><tr><td>" + (tbl != null ? tbl : "&nbsp;") + "</td><td>"+msg+"</td></tr> <!-- 2e -->");
         numErrors++;
     }
     
@@ -981,7 +1029,7 @@ public class ConvertVerifier
      */
     protected void printTotal()
     {
-        out.println("<tr><td>Total Errors</td><td>"+numErrors+"</td></tr>");
+        out.println("<tr><td>Total Errors</td><td>"+numErrors+"</td></tr> <!-- 3 -->");
         numErrors = 0;
     }
     
@@ -1271,18 +1319,17 @@ public class ConvertVerifier
     	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     	boolean dbg = false;
     	
-    	String oldSQL = "SELECT collectingevent.CollectingEventID, collectingevent.StartDate, agent.FirstName,  agent.LastName, agent.Name, collectors.Order  " + 
+         oldSQL = "SELECT collectingevent.CollectingEventID, collectingevent.StartDate, agent.FirstName,  agent.LastName, agent.Name, collectors.Order  " + 
          "FROM collectingevent INNER JOIN collectors ON collectingevent.CollectingEventID = collectors.CollectingEventID " + 
          "INNER JOIN agent ON collectors.AgentID = agent.AgentID ORDER BY collectingevent.CollectingEventID, collectors.Order";
     	
-    	String newSQL = "SELECT collectingevent.CollectingEventID, collectingevent.StartDate, agent.FirstName, agent.LastName, collector.OrderNumber   " + 
+    	 newSQL = "SELECT collectingevent.CollectingEventID, collectingevent.StartDate, agent.FirstName, agent.LastName, collector.OrderNumber   " + 
     	 "FROM collectingevent INNER JOIN collector ON collectingevent.CollectingEventID = collector.CollectingEventID  " + 
     	 "INNER JOIN agent ON collector.AgentID = agent.AgentID ORDER BY collectingevent.CollectingEventID, collector.OrderNumber";
     	
     	int prevOldId = Integer.MAX_VALUE;
     	int prevNewId = Integer.MAX_VALUE;
     	
-    	StringBuilder sb = new StringBuilder();
     	try
         {
 	        getResultSets(oldSQL, newSQL);
@@ -1435,16 +1482,19 @@ public class ConvertVerifier
         }
     }
     
+    /**
+     * 
+     */
     protected void verifyCEs()
     {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         
-        String newSQL = "SELECT c.CollectingEventID, c.StartDate, c.StartTime, l.LocalityName, l.Latitude1, l.Longitude1, g.Name " + 
+        newSQL = "SELECT c.CollectingEventID, c.StartDate, c.StartTime, l.LocalityName, l.Latitude1, l.Longitude1, g.Name " + 
                         "FROM collectingevent c LEFT JOIN locality l ON c.LocalityID = l.LocalityID " + 
                         "LEFT JOIN geography g ON l.GeographyID = g.GeographyID ORDER BY c.CollectingEventID";
 
 
-        String oldSQL = "SELECT c.CollectingEventID, c.StartDate, c.StartTime, l.LocalityName, l.Latitude1, l.Longitude1, g.ContinentOrOcean, g.Country, g.State,  g.County, g.IslandGroup, g.Island, g.WaterBody, g.Drainage "+
+        oldSQL = "SELECT c.CollectingEventID, c.StartDate, c.StartTime, l.LocalityName, l.Latitude1, l.Longitude1, g.ContinentOrOcean, g.Country, g.State,  g.County, g.IslandGroup, g.Island, g.WaterBody, g.Drainage "+
                         "FROM collectingevent c LEFT JOIN locality l ON c.LocalityID = l.LocalityID "+
                         "LEFT JOIN geography g ON l.GeographyID = g.GeographyID ORDER BY c.CollectingEventID";
         
@@ -1494,9 +1544,6 @@ public class ConvertVerifier
                 String       oldLocalityName = oldDBRS.getString(col++);
                 Double       oldLatitude     = oldDBRS.getDouble(col++);
                 Double       oldLongitude    = oldDBRS.getDouble(col++);
-                
-                String  oldGeoName = null;
-                
                 
                 if (newGeoName != null)
                 {
@@ -1636,7 +1683,6 @@ public class ConvertVerifier
         SwingUtilities.invokeLater(new Runnable() {
             public void run()
             {
-        
                 try
                 {
                     if (!System.getProperty("os.name").equals("Mac OS X"))
@@ -1652,25 +1698,53 @@ public class ConvertVerifier
                     log.error("Can't change L&F: ", e);
                 }
                 
-                frame = new ProgressFrame("Converting");
-                
-                ConvertVerifier cv = new ConvertVerifier();
+                final ConvertVerifier cv = new ConvertVerifier();
                 
                 if (cv.selectedDBsToConvert())
                 {
                 	try
                 	{
-	                	Pair<String, String> pair = cv.chooseTable();
+	                	final Pair<String, String> pair = cv.chooseTable();
 	                	if (pair != null)
 	                	{
-	                		cv.verifyDB( pair.first, pair.second);
+	                	    SwingWorker workerThread = new SwingWorker()
+	                        {
+	                            @Override
+	                            public Object construct()
+	                            {
+	                                try
+	                                {
+	                                    cv.verifyDB( pair.first, pair.second);
+	                                    
+	                                } catch (Exception ex)
+	                                {
+	                                    ex.printStackTrace();
+	                                }
+	                                return null;
+	                            }
+	                            
+	                            @SuppressWarnings("unchecked") //$NON-NLS-1$
+	                            @Override
+	                            public void finished()
+	                            {
+	                            }
+	                        };
+	                        
+	                        // start the background task
+	                        workerThread.start();
+	                		
+	                	} else
+	                	{
+	                	    JOptionPane.showMessageDialog(null, "The ConvertVerifier was unable to login", "Not Logged In", JOptionPane.ERROR_MESSAGE);
+	                	    System.exit(0);
 	                	}
                 	} catch (Exception ex)
                 	{
                 		ex.printStackTrace();
+                		System.exit(0);
                 	}
                 }
-                System.exit(0);
+               
             }
         });
 
@@ -1745,220 +1819,225 @@ public class ConvertVerifier
         Vector<DBNamePair> availOldPairs = new Vector<DBNamePair>();
         Vector<DBNamePair> availNewPairs = new Vector<DBNamePair>();
         
-        if (mgr.connectToDBMS(itUsrPwd.first, itUsrPwd.second, hostName))
+        try
         {
-            BasicSQLUtils.setSkipTrackExceptions(true);
-            
-            Connection conn = mgr.getConnection();
-            Vector<Object[]> dbNames = BasicSQLUtils.query(conn, "show databases");
-            for (Object[] row : dbNames)
+            if (mgr.connectToDBMS(itUsrPwd.first, itUsrPwd.second, hostName))
             {
-                System.err.println("Setting ["+row[0].toString()+"]");
-                conn.setCatalog(row[0].toString());
+                BasicSQLUtils.setSkipTrackExceptions(true);
                 
-                boolean isSp5 = false;
-                boolean isSp6 = false;
-                
-                Vector<Object[]> tables = BasicSQLUtils.query(conn, "show tables");
-                for (Object[] tblRow : tables)
+                Connection conn = mgr.getConnection();
+                Vector<Object[]> dbNames = BasicSQLUtils.query(conn, "show databases");
+                for (Object[] row : dbNames)
                 {
-                	if (tblRow[0].toString().equals("usysversion"))
+                    System.err.println("Setting ["+row[0].toString()+"]");
+                    conn.setCatalog(row[0].toString());
+                    
+                    boolean isSp5 = false;
+                    boolean isSp6 = false;
+                    
+                    Vector<Object[]> tables = BasicSQLUtils.query(conn, "show tables");
+                    for (Object[] tblRow : tables)
                     {
-                		isSp5 = true;
-                        break;
-                        
-                    } else if (tblRow[0].toString().equals("gift"))
+                    	if (tblRow[0].toString().equals("usysversion"))
+                        {
+                    		isSp5 = true;
+                            break;
+                            
+                        } else if (tblRow[0].toString().equals("gift"))
+                        {
+                        	isSp6 = true;
+                            break;
+                        }
+                    }
+                    
+                    if (isSp5 || isSp6)
                     {
-                    	isSp6 = true;
-                        break;
+    	            	String collName = null;
+    	                Vector<Object[]> tableDesc = BasicSQLUtils.query(conn, "select CollectionName FROM collection");
+    	                if (tableDesc.size() > 0)
+    	                {
+    	                    collName =  tableDesc.get(0)[0].toString();
+    	                }
+    	                
+    	                if (collName == null)
+    	                {
+    	                	continue;
+    	                }
+    	
+    	                if (isSp5)
+    	                {
+    	                	availOldPairs.add(new DBNamePair(collName, row[0].toString()));
+    	                } else
+    	                {
+    	                	availNewPairs.add(new DBNamePair(collName, row[0].toString()));
+    	                }
                     }
                 }
                 
-                if (isSp5 || isSp6)
+                Comparator<Pair<String, String>> comparator =  new Comparator<Pair<String, String>>() {
+                    @Override
+                    public int compare(Pair<String, String> o1, Pair<String, String> o2)
+                    {
+                        return o1.first.compareTo(o2.first);
+                    }
+                };
+                Collections.sort(availOldPairs, comparator);
+                Collections.sort(availNewPairs, comparator);
+                
+                mgr.close();
+                BasicSQLUtils.setSkipTrackExceptions(false);
+                
+                final JList     oldlist = new JList(availOldPairs);
+                final JList     newList = new JList(availNewPairs);
+                CellConstraints cc   = new CellConstraints();
+                PanelBuilder    pb   = new PanelBuilder(new FormLayout("f:p:g,10px,f:p:g", "p,2px,f:p:g,4px,p"));
+                pb.addSeparator("Specify 5 Databases",     cc.xy(1,1));
+                pb.add(UIHelper.createScrollPane(oldlist), cc.xy(1,3));
+                
+                pb.addSeparator("Specify 6 Databases",     cc.xy(3,1));
+                pb.add(UIHelper.createScrollPane(newList), cc.xy(3,3));
+                
+                ArrayList<String> list = new ArrayList<String>(labels.length);
+                for (String s : labels)
                 {
-	            	String collName = null;
-	                Vector<Object[]> tableDesc = BasicSQLUtils.query(conn, "select CollectionName FROM collection");
-	                if (tableDesc.size() > 0)
-	                {
-	                    collName =  tableDesc.get(0)[0].toString();
-	                }
-	                
-	                if (collName == null)
-	                {
-	                	continue;
-	                }
-	
-	                if (isSp5)
-	                {
-	                	availOldPairs.add(new DBNamePair(collName, row[0].toString()));
-	                } else
-	                {
-	                	availNewPairs.add(new DBNamePair(collName, row[0].toString()));
-	                }
+                    list.add(s);
                 }
-            }
-            
-            Comparator<Pair<String, String>> comparator =  new Comparator<Pair<String, String>>() {
-                @Override
-                public int compare(Pair<String, String> o1, Pair<String, String> o2)
+                chkPanel = new ToggleButtonChooserPanel<String>(list, Type.Checkbox);
+                chkPanel.setUseScrollPane(true);
+                chkPanel.createUI();
+                pb.add(chkPanel, cc.xyw(1, 5, 3));
+                
+                /*ActionListener al = new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        boolean isSelected = chkPanel.getButtons().get(0).isSelected();
+                        int inx = chkPanel.getSelectedIndex();
+                        if (inx == 0)
+                        {
+                            Vector<JToggleButton> btns = chkPanel.getButtons();
+                            for (int i=1;i<btns.size();i++)
+                            {
+                                btns.get(i).setEnabled(!isSelected);
+                            }
+                        } 
+                    }
+                };
+                
+                chkPanel.getButtons().get(0).addActionListener(al);
+                chkPanel.getButtons().get(chkPanel.getButtons().size()-1).addActionListener(al);*/
+    
+                MouseAdapter ma = new MouseAdapter()
                 {
-                    return o1.first.compareTo(o2.first);
-                }
-            };
-            Collections.sort(availOldPairs, comparator);
-            Collections.sort(availNewPairs, comparator);
-            
-            mgr.close();
-            BasicSQLUtils.setSkipTrackExceptions(false);
-            
-            final JList     oldlist = new JList(availOldPairs);
-            final JList     newList = new JList(availNewPairs);
-            CellConstraints cc   = new CellConstraints();
-            PanelBuilder    pb   = new PanelBuilder(new FormLayout("f:p:g,10px,f:p:g", "p,2px,f:p:g,4px,p"));
-            pb.addSeparator("Specify 5 Databases",     cc.xy(1,1));
-            pb.add(UIHelper.createScrollPane(oldlist), cc.xy(1,3));
-            
-            pb.addSeparator("Specify 6 Databases",     cc.xy(3,1));
-            pb.add(UIHelper.createScrollPane(newList), cc.xy(3,3));
-            
-            ArrayList<String> list = new ArrayList<String>(labels.length);
-            for (String s : labels)
-            {
-                list.add(s);
-            }
-            chkPanel = new ToggleButtonChooserPanel<String>(list, Type.Checkbox);
-            chkPanel.setUseScrollPane(true);
-            chkPanel.createUI();
-            pb.add(chkPanel, cc.xyw(1, 5, 3));
-            
-            ActionListener al = new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e)
-                {
-                    boolean isSelected = chkPanel.getButtons().get(0).isSelected();
-                    int inx = chkPanel.getSelectedIndex();
-                    if (inx == 0)
+    				@Override
+    				public void mouseClicked(MouseEvent e) {
+    					super.mouseClicked(e);
+    					
+    					Vector<JToggleButton> btns = chkPanel.getButtons();
+                        if (e.getSource() == btns.get(0))
+                        {
+                            boolean isSelected = btns.get(0).isSelected();
+                            
+                            for (int i=1;i<btns.size();i++)
+                            {
+                                btns.get(i).setEnabled(!isSelected);
+                            }
+                        } else if (e.getSource() == btns.get(btns.size()-1))
+                        {
+                            boolean isSelected = btns.get(btns.size()-1).isSelected();
+                            for (int i=0;i<btns.size()-1;i++)
+                            {
+                            	if (i > 0)  btns.get(i).setSelected(!isSelected);
+                                btns.get(i).setEnabled(!isSelected);
+                            }
+                        }
+    				}
+                };
+                chkPanel.getButtons().get(0).addMouseListener(ma);
+                chkPanel.getButtons().get(chkPanel.getButtons().size()-1).addMouseListener(ma);
+    
+                /*ChangeListener cl = new ChangeListener() {
+                    @Override
+                    public void stateChanged(ChangeEvent e)
                     {
                         Vector<JToggleButton> btns = chkPanel.getButtons();
-                        for (int i=1;i<btns.size();i++)
+                        if (e.getSource() == btns.get(0))
                         {
-                            btns.get(i).setEnabled(!isSelected);
-                        }
-                    } 
-                }
-            };
-            
-            //chkPanel.getButtons().get(0).addActionListener(al);
-            //chkPanel.getButtons().get(chkPanel.getButtons().size()-1).addActionListener(al);
-
-            MouseAdapter ma = new MouseAdapter()
-            {
-				@Override
-				public void mouseClicked(MouseEvent e) {
-					super.mouseClicked(e);
-					
-					Vector<JToggleButton> btns = chkPanel.getButtons();
-                    if (e.getSource() == btns.get(0))
-                    {
-                        boolean isSelected = btns.get(0).isSelected();
-                        
-                        for (int i=1;i<btns.size();i++)
+                            boolean isSelected = btns.get(0).isSelected();
+                            System.out.println(isSelected);
+                            
+                            for (int i=1;i<btns.size();i++)
+                            {
+                                btns.get(i).setEnabled(!isSelected);
+                            }
+                        } else if (e.getSource() == btns.get(btns.size()-1))
                         {
-                            btns.get(i).setEnabled(!isSelected);
-                        }
-                    } else if (e.getSource() == btns.get(btns.size()-1))
-                    {
-                        boolean isSelected = btns.get(btns.size()-1).isSelected();
-                        for (int i=0;i<btns.size()-1;i++)
-                        {
-                        	if (i > 0)  btns.get(i).setSelected(!isSelected);
-                            btns.get(i).setEnabled(!isSelected);
+                            boolean isSelected = btns.get(0).isSelected();
+                            System.out.println(isSelected);
+                            
+                            for (int i=0;i<btns.size()-1;i++)
+                            {
+                                btns.get(i).setEnabled(!isSelected);
+                            }
                         }
                     }
-				}
-            };
-            chkPanel.getButtons().get(0).addMouseListener(ma);
-            chkPanel.getButtons().get(chkPanel.getButtons().size()-1).addMouseListener(ma);
-
-            /*ChangeListener cl = new ChangeListener() {
-                @Override
-                public void stateChanged(ChangeEvent e)
+                };
+                chkPanel.getButtons().get(0).addChangeListener(cl);
+                chkPanel.getButtons().get(chkPanel.getButtons().size()-1).addChangeListener(cl);*/
+                
+                pb.setDefaultDialogBorder();
+                
+                final CustomDialog dlg = new CustomDialog(null, "Select a DB to Convert", true, pb.getPanel());
+                
+                ListSelectionListener lsl = new ListSelectionListener() {
+                    @Override
+                    public void valueChanged(ListSelectionEvent e)
+                    {
+                        if (!e.getValueIsAdjusting())
+                        {
+                            dlg.getOkBtn().setEnabled(oldlist.getSelectedIndex() > -1);
+                        }
+                    }
+                };
+                oldlist.addListSelectionListener(lsl);
+                newList.addListSelectionListener(lsl);
+                
+                oldlist.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+                newList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+                
+                MouseAdapter listMA = new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e)
+                    {
+                        if (e.getClickCount() == 2)
+                        {
+                            dlg.getOkBtn().setEnabled(oldlist.getSelectedIndex() > -1 && newList.getSelectedIndex() > -1);
+                            dlg.getOkBtn().doClick();
+                        }
+                    }
+                };
+                oldlist.addMouseListener(listMA);
+                newList.addMouseListener(listMA);
+                
+                dlg.createUI();
+                dlg.pack();
+                //dlg.setSize(300, 800);
+                dlg.pack();
+                dlg.setVisible(true);
+                if (dlg.isCancelled())
                 {
-                    Vector<JToggleButton> btns = chkPanel.getButtons();
-                    if (e.getSource() == btns.get(0))
-                    {
-                        boolean isSelected = btns.get(0).isSelected();
-                        System.out.println(isSelected);
-                        
-                        for (int i=1;i<btns.size();i++)
-                        {
-                            btns.get(i).setEnabled(!isSelected);
-                        }
-                    } else if (e.getSource() == btns.get(btns.size()-1))
-                    {
-                        boolean isSelected = btns.get(0).isSelected();
-                        System.out.println(isSelected);
-                        
-                        for (int i=0;i<btns.size()-1;i++)
-                        {
-                            btns.get(i).setEnabled(!isSelected);
-                        }
-                    }
+                    return null;
                 }
-            };
-            chkPanel.getButtons().get(0).addChangeListener(cl);
-            chkPanel.getButtons().get(chkPanel.getButtons().size()-1).addChangeListener(cl);*/
-            
-            pb.setDefaultDialogBorder();
-            
-            final CustomDialog dlg = new CustomDialog(null, "Select a DB to Convert", true, pb.getPanel());
-            
-            ListSelectionListener lsl = new ListSelectionListener() {
-                @Override
-                public void valueChanged(ListSelectionEvent e)
-                {
-                    if (!e.getValueIsAdjusting())
-                    {
-                        dlg.getOkBtn().setEnabled(oldlist.getSelectedIndex() > -1);
-                    }
-                }
-            };
-            oldlist.addListSelectionListener(lsl);
-            newList.addListSelectionListener(lsl);
-            
-            oldlist.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-            newList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-            
-            MouseAdapter listMA = new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e)
-                {
-                    if (e.getClickCount() == 2)
-                    {
-                        dlg.getOkBtn().setEnabled(oldlist.getSelectedIndex() > -1 && newList.getSelectedIndex() > -1);
-                        dlg.getOkBtn().doClick();
-                    }
-                }
-            };
-            oldlist.addMouseListener(listMA);
-            newList.addMouseListener(listMA);
-            
-            dlg.createUI();
-            dlg.pack();
-            //dlg.setSize(300, 800);
-            dlg.pack();
-            dlg.setVisible(true);
-            if (dlg.isCancelled())
-            {
-                return null;
+                
+                DBNamePair oldPair = (DBNamePair)oldlist.getSelectedValue();
+                namePairToConvert = (DBNamePair)newList.getSelectedValue();
+                namePairToConvert.first = oldPair.second;
+                return namePairToConvert;
             }
+        } catch (Exception ex)
+        {
             
-            DBNamePair oldPair = (DBNamePair)oldlist.getSelectedValue();
-            namePairToConvert = (DBNamePair)newList.getSelectedValue();
-            namePairToConvert.first = oldPair.second;
-            return namePairToConvert;
         }
-        
         return null;
     }
 

@@ -238,6 +238,7 @@ public class SpecifyDBConverter
                 if (namePair != null)
                 {
                     frame = new ProgressFrame("Converting");
+                    frame.adjustProgressFrame();
                     
                     UIRegistry.setAppName("Specify");
                     
