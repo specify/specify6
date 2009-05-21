@@ -80,24 +80,29 @@ public class ConvertVerifier
 {
     protected static final Logger log = Logger.getLogger(ConvertVerifier.class);
     
+    protected enum StatusType {NO_OLD_REC, NO_NEW_REC, OLD_VAL_NULL, NEW_VAL_NULL, BAD_COMPARE, BAD_DATE, COMPARE_OK, NO_COMPARE, }
+    
     protected Pair<String, String> itUsrPwd          = new Pair<String, String>(null, null);
     protected String               hostName          = "localhost";
     protected Pair<String, String> namePairToConvert = null;
     
     // These are the configuration Options for a View
-    public static final long NO_OPTIONS             =   0; // Indicates there are no options
-    public static final long DO_CO_PREPARATION      =   1; 
-    public static final long DO_CO_CE               =   2; 
-    public static final long DO_CO_LOCALITY         =   4; 
-    public static final long DO_CO_PREPARER         =   8; 
-    public static final long DO_CO_CATLOGER         =  16; 
-    public static final long DO_CO_DETERMINER       =  32; 
-    public static final long DO_CO_TAXON            =  64; 
-    public static final long DO_CO_GEO              = 128; 
-    public static final long DO_COLLECTORS          = 256; 
-    public static final long DO_CO_ALL              = 767; 
+    public static final long NO_OPTIONS             =    0; // Indicates there are no options
+    public static final long DO_CO_PREPARATION      =    1; 
+    public static final long DO_CO_CE               =    2; 
+    public static final long DO_CO_LOCALITY         =    4; 
+    public static final long DO_CO_PREPARER         =    8; 
+    public static final long DO_CO_CATLOGER         =   16; 
+    public static final long DO_CO_DETERMINER       =   32; 
+    public static final long DO_CO_TAXON            =   64; 
+    public static final long DO_CO_GEO              =  128; 
+    public static final long DO_COLLECTORS          =  256; 
+    public static final long DO_COLLEVENTS          =  512; 
+    public static final long DO_CO_ALL              = 1023; 
     
-    protected String[] labels = {"None", "Preparations", "Collecting Events", "Localities", "Preparers", "Catalogers", "Determiners", "Taxon", "Geographies", "Collectors", "All"};
+    protected String[] labels = {"None", "Preparations", "Collecting Events", "Localities", "Preparers", 
+                                 "Catalogers", "Determiners", "Taxon", "Geographies", "Collectors", 
+                                 "Collecting Events", "All"};
     protected ToggleButtonChooserPanel<String> chkPanel;
     
     //public static final long DONT_ADD_ALL_ALTVIEWS  = 256; 
@@ -114,6 +119,9 @@ public class ConvertVerifier
     protected static List<String>                           dbNamesToConvert  = null;
     protected static int                                    currentIndex      = 0;
     protected static Hashtable<String, String>              old2NewDBNames    = null;
+    
+    protected Hashtable<String, Integer>                    catNumsInErrHash  = new Hashtable<String, Integer>();
+    
     
     protected String                                        oldDriver         = "";
     protected String                                        oldDBName         = "";
@@ -155,7 +163,9 @@ public class ConvertVerifier
         System.out.println("From "+databaseNameSource+" to "+databaseNameDest);
         System.out.println("************************************************************");
         
-        out.println("<html><head><title>"+databaseNameDest+"</title></head><body>");
+        out.println("<html><head>");
+        writeStyle(out);
+        out.println("<title>"+databaseNameDest+"</title></head><body>");
         out.println("<h2>"+title+"</h2>");
 
         HibernateUtil.shutdown();    
@@ -263,13 +273,11 @@ public class ConvertVerifier
         }
         
         out.println("<H3>Collection Objects</H3>");
-        out.println("<table border=\"1\">");
+        out.println("<table class=\"o\" cellspacing=\"0\" border=\"0\">");
         
         coOptions = DO_CO_ALL;
         acOptions = DO_AC_ALL;
 
-        verifyCEs();
-        
         if (coOptions > NO_OPTIONS)
         {
             
@@ -284,60 +292,42 @@ public class ConvertVerifier
                 if (isCOOn(DO_CO_DETERMINER) && !verifyDeterminer(oldCatNum, newCatNum))
                 {
                     printVerifyHeader("Determiner");
-                    log.error("Cat Num: "+oldCatNum);
-                    log.error("New SQL: "+newSQL);
-                    log.error("Old SQL: "+oldSQL);
-                    //break;
+                    catNumsInErrHash.put(newCatNum, oldCatNum);
                 }            
                 if (isCOOn(DO_CO_CATLOGER) && !verifyCataloger(oldCatNum, newCatNum))
                 {
                     printVerifyHeader("Cataloger");
-                    log.error("Cat Num: "+oldCatNum);
-                    log.error("New SQL: "+newSQL);
-                    log.error("Old SQL: "+oldSQL);
-                    //break;
+                    catNumsInErrHash.put(newCatNum, oldCatNum);
                 }
                 if (isCOOn(DO_CO_GEO) && !verifyGeography(oldCatNum, newCatNum))
                 {
                     printVerifyHeader("Geography");
-                    log.error("New SQL: "+newSQL);
-                    log.error("Old SQL: "+oldSQL);
-                    //break;
+                    catNumsInErrHash.put(newCatNum, oldCatNum);
                 }
                 if (isCOOn(DO_CO_CE) && !verifyCollectingEvent(oldCatNum, newCatNum))
                 {
                     printVerifyHeader("Collecting Event");
-                    log.error("New SQL: "+newSQL);
-                    log.error("Old SQL: "+oldSQL);
-                    //break;
+                    catNumsInErrHash.put(newCatNum, oldCatNum);
                 }
                 if (isCOOn(DO_CO_TAXON) && !verifyTaxon(oldCatNum, newCatNum))
                 {
                     printVerifyHeader("Taxon");
-                    log.error("New SQL: "+newSQL);
-                    log.error("Old SQL: "+oldSQL);
-                    //break;
+                    catNumsInErrHash.put(newCatNum, oldCatNum);
                 }
                 if (isCOOn(DO_CO_LOCALITY) && !verifyCOToLocality(oldCatNum, newCatNum))
                 {
                     printVerifyHeader("Locality");
-                    log.error("New SQL: "+newSQL);
-                    log.error("Old SQL: "+oldSQL);
-                    //break;
+                    catNumsInErrHash.put(newCatNum, oldCatNum);
                 }
                 if (isCOOn(DO_CO_PREPARATION) && !verifyPreparation(oldCatNum, newCatNum))
                 {
                     printVerifyHeader("Preparations");
-                    log.error("New SQL: "+newSQL);
-                    log.error("Old SQL: "+oldSQL);
-                    //break;
+                    catNumsInErrHash.put(newCatNum, oldCatNum);
                 }
                 if (isCOOn(DO_CO_PREPARER) && !verifyPreparer(oldCatNum, newCatNum))
                 {
                     printVerifyHeader("Preparer");
-                    log.error("New SQL: "+newSQL);
-                    log.error("Old SQL: "+oldSQL);
-                    //break;
+                    catNumsInErrHash.put(newCatNum, oldCatNum);
                 }
                 
                 if ((i % 100) == 0)
@@ -353,14 +343,27 @@ public class ConvertVerifier
         
         if (isCOOn(DO_COLLECTORS))
         {
-        	verifyCollectors();
+            verifyCollectors();
         }
         
-
-        
+        if (isCOOn(DO_COLLEVENTS))
+        {
+            verifyCEs();
+        }
 
         printTotal();
         out.println("</table>");
+        
+        out.println("<BR>");
+        out.println("Catalog Summary:<BR>");
+        Vector<String> catNumList = new Vector<String>(catNumsInErrHash.keySet());
+        Collections.sort(catNumList);
+        for (String catNum : catNumList)
+        {
+            out.println(catNum+"<BR>");
+        }
+        out.println("<BR>");
+        
         out.println("<H3>Accessions</H3>");
         out.println("<table border=\"1\">");
         
@@ -416,11 +419,22 @@ public class ConvertVerifier
         out.close();
     }
     
-    public void compareDate(final Integer sp5Date, final Calendar sp6Date, final Byte partialType)
+    /**
+     * @param out
+     */
+    protected void writeStyle(final PrintWriter out)
     {
-        
+        out.println("<style>");
+        out.println(" table.o { border-top: rgb(128, 128, 128); border-left: rgb(128, 128, 128); }");
+        out.println(" table.o td { border-bottom: rgb(128, 128, 128); border-right: rgb(128, 128, 128); }");
+        out.println(" table.i { border-top: rgb(192, 192, 192); border-left: rgb(192, 192, 192); }");
+        out.println(" table.i td { border-bottom: rgb(192, 192, 192); border-right: rgb(192, 192, 192); }");
+        out.println("</style>");
     }
     
+    /**
+     * @param name
+     */
     protected void printVerifyHeader(final String name)
     {
         out.println("<tr><td colspan=\"2\">"+name+"</td></tr>");
@@ -434,19 +448,63 @@ public class ConvertVerifier
     protected boolean verifyTaxon(final int oldCatNum, final String newCatNum) throws SQLException
     {
         newSQL = "SELECT collectionobject.CatalogedDate, collectionobject.CatalogedDatePrecision, determination.DeterminedDate, determination.DeterminedDatePrecision, taxon.FullName " + 
-                        "FROM determination INNER JOIN collectionobject ON determination.CollectionObjectID = collectionobject.CollectionObjectID "+
-                        "INNER JOIN taxon ON determination.TaxonID = taxon.TaxonID WHERE CatalogNumber = '"+ newCatNum + "'";
+                        "FROM determination LEFT JOIN collectionobject ON determination.CollectionObjectID = collectionobject.CollectionObjectID "+
+                        "LEFT JOIN taxon ON determination.TaxonID = taxon.TaxonID WHERE CatalogNumber = '"+ newCatNum + "'";
 
         oldSQL = "SELECT collectionobjectcatalog.CatalogedDate, determination.Date,taxonname.FullTaxonName " + 
-                        "FROM determination INNER JOIN taxonname ON determination.TaxonNameID = taxonname.TaxonNameID " + 
-                        "INNER JOIN collectionobjectcatalog ON collectionobjectcatalog.CollectionObjectCatalogID = determination.BiologicalObjectID " + 
+                        "FROM determination LEFT JOIN taxonname ON determination.TaxonNameID = taxonname.TaxonNameID " + 
+                        "LEFT JOIN collectionobjectcatalog ON collectionobjectcatalog.CollectionObjectCatalogID = determination.BiologicalObjectID " + 
                         "WHERE CatalogNumber = " + oldCatNum;
         if (debug)
         {
 	         log.debug("New SQL: "+newSQL);
 	         log.debug("Old SQL: "+oldSQL);
         }
-        return compareRecords("Taxon", oldCatNum, newCatNum, oldSQL, newSQL);
+        
+        StatusType status = compareRecords("Taxon", oldCatNum, newCatNum, oldSQL, newSQL);
+        dumpStatus(status);
+        return status == StatusType.COMPARE_OK;
+    }
+    
+    /**
+     * @param status
+     */
+    protected void dumpStatus(final StatusType status)
+    {
+        switch (status)
+        {
+            case OLD_VAL_NULL:
+                out.print("<tr><td colspan=\"2\">");
+                out.println(dumpSQL(newDBConn, newSQL));
+                out.println(dumpSQL(oldDBConn, oldSQL));
+                out.println("<BR>");
+                out.println("</td></tr>");
+                break;
+                
+            case NO_OLD_REC:
+                out.print("<tr><td colspan=\"2\">");
+                out.println(dumpSQL(newDBConn, newSQL));
+                out.println("<BR>");
+                out.println("</td></tr>");
+                break;
+                
+            case NEW_VAL_NULL:
+                out.print("<tr><td colspan=\"2\">");
+                out.println(dumpSQL(newDBConn, newSQL));
+                out.println(dumpSQL(oldDBConn, oldSQL));
+                out.println("<BR>");
+                out.println("</td></tr>");
+                break;
+                
+            case NO_NEW_REC:
+                out.print("<tr><td colspan=\"2\">");
+                out.println(dumpSQL(oldDBConn, oldSQL));
+                out.println("<BR>");
+                out.println("</td></tr>");
+                break;
+        }
+        out.flush();
+
     }
                          
     /**
@@ -491,14 +549,12 @@ public class ConvertVerifier
             if (!hasOldRec)
             {
                 log.error("Geography - No Old Record for ["+oldCatNum+"]");
-                //return false;
-                return true;
+                return false;
             }
             if (!hasNewRec)
             {
                 log.error("Geography - No New Record for ["+newCatNum+"]");
-                //return false;
-                return true;
+                return false;
             }
             
             String newGeoName = newDBRS.getString(1);
@@ -526,6 +582,30 @@ public class ConvertVerifier
         {
             doneWithRS();
         }
+    }
+    
+    /**
+     * @param conn
+     * @param sql
+     * @return
+     */
+    public static String dumpSQL(final Connection conn, final String sql)
+    {
+        StringBuilder sb = new StringBuilder("<table class=\"i\" cellspacing=\"0\" border=\"o\" width=\"100%\">");
+        Vector<Object[]> list = BasicSQLUtils.query(conn, sql, true);
+        for (Object[] row : list)
+        {
+            sb.append("<tr>");
+            for (Object obj : row)
+            {
+                sb.append("<td>");
+                sb.append(obj);
+                sb.append("</td>");
+            }
+            sb.append("</tr>\n");
+        }
+        sb.append("</table>\n");
+        return sb.toString();
     }
     
     /**
@@ -564,7 +644,10 @@ public class ConvertVerifier
 	         log.debug("Old SQL: "+oldSQL);
          }
          
-        return compareRecords("Locality", oldCatNum, newCatNum, oldSQL, newSQL);
+        StatusType status = compareRecords("Locality", oldCatNum, newCatNum, oldSQL, newSQL);
+        dumpStatus(status);
+        return status == StatusType.COMPARE_OK;
+
     }
       
     /**
@@ -590,9 +673,17 @@ public class ConvertVerifier
 	         log.debug("New SQL: "+newSQL);
 	         log.debug("Old SQL: "+oldSQL);
          }
-        return compareRecords("Cataloger", oldCatNum, newCatNum, oldSQL, newSQL);
+         StatusType status = compareRecords("Cataloger", oldCatNum, newCatNum, oldSQL, newSQL);
+         dumpStatus(status);
+         return status == StatusType.COMPARE_OK;
     }
     
+    /**
+     * @param oldCatNum
+     * @param newCatNum
+     * @return
+     * @throws SQLException
+     */
     protected boolean verifyDeterminer(final int oldCatNum, final String newCatNum) throws SQLException
     {
          newSQL = "SELECT agent.FirstName, agent.MiddleInitial, agent.LastName " +
@@ -611,9 +702,17 @@ public class ConvertVerifier
 	         log.debug("Old SQL: "+oldSQL);
          }
          
-        return compareRecords("Determiner", oldCatNum, newCatNum, oldSQL, newSQL);
+         StatusType status = compareRecords("Determiner", oldCatNum, newCatNum, oldSQL, newSQL);
+         dumpStatus(status);
+         return status == StatusType.COMPARE_OK;
     }
 
+    /**
+     * @param oldCatNum
+     * @param newCatNum
+     * @return
+     * @throws SQLException
+     */
     protected boolean verifyPreparer(final int oldCatNum, final String newCatNum) throws SQLException
     {
          newSQL = "SELECT agent.FirstName, agent.MiddleInitial, agent.LastName " +
@@ -631,7 +730,9 @@ public class ConvertVerifier
 	         log.debug("New SQL: "+newSQL);
 	         log.debug("Old SQL: "+oldSQL);
          }
-        return compareRecords("Preparer", oldCatNum, newCatNum, oldSQL, newSQL);
+         StatusType status = compareRecords("Preparer", oldCatNum, newCatNum, oldSQL, newSQL);
+         dumpStatus(status);
+         return status == StatusType.COMPARE_OK;
     }
 
     /**
@@ -699,16 +800,13 @@ public class ConvertVerifier
                 if (!hasOldRec)
                 {
                     log.error("Geography - No Old Record for ["+newDBRS.getObject(1)+"]");
-                    //return false;
-                    return true;
+                    return false;
                 }
                 if (!hasNewRec)
                 {
                     log.error("Geography - No New Record for ["+oldDBRS.getObject(1)+"]");
-                    //return false;
-                    return true;
+                    return false;
                 }
-
             }
             return false;
 
@@ -718,6 +816,12 @@ public class ConvertVerifier
         }
     }
                          
+    /**
+     * @param oldCatNum
+     * @param newCatNum
+     * @return
+     * @throws SQLException
+     */
     protected boolean verifyCollectingEvent(final int oldCatNum, final String newCatNum) throws SQLException
     {
          newSQL = "SELECT collectingevent.StartDate, collectingevent.StartDatePrecision, collectingevent.StationFieldNumber " +
@@ -729,9 +833,17 @@ public class ConvertVerifier
                         "INNER JOIN collectingevent ON collectionobject.CollectingEventID = collectingevent.CollectingEventID " +
                         "WHERE CatalogNumber = " + oldCatNum;
         
-        return compareRecords("Locality", oldCatNum, newCatNum, oldSQL, newSQL);
+         StatusType status = compareRecords("CE To Locality", oldCatNum, newCatNum, oldSQL, newSQL);
+         dumpStatus(status);
+         return status == StatusType.COMPARE_OK;
     }
                          
+    /**
+     * @param oldCatNum
+     * @param newCatNum
+     * @return
+     * @throws SQLException
+     */
     protected boolean verifyPreparation(final int oldCatNum, final String newCatNum) throws SQLException
     {
          newSQL = "SELECT preparation.CountAmt, " +
@@ -749,7 +861,9 @@ public class ConvertVerifier
                     "FROM collectionobject INNER JOIN collectionobjectcatalog ON collectionobject.DerivedFromID = collectionobjectcatalog.CollectionObjectCatalogID " +
                     "WHERE CatalogNumber = " + oldCatNum;
         
-        return compareRecords("Locality", oldCatNum, newCatNum, oldSQL, newSQL);
+         StatusType status = compareRecords("Preparation", oldCatNum, newCatNum, oldSQL, newSQL);
+         dumpStatus(status);
+         return status == StatusType.COMPARE_OK;
     }
                          
     /**
@@ -766,7 +880,9 @@ public class ConvertVerifier
          oldSQL = "SELECT Number, Status, Type, VerbatimDate, DateAccessioned, DateReceived, Number1, Number2, YesNo1, YesNo2 FROM accession " +
                   "WHERE Number = '" + oldAccNum + "'";
         
-        return compareRecords("Accession", oldAccNum, newAccNum, oldSQL, newSQL);
+         StatusType status = compareRecords("Accession", oldAccNum, newAccNum, oldSQL, newSQL);
+         dumpStatus(status);
+         return status == StatusType.COMPARE_OK;
     }
     
     /**
@@ -788,7 +904,9 @@ public class ConvertVerifier
                  "INNER JOIN agent ON agentaddress.AgentID = agent.AgentID " +
                  "WHERE Number = '" + oldAccNum + "' ORDER BY agent.LastName";
 
-        return compareRecords("Accession", oldAccNum, newAccNum, oldSQL, newSQL);
+        StatusType status = compareRecords("Accession", oldAccNum, newAccNum, oldSQL, newSQL);
+        dumpStatus(status);
+        return status == StatusType.COMPARE_OK;
     }
 
 
@@ -831,11 +949,11 @@ public class ConvertVerifier
      * @return
      * @throws SQLException
      */
-    protected boolean compareRecords(final String desc, 
-                                     final int    oldCatNum, 
-                                     final String newCatNum, 
-                                     final String oldSQLArg, 
-                                     final String newSQLArg) throws SQLException
+    protected StatusType compareRecords(final String desc, 
+                                        final int    oldCatNum, 
+                                        final String newCatNum, 
+                                        final String oldSQLArg, 
+                                        final String newSQLArg) throws SQLException
     {
         return compareRecords(desc, Integer.toString(oldCatNum), newCatNum, oldSQLArg, newSQLArg);
     }
@@ -873,11 +991,11 @@ public class ConvertVerifier
      * @return
      * @throws SQLException
      */
-    protected boolean compareRecords(final String desc, 
-                                     final String oldCatNum, 
-                                     final String newCatNum, 
-                                     final String oldSQLArg, 
-                                     final String newSQLArg) throws SQLException
+    protected StatusType compareRecords(final String desc, 
+                                        final String oldCatNum, 
+                                        final String newCatNum, 
+                                        final String oldSQLArg, 
+                                        final String newSQLArg) throws SQLException
     {
         boolean dbg = false;
         
@@ -895,22 +1013,20 @@ public class ConvertVerifier
             
             if (!hasOldRec && !hasNewRec)
             {
-                return true;
+                return StatusType.COMPARE_OK;
             }
             
             if (!hasOldRec)
             {
                 log.error(desc+ " - No Old Record for ["+oldCatNum+"]");
                 printRowError(desc, "No Old Record for ["+oldCatNum+"]");
-                //return false;
-                return true;
+                return StatusType.NO_OLD_REC;
             }
             if (!hasNewRec)
             {
                 log.error(desc+ " - No New Record for ["+newCatNum+"]");
                 printRowError(desc, "No New Record for ["+newCatNum+"]");
-                //return false;
-                return true;
+                return StatusType.NO_NEW_REC;
             }
             
             boolean checkForAgent = newSQL.indexOf("agent.LastName") > -1;
@@ -966,8 +1082,7 @@ public class ConvertVerifier
                         String msg = "Old Value was null and shouldn't have been for Key Value ["+oldCatNum+"] Field ["+oldColName+"]";
                         log.error(desc+ " - "+msg);
                         printRowError(desc, msg);
-                        //return false;
-                        return true;
+                        return StatusType.OLD_VAL_NULL;
                     }
                     
                     if (newObj == null)
@@ -980,7 +1095,7 @@ public class ConvertVerifier
                             String msg = "New Value was null and shouldn't have been for Key Value CatNo["+newCatNum+"] Field ["+colName+"] ["+oldObj+"]";
                             log.error(desc+ " - "+msg);
                             printRowError(desc, msg);
-                            return false;
+                            return StatusType.NEW_VAL_NULL;
                         }
                         
                         if (StringUtils.contains(colName, "Date") && StringUtils.contains(newRsmd.getColumnName(newColInx+1), "DatePrecision"))
@@ -1059,7 +1174,7 @@ public class ConvertVerifier
                             errSB.append("]");
                             log.error(errSB.toString());
                             printRowError(oldCatNum + " / "+newCatNum, errSB.toString());
-                            return false;
+                            return StatusType.BAD_DATE;
                         }
                         
                     } else if (newObj instanceof Float || newObj instanceof Double)
@@ -1071,7 +1186,7 @@ public class ConvertVerifier
                             String msg = "Columns don't compare["+s1+"]["+s2+"]  ["+newRsmd.getColumnName(col)+"]["+oldRsmd.getColumnName(oldColInx)+"]";
                             log.error(desc+ " - "+msg);
                             printRowError(desc, msg);
-                            return true;
+                            return StatusType.NO_COMPARE;
                         }
                         
                     } else
@@ -1087,7 +1202,7 @@ public class ConvertVerifier
                                 String msg = "Columns don't compare["+newObj+"]["+oldObj+"]  ["+newColName+"]["+oldColName+"]";
                                 log.error(desc+ " - "+msg);
                                 printRowError(desc, msg);
-                                return true;
+                                return StatusType.NO_COMPARE;
                             }
                             
                         } else if (!newObj.equals(oldObj))
@@ -1095,7 +1210,7 @@ public class ConvertVerifier
                             String msg = "Columns don't Num["+oldCatNum+"] compare["+newObj+"]["+oldObj+"]  ["+newColName+"]["+oldColName+"]";
                             log.error(desc+ " - "+msg);
                             printRowError(desc, msg);
-                            return true;
+                            return StatusType.NO_COMPARE;
 
                             /*boolean isOK = false;
                             if (oldObj instanceof String)
@@ -1127,20 +1242,20 @@ public class ConvertVerifier
                 
                 if (!hasOldRec && !hasNewRec)
                 {
-                    return true;
+                    return StatusType.COMPARE_OK;
                 }
                 
                 if (!hasOldRec)
                 {
                     log.error(desc+ " - No Old Record for ["+oldCatNum+"]");
                     printRowError("No Old Record for ["+oldCatNum+"]");
-                    return true;
+                    return StatusType.NO_OLD_REC;
                 }
                 if (!hasNewRec)
                 {
                     log.error(desc+ "No New Record for ["+newCatNum+"]");
                     printRowError("No New Record for ["+newCatNum+"]");
-                    return true;
+                    return StatusType.NO_NEW_REC;
                 }
             }
         } finally
@@ -1148,7 +1263,7 @@ public class ConvertVerifier
             doneWithRS();
         }
             
-        return true;
+        return StatusType.COMPARE_OK;
     }
     
     protected void verifyCollectors()
@@ -1366,7 +1481,7 @@ public class ConvertVerifier
                 int col = 1;
                 int     newId           = newDBRS.getInt(col++);
                 String  newStartDate    = newDBRS.getString(col++);
-                //Integer newStartTime    = newDBRS.getInt(col++);
+                Integer newStartTime    = newDBRS.getInt(col++);
                 String  newLocalityName = newDBRS.getString(col++);
                 Double  newLatitude     = newDBRS.getDouble(col++);
                 Double  newLongitude    = newDBRS.getDouble(col++);
@@ -1375,7 +1490,7 @@ public class ConvertVerifier
                 col = 1;
                 int          oldId           = oldDBRS.getInt(col++);
                 String       oldStartDate    = oldDBRS.getString(col++);
-                //Integer      oldStartTime    = oldDBRS.getInt(col++);
+                Integer      oldStartTime    = oldDBRS.getInt(col++);
                 String       oldLocalityName = oldDBRS.getString(col++);
                 Double       oldLatitude     = oldDBRS.getDouble(col++);
                 Double       oldLongitude    = oldDBRS.getDouble(col++);
@@ -1388,7 +1503,7 @@ public class ConvertVerifier
                     boolean fnd       = false;
                     for (int i=7;i<15;i++)
                     {
-                        if (i == 7) System.out.println();
+                        //if (i == 7) System.out.println();
                         String name = oldDBRS.getString(i);
                         if (name != null)
                         {
@@ -1408,8 +1523,6 @@ public class ConvertVerifier
                     }
                 }
                 
-                
-                
                 Object dateObj = oldDBRS.getObject(2);
                 if (dateObj != null && ((Integer)dateObj) == 0)
                 {
@@ -1423,12 +1536,14 @@ public class ConvertVerifier
                     log.error(msg);
                     printRowError(msg);
                 }
+                
                 if (oldStartDate != null && newStartDate == null)
                 {
                     String msg = "Old Date["+oldStartDate+"] is not null   New Date["+newStartDate+"] is NULL";
                     log.error(msg);
                     printRowError(msg);
                 }
+                
                 if (oldStartDate != null && newStartDate != null)
                 {
                     Date date = UIHelper.convertIntToDate(oldDBRS.getInt(2));
@@ -1501,7 +1616,6 @@ public class ConvertVerifier
                     log.error(msg);
                     printRowError(msg);
                 }
-                
             }
             
             oldDBRS.close();

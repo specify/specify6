@@ -4580,6 +4580,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                                 	log.debug(msg);
                                 	tblWriter.logError(msg);
                                 	
+                                	tblWriter.log(ConvertVerifier.dumpSQL(oldDBConn, "SELECT * FROM determination WHERE DeterminationId = "+rs.getInt(oldRecIDInx)));
+                                	
                                 	if (isValueRequired(tableName, newFieldName))
                                 	{
                                 		msg = "For table["+tableName+"] the field ["+newFieldName+"] is null and can't be. Old value["+oldId+"]";
@@ -6353,7 +6355,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         int errorsToShow = (BasicSQLUtils.SHOW_NAME_MAPPING_ERROR | BasicSQLUtils.SHOW_VAL_MAPPING_ERROR);
         if (showMappingErrors)
         {
-            errorsToShow = errorsToShow | BasicSQLUtils.SHOW_FK_LOOKUP;// | BasicSQLUtils.SHOW_NULL_FK);
+            errorsToShow = errorsToShow | BasicSQLUtils.SHOW_PM_LOOKUP | BasicSQLUtils.SHOW_NULL_PM;
         }
         BasicSQLUtils.setShowErrors(errorsToShow);
         
@@ -6366,6 +6368,16 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             log.error(msg);
             tblWriter.logError(msg);
         }
+        
+        IdMapperIFace txMapper = IdMapperMgr.getInstance().get("taxonname", "TaxonNameID");
+        if (txMapper instanceof IdHashMapper)
+        {
+            for (Integer oldId : ((IdHashMapper)txMapper).getOldIdNullList())
+            {
+                tblWriter.println(ConvertVerifier.dumpSQL(oldDBConn, "SELECT * FROM taxonname WHERE ParentTaxonNameId = "+oldId));
+            }
+        }
+        
 
         BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(null);
         BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer(newDBConn, "taxon", BasicSQLUtils.myDestinationServerType);
@@ -6382,7 +6394,6 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         // empty out any pre-existing tree definitions
         BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "geographytreedef", BasicSQLUtils.myDestinationServerType);
         BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "geographytreedefitem", BasicSQLUtils.myDestinationServerType);
-
 
         Session localSession = HibernateUtil.getCurrentSession();
         HibernateUtil.beginTransaction();

@@ -23,6 +23,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -43,6 +44,8 @@ import edu.ku.brc.ui.ProgressFrame;
 public class IdHashMapper implements IdMapperIFace
 {
     protected static final Logger log = Logger.getLogger(IdHashMapper.class);
+    
+    protected static TableWriter tblWriter = null;
 
     protected String          sql           = null;
     protected boolean         isUsingSQL    = false;
@@ -55,8 +58,8 @@ public class IdHashMapper implements IdMapperIFace
     
     protected ProgressFrame   frame         = null;
     protected int             initialIndex  = 1;
-    
-    protected static TableWriter tblWriter = null;
+    protected Vector<Integer> oldIdNullList = new Vector<Integer>();
+
     
     /**
      * Default Constructor for those creating derived classes.
@@ -355,6 +358,8 @@ public class IdHashMapper implements IdMapperIFace
 
             } else
             {
+                oldIdNullList.add(oldId);
+                
                 if (showLogErrors) 
                 {
                 	String msg = "********** Couldn't find old index ["+oldId+"] for "+mapTableName;
@@ -382,6 +387,14 @@ public class IdHashMapper implements IdMapperIFace
         }
     }
     
+    /**
+     * @return the oldIdNullList
+     */
+    public Vector<Integer> getOldIdNullList()
+    {
+        return oldIdNullList;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.conversion.IdMapperIFace#size()
      */

@@ -69,12 +69,14 @@ public class BasicSQLUtils
     public static SERVERTYPE mySourceServerType = SERVERTYPE.MySQL;
     
     // These are the configuration Options for a View
-    public static final int HIDE_ALL_ERRORS         = 0;  // Hhow no errors (Silent)
-    public static final int SHOW_NAME_MAPPING_ERROR = 1;  // Show Errors when mapping from Old Name to New Name
-    public static final int SHOW_VAL_MAPPING_ERROR  = 2;  // Show Errors when mapping from Old Name to New Name
-    public static final int SHOW_NULL_FK            = 4;  // Show Error When a Foreign Key is Null and shouldn't be
-    public static final int SHOW_FK_LOOKUP          = 8;  // Show Error when Foreign Key is not null but couldn't be mapped to a new value
-    public static final int SHOW_ALL                = SHOW_NAME_MAPPING_ERROR | SHOW_VAL_MAPPING_ERROR | SHOW_FK_LOOKUP | SHOW_NULL_FK;
+    public static final int HIDE_ALL_ERRORS         =  0;  // Hhow no errors (Silent)
+    public static final int SHOW_NAME_MAPPING_ERROR =  1;  // Show Errors when mapping from Old Name to New Name
+    public static final int SHOW_VAL_MAPPING_ERROR  =  2;  // Show Errors when mapping from Old Name to New Name
+    public static final int SHOW_NULL_FK            =  4;  // Show Error When a Foreign Key is Null and shouldn't be
+    public static final int SHOW_FK_LOOKUP          =  8;  // Show Error when Foreign Key is not null but couldn't be mapped to a new value
+    public static final int SHOW_NULL_PM            = 16;  // Show Error When a Primary Key is Null and shouldn't be
+    public static final int SHOW_PM_LOOKUP          = 32;  // Show Error when Primary Key is not null but couldn't be mapped to a new value
+    public static final int SHOW_ALL                = SHOW_NAME_MAPPING_ERROR | SHOW_VAL_MAPPING_ERROR | SHOW_FK_LOOKUP | SHOW_NULL_FK | SHOW_NULL_PM | SHOW_PM_LOOKUP;
     
     protected static    int showErrors           = SHOW_ALL;
     
@@ -498,7 +500,16 @@ public class BasicSQLUtils
      */
     public static Vector<Object[]> query(final String sql)
     {
-        return query(null, sql);
+        return query(null, sql, false);
+    }
+
+    /**
+     * @param sql
+     * @return
+     */
+    public static Vector<Object[]> query(final Connection conn, final String sql)
+    {
+        return query(conn, sql, false);
     }
 
     /**
@@ -506,7 +517,7 @@ public class BasicSQLUtils
      * @param sql
      * @return
      */
-    public static Vector<Object[]> query(final Connection conn, final String sql)
+    public static Vector<Object[]> query(final Connection conn, final String sql, final boolean includeHeaderRow)
     {
         Vector<Object[]> list = new Vector<Object[]>();
         Statement stmt = null;
@@ -542,6 +553,15 @@ public class BasicSQLUtils
                 ResultSet         rs       = stmt.executeQuery(sql);
                 ResultSetMetaData metaData = rs.getMetaData();
                 int               numCols  = metaData.getColumnCount();
+                if (includeHeaderRow)
+                {
+                    Object[] colData = new Object[numCols];
+                    list.add(colData);
+                    for (int i=0;i<numCols;i++)
+                    {
+                        colData[i] = metaData.getColumnName(i+1);
+                    } 
+                }
                 while (rs.next())
                 {
                     Object[] colData = new Object[numCols];
@@ -1469,11 +1489,6 @@ public class BasicSQLUtils
                     
                     if (dataObj instanceof Integer)
                     {
-                        if ((Integer)dataObj == 19590000)
-                        {
-                            int x = 0;
-                            x++;
-                        }
                     	Pair<String, String> datep = new Pair<String, String>();
                     	getPartialDate((Integer)dataObj, datep);
                         dateMap.put(newColName, datep);
@@ -1597,27 +1612,23 @@ public class BasicSQLUtils
                             IdMapperIFace idMapper = idMapperMgr.get(fromTableName, oldMappedColName);
                             if (idMapper != null)
                             {
-
+                                int showNullOption     = SHOW_NULL_FK;
+                                int showFkLookUpOption = SHOW_FK_LOOKUP;
+                                                               
                                 int oldPrimaryKeyId = rs.getInt(columnIndex);
-                                
-                                if (toTableName.equalsIgnoreCase("Accession"))
+                                if (oldMappedColName.equalsIgnoreCase(fromTableName+"id"))
                                 {
-                                    System.err.println(oldMappedColName+"  "+oldPrimaryKeyId);
-                                    if (oldPrimaryKeyId == 278)
-                                    {
-                                        int x = 0;
-                                        x++;
-                                    }
-                                }
-
-
+                                    showNullOption     = SHOW_NULL_PM;
+                                    showFkLookUpOption = SHOW_PM_LOOKUP;
+                                } 
+                                    
                                 // if the value was null, getInt() returns 0
                                 // use wasNull() to distinguish real 0 from a null return
                                 if (rs.wasNull())
                                 {
                                     dataObj = null;
                                     
-                                    if (isOptionOn(SHOW_NULL_FK))
+                                    if (isOptionOn(showNullOption))
                                     {
                                     	String msg = "Unable to Map Primary Id[NULL] old Name["+oldMappedColName+"]   colInx["+columnIndex+"]   newColName["+newColName+"]";
                                         log.error(msg);
@@ -1629,7 +1640,7 @@ public class BasicSQLUtils
                                 {
                                     dataObj = idMapper.get(oldPrimaryKeyId);
                                     
-                                    if (dataObj == null && isOptionOn(SHOW_FK_LOOKUP))
+                                    if (dataObj == null && isOptionOn(showFkLookUpOption))
                                     {
                                         String msg = "Unable to Map Primary Id["+oldPrimaryKeyId+"] old Name["+oldMappedColName+"]";
                                         log.error(msg);
@@ -1637,7 +1648,6 @@ public class BasicSQLUtils
                                         skipRecord = true;
                                     }
                                 }
-
                             } else
                             {
                                 if (isOptionOn(SHOW_NAME_MAPPING_ERROR) && 

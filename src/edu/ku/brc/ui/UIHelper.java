@@ -584,7 +584,7 @@ public final class UIHelper
             int month = tmp / 100;
             int day   = (tmp - (month * 100));
 
-            calendar.set(year, month-1, day == 0 ? 1 : day);
+            calendar.set(year, month == 0 ? 0 : month-1, day == 0 ? 1 : day);
         } else
         {
             calendar.setTimeInMillis(0);
