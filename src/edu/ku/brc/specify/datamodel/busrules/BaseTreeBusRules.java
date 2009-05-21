@@ -86,7 +86,7 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
                                        I extends TreeDefItemIface<T,D,I>>
                                        extends BaseBusRules
 {
-    public static final boolean ALLOW_CONCURRENT_FORM_ACCESS = false;
+    public static final boolean ALLOW_CONCURRENT_FORM_ACCESS = true;
 	
 	private static final Logger log = Logger.getLogger(BaseTreeBusRules.class);
     

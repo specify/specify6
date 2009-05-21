@@ -46,6 +46,8 @@ import edu.ku.brc.exceptions.ConfigurationException;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.busrules.BaseTreeBusRules;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
+import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr.SCOPE;
+import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr.USER_ACTION;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -384,7 +386,10 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
             	
             	if (BaseTreeBusRules.ALLOW_CONCURRENT_FORM_ACCESS)
             	{
-            		//increment usage count for lock ...
+            		if (TaskSemaphoreMgr.isLocked(title, treeSemaphoreName, SCOPE.Discipline))
+            		{
+             			return FormLockStatus.Skip;
+            		}
             	}
             	else
             	{
@@ -423,7 +428,10 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
                 // Now grab the Tree Form Lock
                 if (BaseTreeBusRules.ALLOW_CONCURRENT_FORM_ACCESS)
                 {
-                	//usage count stuff???
+                	if (!TaskSemaphoreMgr.incrementUsageCount(title, treeFormSemaphoreName, SCOPE.Discipline))
+                	{
+                		action = USER_ACTION.Error;
+                	}
                 }
                 else
                 {
@@ -431,9 +439,11 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
                 }
                 if (action != TaskSemaphoreMgr.USER_ACTION.OK)
                 {
-                    // Since for some bizarre reason we didn't get the treeForm Lock release the tree lock.
-                    TaskSemaphoreMgr.unlock(title, treeSemaphoreName, TaskSemaphoreMgr.SCOPE.Discipline);
-                    
+                    if (!BaseTreeBusRules.ALLOW_CONCURRENT_FORM_ACCESS)
+                    {
+                    	// Since for some bizarre reason we didn't get the treeForm Lock release the tree lock.
+                    	TaskSemaphoreMgr.unlock(title, treeSemaphoreName, TaskSemaphoreMgr.SCOPE.Discipline);
+                    }
                     UIRegistry.showLocalizedError("TREE_LOCKED_ERR_FRM");
                     return FormLockStatus.Skip;
                 }
@@ -464,6 +474,12 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
             
             DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
             String       title    = tableInfo.getTitle() + " " + "Tree";
+            
+            if (BaseTreeBusRules.ALLOW_CONCURRENT_FORM_ACCESS)
+            {
+            	return TaskSemaphoreMgr.decrementUsageCount(title, treeFormSemaphoreName, SCOPE.Discipline);
+            }
+            
             
             // If this user owns the Tree Form Lock then they can open the View
             if (!TaskSemaphoreMgr.doesOwnSemaphore(treeFormSemaphoreName, TaskSemaphoreMgr.SCOPE.Discipline))

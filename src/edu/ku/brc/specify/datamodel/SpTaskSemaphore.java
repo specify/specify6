@@ -38,6 +38,7 @@ import javax.persistence.Transient;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "sptasksemaphore")
+@SuppressWarnings("serial")
 public class SpTaskSemaphore extends DataModelObjBase implements java.io.Serializable 
 {
 
@@ -51,7 +52,7 @@ public class SpTaskSemaphore extends DataModelObjBase implements java.io.Seriali
     protected SpecifyUser       owner; 
     protected Discipline        discipline;
     protected Collection        collection;
-    protected Integer			usageCount;
+    //protected Integer			usageCount;
 
     protected Boolean           isLocked;
     protected Timestamp         lockedTime;
@@ -84,7 +85,7 @@ public class SpTaskSemaphore extends DataModelObjBase implements java.io.Seriali
         lockedTime      = null;
         discipline      = null;
         collection      = null;
-        usageCount		= null;
+        //usageCount		= null;
     }
     // End Initializer
 
@@ -145,19 +146,19 @@ public class SpTaskSemaphore extends DataModelObjBase implements java.io.Seriali
     /**
 	 * @return the usageCount
 	 */
-    @Column(name = "UsageCount", unique = false, nullable = true, insertable = true, updatable = true)
-	public Integer getUsageCount()
-	{
-		return usageCount;
-	}
+//    @Column(name = "UsageCount", unique = false, nullable = true, insertable = true, updatable = true)
+//	public Integer getUsageCount()
+//	{
+//		return usageCount;
+//	}
 
 	/**
 	 * @param usageCount the usageCount to set
 	 */
-	public void setUsageCount(Integer usageCount)
-	{
-		this.usageCount = usageCount;
-	}
+//	public void setUsageCount(Integer usageCount)
+//	{
+//		this.usageCount = usageCount;
+//	}
 
 	/**
      * @return the isLocked

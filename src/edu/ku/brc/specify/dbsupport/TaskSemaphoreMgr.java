@@ -553,6 +553,101 @@ public class TaskSemaphoreMgr
     }
     
     /**
+     * @param title
+     * @param name
+     * @param scope
+     * @return true if successful.
+     * 
+     * Adds 1 to the usage count for the specified semaphore.
+     */
+    public static boolean incrementUsageCount(final String title, final String name, final SCOPE  scope)
+    {
+    	return updateUsageCount(title, name, scope, 1);
+    }
+    
+    /**
+     * @param title
+     * @param name
+     * @param scope
+     * @return true if successful
+     * 
+     * Subtracts 1 to the usage count for the specified semaphore.
+     */
+    public static boolean decrementUsageCount(final String title, final String name, final SCOPE  scope)
+    {
+    	return updateUsageCount(title, name, scope, -1);
+    }
+
+    public static boolean clearUsageCount(final String title, final String name, final SCOPE  scope)
+    {
+    	return updateUsageCount(title, name, scope, null);
+    }
+
+    /**
+     * @param title
+     * @param name
+     * @param scope
+     * @param increment
+     * @return true if usage count is successfully incremented.
+     * 
+     * Adds increment (can be a negative number) to specified semaphore.
+     * 
+     */
+    private static boolean updateUsageCount(final String title, final String name, final SCOPE  scope, final Integer increment)
+    {
+    	if (isLocked(title, name, scope))
+    	{
+    		return false;
+    	}
+    	
+    	boolean result = false;
+    	boolean inTransaction = false;
+    	DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+    	try
+    	{
+            Discipline discipline = scope == SCOPE.Discipline ? AppContextMgr.getInstance().getClassObject(Discipline.class) : null;
+            Collection collection = scope == SCOPE.Collection ? AppContextMgr.getInstance().getClassObject(Collection.class) : null;
+    		session.beginTransaction();
+    		inTransaction = true;
+            SpTaskSemaphore semaphore = getSemaphore(session, name, scope, discipline, collection);
+    		String context = semaphore.getContext();
+    		if (increment == null)
+    		{
+    			semaphore.setContext(null);
+    		}
+    		else
+    		{
+    			Integer count = StringUtils.isBlank(context) ? 0 : new Integer(context);
+    			Integer newCount = new Integer(count + increment);
+    			if (newCount.intValue() < 0)
+    			{
+    				log.error("attempt to set usage count for " + name + "to " + newCount);
+    				newCount = 0;
+    			}
+    			semaphore.setContext(newCount.toString());
+    		}
+    		session.saveOrUpdate(semaphore);
+    		session.commit();
+    		result = true;
+    	}
+    	catch (Exception ex)
+    	{
+            if (inTransaction)
+            {
+            	session.rollback();
+            }
+    		edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TaskSemaphoreMgr.class, ex);
+            ex.printStackTrace();
+    	}
+    	finally
+    	{
+    		session.close();
+    	}
+    	return result;
+    }
+    
+    /**
      * Builds the SQL string needed for checking the semaphore.
      * @param name the unique name
      * @param scope the scope of the lock
