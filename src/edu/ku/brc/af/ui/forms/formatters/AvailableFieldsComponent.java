@@ -193,11 +193,11 @@ public class AvailableFieldsComponent
         {
             if (field.isHidden()) 
             {
-                break;
+                continue;
             }
             
             DataObjDataField dataField = new DataObjDataField(getFieldNameFromStack(tableStack, field.getName()), 
-                    field.getDataClass(), null, "", null, null);
+                                                              field.getDataClass(), null, "", null, null);
             dataField.setDbInfo(currentTableInfo, field, relInfo);
             DataObjDataFieldWrapper fieldWrapper = new DataObjDataFieldWrapper(dataField);
             node.add(new DefaultMutableTreeNode(fieldWrapper)); // leaf (field)
@@ -237,13 +237,9 @@ public class AvailableFieldsComponent
         // get fields from relationship tables recursively
         for (DBRelationshipInfo rel : currentTableInfo.getRelationships())
         {
-            if (rel.isHidden()) 
-            {
-                break;
-            }
-            
-            if (!RelationshipType.ManyToOne.equals(rel.getType()) && 
-                !RelationshipType.OneToOne.equals(rel.getType()))
+            if (rel.isHidden() || 
+                    (!RelationshipType.ManyToOne.equals(rel.getType()) && 
+                     !RelationshipType.OneToOne.equals(rel.getType())))
             {
                 // Relationship is not *-to-One, so we won't know how to include sets of 
                 // values into the formatted object. Let's not include this relationship.
