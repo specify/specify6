@@ -2398,6 +2398,8 @@ public class BasicSQLUtils
         {
             this.name = name;
             this.type = type;
+            this.isDate = isDate;
+            this.isPrecision = isPrecision;
         }
 
         public String getName()

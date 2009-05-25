@@ -161,7 +161,8 @@ public class ProgressFrame extends JFrame
         setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         pack();
         Dimension size = getSize();
-        size.width = Math.max(size.width, 500);
+        size.width = Math.max(size.width+100, 600);
+        size.height += 20;
         setSize(size);
     }
     

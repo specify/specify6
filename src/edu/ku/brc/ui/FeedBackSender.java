@@ -245,9 +245,10 @@ public abstract class FeedBackSender
                     }
                     catch (Exception e)
                     {
-                        UsageTracker.incrHandledUsageCount();
-                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FeedBackSender.class, e);
+                        //UsageTracker.incrHandledUsageCount();
+                        //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FeedBackSender.class, e);
                         // if any exceptions occur, return them so the finished() method can have them
+                        e.printStackTrace();
                         return e;
                     }
                 }

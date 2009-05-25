@@ -295,7 +295,7 @@ public class ConvertVerifier
         progressFrame = new ProgressFrame("Checking Catalog Objects....");
         progressFrame.adjustProgressFrame();
         
-        Integer total = BasicSQLUtils.getCount(oldDBConn, "SELECT COUNT(CatalogNumber) FROM collectionobjectcatalog WHERE CollectionObjectTypeID = 10 ORDER BY CatalogNumber ASC");
+        Integer total = BasicSQLUtils.getCount(oldDBConn, "SELECT COUNT(CatalogNumber) FROM collectionobjectcatalog WHERE CollectionObjectTypeID < 20 ORDER BY CatalogNumber ASC");
         progressFrame.setProcess(0, total);
         //progressFrame.setDesc("Checking Catalog Objects....");
         
@@ -322,7 +322,7 @@ public class ConvertVerifier
         {
             int i = 0;
             Statement stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            ResultSet rs = stmt.executeQuery("SELECT CatalogNumber FROM collectionobjectcatalog WHERE CollectionObjectTypeID = 10 ORDER BY CatalogNumber ASC");
+            ResultSet rs = stmt.executeQuery("SELECT CatalogNumber FROM collectionobjectcatalog WHERE CollectionObjectTypeID < 20 ORDER BY CatalogNumber ASC");
             while (rs.next())
             {
                 int    oldCatNum = rs.getInt(1);
@@ -465,6 +465,8 @@ public class ConvertVerifier
         progressFrame.setVisible(false);
         
         AttachmentUtils.openURI(verifyFile.toURI());
+        
+        System.exit(0);
     }
     
     /**
@@ -527,6 +529,7 @@ public class ConvertVerifier
                 out.println(dumpSQL(oldDBConn, oldSQL));
                 out.println("<BR>");
                 out.println("</td></tr><!-- 4 -->");
+                out.flush();
                 break;
                 
             case NO_OLD_REC:
@@ -534,6 +537,7 @@ public class ConvertVerifier
                 out.println(dumpSQL(newDBConn, newSQL));
                 out.println("<BR>");
                 out.println("</td></tr><!-- 4 -->");
+                out.flush();
                 break;
                 
             case NEW_VAL_NULL:
@@ -542,6 +546,7 @@ public class ConvertVerifier
                 out.println(dumpSQL(oldDBConn, oldSQL));
                 out.println("<BR>");
                 out.println("</td></tr><!-- 4 -->");
+                out.flush();
                 break;
                 
             case NO_NEW_REC:
@@ -549,9 +554,9 @@ public class ConvertVerifier
                 out.println(dumpSQL(oldDBConn, oldSQL));
                 out.println("<BR>");
                 out.println("</td></tr><!-- 4 -->");
+                out.flush();
                 break;
         }
-        out.flush();
 
     }
                          
@@ -895,19 +900,16 @@ public class ConvertVerifier
     protected boolean verifyPreparation(final int oldCatNum, final String newCatNum) throws SQLException
     {
          newSQL = "SELECT preparation.CountAmt, " +
-                    "collectionobject.FieldNumber, " +
                     "preptype.Name, " +
+                    "preparation.Text1, " +
                     "preparation.Text2 " +
                     "FROM collectionobject INNER JOIN preparation ON collectionobject.CollectionObjectID = preparation.CollectionObjectID " +
                     "INNER JOIN preptype ON preparation.PrepTypeID = preptype.PrepTypeID " +
-                    "WHERE CatalogNumber = '"+ newCatNum + "'";
+                    "WHERE CatalogNumber = '"+ newCatNum + "' ORDER BY PreparationID";
 
-         oldSQL = "SELECT collectionobject.Count, " +
-                    "collectionobject.FieldNumber, " +
-                    "collectionobject.PreparationMethod, " +
-                    "collectionobject.Text2 " +
-                    "FROM collectionobject INNER JOIN collectionobjectcatalog ON collectionobject.DerivedFromID = collectionobjectcatalog.CollectionObjectCatalogID " +
-                    "WHERE CatalogNumber = " + oldCatNum;
+         oldSQL = "SELECT co.Count, co.PreparationMethod, co.Text1, co.Text2 FROM collectionobject co " +
+                  "INNER JOIN collectionobjectcatalog cc ON co.DerivedFromID = cc.CollectionObjectCatalogID " + 
+                  "WHERE co.CollectionObjectTypeID > 20 AND CatalogNumber = " + oldCatNum + " ORDER BY co.CollectionObjectID";
         
          StatusType status = compareRecords("Preparation", oldCatNum, newCatNum, oldSQL, newSQL);
          dumpStatus(status);
@@ -1125,12 +1127,28 @@ public class ConvertVerifier
                     }
                     
                     String oldColName = oldRsmd.getColumnName(oldColInx);
+                    if (oldColName.equals("PreparationMethod"))
+                    {
+                        if ((oldObj == null && newObj != null && !newObj.equals("Misc")) || 
+                            (oldObj != null && newObj != null && !newObj.equals(oldObj)))
+                        {
+                            String msg = "Old Value was null and shouldn't have been for Old CatNum ["+oldCatNum+"] Field ["+oldColName+"] oldObj["+oldObj+"] newObj ["+newObj+"]";
+                            log.error(desc+ " - "+msg);
+                            printRowError(desc, msg);
+                            return StatusType.OLD_VAL_NULL;
+                        }
+                        continue;
+                    }
+                    
                     if (oldObj == null && !StringUtils.contains(oldColName, "LastName"))
                     {
-                        String msg = "Old Value was null and shouldn't have been for Key Value ["+oldCatNum+"] Field ["+oldColName+"]";
-                        log.error(desc+ " - "+msg);
-                        printRowError(desc, msg);
-                        return StatusType.OLD_VAL_NULL;
+                        if (!oldColName.equals("PreparationMethod") || !newObj.equals("Misc"))
+                        {
+                            String msg = "Old Value was null and shouldn't have been for Old CatNum ["+oldCatNum+"] Field ["+oldColName+"]";
+                            log.error(desc+ " - "+msg);
+                            printRowError(desc, msg);
+                            return StatusType.OLD_VAL_NULL;
+                        }
                     }
                     
                     if (newObj == null)
@@ -1255,7 +1273,7 @@ public class ConvertVerifier
                             
                         } else if (!newObj.equals(oldObj))
                         {
-                            String msg = "Columns don't Num["+oldCatNum+"] compare["+newObj+"]["+oldObj+"]  ["+newColName+"]["+oldColName+"]";
+                            String msg = "Columns don't Cat Num["+oldCatNum+"] compare["+newObj+"]["+oldObj+"]  ["+newColName+"]["+oldColName+"]";
                             log.error(desc+ " - "+msg);
                             printRowError(desc, msg);
                             return StatusType.NO_COMPARE;

@@ -132,8 +132,24 @@ public class ConversionLogger
             this.fName = fileName;
             this.title = title;
             
-            println("<html><head><title>"+title+"</title>\n<style>\n  span.err { color: red; }\n</style>\n</head><body>");
+            println("<html>\n<head>\n<title>"+title+"</title>\n");
+            writeStyle(this);
+            println("</head>\n<body>");
             println("<h2>"+title+"</h2>");
+        }
+        
+        /**
+         * @param out
+         */
+        protected void writeStyle(final PrintWriter out)
+        {
+            out.println("<style>");
+            out.println(" span.err { color: red; }");
+            out.println(" table.o { border-top: solid 1px rgb(128, 128, 128); border-left: solid 1px rgb(128, 128, 128); }");
+            out.println(" table.o td { border-bottom: solid 1px rgb(128, 128, 128); border-right: solid 1px rgb(128, 128, 128); }");
+            out.println(" table.i { border-top: solid 1px rgb(192, 192, 192); border-left: solid 1px rgb(192, 192, 192); }");
+            out.println(" table.i td { border-bottom: solid 1px rgb(192, 192, 192); border-right: solid 1px rgb(192, 192, 192); }");
+            out.println("</style>");
         }
         
         /**

@@ -25,6 +25,7 @@ import static edu.ku.brc.specify.config.init.DataBuilder.createStandardGroups;
 import static edu.ku.brc.specify.config.init.DataBuilder.getSession;
 import static edu.ku.brc.specify.config.init.DataBuilder.setSession;
 
+import java.awt.Frame;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -44,6 +45,7 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
@@ -136,7 +138,7 @@ public class SpecifyDBConverter
     protected Pair<String, String> masterUsrPwd = new Pair<String, String>("Master", "Master");
     protected String               hostName     = "localhost";
     
-    protected ConversionLogger convLogger = new ConversionLogger();
+    protected ConversionLogger     convLogger   = new ConversionLogger();
     
     /**
      * Constructor.
@@ -238,7 +240,6 @@ public class SpecifyDBConverter
                 if (namePair != null)
                 {
                     frame = new ProgressFrame("Converting");
-                    frame.adjustProgressFrame();
                     
                     UIRegistry.setAppName("Specify");
                     
@@ -250,6 +251,72 @@ public class SpecifyDBConverter
                 
             }
         });
+    }
+    
+    /**
+     * @param oldDBConn
+     */
+    protected boolean showStatsFromOldCollection(final Connection oldDBConn)
+    {
+        String[] queries = {"SELECT count(*) FROM collectionobject co1 LEFT JOIN collectionobject co2 ON co1.DerivedFromID = co2.CollectionObjectID WHERE co1.DerivedFromID is not NULL AND co2.CollectionObjectID is NULL",
+                            "SELECT count(*) FROM collectionobject",
+                            "SELECT count(*) FROM collectionobjectcatalog",
+                            "SELECT count(*) FROM taxonname",
+                            "SELECT count(*) FROM determination",
+                            "SELECT count(*) FROM agent",
+                            "SELECT count(*) FROM agent WHERE LENGTH(Name) > 50",
+                            "SELECT count(*) FROM agent WHERE LENGTH(LastName) > 50"};
+        
+        String[] descs = {"Stranded Preparations",
+                          "CollectionObjects",
+                          "Collection Object Catalogs",
+                          "Taxon",
+                          "Determinations",
+                          "Agents",
+                          "Agent Names Truncated",
+                          "Agent Last Names Truncated"};
+        
+        Object[][] rows = new Object[queries.length][2];
+        for (int i=0;i<queries.length;i++)
+        {
+            rows[i][0] = descs[i];
+            rows[i][1] = BasicSQLUtils.getCount(oldDBConn, queries[i]);
+        }
+        JTable table = new JTable(rows, new Object[] {"Description", "Count"});
+        CustomDialog dlg = new CustomDialog((Frame)null, "Source DB Statistics", true, CustomDialog.OKCANCEL, UIHelper.createScrollPane(table));
+        dlg.setOkLabel("Continue");
+        dlg.setVisible(true);
+        return !dlg.isCancelled();
+    }
+    
+    /**
+     * @param newDBConn
+     */
+    protected boolean showStatsFromNewCollection(final Connection newDBConn)
+    {
+        String[] queries = {"SELECT count(*) FROM collectionobject",
+                            "SELECT count(*) FROM preparation",
+                            "SELECT count(*) FROM determination",
+                            "SELECT count(*) FROM taxon",
+                            "SELECT count(*) FROM agent",};
+        
+        String[] descs = {"CollectionObjects",
+                          "Preparations",
+                          "Determinations",
+                          "Taxon",
+                          "Agents"};
+        
+        Object[][] rows = new Object[queries.length][2];
+        for (int i=0;i<queries.length;i++)
+        {
+            rows[i][0] = descs[i];
+            rows[i][1] = BasicSQLUtils.getCount(newDBConn, queries[i]);
+        }
+        JTable table = new JTable(rows, new Object[] {"Description", "Count"});
+        CustomDialog dlg = new CustomDialog((Frame)null, "Destination DB Statistics", true, CustomDialog.OKCANCEL, UIHelper.createScrollPane(table));
+        dlg.setOkLabel("Continue");
+        dlg.setVisible(true);
+        return !dlg.isCancelled();
     }
     
     /**
@@ -445,7 +512,7 @@ public class SpecifyDBConverter
         
         boolean doAll               = true; 
         boolean startfromScratch    = true; 
-        boolean deleteMappingTables = false;
+        boolean deleteMappingTables = true;
         
         System.out.println("************************************************************");
         System.out.println("From "+dbNameSource+" to "+dbNameDest);
@@ -496,6 +563,37 @@ public class SpecifyDBConverter
             return;
         }
         
+        if (!showStatsFromOldCollection(oldDBConn))
+        {
+            oldDBConn.close();
+            newDBConn.close();
+            System.exit(0);
+        }
+        
+        convLogger.initialize(dbNameDest);
+        
+        final GenericDBConversion conversion = new GenericDBConversion(oldDBConn, newDBConn, dbNameSource, dbNameDest, convLogger);
+        if (!conversion.initialize())
+        {
+            oldDBConn.close();
+            newDBConn.close();
+            System.exit(0);
+        }
+        
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run()
+            {
+                conversion.setFrame(frame);
+                frame.setDesc("Building Database Schema...");
+                frame.adjustProgressFrame();
+                frame.getProcessProgress().setIndeterminate(true);
+                UIHelper.centerAndShow(frame);
+
+            }
+        });
+
+        
         if (startfromScratch)
         {
             log.debug("Starting from scratch and generating the schema");
@@ -526,13 +624,7 @@ public class SpecifyDBConverter
             {
                 BuildSampleDatabase.createSpecifySAUser(hostName, itUsrPwd.first, itUsrPwd.second, masterUsrPwd.first, masterUsrPwd.second, dbNameDest);
 
-                convLogger.initialize(dbNameDest);
-                
-                GenericDBConversion conversion = new GenericDBConversion(oldDBConn, newDBConn, dbNameSource, dbNameDest, convLogger);
-
-                conversion.setFrame(frame);
-
-               idMapperMgr = IdMapperMgr.getInstance();
+                idMapperMgr = IdMapperMgr.getInstance();
                 Connection oldConn = conversion.getOldDBConnection();
                 Connection newConn = conversion.getNewDBConnection();
                 if (oldConn == null || newConn == null)
@@ -594,7 +686,7 @@ public class SpecifyDBConverter
                 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 // Need to ask for Discipline here or get it from the Sp5 DB
                 
-                conversion.convertDivision("fish", institutionId);
+                conversion.convertDivision(institutionId);
                 frame.incOverall();
                 
                 /////////////////////////////////////////////////////////////
@@ -975,7 +1067,13 @@ public class SpecifyDBConverter
                             
                         } else
                         {
-                            List<?> list = localSession.createQuery("FROM Collection WHERE id = "+conversion.getCurDisciplineID()).list();
+                            String hsql = "FROM Collection WHERE id = "+conversion.getCurCollectionID();
+                            log.info(hsql);
+                            List<?> list = localSession.createQuery(hsql).list();
+                            if (list == null || list.size() == 0)
+                            {
+                                UIRegistry.showError("Couldn't find the Collection record ["+hsql+"]");
+                            }
                             collection = (Collection)list.get(0);
                         }
                     }
@@ -1229,16 +1327,16 @@ public class SpecifyDBConverter
         	errMsgs.append("There is a mismatch between CollectionObjects and CollectionObjectCatalogs\n");
         }*/
         
-        int cntACInnerCO = BasicSQLUtils.getCount(conn, "SELECT count(*) FROM accession INNER JOIN collectionobjectcatalog ON accession.AccessionID = collectionobjectcatalog.AccessionID WHERE CollectionObjectTypeID = 10");
-        int cntACLeftCO  = BasicSQLUtils.getCount(conn, "SELECT count(*) FROM accession LEFT JOIN collectionobjectcatalog ON accession.AccessionID = collectionobjectcatalog.AccessionID WHERE CollectionObjectTypeID = 10");
+        int cntACInnerCO = BasicSQLUtils.getCount(conn, "SELECT count(*) FROM accession INNER JOIN collectionobjectcatalog ON accession.AccessionID = collectionobjectcatalog.AccessionID WHERE CollectionObjectTypeID < 20");
+        int cntACLeftCO  = BasicSQLUtils.getCount(conn, "SELECT count(*) FROM accession LEFT JOIN collectionobjectcatalog ON accession.AccessionID = collectionobjectcatalog.AccessionID WHERE CollectionObjectTypeID < 20");
         
         if (cntACInnerCO != cntACLeftCO)
         {
         	errMsgs.append("There is a mismatch between Accessions and its CollectionObject references.\n");
         }
         
-        int cntDTInnerCO = BasicSQLUtils.getCount(conn, "SELECT count(*) FROM determination INNER JOIN collectionobject ON determination.BiologicalObjectID = collectionobject.CollectionObjectID WHERE CollectionObjectTypeID = 10");
-        int cntDTLeftCO  = BasicSQLUtils.getCount(conn, "SELECT count(*) FROM determination LEFT JOIN collectionobject ON determination.BiologicalObjectID = collectionobject.CollectionObjectID WHERE CollectionObjectTypeID = 10");
+        int cntDTInnerCO = BasicSQLUtils.getCount(conn, "SELECT count(*) FROM determination INNER JOIN collectionobject ON determination.BiologicalObjectID = collectionobject.CollectionObjectID WHERE CollectionObjectTypeID < 20");
+        int cntDTLeftCO  = BasicSQLUtils.getCount(conn, "SELECT count(*) FROM determination LEFT JOIN collectionobject ON determination.BiologicalObjectID = collectionobject.CollectionObjectID WHERE CollectionObjectTypeID < 20");
         
         if (cntDTInnerCO != cntDTLeftCO)
         {

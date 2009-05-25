@@ -338,14 +338,14 @@ public final class UIHelper
         {
             if (comp instanceof JDialog)
             {
-                JDialog dlg = (JDialog)comp;
+                //JDialog dlg = (JDialog)comp;
                 //if (isMacOS_10_5_X)
                 //{
                 //    only works on JFrame
                 //    dlg.getRootPane().putClientProperty("JComponent.windowModified", isModified ? Boolean.TRUE : Boolean.FALSE);
                 //} else
                 //{
-                    dlg.setTitle(dlg.getTitle() + "*");
+                   // dlg.setTitle(dlg.getTitle() + "*");
                 //}
                 
             } else if (comp instanceof JFrame)
