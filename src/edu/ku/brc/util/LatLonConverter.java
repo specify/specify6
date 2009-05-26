@@ -634,7 +634,7 @@ public class LatLonConverter
         // round to four decimal places of precision
         //minutes = Math.round(minutes*10000) / 10000;
         
-        sb.append(String.format("%"+decimalLen+"."+decimalLen+"f", minutes));
+        sb.append(String.format("%"+2+"."+decimalLen+"f", minutes));
         if (addMinSecsSyms) sb.append("'");
         
         if (degreesFMT == DEGREES_FORMAT.String || alwaysIncludeDir)
