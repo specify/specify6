@@ -852,6 +852,7 @@ public class TaskSemaphoreMgr
             // I think it was a timing issue. I wasn't able to
             // reproduce it.
             log.error("Try to unlock when there is no lock.");
+            return null; 
             // error
             //throw new RuntimeException("No lock!");
         }
