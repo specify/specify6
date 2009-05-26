@@ -436,6 +436,12 @@ public class ConfigureCSV extends ConfigureExternalDataBase
 		 
 		DataImportDialog dlg = new DataImportDialog(this, delimiter,
                 textQualifier, charset, escapeMode, firstRowHasHeaders, shouldUseTextQualifier);
+		if (dlg.hasTooManyRows)
+		{
+			status = Status.Cancel;
+			return;
+		}
+		
 		UIHelper.centerAndShow(dlg);
 		
 		if (!dlg.isCancelled())
