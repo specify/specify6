@@ -139,8 +139,18 @@ public class QryListRenderer implements ListCellRenderer
             panel.setBackground(list.getBackground());
             label.setForeground(list.getForeground());
         }
-        label.setText(" " + (qri != null ? qri.getTitle() : "?"));
+        label.setText(" " + (qri != null ? removeSpecialCharacters(qri.getTitle()) : "?"));
         panel.doLayout();
         return panel;
+    }
+    
+    /**
+     * @param str
+     * @return str with characters that mess up display as a single line in a list box removed.
+     */
+    protected String removeSpecialCharacters(final String str)
+    {
+    	String result = str.replaceAll("\\\\n", "");
+    	return result;
     }
 }
