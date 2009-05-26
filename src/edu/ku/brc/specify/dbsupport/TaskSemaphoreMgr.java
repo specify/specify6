@@ -343,7 +343,8 @@ public class TaskSemaphoreMgr
             {
                 return true;
             }
-            throw new RuntimeException("Couldn't unlock.");
+            //throw new RuntimeException("Couldn't unlock.");
+            return false;
             
         } catch (Exception ex)
         {
@@ -605,11 +606,31 @@ public class TaskSemaphoreMgr
     	DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
     	try
     	{
+            Timestamp now = new Timestamp(System.currentTimeMillis());
+            
+            SpecifyUser user      = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
             Discipline discipline = scope == SCOPE.Discipline ? AppContextMgr.getInstance().getClassObject(Discipline.class) : null;
             Collection collection = scope == SCOPE.Collection ? AppContextMgr.getInstance().getClassObject(Collection.class) : null;
+            
+            // Get our own copies of the Global Objects.
+            user       = user       != null ? session.getData(SpecifyUser.class, "id", user.getId(), DataProviderSessionIFace.CompareType.Equals) : null;
+            discipline = discipline != null ? session.getData(Discipline.class, "id", discipline.getId(), DataProviderSessionIFace.CompareType.Equals) : null;
+            collection = collection != null ? session.getData(Collection.class, "id", collection.getId(), DataProviderSessionIFace.CompareType.Equals) : null;
     		session.beginTransaction();
     		inTransaction = true;
             SpTaskSemaphore semaphore = getSemaphore(session, name, scope, discipline, collection);
+            if (semaphore == null)
+            {
+            	semaphore = new SpTaskSemaphore();
+                semaphore = new SpTaskSemaphore();
+                semaphore.initialize();
+                semaphore.setTaskName(name);
+                semaphore.setTimestampCreated(now);
+                semaphore.setOwner(user);
+                semaphore.setScope((byte )scope.ordinal());
+                semaphore.setDiscipline(discipline);
+                semaphore.setCollection(collection);
+            }
     		String context = semaphore.getContext();
     		if (increment == null)
     		{
