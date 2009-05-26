@@ -96,7 +96,7 @@ public class ImportFileSplitter extends CustomDialog
 	public void createUI()
 	{
 		super.createUI();
-		
+				
 		this.setOkLabel(UIRegistry.getResourceString("ImportFileSplitter.SplitBtn"));
 		this.setCancelLabel(UIRegistry.getResourceString("CLOSE"));
 		
@@ -236,10 +236,18 @@ public class ImportFileSplitter extends CustomDialog
 	@Override
 	protected void cancelButtonPressed()
 	{
-		super.cancelButtonPressed();
+		boolean cancelled = true;
 		if (worker != null && !worker.isDone())
 		{
-			worker.cancel(true);
+			 cancelled = worker.cancel(true);
+		}
+		if (cancelled)
+		{
+			super.cancelButtonPressed();
+		}
+		else
+		{
+			UIRegistry.showLocalizedMsg("ImportFileSplitter.TooLateToCancel");
 		}
 	}
 
@@ -338,12 +346,16 @@ public class ImportFileSplitter extends CustomDialog
 					int             leftover = numRows - (numFiles * defaultChunkSize);
 					numFiles++;
 					checkXLS();
-					boolean go = UIRegistry.displayConfirm(UIRegistry.getResourceString("ImportFileSplitter.FileInfoTitle"), 
+					boolean go = false;
+					if (!isCancelled())
+					{
+						go = UIRegistry.displayConfirm(UIRegistry.getResourceString("ImportFileSplitter.FileInfoTitle"), 
 							String.format(UIRegistry.getResourceString("ImportFileSplitter.FileInfo"), 
 							numRows, numFiles-1, 
 							defaultChunkSize, leftover),
 							UIRegistry.getResourceString("OK"), UIRegistry.getResourceString("CANCEL"), JOptionPane.INFORMATION_MESSAGE);
-					if (!go)
+					}
+					if (!go || isCancelled())
 					{
 						result.setCancelled(true);
 					}
@@ -491,7 +503,7 @@ public class ImportFileSplitter extends CustomDialog
 							numFiles-1, 
 							defaultChunkSize, leftover),
 							UIRegistry.getResourceString("OK"), UIRegistry.getResourceString("CANCEL"), JOptionPane.INFORMATION_MESSAGE);
-					if (!go)
+					if (!go || isCancelled())
 					{
 						result.setCancelled(true);
 					}
@@ -614,13 +626,16 @@ public class ImportFileSplitter extends CustomDialog
 				});
 				if (result != null)
 				{
-					if (result.isSuccess())
+					if (!isCancelled())
 					{
-						UIRegistry.displayInfoMsgDlgLocalized("ImportFileSplitter.Success");
-					}
-					else if (!result.isCancelled())
-					{
-						UIRegistry.displayErrorDlg(StringUtils.isBlank(result.getMessage()) ? "Massive catastrophic total failure" : result.getMessage());
+						if (result.isSuccess())
+						{
+							UIRegistry.displayInfoMsgDlgLocalized("ImportFileSplitter.Success");
+						}
+						else if (!result.isCancelled())
+						{
+							UIRegistry.displayErrorDlg(StringUtils.isBlank(result.getMessage()) ? "Massive catastrophic total failure" : result.getMessage());
+						}
 					}
 				}
 			}
@@ -741,6 +756,7 @@ public class ImportFileSplitter extends CustomDialog
         }
         
 		ImportFileSplitter chunker = new ImportFileSplitter();
+		chunker.setCustomTitleBar(UIRegistry.getResourceString("ImportFileSplitter.Title"));
 		chunker.setIconImage(icon.getImage());
 		UIHelper.centerAndShow(chunker);
 	}
