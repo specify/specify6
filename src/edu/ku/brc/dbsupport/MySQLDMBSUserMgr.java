@@ -445,7 +445,8 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
 		try
 		{
 			dbConnection.close();
-			dbConnection = null;
+            dbConnection = null;
+            connection   = null;
 			return true;
 			
 		} catch (Exception ex)
