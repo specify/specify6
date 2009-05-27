@@ -24,13 +24,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.LinkedList;
 import java.util.Locale;
-
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-
-import java.util.LinkedList;
 
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 
@@ -78,6 +76,7 @@ public class DateConverter
                 }
                 Calendar result = new GregorianCalendar();
                 result.setLenient(false);
+                df.setLenient(false);
                 result.setTime(df.parse(dateStr));
                 return result;
             }
