@@ -304,6 +304,21 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
     {
         this.isNew = isNew;
     }
+    
+    /**
+     * @param isPartialOK the isPartialOK to set
+     */
+    public void setPartialOK(final boolean isPartialOK)
+    {
+        boolean isDifferent = this.isPartialOK != isPartialOK;
+        
+        this.isPartialOK = isPartialOK;
+        
+        if (isDifferent)
+        {
+            setRequired(isRequired); // will adjust the color
+        }
+    }
 
     /**
      * Sets the formatter.

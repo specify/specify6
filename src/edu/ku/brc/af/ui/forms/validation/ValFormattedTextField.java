@@ -123,7 +123,7 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
     
     protected CardLayout                  cardLayout;
     protected JPanel                      cardPanel      = null;
-    protected JTextField                  viewTF         = null;
+    protected BGTextField                 viewTF         = null;
     protected JTextField                  editTF         = null;
     
     //---
@@ -556,7 +556,6 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
         {
             return viewtextField.getText();
         }
-        
         StringBuilder sb      = new StringBuilder();
         int           inx     = 0;
         String        prevStr = null;
@@ -574,19 +573,31 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
                 
             } else if (c instanceof JPanel)
             {
-                JTextField tf = isAutoFmtOn ? viewTF : editTF;
-                val = tf.getText();
+                if (isAutoFmtOn)
+                {
+                    val = viewTF.getText();
+                    if (StringUtils.isEmpty(val))
+                    {
+                        val = viewTF.getBgStr();
+                    }
+                } else 
+                {
+                    val = editTF.getText();
+                }
             }
             
             if (StringUtils.isEmpty(val))
             {
-                if (!isPartialOK)
+                if (!formatter.getFields().get(inx).isIncrementer())
                 {
-                    return null;
-                }
-                if (prevStr != null)
-                {
-                    sb.setLength(sb.length() - prevStr.length());
+                    if (!isPartialOK)
+                    {
+                        return null;
+                    }
+                    if (prevStr != null)
+                    {
+                        sb.setLength(sb.length() - prevStr.length());
+                    }
                 }
                 break;
             }
@@ -794,7 +805,10 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
             {
                 try
                 {
-                    setValue(nextNum, nextNum);
+                    setText(nextNum, false);
+                    //shouldIgnoreNotifyDoc  = true;
+                    //setValue(nextNum, nextNum);
+                    //shouldIgnoreNotifyDoc  = false;
                     needsUpdating = false;
                     return;
                     
@@ -919,6 +933,34 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
     {
         return this;
     }
+    
+    /**
+     * @return if all the fields have the correct amount of characters, it skips incrementer fields
+     */
+    protected boolean isFilled()
+    {
+        try
+        {
+        int inx = 0;
+        for (UIFieldFormatterField f : fields)
+        {
+            if (!f.isIncrementer() && f.getType() != FieldType.constant && f.getType() != FieldType.separator)
+            {
+                JFormattedDoc doc = documents.get(inx);
+                int len = f.getSize();
+                if (doc.getLength() != len)
+                {
+                    return false;
+                }
+                inx++;
+            }
+        }
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return true;
+    }
 
     /* (non-Javadoc)
      * @see java.awt.Component#validate()
@@ -933,13 +975,12 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
             
         } else if (formatter != null && formatter.isUserInputNeeded())
         {
-            
             String data = getText();
             if (StringUtils.isEmpty(data))
             {
                 valState = isRequired ? UIValidatable.ErrorType.Incomplete : UIValidatable.ErrorType.Valid;
     
-            } else if (!isPartialOK)
+            } else if (!isPartialOK && !isFilled())
             {
                 valState = formatter.isLengthOK(data.length()) ? UIValidatable.ErrorType.Valid : UIValidatable.ErrorType.Error;
                 // Only validate against the formatter if the it is the right length
@@ -1045,7 +1086,7 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
             {
                 if (data.length() > 0 && data.length() != formatter.getLength())
                 {
-                    UIRegistry.showError(String.format("For formatter named '%s' the data is the wrong size.\nData size '%d' and format Len '%d'", formatter.getName(), data.length(), formatter.getLength()));
+                    UIRegistry.showError(UIRegistry.getLocalizedMessage("ValFormattedTextField.WR_SIZE", formatter.getName(), data.length(), formatter.getLength()));
                 }
                 needsUpdating = (StringUtils.isEmpty(data) || data.length() != formatter.getLength()) && formatter.getAutoNumber() != null && formatter.isIncrementer();
                 
@@ -1140,6 +1181,14 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
             this.inner = getInsets();
         }
         
+        /**
+         * @return the bgStr
+         */
+        public String getBgStr()
+        {
+            return bgStr;
+        }
+
         /* (non-Javadoc)
          * @see javax.swing.text.JTextComponent#setText(java.lang.String)
          */
@@ -1283,7 +1332,10 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
                 }
             }
 
-            validateState();
+            if (!shouldIgnoreNotifyDoc)
+            {
+                validateState();
+            }
         }
     }
 

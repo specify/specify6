@@ -108,13 +108,13 @@ public class AccessionAutoNumberAlphaNum extends AutoNumberGeneric
                 sb.append(" substring("+fieldName+","+(pos.first+1)+","+pos.second+") desc");
             }
             
-            System.out.println(sb.toString());
+            System.out.println("AccessionAutoNumberAlphaNum - "+sb.toString());
             List<?> list = session.createQuery(sb.toString()).setMaxResults(1).list();
             if (list.size() == 1)
             {
                 Object[] objArray = (Object[]) list.get(0);
                 //System.err.println(((Accession)objArray[0]).getAccessionNumber());
-                return objArray[0];
+                return objArray[0] instanceof Accession ? objArray[0] : null;
             }
         } catch (Exception ex)
         {

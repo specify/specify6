@@ -26,7 +26,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 
 /**
  * This interface enables both dialogs and frames to be created that displays information about a data object (usually a form).
- * The display dialog/frame is created with a single name from a factory that implementats the ViewBasedDialogFactoryIFace interface.
+ * The display dialog/frame is created with a single name from a factory that implements the ViewBasedDialogFactoryIFace interface.
  *
  * @code_status Complete
  *

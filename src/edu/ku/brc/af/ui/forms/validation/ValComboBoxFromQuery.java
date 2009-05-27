@@ -109,7 +109,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                                                             GetSetValueIFace,
                                                             AppPrefsChangeListener
 {
-    protected static final Logger log                = Logger.getLogger(ValComboBoxFromQuery.class);
+    protected static final Logger log = Logger.getLogger(ValComboBoxFromQuery.class);
 
     public static final int CREATE_EDIT_BTN   = 1;
     public static final int CREATE_NEW_BTN    = 2;
@@ -630,6 +630,21 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             refreshUIFromData(true);
         }
     }
+    
+    /**
+     * @param comp
+     * @param isPartial
+     */
+    public static void setIsPartial(final Component comp, final boolean isPartial)
+    {
+        if (comp instanceof ValFormattedTextField)
+        {
+            ((ValFormattedTextField)comp).setPartialOK(isPartial);
+        } else if (comp instanceof ValFormattedTextFieldSingle)
+        {
+            ((ValFormattedTextFieldSingle)comp).setPartialOK(isPartial);
+        }
+    }
 
     /**
      * Creates a Dialog (non-modal) that will display detail information
@@ -668,14 +683,28 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             
             // Now get the setter for an object and set the value they typed into the combobox and place it in
             // the first field name
+            Component comp = null;
             DataObjectSettable ds = DataObjectSettableFactory.get(tableInfo.getClassObj().getName(), FormHelper.DATA_OBJ_SETTER);
             if (ds != null)
             {
-                log.error("ID: ["+textWithQuery.getSelectedId()+"]  PrevText["+textWithQuery.getPrevEnteredText()+"] Cached["+textWithQuery.getCachedPrevText()+"]");
+                log.info("ID: ["+textWithQuery.getSelectedId()+"]  PrevText["+textWithQuery.getPrevEnteredText()+"] Cached["+textWithQuery.getCachedPrevText()+"]");
                 String value = textWithQuery.getSelectedId() == null ? textWithQuery.getPrevEnteredText() : "";
                 ds.setFieldValue(newDataObj, fieldNames[0], value);
+                
+                MultiView mv = frame.getMultiView();
+                if (mv != null)
+                {
+                    FormViewObj fvo = mv.getCurrentViewAsFormViewObj();
+                    if (fvo != null)
+                    {
+                        comp = fvo.getControlByName(fieldNames[0]);
+                    }
+                }
             }
+            
+            setIsPartial(comp, true);
             frame.setData(newDataObj);
+            setIsPartial(comp, false);
 
         } else
         {
