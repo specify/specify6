@@ -55,6 +55,7 @@ import edu.ku.brc.helpers.UIFileFilter;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.rstools.ExportFileConfigurationFactory;
+import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
@@ -85,7 +86,7 @@ public class ImportFileSplitter extends CustomDialog
 	
 	public ImportFileSplitter()
 	{
-		super((Frame )null, UIRegistry.getResourceString("ImportFileSplitter.Title"), true, OKCANCEL, null); 
+		super((Frame )null, UIRegistry.getResourceString("ImportFileSplitter.Title"), true, OKCANCELHELP, null); 
 	}
 	
 	
@@ -96,7 +97,8 @@ public class ImportFileSplitter extends CustomDialog
 	public void createUI()
 	{
 		super.createUI();
-				
+			
+		//this.setHelpContext("CHANGE_PWD");
 		this.setOkLabel(UIRegistry.getResourceString("ImportFileSplitter.SplitBtn"));
 		this.setCancelLabel(UIRegistry.getResourceString("CLOSE"));
 		
@@ -754,6 +756,8 @@ public class ImportFileSplitter extends CustomDialog
         {
             //whatever
         }
+        
+        HelpMgr.initializeHelp("SpecifyHelp", icon.getImage()); 
         
 		ImportFileSplitter chunker = new ImportFileSplitter();
 		chunker.setCustomTitleBar(UIRegistry.getResourceString("ImportFileSplitter.Title"));
