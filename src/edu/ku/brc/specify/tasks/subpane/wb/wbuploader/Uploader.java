@@ -96,6 +96,7 @@ import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr.SCOPE;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr.USER_ACTION;
 import edu.ku.brc.specify.tasks.DataEntryTask;
+import edu.ku.brc.specify.tasks.InteractionsTask;
 import edu.ku.brc.specify.tasks.RecordSetTask;
 import edu.ku.brc.specify.tasks.ReportsBaseTask;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
@@ -362,6 +363,11 @@ public class Uploader implements ActionListener, KeyListener
         return currentUpload;
     }
 
+    /**
+     * @param services
+     * @return list of services with services modified or deleted according to
+     * requirements of upload status.
+     */
     public List<ServiceInfo> filterServices(final List<ServiceInfo> services)
     {
         List<ServiceInfo> result =  new Vector<ServiceInfo>();
@@ -370,7 +376,7 @@ public class Uploader implements ActionListener, KeyListener
             ServiceInfo service = services.get(s);
             if (includeService(service))
             {
-                if (service.getTask() instanceof DataEntryTask)
+                if (service.getTask() instanceof DataEntryTask || service.getTask() instanceof InteractionsTask)
                 {
                     try
                     {
