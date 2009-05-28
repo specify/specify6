@@ -147,8 +147,10 @@ public class ConversionLogger
             out.println(" span.err { color: red; }");
             out.println(" table.o { border-top: solid 1px rgb(128, 128, 128); border-left: solid 1px rgb(128, 128, 128); }");
             out.println(" table.o td { border-bottom: solid 1px rgb(128, 128, 128); border-right: solid 1px rgb(128, 128, 128); }");
+            out.println(" table.o th { border-bottom: solid 1px rgb(128, 128, 128); border-right: solid 1px rgb(128, 128, 128); }");
             out.println(" table.i { border-top: solid 1px rgb(192, 192, 192); border-left: solid 1px rgb(192, 192, 192); }");
             out.println(" table.i td { border-bottom: solid 1px rgb(192, 192, 192); border-right: solid 1px rgb(192, 192, 192); }");
+            out.println(" table.i th { border-bottom: solid 1px rgb(192, 192, 192); border-right: solid 1px rgb(192, 192, 192); }");
             out.println("</style>");
         }
         
@@ -184,7 +186,7 @@ public class ConversionLogger
         
         public void startTable()
         {
-            println("<table>");
+            println("<table class=\"o\" cellspacing=\"0\">");
             flush();
         }
         

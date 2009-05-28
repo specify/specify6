@@ -75,6 +75,8 @@ import com.jgoodies.looks.plastic.theme.DesertBlue;
 import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.SchemaI18NService;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
@@ -283,7 +285,7 @@ public class SpecifyDBConverter
             rows[i][1] = BasicSQLUtils.getCount(oldDBConn, queries[i]);
         }
         JTable table = new JTable(rows, new Object[] {"Description", "Count"});
-        CustomDialog dlg = new CustomDialog((Frame)null, "Source DB Statistics", true, CustomDialog.OKCANCEL, UIHelper.createScrollPane(table));
+        CustomDialog dlg = new CustomDialog((Frame)null, "Source DB Statistics", true, CustomDialog.OKCANCEL, UIHelper.createScrollPane(table, true));
         dlg.setOkLabel("Continue");
         dlg.setVisible(true);
         return !dlg.isCancelled();
@@ -313,7 +315,7 @@ public class SpecifyDBConverter
             rows[i][1] = BasicSQLUtils.getCount(newDBConn, queries[i]);
         }
         JTable table = new JTable(rows, new Object[] {"Description", "Count"});
-        CustomDialog dlg = new CustomDialog((Frame)null, "Destination DB Statistics", true, CustomDialog.OKCANCEL, UIHelper.createScrollPane(table));
+        CustomDialog dlg = new CustomDialog((Frame)null, "Destination DB Statistics", true, CustomDialog.OKCANCEL, UIHelper.createScrollPane(table, true));
         dlg.setOkLabel("Continue");
         dlg.setVisible(true);
         return !dlg.isCancelled();
@@ -1201,6 +1203,8 @@ public class SpecifyDBConverter
                 System.setProperty(AppPreferences.factoryName, "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");    // Needed by AppReferences
                 System.setProperty("edu.ku.brc.dbsupport.DataProvider",         "edu.ku.brc.specify.dbsupport.HibernateDataProvider");  // Needed By the Form System and any Data Get/Set
                 
+                createTableSummaryPage();
+                
                 boolean doFurtherTesting = false;
                 if (doFurtherTesting)
                 {
@@ -1311,6 +1315,31 @@ public class SpecifyDBConverter
         }
     }
     
+    /**
+     * 
+     */
+    protected void createTableSummaryPage()
+    {
+        ConversionLogger.TableWriter tblWriter = convLogger.getWriter("TableSummary.html", "Table summary");
+        tblWriter.startTable();
+        tblWriter.println("<tr><th>Table</th><th>Count</th></tr>");
+        for (DBTableInfo ti : DBTableIdMgr.getInstance().getTables())
+        {
+            Integer count = BasicSQLUtils.getCount("select count(*) from "+ti.getName());
+            if (count != null && count > 0)
+            {
+                tblWriter.log(null, ti.getName(), count.toString());
+            }
+        }
+        tblWriter.endTable();
+        tblWriter.startTable();
+        
+    }
+    
+    /**
+     * @param conn
+     * @return
+     */
     protected boolean isOldDBOK(final Connection conn)
     {
     	StringBuilder errMsgs = new StringBuilder();
