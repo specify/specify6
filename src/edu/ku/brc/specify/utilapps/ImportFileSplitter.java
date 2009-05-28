@@ -464,8 +464,8 @@ public class ImportFileSplitter extends CustomDialog
 							fileNum++;
 							writeXLSChunk(toChunk, workBookOut, fileNum, numFiles, firstLine);
 						}
+						result.setSuccess(true);
 					}
-					result.setSuccess(true);
 				}
 				catch (Exception ex)
 				{
@@ -552,9 +552,8 @@ public class ImportFileSplitter extends CustomDialog
 							fileNum++;
 							writeCSVChunk(toChunk, outLines, fileNum, numFiles, firstLine);
 						}
+						result.setSuccess(true);	
 					}
-					result.setSuccess(true);	
-					
 				}
 				catch (Exception ex)
 				{
