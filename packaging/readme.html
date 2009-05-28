@@ -1,78 +1,76 @@
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title>Changelog</title>
-
-<style>
-body {
-    font-size: 10px;
-    }
-
-</style>
-
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Untitled Document</title>
 </head>
+
 <body>
-<h2>Specify 6.0.06 Release Notes</h2>
-<h3>Specify Software Project</h3>
-<h3>8 May 2009</h3>
-
-<p>Bugs fixed since release 6.0.03</p>
-
+<h3>Release Notes<br />
+  Specify 6.0.07<br />
+  29 May 2009<br />
+  Specify Software Project</h3>
 <ol>
-<li>Could not put new field names onto column names in data set mapping editor. Report Date 4/27 Bugzilla 7265</li>
-<li>Taxon data entry was impossible when Life was the only tree node. Report Date 4/16 Bugzilla 7219</li>
-<li>Saving Collection Object data object caused exception. Report Date 4/23  Bugzilla 7239</li>
-<li>Setting the path of mysqldump and then pressing "backup" was resulting in null pointer warning and error.log.  Report Date 4/16 Bugzilla 7220</li>
-<li>For vertebrate and invertebrate paleontology, Specify would lock up when attempting to view the Taxon Tree. Report Date 4/29  Bugzilla 7278</li>
-<li>An exception was showing up in Query Builder Pane. Report Date 5/1  Bugzilla 7289</li>
-<li>Double-clicking a row in tree-definition editor display would cause Specify to hang. Report Date 4/14 Bugzilla 7209</li>
-<li>Uploaded multiple determinations were mistakenly all being set to current.  Report Date 4/13  Bugzilla 7251</li>
-<li>Could not perform a query combo box search (using magnifying glass)  for collection objects when format Catalog Number [yyyy-######] was being used.  Report Date 4/23  Bugzilla 7250</li>
-<li>Specify Wizard Catalog Number field formatting editor had a lockup problem when attempting to create a new format. The save button would not enable.  Report Date 4/21  Bugzilla 7170</li>
-<li>Attempting to update a tree when the tree was in use caused 'Node Numbers out of date' exceptions. Report Date 4/15 Bugzilla 7218</li>
-<li>Wizard was creating null Fullnames in the taxonomy trees.  Report Date 4/14  Bugzilla 7192</li>
-<li>An error would occur when attempting to save a collection object with Accession format 2009-##### and when there were two divisions with different accession formatting. Report Date 4/15 Bugzilla 7215</li>
-<li>Form improvements across all platforms. Report Date varies Bugzilla varies</li>
-<li>Move and Synonymize operations were very slow on large trees and lacked UI feedback while in progress.  Report Date 4/22  Bugzilla 7238</li>
-<li>After adding a user-defined picklist, attempting to edit the picklist, and then deleting the user-defined picklist caused an exception.  Report Date 4/21  Bugzilla 7232</li>
-<li>Default report name had underbars which are not valid character for reports. Report Date 4/16  Bugzilla 7221</li>
-<li>Invalid path in export of record sets caused an exception.  Report Date 4/29 Bugzilla 7275</li>
-<li>Standard rank names for Geography incorrectly appeared to be editable.  Report Date 4/27 Bugzilla 7262</li>
-<li>Exceptions were occurring when editing collection objects in entomology and mammology databases.  Report Date  4/22  Bugzilla 7237</li>
-<li>Save and New were only functioning for the form they were enabled on.  Report Date 04/21  Bugzilla 7231</li>
-<li>Specify issued an incorrect error message when attempted to change isInFullName.  The error message is now correct.  Report Date 4/28  Bugzilla 7272</li>
-<li>An exception was issued when a Taxon attachment was added. Report Date 04/27 Bugzilla 7260</li>
-<li>When creating a discipline in the wizard, the next button was activated prior to anything being selected. Report Date 4/22  Bugzilla 7236</li>
-<li>Within security tools, checkbox choices were not sticking until save, so if the user reviews their tool changes, they were all reset.  Report date 4/17  Bugzilla 7226</li>
-<li>Apostrophe in simple searches caused an exception. Report date 4/28 Bugzilla 7271</li>
-<li>Uploader was uploading collection records with null catalog numbers.  Report date 5/5 Bugzilla 7310</li>
-<li>Query/Report results were showing the value of the Agent Titles picklist, not the title.  Report Date 4/16 Bugzilla 7222</li>
-<li>Sending an Information Request to email, caused a message saying the file did not exist, but the attachment was in fact sent properly in email.  Report Date 5/5 Bugzilla 7302</li>
-<li>Specify allowed deletion of the Administrator user.  Report Date 4/23  Bugzilla 7248</li>
-<li>The creation of a new discipline with a yet-unused catalog number format disrupted the functioning of the catalog number format in the original discipline.  Report Date 4/24 Bugzilla 7257</li>
-<li>Right-click menu in the Workbench did not have cut, copy, and paste functions. Reported Date 05/01 Bugzilla 7293</li>
-<li>The Workbench did not have keyboard shortcuts (Ctrl-x, Ctrl-c, Ctrl-v) for cut, copy, and paste.  Reported Date 05/01 Bugzilla 7292</li>
-<li>Non-shown query builder fields could have user-configured sorts that were not applied:  the sort feature is now disabled for fields that are not shown.  Reported Date 09/26/2008 Bugzilla 6026</li>
-<li>Queries with aggregated results now return more rapidly.  Reported Date 10/02/2008 Bugzilla 6061</li>
-<li>An exception was generated upon importing a dataset into the Workbench.  Reported Date 04/24 Bugzilla 7259</li>
-<li>The node-arrows for remembered tree expansion states were oriented as though they were not expanded when they actually were.  Reported Date 04/28 Bugzilla 7269</li>
-<li>Reports generated from record sets had an extra, blank page. Reported Date 07/18/2008 Bugzilla 5716</li>
-<li>Added user feedback (indicating Specify is not frozen) for move and synonymize actions within large trees. Date Reported 04/22 Bugzilla 7238</li>
-<li>A blank taxon-parent search within taxon form caused an error.  Date Reported 4/17  Bugzilla 4/17 7224</li>
-<li>Low memory warning used for debugging had not been removed. Date Reported 05/05  Bugzilla 7300</li>
-<li>Added use of * as a wildcard in tree viewer find panel.  Date Reported 04/21 Bugzilla 7235</li>
-<li>The size of the form of the edit dialog for nodes in the taxon tree prevented seeing child taxa and synonyms. Date Reported 04/07 Bugzilla 7129</li>
-<li>The standard rank names for Geography tree definition items were editable and should not have been.  Date Reported 04/27 Bugzilla 7263</li>
-<li>Datasets with records identified to non-uniform levels of taxonomic specification only uploaded the set of most specific records.  Date Reported 04/23 Bugzilla 7247</li>
-<li>Added an "exact" check box to find panel for tree editor (exact means wildcards are not appended to the term automatically).  Reported Date 04/21 Bugzilla 7234</li>
-<li>Users could not revert report resources.  Reported Date 2/11 Bugzilla 6717</li>
-<li>The same credentials could be used for both the MySQL IT and Specify Master user accounts in the Specify Wizard, which caused problems in creating the institution.  Reported Date 04/24 Bugzilla 7252</li>
-<li>System configuration or changing collections sometimes caused the Query Builder to return incorrect results.  Reported Date 04/21 Bugzilla 7233</li>
-<li>Adding a child node to a tree level that was spanned/skipped by the pre-loaded taxon but still enforced caused the node to render in the wrong tree level temporarily.  Reported Date 4/23  Bugzilla 7240</li>
-<li>Additional checks were added to prevent exceptions when logging into Specify. Reported Date 05/01  Bugzilla 7291</li>
-<li>Saving a Collection Object in an Entomology database caused an exception.  Reported Date 4/22 Bugzilla 7237</li>
-	
-	
-</ol>
+  <li>1.  The Specify Wizard has been updated to enable the creation of a Specify database and Master user so that a  database on a server or other machine 
 
+not running the Wizard can be set up, and with a MySQL script available from the web site, INNOdb need not be set as the default setting for all databases 
+
+on the server, only the Specify database is set up as INNOdb.
+  (05/18/09)  Bugzilla 7336</li>
+  <li> Under the Interactions panel, right-clicking to add more interactions now shows more of them. (4/23/09)  Bugzilla 7242</li>
+  <li> Agents can now be added to groups. (5/18/09) Bugzilla 7343</li>
+  <li> An apostrophe no longer causes problems in Simple Search. (4/28/09) Bugzilla 7271</li>
+  <li> Accession Number formatting is no longer associated with an error message. (4/15/09) BUgzilla 7214</li>
+  <li> Adding a paleontology discipline collection to an existing Specify installation works correctly now. (4/15/09)  Bugzilla 7212</li>
+  <li> Taxon Tree renumbering(internal links for maintaining correct node relationships in the tree) was failing for large trees of about 100K entries, now 
+
+fixed.) (5/15/09) Bugzilla 7335</li>
+  <li> One can no longer delete the Administrator user.  (4/23/09)  Bugzilla 7248</li>
+  <li> Removed line break in caption for label to be properly viewed in Query Builder.  (5/19/09)  Bugzilla 7348</li>
+  <li> Can now create Accession records from Collection Objects again. (4/14/09) Bugzilla 7201</li>
+  <li> Accession form on Ubuntu (Linux) has been fixed.  (3/6/09)  Bugzilla 6873</li>
+  <li> Can now remove all Interaction options with the resulting button disappearing.  But can get it back by adding an item.  (10/10/08) Bugzilla 6096</li>
+  <li> Can export from the Specify WorkBench to a linked server drive. (5/5/09)  Bugzilla 7304</li>
+  <li> An exception appeared upon editing system pick lists in the schema localizer, mo longer. (05/19/09) Bugzilla 7352 </li>
+  <li> The function for deleting a user in Security had an extra button which was removed.  (05//09) Bugzilla 7327 </li>
+  <li> The look and feel of the Preparation subform were improved. (05/12/09) Bugzilla 6997 </li>
+  <li> The default source of the Master key is now from a local source instead of a web service. (05/19/09) Bugzilla 7338</li>
+  <li> Erroneous duplication warning for adding a child in the tree was removed.  (05/05/09) Bugzilla 7297</li>
+  <li>Prepared by&quot; was added to the query builder for the Preparation table.   (05/12/09) Bugzilla 7326</li>
+  <li> Toggling the &quot;first row contains headers&quot; option in an XLS import dialog no longer causes an error. (05/20/09) Bugzilla 7358 </li>
+  <li> Deleting a user in Security no longer leaves open that user's properties in the right pane.  (05/20/09) Bugzilla 6948 </li>
+  <li> The Uploader now forces non-null catalog numbers, unless the catalog number format is incremental and numeric.  (05/05/09) Bugzilla  7310</li>
+  <li> The Uploader was unnecessarily requiring the Accession Number for all records. (5/26/09) Bugzilla 7368</li>
+  <li> The ability to change collections with Configuration tab open caused problems and was removed.  (05/20/09) BUgzilla 6479</li>
+  <li> When importing a csv/xls file into the Specify WorkBench, if the file's column headers  match those of previously uploaded data, it will allow you to 
+
+use existing map settings. (05/20/09) Bugzilla 7359</li>
+  <li> In Specify WorkBench, the user can now turn sorting off by clicking on the column header (1 click: sort descending, 2 clicks: sort ascending, 3 
+
+clicks: no sort) (05/06/09) Bugzilla 7312</li>
+  <li> User-created Catalog Numbers now increment properly. (05/21/09) Bugzilla 7256</li>
+  <li> In WorkBench, true/false/null columns can now be sorted. (05/07/09) BUgzilla 7314</li>
+  <li> For external data sets in files that have more  than 2000 rows (the limit for uploading into the WorkBench), there is now an import file splitter 
+
+application bundled with Specify to keep the number of data rows per input file to 2000 or fewer. (05/20/09) BUgzilla 7351</li>
+  <li> Fixed a bug with Gift Number formatting. (05/22/09) Bugzilla 7255</li>
+  <li>. If you select field in the bottom half of the Query Builder panel, the corresponding entry in the tree is highlighted in the upper panel.(04/08/08) 
+
+Bugzilla 5385</li>
+  <li>  Adding Interactions and Tools to an undocked Taskbar no longer eclipses Simple Search. (07/02/08) Bugzilla 5633</li>
+  <li>  Geography parent search no longer returns an exception error message when using the magnifying glass search. (03/25/09) Bugzilla 6989</li>
+  <li>  We now have a work-around if a user wants to create a database remotely and still use choice of taxon authority files. (04/27/09) Bugzilla 7264</li>
+  <li>  Sending an Information request to e-mail was erroneously creating an erroneous error message.    (05/05/09) Bugzilla 7302</li>
+  <li>  In the WorkBench, columns are now sorted by their &quot;actual&quot; value and not their text value in the case of numeric fields. (05/06/09) 
+
+Bugzilla 7313</li>
+  <li>  The WorkBench no longer incorrectly thinks changes have been made whenever a cell leaves edit mode. (05/07/09) Bugzilla 7318</li>
+  <li>  Had a problem converting lat/long of the type -115.6 to DD MM.MM.  Now they are all working. (05/26/09) Bugzilla 7367</li>
+</ol>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p></p>
 </body>
 </html>
