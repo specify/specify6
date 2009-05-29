@@ -238,7 +238,7 @@
 		<copy file="${source.root}/edu/ku/brc/specify/images/spireport128.ico" todir="${installer.dir}/images" />
 		<copy file="${source.root}/edu/ku/brc/specify/images/spstatistics128.ico" todir="${installer.dir}/images" />
 		<copy file="${source.root}/edu/ku/brc/specify/images/spwizard128.ico" todir="${installer.dir}/images" />
-				
+		<copy file="${source.root}/edu/ku/brc/specify/images/data_split.ico" todir="${installer.dir}/images" />				
 		
 		<!-- <copy file="${source.root}/edu/ku/brc/specify/images/SpecifyBigSplash.png" todir="${installer.dir}" /> -->
 		<copy file="packaging/specify.icns" todir="${installer.dir}/images" />
