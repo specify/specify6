@@ -13,13 +13,13 @@
 </table>
 <h2>Editing the Schema Configuration</h2>
 <p>Schema refers to the many tables and fields that systematize the many dimensions and relationships of the data within biological collections. The Schema Configuration module is a highly functional, though somewhat complex, set of tools created to configure the Specify schema for individual discipline needs. Changes made in the Schema Configuration tool will affect all collections within a discipline and can be used to individualize Specify for each discipline.</p>
-<p>Changes made within the Schema Configuration tool affect some very sensitive areas of the database and require the Specify application to shut down. For this reason, all tabs must be closed before the tool will open, and when changes are saved within the Schema Configuration tool the Specify application will shut down and will need to be restarted. You will be prompted to save all changes within any open tabs before opening the Schema Configuration. </p>
+<p>Changes made within the Schema Configuration tool affect some very sensitive areas of the database and may require the Specify application to shut down. For this reason, all tabs must be closed before the tool will open, and when changes are saved within the Schema Configuration tool the Specify application will shut down and will need to be restarted. You will be prompted to save all changes within any open tabs before opening the Schema Configuration. </p>
 <p>The tools in the Schema Configuration provide the following functions:</p>
 <ul>
-  <li>Hide unused tables or fields.</li>
+  <li>Hide unused tables or fields from the Query tool. Hidden tables and fields will not be hidden on the forms.</li>
   <li>Change the captions, or display names, of tables and fields in Specify. These are displayed on forms and in searches. The names in the database  are not editable, but the  captions can be edited.</li>
   <li>Edit descriptions (usage notes) for tables and fields. These can be viewed from within a form by double-clicking on the caption.</li>
-  <li>Create a format for a table. This allows one or more fields to represent a table on a form (Query Combo Box) or in a search result. For example, an Agent is sometimes represented by the Last Name and First Name fields, separated by a comma.</li>
+  <li>Create a format for a table. This allows one or more fields to represent a table  in a search result. For example, an Agent is sometimes represented by the Last Name and First Name fields, separated by a comma.</li>
   <li>Create or edit an aggregatation for a table. A related table with a one-to-many relationship to the primary table combines records into a single record typically separated by semi colons.</li>
   <li>Designate a field as being required. This is reflected on forms and in the WorkBench uploader. A record can not be saved unless all required fields containing data.</li>
   <li>Format a Field as a Pick List, Weblink or Field Format.</li>
@@ -49,7 +49,7 @@
 <h3>Table Tools</h3>
 <p>The following tools are available for tables only.</p>
 <h4><u><a name="display_format" id="display_format"></a>Table Format</u></h4>
-<p>Tables can be represented on forms (in Query Combo Boxes), in search results and in reports by one or several fields within the table.   Most tables are represented by only one field, (Collection Object shows the Catalog Number), but some are best represented by more than one field (Agent may be formatted to display Last Name, First Name, Middle Initial). </p>
+<p>Tables can be represented in search results and in reports by one or several fields within the table.   Most tables are represented by only one field, (Collection Object shows the Catalog Number), but some are best represented by more than one field (Agent may be formatted to display Last Name, First Name, Middle Initial). </p>
 <p>It is important to note that Preferred Taxon, Geography, Chronostratigraphy and Lithostratigraphy fields use the Full Name as their format. This is configured in the Tree Definition.</p>
 <p>Open the Table Formatting Editor by first choosing a table to format from the Tables list, then clicking  the <em>...</em> (dialog) button next to the Table Format field. </p>
 <p>The initial dialog screen displays a list of saved table formats for editing purposes. </p>

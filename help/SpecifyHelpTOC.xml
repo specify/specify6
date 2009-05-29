@@ -18,9 +18,6 @@
 -->
 		  <tocitem text="About Specify" target="About">
 		    <tocitem text="Overview" target="About"/>
-			<tocitem text="Queries" target="Sample_Queries"/>
-			<tocitem text="Reports" target="Sample_Reports"/>
-			<tocitem text="Labels" target="Sample_Labels"/>
 			<tocitem text="Using Help" target="Using_Help"/>
 		  </tocitem>
 		  
@@ -31,11 +28,15 @@
 			<tocitem text="Updating" target="Updating"/>
 			<tocitem text="Contact Information" target="Contact_Information"/>
 		  </tocitem>
-
+		  
+		  <tocitem text="Specify Setup Wizard" target="Welcome">
+            <tocitem text="Field Format Editor" target="field_format"/>
+          </tocitem>
 
 		  
 		  
 		  <tocitem text="Starting Specify" target="starting"/>
+		  
 <!--
 		  	 <tocitem text="Login to Specify" target="Login"/>
 		  	 <tocitem text="Update Specify" target="Update"/>
@@ -48,6 +49,7 @@
 			 	   <tocitem text="Add Divisions" target="Add_Division"/>
 				   <tocitem text="Add Disciplines" target="Add_Discipline"/>
 				   <tocitem text="Add Collections" target="Add_Collection"/>
+                   <tocitem text="Field Format Editor" target="field_format"/>
 			     </tocitem>
 			     <tocitem text="Editing System Pick Lists" target="System_Picklist" />
 			     <tocitem text="Editing Preparation Type" target="Prep_Type" />
@@ -239,6 +241,7 @@
           		<tocitem text="Lat Long Converter" target="WorkbenchLatLongConverter"/>
           </tocitem>
           <tocitem text="WorkBench Uploader" target="uploading"/>
+          <tocitem text="Specify File Slicer" target="slicer"/>
       </tocitem>
         
     </tocitem>

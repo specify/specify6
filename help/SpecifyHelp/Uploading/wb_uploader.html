@@ -26,14 +26,15 @@
   <li>Check  Data Set mapping and verify that Data Set fields are being mapped to the correct fields in Specify 6. When importing MS Excel and CSV files the automapping does not always find the correct fields (especially when using latitude 1, Genus, Species and Author fields) and require some remapping.</li><br />
   <li>Check existing data in Specify to verify that data being uploaded will not add a duplicate record because of a typo or abbreviation. One example is Geography. If you have run the Wizard and uploaded the Geography data the United States exists within the Geography table (and tree) as 'United States'. If your Data Set includes the United States as anything other than 'United States' (for example, 'US' or 'USA') the Upload function will create a new Geography record (and node on the Geography tree). </li><br />
   
-  <li>Columns in imported files that do not map to a specific Specify  field should be mapped to a Text or Number field. These fields will then need to be renamed accordingly within Specify to display correctly on forms and become searchable in queries. This can be accomplished by changing the field caption in the <a href="../../SchemaConfig/schema_config.html#change_caption">Schema Configuration tool</a>. </li>
+  <li>Columns in imported files that do not map to a specific Specify  field should be mapped to a Text or Number field. These fields will then need to be renamed accordingly within Specify to display correctly on forms and become searchable in queries. This can be accomplished by changing the field caption in the <a href="../SchemaConfig/schema_config.html#change_caption">Schema Configuration tool</a>. </li>
   <br />
   <li>The Data Set must have data in field sthat are required by Specify 6. For example; if a Data Set column is mapped to a Taxon field in Specify,  all required Taxon fields, including enforced ranks, must be mapped and include data in the Data Set.</li>
   <br />
   <li>At this time the Uploader does not update or change data in existing records, it only adds new records. </li><br />
   <li>Any Specify tabs that allow data to be written to the database must be closed when uploading from the WorkBench. In other words, while uploading no user in the Collection can edit Forms, Trees, Tree Definitions, System Configuration or the Schema Configuration. Specify will automatically close any open tabs after prompting the users.</li><br />
   <li>In a multi-collection database the WorkBench is unable to verify the Data Sets for an appropriate collection. It is up to the user to ensure that the Data Set is being uploaded to the correct Collection.</li><br />
- <li> When uploading Data Sets with attachments only the Collection Object, Accession, Taxon, Locality and Collecting Event tables can accept attachments in the uploader. If one of these tables is not present in the mapping file for the data set an error message will display informing the user that the attachments can not be uploaded. Also, the uploaded attachment will be attached to the 'main' table that is present in the data set mapping. The uploader will look for main tables in this order; Collection Object, Accession, Taxon, Collecting Event and then Locality. </li>
+ <li> When uploading Data Sets with attachments only the Collection Object, Accession, Taxon, Locality and Collecting Event tables can accept attachments in the uploader. If one of these tables is not present in the mapping file for the data set an error message will display informing the user that the attachments can not be uploaded. Also, the uploaded attachment will be attached to the 'main' table that is present in the data set mapping. The uploader will look for main tables in this order; Collection Object, Accession, Taxon, Collecting Event and then Locality. </li><br/>
+ <li>The WorkBench has a limit of 2000 records that can be uploaded at one time. MS Excel files that include more than 2000 records can be separated using the <a href="../Uploading/splitter.html">Specify File Slicer</a> application that ships with Specify. </li>
 </ul>
 <p>&nbsp;</p>
 <p>Uploading is a complex process, requiring user input at each vital step. Each step  is explained in detail below. The default set of permissions that Specify ships with does not allow Guest users access to the Upload tool.</p>
@@ -91,12 +92,12 @@
              DD.DDDD N/S/E/W (32.7619 N)<br />
              DD MM.MM N/S/E/W (32 45.714 N)<br />
              DD MM SS.SS N/S/E/W (32 45 42.84 N)          </p>
-          <p> Formats can be changed using the <a href="LatLongConvert.html"> Lat/Long Converter</a>.</p>
+          <p> Formats can be changed using the <a href="../Workbench/LatLongConvert.html"> Lat/Long Converter</a>.</p>
           <p>Double quotes must be used for seconds (not single quotes).</p>
           <p><u>Taxon, Geography, Lithostratigraphy, Chronostratigraphy and Storage </u><br />
             All required ranks must be present and contain data.</p>
           <p><br />
-            Tree levels (ranks) being uploaded must be present in the <a href="../../Trees/editing_tree_def.html">Tree Definition</a> in Specify.</p>
+            Tree levels (ranks) being uploaded must be present in the <a href="../Trees/editing_tree_def.html">Tree Definition</a> in Specify.</p>
           <p>When uploading only Taxon data  (to add to the Taxon tree) use the mapping fields from the  Taxon Only data types.</p>
             <p>When uploading Taxon data along with other data the Genus, Species, Subspecies and Variety fields need to come from the Determinations data type (mapping).</p>
             <p>If the highest rank in the Data Set does not match with a rank in the taxon tree new ranks will be created with the name of the Data Set being uploaded.<br />
@@ -105,22 +106,22 @@
             Any formats used in the Data Set must match the format specified for the mapped field in Specify. </p>
             <p>Any preset values for Pick Lists in Specify must match the values (and format) in the data set or the data will not upload.</p>
             <p><u>Dates</u><br />Dates will upload using the format set in the Specify System Preferences. </p>
-            <p>Partial Dates are allowed for Collecting Event Start, Collecting Event End, Cataloged Date, Determination Date and Preparation Date in both the uploader and in the Specify database. Dates are uploaded in the US format (month, day, year) and allow zeros or dashes for unknown month or day. Any dashes or zeros for month or day are stored as '01' in the Specify database, which is used for search results. </p>
+            <p>Partial Dates are only allowed for Collecting Event Start, Collecting Event End, Cataloged Date, Determination Date and Preparation Date in both the uploader and in the Specify database. Partial dates are uploaded in the US format (month, day, year) and allow zeros or dashes for unknown month or day. Any dashes or zeros for month or day are stored as '01' in the Specify database, which is used for search results. </p>
             <p>00 --- 1968 (= 1968 in the form but 01 01 1968 in the database)<br />
               00-----1968 (= 1968 in the form but 01/01/1968 in the database)<br />
               00 00 1999  (= 1999 in the form but 01/01/1999 in the database)<br />
-              11.00.1989 (= 11/1999 in the form but 11/01/1989 in the database)<br />
+              11.00.1989 (= 11/1989 in the form but 11/01/1989 in the database)<br />
               00 11 1989 (this is invalid)<br />
               11 12 1989 (= 11/12/1989 on the form and in the database)<br />
               00/---/2000 (= 2000 in the form but 01/01/2000 in the database)<br />
               00 00 04 (= 2004 in the form but 01/01/2004 in the database)<br />
-              00-00-04 (= 2004 in the form but 01/01/1968 in the database)<br />
-              04 00 04 (= 04/2004 in the form but 04/01/1968 in the database)<br />
-              04-00-04 (= 04/2004 in the form but 04/01/1968 in the database)<br />
+              00-00-04 (= 2004 in the form but 01/01/2004 in the database)<br />
+              04 00 04 (= 04/2004 in the form but 04/01/2004 in the database)<br />
+              04-00-04 (= 04/2004 in the form but 04/01/2004 in the database)<br />
               1989/00/00 (= 1989 in the form but 01/01/1989 in the database)<br />
               1999/01/00 (= 1999 in the form but 01/01/1999 in the database)<br />
               1999 00 00 (= 1999 in the form but 01/01/1999 in the database)<br />
-            1999 02 00 (= 02/1999 in the form but 01/01/1989 in the database)</p>
+            1999 02 00 (= 02/1999 in the form but 02/01/1989 in the database)</p>
             <p>Valid separators are '.' (period), '/' (forward slash), ' ' (space),and '-' (dash).</p>
             <p>Preparations</p>
             <p>If the Data Set does not include a Prep Type field one will not be created automatically (for disciplines that use </p>

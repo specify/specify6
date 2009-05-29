@@ -1,0 +1,32 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<link href="../../main.css" rel="stylesheet" type="text/css" media="screen" />
+<title>WorkBench Uploader</title>
+<style type="text/css">
+<!--
+..style8 {font-size: xx-large}
+-->
+</style>
+</head>
+
+<body bgcolor="#ffffff">
+<table width="100%" border="0" background="../../images/topbar.png">
+  <tr>
+    <td>&nbsp;</td>
+  </tr>
+</table><br />
+<table border="0">
+<tr><td><img src="../../images/data_split_32.png" width="32" height="32" /></td>
+<td><h2>Specify File Slicer</h2></td></tr>
+</table>
+<p>There are times that users may wish to upload MS Excel files that contain more than the 2000 records, which is the record limit for the Specify Uploader. For user convenience, the Specify project has created an application, the <em>Specify File Slicer</em>, that will split files that contain more than 2000 records into files that contain only 2000 records. </p>
+<p>The <em>Specify File Slicer</em> application is located in the <strong><em>bin</em></strong> directory within the Specify application directory, which stores the executable files for Specify. Double click<em> Specify File Slicer</em> to launch the tool. Users are required to login using their  Specify Username and Password. </p>
+<p align="center"><img src="../../images/slicer_screenshot.png" alt="file slicer" width="504" height="149" /></p>
+<p align="center" class="imgcaption">File Slicer</p>
+<p><strong>File to Slice</strong>; click the <em>Choose</em> button and find the desired file using the file directory. </p>
+<p><strong>First row contains headers</strong>; check this box if the first row of the file contains headers. Specify will then copy the headers to each 2000 record file. If the files include headers they will contain 2001 records, but Specify does not count header files when uploading.</p>
+<p>Simply click the <em>Slice</em> button to start the File Slicer. The new files use the original file name but add an underscore and consecutive number for each file. The original file remains intact. For example: A file named &quot;Birds.xls&quot; containing 34002 rows will be split into 17 files containing 2000 rows and 1 file containing 2 rows. The files will be named &quot;Birds_1.xls&quot; thru &quot;Birds_18.xls&quot;. </p>
+<p><em><strong>NOTE:</strong></em> When headers are not used in the MS Excel files each file will need to be remapped in the template editor inside the WorkBench. If headers are present then only the first file will need to be mapped and  subsequent files are given the option of using the existing mapping.</p>
+</body>
+</html>
