@@ -57,11 +57,14 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.datamodel.SpTaskSemaphore;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemStandardEntry;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
+import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgrCallerIFace;
+import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr.USER_ACTION;
 import edu.ku.brc.specify.treeutils.TreeDataService;
 import edu.ku.brc.specify.treeutils.TreeDataServiceFactory;
 import edu.ku.brc.specify.treeutils.TreeHelper;
@@ -1423,7 +1426,21 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
 	 */
 	protected boolean getRequiredLocks()
 	{
-		TaskSemaphoreMgr.USER_ACTION result = TaskSemaphoreMgr.lock(getFormSaveLockTitle(), getFormSaveLockName(), "save", TaskSemaphoreMgr.SCOPE.Discipline, false, null);
+		TaskSemaphoreMgr.USER_ACTION result = TaskSemaphoreMgr.lock(getFormSaveLockTitle(), getFormSaveLockName(), "save", 
+				TaskSemaphoreMgr.SCOPE.Discipline, false, new TaskSemaphoreMgrCallerIFace(){
+
+					/* (non-Javadoc)
+					 * @see edu.ku.brc.specify.dbsupport.TaskSemaphoreMgrCallerIFace#resolveConflict(edu.ku.brc.specify.datamodel.SpTaskSemaphore, boolean, java.lang.String)
+					 */
+					@Override
+					public USER_ACTION resolveConflict(
+							SpTaskSemaphore semaphore,
+							boolean previouslyLocked, String prevLockBy)
+					{
+						return USER_ACTION.Error;
+					}
+			
+		});
 		return result == TaskSemaphoreMgr.USER_ACTION.OK;
 	}
 	
