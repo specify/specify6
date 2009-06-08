@@ -119,7 +119,6 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
             ImageIcon img = imageIcon != null ? imageIcon : IconManager.getIcon("locality", IconManager.IconSize.Std32);
             items.add(new CEPlacemark(ce, img));
             
-            
         } else if (locality != null)
         {
             List<CollectingEvent> collectingEvents = locality.getCollectingEvents();
@@ -145,6 +144,12 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
                 {
                     geLoc.setLatitude1(latLon.first);
                     geLoc.setLongitude1(latLon.second);
+                    geLoc.setGeography(locality.getGeography());
+                    
+                } else if (locality.getLatitude1() != null && locality.getLongitude1() != null)
+                {
+                    geLoc.setLatitude1(locality.getLatitude1());
+                    geLoc.setLongitude1(locality.getLongitude1());
                     geLoc.setGeography(locality.getGeography());
                 }
                 items.add(new CEPlacemark(geLoc, img));
