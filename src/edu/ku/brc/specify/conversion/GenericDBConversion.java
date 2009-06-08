@@ -3428,7 +3428,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             StringBuilder sql   = new StringBuilder("SELECT ");
             sql.append(buildSelectFieldList(oldFieldNames, "loan"));
             sql.append(" FROM loan WHERE loan.Category = ");
-            sql.append(doingGifts ? "0" : "1");
+            sql.append(doingGifts ? "1" : "0");
             sql.append(" ORDER BY loan.LoanID");
 
             log.info(sql);
@@ -4953,30 +4953,29 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     continue;
                 }
 
-                /*
-                String stratGTPIdStr = "SELECT collectionobject.CollectionObjectID, "
-                        + "collectingevent.CollectingEventID, "
-                        + "stratigraphy.StratigraphyID, "
-                        + "geologictimeperiod.GeologicTimePeriodID "
-                        + "FROM collectionobject INNER JOIN collectingevent ON collectionobject.CollectingEventID = collectingevent.CollectingEventID "
-                        + "INNER JOIN stratigraphy ON collectingevent.CollectingEventID = stratigraphy.StratigraphyID "
-                        + "INNER JOIN geologictimeperiod ON stratigraphy.GeologicTimePeriodID = geologictimeperiod.GeologicTimePeriodID "
-                        + "where collectionobject.CollectionObjectID = " + rs.getInt(1);
-                rs2 = stmt2.executeQuery(stratGTPIdStr);
-
-                Integer coId = null;
-                Integer ceId = null;
-                Integer stId = null;
-                Integer gtpId = null;
-                if (rs2.next())
+                if (false)
                 {
-                    coId = rs2.getInt(1);
-                    ceId = rs2.getInt(2);
-                    stId = rs2.getInt(3);
-                    gtpId = rs2.getInt(4);
+                    String stratGTPIdStr = "SELECT co.CollectionObjectID, ce.CollectingEventID, s.StratigraphyID, g.GeologicTimePeriodID FROM collectionobject co " +
+                        "LEFT JOIN collectingevent ce ON co.CollectingEventID = ce.CollectingEventID  " +
+                        "LEFT JOIN stratigraphy s ON ce.CollectingEventID = s.StratigraphyID  " +
+                        "LEFT JOIN geologictimeperiod g ON s.GeologicTimePeriodID = g.GeologicTimePeriodID  " +
+                        "WHERE co.CollectionObjectID  = " + rs.getInt(1);
+                    log.info(stratGTPIdStr);
+                    rs2 = stmt2.executeQuery(stratGTPIdStr);
+    
+                    Integer coId = null;
+                    Integer ceId = null;
+                    Integer stId = null;
+                    Integer gtpId = null;
+                    if (rs2.next())
+                    {
+                        coId = rs2.getInt(1);
+                        ceId = rs2.getInt(2);
+                        stId = rs2.getInt(3);
+                        gtpId = rs2.getInt(4);
+                    }
+                    rs2.close();
                 }
-                rs2.close();
-                */
 
                 String catalogNumber = null;
                 String colObjId = null;
@@ -6976,8 +6975,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
         // get all of the old records
         String sql = "SELECT StratigraphyID, SuperGroup, LithoGroup, Formation, Member, Bed FROM stratigraphy";
-        Statement statement = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
-                ResultSet.CONCUR_READ_ONLY);
+        Statement statement = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
         ResultSet oldStratRecords = statement.executeQuery(sql);
 
         if (hasFrame)
@@ -7012,8 +7010,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         localSession.save(earth);
 
         // create an ID mapper for the geography table (mainly for use in converting localities)
-        IdTableMapper lithoStratIdMapper = IdMapperMgr.getInstance().addTableMapper("lithostrat",
-                "LithoStratID");
+        IdTableMapper lithoStratIdMapper = IdMapperMgr.getInstance().addTableMapper("lithostrat", "LithoStratID");
 
         int counter = 0;
         // for each old record, convert the record
@@ -7035,9 +7032,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             int oldId = oldStratRecords.getInt(1);
             String superGroup = oldStratRecords.getString(2);
             String lithoGroup = oldStratRecords.getString(3);
-            String formation = oldStratRecords.getString(4);
-            String member = oldStratRecords.getString(5);
-            String bed = oldStratRecords.getString(6);
+            String formation  = oldStratRecords.getString(4);
+            String member     = oldStratRecords.getString(5);
+            String bed        = oldStratRecords.getString(6);
 
             // create a new Geography object from the old data
             LithoStrat newStrat = convertOldStratRecord(superGroup, lithoGroup, formation, member, bed, earth, localSession);
@@ -7501,9 +7498,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         IdTableMapper gtpIdMapper = IdMapperMgr.getInstance().addTableMapper("geologictimeperiod", "GeologicTimePeriodID");
         Hashtable<Integer, GeologicTimePeriod> oldIdToGTPMap = new Hashtable<Integer, GeologicTimePeriod>();
 
-        String sql = "SELECT g.GeologicTimePeriodID,g.RankCode,g.Name,g.Standard,g.Remarks,g.TimestampModified,g.TimestampCreated,p1.Age as Upper,p1.AgeUncertainty as UpperUncertainty,p2.Age as Lower,p2.AgeUncertainty as LowerUncertainty FROM geologictimeperiod g, geologictimeboundary p1, geologictimeboundary p2 WHERE g.UpperBoundaryID=p1.GeologicTimeBoundaryID AND g.LowerBoundaryID=p2.GeologicTimeBoundaryID ORDER BY Lower DESC, RankCode";
+        String    sql = "SELECT g.GeologicTimePeriodID,g.RankCode,g.Name,g.Standard,g.Remarks,g.TimestampModified,g.TimestampCreated,p1.Age as Upper,p1.AgeUncertainty as UpperUncertainty,p2.Age as Lower,p2.AgeUncertainty as LowerUncertainty FROM geologictimeperiod g, geologictimeboundary p1, geologictimeboundary p2 WHERE g.UpperBoundaryID=p1.GeologicTimeBoundaryID AND g.LowerBoundaryID=p2.GeologicTimeBoundaryID ORDER BY Lower DESC, RankCode";
         Statement statement = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-        ResultSet rs = statement.executeQuery(sql);
+        ResultSet rs        = statement.executeQuery(sql);
 
         Session localSession = HibernateUtil.getCurrentSession();
         HibernateUtil.beginTransaction();
@@ -7527,19 +7524,19 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
         while (rs.next())
         {
-            Integer id = rs.getInt(1);
-            Integer rank = rs.getInt(2) * 100;
-            String name = rs.getString(3);
-            String std = rs.getString(4);
-            String rem = rs.getString(5);
-            Date modTDate = rs.getDate(6);
-            Date creTDate = rs.getDate(7);
-            Timestamp modT = (modTDate != null) ? new Timestamp(modTDate.getTime()) : null;
-            Timestamp creT = (creTDate != null) ? new Timestamp(creTDate.getTime()) : null;
-            Float upper = rs.getFloat(8);
-            Float uError = (Float)rs.getObject(9);
-            Float lower = rs.getFloat(10);
-            Float lError = (Float)rs.getObject(11);
+            Integer   id       = rs.getInt(1);
+            Integer   rank     = rs.getInt(2) * 100;
+            String    name     = rs.getString(3);
+            String    std      = rs.getString(4);
+            String    rem      = rs.getString(5);
+            Date      modTDate = rs.getDate(6);
+            Date      creTDate = rs.getDate(7);
+            Timestamp modT     = (modTDate != null) ? new Timestamp(modTDate.getTime()) : null;
+            Timestamp creT     = (creTDate != null) ? new Timestamp(creTDate.getTime()) : null;
+            Float     upper    = rs.getFloat(8);
+            Float     uError   = (Float)rs.getObject(9);
+            Float     lower    = rs.getFloat(10);
+            Float     lError   = (Float)rs.getObject(11);
 
             if (modT == null && creT == null)
             {
@@ -7549,6 +7546,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             } else if (modT == null && creT != null)
             {
                 modT = new Timestamp(creT.getTime());
+                
             } else if (modT != null && creT == null)
             {
                 creT = new Timestamp(modT.getTime());
@@ -8020,13 +8018,13 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         sql.append(oldFieldListStr);
         sql.append(" FROM agent WHERE AgentID = " + oldAgentId);
 
-        log.info(oldFieldListStr);
+        //log.info(oldFieldListStr);
 
         List<String> newAgentFieldNames = new ArrayList<String>();
         getFieldNamesFromSchema(newDBConn, "agent", newAgentFieldNames, BasicSQLUtils.myDestinationServerType);
         String newFieldListStr = buildSelectFieldList(newAgentFieldNames, "agent");
 
-        log.info(newFieldListStr);
+        //log.info(newFieldListStr);
 
         Hashtable<String, Integer> oldIndexFromNameMap = new Hashtable<String, Integer>();
         int inx = 1;
@@ -8138,9 +8136,16 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     log.info(sqlStr.toString());
                 }
                 updateStatement.executeUpdate(sqlStr.toString());
+                Integer newAgentId = BasicSQLUtils.getInsertedId(updateStatement);
+                if (newAgentId == null)
+                {
+                    throw new RuntimeException("Couldn't get the Agent's inserted ID");
+                }
                 updateStatement.clearBatch();
                 updateStatement.close();
                 updateStatement = null;
+                
+                addAgentDisciplineJoin(newAgentId, getDisciplineId());
 
                 cnt++;
                 BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer(newDBConn, "agent", BasicSQLUtils.myDestinationServerType);

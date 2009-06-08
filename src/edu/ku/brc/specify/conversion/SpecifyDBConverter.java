@@ -236,7 +236,7 @@ public class SpecifyDBConverter
                 } catch (SQLException ex)
                 {
                     ex.printStackTrace();
-                	JOptionPane.showConfirmDialog(null, "The Converter was unable to login.");
+                	JOptionPane.showConfirmDialog(null, "The Converter was unable to login.", "Error", JOptionPane.CLOSED_OPTION);
                 }
                 
                 if (namePair != null)
@@ -248,6 +248,7 @@ public class SpecifyDBConverter
                     converter.processDB(); 
                 } else
                 {
+                    JOptionPane.showConfirmDialog(null, "The Converter was unable to login.", "Error", JOptionPane.CLOSED_OPTION);
                     System.exit(0);
                 }
                 
@@ -830,7 +831,7 @@ public class SpecifyDBConverter
 
                 frame.incOverall();
                 
-               frame.setDesc("Converting Determinations Records");
+                frame.setDesc("Converting Determinations Records");
                 log.info("Converting Determinations Records");
                 boolean doDeterminations = false;
                 if (doDeterminations || doAll)

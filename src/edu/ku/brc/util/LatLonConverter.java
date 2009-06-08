@@ -42,7 +42,7 @@ public class LatLonConverter
     public final  static char UNICODE_DEGREE = 0x00b0;
     
 	public final static String DEGREES_SYMBOL = "\u00b0";
-    public final static String SEPS           = DEGREES_SYMBOL + "'\" ";
+    public final static String SEPS           = DEGREES_SYMBOL + ":'\" ";
     
     protected final static int DDDDDD_LEN = 7;
     protected final static int DDMMMM_LEN = 5;

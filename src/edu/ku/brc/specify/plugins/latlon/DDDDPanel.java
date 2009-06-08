@@ -630,8 +630,8 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
     {
         if (srcLatitudeStr != null && srcLongitudeStr != null)
         {
-            latInfoOrig = adjustLatLonStr(srcLatitudeStr, srcFormat, true, true, LATLON.Latitude);
-            lonInfoOrig = adjustLatLonStr(srcLongitudeStr, srcFormat, true, true, LATLON.Longitude);
+            latInfoOrig = adjustLatLonStr(srcLatitudeStr, null, true, true, LATLON.Latitude);
+            lonInfoOrig = adjustLatLonStr(srcLongitudeStr, null, true, true, LATLON.Longitude);
     
             if (srcFormat != defaultFormat)
             {
