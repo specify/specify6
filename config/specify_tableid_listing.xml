@@ -2,7 +2,7 @@
 
 <!-- 
 
-    Last used ID is 135 or 527
+    Last used ID is 135 or 529
     
     126 are available
     
@@ -327,6 +327,8 @@
         <table name="edu.ku.brc.specify.datamodel.SpAppResourceDir" abbrev="spard" id="516"/>    
         <table name="edu.ku.brc.specify.datamodel.SpExportSchema" abbrev="exs" id="524"/>
         <table name="edu.ku.brc.specify.datamodel.SpExportSchemaItem" abbrev="exsi" id="525"/>
+        <table name="edu.ku.brc.specify.datamodel.SpExportSchemaItemMapping" abbrev="exsim" id="527"/>
+        <table name="edu.ku.brc.specify.datamodel.SpExportSchemaMapping" abbrev="exsm" id="528"/>
         <table name="edu.ku.brc.specify.datamodel.SpFieldValueDefault" abbrev="sfvd" id="520"/>
         <table name="edu.ku.brc.specify.datamodel.SpecifyUser" abbrev="spu" id="72"/>
         <table name="edu.ku.brc.specify.datamodel.SpLocaleContainer" abbrev="splc" id="503"/>
@@ -351,7 +353,7 @@
         <table name="edu.ku.brc.specify.datamodel.SpPrincipal" abbrev="spprin" id="522"/>
 		<table name="edu.ku.brc.specify.datamodel.SpPrincipalSpPermissionType" abbrev="spspt" id="523"/>
         <table name="edu.ku.brc.specify.datamodel.SpTaskSemaphore" abbrev="spts" id="526"/>
-      <!--  <table name="edu.ku.brc.specify.datamodel.SpVersion" abbrev="spvrn" id="527"/>  --> 
+      	<table name="edu.ku.brc.specify.datamodel.SpVersion" abbrev="spvrn" id="529"/>
 		
         <!--  Done Internal Specify Tables -->
         

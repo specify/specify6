@@ -48,12 +48,13 @@ import javax.persistence.Transient;
 @org.hibernate.annotations.Table(appliesTo="spexportschema")
 public class SpExportSchema extends DataModelObjBase
 {
-    protected Integer    spExportSchemaId;
-    protected String     schemaName;
-    protected String     schemaVersion;
-    protected String     description;
-    protected Set<SpExportSchemaItem> spExportSchemaItems;
-    protected Discipline discipline;
+    protected Integer						spExportSchemaId;
+	protected String						schemaName;
+	protected String						schemaVersion;
+	protected String						description;
+	protected Set<SpExportSchemaItem>		spExportSchemaItems;
+	protected Set<SpExportSchemaMapping>	spExportSchemaMappings;
+	protected Discipline					discipline;
     
     /**
      * 
@@ -70,12 +71,13 @@ public class SpExportSchema extends DataModelObjBase
     public void initialize()
     {
         super.init();
-        spExportSchemaId    = null;
-        schemaName          = null;
-        schemaVersion       = null;
-        description         = null;
-        spExportSchemaItems = new HashSet<SpExportSchemaItem>();
-        discipline          = null;
+		spExportSchemaId = null;
+		schemaName = null;
+		schemaVersion = null;
+		description = null;
+		spExportSchemaItems = new HashSet<SpExportSchemaItem>();
+		spExportSchemaMappings = new HashSet<SpExportSchemaMapping>();
+		discipline = null;
     }
 
     /**
@@ -116,6 +118,14 @@ public class SpExportSchema extends DataModelObjBase
     public void setSpExportSchemaItems(Set<SpExportSchemaItem> items)
     {
         this.spExportSchemaItems = items;
+    }
+    
+    /**
+     * @param mappings the mappings to set
+     */
+    public void setSpExportSchemaMappings(Set<SpExportSchemaMapping> mappings)
+    {
+    	this.spExportSchemaMappings = mappings;
     }
     
     /**
@@ -174,6 +184,14 @@ public class SpExportSchema extends DataModelObjBase
         return spExportSchemaItems;
     }
     
+    @OneToMany(mappedBy = "spExportSchema")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<SpExportSchemaMapping> getSpExportSchemaMappings()
+    {
+    	return spExportSchemaMappings;
+    }
+    
+    
     /**
      * @return the schemaItem
      */
@@ -221,4 +239,28 @@ public class SpExportSchema extends DataModelObjBase
     {
         return 524;
     }
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.datamodel.DataModelObjBase#toString()
+	 */
+	@Override
+	public String toString()
+	{
+		return schemaName;
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.datamodel.DataModelObjBase#forceLoad()
+	 */
+	@Override
+	public void forceLoad()
+	{
+		super.forceLoad();
+		for (SpExportSchemaItem item : this.spExportSchemaItems)
+		{
+			item.getId();
+		}
+	}
+    
+    
 }

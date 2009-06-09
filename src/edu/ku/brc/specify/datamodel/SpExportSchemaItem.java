@@ -236,4 +236,16 @@ public class SpExportSchemaItem extends DataModelObjBase
     {
         return 525;
     }
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.datamodel.DataModelObjBase#toString()
+	 */
+	@Override
+	public String toString()
+	{
+		// TODO Auto-generated method stub
+		return getFieldName();
+	}
+    
+    
 }

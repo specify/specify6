@@ -1,0 +1,26 @@
+<vector>
+  <container name="collectingevent" type="">
+    <version>0</version>
+    <isHidden>false</isHidden>
+    <isSystem>false</isSystem>
+    <items/>
+    <names/>
+    <descs/>
+  </container>
+  <container name="collectingtrip" type="">
+    <version>0</version>
+    <isHidden>false</isHidden>
+    <isSystem>false</isSystem>
+    <items/>
+    <names/>
+    <descs/>
+  </container>
+  <container name="collectionobjectattribute">
+    <version>0</version>
+    <isHidden>false</isHidden>
+    <isSystem>false</isSystem>
+    <items/>
+    <names/>
+    <descs/>
+  </container>
+</vector>

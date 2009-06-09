@@ -153,6 +153,8 @@
 		<mapping class="edu.ku.brc.specify.datamodel.SpecifyUser"/>
 		<mapping class="edu.ku.brc.specify.datamodel.SpExportSchema"/>
 		<mapping class="edu.ku.brc.specify.datamodel.SpExportSchemaItem"/>
+		<mapping class="edu.ku.brc.specify.datamodel.SpExportSchemaItemMapping"/>
+		<mapping class="edu.ku.brc.specify.datamodel.SpExportSchemaMapping"/>
 		<mapping class="edu.ku.brc.specify.datamodel.SpFieldValueDefault"/>
 		<mapping class="edu.ku.brc.specify.datamodel.SpLocaleContainer"/>
 		<mapping class="edu.ku.brc.specify.datamodel.SpLocaleContainerItem"/>
@@ -163,7 +165,7 @@
 		<mapping class="edu.ku.brc.specify.datamodel.SpQueryField"/>
 		<mapping class="edu.ku.brc.specify.datamodel.SpReport"/>
 		<mapping class="edu.ku.brc.specify.datamodel.SpTaskSemaphore"/>
-       <!-- <mapping class="edu.ku.brc.specify.datamodel.SpVersion"/> -->
+        <mapping class="edu.ku.brc.specify.datamodel.SpVersion"/>
         <mapping class="edu.ku.brc.specify.datamodel.SpViewSetObj"/>
 		
 		

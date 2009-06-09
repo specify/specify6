@@ -188,7 +188,7 @@ public class SpVersion extends DataModelObjBase implements java.io.Serializable
      */
     public static int getClassTableId()
     {
-        return 527;
+        return 529;
     }
 
 }

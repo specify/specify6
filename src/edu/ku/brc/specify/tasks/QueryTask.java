@@ -84,6 +84,7 @@ import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpQuery;
@@ -165,13 +166,20 @@ public class QueryTask extends BaseTask
      */
     public QueryTask()
     {
-        super(QUERY, getResourceString(QUERY));
+        this(QUERY, getResourceString(QUERY));
+    }
+    
+    /**
+     * Constructor.
+     */
+    public QueryTask(final String name, final String title)
+    {
+        super(name, title);
         
-        CommandDispatcher.register(QUERY, this);   
+        CommandDispatcher.register(name, this);   
         CommandDispatcher.register(TreeDefinitionEditor.TREE_DEF_EDITOR, this);
         CommandDispatcher.register(SchemaLocalizerDlg.SCHEMA_LOCALIZER, this);
     }
-    
     
     /**
      * Ask the user for information needed to fill in the data object. (Could be refactored with WorkBench Task)
@@ -869,6 +877,14 @@ public class QueryTask extends BaseTask
         }
     }
 
+    /**
+     * @return query type
+     */
+    protected String getQueryType()
+    {
+    	return QUERY;
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.core.Taskable#initialize()
      */
@@ -879,7 +895,7 @@ public class QueryTask extends BaseTask
         {
             super.initialize(); // sets isInitialized to false
 
-            navBox = new DroppableNavBox(getResourceString("QUERIES"), QUERY_FLAVOR, QUERY, SAVE_QUERY);
+            navBox = new DroppableNavBox(getResourceString("QUERIES"), QUERY_FLAVOR, getQueryType(), SAVE_QUERY);
             loadQueries();
             
             navBoxes.add(actionNavBox);
@@ -925,7 +941,7 @@ public class QueryTask extends BaseTask
         boolean canDelete = ((QueryTask )ContextMgr.getTaskByClass(QueryTask.class)).isPermitted();
         final RolloverCommand roc = (RolloverCommand) makeDnDNavBtn(navBox, recordSet.getName(),
                 "Query", null,
-                canDelete ? new CommandAction(QUERY, DELETE_CMD_ACT, recordSet) : null, 
+                canDelete ? new CommandAction(getQueryType(), DELETE_CMD_ACT, recordSet) : null, 
                 true, true);
         roc.setToolTip(getResourceString("QY_CLICK2EDIT"));
         roc.setData(recordSet);
@@ -949,7 +965,7 @@ public class QueryTask extends BaseTask
             }
         }
         
-        roc.addDragDataFlavor(new DataFlavorTableExt(QueryTask.class, QUERY, recordSet.getTableId()));
+        roc.addDragDataFlavor(new DataFlavorTableExt(getClass(), getQueryType(), recordSet.getTableId()));
         if (canDelete)
         {
             roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
@@ -958,34 +974,71 @@ public class QueryTask extends BaseTask
     }
     
     /**
+     * @param query
+     * @return true if query is associated with a SpExportSchemaMapping
+     */
+    protected boolean isSchemaExportQuery(SpQuery query)
+    {
+    	return BasicSQLUtils.getCount("select count(*) from spexportschemaitemmapping mapping inner join spqueryfield qf "
+    			+ " on qf.spqueryfieldid = mapping.spqueryfieldid where qf.spqueryid = " + query.getId()) > 0;
+    }
+ 
+    /**
+     * @param query
+     * @return true if query should be loaded.
+     */
+    protected boolean isLoadableQuery(SpQuery query)
+    {
+    	return !isSchemaExportQuery(query);
+    }
+    
+    /**
+     * @return hql to retrieve queries for loading.
+     */
+    protected String getQueryLoaderHQL()
+	{
+		// XXX Users will probably want to share queries??
+		return "From SpQuery as sq Inner Join sq.specifyUser as user where sq.isFavorite = true AND user.specifyUserId = "
+				+ AppContextMgr.getInstance().getClassObject(SpecifyUser.class)
+						.getSpecifyUserId() + " ORDER BY ordinal";
+	}
+    
+    /**
+     * @param session
+     * @return list of possibly loadable queries.
+     */
+    protected List<?> getQueriesForLoading(DataProviderSessionIFace session)
+    {
+    	return session.getDataList(getQueryLoaderHQL());
+    }
+    
+    /**
      * Loads the Queries from the Database
      */
     protected void loadQueries()
     {
-        // XXX Users will probably want to share queries??
-        String sqlStr = "From SpQuery as sq Inner Join sq.specifyUser as user where sq.isFavorite = true AND user.specifyUserId = "
-                + AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getSpecifyUserId()
-                + " ORDER BY ordinal";
-
         DataProviderSessionIFace session = null;
         try
         {
             session = DataProviderFactory.getInstance().createSession();
-            List<?> queries = session.getDataList(sqlStr);
+            List<?> queries = getQueriesForLoading(session);
 
             for (Iterator<?> iter = queries.iterator(); iter.hasNext();)
             {
-                Object[] obj = (Object[]) iter.next();
-                SpQuery query = (SpQuery) obj[0];
+                Object obj = iter.next();
+                SpQuery query = (SpQuery )(obj instanceof Object[] ? ((Object[])obj)[0] : obj);
                 if (!AppContextMgr.isSecurityOn()
                         || DBTableIdMgr.getInstance().getInfoById(query.getContextTableId())
                                 .getPermissions().canView())
                 {
-                    RecordSet rs = new RecordSet();
-                    rs.initialize();
-                    rs.set(query.getName(), SpQuery.getClassTableId(), RecordSet.GLOBAL);
-                    rs.addItem(query.getSpQueryId());
-                    addToNavBox(rs);
+                    if (isLoadableQuery(query))
+                    {
+                    	RecordSet rs = new RecordSet();
+                    	rs.initialize();
+                    	rs.set(query.getName(), SpQuery.getClassTableId(), RecordSet.GLOBAL);
+                    	rs.addItem(query.getSpQueryId());
+                    	addToNavBox(rs);
+                    }
                 }
             }
 
@@ -1085,10 +1138,19 @@ public class QueryTask extends BaseTask
     
     /**
      * @param query
+     * @return QueryBldrPane for new query
+     */
+    protected QueryBldrPane getNewQbPane(SpQuery query)
+    {
+    	return new QueryBldrPane(query.getName(), this, query);
+    }
+    
+    /**
+     * @param query
      */
     protected void editQuery(final SpQuery query)
     {
-        QueryBldrPane newPane = new QueryBldrPane(query.getName(), this, query);
+        QueryBldrPane newPane = getNewQbPane(query);
         
         if (starterPane != null)
         {
@@ -1196,6 +1258,17 @@ public class QueryTask extends BaseTask
     }
     
     /**
+     * @param query
+     * @param session
+     * @throws Exception
+     */
+    protected void deleteThisQuery(SpQuery query, DataProviderSessionIFace session) throws Exception
+    {
+        //assumes caller handles transaction 
+    	session.delete(query);   	
+    }
+    
+    /**
      * Delete a record set
      * @param rs the recordSet to be deleted
      */
@@ -1228,7 +1301,7 @@ public class QueryTask extends BaseTask
             {
                 session.beginTransaction();
                 transOpen = true;
-                session.delete(query);
+                deleteThisQuery(query, session);
                 session.commit();
                 transOpen = false;
                 return true;
@@ -1395,7 +1468,7 @@ public class QueryTask extends BaseTask
     {
         super.doCommand(cmdAction);
         
-        if (cmdAction.isType(QUERY))
+        if (cmdAction.isType(getQueryType()))
         {
             processQueryCommands(cmdAction);
             
