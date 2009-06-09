@@ -1419,11 +1419,13 @@ public class BuildSampleDatabase
                         pickList.setIsSystem(true);
                         if (pickList.getNumItems() > 0)
                         {
+                            log.info("Skipping PickList["+pl.getName()+"]");
                             continue;
                         }
                         
                     } else
                     {
+                        log.info("Creating PickList["+pl.getName()+"]");
                         pickList = createPickList(pl.getName(), pl.getType(), pl.getTableName(),
                                                        pl.getFieldName(), pl.getFormatter(), pl.getReadOnly(), 
                                                        pl.getSizeLimit(), pl.getIsSystem(), pl.getSortType(), collection);

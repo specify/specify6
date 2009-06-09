@@ -2625,7 +2625,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             {
                 if (!useField || rs.getObject(fieldSetInx) != null)
                 {
-                    String val = rs.getString(dataInx);
+                    String val      = rs.getString(dataInx);
                     String lowerStr = val.toLowerCase();
                     if (values.get(lowerStr) == null)
                     {
@@ -2679,19 +2679,29 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         Session cachedSession = DataBuilder.getSession();
         DataBuilder.setSession(null);
         
-        String[] tables = { "usysaccessionstatus", "AccessionStatus", "usysaccessiontype",
-                            "AccessionType", "usysborrowagenrole", "BorrowAgentRole", "usysaccessionarole",
-                            "AccessionRole", "usysdeaccessiorole", "DeaccessionaRole", "usysloanagentsrole",
-                            "LoanAgentRole", "usysbiologicalsex", "BiologicalSex", "usysbiologicalstage",
-                            "BiologicalStage", "usyscollectingmethod", "CollectingMethod",
-                            "usyscollobjprepmeth", "CollObjPrepMeth", "usysdeaccessiotype", "DeaccessionType",
-                            "usysdeterminatconfidence", "DeterminationConfidence", "usysdeterminatmethod",
-                            "DeterminationMethod", "usysdeterminattypestatusname", "DeterminationTypeStatus",
-                            "usyshabitathabitattype", "HabitatType", "usyslocalityelevationmethod",
-                            "LocalityElevationMethod", "usysobservatioobservationmetho", "ObservationMethod",
-                            "usyspermittype", "PermitType", "usyspreparatiocontainertype", "PrepContainertype",
-                            "usyspreparatiomedium", "PreparatioMedium", "usyspreparatiopreparationtype",
-                            "PreparationType", "usysshipmentshipmentmethod", "ShipmentMethod" };
+        String[] tables = { 
+                "usysaccessionstatus",            "AccessionStatus", 
+                "usysaccessiontype",              "AccessionType", 
+                "usysborrowagenrole",             "BorrowAgentRole", 
+                "usysaccessionarole",             "AccessionRole", 
+                "usysdeaccessiorole",             "DeaccessionaRole", 
+                "usysloanagentsrole",             "LoanAgentRole", 
+                "usysbiologicalsex",              "BiologicalSex", 
+                "usysbiologicalstage",            "BiologicalStage", 
+                "usyscollectingmethod",           "CollectingMethod",
+                "usyscollobjprepmeth",            "CollObjPrepMeth", 
+                "usysdeaccessiotype",             "DeaccessionType",
+                "usysdeterminatconfidence",       "DeterminationConfidence", 
+                "usysdeterminatmethod",           "DeterminationMethod", 
+                "usysdeterminattypestatusname",   "TypeStatus",
+                "usyshabitathabitattype",         "HabitatType", 
+                "usyslocalityelevationmethod",    "LocalityElevationMethod", 
+                "usysobservatioobservationmetho", "ObservationMethod",
+                "usyspermittype",                 "PermitType", 
+                "usyspreparatiocontainertype",    "PrepContainertype",
+                "usyspreparatiomedium",           "PreparatioMedium", 
+                "usyspreparatiopreparationtype",  "PreparationType", 
+                "usysshipmentshipmentmethod",     "ShipmentMethod" };
 
         setProcess(0, tables.length);
 
