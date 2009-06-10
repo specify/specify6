@@ -19,6 +19,8 @@
 */
 package edu.ku.brc.specify.conversion;
 
+import static edu.ku.brc.specify.config.init.DataBuilder.createLithoStratTreeDef;
+import static edu.ku.brc.specify.config.init.DataBuilder.createLithoStratTreeDefItem;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.buildSelectFieldList;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.copyTable;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.createFieldNameMap;
@@ -558,7 +560,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 "GeologicTimeBoundary",
                 // "GeologicTimePeriod",
                 "GroupPersons",
-                "Habitat", // Turn back on when datamodel checked in
+                "Habitat", 
                 // XXX "ImageAgents",
                 "ImageCollectionObjects", 
                 "ImageLocalities",
@@ -1246,12 +1248,25 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         if (!doBrief)
         {
             tablesToMoveOver = new String[] { 
-                "AccessionAgent", "Accession", "AccessionAuthorization",
-                "Author", "BiologicalObjectAttributes", "Borrow", "BorrowAgent", "BorrowMaterial",
-                "BorrowReturnMaterial", "CollectingEvent", "CollectionObjectCitation", "Collector",
-                "Deaccession", "DeaccessionAgent", "DeterminationCitation", "ExchangeIn",
+                "AccessionAgent", 
+                "Accession", 
+                "AccessionAuthorization",
+                "Author", 
+                "BiologicalObjectAttributes", 
+                "Borrow", 
+                "BorrowAgent", 
+                "BorrowMaterial",
+                "BorrowReturnMaterial", 
+                "CollectingEvent", 
+                "CollectionObjectCitation", 
+                "Collector",
+                "Deaccession", 
+                "DeaccessionAgent", 
+                "DeterminationCitation", 
+                "ExchangeIn",
                 "ExchangeOut", 
                 "GroupPerson", 
+                "Habitat", 
                 "Journal", 
                 //"Loan", 
                 //"LoanAgent",
@@ -1260,8 +1275,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 "LocalityCitation",
                 "OtherIdentifier",
                 "Permit", 
-                "Preparation", // this is really an Attributes Table
-                                                            // (PreparationAttributes)
+                "Preparation", // this is really an Attributes Table (PreparationAttributes)
                 "Project",
                 // "ProjectCollectionObjects", // I think we got rid of this!
                 "ReferenceWork",
@@ -1338,7 +1352,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         // Turn back on when datamodel checked in
         tableMaps.put("collectionobjectattribute", createFieldNameMap(getCollectionObjectAttributeMappings()));
         tableMaps.put("preparationattribute",      createFieldNameMap(getPrepAttributeMappings()));
-        tableMaps.put("habitatattribute",          createFieldNameMap(getHabitatAttributeMappings()));
+        tableMaps.put("collectingeventattribute",  createFieldNameMap(getHabitatAttributeMappings()));
 
         // Map<String, Map<String, String>> tableDateMaps = new Hashtable<String, Map<String,
         // String>>();
@@ -1474,7 +1488,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 
             } else if (fromTableName.equals("habitat"))
             {
-                toTableName = "habitatattribute";
+                toTableName = "collectingeventattribute";
                 BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(getHabitatAttributeToIgnore());
                 
             } else if (fromTableName.equals("loan"))
@@ -1665,22 +1679,43 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         };
     }
 
+    /**
+     * @return
+     */
     protected String[] getPrepAttributeMappings()
     {
-        return new String[] { "PreparationAttributeID", "PreparationID", "AttrDate",
-                "PreparedDate", "Number3", "MediumID", "Text3", "PartInformation", "Text4",
-                "StartBoxNumber", "Text5", "EndBoxNumber", "Text6", "StartSlideNumber", "Text7",
-                "EndSlideNumber", "Text8", "SectionOrientation", "Text9", "SectionWidth", "Text26",
-                "size", "Text10", "URL", "Text11", "Identifier", "Text12", "NestLining", "Text13",
-                "NestMaterial", "Text14", "NestLocation", "Text15", "SetMark", "Number4",
-                "CollectedEggCount", "Number5", "CollectedParasiteEggCount", "Number6",
-                "FieldEggCount", "Number7", "FieldParasiteEggCount", "Text17",
-                "EggIncubationStage", "Text18", "EggDescription", "Text19", "Format", "Text25",
-                "storageInfo", "Text22", "preparationType",
+        return new String[] { "PreparationAttributeID", "PreparationID", 
+                "AttrDate", "PreparedDate", 
+                "Number3", "MediumID", 
+                "Text3", "PartInformation", 
+                "Text4", "StartBoxNumber", 
+                "Text5", "EndBoxNumber", 
+                "Text6", "StartSlideNumber", 
+                "Text7", "EndSlideNumber", 
+                "Text8", "SectionOrientation", 
+                "Text9", "SectionWidth", 
+                "Text26", "size", 
+                "Text10", "URL", 
+                "Text11", "Identifier", 
+                "Text12", "NestLining", 
+                "Text13", "NestMaterial", 
+                "Text14", "NestLocation", 
+                "Text15", "SetMark", 
+                "Number4", "CollectedEggCount", 
+                "Number5", "CollectedParasiteEggCount", 
+                "Number6", "FieldEggCount", 
+                "Number7", "FieldParasiteEggCount", 
+                "Text17", "EggIncubationStage", 
+                "Text18", "EggDescription", 
+                "Text19", "Format", 
+                "Text25", "StorageInfo", 
+                "Text22", "preparationType",
                 // "preparationTypeId", "Number8", ?????
-                "Text23", "containerType", "Text24", "medium",
+                "Text23", "ContainerType", 
+                "Text24", "Medium",
                 // "containerTypeId",????????
-                "Text20", "DNAConcentration", "Text21", "Volume",
+                "Text20", "DNAConcentration", 
+                "Text21", "Volume",
                 // "Text1",
                 // "Text2",
                 // "Number1",
@@ -1697,7 +1732,11 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
      */
     protected String[] getHabitatAttributeToIgnore()
     {
-        return new String[] { "HabitatTypeId", };
+        return new String[] { "HabitatTypeId", "CreatedByAgentID", "ModifiedByAgentID",  
+                              "CollectionMemberID", "Number10",  "Number12", 
+                              "Number13",  "Number9", "Text12", 
+                              "Text13", "Text14", "Text15", 
+                              "Text16", "Text17", "Version"};
     }
 
     /**
@@ -1706,19 +1745,34 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     protected String[] getHabitatAttributeMappings()
     {
         String oldHabitatAttribute_Current_FieldName = "Current";
-        if (BasicSQLUtils.mySourceServerType == BasicSQLUtils.SERVERTYPE.MySQL)
-        {
+        //if (BasicSQLUtils.mySourceServerType == BasicSQLUtils.SERVERTYPE.MySQL)
+        //{
             //oldHabitatAttribute_Current_FieldName = "IsCurrent";// TODO change when get new MySQL
-        }
-        return new String[] { "HabitatAttributeID", "HabitatID", "Number9", "airTempC",
-                "Number10", "waterTempC", "Number11", "WaterpH", "Text12", "turbidity", "Text16",
-                "clarity", "Text14", "salinity", "Text6", "SoilType", "Number6", "SoilPh",
-                "Number7", "SoilTempC", "Text7", "SoilMoisture", "Text15", "slope", "Text13",
-                "vegetation", "Text17", "habitatType", "Text8",
-                oldHabitatAttribute_Current_FieldName, "Text9", "Substrate", "Text10",
-                "SubstrateMoisture", "Number8", "HeightAboveGround", "Text11", "NearestNeighbor",
+        //}
+        
+        return new String[] { 
+                "CollectingEventAttributeID", "HabitatID", 
+                "Number9",  "AirTempC",
+                "Number10", "WaterTempC", 
+                "Number11", "WaterpH", 
+                "Text12",  "Turbidity", 
+                "Text16",  "Clarity", 
+                "Text14",  "Salinity", 
+                "Text6",   "SoilType", 
+                "Number6", "SoilPh",
+                "Number7", "SoilTempC", 
+                "Text7",   "SoilMoisture", 
+                "Text15",  "Slope", 
+                "Text13",  "Vegetation", 
+                "Text17",  "HabitatType", 
+                "Text8",   oldHabitatAttribute_Current_FieldName,
+                "Text9",   "Substrate", 
+                "Text10",  "SubstrateMoisture", 
+                "Number8", "HeightAboveGround", 
+                "Text11",  "NearestNeighbor",
                 // "remarks",
-                "Number13", "minDepth", "Number12", "maxDepth",
+                "Number13", "minDepth", 
+                "Number12", "maxDepth",
         // "text1",
         // "text2",
         // "number1",
@@ -6973,110 +7027,99 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
      * @param treeDef
      * @throws SQLException
      */
-    public void convertLithoStrat(LithoStratTreeDef treeDef) throws SQLException
+    public void convertLithoStrat(final LithoStratTreeDef treeDef, 
+                                  final LithoStrat earth) throws SQLException
     {
-        // empty out any pre-existing records
-        BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "lithostrat",
-                BasicSQLUtils.myDestinationServerType);
-
-        // get a Hibernate session for saving the new records
-        Session localSession = HibernateUtil.getCurrentSession();
-        HibernateUtil.beginTransaction();
-
-        // get all of the old records
-        String sql = "SELECT StratigraphyID, SuperGroup, LithoGroup, Formation, Member, Bed FROM stratigraphy";
-        Statement statement = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-        ResultSet oldStratRecords = statement.executeQuery(sql);
-
-        if (hasFrame)
+        try
         {
-            if (oldStratRecords.last())
+            // empty out any pre-existing records
+            BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "lithostrat", BasicSQLUtils.myDestinationServerType);
+    
+            // get a Hibernate session for saving the new records
+            Session localSession = HibernateUtil.getCurrentSession();
+            HibernateUtil.beginTransaction();
+    
+            // get all of the old records
+            String sql = "SELECT s.StratigraphyID, s.SuperGroup, s.Group, s.Formation, s.Member, s.Bed FROM stratigraphy s";
+            Statement statement = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            ResultSet oldStratRecords = statement.executeQuery(sql);
+    
+            if (hasFrame)
             {
-                setProcess(0, oldStratRecords.getRow());
+                if (oldStratRecords.last())
+                {
+                    setProcess(0, oldStratRecords.getRow());
+                    oldStratRecords.first();
+                }
+            } else
+            {
                 oldStratRecords.first();
             }
-        } else
-        {
-            oldStratRecords.first();
-        }
-
-        // setup the root Geography record (planet Earth)
-        LithoStrat earth = new LithoStrat();
-        earth.initialize();
-        earth.setName("Earth");
-        earth.setRankId(0);
-        earth.setDefinition(treeDef);
-        for (Object o : treeDef.getTreeDefItems())
-        {
-            LithoStratTreeDefItem defItem = (LithoStratTreeDefItem)o;
-            if (defItem.getRankId() == 0)
+    
+            // create an ID mapper for the geography table (mainly for use in converting localities)
+            IdTableMapper lithoStratIdMapper = IdMapperMgr.getInstance().addTableMapper("lithostrat", "LithoStratID");
+    
+            int counter = 0;
+            // for each old record, convert the record
+            do
             {
-                earth.setDefinitionItem(defItem);
-                break;
-            }
-        }
-        LithoStratTreeDefItem defItem = treeDef.getDefItemByRank(0);
-        earth.setDefinitionItem(defItem);
-        localSession.save(earth);
-
-        // create an ID mapper for the geography table (mainly for use in converting localities)
-        IdTableMapper lithoStratIdMapper = IdMapperMgr.getInstance().addTableMapper("lithostrat", "LithoStratID");
-
-        int counter = 0;
-        // for each old record, convert the record
-        do
-        {
-            if (counter % 100 == 0)
-            {
-                if (hasFrame)
+                if (counter % 100 == 0)
                 {
-                    setProcess(counter);
-
-                } else
-                {
-                    log.info("Converted " + counter + " Stratigraphy records");
+                    if (hasFrame)
+                    {
+                        setProcess(counter);
+    
+                    } else
+                    {
+                        log.info("Converted " + counter + " Stratigraphy records");
+                    }
                 }
-            }
-
-            // grab the important data fields from the old record
-            int oldId = oldStratRecords.getInt(1);
-            String superGroup = oldStratRecords.getString(2);
-            String lithoGroup = oldStratRecords.getString(3);
-            String formation  = oldStratRecords.getString(4);
-            String member     = oldStratRecords.getString(5);
-            String bed        = oldStratRecords.getString(6);
-
-            // create a new Geography object from the old data
-            LithoStrat newStrat = convertOldStratRecord(superGroup, lithoGroup, formation, member, bed, earth, localSession);
-
-            counter++;
-
-            // add this new ID to the ID mapper
-            if (shouldCreateMapTables)
+    
+                // grab the important data fields from the old record
+                int oldId         = oldStratRecords.getInt(1);
+                String superGroup = oldStratRecords.getString(2);
+                String lithoGroup = oldStratRecords.getString(3);
+                String formation  = oldStratRecords.getString(4);
+                String member     = oldStratRecords.getString(5);
+                String bed        = oldStratRecords.getString(6);
+    
+                // create a new Geography object from the old data
+                LithoStrat newStrat = convertOldStratRecord(superGroup, lithoGroup, formation, member, bed, earth, localSession);
+    
+                counter++;
+    
+                // add this new ID to the ID mapper
+                if (shouldCreateMapTables)
+                {
+                    lithoStratIdMapper.put(oldId, newStrat.getLithoStratId());
+                }
+    
+            } while (oldStratRecords.next());
+    
+            if (hasFrame)
             {
-                lithoStratIdMapper.put(oldId, newStrat.getLithoStratId());
+                setProcess(counter);
+    
+            } else
+            {
+                log.info("Converted " + counter + " Stratigraphy records");
             }
-
-        } while (oldStratRecords.next());
-
-        if (hasFrame)
-        {
-            setProcess(counter);
-
-        } else
-        {
+    
+            TreeHelper.fixFullnameForNodeAndDescendants(earth);
+            earth.setNodeNumber(1);
+            fixNodeNumbersFromRoot(earth);
+    
+            HibernateUtil.commitTransaction();
             log.info("Converted " + counter + " Stratigraphy records");
+    
+            // set up Geography foreign key mapping for locality
+            idMapperMgr.mapForeignKey("Locality", "StratigraphyID", "LithoStrat", "LithoStratID");
+            
+        } catch (Exception ex)
+        {
+            HibernateUtil.rollbackTransaction();
+            ex.printStackTrace();
         }
-
-        TreeHelper.fixFullnameForNodeAndDescendants(earth);
-        earth.setNodeNumber(1);
-        fixNodeNumbersFromRoot(earth);
-
-        HibernateUtil.commitTransaction();
-        log.info("Converted " + counter + " Stratigraphy records");
-
-        // set up Geography foreign key mapping for locality
-        idMapperMgr.mapForeignKey("Locality", "StratigraphyID", "LithoStrat", "LithoStratID");
     }
 
     protected Hashtable<String, LithoStrat> lithoStratHash = new Hashtable<String, LithoStrat>();
@@ -7226,9 +7269,15 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         return earth;
     }
 
-    protected LithoStrat buildLithoStratLevel(String nameArg,
-                                              LithoStrat parentArg,
-                                              Session sessionArg)
+    /**
+     * @param nameArg
+     * @param parentArg
+     * @param sessionArg
+     * @return
+     */
+    protected LithoStrat buildLithoStratLevel(final String     nameArg,
+                                              final LithoStrat parentArg,
+                                              final Session    sessionArg)
     {
         String name = nameArg;
         if (name == null)
@@ -7269,13 +7318,23 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         return newStrat;
     }
 
-    protected LithoStrat convertOldStratRecord(String superGroup,
-                                               String lithoGroup,
-                                               String formation,
-                                               String member,
-                                               String bed,
-                                               LithoStrat stratRoot,
-                                               Session localSession)
+    /**
+     * @param superGroup
+     * @param lithoGroup
+     * @param formation
+     * @param member
+     * @param bed
+     * @param stratRoot
+     * @param localSession
+     * @return
+     */
+    protected LithoStrat convertOldStratRecord(final String     superGroup,
+                                               final String     lithoGroup,
+                                               final String     formation,
+                                               final String     member,
+                                               final String     bed,
+                                               final LithoStrat stratRoot,
+                                               final Session    localSession)
     {
         String levelNames[] = { superGroup, lithoGroup, formation, member, bed };
         int levelsToBuild = 0;
@@ -7299,14 +7358,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         LithoStrat prevLevelGeo = stratRoot;
         for (int i = 0; i < levelsToBuild; ++i)
         {
-            // LithoStrat strat = lithoStratHash.get(levelNames[i]);
-            // if (strat == null)
-            // {
-            LithoStrat newLevelStrat = buildLithoStratLevel(levelNames[i], prevLevelGeo,
-                    localSession);
+            LithoStrat newLevelStrat = buildLithoStratLevel(levelNames[i], prevLevelGeo, localSession);
             prevLevelGeo = newLevelStrat;
-            // lithoStratHash.put(levelNames[i], newLevelStrat);
-            // }
         }
 
         return prevLevelGeo;
@@ -7628,6 +7681,63 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
         log.info(count + " geologic time period records converted");
     }
+    
+    /**
+     * @param tblWriter
+     */
+    public void convertStrat(final TableWriter tblWriter) throws SQLException
+    {
+        try
+        {
+            Discipline  discipline   = null;
+
+            Session lclSession = HibernateUtil.getCurrentSession();
+            HibernateUtil.beginTransaction();
+            
+            Criteria criteria        = lclSession.createCriteria(Discipline.class);
+            List<?>  disciplineeList = criteria.list();
+            
+            discipline = (Discipline)disciplineeList.get(0);
+            LithoStratTreeDef lithoStratTreeDef = createLithoStratTreeDef("LithoStrat");
+            
+            lithoStratTreeDef.getDisciplines().add(discipline);
+            discipline.setLithoStratTreeDef(lithoStratTreeDef);
+            
+            lclSession.saveOrUpdate(lithoStratTreeDef);
+            lclSession.saveOrUpdate(discipline);
+            
+            LithoStratTreeDefItem earth     = createLithoStratTreeDefItem(lithoStratTreeDef, "Surface", 0, false);
+            LithoStratTreeDefItem superGrp  = createLithoStratTreeDefItem(earth,     "Super Group", 100, false);
+            LithoStratTreeDefItem lithoGrp  = createLithoStratTreeDefItem(superGrp,  "Litho Group", 200, false);
+            LithoStratTreeDefItem formation = createLithoStratTreeDefItem(lithoGrp,  "Formation",   300, false);
+            LithoStratTreeDefItem member    = createLithoStratTreeDefItem(formation, "Member",      400, false);
+            @SuppressWarnings("unused")
+            LithoStratTreeDefItem bed       = createLithoStratTreeDefItem(member,    "Bed",         500, true);
+            lclSession.saveOrUpdate(earth);
+            
+            // setup the root Geography record (planet Earth)
+            LithoStrat earthNode = new LithoStrat();
+            earthNode.initialize();
+            earthNode.setName("Earth");
+            earthNode.setFullName("Earth");
+            earthNode.setNodeNumber(1);
+            earthNode.setHighestChildNodeNumber(1);
+            earthNode.setRankId(0);
+            earthNode.setDefinition(lithoStratTreeDef);
+            earthNode.setDefinitionItem(earth);
+            earth.getTreeEntries().add(earthNode);
+            lclSession.saveOrUpdate(earthNode);
+            
+            HibernateUtil.commitTransaction();
+            
+            convertLithoStrat(lithoStratTreeDef, earthNode);
+            
+        } catch (Exception ex)
+        {
+            HibernateUtil.rollbackTransaction();
+            ex.printStackTrace();
+        }
+    }
 
 
     /**
@@ -7784,6 +7894,11 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         }
     }
 
+    /**
+     * @param newDBConnArg
+     * @param oldId
+     * @param newId
+     */
     protected void duplicateAddress(final Connection newDBConnArg,
                                     final Integer oldId,
                                     final Integer newId)

@@ -21,6 +21,8 @@ package edu.ku.brc.specify.conversion;
 
 import static edu.ku.brc.specify.config.init.DataBuilder.createAdminGroupAndUser;
 import static edu.ku.brc.specify.config.init.DataBuilder.createAgent;
+import static edu.ku.brc.specify.config.init.DataBuilder.createLithoStratTreeDef;
+import static edu.ku.brc.specify.config.init.DataBuilder.createLithoStratTreeDefItem;
 import static edu.ku.brc.specify.config.init.DataBuilder.createStandardGroups;
 import static edu.ku.brc.specify.config.init.DataBuilder.getSession;
 import static edu.ku.brc.specify.config.init.DataBuilder.setSession;
@@ -98,6 +100,9 @@ import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
 import edu.ku.brc.specify.datamodel.Institution;
+import edu.ku.brc.specify.datamodel.LithoStrat;
+import edu.ku.brc.specify.datamodel.LithoStratTreeDef;
+import edu.ku.brc.specify.datamodel.LithoStratTreeDefItem;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
@@ -962,7 +967,7 @@ public class SpecifyDBConverter
                     frame.incOverall();
                     frame.incOverall();
                 }
-                
+ 
                 frame.setDesc("Converting Taxonomy");
                 log.info("Converting Taxonomy");
                 boolean doTaxonomy = false;
@@ -1020,6 +1025,15 @@ public class SpecifyDBConverter
                 }
                 frame.incOverall();
                 
+                frame.setDesc("Converting Straigraphy");
+                log.info("Converting Straigraphy");
+                boolean doStrat = false;
+                if (doStrat || doAll )
+                {
+                     ConversionLogger.TableWriter tblWriter = convLogger.getWriter("FullStrat.html", "Straigraphy Conversion");
+                     
+                     conversion.convertStrat(tblWriter);
+                }
                 
                 //-------------------------------------------
                 // Get Discipline and Collection

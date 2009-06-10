@@ -1842,10 +1842,10 @@ public class BasicSQLUtils
                 }
                 //setQuotedIdentifierOFFForSQLServer(toConn, BasicSQLUtils.myDestinationServerType);
                 //exeUpdateCmd(updateStatement, "SET FOREIGN_KEY_CHECKS = 0");
-                if (str.toString().toLowerCase().contains("insert into locality"))
-                {
+                //if (str.toString().toLowerCase().contains("insert into locality"))
+                //{
                     //log.debug(str.toString());
-                }
+                //}
 
                 //String str2 = "SET QUOTED_IDENTIFIER ON";
                 //log.debug("executing: " + str);
