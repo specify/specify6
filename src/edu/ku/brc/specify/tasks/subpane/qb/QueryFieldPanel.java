@@ -50,6 +50,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -358,7 +359,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                         /*UIRegistry.getResourceString("QB_FIELD")*/" ", UIRegistry.getResourceString("QB_NOT"),
                         UIRegistry.getResourceString("QB_OPERATOR"),
                         UIRegistry.getResourceString("QB_CRITERIA"), UIRegistry.getResourceString("QB_SORT"),
-                        UIRegistry.getResourceString("QB_DISPLAY"), getResourceString("QB_PROMPT"), getResourceString("QB_ALWAYS_ENFORCE"), " ", " " };
+                        /*UIRegistry.getResourceString("QB_DISPLAY"), getResourceString("QB_PROMPT"), getResourceString("QB_ALWAYS_ENFORCE"), */" ", " " };
             }
         }
         
@@ -563,10 +564,9 @@ public class QueryFieldPanel extends JPanel implements ActionListener
         fieldLabel.setText(fieldLabelText);
         boolean isBool = fieldQRI != null && fieldQRI.getDataClass().equals(Boolean.class);
 		boolean isRel = fieldQRI != null && fieldQRI instanceof RelQRI;
-		if (!isRel)
-		{
-			//XXX need to fixup comparators and criteria...
-		}
+			
+		operatorCBX.setModel(new DefaultComboBoxModel(comparators));
+		//XXX need to set up criteria to support 'between' if necessary
 		
 		for (int c = 1; c < comps.length; c++)
 		{
@@ -589,11 +589,20 @@ public class QueryFieldPanel extends JPanel implements ActionListener
 							.getType() != RelationshipType.OneToMany);
 		}
 
-		if (!ownerQuery.isPromptMode())
+		if (schemaItem == null)
 		{
-			isDisplayedCkbx.setVisible(fieldQRI != null && !isRel);
-			isPromptCkbx.setVisible(fieldQRI != null && !isRel);
-			isEnforcedCkbx.setVisible(fieldQRI != null && !isRel);
+			if (!ownerQuery.isPromptMode())
+			{
+				isDisplayedCkbx.setVisible(fieldQRI != null && !isRel);
+				isPromptCkbx.setVisible(fieldQRI != null && !isRel);
+				isEnforcedCkbx.setVisible(fieldQRI != null && !isRel);
+			}
+		}
+		else
+		{
+			isDisplayedCkbx.setVisible(false);
+			isPromptCkbx.setVisible(false);
+			isEnforcedCkbx.setVisible(false);
 		}
     	setQueryField(qf);
     }
@@ -1387,14 +1396,18 @@ public class QueryFieldPanel extends JPanel implements ActionListener
             this.closeBtn = null;
         }
 
-        JComponent[] allComps = { schemaItemLabel, iconLabel, fieldLabel, isNotCheckbox, operatorCBX, criteria,
+        JComponent[] qComps = {iconLabel, fieldLabel, isNotCheckbox, operatorCBX, criteria,
                 sortCheckbox, isDisplayedCkbx, isPromptCkbx, isEnforcedCkbx, closeBtn, null };
+        JComponent[] sComps = { schemaItemLabel, iconLabel, fieldLabel, isNotCheckbox, operatorCBX, criteria,
+                sortCheckbox, closeBtn, null };
         // 0 1 2 3 4 5 6 7 8 9
-        comps = new JComponent[(schemaItemLabel == null ? 11 : 12)];
-        int start = schemaItemLabel == null ? 1 : 0;
-        for (int c = 0; c < comps.length; c++)
+        if (schemaItem == null)
         {
-        	comps[c] = allComps[start++];
+        	comps = qComps;
+        }
+        else
+        {
+        	comps = sComps;
         }
         
         StringBuilder sb = new StringBuilder();
@@ -1405,7 +1418,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                 sb.append(i == 0 ? "" : ",");
                 if (isCenteredComp(i))
                     sb.append("c:");
-                if (i != 0)
+                if (i != 0 || schemaItem == null)
                 {
                 	sb.append("p");
                 }
@@ -1523,11 +1536,11 @@ public class QueryFieldPanel extends JPanel implements ActionListener
     {
         if (schemaItemLabel == null)
         {
-        	return compIdx == 2 || compIdx == 3 || compIdx == 6 || compIdx == 7 || compIdx == 8;
+        	return compIdx == 1 || compIdx == 2 || compIdx == 5 || compIdx == 6 || compIdx == 7;
         }
         else
         {
-        	return compIdx == 3 || compIdx == 4 || compIdx == 7 || compIdx == 8 || compIdx == 9;
+        	return compIdx == 2 || compIdx == 3 || compIdx == 6 || compIdx == 7 || compIdx == 8;
         }
 
     }

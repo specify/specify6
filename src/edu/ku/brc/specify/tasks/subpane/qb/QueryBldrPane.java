@@ -446,8 +446,11 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         queryFieldsScroll.setBorder(null);
         add(queryFieldsScroll);
         
-        final JPanel mover = buildMoverPanel(false);
-        add(mover, BorderLayout.EAST);
+        if (exportSchema == null)
+        {
+        	final JPanel mover = buildMoverPanel(false);
+        	add(mover, BorderLayout.EAST);
+        }
         
         searchBtn   = createButton(UIRegistry.getResourceString("QB_SEARCH"));
         searchBtn.addActionListener(new ActionListener()
@@ -873,7 +876,12 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 
         for (QueryFieldPanel qfi : qfps)
         {
-            qfi.updateQueryField();
+        	if (qfi.getFieldQRI() == null)
+        	{
+        		continue;
+        	}
+        	
+        	qfi.updateQueryField();
 
             if (qfi.isForDisplay())
             {
@@ -1035,7 +1043,12 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         List<Pair<String,Object>> paramsToSet = new LinkedList<Pair<String, Object>>();
         for (QueryFieldPanel qfi : qfps)
         {
-            if (qfi.isForDisplay())
+            if (qfi.getFieldQRI() == null)
+            {
+            	continue;
+            }
+            
+        	if (qfi.isForDisplay())
             {
                 String fldSpec = qfi.getFieldQRI().getSQLFldSpec(tableAbbreviator, false);
                 if (StringUtils.isNotEmpty(fldSpec))
@@ -1195,8 +1208,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         }
         catch (Exception ex)
         {
-            UIRegistry.getStatusBar().setErrorMessage(ex.getLocalizedMessage(), ex);
-            UIRegistry.writeTimedSimpleGlassPaneMsg(ex.getLocalizedMessage(), Color.RED);
+            String msg = StringUtils.isBlank(ex.getLocalizedMessage()) ? getResourceString("QB_RUN_ERROR") : ex.getLocalizedMessage();
+        	UIRegistry.getStatusBar().setErrorMessage(msg, ex);
+            UIRegistry.writeTimedSimpleGlassPaneMsg(msg, Color.RED);
             runningResults.set(null);
             completedResults.set(null);
         }
@@ -1445,7 +1459,12 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         Vector<ERTICaptionInfoTreeLevelGrp> treeGrps = new Vector<ERTICaptionInfoTreeLevelGrp>(5);
         for (QueryFieldPanel qfp : queryFieldItemsArg)
         {
-            DBFieldInfo fi = qfp.getFieldInfo();
+            if (qfp.getFieldQRI() == null)
+            {
+            	continue;
+            }
+            
+        	DBFieldInfo fi = qfp.getFieldInfo();
             DBTableInfo ti = null;
             if (fi != null)
             {
@@ -1458,7 +1477,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             }
             if (qfp.isForDisplay())
             {
-                String lbl = qfp.getLabel();
+                String lbl = qfp.getSchemaItem() == null ? qfp.getLabel() : qfp.getSchemaItem().getFieldName();
                 if (fixLabels)
                 {
                     lbl = fixFldNameForJR(lbl);
@@ -3240,10 +3259,12 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      */
     protected void updateMoverBtns()
     {
-        int idx = queryFieldItems.indexOf(selectedQFP);
-        orderUpBtn.setEnabled(idx > 0);
-        orderDwnBtn.setEnabled(idx > -1 && idx < queryFieldItems.size()-1);
-        
+        if (exportSchema == null)
+        {
+        	int idx = queryFieldItems.indexOf(selectedQFP);
+        	orderUpBtn.setEnabled(idx > 0);
+        	orderDwnBtn.setEnabled(idx > -1 && idx < queryFieldItems.size()-1);
+        }
     }
     
     /**

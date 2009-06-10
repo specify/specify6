@@ -195,6 +195,26 @@ public class ExportMappingTask extends QueryTask
 	}
 
 	
+	
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.QueryTask#getActionNavBoxTitle()
+	 */
+	@Override
+	protected String getActionNavBoxTitle()
+	{
+		return getResourceString("ExportMappingTask.ActionNavBoxTitle");
+	}
+
+	
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.QueryTask#getQueryNavBoxTitle()
+	 */
+	@Override
+	protected String getQueryNavBoxTitle()
+	{
+		return getResourceString("ExportMappingTask.MappingNavBoxTitle");
+	}
+
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.specify.tasks.QueryTask#getNewQbPane(edu.ku.brc.specify.datamodel.SpQuery)
 	 */

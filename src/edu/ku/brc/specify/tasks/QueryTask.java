@@ -271,8 +271,16 @@ public class QueryTask extends BaseTask
     public void preInitialize()
     {
         // Create and add the Actions NavBox first so it is at the top at the top
-        actionNavBox = new NavBox(getResourceString("QB_CREATE_QUERY"));
+        actionNavBox = new NavBox(getActionNavBoxTitle());
         addNewQCreators();
+    }
+    
+    /**
+     * @return title for the action nav box
+     */
+    protected String getActionNavBoxTitle()
+    {
+    	return getResourceString("QB_CREATE_QUERY");
     }
     
     /**
@@ -895,7 +903,7 @@ public class QueryTask extends BaseTask
         {
             super.initialize(); // sets isInitialized to false
 
-            navBox = new DroppableNavBox(getResourceString("QUERIES"), QUERY_FLAVOR, getQueryType(), SAVE_QUERY);
+            navBox = new DroppableNavBox(getQueryNavBoxTitle(), QUERY_FLAVOR, getQueryType(), SAVE_QUERY);
             loadQueries();
             
             navBoxes.add(actionNavBox);
@@ -907,6 +915,14 @@ public class QueryTask extends BaseTask
         isShowDefault = true;
     }
 
+    /**
+     * @return title for the query nav box.
+     */
+    protected String getQueryNavBoxTitle()
+    {
+    	return getResourceString("QUERIES");
+    }
+    
     /*
      *  (non-Javadoc)
      * @see edu.ku.brc.af.core.Taskable#getToolBarItems()

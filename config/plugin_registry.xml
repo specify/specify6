@@ -18,7 +18,7 @@
 		<plugin class="edu.ku.brc.specify.tasks.QueryTask" addui="true"/>
 		
 		<!-- temporarily adding ExportMappingTask as plugin for convenience during development --> 
-		<!-- <plugin class="edu.ku.brc.specify.tasks.ExportMappingTask" addui="true"/>-->
+		<!-- <plugin class="edu.ku.brc.specify.tasks.ExportMappingTask" addui="true"/> -->
 		
 		<plugin class="edu.ku.brc.specify.tasks.RecordSetTask" addui="false"/>
 		
