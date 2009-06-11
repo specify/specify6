@@ -7032,9 +7032,6 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     {
         try
         {
-            // empty out any pre-existing records
-            BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "lithostrat", BasicSQLUtils.myDestinationServerType);
-    
             // get a Hibernate session for saving the new records
             Session localSession = HibernateUtil.getCurrentSession();
             HibernateUtil.beginTransaction();
@@ -7057,7 +7054,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             }
     
             // create an ID mapper for the geography table (mainly for use in converting localities)
-            IdTableMapper lithoStratIdMapper = IdMapperMgr.getInstance().addTableMapper("lithostrat", "LithoStratID");
+            IdHashMapper lithoStratIdMapper = IdMapperMgr.getInstance().addHashMapper("stratigraphy_stratigraphyid");//, "LithoStratID");
     
             int counter = 0;
             // for each old record, convert the record
@@ -7305,9 +7302,11 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         newStrat.setParent(parentArg);
         parentArg.addChild(newStrat);
         newStrat.setDefinition(parentArg.getDefinition());
-        int newGeoRank = parentArg.getRankId() + 100;
-        LithoStratTreeDefItem defItem = parentArg.getDefinition().getDefItemByRank(newGeoRank);
+        
+        int                   newGeoRank = parentArg.getRankId() + 100;
+        LithoStratTreeDefItem defItem    = parentArg.getDefinition().getDefItemByRank(newGeoRank);
         newStrat.setDefinitionItem(defItem);
+        
         newStrat.setRankId(newGeoRank);
 
         if (sessionArg != null)
@@ -7689,6 +7688,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     {
         try
         {
+            // empty out any pre-existing records
+            BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "lithostrat", BasicSQLUtils.myDestinationServerType);
+            
             Discipline  discipline   = null;
 
             Session lclSession = HibernateUtil.getCurrentSession();

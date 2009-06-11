@@ -91,7 +91,7 @@ public abstract class DataModelObjBase implements FormDataObjIFace,
     {
         Timestamp now     = new Timestamp(System.currentTimeMillis());
         timestampCreated  = now;
-        timestampModified = null;
+        timestampModified = now;
         createdByAgent    = AppContextMgr.getInstance() == null? null : (AppContextMgr.getInstance().hasContext() ? Agent.getUserAgent() : null);
         modifiedByAgent   = null;
     }
