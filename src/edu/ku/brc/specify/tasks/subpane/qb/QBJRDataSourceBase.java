@@ -54,7 +54,7 @@ public class QBJRDataSourceBase implements JRDataSource
     protected final List<ERTICaptionInfoQB> columnInfo;
     protected final boolean recordIdsIncluded;
     protected final ArrayList<SourceColumnInfo> colNames = new ArrayList<SourceColumnInfo>();
-    protected final List<QBJRDataSourceListenerIFace> listeners = new LinkedList<QBJRDataSourceListenerIFace>();
+    protected final List<QBDataSourceListenerIFace> listeners = new LinkedList<QBDataSourceListenerIFace>();
     
     
     /**
@@ -175,7 +175,7 @@ public class QBJRDataSourceBase implements JRDataSource
     /**
      * @param listener the listener to add.
      */
-    public synchronized void addListener(final QBJRDataSourceListenerIFace listener)
+    public synchronized void addListener(final QBDataSourceListenerIFace listener)
     {
     	listeners.add(listener);
     	updateNewListener(listener);
@@ -184,7 +184,7 @@ public class QBJRDataSourceBase implements JRDataSource
     /**
      * @param listener newly added listener.
      */
-    protected void updateNewListener(final QBJRDataSourceListenerIFace listener)
+    protected void updateNewListener(final QBDataSourceListenerIFace listener)
     {
     	listener.rowCount(size());
     }

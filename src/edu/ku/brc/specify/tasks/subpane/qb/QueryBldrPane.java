@@ -126,6 +126,7 @@ import edu.ku.brc.specify.datamodel.SpReport;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.dbsupport.RecordTypeCodeBuilder;
+import edu.ku.brc.specify.tasks.ExportMappingTask;
 import edu.ku.brc.specify.tasks.QueryTask;
 import edu.ku.brc.specify.tasks.ReportsBaseTask;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
@@ -136,6 +137,7 @@ import edu.ku.brc.ui.CommandListener;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.DropDownButton;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.ProgressDialog;
 import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -457,7 +459,23 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         {
             public void actionPerformed(ActionEvent ae)
             {
-                doSearch();
+                //XXX testing!!!!!!!!!
+				if (schemaMapping != null)
+				{
+					if (UIRegistry.displayConfirm("TESTING!!!!!!!",
+							"Export to db? Yes or No?", "YES", "NO",
+							JOptionPane.QUESTION_MESSAGE))
+					{
+						QueryBldrPane.exportToTable(query);
+					} else
+					{
+						doSearch();
+					}
+				}
+            	else
+            	{
+            		doSearch();
+            	}
             }
         });
         distinctChk = createCheckBox(UIRegistry.getResourceString("QB_DISTINCT"));
@@ -719,7 +737,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             }
             query.forceLoad(true);                	
             qfps = exportSchema == null ? getQueryFieldPanels(this, query.getFields(), tableTree, tableTreeHash, saveBtn, missingFlds)
-            		: getQueryFieldPanelsForMapping(missingFlds);
+            		: getQueryFieldPanelsForMapping(this, query.getFields(), tableTree, tableTreeHash, saveBtn, schemaMapping, missingFlds);
             
             if (missingFlds.size() > 0)
             {
@@ -1550,8 +1568,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 }
                 else
                 {
-                    
-                	erti = new ERTICaptionInfoQB(colName, lbl, true, getColumnFormatter(qfp.getFieldQRI()), 0, qfp.getStringId(), qfp.getPickList());
+                	erti = new ERTICaptionInfoQB(colName, lbl, true, getColumnFormatter(qfp.getFieldQRI()), 0, qfp.getStringId(), qfp.getPickList(), fi);
                 }
                 erti.setColClass(qfp.getFieldQRI().getDataClass());
                 if (qfp.getFieldInfo() != null && qfp.getFieldQRI().getFieldInfo().isPartialDate())
@@ -1644,12 +1661,12 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                         ERTICaptionInfo erti;
                         if (fi != null)
                         {
-                            erti = new ERTICaptionInfoQB(colName, lbl, true, fi.getFormatter(), 0, qf.getStringId(), RecordTypeCodeBuilder.getTypeCode(fi));
+                            erti = new ERTICaptionInfoQB(colName, lbl, true, fi.getFormatter(), 0, qf.getStringId(), RecordTypeCodeBuilder.getTypeCode(fi), fi);
                             erti.setColClass(fi.getDataClass());
                         }
                         else
                         {
-                            erti = new ERTICaptionInfoQB(colName, lbl, true, null, 0, qf.getStringId(), null);
+                            erti = new ERTICaptionInfoQB(colName, lbl, true, null, 0, qf.getStringId(), null, fi);
                             erti.setColClass(String.class);
                         }
                         result.add(erti);
@@ -1679,6 +1696,241 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         }
     }
     
+    //XXX DEVELOPING...
+    public static void exportToTable(final SpQuery exportQuery)
+    {
+        UsageTracker.incrUsageCount("QB.ExportToTable." + exportQuery.getContextName());
+        QueryTask qt = (QueryTask )ContextMgr.getTaskByClass(QueryTask.class);
+        final TableTree tblTree;
+        final Hashtable<String, TableTree> ttHash;
+        if (qt != null)
+        {
+            Pair<TableTree, Hashtable<String, TableTree>> trees = qt.getTableTrees();
+            tblTree = trees.getFirst();
+            ttHash = trees.getSecond();
+        }
+        else
+        {
+            log.error("Cound not find the Query task when running report " + exportQuery.getName());
+            //blow up
+            throw new RuntimeException("Cound not find the Query task when running report " + exportQuery.getName());
+        }
+        TableQRI rootQRI = null;
+        int cId = exportQuery.getContextTableId();
+        for (TableTree tt : ttHash.values())
+        {
+            if (cId == tt.getTableInfo().getTableId())
+            {
+                rootQRI = tt.getTableQRI();
+                break;
+            }
+        }
+        QueryParameterPanel qpp = new QueryParameterPanel();
+        qpp.setQuery(exportQuery, tblTree, ttHash);
+        
+        SpExportSchemaMapping mapping = null;
+		DataProviderSessionIFace theSession = DataProviderFactory.getInstance().createSession();;
+        try
+        {
+        	mapping = ExportMappingTask.getMappingForQuery(exportQuery, theSession);
+        	mapping.forceLoad();
+        	mapping.getSpExportSchema().forceLoad();
+        }
+        catch (Exception ex)
+        {
+        	UIRegistry.displayStatusBarErrMsg(getResourceString("QB_DBEXPORT_ERROR_LOADING_MAP"));
+        	return;
+        }
+        finally
+        {
+        	theSession.close();
+        }
+        
+        Vector<QueryFieldPanel> qfps = QueryBldrPane.getQueryFieldPanelsForMapping(qpp, exportQuery.getFields(), tblTree, ttHash,
+        		null, mapping, null);
+
+        HQLSpecs sql = null;
+
+        // XXX need to allow modification of SelectDistinct(etc) ???
+        boolean includeRecordIds = false;
+
+        try
+        {
+            sql = QueryBldrPane.buildHQL(rootQRI, !includeRecordIds, qfps, tblTree, null, 
+            		exportQuery.getSearchSynonymy() == null ? false : exportQuery.getSearchSynonymy());
+        }
+        catch (Exception ex)
+        {
+            UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryBldrPane.class, ex);
+            UIRegistry.getStatusBar().setErrorMessage(ex.getLocalizedMessage(), ex);
+            return;
+        }
+        final List<ERTICaptionInfoQB> cols = getColumnInfo(qfps, false, rootQRI.getTableInfo());
+        final QBExportDataSource src = new QBExportDataSource(sql.getHql(), sql.getArgs(), sql
+                .getSortElements(), cols,
+                includeRecordIds);
+        src.startDataAcquisition();
+        
+        //XXX need progress report for data acquisition step too.
+        
+        //XXX also nay need a 'standalone' app to export schemas.
+        
+        final ProgressDialog progDlg = new ProgressDialog(UIRegistry.getResourceString("QB_EXPORTING_TO_DB_PROGRESS_TITLE"), false, false);
+        javax.swing.SwingWorker<Object, Object> worker = new javax.swing.SwingWorker<Object, Object>()  {
+        	private Exception killer = null;
+        	private boolean success = false;
+        	private QBDataSourceListenerIFace listener = new QBDataSourceListenerIFace() {
+
+				/* (non-Javadoc)
+				 * @see edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace#currentRow(int)
+				 */
+				@Override
+				public void currentRow(final int currentRow)
+				{
+					SwingUtilities.invokeLater(new Runnable() {
+						public void run()
+						{
+							progDlg.setProcess(currentRow);
+						}
+					});
+				}
+
+				/* (non-Javadoc)
+				 * @see edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace#done(int)
+				 */
+				@Override
+				public void done(int rows)
+				{
+					// TODO Auto-generated method stub
+					
+				}
+
+				/* (non-Javadoc)
+				 * @see edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace#filling()
+				 */
+				@Override
+				public void filling()
+				{
+					SwingUtilities.invokeLater(new Runnable(){
+						public void run()
+						{
+							progDlg.getProcessProgress().setIndeterminate(false);
+						}
+					});
+				}
+
+				/* (non-Javadoc)
+				 * @see edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace#loaded()
+				 */
+				@Override
+				public void loaded()
+				{
+					SwingUtilities.invokeLater(new Runnable(){
+						public void run()
+						{
+							progDlg.getProcessProgress().setIndeterminate(false);
+						}
+					});
+				}
+
+				/* (non-Javadoc)
+				 * @see edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace#loading()
+				 */
+				@Override
+				public void loading()
+				{
+					SwingUtilities.invokeLater(new Runnable(){
+						public void run()
+						{
+							progDlg.getProcessProgress().setIndeterminate(true);
+						}
+					});
+				}
+
+				/* (non-Javadoc)
+				 * @see edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace#rowCount(int)
+				 */
+				@Override
+				public void rowCount(final int rowCount)
+				{
+					SwingUtilities.invokeLater(new Runnable(){
+						public void run()
+						{
+							progDlg.setProcess(0, rowCount);
+						}
+					});
+				}
+        		
+        	};
+
+			/* (non-Javadoc)
+			 * @see javax.swing.SwingWorker#doInBackground()
+			 */
+			@Override
+			protected Object doInBackground() throws Exception
+			{
+				Vector<QBDataSourceListenerIFace> listeners = new Vector<QBDataSourceListenerIFace>();
+				listeners.add(listener);
+				try
+				{
+					//XXX This only works if the Master user is given create privilege...
+					ExportToMySQLDB.exportToTable(cols, src.getCache(), "dumped", listeners);
+					success = true;
+				}
+				catch (Exception ex)
+				{
+					killer = ex;
+				}
+				return null;
+			}
+
+			/* (non-Javadoc)
+			 * @see javax.swing.SwingWorker#done()
+			 */
+			@Override
+			protected void done()
+			{
+				if (success)
+				{
+					UIRegistry.displayInfoMsgDlgLocalized("QB_EXPORT_TO_DB_SUCCESS");
+				}
+				else
+				{
+					String msg = getResourceString("QB_EXPORT_TO_DB_FAIL");
+					if (killer != null)
+					{
+						msg += ": " + killer.getClass().getSimpleName();
+						if (StringUtils.isNotBlank(killer.getLocalizedMessage()))
+						{
+							msg += " (" + killer.getLocalizedMessage() + ")";
+						}
+					}
+					else
+					{
+						msg += ".";
+					}
+					UIRegistry.displayErrorDlg(msg);
+				}
+				progDlg.setVisible(false);
+			}
+        	
+        };
+        progDlg.getProcessProgress().setIndeterminate(true);
+        UIHelper.centerAndShow(progDlg);
+        worker.execute();
+
+//        try
+//        {
+//        	ExportToMySQLDB.exportToTable(cols, src.getCache(), "dumped", new Vector<QBDataSourceListenerIFace>());
+//        }
+//        catch (Exception ex)
+//        {
+//        	UIRegistry.displayErrorDlg(ex.getClass().getSimpleName() + " - " + ex.getLocalizedMessage());
+//        }
+        
+        
+    }
     /**
      * @param report
      * 
@@ -3022,7 +3274,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         return result;
     }
   
-    protected SpQueryField getQueryFieldMapping(final SpExportSchemaItem schemaItem)
+    protected static SpQueryField getQueryFieldMapping(final SpExportSchemaMapping schemaMapping, final SpExportSchemaItem schemaItem)
     {
     	if (schemaMapping != null)
     	{
@@ -3040,13 +3292,16 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     /**
      * @return
      */
-    protected Vector<QueryFieldPanel> getQueryFieldPanelsForMapping(List<String> missingFlds) 
+    protected static Vector<QueryFieldPanel> getQueryFieldPanelsForMapping(final QueryFieldPanelContainerIFace container, 
+            final Set<SpQueryField> fields, final TableTree tblTree, 
+            final Hashtable<String,TableTree> ttHash, final Component saveBtn,
+            SpExportSchemaMapping schemaMapping, List<String> missingFlds) 
     {
         Vector<QueryFieldPanel> result = new Vector<QueryFieldPanel>();
         //Need to change columnDefStr if mapMode...
         //result.add(bldQueryFieldPanel(this, null, null, getColumnDefStr(), saveBtn));
         
-        Vector<SpExportSchemaItem> sis = new Vector<SpExportSchemaItem>(this.exportSchema.getSpExportSchemaItems());
+        Vector<SpExportSchemaItem> sis = new Vector<SpExportSchemaItem>(schemaMapping.getSpExportSchema().getSpExportSchemaItems());
         Collections.sort(sis, new Comparator<SpExportSchemaItem>(){
 
 			/* (non-Javadoc)
@@ -3062,21 +3317,21 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         for (SpExportSchemaItem schemaItem : sis)
         {
         	
-        	SpQueryField fld = getQueryFieldMapping(schemaItem);
+        	SpQueryField fld = getQueryFieldMapping(schemaMapping, schemaItem);
         	if (fld == null)
         	{
-        		result.add(new QueryFieldPanel(this, null, 
-        				IconManager.IconSize.Std24, this.columnDefStr, saveBtn, fld, schemaItem));
+        		result.add(new QueryFieldPanel(container, null, 
+        				IconManager.IconSize.Std24, container.getColumnDefStr(), saveBtn, fld, schemaItem));
         	}
         	else
         	{
-        		FieldQRI fieldQRI = getFieldQRI(tableTree, fld, getTableIds(fld.getTableList()), 0, tableTreeHash);
+        		FieldQRI fieldQRI = getFieldQRI(tblTree, fld, getTableIds(fld.getTableList()), 0, ttHash);
         		if (fieldQRI != null)
         		{
-        			result.add(new QueryFieldPanel(this, fieldQRI, 
-            				IconManager.IconSize.Std24, this.columnDefStr, saveBtn, fld, schemaItem));
+        			result.add(new QueryFieldPanel(container, fieldQRI, 
+            				IconManager.IconSize.Std24, container.getColumnDefStr(), saveBtn, fld, schemaItem));
         			fieldQRI.setIsInUse(true);
-        			if (fieldQRI.isFieldHidden() && !isPromptMode())
+        			if (fieldQRI.isFieldHidden() && !container.isPromptMode())
         			{
         				UIRegistry.showLocalizedMsg("QB_FIELD_HIDDEN_TITLE", "QB_FIELD_HIDDEN_SHOULD_REMOVE", fieldQRI.getTitle());
         			}

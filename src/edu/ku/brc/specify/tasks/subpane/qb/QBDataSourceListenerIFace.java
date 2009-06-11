@@ -23,7 +23,7 @@ package edu.ku.brc.specify.tasks.subpane.qb;
  * @author Administrator
  *
  */
-public interface QBJRDataSourceListenerIFace
+public interface QBDataSourceListenerIFace
 {
 	/**
 	 * @param progressPerCent

@@ -50,6 +50,7 @@ import edu.ku.brc.ui.UIRegistry;
  * @code_status Alpha
  *
  */
+@SuppressWarnings("serial")
 public class QBResultSetTableModel extends ResultSetTableModel
 {
     private static final Logger log = Logger.getLogger(QBResultSetTableModel.class);

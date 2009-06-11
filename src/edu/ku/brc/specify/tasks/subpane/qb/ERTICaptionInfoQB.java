@@ -19,6 +19,7 @@
 */
 package edu.ku.brc.specify.tasks.subpane.qb;
 
+import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.ui.db.ERTICaptionInfo;
 import edu.ku.brc.af.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.af.ui.db.PickListItemIFace;
@@ -54,9 +55,11 @@ public class ERTICaptionInfoQB extends ERTICaptionInfo
                            UIFieldFormatterIFace uiFieldFormatter,
                            int     posIndex,
                            String colStringId,
-                           PickListDBAdapterIFace pickList)
+                           PickListDBAdapterIFace pickList,
+                           DBFieldInfo fieldInfo)
     {
         super(colName, colLabel, isVisible, uiFieldFormatter, posIndex);
+        this.fieldInfo = fieldInfo;
         this.colStringId = colStringId;
         this.pickList = pickList;
     }

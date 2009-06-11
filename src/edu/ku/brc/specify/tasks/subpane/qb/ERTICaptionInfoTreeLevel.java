@@ -39,7 +39,7 @@ public class ERTICaptionInfoTreeLevel extends ERTICaptionInfoQB
                                     final ERTICaptionInfoTreeLevelGrp group,
                                     final int rank)
     {
-        super(colName, colLabel, true, null, posIndex, colStringId, null);
+        super(colName, colLabel, true, null, posIndex, colStringId, null, null);
         this.group = group;
         this.rank = rank;
     }

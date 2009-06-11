@@ -62,7 +62,7 @@ public class ERTICaptionInfoRel extends ERTICaptionInfoQB
                            boolean useCache,
                            Integer cacheSize)
     {
-        super(colName, colLabel, isVisible, uiFieldFormatter, posIndex, colStringId, null);
+        super(colName, colLabel, isVisible, uiFieldFormatter, posIndex, colStringId, null, null);
         this.relationship = relationship;
         this.useCache = useCache;
         if (useCache)

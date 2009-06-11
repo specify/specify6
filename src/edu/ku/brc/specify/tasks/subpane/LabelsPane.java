@@ -65,7 +65,7 @@ import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSource;
 import edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceBase;
-import edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceListenerIFace;
+import edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace;
 import edu.ku.brc.specify.tasks.subpane.qb.ReportParametersPanel;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
@@ -84,7 +84,7 @@ import edu.ku.brc.util.Pair;
  */
 @SuppressWarnings("serial")
 public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener, 
- 	JasperCompileListener, QBJRDataSourceListenerIFace
+ 	JasperCompileListener, QBDataSourceListenerIFace
 {
     // Static Data Members
     protected static final Logger    log = Logger.getLogger(LabelsPane.class);

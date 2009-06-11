@@ -328,10 +328,7 @@ public class ExportMappingTask extends QueryTask
 	protected void deleteThisQuery(SpQuery query,
 			DataProviderSessionIFace session) throws Exception
 	{
-		String hql = "from SpExportSchemaMapping sesm inner join sesm.mappings maps inner join maps.queryField qf inner join qf.query q where q.id = " + query.getId();
-		QueryIFace q = session.createQuery(hql, false);
-		Object x = q.list().get(0);
-		session.delete(((Object[] )x)[0]);
+		session.delete(getMappingForQuery(query, session));
 		super.deleteThisQuery(query, session);
 		
 	}
@@ -345,5 +342,37 @@ public class ExportMappingTask extends QueryTask
 		return "ExportMappingTask";
 	}
 
-	
+	/**
+	 * @param query
+	 * @param session
+	 * @return 
+	 * @throws Exception
+	 */
+	public static SpExportSchemaMapping getMappingForQuery(SpQuery query, DataProviderSessionIFace session) throws Exception
+	{
+		DataProviderSessionIFace theSession = session;
+		boolean createSession = theSession == null;
+		try
+		{
+			if (createSession)
+			{
+				theSession = DataProviderFactory.getInstance().createSession();
+			}
+			String hql = "from SpExportSchemaMapping sesm inner join sesm.mappings maps inner join maps.queryField qf inner join qf.query q where q.id = " + query.getId();
+			QueryIFace q = theSession.createQuery(hql, false);
+			if (q.list().size() == 0)
+			{
+				return null;
+			}
+			Object x = q.list().get(0);
+			return (SpExportSchemaMapping )((Object[] )x)[0];
+		}
+		finally
+		{
+			if (createSession)
+			{
+				theSession.close();
+			}
+		}
+	}
 }

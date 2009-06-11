@@ -195,7 +195,7 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
         boolean result = doGetNext(false);
         if (result)
         {
-            for (QBJRDataSourceListenerIFace listener : listeners)
+            for (QBDataSourceListenerIFace listener : listeners)
             {
             	listener.currentRow(++currentRow);
             }
@@ -207,7 +207,7 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
             	return true; //this is to work around JasperReports behavior.
             				//returning true prevents "Document Contained No Pages" message
             }
-        	for (QBJRDataSourceListenerIFace listener : listeners)
+        	for (QBDataSourceListenerIFace listener : listeners)
             {
             	listener.done(currentRow);
             }
@@ -276,6 +276,14 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
         return (Object[] )rowVals;
     }
 
+    /**
+     * @return true if need to process all results before sending to consumers
+     */
+    protected boolean needToPreProcess()
+    {
+    	return sort != null && sort.size() > 0;
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.CustomQueryListener#exectionDone(edu.ku.brc.dbsupport.CustomQueryIFace)
      */
@@ -283,23 +291,23 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
     public void exectionDone(CustomQueryIFace customQuery)
     {
         resultSetSize.set(((JPAQuery)customQuery).getDataObjects().size()); 
-        for (QBJRDataSourceListenerIFace listener : listeners)
+        for (QBDataSourceListenerIFace listener : listeners)
         {
         	listener.rowCount(resultSetSize.get());
         }
         rows.set(((JPAQuery)customQuery).getDataObjects().iterator());
         //cache rows and sort
-        if (sort != null && sort.size() > 0)
+        if (needToPreProcess())
         {
             cache = new Vector<Vector<Object>>(resultSetSize.get());
-            for (QBJRDataSourceListenerIFace listener : listeners)
+            for (QBDataSourceListenerIFace listener : listeners)
             {
             	listener.loading();
             }
             
             while (doGetNext(true))
             {
-                for (QBJRDataSourceListenerIFace listener : listeners)
+                for (QBDataSourceListenerIFace listener : listeners)
                 {
                 	listener.currentRow(++currentRow);
                 }
@@ -342,13 +350,13 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
             firstRow = true;
             currentRow = 0;
             rows.set(cache.iterator());
-            for (QBJRDataSourceListenerIFace listener : listeners)
+            for (QBDataSourceListenerIFace listener : listeners)
             {
             	listener.loaded();
             }
         }
         processing.set(false);
-        for (QBJRDataSourceListenerIFace listener : listeners)
+        for (QBDataSourceListenerIFace listener : listeners)
         {
         	listener.filling();
         }
@@ -466,7 +474,7 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
 	 * @see edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceBase#updateNewListener(edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceListenerIFace)
 	 */
 	@Override
-	protected void updateNewListener(QBJRDataSourceListenerIFace listener)
+	protected void updateNewListener(QBDataSourceListenerIFace listener)
 	{
 		super.updateNewListener(listener);
 		if (processing.get())
@@ -478,6 +486,5 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
 			listener.filling();
 		}
 	}
-
     
 }
