@@ -77,6 +77,14 @@ public class LithoStrat extends DataModelObjBase implements java.io.Serializable
     protected String                        fullName;
     protected String                        remarks;
     protected String                        guid;
+    
+    protected String                        text1;
+    protected String                        text2;
+    protected Double                        number1;
+    protected Double                        number2;
+    protected Boolean                       yesNo1;
+    protected Boolean                       yesNo2;
+    
     protected Integer                       nodeNumber;
     protected Integer                       highestChildNodeNumber;
     protected LithoStratTreeDef             definition;
@@ -117,6 +125,14 @@ public class LithoStrat extends DataModelObjBase implements java.io.Serializable
         fullName = null;
         remarks = null;
         guid = null;
+        
+        text1 = null;
+        text2 = null;
+        number1 = null;
+        number2 = null;
+        yesNo1 = null;
+        yesNo2 = null;
+        
         nodeNumber = null;
         highestChildNodeNumber = null;
         definition = null;
@@ -228,6 +244,108 @@ public class LithoStrat extends DataModelObjBase implements java.io.Serializable
         this.guid = guid;
     }
     
+    /**
+     * @return the text1
+     */
+    @Column(name = "Text1", unique = false, nullable = true, insertable = true, updatable = true, length = 300)
+    public String getText1()
+    {
+        return text1;
+    }
+
+    /**
+     * @param text1 the text1 to set
+     */
+    public void setText1(String text1)
+    {
+        this.text1 = text1;
+    }
+
+    /**
+     * @return the text2
+     */
+    @Column(name = "Text2", unique = false, nullable = true, insertable = true, updatable = true, length = 300)
+    public String getText2()
+    {
+        return text2;
+    }
+
+    /**
+     * @param text2 the text2 to set
+     */
+    public void setText2(String text2)
+    {
+        this.text2 = text2;
+    }
+
+    /**
+     * @return the number1
+     */
+    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true)
+    public Double getNumber1()
+    {
+        return number1;
+    }
+
+    /**
+     * @param number1 the number1 to set
+     */
+    public void setNumber1(Double number1)
+    {
+        this.number1 = number1;
+    }
+
+    /**
+     * @return the number2
+     */
+    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true)
+    public Double getNumber2()
+    {
+        return number2;
+    }
+
+    /**
+     * @param number2 the number2 to set
+     */
+    public void setNumber2(Double number2)
+    {
+        this.number2 = number2;
+    }
+
+    /**
+     * @return the yesNo1
+     */
+    @Column(name = "YesNo1", unique = false, nullable = true, insertable = true, updatable = true)
+    public Boolean getYesNo1()
+    {
+        return yesNo1;
+    }
+
+    /**
+     * @param yesNo1 the yesNo1 to set
+     */
+    public void setYesNo1(Boolean yesNo1)
+    {
+        this.yesNo1 = yesNo1;
+    }
+
+    /**
+     * @return the yesNo2
+     */
+    @Column(name = "YesNo2", unique = false, nullable = true, insertable = true, updatable = true)
+    public Boolean getYesNo2()
+    {
+        return yesNo2;
+    }
+
+    /**
+     * @param yesNo2 the yesNo2 to set
+     */
+    public void setYesNo2(Boolean yesNo2)
+    {
+        this.yesNo2 = yesNo2;
+    }
+
     /**
      * 
      */
