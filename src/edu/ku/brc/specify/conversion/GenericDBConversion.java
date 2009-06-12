@@ -7028,8 +7028,12 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
      * @throws SQLException
      */
     public void convertLithoStrat(final LithoStratTreeDef treeDef, 
-                                  final LithoStrat earth) throws SQLException
+                                  final LithoStrat earth,
+                                  final TableWriter tblWriter) throws SQLException
     {
+        Statement stmt = null;
+        ResultSet rs   = null;
+        
         try
         {
             // get a Hibernate session for saving the new records
@@ -7037,25 +7041,28 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             HibernateUtil.beginTransaction();
     
             // get all of the old records
-            String sql = "SELECT s.StratigraphyID, s.SuperGroup, s.Group, s.Formation, s.Member, s.Bed FROM stratigraphy s";
-            Statement statement = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            ResultSet oldStratRecords = statement.executeQuery(sql);
+            String sql  = "SELECT s.StratigraphyID, s.SuperGroup, s.Group, s.Formation, s.Member, s.Bed, Remarks, Text1, Text2, Number1, Number2, YesNo1, YesNo2, GeologicTimePeriodID FROM stratigraphy s";
+            stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            rs   = stmt.executeQuery(sql);
     
             if (hasFrame)
             {
-                if (oldStratRecords.last())
+                if (rs.last())
                 {
-                    setProcess(0, oldStratRecords.getRow());
-                    oldStratRecords.first();
+                    setProcess(0, rs.getRow());
+                    rs.first();
                 }
             } else
             {
-                oldStratRecords.first();
+                rs.first();
             }
     
             // create an ID mapper for the geography table (mainly for use in converting localities)
-            IdHashMapper lithoStratIdMapper = IdMapperMgr.getInstance().addHashMapper("stratigraphy_stratigraphyid");//, "LithoStratID");
-    
+            IdHashMapper  lithoStratIdMapper = IdMapperMgr.getInstance().addHashMapper("stratigraphy_stratigraphyid");
+            IdMapperIFace gtpIdMapper        = IdMapperMgr.getInstance().get("geologictimeperiod", "GeologicTimePeriodID");
+            
+            Hashtable<Integer, Integer> stratGTPIdHash   = new Hashtable<Integer, Integer>();
+            
             int counter = 0;
             // for each old record, convert the record
             do
@@ -7073,25 +7080,44 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 }
     
                 // grab the important data fields from the old record
-                int oldId         = oldStratRecords.getInt(1);
-                String superGroup = oldStratRecords.getString(2);
-                String lithoGroup = oldStratRecords.getString(3);
-                String formation  = oldStratRecords.getString(4);
-                String member     = oldStratRecords.getString(5);
-                String bed        = oldStratRecords.getString(6);
+                int oldId         = rs.getInt(1);
+                String superGroup = rs.getString(2);
+                String lithoGroup = rs.getString(3);
+                String formation  = rs.getString(4);
+                String member     = rs.getString(5);
+                String bed        = rs.getString(6);
+                String remarks    = rs.getString(7);
+                String text1      = rs.getString(8);
+                String text2      = rs.getString(9);
+                Double number1    = rs.getObject(10) != null ? rs.getDouble(10) : null;
+                Double number2    = rs.getObject(11) != null ? rs.getDouble(11) : null;
+                Boolean yesNo1    = rs.getObject(12) != null ? rs.getBoolean(12) : null;
+                Boolean yesNo2    = rs.getObject(13) != null ? rs.getBoolean(13) : null;
+                Integer gtpId     = rs.getObject(14) != null ? rs.getInt(14) : null;
+                
+                if (gtpId != null)
+                {
+                    gtpId = gtpIdMapper.get(gtpId);
+                    if (gtpId == null)
+                    {
+                        tblWriter.logError("Old GTPID["+gtpId+"] could not be mapped for StratID["+oldId+"]");
+                    }
+                }
     
                 // create a new Geography object from the old data
-                LithoStrat newStrat = convertOldStratRecord(superGroup, lithoGroup, formation, member, bed, earth, localSession);
+                LithoStrat newStrat = convertOldStratRecord(superGroup, lithoGroup, formation, member, bed, remarks, 
+                                                            text1, text2, number1, number2, yesNo1, yesNo2,
+                                                            earth, localSession);
     
                 counter++;
     
-                // add this new ID to the ID mapper
-                if (shouldCreateMapTables)
+                lithoStratIdMapper.put(oldId, newStrat.getLithoStratId());
+                if (gtpId != null && stratGTPIdHash.get(newStrat.getLithoStratId()) == null)
                 {
-                    lithoStratIdMapper.put(oldId, newStrat.getLithoStratId());
+                    stratGTPIdHash.put(newStrat.getLithoStratId(), gtpId);  // new ID to new ID
                 }
     
-            } while (oldStratRecords.next());
+            } while (rs.next());
     
             if (hasFrame)
             {
@@ -7108,15 +7134,98 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     
             HibernateUtil.commitTransaction();
             log.info("Converted " + counter + " Stratigraphy records");
+            
+            rs.close();
+            
+            Statement updateStatement = newDBConn.createStatement();
+            
+            Hashtable<Integer, Integer> ceToPCHash = new Hashtable<Integer, Integer>();
+            
+            sql  = "SELECT CollectingEventID FROM collectingevent ORDER BY CollectingEventID";
+            rs   = stmt.executeQuery(sql);
+            while (rs.next())
+            {
+                int     oldCEId = rs.getInt(1);
+                int     lithoId = lithoStratIdMapper.get(oldCEId);
+                Integer gtpId   = stratGTPIdHash.get(lithoId);
+                
+                try
+                {
+                   
+                    String updateStr = "INSERT INTO paleocontext ( TimestampCreated, TimestampModified, CollectionMemberID, Version, CreatedByAgentID, ModifiedByAgentID, LithoStratID, ChronosStratID) "
+                            + "VALUES ('"
+                            + nowStr
+                            + "','"
+                            + nowStr
+                            + "',"
+                            + getCollectionMemberId()
+                            + ", 0, " 
+                            + getCreatorAgentId(null) + "," + getModifiedByAgentId(null) 
+                            +"," + lithoId
+                            +"," + (gtpId != null ? gtpId : "NULL")
+                            + ")";
+                    updateStatement.executeUpdate(updateStr);
+                    
+                    Integer paleoContextID = BasicSQLUtils.getInsertedId(updateStatement);
+                    if (paleoContextID == null)
+                    {
+                        throw new RuntimeException("Couldn't get the Agent's inserted ID");
+                    }
+                    ceToPCHash.put(lithoId, paleoContextID);
+                    
+                } catch (SQLException e)
+                {
+                    e.printStackTrace();
+                    log.error(e);
+                    showError(e.getMessage());
+                    throw new RuntimeException(e);
+                }
+            }
+            rs.close();
+            stmt.close();
+            
+            // Now assign the appropriate PaleoContext to the CollectionObject
+            stmt = newDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            
+            sql  = "SELECT CollectionObjectID, CollectingEventID FROM collectionobject";
+            rs   = stmt.executeQuery(sql);
+            
+            while (rs.next())
+            {
+                if (rs.getObject(2) == null) continue;
+                    
+                int coId = lithoStratIdMapper.get(rs.getInt(1));
+                int ceId = lithoStratIdMapper.get(rs.getInt(2));
+                try
+                {
+                    Integer paleoContextID = ceToPCHash.get(ceId);
+                    
+                    String sqlUpdate = "UPDATE collectionobject SET PaleoContextID=" + paleoContextID + " WHERE CollectingEventID = " + coId;
+                    updateStatement.executeUpdate(sqlUpdate);
+
+                } catch (SQLException e)
+                {
+                    e.printStackTrace();
+                    log.error(e);
+                    showError(e.getMessage());
+                    throw new RuntimeException(e);
+                }
+            }
+            
+            rs.close();
+            stmt.close();
+            updateStatement.close();
     
             // set up Geography foreign key mapping for locality
-            idMapperMgr.mapForeignKey("Locality", "StratigraphyID", "LithoStrat", "LithoStratID");
+            //idMapperMgr.mapForeignKey("Locality", "StratigraphyID", "LithoStrat", "LithoStratID");
             
         } catch (Exception ex)
         {
-            HibernateUtil.rollbackTransaction();
             ex.printStackTrace();
         }
+        
+        // Now in this Step we Add the PaleoContext to the Collecting Events
+        
     }
 
     protected Hashtable<String, LithoStrat> lithoStratHash = new Hashtable<String, LithoStrat>();
@@ -7222,9 +7331,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             String member = columns[5];
             String bed = columns[6];
 
-            // create a new Geography object from the old data
-            LithoStrat newStrat = convertOldStratRecord(superGroup, lithoGroup, formation, member,
-                    bed, earth, localSession);
+            // create a new Geography object from the old data 
+            LithoStrat newStrat = convertOldStratRecord(superGroup, lithoGroup, formation, member, bed, null, null, null, null, null, null, null, earth, localSession);
 
             counter++;
 
@@ -7268,11 +7376,25 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
     /**
      * @param nameArg
+     * @param remarks
+     * @param text1
+     * @param text2
+     * @param number1
+     * @param number2
+     * @param yesNo1
+     * @param yesNo2
      * @param parentArg
      * @param sessionArg
      * @return
      */
     protected LithoStrat buildLithoStratLevel(final String     nameArg,
+                                              final String     remarks,
+                                              final String     text1, 
+                                              final String     text2, 
+                                              final Double     number1, 
+                                              final Double     number2, 
+                                              final Boolean    yesNo1, 
+                                              final Boolean    yesNo2,
                                               final LithoStrat parentArg,
                                               final Session    sessionArg)
     {
@@ -7299,6 +7421,15 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         LithoStrat newStrat = new LithoStrat();
         newStrat.initialize();
         newStrat.setName(name);
+        newStrat.setRemarks(remarks);
+        
+        newStrat.setText1(text1);
+        newStrat.setText2(text2);
+        newStrat.setNumber1(number1);
+        newStrat.setNumber2(number2);
+        newStrat.setYesNo1(yesNo1);
+        newStrat.setYesNo2(yesNo2);
+        
         newStrat.setParent(parentArg);
         parentArg.addChild(newStrat);
         newStrat.setDefinition(parentArg.getDefinition());
@@ -7332,6 +7463,13 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                                                final String     formation,
                                                final String     member,
                                                final String     bed,
+                                               final String     remarks,
+                                               final String     text1, 
+                                               final String     text2, 
+                                               final Double     number1, 
+                                               final Double     number2, 
+                                               final Boolean    yesNo1, 
+                                               final Boolean    yesNo2,
                                                final LithoStrat stratRoot,
                                                final Session    localSession)
     {
@@ -7357,7 +7495,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         LithoStrat prevLevelGeo = stratRoot;
         for (int i = 0; i < levelsToBuild; ++i)
         {
-            LithoStrat newLevelStrat = buildLithoStratLevel(levelNames[i], prevLevelGeo, localSession);
+            LithoStrat newLevelStrat = buildLithoStratLevel(levelNames[i], remarks, text1, text2, number1, number2, yesNo1, yesNo2, prevLevelGeo, localSession);
             prevLevelGeo = newLevelStrat;
         }
 
@@ -7732,7 +7870,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             
             HibernateUtil.commitTransaction();
             
-            convertLithoStrat(lithoStratTreeDef, earthNode);
+            convertLithoStrat(lithoStratTreeDef, earthNode, tblWriter);
             
         } catch (Exception ex)
         {

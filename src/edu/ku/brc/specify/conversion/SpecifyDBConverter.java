@@ -520,7 +520,7 @@ public class SpecifyDBConverter
         
         boolean doAll               = true; 
         boolean startfromScratch    = true; 
-        boolean deleteMappingTables = true;
+        boolean deleteMappingTables = false;
         
         System.out.println("************************************************************");
         System.out.println("From "+dbNameSource+" to "+dbNameDest);
