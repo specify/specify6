@@ -46,9 +46,9 @@ import edu.ku.brc.ui.DateWrapper;
  * Base class for implementations of JRDataSource for QueryBuilder queries.
  *
  */
-public class QBJRDataSourceBase implements JRDataSource
+public class QBDataSourceBase implements JRDataSource
 {
-    private static final Logger log = Logger.getLogger(QBJRDataSourceBase.class);
+    private static final Logger log = Logger.getLogger(QBDataSourceBase.class);
     
     protected static DateWrapper scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");    
     protected final List<ERTICaptionInfoQB> columnInfo;
@@ -191,7 +191,7 @@ public class QBJRDataSourceBase implements JRDataSource
     /**
      * @param columnInfo
      */
-    public QBJRDataSourceBase(final List<ERTICaptionInfoQB> columnInfo, final boolean recordIdsIncluded, final Object repeats)
+    public QBDataSourceBase(final List<ERTICaptionInfoQB> columnInfo, final boolean recordIdsIncluded, final Object repeats)
     {
         this.columnInfo = columnInfo;
         this.recordIdsIncluded = recordIdsIncluded;

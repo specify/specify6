@@ -22,6 +22,8 @@ package edu.ku.brc.specify.datamodel;
 import static edu.ku.brc.helpers.XMLHelper.addAttr;
 import static edu.ku.brc.helpers.XMLHelper.getAttr;
 
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -29,6 +31,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -156,6 +159,8 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
     protected Byte         sortType;
     
     protected String       tableList;
+    
+    protected Set<SpExportSchemaItemMapping> mappings;
     
     /**
      * The tableId of the table that contains the database field represented by this object.
@@ -465,7 +470,17 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
     {
         return query;
     }
-    
+
+    /**
+     * @return the fields
+     */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "queryField")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<SpExportSchemaItemMapping> getMappings()
+    {
+        return mappings;
+    }
+
     /**
      * @return the tableList
      */
@@ -474,6 +489,8 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
     {
         return tableList;
     }
+    
+    
     
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#initialize()
@@ -502,6 +519,7 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
         formatName     = null;
         columnAlias    = null;
         contextTableIdent = null;
+        mappings = null;
     }
 
     @Transient
@@ -537,6 +555,11 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
         this.sortType = sortType.getOrdinal();
     }
             
+    public void setMappings(Set<SpExportSchemaItemMapping> mappings)
+    {
+    	this.mappings = mappings;
+    }
+    
     //-------------------------------------------------------------------------
     //-- DataModelObjBase
     //-------------------------------------------------------------------------

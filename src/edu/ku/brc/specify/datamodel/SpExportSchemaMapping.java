@@ -3,6 +3,7 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -35,6 +36,7 @@ public class SpExportSchemaMapping extends DataModelObjBase
 	protected SpExportSchema					spExportSchema;
 	protected String                            mappingName;
 	protected String                            description;
+	protected Timestamp							timestampExported;
 	protected Set<SpExportSchemaItemMapping>	mappings;
 
 	/**
@@ -60,6 +62,24 @@ public class SpExportSchemaMapping extends DataModelObjBase
 		this.spExportSchemaMappingId = spExportSchemaMappingId;
 	}
 	
+	
+	/**
+	 * @return the timeLastExported
+	 */
+	   @Column(name = "TimeStampExported")
+	public Timestamp getTimestampExported()
+	{
+		return timestampExported;
+	}
+
+	/**
+	 * @param timeLastExported the timeLastExported to set
+	 */
+	public void setTimestampExported(Timestamp timestampExported)
+	{
+		this.timestampExported = timestampExported;
+	}
+
 	/**
 	 * @return the exportSchemaItem
 	 */
@@ -179,6 +199,7 @@ public class SpExportSchemaMapping extends DataModelObjBase
 		spExportSchema = null;
 		mappingName = null;
 		description = null;
+		timestampExported = null;
 		mappings = new HashSet<SpExportSchemaItemMapping>();
 	}
 

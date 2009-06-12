@@ -47,9 +47,9 @@ import edu.ku.brc.util.Pair;
  * Provides data by executing an hql statement for a QueryBuilder query.
  *
  */
-public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryListener
+public class QBDataSource extends QBDataSourceBase implements CustomQueryListener
 {
-    protected static final Logger log = Logger.getLogger(QBJRDataSource.class);
+    protected static final Logger log = Logger.getLogger(QBDataSource.class);
     
     protected final AtomicBoolean loadCancelled = new AtomicBoolean(false);
     
@@ -126,25 +126,46 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
         return getFieldValue(fldIdx, arg0.getName(), arg0.getClass());
     }
     
+    public Object getFieldValue(int colIdx)
+    {
+    	return getFieldValue(colIdx, null, null);
+    }
+    
+    public int getFieldCount()
+    {
+    	return this.columnInfo.size() + (this.recordIdsIncluded ? 1 : 0);
+    }
+    
     @SuppressWarnings("unchecked")
     protected Object getFieldValue(final int fldIdx, final String fldName, final Class<?> fldClass)
     {
          if (fldIdx < 0)
             return null;
-        int colInfoIdx = Collections.binarySearch(colNames, new SourceColumnInfo(fldName, null, null), srcColNameComparator);
-        if (colInfoIdx < 0)
+        boolean isRawCol = fldName == null; //isRawCol assumes no additional column info - partial date or other stuff.
+        int colInfoIdx; 
+        if (isRawCol)
         {
-           if (fldClass.equals(String.class))
-           {
-               return String.format(UIRegistry.getResourceString("QBJRDS_UNKNOWN_FIELD"), fldName);
-           }
-           log.error("field not found: " + fldName + " (" + fldIdx + ")");
-           return null;
+        	colInfoIdx = fldIdx - 1;
         }
-       
-        if (!processed)
+        else 
         {
-            int processIdx = colNames.get(colInfoIdx).getColInfoIdx();
+        	colInfoIdx = Collections.binarySearch(colNames, new SourceColumnInfo(fldName, null, null), srcColNameComparator);
+        	if (colInfoIdx < 0)
+        	{
+        		if (fldClass.equals(String.class))
+        		{
+        			return String.format(UIRegistry.getResourceString("QBJRDS_UNKNOWN_FIELD"), fldName);
+        		}
+        		log.error("field not found: " + fldName + " (" + fldIdx + ")");
+        		return null;
+        	}
+        }
+        
+        boolean skipProcessing = isRawCol && fldIdx == 0; //it's a request for the id field.
+        
+        if (!processed && !skipProcessing)
+        {
+            int processIdx = isRawCol ? colInfoIdx : colNames.get(colInfoIdx).getColInfoIdx();
             ERTICaptionInfoQB col = columnInfo.get(processIdx);
             Object value;
             if (col.getColInfoList() != null && col.getColInfoList().size() > 1)
@@ -163,6 +184,10 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
             	value = ((Object[] )rowVals)[fldIdx];
             }
             return processValue(processIdx, col.processValue(value));
+        }
+        if (!processed)
+        {
+        	return ((Object[] )rowVals)[fldIdx];
         }
         //else processing already done
         //int colIdx = this.recordIdsIncluded ? fldIdx - 1 : fldIdx;       
@@ -377,7 +402,7 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
      * @param columnInfo
      * @param recordIdsIncluded
      */
-    public QBJRDataSource(final String hql, final List<Pair<String, Object>> params, final List<SortElement> sort, 
+    public QBDataSource(final String hql, final List<Pair<String, Object>> params, final List<SortElement> sort, 
                           final List<ERTICaptionInfoQB> columnInfo,
                           final boolean recordIdsIncluded)
     {
@@ -394,7 +419,7 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
      * @param recordIdsIncluded
      * @param repeatCount - number of repeats for each record
      */
-    public QBJRDataSource(final String hql, final List<Pair<String, Object>> params, final List<SortElement> sort,
+    public QBDataSource(final String hql, final List<Pair<String, Object>> params, final List<SortElement> sort,
                           final List<ERTICaptionInfoQB> columnInfo,
                           final boolean recordIdsIncluded, final Object repeats)
     {

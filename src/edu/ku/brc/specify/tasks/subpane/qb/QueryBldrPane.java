@@ -38,6 +38,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -874,7 +875,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                                        final Vector<QueryFieldPanel> qfps,
                                        final TableTree tblTree, 
                                        final RecordSetIFace keysToRetrieve,
-                                       final boolean searchSynonymy) throws ParseException
+                                       final boolean searchSynonymy,
+                                       final boolean isSchemaExport,
+                                       final Timestamp lastExportTime) throws ParseException
     {
         if (qfps.size() == 0)
             return null;
@@ -1096,6 +1099,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 }
             }
         }
+        //XXX if isSchemaExport -- add root ID and DISTINCT to enable updates???
         sqlStr.append(fieldsStr);
 
         sqlStr.append(" from ");
@@ -1150,6 +1154,34 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 break;
             }
             //...done adding system whereses
+            
+            //get only records modified/added since last export of the schema...
+            if (isSchemaExport && lastExportTime != null)
+            {
+                //XXX deletes via audit stuff?? - during db-export phase
+                //XXX formatters????? - need to add joins and conditions for tables accessed by formatters --- possible??
+                if (criteriaStr.length() > 0)
+                {
+                    criteriaStr.append(" AND (");
+                }
+                int f = 0;
+                for (Pair<DBTableInfo, String> fromTbl : fromTbls)
+                {
+                    if (f > 0)
+                    {
+                        criteriaStr.append(" OR ");
+                    }
+                    f++;
+                    String paramName = "spparam" + paramsToSet.size();
+                    criteriaStr.append(fromTbl.getSecond() + ".timestampModified > :" + paramName);
+                    paramsToSet.add(new Pair<String, Object>(paramName, lastExportTime));
+                    criteriaStr.append(" OR ");
+                    paramName = "spparam" + paramsToSet.size();
+                    criteriaStr.append(fromTbl.getSecond() + ".timestampCreated > :" + paramName);
+                    paramsToSet.add(new Pair<String, Object>(paramName, lastExportTime));
+                }
+                criteriaStr.append(") ");
+            }
         }
         
         if (criteriaStr.length() > 0)
@@ -1221,7 +1253,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     {
         try
         {
-            HQLSpecs hql = buildHQL(rootTable, distinct, queryFieldItems, tableTree, null, searchSynonymy);    
+            //XXX need to determine exportQuery params (probably)
+        	HQLSpecs hql = buildHQL(rootTable, distinct, queryFieldItems, tableTree, null, searchSynonymy, false, null);    
             processSQL(queryFieldItems, hql, rootTable.getTableInfo(), distinct);
         }
         catch (Exception ex)
@@ -1635,7 +1668,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      * @param fixLabels
      * @return ERTICaptionInfo for the visible columns represented in an SpQuery's queryFields.
      * 
-     * This method is used by QBJRDataSourceConnection object which current do not actually need to
+     * This method is used by QBDataSourceConnection object which current do not actually need to
      * retrieve any data, so ERTICaptionInfoQB objects are used for all columns.
      */
     public static List<ERTICaptionInfo> getColumnInfoSp(final Set<SpQueryField> queryFields, final boolean fixLabels)
@@ -1746,18 +1779,43 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         	theSession.close();
         }
         
+        
+        final SpExportSchemaMapping theMapping = mapping;
+        
+        //Check to see if the mapping structure has changed
+        boolean needToRebuildTable = true;
+        if (mapping.getTimestampExported() != null)
+        {
+        	needToRebuildTable = false;
+        	for (SpExportSchemaItemMapping im : mapping.getMappings())
+        	{
+        		if (im.getTimestampCreated().compareTo(mapping.getTimestampExported()) > 0)
+        		{
+        			needToRebuildTable = true;
+        			break;
+        		}
+        		if (im.getTimestampModified() != null && im.getTimestampModified().compareTo(mapping.getTimestampExported()) > 0)
+        		{
+        			needToRebuildTable = true;
+        			break;
+        		}
+        	}
+        }
+        final boolean rebuildExistingTbl = needToRebuildTable;
+        
         Vector<QueryFieldPanel> qfps = QueryBldrPane.getQueryFieldPanelsForMapping(qpp, exportQuery.getFields(), tblTree, ttHash,
         		null, mapping, null);
 
         HQLSpecs sql = null;
 
         // XXX need to allow modification of SelectDistinct(etc) ???
-        boolean includeRecordIds = false;
+        final boolean includeRecordIds = true; //XXX testing export/update of only changed records.
 
         try
         {
             sql = QueryBldrPane.buildHQL(rootQRI, !includeRecordIds, qfps, tblTree, null, 
-            		exportQuery.getSearchSynonymy() == null ? false : exportQuery.getSearchSynonymy());
+            		exportQuery.getSearchSynonymy() == null ? false : exportQuery.getSearchSynonymy(),
+            				true, mapping.getTimestampExported());
         }
         catch (Exception ex)
         {
@@ -1767,7 +1825,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             return;
         }
         final List<ERTICaptionInfoQB> cols = getColumnInfo(qfps, false, rootQRI.getTableInfo());
-        final QBExportDataSource src = new QBExportDataSource(sql.getHql(), sql.getArgs(), sql
+        final QBDataSource src = new QBDataSource(sql.getHql(), sql.getArgs(), sql
                 .getSortElements(), cols,
                 includeRecordIds);
         src.startDataAcquisition();
@@ -1875,7 +1933,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 				try
 				{
 					//XXX This only works if the Master user is given create privilege...
-					ExportToMySQLDB.exportToTable(cols, src.getCache(), "dumped", listeners);
+					ExportToMySQLDB.exportToTable(cols, src, "dumped", listeners, includeRecordIds, rebuildExistingTbl, true);
 					success = true;
 				}
 				catch (Exception ex)
@@ -1894,6 +1952,30 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 				if (success)
 				{
 					UIRegistry.displayInfoMsgDlgLocalized("QB_EXPORT_TO_DB_SUCCESS");
+					boolean transOpen = false;
+					DataProviderSessionIFace theSession = DataProviderFactory.getInstance().createSession();;
+			        try
+			        {
+			        	SpExportSchemaMapping mergedMap = theSession.merge(theMapping);
+			        	mergedMap.setTimestampExported(new Timestamp(System.currentTimeMillis()));
+			        	theSession.beginTransaction();
+			        	transOpen = true;
+			        	theSession.saveOrUpdate(mergedMap);
+			        	theSession.commit();
+			        	transOpen = false;
+			        }
+			        catch (Exception ex)
+			        {
+			        	UIRegistry.displayStatusBarErrMsg(getResourceString("QB_DBEXPORT_ERROR_SETTING_EXPORT_TIMESTAMP"));
+			        	if (transOpen)
+			        	{
+			        		theSession.rollback();
+			        	}
+			        }
+			        finally
+			        {
+			        	theSession.close();
+			        }
 				}
 				else
 				{
@@ -2024,8 +2106,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 
                 try
                 {
-                    sql = QueryBldrPane.buildHQL(rootQRI, !includeRecordIds, qfps, tblTree, rs, 
-                    		report.getQuery().getSearchSynonymy() == null ? false : report.getQuery().getSearchSynonymy());
+                    //XXX Is it safe to assume that query is not an export query? 
+                	sql = QueryBldrPane.buildHQL(rootQRI, !includeRecordIds, qfps, tblTree, rs, 
+                    		report.getQuery().getSearchSynonymy() == null ? false : report.getQuery().getSearchSynonymy(),
+                    				false, null);
                 }
                 catch (Exception ex)
                 {
@@ -2034,7 +2118,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     UIRegistry.getStatusBar().setErrorMessage(ex.getLocalizedMessage(), ex);
                     return;
                 }
-                QBJRDataSource src = new QBJRDataSource(sql.getHql(), sql.getArgs(), sql
+                QBDataSource src = new QBDataSource(sql.getHql(), sql.getArgs(), sql
                         .getSortElements(), getColumnInfo(qfps, true, rootQRI.getTableInfo()),
                         includeRecordIds, report.getRepeats());
                 src.startDataAcquisition();

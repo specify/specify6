@@ -941,7 +941,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                 {
                     for (int p = 0; p < criteriaStrs.length; p++)
                     {
-                        String paramName = "spparam" + p;
+                        String paramName = "spparam" + paramList.size();
                         try
                         {
                             Object arg = dateConverter.convert((String)criteriaStrs[p]);

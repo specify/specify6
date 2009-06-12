@@ -37,9 +37,9 @@ import edu.ku.brc.ui.UIRegistry;
  *
  * Provides data from a already executed and displayed QB query.
  */
-public class QBLiveJRDataSource extends QBJRDataSourceBase
+public class QBLiveDataSource extends QBDataSourceBase
 {
-    protected static final Logger log = Logger.getLogger(QBLiveJRDataSource.class);
+    protected static final Logger log = Logger.getLogger(QBLiveDataSource.class);
     /**
      * pre-computed 'live' data.
      */
@@ -62,7 +62,7 @@ public class QBLiveJRDataSource extends QBJRDataSourceBase
      * @param data
      * @param columnInfo
      */
-    public QBLiveJRDataSource(final ResultSetTableModel data, final List<ERTICaptionInfoQB> columnInfo)
+    public QBLiveDataSource(final ResultSetTableModel data, final List<ERTICaptionInfoQB> columnInfo)
     {
         //XXX setting rowIds to true doesn't guarantee that rowIds will be available if Select Distinct was used
         super(columnInfo, true, null);
@@ -77,7 +77,7 @@ public class QBLiveJRDataSource extends QBJRDataSourceBase
         }
     }
 
-    public QBLiveJRDataSource(final ResultSetTableModel data, final List<ERTICaptionInfoQB> columnInfo, final Object repeats)
+    public QBLiveDataSource(final ResultSetTableModel data, final List<ERTICaptionInfoQB> columnInfo, final Object repeats)
     {
         //XXX setting rowIds to true doesn't guarantee that rowIds will be available if Select Distinct was used
         super(columnInfo, true, repeats);

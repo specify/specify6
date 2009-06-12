@@ -95,7 +95,7 @@ import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.tasks.subpane.SQLQueryPane;
 import edu.ku.brc.specify.tasks.subpane.qb.ERTICaptionInfoQB;
-import edu.ku.brc.specify.tasks.subpane.qb.QBLiveJRDataSource;
+import edu.ku.brc.specify.tasks.subpane.qb.QBLiveDataSource;
 import edu.ku.brc.specify.tasks.subpane.qb.QBQueryForIdResultsHQL;
 import edu.ku.brc.specify.tasks.subpane.qb.QBReportInfoPanel;
 import edu.ku.brc.specify.tasks.subpane.qb.QueryBldrPane;
@@ -1435,7 +1435,7 @@ public class QueryTask extends BaseTask
 				// (type safety warning)
 				List<? extends ERTICaptionInfo> captions = rsm.getResults()
 						.getVisibleCaptionInfo();
-				src = new QBLiveJRDataSource(rsm,
+				src = new QBLiveDataSource(rsm,
 						(List<ERTICaptionInfoQB>) captions, selectedRep
 								.getRepeats());
 			} else

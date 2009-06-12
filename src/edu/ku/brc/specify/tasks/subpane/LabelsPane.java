@@ -63,8 +63,8 @@ import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.dbsupport.RecordSetIFace;
-import edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSource;
-import edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceBase;
+import edu.ku.brc.specify.tasks.subpane.qb.QBDataSource;
+import edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceBase;
 import edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace;
 import edu.ku.brc.specify.tasks.subpane.qb.ReportParametersPanel;
 import edu.ku.brc.ui.CustomDialog;
@@ -141,10 +141,10 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
 					try
 					{
 						asyncFillHandler.cancellFill();
-						if (dataSource != null && (dataSource instanceof QBJRDataSource)
+						if (dataSource != null && (dataSource instanceof QBDataSource)
 								&& loading.get())
 						{
-							((QBJRDataSource )dataSource).cancelLoad();
+							((QBDataSource )dataSource).cancelLoad();
 						}
 					} catch (JRException ex)
 					{
@@ -306,10 +306,10 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
                         
                     } else if (dataSource != null)
                     {
-                        if (dataSource instanceof QBJRDataSourceBase)
+                        if (dataSource instanceof QBDataSourceBase)
                         {
                             //if source has not finished retrieving results, size = -1
-                            size = ((QBJRDataSourceBase )dataSource).size();
+                            size = ((QBDataSourceBase )dataSource).size();
                         }
                     }
 
@@ -381,9 +381,9 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
                                     session);
                         }
 
-                        if (dataSource instanceof QBJRDataSourceBase)
+                        if (dataSource instanceof QBDataSourceBase)
                         {
-                        	((QBJRDataSourceBase )dataSource).addListener(this);
+                        	((QBDataSourceBase )dataSource).addListener(this);
                         	progressLabel.setText(getResourceString("LabelsPane.LoadingReportData"));
                         }
                         else
@@ -557,7 +557,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
     }
 
 	/* (non-Javadoc)
-	 * @see edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceListenerIFace#currentRow(int)
+	 * @see edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace#currentRow(int)
 	 */
 	@Override
 	public void currentRow(final int currentRow)
@@ -570,10 +570,10 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
 			@Override
 			public void run()
 			{
-				if (progressBar.isIndeterminate() && dataSource instanceof QBJRDataSource)
+				if (progressBar.isIndeterminate() && dataSource instanceof QBDataSource)
 				{
 					progressBar.setMinimum(0);
-					progressBar.setMaximum(((QBJRDataSource )dataSource).size());
+					progressBar.setMaximum(((QBDataSource )dataSource).size());
 					progressBar.setIndeterminate(false);
 				}
 				progressBar.setValue(currentRow);
@@ -583,7 +583,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
 	}
 
 	/* (non-Javadoc)
-	 * @see edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceListenerIFace#done(int)
+	 * @see edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace#done(int)
 	 */
 	@Override
 	public void done(int rows)
@@ -593,7 +593,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
 	}
 
 	/* (non-Javadoc)
-	 * @see edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceListenerIFace#filling()
+	 * @see edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace#filling()
 	 */
 	@Override
 	public void filling()
@@ -614,7 +614,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
 	}
 
 	/* (non-Javadoc)
-	 * @see edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceListenerIFace#loaded()
+	 * @see edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace#loaded()
 	 */
 	@Override
 	public void loaded()
@@ -623,7 +623,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
 	}
 
 	/* (non-Javadoc)
-	 * @see edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceListenerIFace#loading()
+	 * @see edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace#loading()
 	 */
 	@Override
 	public void loading()
@@ -644,7 +644,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
 	}
 
 	/* (non-Javadoc)
-	 * @see edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceListenerIFace#rowCount(int)
+	 * @see edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace#rowCount(int)
 	 */
 	@Override
 	public void rowCount(final int rowCount)

@@ -45,6 +45,7 @@ public class SpAuditLog extends DataModelObjBase implements java.io.Serializable
 
     protected Integer           spAuditLogId;
     protected Integer           tableNum;
+    protected Integer           recordId;
     protected Integer           action;
     protected String            description;
     
@@ -71,6 +72,7 @@ public class SpAuditLog extends DataModelObjBase implements java.io.Serializable
         super.init();
         spAuditLogId    = null;
         tableNum        = null;
+        recordId        = null;
         action          = null;
         description     = null;
         
@@ -131,7 +133,25 @@ public class SpAuditLog extends DataModelObjBase implements java.io.Serializable
         this.tableNum = tableNum;
     }
 
+    
     /**
+	 * @return the recordId
+	 */
+    @Column(name = "RecordId", unique = false, nullable = true, insertable = true, updatable = true)
+	public Integer getRecordId()
+	{
+		return recordId;
+	}
+
+	/**
+	 * @param recordId the recordId to set
+	 */
+	public void setRecordId(Integer recordId)
+	{
+		this.recordId = recordId;
+	}
+
+	/**
      * @return the action
      */
     @Column(name = "Action", unique = false, nullable = false, insertable = true, updatable = true)
