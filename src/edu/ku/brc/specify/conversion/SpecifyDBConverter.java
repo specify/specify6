@@ -793,8 +793,10 @@ public class SpecifyDBConverter
                 if (copyAgentAddressTables || doAll)
                 {
                     log.info("Calling - convertAgents");
-                    conversion.convertAgents();
-
+                    
+                    AgentConverter agentConverter = new AgentConverter(conversion, idMapperMgr, startfromScratch);
+                    agentConverter.convertAgents();
+                    
                 } else
                 {
                     idMapperMgr.addTableMapper("agent", "AgentID");

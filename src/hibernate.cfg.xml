@@ -149,7 +149,9 @@
 
 		<mapping class="edu.ku.brc.specify.datamodel.SpAppResourceDir"/>
 		<mapping class="edu.ku.brc.specify.datamodel.SpAppResource"/>
-		<mapping class="edu.ku.brc.specify.datamodel.SpAppResourceData"/>
+        <mapping class="edu.ku.brc.specify.datamodel.SpAppResourceData"/>
+        <mapping class="edu.ku.brc.specify.datamodel.SpAuditLog"/>
+        <mapping class="edu.ku.brc.specify.datamodel.SpAuditLogField"/>
 		<mapping class="edu.ku.brc.specify.datamodel.SpecifyUser"/>
 		<mapping class="edu.ku.brc.specify.datamodel.SpExportSchema"/>
 		<mapping class="edu.ku.brc.specify.datamodel.SpExportSchemaItem"/>

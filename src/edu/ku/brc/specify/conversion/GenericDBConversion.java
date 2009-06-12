@@ -7924,10 +7924,10 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
      * @param fieldNames the list of field names
      * @param tableName the table name
      */
-    protected void addNamesWithTableName(final List<String> list,
-                                         final List<String> fieldNames,
-                                         final String tableName)
-    {
+    protected static void addNamesWithTableName(final List<String> list,
+                                                final List<String> fieldNames,
+                                                final String tableName)
+            {
         for (String fldName : fieldNames)
         {
             list.add(tableName + "." + fldName);
@@ -9433,4 +9433,46 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     {
         return curAgentModifierID;
     }
+
+    /**
+     * @return the convLogger
+     */
+    public ConversionLogger getConvLogger()
+    {
+        return convLogger;
+    }
+
+    /**
+     * @return the columnValueMapper
+     */
+    public Hashtable<String, BasicSQLUtilsMapValueIFace> getColumnValueMapper()
+    {
+        return columnValueMapper;
+    }
+
+    /**
+     * @return the oldDBConn
+     */
+    public Connection getOldDBConn()
+    {
+        return oldDBConn;
+    }
+
+    /**
+     * @param oldDBConn the oldDBConn to set
+     */
+    public void setOldDBConn(Connection oldDBConn)
+    {
+        this.oldDBConn = oldDBConn;
+    }
+
+    /**
+     * @return the newDBConn
+     */
+    public Connection getNewDBConn()
+    {
+        return newDBConn;
+    }
+    
+    
 }
