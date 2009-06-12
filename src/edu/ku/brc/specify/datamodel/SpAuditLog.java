@@ -46,7 +46,7 @@ public class SpAuditLog extends DataModelObjBase implements java.io.Serializable
     protected Integer           spAuditLogId;
     protected Integer           tableNum;
     protected Integer           action;
-    protected String            desc;
+    protected String            description;
     
     protected Set<SpAuditLogField> fields;
 
@@ -72,7 +72,8 @@ public class SpAuditLog extends DataModelObjBase implements java.io.Serializable
         spAuditLogId    = null;
         tableNum        = null;
         action          = null;
-        desc            = null;
+        description     = null;
+        
         fields          = new HashSet<SpAuditLogField>();
     }
     // End Initializer
@@ -150,18 +151,18 @@ public class SpAuditLog extends DataModelObjBase implements java.io.Serializable
     /**
      * @return the desc
      */
-    @Column(name = "Desc", unique = false, nullable = false, insertable = true, updatable = true, length = 64)
-    public String getDesc()
+    @Column(name = "Description", unique = false, nullable = false, insertable = true, updatable = true, length = 64)
+    public String getDescription()
     {
-        return desc;
+        return description;
     }
     
     /**
      * @param desc the desc to set
      */
-    public void setDesc(String desc)
+    public void setDescription(String desc)
     {
-        this.desc = desc;
+        this.description = desc;
     }
 
     /**
