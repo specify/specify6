@@ -25,6 +25,7 @@ import static edu.ku.brc.ui.UIRegistry.showError;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -35,12 +36,19 @@ import java.util.Vector;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
-import edu.ku.brc.specify.conversion.ConversionLogger.TableWriter;
+import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.datamodel.Agent;
+import edu.ku.brc.specify.datamodel.CollectingEvent;
+import edu.ku.brc.specify.datamodel.Collector;
+import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.datamodel.Division;
+import edu.ku.brc.util.Pair;
 
 /**
  * @author rods
@@ -63,8 +71,12 @@ public class AgentConverter
     protected GenericDBConversion                           conv;
     
     protected Statement                                     gStmt;
-
+    protected Statement                                     updateStmtNewDB;
     
+    protected Hashtable<Integer, AgentInfo>                 agentHash = new Hashtable<Integer, AgentInfo>();
+
+    protected ConversionLogger.TableWriter                  tblWriter;
+
     /**
      * @param conv
      * @param idMapperMgr
@@ -82,6 +94,9 @@ public class AgentConverter
         this.newDBConn   = conv.getNewDBConn();
         
         this.gStmt       = newDBConn.createStatement();
+        this.updateStmtNewDB = newDBConn.createStatement();
+        
+        tblWriter = conv.getConvLogger().getWriter("AgentConv.html", "Agents");
     }
 
 
@@ -120,6 +135,8 @@ public class AgentConverter
             log.info("Mapping Address Ids");
             addrIDMapper.mapAllIds("select AddressID from address order by AddressID");
         }
+        
+        //createCollectorsTable();
 
         // Just like in the conversion of the CollectionObjects we
         // need to build up our own select clause because the MetaData of columns names returned
@@ -173,7 +190,6 @@ public class AgentConverter
                                     "address.AgentID" };
 
         Hashtable<Integer, AddressInfo> addressHash = new Hashtable<Integer, AddressInfo>();
-        Hashtable<Integer, AgentInfo> agentHash = new Hashtable<Integer, AgentInfo>();
 
         // Create a Hashtable to track which IDs have been handled during the conversion process
         try
@@ -210,7 +226,7 @@ public class AgentConverter
             log.info("Hashing Agent Ids");
             stmtX    = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             agentCnt = BasicSQLUtils.getCount(oldDBConn, "select count(*) from agent order by AgentID");
-            rsX      = stmtX.executeQuery("select AgentID from agent order by AgentID");
+            rsX      = stmtX.executeQuery("select AgentID, AgentType, LastName, Name from agent order by AgentID");
 
             conv.setProcess(0, agentCnt);
             
@@ -218,7 +234,7 @@ public class AgentConverter
             while (rsX.next())
             {
                 int agentId = rsX.getInt(1);
-                agentHash.put(agentId, new AgentInfo(agentId, agentIDMapper.get(agentId)));
+                agentHash.put(agentId, new AgentInfo(agentId, agentIDMapper.get(agentId), rsX.getByte(2), rsX.getString(3), rsX.getString(4)));
                 if (cnt % 100 == 0)
                 {
                     conv.setProcess(0, cnt);
@@ -349,10 +365,10 @@ public class AgentConverter
             int lastEditInx  = indexFromNameMap.get("agent.LastEditedBy");
             int nameInx      = indexFromNameMap.get("agent.Name");
             int lastNameInx  = indexFromNameMap.get("agent.LastName");
-
-            // int newAddrId = -1;
-            // int newAgentId = -1;
-
+            int firstNameInx = indexFromNameMap.get("agent.FirstName");
+            
+            Pair<String, String> namePair = new Pair<String, String>();
+            
             int recordCnt = 0;
             while (rs.next())
             {
@@ -364,6 +380,11 @@ public class AgentConverter
 
                 AddressInfo addrInfo  = addressHash.get(addrId);
                 AgentInfo   agentInfo = agentHash.get(agentId);
+
+                // Deal with Agent FirstName, LastName and Name
+                int    srcColInx = agentType != 1 ? nameInx : lastNameInx;
+                namePair.second  = rs.getString(srcColInx);
+                namePair.first   = rs.getString(firstNameInx);
 
                 // Now tell the AgentAddress Mapper the New ID to the Old AgentAddressID
                 if (shouldCreateMapTables)
@@ -423,11 +444,11 @@ public class AgentConverter
 
                         } else if (agentColumns[i].equals("agent.LastName") || agentColumns[i].equals("LastName"))
                         {
-                            if (debugAgents)log.info("Adding: "+agentColumns[i]);
-                            
-                            int    srcColInx = agentType != 1 ? nameInx : lastNameInx;
-                            String lName     = BasicSQLUtils.getStrValue(rs.getObject(srcColInx));
-                            sqlStr.append(lName);
+                            sqlStr.append(BasicSQLUtils.getStrValue(namePair.second));
+
+                        } else if (agentColumns[i].equals("agent.FirstName") || agentColumns[i].equals("FirstName"))
+                        {
+                            sqlStr.append(BasicSQLUtils.getStrValue(namePair.first));
 
                         } else
                         {
@@ -587,7 +608,7 @@ public class AgentConverter
 
                 for (Integer newAddrId : addrInfo.getNewIdsToDuplicate())
                 {
-                    conv.duplicateAddress(newDBConn, addrInfo.getNewAddrId(), newAddrId);
+                    duplicateAddress(newDBConn, addrInfo.getNewAddrId(), newAddrId);
                 }
             }
 
@@ -767,7 +788,6 @@ public class AgentConverter
             rs.close();
             stmt.close();
             
-            ConversionLogger.TableWriter  tblWriter = conv.getConvLogger().getWriter("AgentConv.html", "Agents");
 
             conv.setProcess(0, BasicSQLUtils.getNumRecords(oldDBConn, "agent"));
             conv.setDesc("Adding Agents");
@@ -782,7 +802,7 @@ public class AgentConverter
                 AgentInfo agentInfo = agentHash.get(agentId);
                 if (agentInfo == null || !agentInfo.wasAdded())
                 {
-                    copyAgentFromOldToNew(agentId, agentIDMapper, tblWriter);
+                    copyAgentFromOldToNew(agentId, agentIDMapper);
                 }
                 recordCnt++;
                 if (recordCnt % 50 == 0)
@@ -810,7 +830,7 @@ public class AgentConverter
                     Integer isThere = BasicSQLUtils.getCount(newDBConn, "SELECT COUNT(*) FROM agent WHERE AgentID = "+ newId);
                     if (isThere == null || isThere == 0)
                     {
-                        copyAgentFromOldToNew(agentId, agentIDMapper, tblWriter);
+                        copyAgentFromOldToNew(agentId, agentIDMapper);
                     }
                 } else
                 {
@@ -823,6 +843,9 @@ public class AgentConverter
                 }
             }
             conv.setProcess(recordCnt);
+            
+            fixAgentsLFirstLastName();
+            
             BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer(newDBConn, "agent", BasicSQLUtils.myDestinationServerType);
             /*
              * if (oldAddrIds.size() > 0) { //log.info("Address Record IDs not used by
@@ -880,13 +903,94 @@ public class AgentConverter
     
 
     /**
+     * @param newDBConnArg
+     * @param oldId
+     * @param newId
+     */
+    protected void duplicateAddress(final Connection newDBConnArg,
+                                    final Integer oldId,
+                                    final Integer newId)
+    {
+        log.info("Duplicating [" + oldId + "] to [" + newId + "]");
+
+        List<String> agentAddrFieldNames = new ArrayList<String>();
+        getFieldNamesFromSchema(newDBConnArg, "address", agentAddrFieldNames,
+                BasicSQLUtils.myDestinationServerType);
+        String fieldList = buildSelectFieldList(agentAddrFieldNames, "address");
+        log.info(fieldList);
+
+        StringBuilder sqlStr = new StringBuilder();
+        sqlStr.append("SELECT ");
+        sqlStr.append(fieldList);
+        sqlStr.append(" from address where AddressID = " + oldId);
+
+        if (true)
+        {
+            log.info(sqlStr.toString());
+        }
+
+        try
+        {
+            Statement stmt = newDBConnArg.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            ResultSet rs = stmt.executeQuery(sqlStr.toString());
+
+            if (rs.last())
+            {
+                conv.setProcess(0, rs.getRow());
+                rs.first();
+            }
+
+            sqlStr.setLength(0);
+            sqlStr.append("INSERT INTO address ");
+            sqlStr.append("(" + fieldList + ")");
+            sqlStr.append(" VALUES (");
+
+            ResultSetMetaData metaData = rs.getMetaData();
+            int cols = metaData.getColumnCount();
+            for (int i = 1; i <= cols; i++)
+            {
+                if (i == 1)
+                {
+                    sqlStr.append(newId);
+
+                } else
+                {
+                    sqlStr.append(",");
+                    sqlStr.append(BasicSQLUtils.getStrValue(rs.getObject(i)));
+                }
+            }
+            sqlStr.append(") ");
+
+            rs.close();
+            stmt.close();
+
+            Statement updateStatement = newDBConnArg.createStatement();
+            BasicSQLUtils.removeForeignKeyConstraints(newDBConn,
+                    BasicSQLUtils.myDestinationServerType);
+            // updateStatement.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
+            if (true)
+            {
+                log.info(sqlStr.toString());
+            }
+            updateStatement.executeUpdate(sqlStr.toString());
+            updateStatement.clearBatch();
+            updateStatement.close();
+            updateStatement = null;
+
+        } catch (Exception ex)
+        {
+            throw new RuntimeException(ex);
+        }
+
+    }
+ 
+    /**
      * @param oldAgentId
      * @param agentIDMapper
      * @param tblWriter
      */
     protected void copyAgentFromOldToNew(final Integer oldAgentId, 
-                                         final IdTableMapper agentIDMapper,
-                                         final TableWriter tblWriter)
+                                         final IdTableMapper agentIDMapper)
     {
         boolean doDebug = false;
         
@@ -1160,15 +1264,33 @@ public class AgentConverter
             Integer numAgents    = BasicSQLUtils.getCount("SELECT COUNT(*) FROM agent WHERE AgentType = " + Agent.PERSON);
             Integer numBadAgents = BasicSQLUtils.getCount("SELECT COUNT(*) FROM agent WHERE FirstName is NULL AND LastName IS NOT NULL AND NOT (LastName LIKE '%&%') AND AgentType = " + Agent.PERSON);
             
-            if (numBadAgents / numAgents > 0.25)
+            double percent = ((double)numBadAgents / (double)numAgents);
+            if (percent > 0.25)
             {
-                log.info("Bad Agents > 25%");
+                log.info("Bad Agents > 25% => " + percent);
             }
             
-            StringBuilder sb = new StringBuilder();
-            String sql = "SELECT AgentID, LastName FROM agent WHERE FirstName is NULL AND LastName IS NOT NULL AND NOT (LastName LIKE '%&%') AND AgentType = " + Agent.PERSON;
+            tblWriter.log("<H3>Person Names not Fixed</H3>");
+            tblWriter.startTable();
+            tblWriter.log("New Agent ID", "Old Last Name", null);
+            String sql = "SELECT AgentID, LastName FROM agent WHERE FirstName is NULL AND LastName IS NOT NULL AND (LastName LIKE '%&%') AND AgentType = " + Agent.PERSON;
             ResultSet rs = gStmt.executeQuery(sql);
-            if (rs.next())
+            while (rs.next())
+            {
+                Integer  id        = rs.getInt(1);
+                String   lastName  = rs.getString(2);
+                tblWriter.log(id.toString(), lastName, null);
+            }
+            rs.close();
+            tblWriter.endTable();
+            
+            tblWriter.log("<BR><h3>Person Names not Fixed</H3>");
+            tblWriter.startTable();
+            tblWriter.log("Old Last Name", "New First Name", "New Last Name");
+            StringBuilder sb = new StringBuilder();
+            sql = "SELECT AgentID, LastName FROM agent WHERE FirstName is NULL AND LastName IS NOT NULL AND NOT (LastName LIKE '%&%') AND AgentType = " + Agent.PERSON;
+            rs  = gStmt.executeQuery(sql);
+            while (rs.next())
             {
                 int      id        = rs.getInt(1);
                 String   lastName  = rs.getString(2);
@@ -1181,11 +1303,13 @@ public class AgentConverter
                     for (int i=1;i<toks.length;i++)
                     {
                         sb.append(toks[i]);
-                        sb.append(' ');
+                        if (i < toks.length-1) sb.append(' ');
                     }
                     
-                    sql = "UPDATE agent SET FirstName='" + firstName + ", LastName='" + sb.toString() + "' WHERE AgentID = " + id;
-                    gStmt.executeUpdate(sql);
+                    tblWriter.log(lastName, firstName, sb.toString());
+                    sql = "UPDATE agent SET FirstName='" + firstName + "', LastName='" + sb.toString() + "' WHERE AgentID = " + id;
+                    log.debug(sql);
+                    updateStmtNewDB.executeUpdate(sql);
                 }
                 
             }
@@ -1196,7 +1320,192 @@ public class AgentConverter
             log.error(ex);
             ex.printStackTrace();
         }
- 
+        tblWriter.endTable();
+    }
+    
+    /**
+     * @param agentInfo
+     * @param namePair
+     */
+    @SuppressWarnings("unchecked")
+    protected void fixupForCollectors(final Division    divisionArg,
+                                      final Discipline  disciplineArg)
+    {
+        Session     session = HibernateUtil.getNewSession();
+        Transaction trans   = null;
+        try
+        {
+            Division   division       = (Division)session.createQuery("FROM Division WHERE id = " + divisionArg.getId()).list().iterator().next();
+            Discipline discipline     = (Discipline)session.createQuery("FROM Discipline WHERE id = " + disciplineArg.getId()).list().iterator().next();
+            Agent      createdByAgent = (Agent)session.createQuery("FROM Agent WHERE id = " + conv.getCreatorAgentId(null)).list().iterator().next();
+            
+            tblWriter.log("<H3>Splitting Mutliple Collectors names into Multiple Agents</H3>");
+            tblWriter.startTable();
+            tblWriter.log("New Agent ID", "Old Last Name", null);
+            
+            Vector<Agent> agentToDelete = new Vector<Agent>();
+            
+            conv.setProcess(0, agentHash.values().size());
+            int cnt = 0;
+            
+            for (AgentInfo agentInfo : agentHash.values())
+            {
+                String text = agentInfo.getAgentType() != Agent.PERSON ? agentInfo.getName() : agentInfo.getLastName();
+                
+                if (StringUtils.contains(text, ","))
+                {
+                    String    sql = "SELECT c.CollectorID, c.CollectingEventID FROM collector c INNER JOIN agent ON c.AgentID = agent.AgentID WHERE agent.AgentID = " + agentInfo.getNewAgentId();
+                    ResultSet rs  = gStmt.executeQuery(sql);
+                    if (rs.next())
+                    {
+                        int      highestOrder = 0;
+                        Integer  colID        = rs.getInt(1);
+                        Integer  ceId         = rs.getInt(2);
+                        
+                        sql = "SELECT ce.CollectingEventID, c.CollectorID, c.OrderNumber, c.IsPrimary FROM collector c INNER JOIN collectingevent ce ON c.CollectingEventID = ce.CollectingEventID " + 
+                              "WHERE c.CollectorID = " + colID + " ORDER BY c.OrderNumber DESC";
+                        ResultSet rs2 = gStmt.executeQuery(sql);
+                        if (rs2.next())
+                        {
+                            highestOrder = rs2.getInt(3);
+                        }
+                        rs.close();
+                        
+                        CollectingEvent ce        = (CollectingEvent)session.createQuery("FROM CollectingEvent WHERE id = " + ceId).list().get(0);
+                        Agent           origAgent = (Agent)session.createQuery("FROM Agent WHERE id = " + agentInfo.getNewAgentId()).list().get(0);
+                        
+                        // Now process the multiple Collectors
+                        String[] names = StringUtils.split(text, ",");
+                        for (int i=0;i<names.length;i++)
+                        {
+                            String[] nameStrs = StringUtils.split(names[i], " ");
+                            if (nameStrs.length > 1)
+                            {
+                                String firstName = nameStrs[0];
+                                String lastName  = names[i].substring(nameStrs[0].length()+1);
+                                
+                                List<Agent> agts          = (List<Agent>)session.createQuery("FROM Agent WHERE firstName = '"+ (firstName != null ? firstName : "") + "' AND lastName = '" + (lastName != null ? lastName : "") + "'").list();
+                                Agent       existingAgent = agts != null && agts.size() > 0 ? agts.get(0) : null;
+                                
+                                trans = session.beginTransaction();
+                                if (i == 0)
+                                {
+                                    if (existingAgent != null)
+                                    {
+                                        Collector collector = (Collector)session.createQuery("FROM Collector WHERE id = " + colID).list().get(0);
+                                        collector.setAgent(existingAgent);
+                                        existingAgent.getCollectors().add(collector);
+                                        
+                                        origAgent.getCollectors().clear();
+                                        origAgent.getDisciplines().clear();
+                                        
+                                        for (Agent a : new ArrayList<Agent>(discipline.getAgents()))
+                                        {
+                                            if (a.getId().equals(origAgent.getId()))
+                                            {
+                                                discipline.getAgents().remove(a);
+                                                break;
+                                            }
+                                        }
+                                        for (Agent a : new ArrayList<Agent>(division.getMembers()))
+                                        {
+                                            if (a.getId().equals(origAgent.getId()))
+                                            {
+                                                division.getMembers().remove(a);
+                                                break;
+                                            }
+                                        }
+                                        origAgent.setDivision(null);
+                                        origAgent.setCreatedByAgent(null);
+                                        origAgent.setModifiedByAgent(null);
+                                        
+                                        //session.delete(origAgent);
+                                        
+                                        agentToDelete.add(origAgent);
+                                        
+                                        session.saveOrUpdate(existingAgent);
+                                        session.saveOrUpdate(collector);
+                                        session.saveOrUpdate(division);
+                                        session.saveOrUpdate(discipline);
+                                        
+                                    } else
+                                    {
+                                        origAgent.setFirstName(firstName);
+                                        origAgent.setLastName(lastName);
+                                        origAgent.setAgentType(Agent.PERSON);
+                                        
+                                        session.saveOrUpdate(origAgent);
+                                    }
+                                    
+                                } else
+                                {
+                                    highestOrder++;
+                                    
+                                    Agent agent;
+                                    if (existingAgent == null)
+                                    {
+                                        agent = new Agent();
+                                        agent.initialize();     
+                                        agent.setAgentType(Agent.PERSON);
+                                        agent.setCreatedByAgent(createdByAgent);
+                                        agent.setDivision(division);
+                                        agent.setFirstName(nameStrs[0]);
+                                        agent.setLastName(names[i].substring(nameStrs[0].length()+1));
+                                        division.getMembers().add(agent);
+                                        agent.getDisciplines().add(discipline);
+                                        discipline.getAgents().add(agent);
+                                        
+                                    } else
+                                    {
+                                        agent = existingAgent;
+                                    }
+                                    
+                                    Collector collector = new Collector();
+                                    collector.initialize();
+                                    collector.setCreatedByAgent(createdByAgent);
+                                    collector.setOrderNumber(highestOrder);
+                                    
+                                    ce.getCollectors().add(collector);
+                                    collector.setCollectingEvent(ce);
+                                    collector.setAgent(agent);
+                                    agent.getCollectors().add(collector);
+                                    collector.setIsPrimary(false);
+                                    
+                                    session.saveOrUpdate(agent);
+                                    session.saveOrUpdate(collector);
+                                    session.saveOrUpdate(division);
+                                    session.saveOrUpdate(discipline);
+                                    
+                                }
+                                trans.commit();
+                            }
+                        }
+                    }
+                    rs.close();
+                }
+                conv.setProcess(++cnt);
+            }
+            
+            trans = session.beginTransaction();
+            for (Agent agt : agentToDelete)
+            {
+                session.delete(agt);
+            }
+            trans.commit();
+            
+        } catch (Exception ex)
+        {
+            try
+            {
+                if (trans != null) trans.rollback();
+            } catch (Exception ex1) {}
+            ex.printStackTrace();
+            log.error(ex);
+            
+        } finally
+        {
+            session.close();
+        }
     }
     
 
@@ -1207,7 +1516,7 @@ public class AgentConverter
     {
         Integer                     oldAddrId;
         Integer                     newAddrId;
-        Hashtable<Integer, Boolean> agentHash         = new Hashtable<Integer, Boolean>();
+        Hashtable<Integer, Boolean> agtHash           = new Hashtable<Integer, Boolean>();
         Vector<Integer>             newIdsToDuplicate = new Vector<Integer>();
         boolean                     isUsed            = false;
         boolean                     wasAdded          = false;
@@ -1216,7 +1525,7 @@ public class AgentConverter
         {
             this.oldAddrId = oldAddrId;
             this.newAddrId = newAddrId;
-            agentHash.put(agentId, true);
+            agtHash.put(agentId, true);
         }
 
         public AddressInfo(final Integer oldAddrId, final Integer newAddrId)
@@ -1227,7 +1536,7 @@ public class AgentConverter
 
         public Hashtable<Integer, Boolean> getAgentHash()
         {
-            return agentHash;
+            return agtHash;
         }
 
         public Integer getNewAddrId()
@@ -1252,9 +1561,9 @@ public class AgentConverter
 
         public Integer addAgent(Integer agentId)
         {
-            agentHash.put(agentId, true);
+            agtHash.put(agentId, true);
 
-            if (agentHash.size() > 1)
+            if (agtHash.size() > 1)
             {
                 newIdsToDuplicate.add(nextAddressId);
                 nextAddressId++;
@@ -1286,23 +1595,25 @@ public class AgentConverter
     {
         Integer                     oldAgentId;
         Integer                     newAgentId;
+        Byte                        agentType;
         Hashtable<Integer, Boolean> addrs    = new Hashtable<Integer, Boolean>();
         boolean                     isUsed   = false;
         boolean                     wasAdded = false;
+        String                      lastName;
+        String                      name;
 
-        public AgentInfo(Integer oldAgentId, Integer newAgentId, Integer addrId)
+        public AgentInfo(Integer oldAgentId, 
+                         Integer newAgentId,
+                         byte    agentType,
+                         String  lastName,
+                         String  name)
         {
             super();
             this.oldAgentId = oldAgentId;
             this.newAgentId = newAgentId;
-            addrs.put(addrId, true);
-        }
-
-        public AgentInfo(Integer oldAgentId, Integer newAgentId)
-        {
-            super();
-            this.oldAgentId = oldAgentId;
-            this.newAgentId = newAgentId;
+            this.agentType  = agentType;
+            this.lastName   = lastName;
+            this.name       = name;
         }
 
         public Hashtable<Integer, Boolean> getAddrs()
@@ -1339,5 +1650,30 @@ public class AgentConverter
         {
             this.wasAdded = wasAddedArg;
         }
+
+        /**
+         * @return the agentType
+         */
+        public Byte getAgentType()
+        {
+            return agentType;
+        }
+
+        /**
+         * @return the lastName
+         */
+        public String getLastName()
+        {
+            return lastName;
+        }
+
+        /**
+         * @return the name
+         */
+        public String getName()
+        {
+            return name;
+        }
+        
     }
 }

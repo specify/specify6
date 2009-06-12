@@ -21,8 +21,6 @@ package edu.ku.brc.specify.conversion;
 
 import static edu.ku.brc.specify.config.init.DataBuilder.createAdminGroupAndUser;
 import static edu.ku.brc.specify.config.init.DataBuilder.createAgent;
-import static edu.ku.brc.specify.config.init.DataBuilder.createLithoStratTreeDef;
-import static edu.ku.brc.specify.config.init.DataBuilder.createLithoStratTreeDefItem;
 import static edu.ku.brc.specify.config.init.DataBuilder.createStandardGroups;
 import static edu.ku.brc.specify.config.init.DataBuilder.getSession;
 import static edu.ku.brc.specify.config.init.DataBuilder.setSession;
@@ -92,6 +90,8 @@ import edu.ku.brc.dbsupport.ResultsPager;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.SpecifyUserTypes;
+import edu.ku.brc.specify.conversion.AgentConverter.AgentInfo;
+import edu.ku.brc.specify.conversion.ConversionLogger.TableWriter;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
@@ -100,9 +100,6 @@ import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
 import edu.ku.brc.specify.datamodel.Institution;
-import edu.ku.brc.specify.datamodel.LithoStrat;
-import edu.ku.brc.specify.datamodel.LithoStratTreeDef;
-import edu.ku.brc.specify.datamodel.LithoStratTreeDefItem;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
@@ -518,7 +515,7 @@ public class SpecifyDBConverter
 
         AppContextMgr.getInstance().clear();
         
-        boolean doAll               = true; 
+        boolean doAll               = false; 
         boolean startfromScratch    = true; 
         boolean deleteMappingTables = false;
         
@@ -786,15 +783,17 @@ public class SpecifyDBConverter
                 frame.setDesc("Converting Agents.");
                 log.info("Converting Agents.");
                 
+                AgentConverter agentConverter = new AgentConverter(conversion, idMapperMgr, startfromScratch);
+
+                
                 // This MUST be done before any of the table copies because it
                 // creates the IdMappers for Agent, Address and more importantly AgentAddress
                 // NOTE: AgentAddress is actually mapping from the old AgentAddress table to the new Agent table
-                boolean copyAgentAddressTables = false;
+                boolean copyAgentAddressTables = true;
                 if (copyAgentAddressTables || doAll)
                 {
                     log.info("Calling - convertAgents");
                     
-                    AgentConverter agentConverter = new AgentConverter(conversion, idMapperMgr, startfromScratch);
                     agentConverter.convertAgents();
                     
                 } else
@@ -825,7 +824,7 @@ public class SpecifyDBConverter
                 log.info("Converting Geologic Time Period.");
                 // GTP needs to be converted here so the stratigraphy conversion can use
                 // the IDs
-                boolean doGTP = false;
+                boolean doGTP = true;
                 if (doGTP || doAll )
                 {
                     GeologicTimePeriodTreeDef treeDef = conversion.convertGTPDefAndItems();
@@ -855,7 +854,7 @@ public class SpecifyDBConverter
                 
                 frame.setDesc("Copying Tables");
                 log.info("Copying Tables");
-                boolean copyTables = false;
+                boolean copyTables = true;
                 if (copyTables || doAll)
                 {
                     boolean doBrief  = false;
@@ -876,7 +875,7 @@ public class SpecifyDBConverter
 
                 frame.setDesc("Converting CollectionObjects");
                 log.info("Converting CollectionObjects");
-                boolean doCollectionObjects = true;
+                boolean doCollectionObjects = false;
                 if (doCollectionObjects || doAll)
                 {
                     if (true)
@@ -955,7 +954,7 @@ public class SpecifyDBConverter
                 
                 frame.setDesc("Converting Geography");
                 log.info("Converting Geography");
-                boolean doGeography = false;
+                boolean doGeography = true;
                 if (!dbNameDest.startsWith("accessions") && (doGeography || doAll))
                 {
                     GeographyTreeDef treeDef = conversion.createStandardGeographyDefinitionAndItems();
@@ -972,7 +971,7 @@ public class SpecifyDBConverter
  
                 frame.setDesc("Converting Taxonomy");
                 log.info("Converting Taxonomy");
-                boolean doTaxonomy = false;
+                boolean doTaxonomy = true;
                 if (doTaxonomy || doAll )
                 {
                 	 ConversionLogger.TableWriter tblWriter = convLogger.getWriter("FullTaxon.html", "Taxon Conversion");
@@ -1107,6 +1106,8 @@ public class SpecifyDBConverter
                     AppContextMgr.getInstance().setClassObject(Division.class, division);
                     AppContextMgr.getInstance().setClassObject(Institution.class, institution);
                     
+                    agentConverter.fixupForCollectors(division, dscp);
+                    
                     setSession(localSession);
                     
                     if (true)
@@ -1135,15 +1136,16 @@ public class SpecifyDBConverter
                             localSession = HibernateUtil.getNewSession();
                             
                             specifyUser = (SpecifyUser)localSession.merge(specifyUser);
-                            division    = (Division)localSession.merge(division);
-                            institution = (Institution)localSession.merge(institution);
-                            collection  = (Collection)localSession.merge(collection);
+                            
+                            division       = (Division)localSession.createQuery("FROM Division WHERE id = " + division.getId()).list().iterator().next();
+                            institution    = (Institution)localSession.createQuery("FROM Institution WHERE id = " + institution.getId()).list().iterator().next();
+                            collection     = (Collection)localSession.createQuery("FROM Collection WHERE id = " + collection.getId()).list().iterator().next();
                             
                             AppContextMgr.getInstance().setClassObject(Collection.class, collection);
                             AppContextMgr.getInstance().setClassObject(Division.class,   division);
                             AppContextMgr.getInstance().setClassObject(Institution.class, institution);
                             
-                            dscp = (Discipline)localSession.merge(dscp);
+                            dscp = (Discipline)localSession.createQuery("FROM Discipline WHERE id = " + dscp.getId()).list().iterator().next();
                             dscp.getAgents();
                             AppContextMgr.getInstance().setClassObject(Discipline.class, dscp);
                             
