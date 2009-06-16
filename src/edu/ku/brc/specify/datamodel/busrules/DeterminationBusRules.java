@@ -329,18 +329,6 @@ public class DeterminationBusRules extends BaseBusRules
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#addChildrenToNewDataObjects(java.lang.Object)
-     */
-    @Override
-    public void addChildrenToNewDataObjects(final Object newDataObj)
-    {
-        super.addChildrenToNewDataObjects(newDataObj);
-
-    }
-
-    
-
-    /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.BaseBusRules#beforeSaveCommit(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
      */
     @Override

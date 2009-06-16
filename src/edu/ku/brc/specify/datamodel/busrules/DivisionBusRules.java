@@ -94,16 +94,6 @@ public class DivisionBusRules extends BaseBusRules implements CommandListener
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.af.ui.forms.BaseBusRules#addChildrenToNewDataObjects(java.lang.Object)
-     */
-    @Override
-    public void addChildrenToNewDataObjects(Object newDataObj)
-    {
-        super.addChildrenToNewDataObjects(newDataObj);
-        
-    }
-
-    /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.BaseBusRules#initialize(edu.ku.brc.af.ui.forms.Viewable)
      */
     @Override

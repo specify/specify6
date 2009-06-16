@@ -949,7 +949,8 @@ public class FormViewObj implements Viewable,
             
             fieldInfo.setFieldInfo(fi);
                     
-            //log.debug(fieldName);
+            log.debug("-------------------------------");
+            log.debug(fieldName);
 
             // Start by assuming it is OK to be added
             boolean isOK = true;
@@ -998,7 +999,7 @@ public class FormViewObj implements Viewable,
                     }
                 }
                 
-                log.error("Couldn't find field ["+fieldName+"] in ["+ti.getTitle()+"]");
+                log.debug("Field ["+fieldName+"] in ["+ti.getTitle()+"]");
                 
                 // Now we go get the DBFieldInfo and DBRelationshipInfo and check to make
                 // that the field or Relationship is still a candidate for CF
@@ -1071,6 +1072,9 @@ public class FormViewObj implements Viewable,
                         fieldInfo.setLabel(label);
                         itemLabels.add(fieldInfo);
                         fieldInfo.setFieldInfo(infoBase);
+                    } else
+                    {
+                        log.error("Field NOT OK ["+fieldName+"] in ["+ti.getTitle()+"]");
                     }
                 }
             }
@@ -1892,16 +1896,20 @@ public class FormViewObj implements Viewable,
             
         } else
         {
-            boolean shouldDoCarryForward = doCarryForward && carryFwdDataObj != null && carryFwdInfo != null;
+            // 06/16/09 - rods - no longer need to override the children objects. Let them be created anyway and then set overtop of them
+            // this is because we don't know no in the business rules which ones should be created or not
+            // from the CarryForward info
+            
+            //boolean shouldDoCarryForward = doCarryForward && carryFwdDataObj != null && carryFwdInfo != null;
             
             //log.info("createNewDataObject "+hashCode() + " Session ["+(session != null ? session.hashCode() : "null")+"] ");
             FormDataObjIFace obj;
             if (classToCreate != null)
             {
-                obj = FormHelper.createAndNewDataObj(classToCreate, !shouldDoCarryForward);
+                obj = FormHelper.createAndNewDataObj(classToCreate, null);//!shouldDoCarryForward);
             } else
             {
-                obj = FormHelper.createAndNewDataObj(view.getClassName(), !shouldDoCarryForward);
+                obj = FormHelper.createAndNewDataObj(view.getClassName(), null);//!shouldDoCarryForward);
             }
             
             setNewObject(obj);

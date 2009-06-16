@@ -321,10 +321,11 @@ public class BuildSampleDatabase
     protected StorageTreeDef      stgTreeDef = null;
     protected int                 createStep = 0;
     protected Transaction         trans      = null;
-    protected static SimpleDateFormat                       dateTimeFormatter      = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-    protected static SimpleDateFormat                       dateFormatter          = new SimpleDateFormat("yyyy-MM-dd");
+    
     protected static Timestamp                              now                    = new Timestamp(System .currentTimeMillis());
-    protected static String                                 nowStr                 = "'" + dateTimeFormatter.format(now) + "'";
+    protected static SimpleDateFormat                       dateTimeFormatter;
+    protected static SimpleDateFormat                       dateFormatter;
+    protected static String                                 nowStr;
     
     protected LinkedList<Pair<String, Integer>> recycler = new LinkedList<Pair<String, Integer>>();
     protected StringBuilder gSQLStr = new StringBuilder();
@@ -335,6 +336,9 @@ public class BuildSampleDatabase
      */
     public BuildSampleDatabase()
     {
+        dateTimeFormatter  = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        dateFormatter      = new SimpleDateFormat("yyyy-MM-dd");
+        nowStr              = "'" + dateTimeFormatter.format(now) + "'";
     }
     
     public Session getSession()
