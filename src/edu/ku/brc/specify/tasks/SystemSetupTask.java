@@ -302,7 +302,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                     startEditor(edu.ku.brc.specify.datamodel.PickList.class, "name", nameStr, name, "PickList");
                 }
             });
-        } else
+        } /*else
         {
             roc = (RolloverCommand)makeDnDNavBtn(navBox, nameStr, "PickList", null, 
                 new CommandAction(SYSTEMSETUPTASK, DELETE_CMD_ACT, pickList.getPickListId()), 
@@ -327,7 +327,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             {
                 navBox.add((NavBoxItemIFace)roc);
             }
-        }
+        }*/
     }
     
     /**

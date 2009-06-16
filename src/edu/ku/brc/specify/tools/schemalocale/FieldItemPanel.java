@@ -498,7 +498,9 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
                         for (PickList pl : list)
                         {
                             plCbxModel.addElement(pl);
-                            if (inx == -1 && selectedItem != null && selectedItem.getId().equals(pl.getId()))
+                            if (inx == -1 && selectedItem != null && 
+                                    ((selectedItem.getId() != null && pl.getId() != null && selectedItem.getId().equals(pl.getId())) ||
+                                     (selectedItem.getName() != null && pl.getName() != null && selectedItem.getName().equals(pl.getName()))))
                             {
                                 inx = i;
                             }
