@@ -27,6 +27,8 @@ import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Properties;
@@ -34,6 +36,7 @@ import java.util.Properties;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
@@ -486,7 +489,7 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
             DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByClassName(parent.getView().getClassName());
             if (tblInfo != null)
             {
-                DBFieldInfo fi = tblInfo.getFieldByName(dateFieldName);
+                final DBFieldInfo fi = tblInfo.getFieldByName(dateFieldName);
                 if (fi != null)
                 {
                     isRequired = fi.isRequired();
@@ -505,6 +508,24 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
                     {
                         lbl.setText(fi.getTitle()+":");
                         lbl.setFont(lbl.getFont().deriveFont(Font.BOLD));
+                    }
+                    
+                    if (lbl != null)
+                    {
+                        lbl.addMouseListener(new MouseAdapter() {
+                            @Override
+                            public void mouseClicked(MouseEvent e)
+                            {
+                                super.mouseClicked(e);
+                                if (e.getClickCount() == 2)
+                                {
+                                    JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow(),
+                                            "<html>"+fi.getDescription(), 
+                                            UIRegistry.getResourceString("FormViewObj.UNOTES"), 
+                                            JOptionPane.INFORMATION_MESSAGE);
+                                }
+                            }
+                        });
                     }
                 } else
                 {
