@@ -29,6 +29,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
@@ -49,6 +50,7 @@ import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.util.Pair;
+import edu.ku.brc.util.Triple;
 
 /**
  * @author rods
@@ -73,7 +75,9 @@ public class AgentConverter
     protected Statement                                     gStmt;
     protected Statement                                     updateStmtNewDB;
     
-    protected Hashtable<Integer, AgentInfo>                 agentHash = new Hashtable<Integer, AgentInfo>();
+    protected Hashtable<Integer, AgentInfo>                 agentHash  = new Hashtable<Integer, AgentInfo>();
+    protected Pair<String, String>                          namePair   = new Pair<String, String>();
+    protected Triple<String, String, String>                nameTriple = new Triple<String, String, String>();
 
     protected ConversionLogger.TableWriter                  tblWriter;
 
@@ -901,6 +905,41 @@ public class AgentConverter
         }
     }
     
+    /**
+     * @param name
+     * @param np
+     * @return
+     */
+    protected boolean parseName(final String name, final Triple<String, String, String> np)
+    {
+        np.first  = null;
+        np.second = null;
+        np.third  = null;
+        
+        String[] toks = StringUtils.split(name, ' ');
+        switch (toks.length)
+        {
+            case 1 : 
+                np.third = toks[0];
+                break;
+                
+            case 2 : 
+                np.first = toks[0];
+                np.third = toks[1];
+                break;
+                
+            case 3 : 
+                np.first  = toks[0];
+                np.second = toks[1];
+                np.third  = toks[2];
+                break;
+                
+            default:
+                return false;
+        }
+        return true;
+    }
+    
 
     /**
      * @param newDBConnArg
@@ -1270,23 +1309,23 @@ public class AgentConverter
                 log.info("Bad Agents > 25% => " + percent);
             }
             
-            tblWriter.log("<H3>Person Names not Fixed</H3>");
+            tblWriter.log("<H4>Person Names not Fixed</H4>");
             tblWriter.startTable();
-            tblWriter.log("New Agent ID", "Old Last Name", null);
+            tblWriter.logHdr("New Agent ID", "Old Last Name");
             String sql = "SELECT AgentID, LastName FROM agent WHERE FirstName is NULL AND LastName IS NOT NULL AND (LastName LIKE '%&%') AND AgentType = " + Agent.PERSON;
             ResultSet rs = gStmt.executeQuery(sql);
             while (rs.next())
             {
                 Integer  id        = rs.getInt(1);
                 String   lastName  = rs.getString(2);
-                tblWriter.log(id.toString(), lastName, null);
+                tblWriter.log(id.toString(), lastName);
             }
             rs.close();
             tblWriter.endTable();
             
-            tblWriter.log("<BR><h3>Person Names not Fixed</H3>");
+            tblWriter.log("<BR><H4>Person Names not Fixed</H4>");
             tblWriter.startTable();
-            tblWriter.log("Old Last Name", "New First Name", "New Last Name");
+            tblWriter.logHdr("Old Last Name", "New First Name", "New Last Name");
             StringBuilder sb = new StringBuilder();
             sql = "SELECT AgentID, LastName FROM agent WHERE FirstName is NULL AND LastName IS NOT NULL AND NOT (LastName LIKE '%&%') AND AgentType = " + Agent.PERSON;
             rs  = gStmt.executeQuery(sql);
@@ -1339,11 +1378,11 @@ public class AgentConverter
             Discipline discipline     = (Discipline)session.createQuery("FROM Discipline WHERE id = " + disciplineArg.getId()).list().iterator().next();
             Agent      createdByAgent = (Agent)session.createQuery("FROM Agent WHERE id = " + conv.getCreatorAgentId(null)).list().iterator().next();
             
-            tblWriter.log("<H3>Splitting Mutliple Collectors names into Multiple Agents</H3>");
+            tblWriter.log("<H4>Splitting Mutliple Collectors names into Multiple Agents</H4>");
             tblWriter.startTable();
-            tblWriter.log("New Agent ID", "Old Last Name", null);
+            tblWriter.logHdr("New Agent ID", "Old Last Name", "Description");
             
-            Vector<Agent> agentToDelete = new Vector<Agent>();
+            Vector<Integer> agentToDelete = new Vector<Integer>();
             
             conv.setProcess(0, agentHash.values().size());
             int cnt = 0;
@@ -1351,8 +1390,8 @@ public class AgentConverter
             for (AgentInfo agentInfo : agentHash.values())
             {
                 String text = agentInfo.getAgentType() != Agent.PERSON ? agentInfo.getName() : agentInfo.getLastName();
-                
-                if (StringUtils.contains(text, ","))
+
+                if ((StringUtils.contains(text, ",") || StringUtils.contains(text, ";")) && !StringUtils.contains(text, "'"))
                 {
                     String    sql = "SELECT c.CollectorID, c.CollectingEventID FROM collector c INNER JOIN agent ON c.AgentID = agent.AgentID WHERE agent.AgentID = " + agentInfo.getNewAgentId();
                     ResultSet rs  = gStmt.executeQuery(sql);
@@ -1361,6 +1400,8 @@ public class AgentConverter
                         int      highestOrder = 0;
                         Integer  colID        = rs.getInt(1);
                         Integer  ceId         = rs.getInt(2);
+                        
+                        tblWriter.log(ceId +" / " + colID +" / " + agentInfo.getNewAgentId().toString(), text, "&nbsp;");
                         
                         sql = "SELECT ce.CollectingEventID, c.CollectorID, c.OrderNumber, c.IsPrimary FROM collector c INNER JOIN collectingevent ce ON c.CollectingEventID = ce.CollectingEventID " + 
                               "WHERE c.CollectorID = " + colID + " ORDER BY c.OrderNumber DESC";
@@ -1375,16 +1416,18 @@ public class AgentConverter
                         Agent           origAgent = (Agent)session.createQuery("FROM Agent WHERE id = " + agentInfo.getNewAgentId()).list().get(0);
                         
                         // Now process the multiple Collectors
-                        String[] names = StringUtils.split(text, ",");
+                        String[] names = StringUtils.split(text, ",;");
                         for (int i=0;i<names.length;i++)
                         {
-                            String[] nameStrs = StringUtils.split(names[i], " ");
-                            if (nameStrs.length > 1)
+                            if (parseName(names[i], nameTriple))
                             {
-                                String firstName = nameStrs[0];
-                                String lastName  = names[i].substring(nameStrs[0].length()+1);
+                                String firstName = nameTriple.first;
+                                String middle    = nameTriple.second;
+                                String lastName  = nameTriple.third;
                                 
-                                List<Agent> agts          = (List<Agent>)session.createQuery("FROM Agent WHERE firstName = '"+ (firstName != null ? firstName : "") + "' AND lastName = '" + (lastName != null ? lastName : "") + "'").list();
+                                List<Agent> agts          = (List<Agent>)session.createQuery("FROM Agent WHERE firstName = " + (firstName != null ? "'" + firstName + "'" : "NULL") 
+                                                                         + " AND middleInitial = " + (middle != null ? "'"+middle+"'" : "NULL") 
+                                                                         + " AND lastName = " + (lastName != null ? "'" + lastName + "'" : "NULL")).list();
                                 Agent       existingAgent = agts != null && agts.size() > 0 ? agts.get(0) : null;
                                 
                                 trans = session.beginTransaction();
@@ -1396,7 +1439,7 @@ public class AgentConverter
                                         collector.setAgent(existingAgent);
                                         existingAgent.getCollectors().add(collector);
                                         
-                                        origAgent.getCollectors().clear();
+                                        /*origAgent.getCollectors().clear();
                                         origAgent.getDisciplines().clear();
                                         
                                         for (Agent a : new ArrayList<Agent>(discipline.getAgents()))
@@ -1419,9 +1462,11 @@ public class AgentConverter
                                         origAgent.setCreatedByAgent(null);
                                         origAgent.setModifiedByAgent(null);
                                         
-                                        //session.delete(origAgent);
+                                        //session.delete(origAgent);*/
                                         
-                                        agentToDelete.add(origAgent);
+                                        tblWriter.log(agentInfo.getNewAgentId().toString(), firstName+", "+lastName, "reusing collector,using existing agent");
+                                        
+                                        agentToDelete.add(origAgent.getId());
                                         
                                         session.saveOrUpdate(existingAgent);
                                         session.saveOrUpdate(collector);
@@ -1434,6 +1479,7 @@ public class AgentConverter
                                         origAgent.setLastName(lastName);
                                         origAgent.setAgentType(Agent.PERSON);
                                         
+                                        tblWriter.log(agentInfo.getNewAgentId().toString(), firstName+", "+lastName, "resetting agent names - reclaiming");
                                         session.saveOrUpdate(origAgent);
                                     }
                                     
@@ -1449,15 +1495,20 @@ public class AgentConverter
                                         agent.setAgentType(Agent.PERSON);
                                         agent.setCreatedByAgent(createdByAgent);
                                         agent.setDivision(division);
-                                        agent.setFirstName(nameStrs[0]);
-                                        agent.setLastName(names[i].substring(nameStrs[0].length()+1));
+                                        agent.setFirstName(nameTriple.first);
+                                        agent.setMiddleInitial(nameTriple.second);
+                                        agent.setLastName(nameTriple.third);
                                         division.getMembers().add(agent);
                                         agent.getDisciplines().add(discipline);
                                         discipline.getAgents().add(agent);
                                         
+                                        tblWriter.log(agentInfo.getNewAgentId().toString(), firstName+", "+lastName, "new agent, new collector");
+
+                                        
                                     } else
                                     {
                                         agent = existingAgent;
+                                        tblWriter.log(agentInfo.getNewAgentId().toString(), firstName+", "+lastName, "reusing, new collector");
                                     }
                                     
                                     Collector collector = new Collector();
@@ -1485,13 +1536,26 @@ public class AgentConverter
                 }
                 conv.setProcess(++cnt);
             }
+            tblWriter.endTable();
             
-            trans = session.beginTransaction();
-            for (Agent agt : agentToDelete)
+            Collections.sort(agentToDelete);
+            
+            tblWriter.log("<H4>Removing Original Agents</H4>");
+            tblWriter.startTable();
+            tblWriter.logHdr("New Agent ID", "LastName", "FirstName");
+            for (Integer id : agentToDelete)
             {
-                session.delete(agt);
+                System.out.println("Deleting Agent["+id+"]");
+                List<Object[]> rows = BasicSQLUtils.query("SELECT AgentID, LastName, MiddleInitial, FirstName FROM agent WHERE AgentID = " + id);
+                Object[] row = rows.get(0);
+                tblWriter.log(id.toString(), (row[1] == null ? "&nbsp;" : row[1].toString()) + (row[2] == null ? "" : " "+row[2].toString()), 
+                                             row[3] == null ? "&nbsp;" : row[3].toString());
+                
+                updateStmtNewDB.executeUpdate("DELETE FROM agent_discipline WHERE AgentID = " + id);
+                updateStmtNewDB.executeUpdate("DELETE FROM agent WHERE AgentID = " + id);
+                
             }
-            trans.commit();
+            tblWriter.endTable();
             
         } catch (Exception ex)
         {
@@ -1508,7 +1572,6 @@ public class AgentConverter
         }
     }
     
-
     //-------------------------------------------------------------------------
     //--
     //-------------------------------------------------------------------------

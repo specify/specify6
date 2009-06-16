@@ -37,10 +37,12 @@ import org.apache.commons.io.FilenameUtils;
  */
 public class ConversionLogger
 {
-    public static String TR ="<tr>";
-    public static String TR_ ="</tr>";
-    public static String TD ="<td>";
-    public static String TD_ ="</td>";
+    public static String TR ="<TR>";
+    public static String TR_ ="</TR>";
+    public static String TD ="<TD>";
+    public static String TD_ ="</TD>";
+    public static String TH ="<TH>";
+    public static String TH_ ="</TH>";
     
     protected Hashtable<String, String>      printWritersNameHash  = new Hashtable<String, String>();
     protected Hashtable<String, TableWriter> printWritersHash      = new Hashtable<String, TableWriter>();
@@ -100,7 +102,7 @@ public class ConversionLogger
             {
                 try
                 {
-                    indexWriter.log(null, "<a href=\""+ FilenameUtils.getName(tw.getFileName())+"\">"+tw.getTitle()+"</a>", null);
+                    indexWriter.log("<A href=\""+ FilenameUtils.getName(tw.getFileName())+"\">"+tw.getTitle()+"</A>");
                     
                     tw.close();
                     
@@ -132,10 +134,10 @@ public class ConversionLogger
             this.fName = fileName;
             this.title = title;
             
-            println("<html>\n<head>\n<title>"+title+"</title>\n");
+            println("<HTML>\n<HEAD>\n<TITLE>"+title+"</TITLE>\n");
             writeStyle(this);
-            println("</head>\n<body>");
-            println("<h2>"+title+"</h2>");
+            println("</HEAD>\n<BODY>");
+            println("<H2>"+title+"</H2>");
         }
         
         /**
@@ -143,15 +145,15 @@ public class ConversionLogger
          */
         protected void writeStyle(final PrintWriter out)
         {
-            out.println("<style>");
-            out.println(" span.err { color: red; }");
-            out.println(" table.o { border-top: solid 1px rgb(128, 128, 128); border-left: solid 1px rgb(128, 128, 128); }");
-            out.println(" table.o td { border-bottom: solid 1px rgb(128, 128, 128); border-right: solid 1px rgb(128, 128, 128); }");
-            out.println(" table.o th { border-bottom: solid 1px rgb(128, 128, 128); border-right: solid 1px rgb(128, 128, 128); }");
-            out.println(" table.i { border-top: solid 1px rgb(192, 192, 192); border-left: solid 1px rgb(192, 192, 192); }");
-            out.println(" table.i td { border-bottom: solid 1px rgb(192, 192, 192); border-right: solid 1px rgb(192, 192, 192); }");
-            out.println(" table.i th { border-bottom: solid 1px rgb(192, 192, 192); border-right: solid 1px rgb(192, 192, 192); }");
-            out.println("</style>");
+            out.println("<STYLE>");
+            out.println(" SPAN.err { color: red; }");
+            out.println(" TABLE.o { border-top: solid 1px rgb(128, 128, 128); border-left: solid 1px rgb(128, 128, 128); }");
+            out.println(" TABLE.o td { border-bottom: solid 1px rgb(128, 128, 128); border-right: solid 1px rgb(128, 128, 128); }");
+            out.println(" TABLE.o th { border-bottom: solid 1px rgb(128, 128, 128); border-right: solid 1px rgb(128, 128, 128); }");
+            out.println(" TABLE.i { border-top: solid 1px rgb(192, 192, 192); border-left: solid 1px rgb(192, 192, 192); }");
+            out.println(" TABLE.i td { border-bottom: solid 1px rgb(192, 192, 192); border-right: solid 1px rgb(192, 192, 192); }");
+            out.println(" TABLE.i th { border-bottom: solid 1px rgb(192, 192, 192); border-right: solid 1px rgb(192, 192, 192); }");
+            out.println("</STYLE>");
         }
         
         /**
@@ -178,41 +180,51 @@ public class ConversionLogger
         
         public void logError(final String msg)
         {
-            println("<span class=\"err\">");
+            println("<SPAN class=\"err\">");
             print(msg);
-            println("</span><BR>");
+            println("</SPAN><BR>");
             flush();
         }
         
         public void startTable()
         {
-            println("<table class=\"o\" cellspacing=\"0\">");
+            println("<TABLE class=\"o\" cellspacing=\"0\">");
             flush();
         }
         
         public void endTable()
         {
-            println("</table>");
+            println("</TABLE>");
             flush();
         }
         
-        public void log(final String id, final String value, final String desc)
+        public void log(final String...cols)
         {
             print(TR);
-            if (id != null)
+            for (String c : cols)
             {
-                print(TD);
-                print(id);
-                print(TD_);
+                if (c != null)
+                {
+                    print(TD);
+                    print(c);
+                    print(TD_);
+                }
             }
-            print(TD);
-            print(value);
-            print(TD_);
-            if (desc != null)
+            println(TR_);
+            flush();
+        }
+        
+        public void logHdr(final String...cols)
+        {
+            print(TR);
+            for (String c : cols)
             {
-                print(TD);
-                print(desc);
-                print(TD_);
+                if (c != null)
+                {
+                    print(TH);
+                    print(c);
+                    print(TH_);
+                }
             }
             println(TR_);
             flush();
@@ -223,9 +235,8 @@ public class ConversionLogger
          */
         public void close()
         {
-            println("</body></html>");
+            println("</BODY></HTML>");
             super.close();
-            
         }
     }
 }

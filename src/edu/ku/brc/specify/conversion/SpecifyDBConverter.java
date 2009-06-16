@@ -1347,7 +1347,7 @@ public class SpecifyDBConverter
             Integer count = BasicSQLUtils.getCount("select count(*) from "+ti.getName());
             if (count != null && count > 0)
             {
-                tblWriter.log(null, ti.getName(), count.toString());
+                tblWriter.log(ti.getName(), count.toString());
             }
         }
         tblWriter.endTable();
