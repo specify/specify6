@@ -46,6 +46,7 @@ import org.apache.log4j.Logger;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+import com.lowagie.text.Font;
 
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
@@ -104,6 +105,7 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
     
     protected UIValidatable[]         uivs        = new UIValidatable[3];
     protected JTextField[]            textFields  = new JTextField[3];
+
     protected JPanel[]                panels      = new JPanel[3];
     protected CardLayout              cardLayout  = new CardLayout();
     protected JPanel                  cardPanel;
@@ -449,7 +451,7 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
         
         dateFieldName = properties.getProperty("df");
         dateTypeName  = properties.getProperty("tp");
-        
+
         createUI();
     }
 
@@ -487,9 +489,22 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
                 DBFieldInfo fi = tblInfo.getFieldByName(dateFieldName);
                 if (fi != null)
                 {
+                    isRequired = fi.isRequired();
+                    if (uivs[0] instanceof ValFormattedTextFieldSingle)
+                    {
+                        ((ValFormattedTextFieldSingle)uivs[0]).setRequired(isRequired);
+                    } else
+                    {
+                        for (UIValidatable uiv : uivs)
+                        {
+                            ((ValFormattedTextField)uiv).setRequired(isRequired);
+                        }
+                    }
+                    
                     if (StringUtils.isNotEmpty(fi.getTitle()))
                     {
                         lbl.setText(fi.getTitle()+":");
+                        lbl.setFont(lbl.getFont().deriveFont(Font.BOLD));
                     }
                 } else
                 {
