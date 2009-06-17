@@ -706,20 +706,6 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
         return field;
     }
     
-    
-	/* (non-Javadoc)
-	 * @see edu.ku.brc.specify.datamodel.DataModelObjBase#forceLoad()
-	 */
-	@Override
-	public void forceLoad()
-	{
-		super.forceLoad();
-		for (SpExportSchemaItemMapping mapping : mappings)
-		{
-			mapping.getId();
-		}
-	}
-
 	/**
      * @param sb
      */

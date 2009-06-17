@@ -362,7 +362,7 @@ public class SpQuery extends DataModelObjBase implements Cloneable
     {
         for (SpQueryField qf : getFields())
         {
-            qf.forceLoad();
+            qf.getFieldName();
         }
         getSpecifyUser();
         if (forceReports)
