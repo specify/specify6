@@ -28,6 +28,8 @@ import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.awt.Frame;
 import java.io.File;
+import java.net.ConnectException;
+import java.net.UnknownHostException;
 import java.security.Security;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -328,8 +330,23 @@ public class EMailHelper
                     
                 } catch (MessagingException mex)
                 {
-                    mex.printStackTrace();
-                    exception = mex;
+                    if (mex.getCause() instanceof UnknownHostException)
+                    {
+                        instance.lastErrorMsg = null;
+                        fail                  = true;
+                        UIRegistry.showLocalizedError("EMailHelper.UNK_HOST", host);
+                        
+                    } else  if (mex.getCause() instanceof ConnectException)
+                    {
+                        instance.lastErrorMsg = null;
+                        fail                  = true;
+                        UIRegistry.showLocalizedError("EMailHelper." + (StringUtils.isEmpty(port) ? "CNCT_ERR1" : "CNCT_ERR2"), port);
+                        
+                    } else
+                    {
+                        mex.printStackTrace();
+                        exception = mex;
+                    }
                     
                 } catch (Exception mex)
                 {

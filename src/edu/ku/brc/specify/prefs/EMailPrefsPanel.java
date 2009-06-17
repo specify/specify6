@@ -236,7 +236,7 @@ public class EMailPrefsPanel extends GenericPrefsPanel implements PrefsSavable, 
         protected EMailHelper.ErrorType status = EMailHelper.ErrorType.OK;
 
         /**
-         * Constructs a an object to execute an SQL staement and then notify the listener
+         * Constructs a an object to execute an SQL statement and then notify the listener
          */
         public EMailCheckerRunnable(final JDialog parentDlg)
         {
@@ -256,8 +256,12 @@ public class EMailPrefsPanel extends GenericPrefsPanel implements PrefsSavable, 
             {
                 if (status == EMailHelper.ErrorType.Error)
                 {
-                    // XXX Get response error message from Helper and display it.
-                    UIRegistry.showLocalizedError("EMailPrefsPanel.ERROR", EMailHelper.getLastErrorMsg()); // XXX I18N
+                    String errMsg = EMailHelper.getLastErrorMsg(); // some errors have already been displayed
+                    if (errMsg != null)
+                    {
+                        // XXX Get response error message from Helper and display it.
+                        UIRegistry.showLocalizedError("EMailPrefsPanel.ERROR", errMsg);
+                    }
                     
                 } else
                 {
