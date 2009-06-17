@@ -825,15 +825,13 @@ public class BuildSampleDatabase
         
         startTx();
         
-        boolean taxonWasBuilt = false;
-        if (!isPaleo && StringUtils.isNotEmpty(taxonFileName))
+        boolean                    taxonWasBuilt = false;
+        Hashtable<String, Boolean> colNameHash   = null;
+        if (StringUtils.isNotEmpty(taxonFileName))
         {
-            Hashtable<String, Boolean> colNameHash = getColumnNamesFromXLS(taxonFileName, usingOtherTxnFile);
-            if (colNameHash != null)
-            {
-                taxonWasBuilt = createTaxonDefFromXML(taxa, colNameHash, taxonTreeDef, taxonXML);
-            }
+            colNameHash = getColumnNamesFromXLS(taxonFileName, usingOtherTxnFile);
         }
+        taxonWasBuilt = createTaxonDefFromXML(taxa, colNameHash, taxonTreeDef, taxonXML);
         
         frame.incOverall();
         
@@ -1199,14 +1197,16 @@ public class BuildSampleDatabase
     
     /**
      * @param taxonList
+     * @param colNameHash
      * @param taxonTreeDef
      * @param taxonXML
+     * @return
      */
     @SuppressWarnings("unchecked")
-    public static boolean createTaxonDefFromXML(final List<Object> taxonList, 
+    public static boolean createTaxonDefFromXML(final List<Object>               taxonList, 
                                                 final Hashtable<String, Boolean> colNameHash,
-                                                final TaxonTreeDef taxonTreeDef, 
-                                                final String       taxonXML)
+                                                final TaxonTreeDef               taxonTreeDef, 
+                                                final String                     taxonXML)
     {
         if (StringUtils.isNotEmpty(taxonXML))
         {
@@ -1219,7 +1219,7 @@ public class BuildSampleDatabase
             for (TreeDefRow row : treeDefList)
             {
                 if (row.isIncluded() || 
-                    (row.getDefName() != null && colNameHash != null && colNameHash.get(row.getDefName().toLowerCase()) != null))
+                    (row.getDefName() != null && colNameHash == null || colNameHash.get(row.getDefName().toLowerCase()) != null))
                 {
                     TaxonTreeDefItem ttdi = new TaxonTreeDefItem();
                     ttdi.initialize();
