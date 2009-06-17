@@ -123,6 +123,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
 	protected JLabel						schemaItemLabel;
 	protected JLabel						iconLabel;
 	protected ImageIcon						icon;
+	protected IconManager.IconSize			iconSize = IconManager.IconSize.Std24;
 	protected JCheckBox						isNotCheckbox;
 	protected JComboBox						operatorCBX;
 	protected JComponent					criteria;
@@ -319,6 +320,24 @@ public class QueryFieldPanel extends JPanel implements ActionListener
     }
     
     /**
+     * @param ownerQuery
+     * @param fieldQRI
+     * @param columnDefStr
+     * @param saveBtn
+     * @param queryField
+     * @param schemaItem
+     */
+    public QueryFieldPanel(final QueryFieldPanelContainerIFace ownerQuery,
+                           final FieldQRI      fieldQRI, 
+                           final String        columnDefStr,
+                           final Component       saveBtn,
+                           final SpQueryField  queryField,
+                           final SpExportSchemaItem schemaItem)
+    {
+    	this(ownerQuery, fieldQRI, IconManager.IconSize.Std24, columnDefStr, saveBtn, queryField, schemaItem);
+    }
+    
+    /**
      * Constructor.
      * @param fieldName the field Name
      * @param icon the icon to use once it is mapped
@@ -362,7 +381,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                         /*UIRegistry.getResourceString("QB_DISPLAY"), getResourceString("QB_PROMPT"), getResourceString("QB_ALWAYS_ENFORCE"), */" ", " " };
             }
         }
-        
+        this.iconSize = iconSize;
         this.fieldQRI      = fieldQRI;
         if (fieldQRI != null && (fieldQRI.getDataClass().equals(Calendar.class) || fieldQRI.getDataClass().equals(java.sql.Timestamp.class)))
         {
@@ -509,7 +528,6 @@ public class QueryFieldPanel extends JPanel implements ActionListener
     private void setQueryField(SpQueryField queryField)
     {
         this.queryField = queryField;
-        
         if (queryField != null)
         {
             if (queryField.getSpQueryFieldId() != null)
@@ -530,7 +548,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
             {
                 validator.reset(true); // tells it it is a new data object
                 validator.setHasChanged(true);
-    
+                this.queryField.setStringId(fieldQRI.getStringId());
             }
             validator.validateForm();
             validator.wasValidated(null);
@@ -544,6 +562,13 @@ public class QueryFieldPanel extends JPanel implements ActionListener
         {
             dateConverter = new DateConverter();
         }
+ 
+        if (fieldQRI != null)
+        {
+            icon = IconManager.getIcon(fieldQRI.getTableInfo().getName(), iconSize);
+            setIcon(icon);
+        }
+ 
         pickList = buildPickList();
     	comparators = getComparatorList(fieldQRI);
         String fieldLabelText = fieldQRI != null ? fieldQRI.getTitle() : null;
@@ -1357,15 +1382,16 @@ public class QueryFieldPanel extends JPanel implements ActionListener
             {
                 public void actionPerformed(ActionEvent ae)
                 {
-                	if (schemaItem == null)
+                	if (schemaItem != null)
                 	{
-                		ownerQuery.removeQueryFieldItem((QueryFieldPanel) ((JComponent) ae.getSource())
-                            .getParent());
-                	}
-                	else
-                	{
+                		if (fieldQRI != null)
+                		{
+                			fieldQRI.setIsInUse(false);
+                		}
                 		setField(null, null);
                 	}
+            		ownerQuery.removeQueryFieldItem((QueryFieldPanel) ((JComponent) ae.getSource())
+                        .getParent());
                 }
             });
             closeBtn.setEnabled(true);

@@ -22,6 +22,7 @@ package edu.ku.brc.specify.datamodel;
 import static edu.ku.brc.helpers.XMLHelper.addAttr;
 import static edu.ku.brc.helpers.XMLHelper.getAttr;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -474,7 +475,7 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
     /**
      * @return the fields
      */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "queryField")
+    @OneToMany(cascade = {}, fetch = FetchType.EAGER, mappedBy = "queryField")
     @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<SpExportSchemaItemMapping> getMappings()
     {
@@ -519,7 +520,7 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
         formatName     = null;
         columnAlias    = null;
         contextTableIdent = null;
-        mappings = null;
+        mappings = new HashSet<SpExportSchemaItemMapping>();
     }
 
     @Transient
@@ -705,7 +706,21 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
         return field;
     }
     
-    /**
+    
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.datamodel.DataModelObjBase#forceLoad()
+	 */
+	@Override
+	public void forceLoad()
+	{
+		super.forceLoad();
+		for (SpExportSchemaItemMapping mapping : mappings)
+		{
+			mapping.getId();
+		}
+	}
+
+	/**
      * @param sb
      */
     public void toXML(final StringBuilder sb)
