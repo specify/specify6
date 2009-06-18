@@ -48,6 +48,8 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
+import org.apache.log4j.Logger;
+
 import edu.ku.brc.af.auth.PermissionPanelContainerIFace;
 import edu.ku.brc.af.auth.PermissionSettings;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -72,7 +74,7 @@ import edu.ku.brc.util.ComparatorByStringRepresentation;
 @SuppressWarnings("serial")
 public class PermissionEditor extends JPanel implements PermissionPanelContainerIFace
 {
-    //private static final Logger log = Logger.getLogger(PermissionEditor.class);
+    private static final Logger log = Logger.getLogger(PermissionEditor.class);
 
     protected String                panelName;
 	protected JTable				table;
@@ -437,7 +439,7 @@ public class PermissionEditor extends JPanel implements PermissionPanelContainer
 			return;
 		}
 		
-        //log.debug("Saving Principal: "+principal.getId()+"  hashCode: "+principal.hashCode());
+        log.debug("Saving Principal: "+principal.getId()+" - "+principal.getName()+ "  hashCode: "+principal.hashCode());
         
 		int numRows = model.getRowCount();
 		int taskCol = nameColTitle != null ? table.getColumn(nameColTitle).getModelIndex() : -1;
@@ -456,17 +458,22 @@ public class PermissionEditor extends JPanel implements PermissionPanelContainer
 			Boolean canMod  = getValueAt(row, modCol);
 			Boolean canDel  = getValueAt(row, delCol);
 			
+			log.debug(perm.getName()+"  v: " +canView+"  a: " + canAdd+"  m: " + canMod+"  d: " + canDel+" ");
+			
 			if ( !(canView || canAdd || canMod || canDel) )
 			{
 				// no flag is set, so delete the permission
 				if (perm.getId() != null)
 				{
+				    log.debug("Clearing: " + perm.getName()+" ["+perm.getActions()+"]");
 				    perm.setActions("");
                     session.saveOrUpdate(session.merge(perm));
+                    perm.setHasChanged(false);
 				}
 			}
-			else if (!perm.hasSameFlags(canView, canAdd, canMod, canDel))
+			else if (perm.hasChanged())
 			{
+			    log.debug("Saving: " + perm.getName()+" ["+perm.getActions()+"]");
 				// set new flags
 				perm.setActions(canView, canAdd, canMod, canDel);
 
@@ -477,6 +484,7 @@ public class PermissionEditor extends JPanel implements PermissionPanelContainer
 					perm.getPrincipals().add(principal);
 				}
 				session.saveOrUpdate(session.merge(perm));
+				perm.setHasChanged(false);
 			}
 		}
 	}

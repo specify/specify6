@@ -46,6 +46,9 @@ public class SpPermission /*extends DataModelObjBase*/implements java.io.Seriali
 	protected String actions;
 	protected Integer targetId;
 	protected Set<SpPrincipal> principals;
+	
+	// Transient 
+	protected boolean hasChanged = false;
 
 	// Constructors
 
@@ -91,7 +94,6 @@ public class SpPermission /*extends DataModelObjBase*/implements java.io.Seriali
 	 * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
 	 */
 	@Transient
-	//@Override
 	public Class<?> getDataClass()
 	{
 		return SpPermission.class;
@@ -111,6 +113,7 @@ public class SpPermission /*extends DataModelObjBase*/implements java.io.Seriali
 	 */
 	public void setActions(String actions)
 	{
+	    //hasChanged = this.actions == null || !actions.equals(this.actions);
 		this.actions = actions;
 	}
 
@@ -160,6 +163,22 @@ public class SpPermission /*extends DataModelObjBase*/implements java.io.Seriali
 	}
 
 	/**
+     * @return the hasChanged
+     */
+    public boolean hasChanged()
+    {
+        return hasChanged;
+    }
+
+    /**
+     * @param hasChanged the hasChanged to set
+     */
+    public void setHasChanged(boolean hasChanged)
+    {
+        this.hasChanged = hasChanged;
+    }
+
+    /**
 	 * Generic Getter for the ID Property.
 	 * @returns ID Property.
 	 */
@@ -300,6 +319,7 @@ public class SpPermission /*extends DataModelObjBase*/implements java.io.Seriali
 	 */
 	public boolean hasSameFlags(boolean canView, boolean canAdd, boolean canModify, boolean canDelete)
 	{
+	    System.err.println(name + " - "+actions);
 		return 	(canView   == canView())   &&
 				(canAdd    == canAdd())    &&
 				(canModify == canModify()) &&
@@ -314,30 +334,32 @@ public class SpPermission /*extends DataModelObjBase*/implements java.io.Seriali
 	 */
 	public void setActions(boolean canView, boolean canAdd, boolean canModify, boolean canDelete)
 	{
-		actions = "";
-		String sep = "";
+		String newActions = "";
+		String sep        = "";
 		if (canView)
 		{
-			actions += "view";
+		    newActions += "view";
 			sep = ",";
 		}
 		
 		if (canAdd)
 		{
-			actions += sep + "add";
+		    newActions += sep + "add";
 			sep = ",";
 		}
 
 		if (canModify)
 		{
-			actions += sep + "modify";
+		    newActions += sep + "modify";
 			sep = ",";
 		}
 
 		if (canDelete)
 		{
-			actions += sep + "delete";
+		    newActions += sep + "delete";
 			sep = ",";
 		}
+		hasChanged = actions == null || !newActions.equals(actions);
+		actions = newActions;
 	}
 }

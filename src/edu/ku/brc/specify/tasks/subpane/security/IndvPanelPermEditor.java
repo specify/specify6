@@ -40,6 +40,8 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.apache.log4j.Logger;
+
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -71,7 +73,7 @@ import edu.ku.brc.util.ComparatorByStringRepresentation;
 @SuppressWarnings("serial")
 public class IndvPanelPermEditor extends JPanel implements PermissionPanelContainerIFace
 {
-    //private static final Logger log = Logger.getLogger(IndvPanelPermEditor.class);
+    private static final Logger  log = Logger.getLogger(IndvPanelPermEditor.class);
     
     protected String                           panelName;
     protected PermissionEnumerator             enumerator;
@@ -281,20 +283,25 @@ public class IndvPanelPermEditor extends JPanel implements PermissionPanelContai
             for (SpPermission perm : rowData.getPermissionList())
             {
                 SpPermission newPerm = perm;
-                System.out.println(perm.getName()+" ["+perm.getActions()+"]");
+                
                 
                 if ( !(perm.canView() || perm.canAdd() || perm.canModify() || perm.canDelete()))
                 {
+                    log.debug("Clearing: " + perm.getName()+" ["+perm.getActions()+"]");
+                    
                     // no flag is set, so delete the permission
                     if (perm.getId() != null)
                     {
                         perm.setActions("");
                         newPerm = session.merge(perm);
                         session.saveOrUpdate(newPerm);
+                        perm.setHasChanged(false);
                     }
                 }
-                else if (perm.hasSameFlags(perm.canView(), perm.canAdd(), perm.canModify(), perm.canDelete()))
+                else if (perm.hasChanged())
                 {
+                    log.debug("Saving: " + perm.getName()+" ["+perm.getActions()+"]");
+                    
                     // permission has changed: save it
                     if (perm.getId() == null)
                     {
@@ -303,6 +310,7 @@ public class IndvPanelPermEditor extends JPanel implements PermissionPanelContai
                     }
                     newPerm = perm.getId() == null ? perm : session.merge(perm);
                     session.saveOrUpdate(newPerm);
+                    perm.setHasChanged(false);
                     //session.saveOrUpdate(session.merge(principal));
                 }
                 rowData.updatePerm(perm, newPerm);
