@@ -87,6 +87,7 @@ import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.RecordSet;
+import edu.ku.brc.specify.datamodel.SpExportSchemaMapping;
 import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpReport;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
@@ -1222,10 +1223,12 @@ public class QueryTask extends BaseTask
      * Save it out to persistent storage.
      * @param query the SpQuery
      */
-    protected void persistQuery(final SpQuery query)
+    protected void persistQuery(final SpQuery query, final SpExportSchemaMapping schemaMapping)
     {
         // TODO Add StaleObject Code from FormView
-        if (DataModelObjBase.save(true, query))
+    	boolean saved = schemaMapping == null ? DataModelObjBase.save(true, query) 
+    			: DataModelObjBase.save(true, query, schemaMapping);
+        if (saved)
         {
             FormHelper.updateLastEdittedInfo(query);
         }
@@ -1235,7 +1238,7 @@ public class QueryTask extends BaseTask
      * Save a record set.
      * @param recordSets the rs to be saved
      */
-    public RolloverCommand saveNewQuery(final SpQuery query, final boolean enabled)
+    public RolloverCommand saveNewQuery(final SpQuery query, final SpExportSchemaMapping schemaMapping, final boolean enabled)
     {        
         query.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
         query.setSpecifyUser(AppContextMgr.getInstance().getClassObject(SpecifyUser.class));
@@ -1244,7 +1247,7 @@ public class QueryTask extends BaseTask
             query.setIsFavorite(true);
         }
 
-        persistQuery(query);
+        persistQuery(query, schemaMapping);
 
         RecordSet rs = new RecordSet();
         rs.initialize();

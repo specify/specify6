@@ -965,7 +965,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         LinkedList<SortElement> sortElements = new LinkedList<SortElement>();
         boolean postSortPresent = false;
         boolean debug = false;
-        ProcessNode root = new ProcessNode(null);
+        ProcessNode root = new ProcessNode();
         int fldPosition = distinct ? 0 : 1;
 
         for (QueryFieldPanel qfi : qfps)
@@ -1103,7 +1103,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 						}
 					}
 				}
-
+				
 				if (debug)
 				{
 					log.debug("Current Tree:");
@@ -1111,6 +1111,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 				}
 			}
         }
+
         if (debug)
         {
             printTree(root, 0);
@@ -1237,35 +1238,58 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 {
                     criteriaStr.append(" AND (");
                 }
-                int f = 0;
+                Vector<String> tblAliii = new Vector<String>(fromTbls.size());
                 for (Pair<DBTableInfo, String> fromTbl : fromTbls)
                 {
-                    if (f > 0)
-                    {
-                        criteriaStr.append(" OR ");
-                    }
-                    f++;
-                    String paramName = "spparam" + paramsToSet.size();
-                    criteriaStr.append(fromTbl.getSecond() + ".timestampModified > :" + paramName);
-                    paramsToSet.add(new Pair<String, Object>(paramName, lastExportTime));
-                    criteriaStr.append(" OR ");
-                    paramName = "spparam" + paramsToSet.size();
-                    criteriaStr.append(fromTbl.getSecond() + ".timestampCreated > :" + paramName);
-                    paramsToSet.add(new Pair<String, Object>(paramName, lastExportTime));
+                	tblAliii.add(fromTbl.getSecond());
                 }
+                criteriaStr.append(getTimestampWhere(tblAliii, paramsToSet, lastExportTime));
+//                int f = 0;
+//                for (Pair<DBTableInfo, String> fromTbl : fromTbls)
+//                {
+//                    if (f > 0)
+//                    {
+//                        criteriaStr.append(" OR ");
+//                    }
+//                    f++;
+//                    String paramName = "spparam" + paramsToSet.size();
+//                    criteriaStr.append(fromTbl.getSecond() + ".timestampModified > :" + paramName);
+//                    paramsToSet.add(new Pair<String, Object>(paramName, lastExportTime));
+//                    criteriaStr.append(" OR ");
+//                    paramName = "spparam" + paramsToSet.size();
+//                    criteriaStr.append(fromTbl.getSecond() + ".timestampCreated > :" + paramName);
+//                    paramsToSet.add(new Pair<String, Object>(paramName, lastExportTime));
+//                }
                 //now for the relationships implicit in the formatters
+                ProcessNode formattersRoot = new ProcessNode();
                 for (QueryFieldPanel qfp : qfps)
                 {
 					if (qfp.getFieldQRI() instanceof RelQRI)
 					{
 						RelQRI relQRI = (RelQRI )qfp.getFieldQRI();
 						DataObjDataFieldFormatIFace formatter = relQRI.getDataObjFormatter();
-						for (DataObjDataField fld : formatter.getFields())
+						//if (formatter.getSingleField() == null)
 						{
-							System.out.println(fld.getTableInfo() + "." + fld.getFieldInfo());
+							ProcessNode newNode = new ProcessNode(relQRI.getRelationshipInfo());
+							formattersRoot.getKids().add(newNode);
+							processFormatter(formatter, newNode);
 						}
 					}
-
+                }
+                printTree(formattersRoot, 0);
+                String formattersCriteria  = "";
+                String rootAlias = tableAbbreviator.getAbbreviation(rootTable.getTableTree());
+                for (ProcessNode node : formattersRoot.getKids())
+                {
+                	if (formattersCriteria.length() > 0)
+                	{
+                		formattersCriteria += " or ";
+                	}
+                	formattersCriteria += getTimestampCriteria(rootAlias, node, paramsToSet, lastExportTime);
+                }
+                if (StringUtils.isNotBlank(formattersCriteria))
+                {
+                	criteriaStr.append(" or " + formattersCriteria);
                 }
                 criteriaStr.append(") ");
             }
@@ -1314,6 +1338,83 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         
         //return new Pair<String, List<Pair<String, Object>>>(result, paramsToSet);
         return new HQLSpecs(result, paramsToSet, sortElements);
+    }
+  
+    protected static String getNextAlias(String rootAlias, ProcessNode node)
+    {
+    	return rootAlias + "_" + DBTableIdMgr.getInstance().getByClassName(node.getRel().getClassName()).getAbbrev();
+    }
+    
+    protected static String getTimestampFrom(String rootAlias, ProcessNode node, Vector<String> fromTbls)
+    {
+    	String nextAlias = getNextAlias(rootAlias, node);
+    	String result = rootAlias + " inner join " + rootAlias + "." + node.getRel().getName() + " " + nextAlias;
+    	fromTbls.add(nextAlias);
+    	for (ProcessNode kid : node.getKids())
+    	{
+    		result += getTimestampFrom(nextAlias, kid, fromTbls);
+    	}
+    	return result;
+    }
+    
+    protected static String getTimestampWhere( Vector<String> fromTbls, List<Pair<String, Object>> paramsToSet, Timestamp lastExportTime)
+    {
+        String result = "";
+    	int f = 0;
+        for (String fromTbl : fromTbls)
+        {
+            if (f > 0)
+            {
+                result += " OR ";
+            }
+            f++;
+            String paramName = "spparam" + paramsToSet.size();
+            result += fromTbl + ".timestampModified > :" + paramName;
+            paramsToSet.add(new Pair<String, Object>(paramName, lastExportTime));
+            result += " OR ";
+            paramName = "spparam" + paramsToSet.size();
+            result += fromTbl + ".timestampCreated > :" + paramName;
+            paramsToSet.add(new Pair<String, Object>(paramName, lastExportTime));
+        }
+        return result;
+    }
+    
+    protected static String getTimestampCriteria(String rootAlias, ProcessNode node, List<Pair<String, Object>> paramsToSet, Timestamp lastExportTime)
+    {
+    	DBTableInfo tbl = DBTableIdMgr.getInstance().getByClassName(node.getRel().getClassName());
+    	Vector<String> fromTbls = new Vector<String>();
+    	String from = getTimestampFrom(rootAlias, node, fromTbls);
+    	String where = getTimestampWhere(fromTbls, paramsToSet, lastExportTime);
+    	if (StringUtils.isNotBlank(from) && StringUtils.isNotBlank(where))
+    	{
+    		return " exists(select " + getNextAlias(rootAlias, node) + "." + tbl.getIdFieldName() + " from " + from + " where " + where + ")";
+    	}
+    	return null;
+    }
+    
+    /**
+     * @param formatter
+     * 
+     * Eventually this will add conditions to check for changed data when exporting a schema.
+     */
+    protected static void processFormatter(DataObjDataFieldFormatIFace formatter, ProcessNode node)
+    {
+		for (DataObjDataField fld : formatter.getFields())
+		{
+			if (fld.getObjFormatter() != null)
+			{
+				ProcessNode subNode = null;
+				for (DataObjDataFieldFormatIFace subformatter : fld.getObjFormatter().getFormatters())
+				{
+					if (subNode == null)
+					{
+						subNode = new ProcessNode(fld.getRelInfo());
+						node.getKids().add(subNode);
+					}
+					processFormatter(subformatter, subNode);
+				}
+			}
+		}
     }
     
     /**
@@ -2459,8 +2560,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         for (int i = 0; i < lvl; i++)
         {
             log.debug(" ");
+            System.out.print(" ");
         }
-        log.debug(pn.getQri() == null ? "Root" : pn.getQri().getTitle());
+        log.debug(pn);
+        System.out.println(pn);
         for (ProcessNode kid : pn.getKids())
         {
             printTree(kid, lvl + 1);
@@ -2591,7 +2694,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     queryNavBtn.setEnabled(true);
                 }
                 
-                queryNavBtn = ((QueryTask) task).saveNewQuery(query, false); // false tells it to
+                queryNavBtn = ((QueryTask) task).saveNewQuery(query, schemaMapping, false); // false tells it to
                                                                                 // disable the
                                                                                 // navbtn
 
@@ -2602,6 +2705,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 }   
                 
                 SubPaneMgr.getInstance().renamePane(this, query.getName());
+                
+                return true;
             }
             
             

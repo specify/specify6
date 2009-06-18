@@ -79,6 +79,11 @@ public class DataObjDataField implements Cloneable
 		this.relInfo   = relInfo;
 	}
 
+	public DataObjSwitchFormatter getObjFormatter()
+	{
+		return objFormatter;
+	}
+	
 	public void setObjFormatter(DataObjSwitchFormatter objFormatter)
     {
         this.objFormatter = objFormatter;
