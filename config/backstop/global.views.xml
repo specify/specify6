@@ -2083,11 +2083,11 @@
     		<rows>
                 <row>
                     <cell type="label" labelfor="origFilename" label="FILENAME"/>
-                    <cell type="field" id="origFilename" name="attachment.origFilename" initialize="editoncreate=true" cols="30" uitype="browse" />
+                    <cell type="field" id="origFilename" name="attachment.origFilename" initialize="editoncreate=true" cols="30" uitype="browse" isrequired="true"/>
                 </row>
                 <row>
                 	<cell type="label" labelfor="title"  label="TITLE"/>
-                	<cell type="field" id="title" name="attachment.title" cols="30"/>
+                	<cell type="field" id="title" name="attachment.title" cols="30" isrequired="true"/>
                 </row>
     		 <!--   <row>
     		        <cell type="subview" id="metadata" name="attachment.metadata" viewname="AttachmentMetadata" colspan="3"/>
