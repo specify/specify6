@@ -65,6 +65,7 @@ import edu.ku.brc.util.GeoRefConverter.GeoRefFormat;
     {   
         @Index (name="RowNumberIDX", columnNames={"RowNumber"})
     })
+@SuppressWarnings("serial")
 public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchRow>, GeoCoordDataIFace
 {
     private static final Logger log = Logger.getLogger(WorkbenchRow.class);

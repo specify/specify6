@@ -631,21 +631,20 @@ public class TaskSemaphoreMgr
                 semaphore.setDiscipline(discipline);
                 semaphore.setCollection(collection);
             }
-    		String context = semaphore.getContext();
+    		Integer count = semaphore.getUsageCount() == null ? 0 : semaphore.getUsageCount();
     		if (increment == null)
     		{
-    			semaphore.setContext(null);
+    			semaphore.setUsageCount(null);
     		}
     		else
     		{
-    			Integer count = StringUtils.isBlank(context) ? 0 : new Integer(context);
-    			Integer newCount = new Integer(count + increment);
+     			Integer newCount = new Integer(count + increment);
     			if (newCount.intValue() < 0)
     			{
     				log.error("attempt to set usage count for " + name + "to " + newCount);
     				newCount = 0;
     			}
-    			semaphore.setContext(newCount.toString());
+    			semaphore.setUsageCount(newCount);
     		}
     		session.saveOrUpdate(semaphore);
     		session.commit();
