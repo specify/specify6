@@ -3022,8 +3022,25 @@ public class FormViewObj implements Viewable,
                         FormDataObjIFace fdo = (FormDataObjIFace)carryFwdDataObj;
                         if (fdo.getId() != null && fdo.getId().equals(((FormDataObjIFace)dataObj).getId()))
                         {
-                            carryFwdDataObj = null;
-                            // XXX should we warn the user?
+                            boolean doClear = true;
+                            if (list != null && rsController != null)
+                            {
+                                int inx = rsController.getCurrentIndex();
+                                if (inx > -1 && inx < list.size())
+                                {
+                                    carryFwdDataObj = list.get(inx-1);
+                                    doClear = false;
+                                }
+                            }
+                            if (doClear)
+                            {
+                                carryFwdDataObj = null;
+                            }
+                            
+                            if (carryFwdDataObj == null)
+                            {
+                                UIRegistry.showLocalizedError("FormViewObj.NO_CF_OBJ");
+                            }
                         }
                     }
                     
