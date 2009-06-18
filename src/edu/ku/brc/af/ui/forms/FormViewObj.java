@@ -86,6 +86,7 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
+import org.hibernate.TypeMismatchException;
 import org.hibernate.exception.ConstraintViolationException;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -4583,6 +4584,19 @@ public class FormViewObj implements Viewable,
                     try
                     {
                         dataObj = session.merge(dataObj);
+                    }
+                    catch (TypeMismatchException tmmex)
+                    {
+                        try
+                        {
+                            session.saveOrUpdate(dataObj);
+                        }
+                        catch (Exception ex2)
+                        {
+                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(FormViewObj.class, ex2);
+                            throw new RuntimeException(ex2);
+                        }
                     }
                     catch (Exception ex2)
                     {

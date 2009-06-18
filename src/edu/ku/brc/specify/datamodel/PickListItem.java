@@ -27,6 +27,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.StringUtils;
@@ -46,7 +47,10 @@ import edu.ku.brc.util.Orderable;
  *
  */
 @SuppressWarnings("serial")
-@Entity(name="picklistitem")
+@Entity
+@org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
+@org.hibernate.annotations.Proxy(lazy = false)
+@Table(name = "picklistitem")
 public class PickListItem extends DataModelObjBase implements PickListItemIFace, 
                                                               Orderable,
                                                               java.io.Serializable
@@ -67,7 +71,7 @@ public class PickListItem extends DataModelObjBase implements PickListItemIFace,
     public PickListItem()
     {
         // do nothing
-        initialize();
+        //initialize();
     }
 
     public PickListItem(final String title, final String value, final Timestamp timestampCreated)
@@ -106,7 +110,7 @@ public class PickListItem extends DataModelObjBase implements PickListItemIFace,
      */
     @Id
     @GeneratedValue
-    @Column(name = "PickListItemID")
+    @Column(name = "PickListItemID", unique = false, nullable = false, insertable = true, updatable = true)
     protected Integer getPickListItemId()
     {
         return pickListItemId;
