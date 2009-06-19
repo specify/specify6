@@ -1,0 +1,15 @@
+Detailed here are the version numbers of all libraries included in this
+directory.  The listings that are indented are for libraries that are runtime
+dependencies of the un-indented listing just above them.  Their version numbers
+are not listed since they are 'tied' to the version of the parent library.
+Other versions can be retrieved from their repective websites, but runtime
+compatibility with the 'parent' libraries is not guaranteed.
+
+Libraries:
+
+Name                                    Version Info                   License Info
+-----------------------------------------------------------------------------------------------
+aspectjrt.jar                           5.0.9                          GPL
+aspectjtools.jar                        5.0.9                          GPL
+mysql-connector-mxj-gpl-db-files.jar    5.0.9                          GPL
+mysql-connector-mxj-gpl.jar             5.0.9                          GPL
