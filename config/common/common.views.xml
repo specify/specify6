@@ -105,15 +105,15 @@
         </view>
         
         <view name="BorrowAgent"
+            Objtitle="Borrow Agent"
             class="edu.ku.brc.specify.datamodel.BorrowAgent"
-            resourcelabels="false"
-            usedefbusrule="false">
+            resourcelabels="false">
             <desc><![CDATA[Agent subform for the Borrow form]]></desc>
             <altviews>
-                <altview name="BorrowAgent View" viewdef="BorrowAgent" mode="view" default="true"/>
-                <altview name="BorrowAgent Edit" viewdef="BorrowAgent" mode="edit"/>
                 <altview name="BorrowAgent Table View" viewdef="BorrowAgent Table" mode="view"/>
                 <altview name="BorrowAgent Table Edit" viewdef="BorrowAgent Table" mode="edit"/>
+                <altview name="BorrowAgent View" viewdef="BorrowAgent" mode="view"/>
+                <altview name="BorrowAgent Edit" viewdef="BorrowAgent" mode="edit" default="true"/>
             </altviews>
         </view>
         
@@ -1144,7 +1144,7 @@
                     <cell type="field" id="5" name="remarks" uitype="textareabrief" rows="2" colspan="12"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="BorrowAgent" id="6" name="borrowAgents" colspan="15"/>
+                    <cell type="subview" viewname="BorrowAgent" id="6" name="borrowAgents" rows="2" desc="Agents" colspan="15"/>
                 </row>
                 <row>
                     <cell type="subview" viewname="Shipment" id="11" name="shipments" colspan="15"/>
@@ -1161,7 +1161,8 @@
             class="edu.ku.brc.specify.datamodel.BorrowAgent"
             gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
-            <desc><![CDATA[The Agent subform for the Borrow form.]]></desc>
+            
+            <desc><![CDATA[Preparation subform table for Collection Object form.]]></desc>
             <definition>BorrowAgent</definition>
         </viewdef>
 
@@ -1184,14 +1185,8 @@
                 <row>
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="agent" uitype="querycbx" initialize="name=Agent;title=Agent"/>
-                    
                     <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="role" uitype="combobox" />
-                </row>
-                
-                <row>
-                    <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="remarks" uitype="textareabrief" rows="2" colspan="6"/>
                 </row>
             </rows>
         </viewdef>

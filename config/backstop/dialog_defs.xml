@@ -36,6 +36,7 @@
     <dialog type="display" view="AutoNumberingScheme" name="AutoNumberingScheme"     class="edu.ku.brc.specify.datamodel.AutoNumberingScheme" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="Author"             name="AuthorDisplay"            class="edu.ku.brc.specify.datamodel.Author" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="BioStrat"           name="BioStratDisplay"          class="edu.ku.brc.specify.datamodel.GeologicTimePeriod" helpcontext="CBXQViewEdit"/>
+    <dialog type="display" view="BorrowAgent"        name="BorrowAgentDisplay"       class="edu.ku.brc.specify.datamodel.BorrowAgent" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="Collection"         name="Collection"               class="edu.ku.brc.specify.datamodel.Collection" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="Collector"          name="CollectorDisplay"         class="edu.ku.brc.specify.datamodel.Collector" helpcontext="CBXQViewEdit"/>
     <dialog type="display" view="CollectionObject"   name="CollectionObject"         class="edu.ku.brc.specify.datamodel.CollectionObject" helpcontext="CBXQViewEdit"/>
