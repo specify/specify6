@@ -21,6 +21,7 @@ package edu.ku.brc.dbsupport;
 
 import static edu.ku.brc.helpers.XMLHelper.getAttr;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.lang.ref.SoftReference;
 import java.util.Collections;
@@ -34,6 +35,7 @@ import org.dom4j.Element;
 
 import edu.ku.brc.exceptions.ConfigurationException;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * This class holds the necessary nformation for connecting to JDBC and Hibernate. There is a tstaic function for
@@ -103,6 +105,10 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
             {
                 connStr = connStr.replaceFirst("DATABASE", database); //$NON-NLS-1$
             }
+            
+            String dataDir = UIRegistry.getAppDataDir() + File.separator + "specify_data";
+            connStr = connStr.replaceFirst("DATADIR",  dataDir); //$NON-NLS-1$
+            
             return StringUtils.isNotEmpty(server) ? connStr.replaceFirst("SERVER", server) : connStr; //$NON-NLS-1$
         }
         return null;
@@ -115,6 +121,7 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
      */
     public String getConnectionStr(final ConnectionType type, final String server, final String database, final String username, final String password, final String serverType)
     {
+        
         String connStr = connectionFormats.get(type);
         if (connStr != null)
         {
@@ -132,6 +139,10 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
                 connStr = connStr.replaceFirst("PASSWORD", password); //$NON-NLS-1$
                 return StringUtils.isNotEmpty(server) ? connStr.replaceFirst("SERVER", server): connStr; //$NON-NLS-1$
             }
+            
+            String dataDir = UIRegistry.getAppDataDir() + File.separator + "specify_data";
+            connStr = connStr.replaceFirst("DATADIR",  dataDir); //$NON-NLS-1$
+            
             connStr = connStr.replaceFirst("DATABASE", database); //$NON-NLS-1$
             connStr = connStr.replaceFirst("USERNAME", username); //$NON-NLS-1$
             connStr = connStr.replaceFirst("PASSWORD", password); //$NON-NLS-1$
@@ -170,6 +181,10 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
                 connStr = connStr.replaceFirst("PASSWORD", password); //$NON-NLS-1$
                 return StringUtils.isNotEmpty(server) ? connStr.replaceFirst("SERVER", server): connStr; //$NON-NLS-1$
             }
+            
+            String dataDir = UIRegistry.getAppDataDir() + File.separator + "specify_data";
+            connStr = connStr.replaceFirst("DATADIR",  dataDir); //$NON-NLS-1$
+            
             connStr = connStr.replaceFirst("DATABASE", database); //$NON-NLS-1$
             connStr = connStr.replaceFirst("USERNAME", username); //$NON-NLS-1$
             connStr = connStr.replaceFirst("PASSWORD", password); //$NON-NLS-1$

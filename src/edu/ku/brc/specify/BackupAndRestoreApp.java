@@ -536,14 +536,6 @@ public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener
         
         setupDefaultFonts();
         
-        // Insurance
-        if (StringUtils.isEmpty(UIRegistry.getJavaDBPath()))
-        {
-            File userDataDir = new File(UIRegistry.getAppDataDir() + File.separator + "DerbyDatabases"); //$NON-NLS-1$
-            UIRegistry.setJavaDBDir(userDataDir.getAbsolutePath());
-        }
-        log.debug(UIRegistry.getJavaDBPath());
-        
         // Load Local Prefs
         AppPreferences localPrefs = AppPreferences.getLocalPrefs();
         
@@ -745,36 +737,48 @@ public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener
    {
        log.debug("********* Current ["+(new File(".").getAbsolutePath())+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
        // This is for Windows and Exe4J, turn the args into System Properties
+       
+       UIRegistry.setEmbeddedDBDir(UIRegistry.getDefaultEmbeddedDBPath()); // on the local machine
+       
        for (String s : args)
        {
            String[] pairs = s.split("="); //$NON-NLS-1$
            if (pairs.length == 2)
            {
-               log.debug("["+pairs[0]+"]["+pairs[1]+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                if (pairs[0].startsWith("-D")) //$NON-NLS-1$
                {
                    System.setProperty(pairs[0].substring(2, pairs[0].length()), pairs[1]);
                } 
+           } else
+           {
+               String symbol = pairs[0].substring(2, pairs[0].length());
+               System.setProperty(symbol, symbol);
            }
        }
        
        // Now check the System Properties
-       String appDir = System.getProperty("appdir"); //$NON-NLS-1$
+       String appDir = System.getProperty("appdir");
        if (StringUtils.isNotEmpty(appDir))
        {
            UIRegistry.setDefaultWorkingPath(appDir);
        }
        
-       String appdatadir = System.getProperty("appdatadir"); //$NON-NLS-1$
+       String appdatadir = System.getProperty("appdatadir");
        if (StringUtils.isNotEmpty(appdatadir))
        {
            UIRegistry.setBaseAppDataDir(appdatadir);
        }
        
-       String javadbdir = System.getProperty("javadbdir"); //$NON-NLS-1$
-       if (StringUtils.isNotEmpty(javadbdir))
+       String embeddeddbdir = System.getProperty("embeddeddbdir");
+       if (StringUtils.isNotEmpty(embeddeddbdir))
        {
-           UIRegistry.setJavaDBDir(javadbdir);
+           UIRegistry.setEmbeddedDBDir(embeddeddbdir);
+       }
+       
+       String mobile = System.getProperty("mobile");
+       if (StringUtils.isNotEmpty(mobile))
+       {
+           UIRegistry.setEmbeddedDBDir(UIRegistry.getMobileEmbeddedDBPath());
        }
        
        SwingUtilities.invokeLater(new Runnable() {

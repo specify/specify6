@@ -19,16 +19,12 @@
 */
 package edu.ku.brc.specify.tools;
 
-import java.io.File;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.cfg.AnnotationConfiguration;
 import org.hibernate.cfg.Configuration;
@@ -39,7 +35,6 @@ import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
-import edu.ku.brc.ui.UIRegistry;
 
 
 /**
@@ -69,38 +64,23 @@ public class SpecifySchemaGenerator
     {
         log.debug("generateSchema hostname:" + hostname);
         log.debug("generateSchema databaseName:" + databaseName);
-        //log.debug("generateSchema userName:" + userName);
-        //log.debug("generateSchema password:" + password);
-        boolean isDerby     = dbdriverInfo.getName().equals("Derby");
         //boolean isSQLServer = dbdriverInfo.getName().equals("SQLServer");
         
         // Get the Create OR the Open String
         // Note: Derby local databases have a different connection string for creating verses opening.
         // So we need to get the Create string if it has one (Derby) or the open string if it doesn't
         // Also notice that Derby wants a database name for the initial connection and the others do not
-        String connectionStr = dbdriverInfo.getConnectionCreateOpenStr(hostname, isDerby ? databaseName : "", userName, password, dbdriverInfo.getName());
+        String connectionStr = dbdriverInfo.getConnectionCreateOpenStr(hostname, "", userName, password, dbdriverInfo.getName());
         log.debug("generateSchema connectionStr: " + connectionStr);
         
-        // For derby the Connection String includes the "create" indicator
-        // so we must first drop (delete) the Derby Database
-        if (isDerby)
-        {
-            //log.debug("database is derby database, running special drop method");
-            dropDerbyDatabase(databaseName);
-        }
-
         log.debug("Creating database connection to: " + connectionStr);
         // Now connect to other databases and "create" the Derby database
         DBConnection dbConn = DBConnection.createInstance(dbdriverInfo.getDriverClassName(), dbdriverInfo.getDialectClassName(), databaseName, connectionStr, userName, password);
 
-        // Once connected drop the non-Derby databases
-        if (!isDerby)
-        {
-            //log.debug("calling dropAndCreateDB(" + dbConn.toString() + ", " + databaseName +")");
-            dropAndCreateDB(dbConn, databaseName);
-            
-            connectionStr = dbdriverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostname, databaseName, userName, password, dbdriverInfo.getName());
-        }
+        //log.debug("calling dropAndCreateDB(" + dbConn.toString() + ", " + databaseName +")");
+        dropAndCreateDB(dbConn, databaseName);
+        
+        connectionStr = dbdriverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostname, databaseName, userName, password, dbdriverInfo.getName());
         
         log.debug("Preparting to doGenSchema: " + connectionStr);
         
@@ -113,59 +93,8 @@ public class SpecifySchemaGenerator
         String       connStr           = dbdriverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostname, databaseName);
         DBConnection dbConnForDatabase = DBConnection.createInstance(dbdriverInfo.getDriverClassName(), dbdriverInfo.getDialectClassName(), databaseName, connStr, userName, password);
         fixFloatFields(dbConnForDatabase);
-        
-        // Now switch the Connection String back to Open from Create.
-        if (isDerby)
-        {
-            dbConn.close(); // Derby Only
-            
-            connectionStr = dbdriverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostname, databaseName, userName, password, dbdriverInfo.getName());
-            
-            dbConn = DBConnection.createInstance(dbdriverInfo.getDriverClassName(), dbdriverInfo.getDialectClassName(), databaseName, connectionStr, userName, password);
-        }
-
     }
 
-    /**
-     * Drops (deletes the directory) for a local Derby Database.
-     * @param databaseName the database name (which is really the directory name).
-     */
-    protected static void dropDerbyDatabase(final String databaseName)
-    {
-        String derbyDatabasePath = UIRegistry.getJavaDBPath();
-        if (StringUtils.isNotEmpty(derbyDatabasePath))
-        {
-            if (new File(derbyDatabasePath).exists())
-            {
-                File derbyDBDir = new File(derbyDatabasePath + File.separator + databaseName);
-                if (derbyDBDir.exists())
-                {
-                    try
-                    {
-                        FileUtils.deleteDirectory(derbyDBDir);
-                        return;
-                        
-                    } catch (IOException ex)
-                    {
-                        log.error(ex);
-                    }
-                    throw new RuntimeException("Error deleting directory["+derbyDBDir.getAbsolutePath()+"]");
-                }
-            }
-        } else
-        {
-            throw new RuntimeException("JavaDB Path System property was null or empty and can't be!");
-        }
-    }
-   
-//    /**
-//     * Drops (deletes the directory) for a local Derby Database.
-//     * @param databaseName the database name (which is really the directory name).
-//     */
-//    protected static void dropSQLServerDatabase(final String databaseName)
-//    {
-//
-//    }    
     /**
      * Drop the database via it's connection.
      * @param dbConnection the connection 

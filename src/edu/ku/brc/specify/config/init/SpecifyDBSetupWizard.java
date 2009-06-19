@@ -95,7 +95,6 @@ public class SpecifyDBSetupWizard extends JPanel
     protected WizardType             wizardType  = WizardType.Institution;
     protected WizardListener         listener;
     
-    protected boolean                assumeDerby = false;
     protected final String           HOSTNAME    = "localhost";
     protected boolean                doLoginOnly = false;
     

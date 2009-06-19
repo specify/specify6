@@ -103,7 +103,9 @@ public class UIRegistry
 {
     // Static Data Members
     protected static final String MISSING_FACTORY_MSG = "The object has not been set for the ViewBasedDialogFactoryIFace. This class can be used without first setting a factory implementing this interface.";
-
+    protected static final String EMBEDDED_DB_PATH = "embedded.dbpath";
+    protected static final String EMBEDDED_DB_DIR = "specify_data";
+    
     public static final String FRAME        = "frame";
     public static final String MENUBAR      = "menubar";
     public static final String TOOLBAR      = "toolbar";
@@ -1605,20 +1607,44 @@ public class UIRegistry
         showingGlassPane = false;
     }
     
-    public static void setJavaDBDir(final String path)
+    /**
+     * Sets the path to the embedded DB.
+     * @param path the path.
+     */
+    public static void setEmbeddedDBDir(final String path)
     {
-        log.debug("Setting JavaDB: "+path);
+        log.debug("Setting Embedded DB Path: "+path);
         
         if (StringUtils.isNotEmpty(path))
         {
-            System.setProperty("derby.system.home", path);
+            System.setProperty(EMBEDDED_DB_PATH, path);
         }
     }
     
-    public static String getJavaDBPath()
+    /**
+     * @return the path to the embedded DB
+     */
+    public static String getEmbeddedDBPath()
     {
-        log.debug("JavaDB: "+System.getProperty("derby.system.home"));
-        return System.getProperty("derby.system.home");
+        log.debug("Embedded DB Path: "+System.getProperty(EMBEDDED_DB_PATH));
+        return System.getProperty(EMBEDDED_DB_PATH);
+    }
+    
+    /**
+     * @return a default path to the embedded DB when it is suppose to be on the local machine.
+     */
+    public static String getDefaultEmbeddedDBPath()
+    {
+        return UIRegistry.getAppDataDir() + File.separator + EMBEDDED_DB_DIR;
+    }
+    
+    /**
+     * @return a default path to the embedded DB when it is suppose to be on removable media. 
+     * Sos it is placed relative to the executable.
+     */
+    public static String getMobileEmbeddedDBPath()
+    {
+        return UIRegistry.getDefaultWorkingPath() + File.separator + EMBEDDED_DB_DIR;
     }
     
     //---------------------------------------------------------

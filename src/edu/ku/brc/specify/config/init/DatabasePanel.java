@@ -79,8 +79,6 @@ public class DatabasePanel extends BaseSetupPanel
     protected final String            DBPWD       = "dbPassword";
     protected final String            DBUSERNAME  = "dbUserName";
 
-    protected boolean                 assumeDerby = false;
-    
     protected JTextField              usernameTxt;
     protected JTextField              passwordTxt;
     protected JTextField              dbNameTxt;
@@ -129,8 +127,8 @@ public class DatabasePanel extends BaseSetupPanel
         driverList  = DatabaseDriverInfo.getDriversList();
         drivers     = createComboBox(driverList);
         
-        // Select Derby or MySQL as the default
-        drivers.setSelectedItem(DatabaseDriverInfo.getDriver(assumeDerby ? "Derby" : "MySQL"));
+        // MySQL as the default
+        drivers.setSelectedItem(DatabaseDriverInfo.getDriver("MySQL"));
         
         JLabel lbl = createI18NFormLabel("DRIVER", SwingConstants.RIGHT);
         lbl.setFont(bold);
@@ -440,15 +438,6 @@ public class DatabasePanel extends BaseSetupPanel
         {
             nextBtn.setEnabled(isValid && (isOK == null || isOK || manualLoginOK));
         }
-    }
-    
-    /**
-     * @return
-     */
-    public boolean isUsingDerby()
-    {
-        DatabaseDriverInfo database = (DatabaseDriverInfo)drivers.getSelectedItem();
-        return database.getDialectClassName().equals("org.hibernate.dialect.DerbyDialect");
     }
     
     /**

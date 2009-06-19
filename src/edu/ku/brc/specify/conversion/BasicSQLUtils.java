@@ -64,7 +64,7 @@ public class BasicSQLUtils
     
     protected static ConversionLogger.TableWriter tblWriter = null;
     
-    public static enum SERVERTYPE {MySQL, Derby, MS_SQLServer}
+    public static enum SERVERTYPE {MySQL, MS_SQLServer}
     public static SERVERTYPE myDestinationServerType = SERVERTYPE.MySQL;
     public static SERVERTYPE mySourceServerType = SERVERTYPE.MySQL;
     
@@ -2184,10 +2184,6 @@ public class BasicSQLUtils
     
     public static String getServerTypeSpecificSQL(final String mySQLFormatedStr, final SERVERTYPE currentServerType)
     {
-        //if ((myDestinationServerType == myDestinationServerType.MySQL) || (myDestinationServerType == myDestinationServerType.Derby))
-        //{
-        //    return mySQLFormatedString;
-        //}
         String mySQLFormatedString = mySQLFormatedStr;
          if (currentServerType == SERVERTYPE.MS_SQLServer)
         {
@@ -2222,7 +2218,7 @@ public class BasicSQLUtils
         {
             return "create INDEX INX_"+name+" ON " + name + " (NewID)";
         }
-        else if ((currentServerType == SERVERTYPE.MySQL)|| (currentServerType == SERVERTYPE.Derby))
+        else if (currentServerType == SERVERTYPE.MySQL)
         {
             return "alter table "+name+" add index INX_"+name+" (NewID)";
         }

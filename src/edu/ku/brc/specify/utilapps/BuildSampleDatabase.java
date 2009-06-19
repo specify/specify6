@@ -7177,51 +7177,6 @@ public class BuildSampleDatabase
         
     }
     
-    /**
-     * Copies the DerbyDatabases dir to the User app dir
-     */
-    protected void copyToUserWorkingDir()
-    {
-        File src = new File(UIRegistry.getDefaultWorkingPath()+File.separator+"DerbyDatabases");
-        File dst = new File(UIRegistry.getUserHomeAppDir()+File.separator+"DerbyDatabases");
-        log.info("Copying DerbyDatabases from \n"+ src.getAbsolutePath() + "\n to \n" + dst.getAbsolutePath());
-        try
-        {
-            FileUtils.copyDirectory(src, dst);
-            
-        } catch (IOException ex)
-        {
-            ex.printStackTrace();
-        }
-    }
-    
-    /**
-     * Makes sure the Derby Directory gets created to hold the database. 
-     */
-    protected void ensureDerbyDirectory(final String driver)
-    {
-        if (StringUtils.isNotEmpty(driver) && 
-            StringUtils.contains(driver, "Derby") && 
-            StringUtils.isNotEmpty(UIRegistry.getJavaDBPath()))
-        {
-            File derbyDir = new File(UIRegistry.getJavaDBPath());
-            if (!derbyDir.exists())
-            {
-                if (!derbyDir.mkdirs())
-                {
-                    try
-                    {
-                        log.error("Couldn't create Derby Path["+derbyDir.getCanonicalPath()+"]");
-                        
-                    } catch (IOException ex)
-                    {
-                        log.error(ex);
-                    }
-                }
-            }
-        }
-    }
-    
     public ProgressFrame createProgressFrame(final String title)
     {
         if (frame == null)
@@ -7237,10 +7192,10 @@ public class BuildSampleDatabase
      */
     public void buildSetup(final String[] args)
     {
-        boolean doEmptyBuild = false;
-        String  derbyPath    = null;
+        boolean doEmptyBuild   = false;
         
-        boolean wasJavaDBSet = false;
+        UIRegistry.setEmbeddedDBDir(UIRegistry.getDefaultEmbeddedDBPath()); // on the local machine
+        
         if (args != null && args.length > 0)
         {
             for (String arg : args)
@@ -7259,21 +7214,15 @@ public class BuildSampleDatabase
                     {
                         UIRegistry.setBaseAppDataDir(value);
                         
-                    } else if (option.equals("-Djavadbdir"))
+                    } else if (option.equals("-Dembeddeddbdir"))
                     {
-                        UIRegistry.setJavaDBDir(value);
-                        derbyPath = UIRegistry.getJavaDBPath();
-                        wasJavaDBSet = true;
+                        UIRegistry.setEmbeddedDBDir(value);
+                        
+                    } else if (option.equals("-Dmobile"))
+                    {
+                        UIRegistry.setEmbeddedDBDir(UIRegistry.getMobileEmbeddedDBPath());
                     }
                 }
-            }
-            
-            if (args.length == 2 && !args[0].startsWith("-D") && !args[1].startsWith("-D"))
-            {
-                doEmptyBuild = args[0].equals("build_empty");
-                derbyPath    = StringUtils.isNotEmpty(args[1]) ? args[1] : derbyPath;
-                hideFrame    = true;
-                log.debug("doEmptyBuild [ "+doEmptyBuild+" ]");
             }
         }
         
@@ -7282,14 +7231,9 @@ public class BuildSampleDatabase
             UIRegistry.setAppName("Specify");
         }
         
-        if (!wasJavaDBSet)
-        {
-            UIRegistry.setJavaDBDir(derbyPath != null ? derbyPath : UIRegistry.getDefaultWorkingPath() + File.separator + "DerbyDatabases");
-        }
-        
         if (hideFrame)
         {
-            System.out.println("Derby Path [ "+UIRegistry.getJavaDBPath()+" ]");
+            System.out.println("Embedded DB Path [ "+UIRegistry.getEmbeddedDBPath()+" ]");
         }
         
         // Then set this
@@ -7655,10 +7599,6 @@ public class BuildSampleDatabase
                          final Pair<String, String> saUser, 
                          final Pair<String, String> cmUser) throws SQLException
     {
-        boolean doingDerby = StringUtils.contains(driverName, "Derby");
-        
-        ensureDerbyDirectory(driverName);
-
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         frame.pack();
         Dimension size = frame.getSize();
@@ -7678,7 +7618,7 @@ public class BuildSampleDatabase
         }
         
         frame.setProcessPercent(true);
-        frame.setOverall(0, 7+(doingDerby ? 1 : 0) + this.selectedChoices.size());
+        frame.setOverall(0, 7 + this.selectedChoices.size());
         frame.getCloseBtn().setVisible(false);
 
         
@@ -7705,6 +7645,30 @@ public class BuildSampleDatabase
             UIRegistry.showError(msg);
             throw new RuntimeException(msg);
         }
+        
+        String newConnStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, databaseHost, dbName, saUser.first, saUser.second, driverInfo.getName());
+        if (DBConnection.isEmbedded(newConnStr))
+        {
+            try
+            {
+                Class.forName(driverInfo.getDriverClassName());
+                
+                DBConnection testDB = DBConnection.createInstance(driverInfo.getDriverClassName(), driverInfo.getDialectClassName(), dbName, newConnStr, saUser.first, saUser.second);
+                
+                Connection conn = testDB.createConnection();
+                
+                if (conn != null)
+                {
+                    conn.close();
+                }
+                
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
+            DBConnection.getInstance().setDatabaseName(null);
+        }
+                
         SpecifySchemaGenerator.generateSchema(driverInfo, databaseHost, dbName, dbUser.first, dbUser.second);
 
         SwingUtilities.invokeLater(new Runnable()
@@ -7717,21 +7681,13 @@ public class BuildSampleDatabase
         });
         
         if (UIHelper.tryLogin(driverInfo.getDriverClassName(), 
-                driverInfo.getDialectClassName(), 
-                dbName, 
-                driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, databaseHost, dbName), 
-                dbUser.first, 
-                dbUser.second))
-            
-        createSpecifySAUser(databaseHost, dbUser.first, dbUser.second, saUser.first, saUser.second, dbName);
-
-        if (UIHelper.tryLogin(driverInfo.getDriverClassName(), 
                               driverInfo.getDialectClassName(), 
                               dbName, 
                               driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, databaseHost, dbName), 
                               saUser.first, 
                               saUser.second))
         {
+            createSpecifySAUser(databaseHost, dbUser.first, dbUser.second, saUser.first, saUser.second, dbName);
             
             boolean single = true;
             if (single)
@@ -7799,23 +7755,6 @@ public class BuildSampleDatabase
                     }
                     AppPreferences.getRemote().flush();
                     
-                    
-                    if (doingDerby)
-                    {
-                        SwingUtilities.invokeLater(new Runnable()
-                        {
-                            public void run()
-                            {
-                                frame.getProcessProgress().setIndeterminate(true);
-                                frame.getProcessProgress().setString("");
-                                frame.setDesc("Copying DerbyDatases to User App Dir");
-                                frame.setOverall(steps++);
-                            }
-                        });
-                        copyToUserWorkingDir();
-                    }
-                    
-
                     frame.setDesc("Build Completed.");
                     frame.setOverall(steps++);
 

@@ -487,6 +487,8 @@ public class DataObjFieldFormatMgr
         sb.append("  </aggregators>\n");
         sb.append("\n\n</formatters>\n");
         
+        log.debug(sb.toString());
+        
         saveXML(sb.toString());
     }
     
@@ -506,9 +508,9 @@ public class DataObjFieldFormatMgr
                 
             } catch (Exception ex)
             {
+                ex.printStackTrace();
                 edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(DataObjFieldFormatMgr.class, ex);
-                ex.printStackTrace();
             }
         }
     }

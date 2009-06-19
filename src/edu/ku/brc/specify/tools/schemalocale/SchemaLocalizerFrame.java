@@ -458,12 +458,6 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
             UIRegistry.setBaseAppDataDir(appdatadir);
         }
 
-        String javadbdir = System.getProperty("javadbdir"); //$NON-NLS-1$
-        if (StringUtils.isNotEmpty(javadbdir))
-        {
-            UIRegistry.setJavaDBDir(javadbdir);
-        }
-
         SwingUtilities.invokeLater(new Runnable()
         {
             public void run()

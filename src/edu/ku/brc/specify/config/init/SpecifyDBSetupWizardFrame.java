@@ -275,6 +275,24 @@ public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFa
             e.printStackTrace();
         }
         
+        UIRegistry.setEmbeddedDBDir(UIRegistry.getDefaultEmbeddedDBPath()); // on the local machine
+        
+        for (String s : args)
+        {
+            String[] pairs = s.split("="); //$NON-NLS-1$
+            if (pairs.length == 2)
+            {
+                if (pairs[0].startsWith("-D")) //$NON-NLS-1$
+                {
+                    System.setProperty(pairs[0].substring(2, pairs[0].length()), pairs[1]);
+                } 
+            } else
+            {
+                String symbol = pairs[0].substring(2, pairs[0].length());
+                System.setProperty(symbol, symbol);
+            }
+        }
+        
         // Now check the System Properties
         String appDir = System.getProperty("appdir");
         if (StringUtils.isNotEmpty(appDir))
@@ -288,10 +306,16 @@ public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFa
             UIRegistry.setBaseAppDataDir(appdatadir);
         }
         
-        String javadbdir = System.getProperty("javadbdir");
-        if (StringUtils.isNotEmpty(javadbdir))
+        String embeddeddbdir = System.getProperty("embeddeddbdir");
+        if (StringUtils.isNotEmpty(embeddeddbdir))
         {
-            UIRegistry.setJavaDBDir(javadbdir);
+            UIRegistry.setEmbeddedDBDir(embeddeddbdir);
+        }
+        
+        String mobile = System.getProperty("mobile");
+        if (StringUtils.isNotEmpty(mobile))
+        {
+            UIRegistry.setEmbeddedDBDir(UIRegistry.getMobileEmbeddedDBPath());
         }
         
         SwingUtilities.invokeLater(new Runnable()

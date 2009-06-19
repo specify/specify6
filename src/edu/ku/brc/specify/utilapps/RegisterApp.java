@@ -1460,24 +1460,6 @@ public class RegisterApp extends JPanel
                         } 
                     }
                 }
-                
-                String appDir = System.getProperty("appdir"); //$NON-NLS-1$
-                if (StringUtils.isNotEmpty(appDir))
-                {
-                    UIRegistry.setDefaultWorkingPath(appDir);
-                }
-                
-                String appdatadir = System.getProperty("appdatadir"); //$NON-NLS-1$
-                if (StringUtils.isNotEmpty(appdatadir))
-                {
-                    UIRegistry.setBaseAppDataDir(appdatadir);
-                }
-                
-                String javadbdir = System.getProperty("javadbdir"); //$NON-NLS-1$
-                if (StringUtils.isNotEmpty(javadbdir))
-                {
-                    UIRegistry.setJavaDBDir(javadbdir);
-                }
 
                 // Then set this
                 IconManager.setApplicationClass(Specify.class);

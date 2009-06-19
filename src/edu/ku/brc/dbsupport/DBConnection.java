@@ -21,6 +21,9 @@ package edu.ku.brc.dbsupport;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.io.File;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -28,11 +31,13 @@ import java.sql.SQLException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import com.mysql.management.driverlaunched.ServerLauncherSocketFactory;
+
 /**
  * A singleton that remembers all the information needed for creating a JDBC Database connection. 
  * It uses the DBConnection
- * After setting the necessary parameters you can ask it for a connection at anytime.<br><br>
- * Also, has a factory method for creating instances so users can connect to more than one database ata time.
+ * After setting the necessary parameters you can ask it for a connection at any time.<br><br>
+ * Also, has a factory method for creating instances so users can connect to more than one database at a time.
  *
  * @code_status Complete
  * 
@@ -61,7 +66,9 @@ public class DBConnection
     protected String     errMsg = ""; //$NON-NLS-1$
     
     // Static Data Members
-    protected static final DBConnection instance = new DBConnection();
+    protected static final DBConnection instance        = new DBConnection();
+    protected static Boolean            isEmbeddedDB    = null;
+    protected static File               embeddedDataDir = null;
     
     /**
      * Protected Default constructor
@@ -69,7 +76,63 @@ public class DBConnection
      */
     protected DBConnection()
     {
-        
+        AccessController.doPrivileged(new PrivilegedAction<Object>() {
+            public Object run() 
+            {
+                Runtime.getRuntime().addShutdownHook(new Thread() 
+                {
+                    @Override
+                    public void run() 
+                    {
+                        if (isEmbeddedDB)
+                        {
+                            ServerLauncherSocketFactory.shutdown(embeddedDataDir, null);
+                        }
+                    }
+                });
+                return null;
+            }
+        });
+    }
+    
+    /**
+     * @param connectionStr
+     * @return
+     */
+    public static boolean isEmbedded(final String connectionStr)
+    {
+        return StringUtils.isNotEmpty(connectionStr) && StringUtils.contains(connectionStr, "mxj");
+    }
+    
+    /**
+     * For Embedded MySQL.
+     * @param connectionStr JDBC connection string
+     */
+    protected static void checkForEmbeddedDir(final String connectionStr)
+    {
+        isEmbeddedDB = isEmbedded(connectionStr);
+        if (isEmbeddedDB)
+        {
+            String attr = "server.basedir=";
+            int inx = connectionStr.indexOf(attr);
+            if (inx > -1)
+            {
+                inx += attr.length();
+                int eInx = connectionStr.indexOf("&", inx);
+                if (eInx > -1)
+                {
+                    embeddedDataDir = new File(connectionStr.substring(inx, eInx));
+                }
+            }
+        }
+    }
+    
+    /**
+     * @return whether the database is being run in "embedded" mode
+     */
+    public boolean isEmbedded()
+    {
+        return isEmbeddedDB;
     }
     
     /**
@@ -95,6 +158,8 @@ public class DBConnection
         this.dbDialect       = dbDialect;
         this.dbName          = dbName;
         this.skipDBNameCheck = dbName == null;
+        
+        checkForEmbeddedDir(dbConnectionStr);
     }
 
     /**
@@ -160,6 +225,8 @@ public class DBConnection
             
         } catch (SQLException sqlEX)
         {
+            sqlEX.printStackTrace();
+            
             log.error("Error in getConnection", sqlEX);
             if (sqlEX.getNextException() != null)
             {
@@ -203,6 +270,7 @@ public class DBConnection
         {
             log.error(ex);
         }
+        
     }
     
     /**
@@ -297,6 +365,8 @@ public class DBConnection
     {
         this.dbConnectionStr = dbConnectionStr;
         argHaveBeenChecked = false;
+        
+        checkForEmbeddedDir(dbConnectionStr);
     }
     
     /**

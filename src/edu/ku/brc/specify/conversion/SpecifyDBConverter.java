@@ -174,25 +174,6 @@ public class SpecifyDBConverter
             }
         }
         
-        // Now check the System Properties
-        String appDir = System.getProperty("appdir"); //$NON-NLS-1$
-        if (StringUtils.isNotEmpty(appDir))
-        {
-            UIRegistry.setDefaultWorkingPath(appDir);
-        }
-        
-        String appdatadir = System.getProperty("appdatadir"); //$NON-NLS-1$
-        if (StringUtils.isNotEmpty(appdatadir))
-        {
-            UIRegistry.setBaseAppDataDir(appdatadir);
-        }
-        
-        String javadbdir = System.getProperty("javadbdir"); //$NON-NLS-1$
-        if (StringUtils.isNotEmpty(javadbdir))
-        {
-            UIRegistry.setJavaDBDir(javadbdir);
-        }
-        
         final SpecifyDBConverter converter = new  SpecifyDBConverter();
         
         Logger logger = LogManager.getLogger("edu.ku.brc");

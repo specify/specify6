@@ -16,6 +16,11 @@ There are three types of connection strings:
         <connection type="opensys"><![CDATA[jdbc:mysql://SERVER/]]></connection>
     </db>
     
+    <db name="MySQLEmbedded" driver="com.mysql.jdbc.Driver" dialect="org.hibernate.dialect.MySQLDialect">
+        <connection type="open"><![CDATA[jdbc:mysql:mxj://SERVER:3336/DATABASE?characterEncoding=UTF-8&server.basedir=DATADIR&createDatabaseIfNotExist=true&autoReconnect=true&server.initialize-user=true]]></connection>
+        <connection type="opensys"><![CDATA[jdbc:mysql:mxj://SERVER:3336/?characterEncoding=UTF-8&server.basedir=DATADIR&createDatabaseIfNotExist=true&autoReconnect=true&server.initialize-user=true]]></connection>
+    </db>
+    
     <!-- 
     <db name="Derby" driver="org.apache.derby.jdbc.EmbeddedDriver" dialect="org.hibernate.dialect.DerbyDialect">
         <connection type="create">jdbc:derby:DATABASE;create=true</connection>
