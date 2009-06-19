@@ -1347,6 +1347,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             result += fromTbl.getSecond() + ".timestampModified > :" + timestampParam;
             result += " or ";
             result += fromTbl.getSecond() + ".timestampCreated > :" + timestampParam;
+            result += " or ";
+            result += fromTbl.getSecond() + ".timestampModified is null";
+            result += " or ";
+            result += fromTbl.getSecond() + ".timestampCreated is null";
         }
         return result;
     }
