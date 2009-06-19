@@ -964,7 +964,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         StringBuilder orderStr = new StringBuilder();
         LinkedList<SortElement> sortElements = new LinkedList<SortElement>();
         boolean postSortPresent = false;
-        boolean debug = false;
+        boolean debug = true;
         ProcessNode root = new ProcessNode();
         int fldPosition = distinct ? 0 : 1;
 
@@ -1030,18 +1030,25 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 																					// OneToOne
 																					// also?????????
 					{
+						parent = parent.getParent();
+						if (isSchemaExport && lastExportTime != null)
+						{
+							addToList = true;
+						}
+						else
+						{
 						// parent will initially point to the related table
 						// and don't need to add related table unless it has
 						// children displayed/queried,
-						parent = parent.getParent();
-						addToList = false;
+							addToList = false;
+						}
 					} else
 					{
 						DataObjDataFieldFormatIFace formatter = relQRI
 								.getDataObjFormatter();
 						if (formatter != null)
 						{
-							addToList = formatter.getSingleField() != null;
+							addToList = formatter.getSingleField() != null || (isSchemaExport && lastExportTime != null);
 						} else
 						{
 							addToList = false;
@@ -1071,13 +1078,15 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 				// down and if the path form the top down doesn't
 				// exist then add a new node
 				ProcessNode parentNode = root;
+				int q = 0;
 				for (BaseQRI qri : list)
 				{
 					if (debug)
 					{
 						log.debug("ProcessNode[" + qri.getTitle() + "]");
 					}
-					if (!parentNode.contains(qri) && qri instanceof TableQRI)
+					q++;
+					if (!parentNode.contains(qri) && (qri instanceof TableQRI || q == list.size()))
 					{
 						ProcessNode newNode = new ProcessNode(qri);
 						parentNode.getKids().add(newNode);
@@ -1120,7 +1129,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         StringBuilder fromStr = new StringBuilder();
         TableAbbreviator tableAbbreviator = new TableAbbreviator();
         List<Pair<DBTableInfo,String>> fromTbls = new LinkedList<Pair<DBTableInfo,String>>();
-        boolean hqlHasSynJoins = processTree(root, fromStr, fromTbls, 0, tableAbbreviator, tblTree, qfps, searchSynonymy);
+        boolean hqlHasSynJoins = processTree(root, fromStr, fromTbls, 0, tableAbbreviator, tblTree, qfps, searchSynonymy, isSchemaExport, lastExportTime);
 
         StringBuilder sqlStr = new StringBuilder();
         sqlStr.append("select ");
@@ -1232,65 +1241,14 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             //get only records modified/added since last export of the schema...
             if (isSchemaExport && lastExportTime != null)
             {
-                //XXX deletes via audit stuff?? - during db-export phase
-                //XXX formatters????? - need to add joins and conditions for tables accessed by formatters --- possible??
+                //XXX deletes via audit stuff- wait - don't need audit stuff?? - during db-export phase (
                 if (criteriaStr.length() > 0)
                 {
                     criteriaStr.append(" AND (");
                 }
-                Vector<String> tblAliii = new Vector<String>(fromTbls.size());
-                for (Pair<DBTableInfo, String> fromTbl : fromTbls)
-                {
-                	tblAliii.add(fromTbl.getSecond());
-                }
-                criteriaStr.append(getTimestampWhere(tblAliii, paramsToSet, lastExportTime));
-//                int f = 0;
-//                for (Pair<DBTableInfo, String> fromTbl : fromTbls)
-//                {
-//                    if (f > 0)
-//                    {
-//                        criteriaStr.append(" OR ");
-//                    }
-//                    f++;
-//                    String paramName = "spparam" + paramsToSet.size();
-//                    criteriaStr.append(fromTbl.getSecond() + ".timestampModified > :" + paramName);
-//                    paramsToSet.add(new Pair<String, Object>(paramName, lastExportTime));
-//                    criteriaStr.append(" OR ");
-//                    paramName = "spparam" + paramsToSet.size();
-//                    criteriaStr.append(fromTbl.getSecond() + ".timestampCreated > :" + paramName);
-//                    paramsToSet.add(new Pair<String, Object>(paramName, lastExportTime));
-//                }
-                //now for the relationships implicit in the formatters
-                ProcessNode formattersRoot = new ProcessNode();
-                for (QueryFieldPanel qfp : qfps)
-                {
-					if (qfp.getFieldQRI() instanceof RelQRI)
-					{
-						RelQRI relQRI = (RelQRI )qfp.getFieldQRI();
-						DataObjDataFieldFormatIFace formatter = relQRI.getDataObjFormatter();
-						//if (formatter.getSingleField() == null)
-						{
-							ProcessNode newNode = new ProcessNode(relQRI.getRelationshipInfo());
-							formattersRoot.getKids().add(newNode);
-							processFormatter(formatter, newNode);
-						}
-					}
-                }
-                printTree(formattersRoot, 0);
-                String formattersCriteria  = "";
-                String rootAlias = tableAbbreviator.getAbbreviation(rootTable.getTableTree());
-                for (ProcessNode node : formattersRoot.getKids())
-                {
-                	if (formattersCriteria.length() > 0)
-                	{
-                		formattersCriteria += " or ";
-                	}
-                	formattersCriteria += getTimestampCriteria(rootAlias, node, paramsToSet, lastExportTime);
-                }
-                if (StringUtils.isNotBlank(formattersCriteria))
-                {
-                	criteriaStr.append(" or " + formattersCriteria);
-                }
+                String timestampParam = "spparam" + paramsToSet.size();
+                paramsToSet.add(new Pair<String, Object>(timestampParam, lastExportTime));
+                criteriaStr.append(getTimestampWhere(fromTbls, timestampParam, lastExportTime));
                 criteriaStr.append(") ");
             }
         }
@@ -1336,60 +1294,61 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         
         String result = sqlStr.toString();
         
-        //return new Pair<String, List<Pair<String, Object>>>(result, paramsToSet);
-        return new HQLSpecs(result, paramsToSet, sortElements);
+         return new HQLSpecs(result, paramsToSet, sortElements);
     }
   
+    /**
+     * @param rootAlias
+     * @param node
+     * @return reasonably likely to be unique alias for table represented by node.
+     */
     protected static String getNextAlias(String rootAlias, ProcessNode node)
     {
     	return rootAlias + "_" + DBTableIdMgr.getInstance().getByClassName(node.getRel().getClassName()).getAbbrev();
     }
     
-    protected static String getTimestampFrom(String rootAlias, ProcessNode node, Vector<String> fromTbls)
+    /**
+     * @param rootAlias
+     * @param node
+     * @param fromTbls
+     * @return a from clause for use in adding timestamp conditions for the tables related by the tree rooted by node.
+     * The ProcessNode tree is expected to have been created by processFormatter().
+     */
+    protected static String getTimestampFrom(String rootAlias, ProcessNode node, List<Pair<DBTableInfo,String>> fromTbls)
     {
     	String nextAlias = getNextAlias(rootAlias, node);
-    	String result = rootAlias + " inner join " + rootAlias + "." + node.getRel().getName() + " " + nextAlias;
-    	fromTbls.add(nextAlias);
+    	String result = " left join " + rootAlias + "." + node.getRel().getName() + " " + nextAlias;
+    	fromTbls.add(new Pair<DBTableInfo, String>(null, nextAlias));
     	for (ProcessNode kid : node.getKids())
     	{
     		result += getTimestampFrom(nextAlias, kid, fromTbls);
     	}
     	return result;
     }
-    
-    protected static String getTimestampWhere( Vector<String> fromTbls, List<Pair<String, Object>> paramsToSet, Timestamp lastExportTime)
+
+  
+    /**
+     * @param fromTbls
+     * @param timestampParam
+     * @param lastExportTime
+     * @return a set of conditions to get records modified or created after lastExportTime for each table in fromTbls. 
+     */
+    protected static String getTimestampWhere( List<Pair<DBTableInfo, String>> fromTbls, String timestampParam, Timestamp lastExportTime)
     {
         String result = "";
     	int f = 0;
-        for (String fromTbl : fromTbls)
+        for (Pair<DBTableInfo, String> fromTbl : fromTbls)
         {
             if (f > 0)
             {
-                result += " OR ";
+                result += " or ";
             }
             f++;
-            String paramName = "spparam" + paramsToSet.size();
-            result += fromTbl + ".timestampModified > :" + paramName;
-            paramsToSet.add(new Pair<String, Object>(paramName, lastExportTime));
-            result += " OR ";
-            paramName = "spparam" + paramsToSet.size();
-            result += fromTbl + ".timestampCreated > :" + paramName;
-            paramsToSet.add(new Pair<String, Object>(paramName, lastExportTime));
+            result += fromTbl.getSecond() + ".timestampModified > :" + timestampParam;
+            result += " or ";
+            result += fromTbl.getSecond() + ".timestampCreated > :" + timestampParam;
         }
         return result;
-    }
-    
-    protected static String getTimestampCriteria(String rootAlias, ProcessNode node, List<Pair<String, Object>> paramsToSet, Timestamp lastExportTime)
-    {
-    	DBTableInfo tbl = DBTableIdMgr.getInstance().getByClassName(node.getRel().getClassName());
-    	Vector<String> fromTbls = new Vector<String>();
-    	String from = getTimestampFrom(rootAlias, node, fromTbls);
-    	String where = getTimestampWhere(fromTbls, paramsToSet, lastExportTime);
-    	if (StringUtils.isNotBlank(from) && StringUtils.isNotBlank(where))
-    	{
-    		return " exists(select " + getNextAlias(rootAlias, node) + "." + tbl.getIdFieldName() + " from " + from + " where " + where + ")";
-    	}
-    	return null;
     }
     
     /**
@@ -1590,7 +1549,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                                final int level, 
                                final TableAbbreviator tableAbbreviator, final TableTree tblTree,
                                List<QueryFieldPanel> fieldPanels,
-                               final boolean searchSynonymy)
+                               final boolean searchSynonymy,
+                               final boolean isSchemaExport,
+                               final Timestamp exportTimestamp)
     {
         BaseQRI qri = parent.getQri();
         boolean hqlHasSynJoins = false;
@@ -1653,14 +1614,32 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     sqlStr.append(extraJoin + " ");
                 }
             }
+            else if (qri instanceof RelQRI && isSchemaExport && exportTimestamp != null)
+            {
+				RelQRI relQRI = (RelQRI )qri;
+				RelationshipType relType = relQRI.getRelationshipInfo().getType();
+				DataObjDataFieldFormatIFace formatter = relQRI.getDataObjFormatter();
+				if ((!relType.equals(RelationshipType.ManyToOne) && !relType.equals(RelationshipType.ManyToMany))
+					|| formatter.getSingleField() == null)
+				{
+					ProcessNode newNode = new ProcessNode(relQRI);
+					processFormatter(formatter, newNode);
+					String rootAlias = tableAbbreviator.getAbbreviation(relQRI.getTableTree().getParent());
+					String formFrom = getTimestampFrom(rootAlias, newNode, fromTbls);
+					sqlStr.append(" ");
+					sqlStr.append(formFrom);
+					sqlStr.append(" ");
+				}
+            }
         }
         for (ProcessNode kid : parent.getKids())
         {
-            hqlHasSynJoins |= processTree(kid, sqlStr, fromTbls, level + 1, tableAbbreviator, tblTree, fieldPanels, searchSynonymy);
+            hqlHasSynJoins |= processTree(kid, sqlStr, fromTbls, level + 1, tableAbbreviator, tblTree, fieldPanels, searchSynonymy, isSchemaExport, exportTimestamp);
         }
         return hqlHasSynJoins;
     }
 
+    
     /**
      * @param fldName
      * @return fldName formatted for use as a field in a JasperReports data source or

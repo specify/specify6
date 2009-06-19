@@ -22,7 +22,6 @@ package edu.ku.brc.specify.tasks.subpane.qb;
 import java.util.Vector;
 
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
-import edu.ku.brc.af.core.db.DBTableInfo;
 
 
 /**
@@ -47,8 +46,12 @@ public class ProcessNode
     public ProcessNode(BaseQRI qri)
     {
         this.qri = qri;
+        if (qri instanceof RelQRI)
+        {
+        	this.rel = ((RelQRI )qri).getRelationshipInfo();
+        }
     }
-
+    
     public ProcessNode(DBRelationshipInfo rel)
     {
     	this.rel = rel;
