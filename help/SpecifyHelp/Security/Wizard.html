@@ -10,6 +10,7 @@
 .style3 {
 	color: #990033
 }
+.style6 {color: #990000; font-style: italic; }
 -->
 </style>
 </head>
@@ -24,33 +25,55 @@
 <tr><td width="32"><img src="../../images/spwizard32.png" width="32" height="32" /></td>
 <td width="296"><h2>Setup Wizard</h2>  </td></tr>
 </table>
-<p>The Specify Setup Wizard is used to create a new, empty database within Specify. It will walk you through the creation of some very important structural elements for your Specify installation. </p>
-<p>Before running the Wizard, it is also necessary to have installed  Java and MySQL and  an administrative (root) login account within MySQL which includes all MySQL permissions.</p>
+<p>The Specify Setup Wizard is used to create a new, empty database within Specify. It walks you through the creation of a database and insertion of a schema within MySQL, the creation of an administrative level database and Specify user and the initialization of the database structure. It also allows you to download that start of Taxon and Geography authority files.</p>
+<p>Before running the Wizard,   Java and MySQL must be installed. MySQL must include  an administrative (root) login account with all MySQL permissions.</p>
 <p>The Setup Wizard should NOT be run if collection data already exists in Specify. It creates a new, blank database and will permanently erase all existing data. The Wizard should only be run one time, for the initial Specify installation and setup, then can be deleted from your computer.</p>
 <p>Fields that must contain data before moving to the next Wizard window (required fields) are displayed with a <strong>bold</strong> font.</p>
+<h4>MySQL requirements for creating a Specify database and Master credentials using the Specify Setup Wizard</h4>
+<p>The first  Wizard window creates a blank Specify database within MySQL and inserts the schema (empty tables, fields and relationships) for the database. The Specify Setup Wizard can <strong>NOT</strong> be used to perform these two tasks if:</p>
+<ol>
+  <li>The MySQLinstallation is located ona different computer or  server.</li>
+  <li>The default data management engine for an existing MySQL installation is NOT InnoDB. </li>
+</ol>
+<p>If you are accessing MySQL on a remote server or have previously installed a MySQL instance configured to use a  data engine other than InnoDB as its default, you will need to create a blank Specify database   with MySQL software tools and insert a Specify schema <em>before</em> running the Specify Setup Wizard. The Specify team provides both an explanation and script for performing these tasks from within MySQL on the Specify website at <a href="http://specifysoftware.org/content/creating-specify-database-within-mysql">http://specifysoftware.org/content/creating-specify-database-within-mysql</a>. </p>
+<p><em><strong>Note:</strong></em> The MySQL step-by-step installation guide available on the Specify web site, specifies to make INNOdb the default data storage engine when installing Specify for the first time.  Institutions with legacy installations of MySQL may have had it configured originally for a different data engine, and in that case the Wizard should not be used to create a new Specify database in that installation of MYSQL, until after the above procedure and script is run. </p>
+<p>When you are running the Wizard, rather than creating the database and inserting the schema in the first Wizard window, you will verify that Specify can access your existing database and schema in the <em>Advanced</em> section by clicking on the <em>Test IT Login</em> button. </p>
+<p>The second Wizard window creates a 'Master' Username and Password that Specify will use to access the Specify database from within MySQL. The Specify Setup Wizard can <strong>NOT</strong> create a Master Username and Password if:</p>
+<ol>
+  <li>MySQL is being accessed on a remote server.</li>
+</ol>
+<p>If you are accessing a remote server you will need to create your Specify Master Username and Password from within the MySQL command line tool before running the Specify Setup Wizard. The following MySQL commands can be used to create the credentials. When entering the commands from within MySQL replace the red text with the appropriate names for your MySQL setup. Type this command:</p>
+<div style="margin-left: 1em;">
+<p>&gt; GRANT SELECT, INSERT, UPDATE, DELETE PRIVILEGES ON *.* TO '<span class="style6">Master Username</span>'@'<span class="style6">name of remote server</span>' IDENTIFIED BY '<span class="style6">Master Password</span>';</p></div>
+<p>Type the <em>Return</em> key and enter the second command:<br />
+<div style="margin-left: 1em;">
+  &gt; flush privileges;</p>
+</div>
+<p>Then in the second Wizard window, rather than creating the Master credentials, you will  verify  your Master credentials in the Advanced section by clicking the <em>Test Master Login</em> button.</p>
 <p><a name="mysql_username" id="mysql_username"></a></p>
 <p align="center"><img src="../../images/window1.png" /></p>
 <p align="center"><span class="imgcaption">Enter MySQL IT Username and Password</span></p>
-<p>This window allows you to either create a Specify database or test a database you have already created within MySQL to use with Specify. The Specify Setup Wizard requires the default engine for MySQL to be set to InnoDB to build the Specify database, other default engine settings require that the database be built manually within MySQL. An explanation and script for accomplishing this task exists on the website; www.specifysoftware.org/documentation/</p>
+<p>This window allows you to either create a Specify database or verify that Specify can access a database you have already created within MySQL. To create or verify a database, you must first complete the following information:</p>
 <p>The <strong>IT Username</strong> and <strong>IT Password</strong> must be an account with full administrator privileges in the MySQL database manager. This account will be used by the Specify Setup Wizard to create your Specify database and a Specify Administrative User account (in the next window) in MySQL. If you do not know the IT administrator (&quot;root&quot;) account username and password for MySQL, or do not have a MySQL installation, exit now. You can not go further without these.</p>
 <p>The <strong>Database Name</strong> will be used to name the database that the Setup Wizard is about to create. If you do not have an existing database but are using the Wizard to create one, you are creating this name as you type it into the window. Once you name the database make sure to document it so you can reference if you need it at a later date.</p>
 <p>If you have an existing database you much enter the name of the database in this text box so that the Wizard may verify that Specify can connect to the database before continuing with the Wizard.</p>
 <p>The <strong>Host Name</strong> is the name of the computer that is running MySQL. This is either an IP Address  or a DNS (Domain Name Service) name. When running MySQL on your local machine this is almost always 'localhost' or '127.0.0.1'.</p>
+<p>Note: When using an IP Address make sure that the IP is 'static'. </p>
 <p><u><strong>Create a Specify Database</strong></u></p>
-<p>When you click the <em>Create Specify Database</em> button Specify will connect to MySQL using the information you have entered and then create your Specify database. If Specify can not connect to MySQL and build the database for any reason a message will display. To proceed in the Wizard you will need to verify that the information entered and MySQL setup are correct.</p>
-<p><strong><u>Test an existing Specify Database</u></strong></p>
-<p>Enter the database information in this window, then click the <em>Test IT Login</em> button in the Advanced section of the window. The Wizard will verify that Specify can connect to the database using the information that is entered. </p>
+<p>When you click the <em>Create Specify Database</em> button Specify will connect to MySQL using the information you have entered and then create your Specify database and insert the Specify schema. If Specify can not connect to MySQL and build the database for any reason a message will display. To proceed in the Wizard you will need to verify that the information entered and MySQL setup are correct.</p>
+<p><strong><u>Verify access to an existing Specify Database</u></strong></p>
+<p>Enter your database information in this window, then click the <em>Test IT Login</em> button in the Advanced section of the window. The Wizard will verify that Specify can connect to your existing database. </p>
 <p align="center"><a name="master_username" id="master_username"></a></p>
 <p align="center"><img src="../../images/window2.png"/></p>
 <p align="center"><span class="imgcaption">Create a Master Username and Password</span></p>
 <p>The security system for Specify 6 uses both a &quot;Master&quot; username and password, which Specify uses to access  the MySQL Database, as well as a User username and password, which allows people to run the Specify program. The Master account has SELECT, INSERT, UPDATE and DELETE privileges on data tables in your Specify database only and has no other MySQL privileges. Specify uses only one Master username and password for all users, but encrypts the Master password with the User information, creating an encrypted string. This allows the Master information to become unique for each user. </p>
-<p>This window either creates the Master Username and Password for your Specify system, or verifies that the Master username and password that has been created within MySQL is recognized by Specify. Any instance of Specify that does not access MySQL on the local machine is required to create the Master username and password using the MySQL Admin tool. This Master account must have SELECT, INSERT, UPDATE and DELETE privileges on data tables in your Specify database.</p>
+<p>This window either creates the Master Username and Password for your Specify system, or verifies that a Master username and password that has already been created within MySQL is recognized by Specify. Any instance of Specify that does not access MySQL on the local machine, (uses a remote server), must create the Master username and password using the MySQL Admin tool. This Master account must have SELECT, INSERT, UPDATE and DELETE privileges on data tables in your Specify database.</p>
 <p>When creating the Master username and password, the word &quot;Master&quot; or &quot;Root&quot; SHOULD NOT BE USED. Please create a unique Master username and  a secure, strong password for it. This should not be the same as the Username and Password used for the MySQL IT account in the previous window. This information should be remembered and secured by the person installing MySQL and Specify at your institution. The Specify administrator  (a role and  account within Specify) will need the Master username and password to create new user accounts in Specify. </p>
 <p>Also, the &quot;Master&quot; username and password should not be used as a Specify user account name within Specify.  Whichever user name and password you choose for the Master account, that username and password is never used to log in to Specify. This &quot;Master&quot; username and password should ALWAYS be unique. Do not use this username and password for any other accounts in MySQL or Specify.</p>
 <p><strong><u>Create the Master</u></strong></p>
-<p>When you click the <em>Create Master User</em> button Specify will take a moment to create the Master account in the database. Once this account has been created you may not change the information on this screen or or any previous screens and the <em>Back</em> button will become disabled.</p>
+<p>When you click the <em>Create Master User</em> button Specify will take a moment to create the Master account in the database. Once this account has been created you may not change the information on this screen, or  any previous screens; therefore, the <em>Back</em> button will become disabled.</p>
 <p><u><strong>Test the Master</strong></u></p>
-<p>Click the <em>Test Master Login</em> button to verify that Specify can connect to the database using the master credentials that have been entered. </p>
+<p>Click the <em>Test Master Login</em> button to verify that Specify can connect to the Specify database using the existing master credentials that you have previously created in the MySQL command line tool. </p>
 <p><a name="security_on" id="security_on"></a></p>
 <p align="center"><img src="../../images/window_security.png"/></p>
 <p align="center" class="imgcaption">Turn Security On/Off</p>
@@ -95,7 +118,7 @@
 <p align="center"><img src="../../images/window6.png"/></p>
 <p align="center" class="imgcaption">Configure the Storage Tree</p>
 <p align="left">&nbsp;</p>
-<p align="left">Specify 6 visually presents some data  types in hierarchical tree displays. These data types include the Taxon, Geography, (Specimen) Storage, Chronostratigraphy and Lithostratigraphy tables. There are two distinctions for trees; the first is the tree definition, or list of all the Ranks (levels) included in each tree,  the second is the nodes which reside on the tree at each of these levels.  The ranks must first be defined, then nodes can be added. The Wizard offers a table  for each of the trees (Chronostratigraphy and Lithostratigraphy for paleo collections only) for creating  tree definitions. </p>
+<p align="left">Specify 6 visually presents some data  types in hierarchical tree displays. These data types include the Taxon, Geography, (Specimen) Storage, Chronostratigraphy and Lithostratigraphy tables. There are two distinctions for trees; the first is the tree definition, or list of all the Ranks (levels) included in each tree,  the second is the nodes which reside on the tree at each of these levels.  The ranks must first be defined, then nodes can be added. The Wizard offers a table  for each of the trees (Chronostratigraphy and Lithostratigraphy for paleo collections only) for creating  tree definitions. These can also be edited from within Specify.</p>
 <p align="left">Nodes for the Storage tree can be added within the Specify application. The storage tree operates at the Institution level and is available and visible to all Collections. </p>
 <ul>
   <li>The <strong>Rank</strong> is the tree level. This name can be edited from within Specify. Click the Include box to place the rank in the tree. </li><br/>
@@ -164,7 +187,8 @@
 <p>&nbsp;</p>
 <p align="center"><img src="../../images/window11.png"/></p>
 <p align="center" class="imgcaption">Preload Taxon Records/Nodes</p>
-<p>The Specify Wizard not only defines the Taxon tree but also allows loading of an authority file for your Discipline. <span class="style2">Authority files were created using data from the </span> Catalog of Life Project for each predefined discipline within Specify. If you choose to load the data into your tree the Taxon tree  will be populated with hundreds of taxon nodes and all associated data. Then, when adding Collection Objects into your database you can simply choose a taxa from the Taxon field rather than adding each individually as needed.</p>
+<p>The Specify Wizard not only defines the Taxon tree but also allows loading of an authority file for  Discipline. <span class="style2">Authority files were created using data from the </span> Catalog of Life Project for some of the disciplines within Specify. If this window does not appear there are no existing authority files for your chosen discipline. </p>
+<p>If  you choose to load the data into your tree the Taxon tree  will be populated with hundreds of taxon nodes and all associated data. Then, when adding Collection Objects into your database you can simply choose a taxa from the Taxon field rather than adding each individually as needed.</p>
 <p>Please note that loading the Taxon tree will also affect the tree definition. If you load the provided Taxon authority file for your discipline the accompanying tree definition may include ranks that were not defined by you in the previous window, but are necessary to include all the predefined Taxon information.</p>
 <p>Additional discipline-specific trees can be loaded from within Specify at the time new disciplines are created.</p>
 <p>Click the <em>Choose</em> button for a list of taxon files for the discipline you are creating. Not all disciplines offer more than one taxon file. Once the taxon file is chosen information will display in the <strong>Source</strong>, <strong>Coverage</strong> and <strong>Description</strong> fields for that file. </p>
