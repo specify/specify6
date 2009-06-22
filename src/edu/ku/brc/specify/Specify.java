@@ -44,6 +44,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.Locale;
 import java.util.MissingResourceException;
@@ -1803,12 +1807,70 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             dialog.setVisible(true);
         }
     }
+    
+    protected void localities()
+    {
+        Connection connection = DBConnection.getInstance().getConnection();
+        Statement stmt        = null;
+        Statement stmt2       = null;
+        try
+        {
+            stmt  = connection.createStatement();
+            stmt2 = connection.createStatement();
+            String    sql = "SELECT l.LocalityID, l.LocalityName, g.FullName, l.Latitude1, l.Longitude1 FROM locality l INNER JOIN geography g ON l.GeographyID = g.GeographyID";
+            ResultSet rs  = stmt.executeQuery(sql);
+            while (rs.next())
+            {
+                String currLocalityName = rs.getString(2);
+                ResultSet rs1 = stmt2.executeQuery(sql+" WHERE g.FullName = \""+rs.getString(3)+"\" AND l.LocalityID <> " + rs.getInt(1));
+                while (rs1.next())
+                {
+                    String localityName = rs1.getString(2);
+                    int    distance     = StringUtils.getLevenshteinDistance(currLocalityName, localityName);
+                    //System.err.println(rs.getInt(1) + "  "+ rs1.getInt(1) + "  "+ distance);
+                    if (distance < 6)
+                    {
+                        System.err.println("----- "+distance+"\n"+currLocalityName+"\n"+localityName);
+                        System.err.println(rs.getBigDecimal(4)+","+rs.getBigDecimal(5)+"\n"+rs1.getBigDecimal(4)+","+rs1.getBigDecimal(5));
+                    }
+                }
+                rs1.close();
+            }
+            rs.close();
+            
+        } catch (SQLException ex)
+        {
+            ex.printStackTrace();
+        } finally
+        {
+            try
+            {
+                if (stmt != null)
+                {
+                    stmt.close();
+                }
+                if (stmt2 != null)
+                {
+                    stmt2.close();
+                }
+            } catch (SQLException ex)
+            {
+                ex.printStackTrace();
+            }
+        }
+    }
 
     /**
      * Shows the About dialog.
      */
     public void doAbout()
     {
+        if (true)
+        {
+            localities();
+            return;
+        }
+        
         if (false)
         {
             StatsTrackerTask statsTrackerTask = (StatsTrackerTask)TaskMgr.getTask(StatsTrackerTask.STATS_TRACKER);
@@ -2117,6 +2179,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                     canSendStats = AppPreferences.getRemote().getBoolean(sendStatsPrefName, true); //$NON-NLS-1$
                 }
                 
+                canSendStats = false;
                 if (canSendStats)
                 {
                     Boolean          canSendISAStats  = AppPreferences.getRemote().getBoolean(sendISAStatsPrefName, true); //$NON-NLS-1$
@@ -2129,10 +2192,12 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                         return false;
                     }
                     DataProviderFactory.getInstance().shutdown();
-                    DBConnection.getInstance().close();
+                    DBConnection.shutdown();
+                    
                 } else
                 {
-                    DBConnection.getInstance().close();
+                    DataProviderFactory.getInstance().shutdown();
+                    DBConnection.shutdown();
                     System.exit(0);
                 }
                 

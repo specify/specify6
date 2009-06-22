@@ -72,6 +72,7 @@ import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
+import edu.ku.brc.dbsupport.SchemaUpdateService;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.ui.HelpMgr;
@@ -425,9 +426,17 @@ public class DatabaseLoginPanel extends JTiledPanel
         dbDriverCBX = createComboBox(dbDrivers);
         if (dbDrivers.size() > 0)
         {
-            String selectedStr = AppPreferences.getLocalPrefs().get("login.dbdriver_selected", "MySQL"); //$NON-NLS-1$ //$NON-NLS-2$
-            int inx = Collections.binarySearch(dbDrivers, new DatabaseDriverInfo(selectedStr, null, null));
-            dbDriverCBX.setSelectedIndex(inx > -1 ? inx : -1);
+            if (dbDrivers.size() == 1)
+            {
+                dbDriverCBX.setSelectedIndex(0);
+                dbDriverCBX.setEnabled(false);
+                
+            } else
+            {
+                String selectedStr = AppPreferences.getLocalPrefs().get("login.dbdriver_selected", "MySQL"); //$NON-NLS-1$ //$NON-NLS-2$
+                int inx = Collections.binarySearch(dbDrivers, new DatabaseDriverInfo(selectedStr, null, null));
+                dbDriverCBX.setSelectedIndex(inx > -1 ? inx : -1);
+            }
 
         } else
         {
@@ -940,11 +949,12 @@ public class DatabaseLoginPanel extends JTiledPanel
                         DBConnection.getInstance().setDriverName(((DatabaseDriverInfo)dbDriverCBX.getSelectedItem()).getName());
                         
                         // Extremely Temporary Code.
-                        /*String version = UIHelper.getInstall4JInstallString();
-                        if (version == null || version.equals("Unknown"))
+                        // This needs to be done before Hibernate starts up
+                        String version = UIHelper.getInstall4JInstallString();
+                        //if (version == null || version.equals("Unknown"))
                         {
-                            SchemaUpdateService.getInstance().updateSchema();
-                        }*/
+                            SchemaUpdateService.getInstance().updateSchema(version);
+                        }
                     }
                 }
                 return null;

@@ -119,7 +119,12 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
      * @param database the database name
      * @return the full connection string
      */
-    public String getConnectionStr(final ConnectionType type, final String server, final String database, final String username, final String password, final String serverType)
+    public String getConnectionStr(final ConnectionType type, 
+                                   final String server, 
+                                   final String database, 
+                                   final String username, 
+                                   final String password, 
+                                   final String serverType)
     {
         
         String connStr = connectionFormats.get(type);
@@ -140,8 +145,16 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
                 return StringUtils.isNotEmpty(server) ? connStr.replaceFirst("SERVER", server): connStr; //$NON-NLS-1$
             }
             
-            String dataDir = UIRegistry.getAppDataDir() + File.separator + "specify_data";
-            connStr = connStr.replaceFirst("DATADIR",  dataDir); //$NON-NLS-1$
+            String dataDir = UIRegistry.getEmbeddedDBPath();
+            if (dataDir != null)
+            {
+                dataDir = new File(dataDir).getAbsolutePath();
+                
+                log.debug(dataDir);
+                System.err.println(dataDir);
+            
+                connStr = connStr.replaceFirst("DATADIR",  dataDir); //$NON-NLS-1$
+            }
             
             connStr = connStr.replaceFirst("DATABASE", database); //$NON-NLS-1$
             connStr = connStr.replaceFirst("USERNAME", username); //$NON-NLS-1$

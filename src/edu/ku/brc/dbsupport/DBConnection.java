@@ -27,11 +27,15 @@ import java.security.PrivilegedAction;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Stack;
+import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.mysql.management.driverlaunched.ServerLauncherSocketFactory;
+
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * A singleton that remembers all the information needed for creating a JDBC Database connection. 
@@ -66,16 +70,20 @@ public class DBConnection
     protected String     errMsg = ""; //$NON-NLS-1$
     
     // Static Data Members
-    protected static final DBConnection instance        = new DBConnection();
-    protected static Boolean            isEmbeddedDB    = null;
-    protected static File               embeddedDataDir = null;
+    protected static final DBConnection  instance;
+    protected static Boolean             isEmbeddedDB;
+    protected static File                embeddedDataDir;
+    protected static Stack<DBConnection> connections;
+    protected static boolean             isShuttingDown;
     
-    /**
-     * Protected Default constructor
-     *
-     */
-    protected DBConnection()
+    static
     {
+        isShuttingDown  = false;
+        isEmbeddedDB    = null;
+        embeddedDataDir = null;
+        connections     = new Stack<DBConnection>();
+        instance        = new DBConnection();
+        
         AccessController.doPrivileged(new PrivilegedAction<Object>() {
             public Object run() 
             {
@@ -96,6 +104,15 @@ public class DBConnection
     }
     
     /**
+     * Protected Default constructor
+     *
+     */
+    protected DBConnection()
+    {
+        connections.push(this);
+    }
+    
+    /**
      * @param connectionStr
      * @return
      */
@@ -108,7 +125,7 @@ public class DBConnection
      * For Embedded MySQL.
      * @param connectionStr JDBC connection string
      */
-    protected static void checkForEmbeddedDir(final String connectionStr)
+    public static void checkForEmbeddedDir(final String connectionStr)
     {
         isEmbeddedDB = isEmbedded(connectionStr);
         if (isEmbeddedDB)
@@ -158,6 +175,8 @@ public class DBConnection
         this.dbDialect       = dbDialect;
         this.dbName          = dbName;
         this.skipDBNameCheck = dbName == null;
+        
+        connections.push(this);
         
         checkForEmbeddedDir(dbConnectionStr);
     }
@@ -220,7 +239,7 @@ public class DBConnection
             }
             Class.forName(dbDriver); // load driver
             
-            //log.debug("["+dbConnectionStr+"]["+dbUsername+"]["+dbPassword+"] ");
+            log.debug("["+dbConnectionStr+"]["+dbUsername+"]["+dbPassword+"] ");
             con = DriverManager.getConnection(dbConnectionStr, dbUsername, dbPassword);
             
         } catch (SQLException sqlEX)
@@ -253,6 +272,26 @@ public class DBConnection
     {
         try
         {
+            if (connections.indexOf(this) > -1)
+            {
+                connections.remove(this);
+            } else
+            {
+                String msg = "The DBConnection ["+this+"] has already been removed!";
+                log.error(msg);
+                UIRegistry.showError(msg);
+            }
+            
+            if (!isShuttingDown)
+            {
+                if (this == instance)
+                {
+                    String msg = "The DBConnection.getInstance().close() should not be called. (Call DBConnection.shutdown()).";
+                    log.error(msg);
+                    UIRegistry.showError(msg);
+                }
+            }
+            
             // This is primarily for Derby non-networked database. 
             if (dbCloseConnectionStr != null)
             {
@@ -271,15 +310,6 @@ public class DBConnection
             log.error(ex);
         }
         
-    }
-    
-    /**
-     * Returns the instance to the singleton.
-     * @return the instance to the singleton
-     */
-    public static DBConnection getInstance()
-    {
-        return instance;
     }
     
     /**
@@ -490,7 +520,32 @@ public class DBConnection
         dbConnection.setConnectionStr(dbConnectionStr);
         dbConnection.setUsernamePassword(dbUsername, dbPassword);
         
+        checkForEmbeddedDir(dbConnectionStr);
+        
         return dbConnection;
+    }
+    
+    /**
+     * Returns the instance to the singleton.
+     * @return the instance to the singleton
+     */
+    public static DBConnection getInstance()
+    {
+        return instance;
+    }
+    
+    /**
+     * Shuts down all the connections (including the main getInstance()).
+     */
+    public static void shutdown()
+    {
+        isShuttingDown = true;
+        for (DBConnection dbc : new Vector<DBConnection>(connections))
+        {
+            dbc.close();
+        }
+        connections.clear();
+        isShuttingDown = false;
     }
 
 }

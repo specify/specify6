@@ -39,6 +39,7 @@ import org.apache.commons.lang.StringUtils;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DBMSUserMgr;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -64,6 +65,8 @@ public class MasterUserPanel extends GenericFormPanel
     protected JButton                 skipStepBtn;
     protected boolean                 manualLoginOK = false;
     protected JLabel                  advLabel;
+    
+    protected boolean                 isEmbedded = false;
 
 
     /**
@@ -85,7 +88,6 @@ public class MasterUserPanel extends GenericFormPanel
                            boolean makeStretchy)
     {
         super(name, title, helpContext, labels, fields, nextBtn, prevBtn, makeStretchy);
-        
     }
 
     /* (non-Javadoc)
@@ -144,6 +146,22 @@ public class MasterUserPanel extends GenericFormPanel
         progressBar.setVisible(false);
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.config.init.BaseSetupPanel#doingNext()
+     */
+    @Override
+    public void doingNext()
+    {
+        isEmbedded = DBConnection.getInstance().isEmbedded();
+        if (isEmbedded)
+        {
+            ((JTextField)comps.get("saUserName")).setText("Specify");
+            ((JTextField)comps.get("saPassword")).setText("Specify");
+            ((JTextField)comps.get("saUserName")).setEnabled(false);
+            ((JTextField)comps.get("saPassword")).setEnabled(false);
+        }
+    }
+
     /**
      * @return the Row and Column JGoodies definitions
      */
@@ -167,11 +185,17 @@ public class MasterUserPanel extends GenericFormPanel
         String saUserName = ((JTextField)comps.get("saUserName")).getText();
         String saPassword = ((JTextField)comps.get("saPassword")).getText();
 
-        
-        if (mgr.connect(saUserName, saPassword, hostName, dbName))
+        if (isEmbedded)
+        {
+            if (mgr.connect(saUserName, saPassword, hostName, dbName))
+            {
+                nextBtn.setEnabled(true);
+                mgr.close();
+                return true;
+            }
+        } else
         {
             nextBtn.setEnabled(true);
-            mgr.close();
             return true;
         }
         return false;
@@ -208,7 +232,7 @@ public class MasterUserPanel extends GenericFormPanel
             String dbUsername = properties.getProperty("dbUserName");
             String saUserName = ((JTextField)comps.get("saUserName")).getText();
             
-            if (dbUsername.equals(saUserName))
+            if (dbUsername.equals(saUserName) && !isEmbedded)
             {
                 label.setText(UIRegistry.getResourceString("DB_SA_USRNAME_MATCH"));
                 createMUBtn.setEnabled(false);
@@ -280,46 +304,55 @@ public class MasterUserPanel extends GenericFormPanel
                 protected Object doInBackground() throws Exception
                 {
                     isOK = false;
-                    
-                    DBMSUserMgr mgr = DBMSUserMgr.getInstance();
-                    
-                    String dbUserName = properties.getProperty("dbUserName");
-                    String dbPassword = properties.getProperty("dbPassword");
-                    String dbName     = properties.getProperty("dbName");
-                    String hostName   = properties.getProperty("hostName");
-                    
-                    String saUserName = ((JTextField)comps.get("saUserName")).getText();
-                    String saPassword = ((JTextField)comps.get("saPassword")).getText();
-                    
-                    if (mgr.connectToDBMS(dbUserName, dbPassword, hostName))
+                    if (!isEmbedded)
                     {
-                        if (mgr.doesUserExists(saUserName))
-                        {
-                            if (!mgr.dropUser("\'"+saUserName+"\'@\'"+hostName+"\'"))
-                            {
-                                errorKey = "ERR_DROP_USR";
-                            }
-                        }
+                        DBMSUserMgr mgr = DBMSUserMgr.getInstance();
                         
-                        if (!mgr.doesUserExists(saUserName))
+                        String dbUserName = properties.getProperty("dbUserName");
+                        String dbPassword = properties.getProperty("dbPassword");
+                        String dbName     = properties.getProperty("dbName");
+                        String hostName   = properties.getProperty("hostName");
+                        
+                        String saUserName = ((JTextField)comps.get("saUserName")).getText();
+                        String saPassword = ((JTextField)comps.get("saPassword")).getText();
+                        
+                        if (mgr.connectToDBMS(dbUserName, dbPassword, hostName))
                         {
-                            firePropertyChange(propName, 0, 1);
-                            
-                            isOK = mgr.createUser(saUserName, saPassword, dbName, DBMSUserMgr.PERM_BASIC);
-                            if (!isOK)
+                            if (mgr.doesUserExists(saUserName))
                             {
-                                errorKey = "ERR_CRE_MASTER";
+                                if (!mgr.dropUser("\'"+saUserName+"\'@\'"+hostName+"\'"))
+                                {
+                                    errorKey = "ERR_DROP_USR";
+                                }
+                            }
+                            
+                            if (!mgr.doesUserExists(saUserName))
+                            {
+                                firePropertyChange(propName, 0, 1);
+                                
+                                isOK = mgr.createUser(saUserName, saPassword, dbName, DBMSUserMgr.PERM_BASIC);
+                                if (!isOK)
+                                {
+                                    errorKey = "ERR_CRE_MASTER";
+                                }
+                            } else
+                            {
+                                isOK = true;
                             }
                         } else
                         {
-                            isOK = true;
+                            errorKey = "NO_CONN_ROOT";
+                            isOK = false;
+                        }
+                        
+                        if (mgr != null)
+                        {
+                            mgr.close();
                         }
                     } else
                     {
-                        errorKey = "NO_CONN_ROOT";
-                        isOK = false;
+                        isOK = true;
                     }
-                    mgr.close();
                     
                     return null;
                 }

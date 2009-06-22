@@ -104,9 +104,10 @@ public abstract class SchemaUpdateService
     /**
      * Returns a View by name, meaning a ViewSet name and a View name inside the ViewSet.
      * @param viewName the name of the view (cannot be null)
+     * @param versionNumber the current version number of the application
      * @return the view
      */
-    public abstract boolean updateSchema();
+    public abstract boolean updateSchema(String versionNumber);
     
     /**
      * Returns the instance of the AppContextMgr.

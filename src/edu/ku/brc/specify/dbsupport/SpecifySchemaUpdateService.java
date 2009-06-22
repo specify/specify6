@@ -47,17 +47,18 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.af.core.db.SchmeaUpdateService#updateSchema()
+     * @see edu.ku.brc.dbsupport.SchemaUpdateService#updateSchema(java.lang.String)
      */
     @Override
-    public boolean updateSchema()
+    public boolean updateSchema(final String versionNumber)
     {
-        DBConnection dbConn = DBConnection.getInstance();//getITConnection();
+        /*DBConnection dbConn = DBConnection.getInstance();//getITConnection();
         if (dbConn != null)
         {
             DBMSUserMgr dbMgr = DBMSUserMgr.getInstance();
             if (dbMgr.connect(dbConn.getUserName(), dbConn.getPassword(), dbConn.getServerName(), dbConn.getDatabaseName()))
             {
+                // Here checks to see if this is the first ever
                 if (!dbMgr.doesDBHaveTable("spversion"))
                 {
                     DatabaseDriverInfo driverInfo = DatabaseDriverInfo.getDriver(dbConn.getDriverName());
@@ -76,7 +77,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 }
                 dbMgr.close();
             }
-        }
+        }*/
         return false;
     }
 

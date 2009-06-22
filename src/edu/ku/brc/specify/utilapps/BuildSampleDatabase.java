@@ -7647,6 +7647,8 @@ public class BuildSampleDatabase
         }
         
         String newConnStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, databaseHost, dbName, saUser.first, saUser.second, driverInfo.getName());
+        DBConnection.checkForEmbeddedDir(newConnStr);
+        
         if (DBConnection.isEmbedded(newConnStr))
         {
             try

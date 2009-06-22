@@ -64,25 +64,20 @@ public class SpecifySchemaGenerator
     {
         log.debug("generateSchema hostname:" + hostname);
         log.debug("generateSchema databaseName:" + databaseName);
-        //boolean isSQLServer = dbdriverInfo.getName().equals("SQLServer");
         
-        // Get the Create OR the Open String
-        // Note: Derby local databases have a different connection string for creating verses opening.
-        // So we need to get the Create string if it has one (Derby) or the open string if it doesn't
-        // Also notice that Derby wants a database name for the initial connection and the others do not
-        String connectionStr = dbdriverInfo.getConnectionCreateOpenStr(hostname, "", userName, password, dbdriverInfo.getName());
+        String connectionStr = dbdriverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostname, "", userName, password, dbdriverInfo.getName());
         log.debug("generateSchema connectionStr: " + connectionStr);
         
         log.debug("Creating database connection to: " + connectionStr);
         // Now connect to other databases and "create" the Derby database
         DBConnection dbConn = DBConnection.createInstance(dbdriverInfo.getDriverClassName(), dbdriverInfo.getDialectClassName(), databaseName, connectionStr, userName, password);
 
-        //log.debug("calling dropAndCreateDB(" + dbConn.toString() + ", " + databaseName +")");
+        log.debug("calling dropAndCreateDB(" + dbConn.toString() + ", " + databaseName +")");
         dropAndCreateDB(dbConn, databaseName);
         
         connectionStr = dbdriverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostname, databaseName, userName, password, dbdriverInfo.getName());
         
-        log.debug("Preparting to doGenSchema: " + connectionStr);
+        log.debug("Preparing to doGenSchema: " + connectionStr);
         
         // Generate the schema
         doGenSchema(dbdriverInfo,
@@ -246,7 +241,7 @@ public class SpecifySchemaGenerator
                                       final String user,
                                       final String passwd)
     {
-        // setup the Hibernate configuartion
+        // setup the Hibernate configuration
         Configuration hibCfg = new AnnotationConfiguration();
         hibCfg.setProperties(getHibernateProperties(driverInfo, connectionStr, user, passwd));
         hibCfg.configure();

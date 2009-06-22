@@ -350,6 +350,8 @@ public class HibernateUtil {
             
             //log.debug("Shutting down Hibernate.");
             
+            closeSession();
+            
             // Close caches and connection pools
             getSessionFactory().close();
     

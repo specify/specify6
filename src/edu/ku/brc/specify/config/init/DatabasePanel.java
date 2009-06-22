@@ -29,6 +29,7 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -49,6 +50,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DBMSUserMgr;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.helpers.XMLHelper;
@@ -276,6 +278,15 @@ public class DatabasePanel extends BaseSetupPanel
     {
         getValues(properties);
         
+        final String dbName     = dbNameTxt.getText();
+        final String dbUserName = usernameTxt.getText();
+        final String dbPwd      = passwordTxt.getText();
+        final String hostName   = hostNameTxt.getText();
+        
+        final DatabaseDriverInfo driverInfo = (DatabaseDriverInfo)drivers.getSelectedItem();
+        String newConnStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostName, dbName, dbUserName, dbPwd, driverInfo.getName());
+        DBConnection.checkForEmbeddedDir(newConnStr);
+        
         if ((isOK == null || !isOK) && verifyDatabase(properties))
         {
             progressBar.setIndeterminate(true);
@@ -297,16 +308,41 @@ public class DatabasePanel extends BaseSetupPanel
                     isOK = false;
                     
                     DBMSUserMgr mgr   = DBMSUserMgr.getInstance();
-                    String dbName     = dbNameTxt.getText();
-                    String dbUserName = usernameTxt.getText();
-                    String dbPwd      = passwordTxt.getText();
-                    String hostName   = hostNameTxt.getText();
-                    DatabaseDriverInfo driverInfo = (DatabaseDriverInfo)drivers.getSelectedItem();
                     
-                    if (mgr.connectToDBMS(dbUserName, dbPwd, hostName))
+                    boolean dbmsOK = false;
+                    if (DBConnection.getInstance().isEmbedded())
+                    {
+                        String newConnStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostName, dbName, dbUserName, dbPwd, driverInfo.getName());
+                        if (DBConnection.isEmbedded(newConnStr))
+                        {
+                            try
+                            {
+                                Class.forName(driverInfo.getDriverClassName());
+                                
+                                DBConnection testDB = DBConnection.createInstance(driverInfo.getDriverClassName(), driverInfo.getDialectClassName(), dbName, newConnStr, dbUserName, dbPwd);
+                                
+                                Connection conn = testDB.createConnection();
+                                
+                                if (conn != null)
+                                {
+                                    conn.close();
+                                }
+                                dbmsOK = true;
+                                
+                            } catch (Exception ex)
+                            {
+                                ex.printStackTrace();
+                            }
+                            DBConnection.getInstance().setDatabaseName(null);
+                        }
+                    } else if (mgr.connectToDBMS(dbUserName, dbPwd, hostName))
                     {
                         mgr.close();
-                        
+                        dbmsOK = true;
+                    }
+                    
+                    if (dbmsOK)
+                    {
                         firePropertyChange(PROPNAME, 0, 1);
                         
                         try
@@ -510,20 +546,23 @@ public class DatabasePanel extends BaseSetupPanel
     protected boolean verifyDatabase(final Properties props)
     {
         boolean proceed = true;
-        if (checkForDatabase(props))
+        if (!DBConnection.getInstance().isEmbedded())
         {
-            Object[] options = { 
-                    getResourceString("PROCEED"), 
-                    getResourceString("CANCEL")
-                  };
-            int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
-                                                         UIRegistry.getLocalizedMessage("DEL_CUR_DB", props.getProperty(DBNAME)), 
-                                                         getResourceString("DEL_CUR_DB_TITLE"), 
-                                                         JOptionPane.YES_NO_OPTION,
-                                                         JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-            proceed = userChoice == JOptionPane.YES_OPTION;
-            
-        } 
+            if (checkForDatabase(props))
+            {
+                Object[] options = { 
+                        getResourceString("PROCEED"), 
+                        getResourceString("CANCEL")
+                      };
+                int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
+                                                             UIRegistry.getLocalizedMessage("DEL_CUR_DB", props.getProperty(DBNAME)), 
+                                                             getResourceString("DEL_CUR_DB_TITLE"), 
+                                                             JOptionPane.YES_NO_OPTION,
+                                                             JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+                proceed = userChoice == JOptionPane.YES_OPTION;
+                
+            } 
+        }
         return proceed;
     }
     
@@ -590,26 +629,32 @@ public class DatabasePanel extends BaseSetupPanel
             String itPassword = props.getProperty(DBPWD);
             String hostName   = props.getProperty(HOSTNAME);
             
-            mgr = DBMSUserMgr.getInstance();
-            
-            if (mgr.connectToDBMS(itUsername, itPassword, hostName))
+            if (!DBConnection.getInstance().isEmbedded())
             {
-                if (!mgr.verifyEngineAndCharSet(dbName))
+                mgr = DBMSUserMgr.getInstance();
+                
+                if (mgr.connectToDBMS(itUsername, itPassword, hostName))
                 {
-                    String errMsg = mgr.getErrorMsg();
-                    if (errMsg != null)
+                    if (!mgr.verifyEngineAndCharSet(dbName))
                     {
-                        Object[] options = { 
-                                getResourceString("CLOSE")
-                              };
-                        JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
-                                                                     errMsg, 
-                                                                     getResourceString("DEL_CUR_DB_TITLE"), 
-                                                                     JOptionPane.OK_OPTION,
-                                                                     JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-                    } 
-                    return false;
+                        String errMsg = mgr.getErrorMsg();
+                        if (errMsg != null)
+                        {
+                            Object[] options = { 
+                                    getResourceString("CLOSE")
+                                  };
+                            JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
+                                                                         errMsg, 
+                                                                         getResourceString("DEL_CUR_DB_TITLE"), 
+                                                                         JOptionPane.OK_OPTION,
+                                                                         JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+                        } 
+                        return false;
+                    }
+                    return true;
                 }
+            } else
+            {
                 return true;
             }
             

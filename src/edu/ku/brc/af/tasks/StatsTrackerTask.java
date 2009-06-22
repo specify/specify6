@@ -165,7 +165,7 @@ public class StatsTrackerTask extends BaseTask
                     if (doExit)
                     {
                         DataProviderFactory.getInstance().shutdown();
-                        DBConnection.getInstance().close();
+                        DBConnection.shutdown();
                         System.exit(0);
                     }
                 }
