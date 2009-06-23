@@ -599,24 +599,24 @@ public class UIRegistry
     public static String getAppDataDir()
     {
         File dir;
-        //log.debug("1 AppDataDir["+instance.appDataDir+"]");
+        log.debug("1 AppDataDir["+instance.appDataDir+"]");
         if (instance.appDataDir == null)
         {
             dir = new File(getUserHomeAppDir());
         } else
         {
-            //log.debug("2 AppDataDir["+instance.appDataDir+"]");
+            log.debug("2 AppDataDir["+instance.appDataDir+"]");
             if (instance.appDataDir.equals("."))
             {
-                //log.debug("************* dot");
+                log.debug("************* dot");
                 dir = new File(UIHelper.stripSubDirs((new File(".").getAbsolutePath()), 1) + File.separator + instance.appName);
             } else
             {
-                //log.debug("3 AppDataDir["+instance.appDataDir+"]");
+                log.debug("3 AppDataDir["+instance.appDataDir+"]");
                 dir = new File(instance.appDataDir + File.separator + instance.appName);
             }
         }
-        //log.debug("AppDataDir["+dir.getAbsolutePath()+"]");
+        log.debug("AppDataDir["+dir.getAbsolutePath()+"]");
         
         if (!dir.exists())
         {
@@ -647,6 +647,16 @@ public class UIRegistry
      * @return the string to a platform specify user data directory
      */
     public static String getUserHomeDir()
+    {
+        log.error("isMobile() "+isMobile()+"["+UIRegistry.getDefaultWorkingPath()+"]");
+        
+        return isMobile() ? UIRegistry.getDefaultWorkingPath() : getDefaultUserHomeDir();
+    }
+
+    /**
+     * @return
+     */
+    public static String getDefaultUserHomeDir()
     {
         String homeDir = System.getProperty("user.home");
         
@@ -1608,13 +1618,29 @@ public class UIRegistry
     }
     
     /**
+     * @param isMobile
+     */
+    public static void setMobile(final boolean isMobile)
+    {
+        System.setProperty("ismobile", isMobile ? "true" : "false");
+    }
+    
+    /**
+     * @return
+     */
+    public static boolean isMobile()
+    {
+        String isMobileStr = System.getProperty("ismobile");
+        return StringUtils.isNotEmpty(isMobileStr) && isMobileStr.equals("true");
+    }
+    
+    /**
      * Sets the path to the embedded DB.
      * @param path the path.
      */
     public static void setEmbeddedDBDir(final String path)
     {
-        log.debug("Setting Embedded DB Path: "+path);
-        
+        //log.debug(">>>>>>>>>>>>>>>>>>>>>> setEmbeddedDBDir: "+path);
         if (StringUtils.isNotEmpty(path))
         {
             System.setProperty(EMBEDDED_DB_PATH, path);
@@ -1626,7 +1652,7 @@ public class UIRegistry
      */
     public static String getEmbeddedDBPath()
     {
-        log.debug("Embedded DB Path: "+System.getProperty(EMBEDDED_DB_PATH));
+        //log.debug("************************ getEmbeddedDBPath: "+System.getProperty(EMBEDDED_DB_PATH));
         return System.getProperty(EMBEDDED_DB_PATH);
     }
     
@@ -1635,6 +1661,7 @@ public class UIRegistry
      */
     public static String getDefaultEmbeddedDBPath()
     {
+        //log.debug("########################## getDefaultEmbeddedDBPath["+(UIRegistry.getAppDataDir() + File.separator + EMBEDDED_DB_DIR)+"]");
         return UIRegistry.getAppDataDir() + File.separator + EMBEDDED_DB_DIR;
     }
     
@@ -1644,6 +1671,7 @@ public class UIRegistry
      */
     public static String getMobileEmbeddedDBPath()
     {
+        //log.debug("########################## getMobileEmbeddedDBPath["+(UIRegistry.getDefaultWorkingPath() + File.separator + EMBEDDED_DB_DIR)+"]");
         return UIRegistry.getDefaultWorkingPath() + File.separator + EMBEDDED_DB_DIR;
     }
     

@@ -2943,6 +2943,10 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
    */
   public static void main(String[] args)
   {
+      
+      // Set App Name, MUST be done very first thing!
+      UIRegistry.setAppName("Specify");  //$NON-NLS-1$
+
       /*UIDefaults uiDefaults = UIManager.getDefaults();
       Enumeration<Object> e = uiDefaults.keys();
       while (e.hasMoreElements())
@@ -2994,11 +2998,13 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
           {
               if (pairs[0].startsWith("-D")) //$NON-NLS-1$
               {
+                  System.err.println("["+pairs[0].substring(2, pairs[0].length())+"]["+pairs[1]+"]");
                   System.setProperty(pairs[0].substring(2, pairs[0].length()), pairs[1]);
               } 
           } else
           {
               String symbol = pairs[0].substring(2, pairs[0].length());
+              System.err.println("["+symbol+"]");
               System.setProperty(symbol, symbol);
           }
       }
@@ -3025,8 +3031,17 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
       String mobile = System.getProperty("mobile");
       if (StringUtils.isNotEmpty(mobile))
       {
-          UIRegistry.setEmbeddedDBDir(UIRegistry.getMobileEmbeddedDBPath());
+          UIRegistry.setMobile(true);
+          
+          try
+          {
+              UIRegistry.setEmbeddedDBDir(DBConnection.getMobileTempDir().getAbsolutePath());
+          } catch (IOException e)
+          {
+            e.printStackTrace();
+          }
       }
+      
       SwingUtilities.invokeLater(new Runnable() {
           @SuppressWarnings("synthetic-access") //$NON-NLS-1$
         public void run()
@@ -3034,9 +3049,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
               log.debug("Checking for update....");
               try
               {
-                  // Set App Name, MUST be done very first thing!
-                  UIRegistry.setAppName("Specify");  //$NON-NLS-1$
-                  
                   // Load Local Prefs
                   AppPreferences localPrefs = AppPreferences.getLocalPrefs();
                   localPrefs.setDirPath(UIRegistry.getAppDataDir());

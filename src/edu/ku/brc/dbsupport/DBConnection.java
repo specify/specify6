@@ -22,6 +22,7 @@ package edu.ku.brc.dbsupport;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.io.File;
+import java.io.IOException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.sql.Connection;
@@ -30,6 +31,7 @@ import java.sql.SQLException;
 import java.util.Stack;
 import java.util.Vector;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -75,6 +77,8 @@ public class DBConnection
     protected static File                embeddedDataDir;
     protected static Stack<DBConnection> connections;
     protected static boolean             isShuttingDown;
+    protected static File                mobileTmpDir = null;
+    protected static boolean             isCopiedToMachineDisk = false;
     
     static
     {
@@ -205,6 +209,11 @@ public class DBConnection
      */
     public Connection createConnection()
     {
+        if (UIRegistry.isMobile() && this == getInstance())
+        {
+            copyToMachineDisk();
+        }
+        
         Connection con = null;
         try
         {
@@ -546,6 +555,94 @@ public class DBConnection
         }
         connections.clear();
         isShuttingDown = false;
+        
+        if (UIRegistry.isMobile())
+        {
+            copyToMobileDisk();
+        }
+    }
+    
+    public static File getMobileTempDir() throws IOException
+    {
+        if (mobileTmpDir == null)
+        {
+            String path = UIRegistry.getDefaultUserHomeDir();
+            
+            mobileTmpDir = new File(path + File.separator + "specify_data_" + Long.toString(System.currentTimeMillis()));
+    
+            if (mobileTmpDir.exists() || !(mobileTmpDir.mkdir())) 
+            { 
+                throw new IOException("Could not create temp directory: " + mobileTmpDir.getAbsolutePath()); 
+            }
+        }
+        return mobileTmpDir;
+    }
+    
+    /**
+     * @return
+     */
+    private static boolean copyToMachineDisk()
+    {
+        if (!isCopiedToMachineDisk)
+        {
+            try
+            {
+                mobileTmpDir = getMobileTempDir();
+                FileUtils.copyDirectory(new File(UIRegistry.getMobileEmbeddedDBPath()), mobileTmpDir, true);
+                UIRegistry.setEmbeddedDBDir(mobileTmpDir.getAbsolutePath());
+                isCopiedToMachineDisk = true;
+                
+                for (Object fObj : FileUtils.listFiles(mobileTmpDir, null, true))
+                {
+                    File f = (File)fObj;
+                    if (f.getName().endsWith("DS_Store"))
+                    {
+                        f.delete();
+                    }
+                }
+                return true;
+                
+            } catch (IOException ex)
+            {
+                ex.printStackTrace();
+            }
+        }
+        return false;
+    }
+
+    private static boolean copyToMobileDisk()
+    {
+        if (mobileTmpDir != null && isCopiedToMachineDisk)
+        {
+            try
+            {
+                File mobileDir = new File(UIRegistry.getMobileEmbeddedDBPath());
+                FileUtils.deleteDirectory(mobileDir);
+                FileUtils.copyDirectory(mobileTmpDir, mobileDir, true);
+                for (Object fObj : FileUtils.listFiles(mobileDir, null, true))
+                {
+                    File f = (File)fObj;
+                    if (f.getName().endsWith("DS_Store"))
+                    {
+                        f.delete();
+                    }
+                }
+                for (Object fObj : FileUtils.listFiles(mobileTmpDir, null, true))
+                {
+                    File f = (File)fObj;
+                    if (f.exists() && !f.getName().equals("mysql.sock"))
+                    {
+                        f.delete();
+                    }
+                }
+                return true;
+                
+            } catch (IOException ex)
+            {
+                ex.printStackTrace();
+            }
+        }
+        return false;
     }
 
 }

@@ -24,6 +24,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -59,6 +60,7 @@ import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.af.ui.weblink.WebLinkMgr;
 import edu.ku.brc.dbsupport.CustomQueryFactory;
+import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
@@ -250,6 +252,9 @@ public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFa
      */
     public static void main(String[] args)
     {
+        // Set App Name, MUST be done very first thing!
+        UIRegistry.setAppName("Specify");  //$NON-NLS-1$
+        
         try
         {
             ResourceBundle.getBundle("resources", Locale.getDefault()); //$NON-NLS-1$
@@ -315,16 +320,22 @@ public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFa
         String mobile = System.getProperty("mobile");
         if (StringUtils.isNotEmpty(mobile))
         {
-            UIRegistry.setEmbeddedDBDir(UIRegistry.getMobileEmbeddedDBPath());
+            UIRegistry.setMobile(true);
+            
+            try
+            {
+                UIRegistry.setEmbeddedDBDir(DBConnection.getMobileTempDir().getAbsolutePath());
+                
+            } catch (IOException e)
+            {
+              e.printStackTrace();
+            }
         }
         
         SwingUtilities.invokeLater(new Runnable()
         {
             public void run()
             {
-                // Set App Name, MUST be done very first thing!
-                UIRegistry.setAppName("Specify");  //$NON-NLS-1$
-                
                 // Then set this
                 IconManager.setApplicationClass(Specify.class);
                 IconManager.loadIcons(XMLHelper.getConfigDir("icons_datamodel.xml")); //$NON-NLS-1$

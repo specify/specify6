@@ -218,27 +218,27 @@ public class AdminInfoSubPanelWrapper
         // We need to do this because we can't call the BusniessRules
         if (obj instanceof SpecifyUser)
         {
-            SpecifyUser spUser = (SpecifyUser)obj;
+            user = (SpecifyUser)obj;
             
             // Hibernate doesn't seem to be cascading the Merge
             // when Agent has been edited outside the session.
             // So this seems to be the only way I can cal merge and save.
             // it is totally bizarre
-            Set<Agent> set = spUser.getAgents();
+            Set<Agent> set = user.getAgents();
             for (Agent agent : new Vector<Agent>(set))
             {
                 set.remove(agent);
                 set.add(session.get(Agent.class, agent.getId()));
             }
             
-            spUser = session.merge(spUser);
+            user = session.merge(user);
             
-            String pwd = spUser.getPassword();
+            String pwd = user.getPassword();
             if (pwd.length() < 30)
             {
-                spUser.setPassword(Encryption.encrypt(pwd, pwd));
+                user.setPassword(Encryption.encrypt(pwd, pwd));
             }
-            session.saveOrUpdate(spUser);
+            session.saveOrUpdate(user);
             
         } else
         {

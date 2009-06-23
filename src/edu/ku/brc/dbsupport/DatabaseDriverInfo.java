@@ -91,6 +91,23 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
     }
     
     /**
+     * @param connStr
+     * @return
+     */
+    protected String subForDataDir(final String connStr)
+    {
+        String dataDir = UIRegistry.getEmbeddedDBPath();
+        if (dataDir != null)
+        {
+            dataDir = new File(dataDir).getAbsolutePath();
+            
+            log.debug(dataDir);
+            return connStr.replaceFirst("DATADIR",  dataDir); //$NON-NLS-1$
+        }
+        return connStr;
+    }
+    
+    /**
      * Returns the connection string might return null if connection type doesn't exist.
      * @param server the server (machine name or IP addr)
      * @param database the database name
@@ -106,8 +123,7 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
                 connStr = connStr.replaceFirst("DATABASE", database); //$NON-NLS-1$
             }
             
-            String dataDir = UIRegistry.getAppDataDir() + File.separator + "specify_data";
-            connStr = connStr.replaceFirst("DATADIR",  dataDir); //$NON-NLS-1$
+            connStr = subForDataDir(connStr);
             
             return StringUtils.isNotEmpty(server) ? connStr.replaceFirst("SERVER", server) : connStr; //$NON-NLS-1$
         }
@@ -145,16 +161,7 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
                 return StringUtils.isNotEmpty(server) ? connStr.replaceFirst("SERVER", server): connStr; //$NON-NLS-1$
             }
             
-            String dataDir = UIRegistry.getEmbeddedDBPath();
-            if (dataDir != null)
-            {
-                dataDir = new File(dataDir).getAbsolutePath();
-                
-                log.debug(dataDir);
-                System.err.println(dataDir);
-            
-                connStr = connStr.replaceFirst("DATADIR",  dataDir); //$NON-NLS-1$
-            }
+            connStr = subForDataDir(connStr);
             
             connStr = connStr.replaceFirst("DATABASE", database); //$NON-NLS-1$
             connStr = connStr.replaceFirst("USERNAME", username); //$NON-NLS-1$
