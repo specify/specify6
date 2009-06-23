@@ -286,8 +286,18 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
      */
     public static DatabaseDriverInfo getDriver(final String drvName)
     {
-        int inx = Collections.binarySearch(getDriversList(), new DatabaseDriverInfo(drvName, null, null));
-        return inx > -1 ? getDriversList().get(inx) : null;
+        Vector<DatabaseDriverInfo> list = getDriversList();
+        int inx = -1;
+        for (DatabaseDriverInfo ddi :list)
+        {
+            inx++;
+            if ((ddi.getDriverClassName() != null && ddi.getDriverClassName().equals(drvName)) ||
+                 ddi.getName().equals(drvName))
+            {
+                return list.get(inx);
+            }
+        }
+        return null;
     }
     
     /**
