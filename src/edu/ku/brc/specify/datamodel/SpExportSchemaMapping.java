@@ -18,9 +18,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
-
 /**
  * @author timbo
  *
@@ -101,7 +98,7 @@ public class SpExportSchemaMapping extends DataModelObjBase
      * @return the mappings.
      */
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "exportSchemaMapping")
-    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.DELETE, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<SpExportSchemaItemMapping> getMappings()
     {
     	return mappings;

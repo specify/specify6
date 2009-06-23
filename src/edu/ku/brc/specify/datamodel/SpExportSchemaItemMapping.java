@@ -13,13 +13,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
-
-import edu.ku.brc.specify.datamodel.DataModelObjBase;
-import edu.ku.brc.specify.datamodel.SpExportSchemaItem;
-import edu.ku.brc.specify.datamodel.SpQueryField;
-
 /**
  * @author timbo
  *
@@ -131,7 +124,7 @@ public class SpExportSchemaItemMapping extends DataModelObjBase
 	 * @return the exportMapping
 	 */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "SpQueryFieldID", unique = false, nullable = false, insertable = true, updatable = true)
+    @JoinColumn(name = "SpQueryFieldID", unique = false, nullable = true, insertable = true, updatable = true)
 	public SpQueryField getQueryField()
 	{
 		return queryField;
@@ -148,7 +141,6 @@ public class SpExportSchemaItemMapping extends DataModelObjBase
      * @return the schema mapping
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.LOCK })
     @JoinColumn(name = "SpExportSchemaMappingID", unique = false, nullable = true, insertable = true, updatable = true)
     public SpExportSchemaMapping getExportSchemaMapping()
     {

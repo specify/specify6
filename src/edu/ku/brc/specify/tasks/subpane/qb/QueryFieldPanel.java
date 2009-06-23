@@ -84,6 +84,7 @@ import edu.ku.brc.af.ui.forms.validation.ValTextField;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.SpExportSchemaItem;
+import edu.ku.brc.specify.datamodel.SpExportSchemaItemMapping;
 import edu.ku.brc.specify.datamodel.SpQueryField;
 import edu.ku.brc.specify.datamodel.SpQueryField.OperatorType;
 import edu.ku.brc.specify.dbsupport.RecordTypeCodeBuilder;
@@ -136,7 +137,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
 
 	protected FieldQRI						fieldQRI;
 	protected SpQueryField					queryField		= null;
-	protected SpExportSchemaItem			schemaItem;
+	protected SpExportSchemaItem			schemaItem      = null;
 	protected PickListDBAdapterIFace		pickList		= null;
 
 	protected FormValidator					validator;
@@ -555,6 +556,12 @@ public class QueryFieldPanel extends JPanel implements ActionListener
         }
     }
     
+    /**
+     * @param fqri
+     * @param qf
+     * 
+     * Sets new field and updates UI to display properties for new field.
+     */
     public void setField(final FieldQRI fqri, final SpQueryField qf)
     {
         fieldQRI = fqri;
@@ -1382,16 +1389,13 @@ public class QueryFieldPanel extends JPanel implements ActionListener
             {
                 public void actionPerformed(ActionEvent ae)
                 {
-                	if (schemaItem != null)
-                	{
-                		if (fieldQRI != null)
-                		{
-                			fieldQRI.setIsInUse(false);
-                		}
-                		setField(null, null);
-                	}
-            		ownerQuery.removeQueryFieldItem((QueryFieldPanel) ((JComponent) ae.getSource())
+            		boolean clearIt = schemaItem != null;
+                	ownerQuery.removeQueryFieldItem((QueryFieldPanel) ((JComponent) ae.getSource())
                         .getParent());
+                	if (clearIt)
+                	{
+                 		setField(null, null);
+                	}
                 }
             });
             closeBtn.setEnabled(true);
@@ -1896,6 +1900,13 @@ public class QueryFieldPanel extends JPanel implements ActionListener
 	{
 		return schemaItem;
 	}
-    
+
+	/**
+	 * @return the itemMapping
+	 */
+	public SpExportSchemaItemMapping getItemMapping()
+	{
+		return queryField != null ? queryField.getMapping() : null;
+	}
     
 }

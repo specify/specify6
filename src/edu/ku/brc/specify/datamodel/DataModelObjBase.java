@@ -830,11 +830,12 @@ public abstract class DataModelObjBase implements FormDataObjIFace,
         
         // save to database
         DataProviderSessionIFace session = null;
+        boolean transOpen = false;
         try
         {
             session = DataProviderFactory.getInstance().createSession();
             session.beginTransaction();
-            
+            transOpen = true;
             boolean doSave = true;
             if (dataObjs.length == 1)
             {
@@ -859,7 +860,7 @@ public abstract class DataModelObjBase implements FormDataObjIFace,
                 }
             }
             session.commit();
-            
+            transOpen = false;
         } catch (Exception ex)
         {
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
@@ -871,6 +872,10 @@ public abstract class DataModelObjBase implements FormDataObjIFace,
             if (doShowError)
             {
                 UIRegistry.showError(errMsg);
+            }
+            if (transOpen)
+            {
+            	session.rollback();
             }
             return false;
             

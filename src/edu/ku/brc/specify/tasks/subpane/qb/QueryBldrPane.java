@@ -431,10 +431,17 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 			//removeReference doesn't work. Something off with the equals method or Comparable<?> stuff or something.
                 			//query.removeReference(selectedQFP.getQueryField(), "fields");
                 			removeFieldFromQuery(selectedQFP.getQueryField());
-                			removeSchemaItemMapping(selectedQFP.getSchemaItem());
+                			removeSchemaItemMapping(selectedQFP.getItemMapping());
                 		}
                 		if (!isConditionForSchemaMap(QueryBldrPane.this.selectedQFP))
                 		{
+                			SpExportSchemaItemMapping newMapping = new SpExportSchemaItemMapping();
+                			newMapping.initialize();
+                			newMapping.setExportSchemaItem(selectedQFP.getSchemaItem());
+                			newMapping.setExportSchemaMapping(schemaMapping);
+                			newMapping.setQueryField(qf);
+                			schemaMapping.getMappings().add(newMapping);
+                			qf.setMapping(newMapping);
                 			QueryBldrPane.this.selectedQFP.setField(fieldQRI, qf);
                             fieldQRI.setIsInUse(true);
                 		}
@@ -630,13 +637,13 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      * @param schemaItem
      * @return true if schemaItem was removed
      */
-    protected boolean removeSchemaItemMapping(SpExportSchemaItem schemaItem)
+    protected boolean removeSchemaItemMapping(SpExportSchemaItemMapping itemMapping)
     {
     	int size = schemaMapping.getMappings().size();
     	SpExportSchemaItemMapping theOne = null;
     	for (SpExportSchemaItemMapping esim : schemaMapping.getMappings())
     	{
-    		if (esim.getExportSchemaItem().getId().equals(schemaItem.getId()))
+    		if (esim.getExportSchemaItem().getId().equals(itemMapping.getExportSchemaItem().getId()))
     		{
     			theOne = esim;
     			break;
@@ -645,7 +652,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     	if (theOne != null)
     	{
     		schemaMapping.getMappings().remove(theOne);
-    		theOne.setSpExportSchemaItemMappingId(null);
+    		theOne.setExportSchemaMapping(null);
+    		theOne.getQueryField().setMapping(null);
     		theOne.setQueryField(null);
     	}
     	return schemaMapping.getMappings().size() < size;
@@ -2611,24 +2619,28 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         
         UsageTracker.incrUsageCount("QB.SaveQuery." + query.getContextName());
         
-        if (schemaMapping != null)
-        {
-        	schemaMapping.getMappings().clear();
-        	for (QueryFieldPanel qfp : queryFieldItems)
-        	{
-        		if (qfp.getSchemaItem() != null && qfp.getQueryField() != null)
-        		{
-        			SpExportSchemaItemMapping mapping = new SpExportSchemaItemMapping();
-        			mapping.initialize();
-        			mapping.setExportSchemaItem(qfp.getSchemaItem());
-        			mapping.setQueryField(qfp.getQueryField());
-        			qfp.getQueryField().getMappings().clear();
-        			qfp.getQueryField().getMappings().add(mapping);
-        			mapping.setExportSchemaMapping(schemaMapping);
-        			schemaMapping.getMappings().add(mapping);
-        		}
-        	}
-        }
+//        if (schemaMapping != null)
+//        {
+//        	for (SpExportSchemaItemMapping esim : schemaMapping.getMappings())
+//        	{
+//        		esim.setExportSchemaMapping(null);
+//        	}
+//        	schemaMapping.getMappings().clear();
+//        	for (QueryFieldPanel qfp : queryFieldItems)
+//        	{
+//        		if (qfp.getSchemaItem() != null && qfp.getQueryField() != null)
+//        		{
+//        			SpExportSchemaItemMapping mapping = new SpExportSchemaItemMapping();
+//        			mapping.initialize();
+//        			mapping.setExportSchemaItem(qfp.getSchemaItem());
+//        			mapping.setQueryField(qfp.getQueryField());
+//        			qfp.getQueryField().getMappings().clear();
+//        			qfp.getQueryField().getMappings().add(mapping);
+//        			mapping.setExportSchemaMapping(schemaMapping);
+//        			schemaMapping.getMappings().add(mapping);
+//        		}
+//        	}
+//        }
         
         TableQRI tableQRI = (TableQRI) tableList.getSelectedValue();
         if (tableQRI != null)
@@ -2681,7 +2693,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                                                                                 // disable the
                                                                                 // navbtn
 
-                query.setNamed(true);
+                query.setNamed(true); //XXX this isn't getting persisted!!!!!!!!!
                 if (query.getSpQueryId() != null && saveAs)
                 {
                     this.setupUI();
@@ -2695,7 +2707,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             
             if (schemaMapping != null)
             {
-            	return DataModelObjBase.save(true, query, schemaMapping);
+            	//return DataModelObjBase.save(true, query, schemaMapping);
+            	return DataModelObjBase.save(true, schemaMapping, query);
             }
             return DataModelObjBase.save(true, query);
         }
@@ -3081,7 +3094,12 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                                             FieldQRI fqri = qfp.getFieldQRI();
                                             if (fqri == qri || (fqri instanceof RelQRI && fqri.getTable() == qri))
                                             {
-                                                QueryBldrPane.this.removeQueryFieldItem(qfp);
+                                        		boolean clearIt = qfp.getSchemaItem() != null;
+                                        		QueryBldrPane.this.removeQueryFieldItem(qfp);
+                                            	if (clearIt)
+                                            	{
+                                            		qfp.setField(null, null);
+                                            	}
                                                 break;
                                             }
                                         }
@@ -3093,8 +3111,41 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                                         SpQueryField qf = new SpQueryField();
                                         qf.initialize();
                                         qf.setFieldName(fieldQRI.getFieldName());
-                                        query.addReference(qf, "fields");
-                                        addQueryFieldItem(fieldQRI, qf, false);
+                                    	qf.setStringId(fieldQRI.getStringId());
+                                    	query.addReference(qf, "fields");
+                                        if (exportSchema == null)
+                                        {
+                                        	addQueryFieldItem(fieldQRI, qf, false);
+                                        }
+                                        else
+                                        {
+                                        	if (selectedQFP != null)
+                                        	{
+                                        		if (selectedQFP.getFieldQRI() != null)
+                                        		{
+                                        			selectedQFP.getFieldQRI().setIsInUse(false);
+                                        		}
+                                        		if (selectedQFP.getQueryField() != null)
+                                        		{
+                                        			//removeReference doesn't work. Something off with the equals method or Comparable<?> stuff or something.
+                                        			//query.removeReference(selectedQFP.getQueryField(), "fields");
+                                        			removeFieldFromQuery(selectedQFP.getQueryField());
+                                        			removeSchemaItemMapping(selectedQFP.getItemMapping());
+                                        		}
+                                        		if (!isConditionForSchemaMap(QueryBldrPane.this.selectedQFP))
+                                        		{
+                                        			SpExportSchemaItemMapping newMapping = new SpExportSchemaItemMapping();
+                                        			newMapping.initialize();
+                                        			newMapping.setExportSchemaItem(selectedQFP.getSchemaItem());
+                                        			newMapping.setExportSchemaMapping(schemaMapping);
+                                        			newMapping.setQueryField(qf);
+                                        			schemaMapping.getMappings().add(newMapping);
+                                        			qf.setMapping(newMapping);
+                                        			QueryBldrPane.this.selectedQFP.setField(fieldQRI, qf);
+                                                    fieldQRI.setIsInUse(true);
+                                        		}
+                                        	}
+                                        }
                                     }
                                 }
                             }
@@ -3235,7 +3286,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     /**
      * Removes it from the List.
      * 
-     * @param qfp QueryFieldPanel to be added
+     * @param qfp QueryFieldPanel to be removed
      */
     public void removeQueryFieldItem(final QueryFieldPanel qfp)
 	{
@@ -3267,6 +3318,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 		{
 			//query.removeReference(qfp.getQueryField(), "fields");
 			removeFieldFromQuery(qfp.getQueryField());
+			if (qfp.getItemMapping() != null)
+			{
+				removeSchemaItemMapping(qfp.getItemMapping());
+			}
 		}
 		if (exportSchema == null || isConditionForSchemaMap(qfp))
 		{
