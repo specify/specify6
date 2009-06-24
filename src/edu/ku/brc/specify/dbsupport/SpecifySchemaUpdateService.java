@@ -19,13 +19,28 @@
 */
 package edu.ku.brc.specify.dbsupport;
 
+import static edu.ku.brc.helpers.XMLHelper.getAttr;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Vector;
+
+import org.dom4j.Element;
+import org.jfree.util.Log;
 
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DBMSUserMgr;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.SchemaUpdateService;
+import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
+import edu.ku.brc.util.Pair;
 
 /**
  * @author rods
@@ -52,32 +67,112 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     @Override
     public boolean updateSchema(final String versionNumber)
     {
-        /*DBConnection dbConn = DBConnection.getInstance();//getITConnection();
+        String  dbVersion = null;
+        
+        Element root;
+        try
+        {
+            root = XMLHelper.readFileToDOM4J(new FileInputStream(XMLHelper.getConfigDirPath("schema_version.xml")));//$NON-NLS-1$
+            if (root != null)
+            {
+                Element dbElement = (Element)root;//.selectObject("version");
+                if (dbElement != null)
+                {
+                    dbVersion = dbElement.getTextTrim();
+                }
+            }
+        } catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+            
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        } 
+        
+        
+        DBConnection dbConn = DBConnection.getInstance();
         if (dbConn != null)
         {
             DBMSUserMgr dbMgr = DBMSUserMgr.getInstance();
             if (dbMgr.connect(dbConn.getUserName(), dbConn.getPassword(), dbConn.getServerName(), dbConn.getDatabaseName()))
             {
                 // Here checks to see if this is the first ever
-                if (!dbMgr.doesDBHaveTable("spversion"))
+                boolean doUpdate      = false;
+                boolean doInsert      = false;
+                String  appVersion    = null;
+                String  schemaVersion = null;
+                Integer spverId       = null;
+                Integer versionNum    = 1;
+                
+                if (dbMgr.doesDBHaveTable("spversion"))
                 {
-                    DatabaseDriverInfo driverInfo = DatabaseDriverInfo.getDriver(dbConn.getDriverName());
-                    try
+                    Vector<Object[]> rows = BasicSQLUtils.query(dbConn.getConnection(), "SELECT AppVersion, SchemaVersion, SpVersionID, Version FROM spversion");
+                    if (rows.size() == 1)
                     {
-                        dbConn = getITConnection();
-                        if (dbConn != null)
+                        Object[] row  = (Object[])rows.get(0);
+                        appVersion    = row[0].toString();
+                        schemaVersion = row[1].toString();
+                        spverId       = (Integer)row[2];
+                        versionNum    = (Integer)row[3];
+                        
+                        if (appVersion == null && schemaVersion == null)
                         {
-                            SpecifySchemaGenerator.generateSchema(driverInfo, dbConn.getServerName(), dbConn.getDatabaseName(), dbConn.getUserName(), dbConn.getPassword());
+                            doUpdate = true;
+                            
+                        } else if (appVersion.equals(versionNumber) || (schemaVersion.equals(dbVersion) && dbVersion != null))
+                        {
+                            doUpdate = true;
                         }
                         
-                    } catch (SQLException ex)
-                    {
-                        ex.printStackTrace();
                     }
+                } else
+                {
+                    doInsert = true;
                 }
-                dbMgr.close();
+                
+                SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+                Timestamp        now               = new Timestamp(System .currentTimeMillis());
+
+                try
+                {
+                    if (doUpdate || doInsert)
+                    {
+                        Pair<String, String> usrPwd = getITConnection();
+                        if (dbConn != null)
+                        {
+                            DBConnection dbc = DBConnection.getInstance();
+    
+                            SpecifySchemaGenerator.updateSchema(DatabaseDriverInfo.getDriver(dbc.getDriver()), dbc.getServerName(), dbc.getDatabaseName(), usrPwd.first,usrPwd.second);
+                        }
+                        
+                        if (doInsert || (appVersion == null && schemaVersion == null))
+                        {
+                            String sql = "INSERT INTO spversion (AppName, AppVersion, SchemaVersion, TimestampCreated, TimestampModified, Version) VALUES('Specify', '"+versionNumber+"', '"+dbVersion+"', '" + 
+                                                                 dateTimeFormatter.format(now) + "', '" + dateTimeFormatter.format(now) + "', "+versionNum+")";
+                            System.err.println(sql);
+                            BasicSQLUtils.update(dbConn.getConnection(), sql);
+                            
+                        } else if (appVersion.equals(versionNumber) || (schemaVersion.equals(dbVersion) && dbVersion != null))
+                        {
+                            versionNum++;
+                            String sql = "UPDATE spversion SET AppVersion='"+versionNumber+"', SchemaVersion='"+dbVersion+"', Version="+versionNum+" WHERE SpVersionID = "+ spverId;
+                            System.err.println(sql);
+                            BasicSQLUtils.update(dbConn.getConnection(), sql);
+                        }
+                        return true;
+                    }
+                    
+                } catch (SQLException e)
+                {
+                    e.printStackTrace();
+                    
+                } finally
+                {
+                    dbMgr.close();
+                }
             }
-        }*/
+        }
         return false;
     }
 

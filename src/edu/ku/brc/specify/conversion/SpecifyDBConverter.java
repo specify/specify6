@@ -29,6 +29,7 @@ import java.awt.Frame;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -159,19 +160,42 @@ public class SpecifyDBConverter
      */
     public static void main(String args[]) throws Exception
     {
+        // Set App Name, MUST be done very first thing!
+        UIRegistry.setAppName("Specify");  //$NON-NLS-1$
+
         log.debug("********* Current ["+(new File(".").getAbsolutePath())+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        // This is for Windows and Exe4J, turn the args into System Properties
+        
+        UIRegistry.setEmbeddedDBDir(UIRegistry.getDefaultEmbeddedDBPath()); // on the local machine
+        
         for (String s : args)
         {
             String[] pairs = s.split("="); //$NON-NLS-1$
             if (pairs.length == 2)
             {
-                log.debug("["+pairs[0]+"]["+pairs[1]+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                 if (pairs[0].startsWith("-D")) //$NON-NLS-1$
                 {
+                    //System.err.println("["+pairs[0].substring(2, pairs[0].length())+"]["+pairs[1]+"]");
                     System.setProperty(pairs[0].substring(2, pairs[0].length()), pairs[1]);
                 } 
+            } else
+            {
+                String symbol = pairs[0].substring(2, pairs[0].length());
+                //System.err.println("["+symbol+"]");
+                System.setProperty(symbol, symbol);
             }
+        }
+        
+        // Now check the System Properties
+        String appDir = System.getProperty("appdir");
+        if (StringUtils.isNotEmpty(appDir))
+        {
+            UIRegistry.setDefaultWorkingPath(appDir);
+        }
+        
+        String appdatadir = System.getProperty("appdatadir");
+        if (StringUtils.isNotEmpty(appdatadir))
+        {
+            UIRegistry.setBaseAppDataDir(appdatadir);
         }
         
         final SpecifyDBConverter converter = new  SpecifyDBConverter();
@@ -225,8 +249,6 @@ public class SpecifyDBConverter
                 if (namePair != null)
                 {
                     frame = new ProgressFrame("Converting");
-                    
-                    UIRegistry.setAppName("Specify");
                     
                     converter.processDB(); 
                 } else

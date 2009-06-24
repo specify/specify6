@@ -248,7 +248,7 @@ public class DBConnection
             }
             Class.forName(dbDriver); // load driver
             
-            log.debug("["+dbConnectionStr+"]["+dbUsername+"]["+dbPassword+"] ");
+            //log.debug("["+dbConnectionStr+"]["+dbUsername+"]["+dbPassword+"] ");
             con = DriverManager.getConnection(dbConnectionStr, dbUsername, dbPassword);
             
         } catch (SQLException sqlEX)
@@ -288,7 +288,7 @@ public class DBConnection
             {
                 String msg = "The DBConnection ["+this+"] has already been removed!";
                 log.error(msg);
-                UIRegistry.showError(msg);
+                //UIRegistry.showError(msg);
             }
             
             if (!isShuttingDown)

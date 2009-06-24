@@ -22,7 +22,7 @@ package edu.ku.brc.dbsupport;
 import java.awt.Frame;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.sql.Connection;
+import java.sql.SQLException;
 
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
@@ -31,9 +31,11 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.Pair;
 
 /**
  * Abstract class for setting application context. It is designed that each application should implement its own.<br>
@@ -61,9 +63,10 @@ public abstract class SchemaUpdateService
     protected static SchemaUpdateService instance = null;
     
     /**
-     * @return
+     * @return a username/password pair if valid or null if canceled
+     * @throws SQLException
      */
-    protected DBConnection getITConnection()
+    public static Pair<String, String> getITConnection() throws SQLException
     {
         JTextField     userNameTF = new JTextField(15);
         JPasswordField passwordTF = new JPasswordField();
@@ -83,20 +86,7 @@ public abstract class SchemaUpdateService
         dlg.setVisible(true);
         if (!dlg.isCancelled())
         {
-            DBConnection dbc    = DBConnection.getInstance();
-            DBConnection dbConn = new DBConnection(userNameTF.getText(), new String(passwordTF.getPassword()),  dbc.getConnectionStr(), dbc.getDriver(), dbc.getDialect(), dbc.getDatabaseName());
-            try
-            {
-                Connection conn = dbConn.createConnection();
-                conn.close();
-                
-                dbConn.setServerName(dbc.getServerName());
-                return dbConn;
-                
-            } catch (Exception ex)
-            {
-                
-            }
+            return new Pair<String, String>( userNameTF.getText(), new String(passwordTF.getPassword()));
         }
         return null;
     }
