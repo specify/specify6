@@ -7144,8 +7144,13 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             while (rs.next())
             {
                 int     oldCEId = rs.getInt(1);
-                int     lithoId = lithoStratIdMapper.get(oldCEId);
+                Integer lithoId = lithoStratIdMapper.get(oldCEId);
                 Integer gtpId   = stratGTPIdHash.get(lithoId);
+                
+                if (lithoId == null)
+                {
+                    continue;
+                }
                 
                 try
                 {
