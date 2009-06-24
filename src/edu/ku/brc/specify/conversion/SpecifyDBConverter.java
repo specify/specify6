@@ -518,9 +518,9 @@ public class SpecifyDBConverter
 
         AppContextMgr.getInstance().clear();
         
-        boolean doAll               = false; 
+        boolean doAll               = true; 
         boolean startfromScratch    = true; 
-        boolean deleteMappingTables = false;
+        boolean deleteMappingTables = true;
         
         System.out.println("************************************************************");
         System.out.println("From "+dbNameSource+" to "+dbNameDest);
