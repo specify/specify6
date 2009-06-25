@@ -1234,14 +1234,15 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     /**
      * Fill the the drop down with the list from the query
      */
-    protected void doQuery(final String newEntryStr)
+    protected void doQuery(final String newEntryStrArg)
     {
         UIRegistry.getStatusBar().setText("");
        
         ESTermParser parser = ESTermParser.getInstance();
         
-        if (parser.parse(newEntryStr, true))
+        if (parser.parse(newEntryStrArg, true))
         {
+            String newEntryStr = parser.getFields().get(0).getTerm();
             prevEnteredText = newEntryStr;
     
             if (!isDoingQuery.get())
