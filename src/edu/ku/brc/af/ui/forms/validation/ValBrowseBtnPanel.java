@@ -20,6 +20,7 @@
 package edu.ku.brc.af.ui.forms.validation;
 
 import java.awt.Component;
+import java.io.File;
 
 import edu.ku.brc.af.ui.BrowseBtnPanel;
 
@@ -34,6 +35,8 @@ import edu.ku.brc.af.ui.BrowseBtnPanel;
 public class ValBrowseBtnPanel extends BrowseBtnPanel implements UIValidatable
 {
     protected ValTextField textField;
+    protected ErrorType    errorStatus = ErrorType.Valid;
+    
     
     /**
      * @param textField
@@ -82,7 +85,7 @@ public class ValBrowseBtnPanel extends BrowseBtnPanel implements UIValidatable
      */
     public ErrorType getState()
     {
-        return textField.getState();
+        return textField.getState().ordinal() > errorStatus.ordinal() ? textField.getState() : errorStatus;
     }
 
     /* (non-Javadoc)
@@ -107,7 +110,7 @@ public class ValBrowseBtnPanel extends BrowseBtnPanel implements UIValidatable
     public boolean isInError()
     {
         //System.out.println("isInError: "+textField.isInError());
-        return textField.isInError();
+        return getState() != ErrorType.Valid;
     }
 
     /* (non-Javadoc)
@@ -136,6 +139,7 @@ public class ValBrowseBtnPanel extends BrowseBtnPanel implements UIValidatable
     public void reset()
     {
         textField.reset();
+        errorStatus = ErrorType.Valid;
     }
 
     /* (non-Javadoc)
@@ -167,7 +171,8 @@ public class ValBrowseBtnPanel extends BrowseBtnPanel implements UIValidatable
      */
     public void setState(final ErrorType state)
     {
-        textField.setState(state);  
+        textField.setState(state); 
+        errorStatus = state;
     }
 
     /* (non-Javadoc)
@@ -175,10 +180,16 @@ public class ValBrowseBtnPanel extends BrowseBtnPanel implements UIValidatable
      */
     public ErrorType validateState()
     {
-        ErrorType err       = textField.validateState();
-        ErrorType fileError = isValidatingFile && isValidFile ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
+        ErrorType err = textField.validateState();
+        if (isValidatingFile && err == ErrorType.Valid)
+        {
+            File file = new File(textField.getText());
+            isValidFile = file.isFile() && file.exists();
+        }
         
-        return err.ordinal() > fileError.ordinal() ? err : fileError;
+        ErrorType fileError = isValidatingFile && !isValidFile ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
+        
+        return errorStatus = err.ordinal() > fileError.ordinal() ? err : fileError;
     }
 
     /* (non-Javadoc)
