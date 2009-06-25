@@ -22,6 +22,7 @@ package edu.ku.brc.af.ui.forms.formatters;
 import static edu.ku.brc.helpers.XMLHelper.xmlAttr;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
@@ -41,6 +42,8 @@ import edu.ku.brc.af.core.db.DBTableInfo;
  */
 public class DataObjDataField implements Cloneable
 {
+    private static final Logger log = Logger.getLogger(DataObjDataField.class);
+    
 	protected String                 name;
 	protected Class<?>               type;
 	protected String                 format;
@@ -228,11 +231,35 @@ public class DataObjDataField implements Cloneable
 		String[] parts = name.split("\\.");
 		if (parts.length == 2)
 		{
-			// there's a dot on field name, which means it represents a field in a related table
-			// split name into relation.fieldName
-			setRelInfo(tableInfo.getRelationshipByName(parts[0]));
-			DBTableInfo otherTable = DBTableIdMgr.getInstance().getByClassName(relInfo.getClassName());
-	        setFieldInfo(otherTable.getFieldByName(parts[1]));
+		    if (StringUtils.isNotEmpty(parts[0]) && StringUtils.isNotEmpty(parts[1]))
+		    {
+    			// there's a dot on field name, which means it represents a field in a related table
+    			// split name into relation.fieldName
+    		    DBRelationshipInfo relInfo = tableInfo.getRelationshipByName(parts[0]);
+    		    if (relInfo != null)
+    		    {
+    		        setRelInfo(relInfo);
+    		        
+        			DBTableInfo otherTable = DBTableIdMgr.getInstance().getByClassName(relInfo.getClassName());
+        			if (otherTable != null)
+        			{
+        			    DBFieldInfo fi = otherTable.getFieldByName(parts[1]);
+        			    if (fi != null)
+        			    {
+        			        setFieldInfo(fi);
+        			    } else
+                        {
+                            log.error("Couldn't find fieldinfo for ["+parts[1]+"]");
+                        }
+        			} else
+        			{
+        			    log.error("Couldn't find tableinfo for ["+relInfo.getClassName()+"]");
+        			}
+    		    } else
+    		    {
+    		        log.error("Couldn't find Rel Info for ["+parts[0]+"]");
+    		    }
+		    }
 			return;
 		}
 
