@@ -6343,7 +6343,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         // "in" function on the result of subquery so the order should not matter
         // String sql = "SELECT * FROM taxonname where taxonname.TaxonomyTypeId in (SELECT DISTINCT
         // t.TaxonomyTypeId FROM taxonname t WHERE t.RankId <> 0 ORDER BY TaxonomyTypeId)";
-        String sql = "SELECT * FROM taxonname WHERE TaxonName IS NOT NULL AND taxonname.TaxonomyTypeId IN (SELECT DISTINCT t.TaxonomyTypeId FROM taxonname t WHERE t.RankId <> 0 )";
+        String sql = "SELECT * FROM taxonname WHERE TaxonName IS NOT NULL AND taxonname.TaxonomyTypeId IN (SELECT DISTINCT t.TaxonomyTypeId FROM taxonname t WHERE t.RankId <> 0) AND RankId IS NOT NULL";
 
 
         Hashtable<String, String> newToOldColMap = new Hashtable<String, String>();

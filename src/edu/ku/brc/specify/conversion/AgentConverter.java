@@ -1346,7 +1346,7 @@ public class AgentConverter
                     }
                     
                     tblWriter.log(lastName, firstName, sb.toString());
-                    sql = "UPDATE agent SET FirstName='" + firstName + "', LastName='" + sb.toString() + "' WHERE AgentID = " + id;
+                    sql = "UPDATE agent SET FirstName=\"" + firstName + "\", LastName=\"" + sb.toString() + "\" WHERE AgentID = " + id;
                     log.debug(sql);
                     updateStmtNewDB.executeUpdate(sql);
                 }
