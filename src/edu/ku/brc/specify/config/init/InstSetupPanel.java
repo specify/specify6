@@ -202,7 +202,6 @@ public class InstSetupPanel extends GenericFormPanel
                         AppContextMgr.getInstance().setClassObject(DataType.class, bsd.getDataType());
 
                         HibernateUtil.closeSession();
-                        conn.close();
                         
                         if (!isOK)
                         {
