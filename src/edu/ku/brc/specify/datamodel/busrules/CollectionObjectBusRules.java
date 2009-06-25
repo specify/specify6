@@ -25,6 +25,8 @@ import static edu.ku.brc.ui.UIRegistry.showLocalizedMsg;
 
 import java.util.List;
 
+import javax.swing.SwingWorker;
+
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.core.AppContextMgr;
@@ -53,7 +55,7 @@ import edu.ku.brc.specify.datamodel.Project;
 /**
  * @author rods
  *
- * @code_status Alpha
+ * @code_status Beta
  *
  * Created Date: Jan 24, 2007
  *
@@ -230,11 +232,11 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
         if (AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent())
         {
             CollectingEvent ce = colObj.getCollectingEvent();
-            if (ce != null)
+            if (ce != null && ce.getId() == null)
             {
                 try
                 {
-                    session.saveOrUpdate(colObj.getCollectingEvent()); // need to save attch and merge do not work.
+                    session.save(colObj.getCollectingEvent());
                     
                 } catch (Exception ex)
                 {
@@ -244,6 +246,72 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                 }
             }
         }
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#afterSaveCommit(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public boolean afterSaveCommit(Object dataObj, DataProviderSessionIFace session)
+    {
+        CollectionObject colObj = (CollectionObject)dataObj;
+        if (AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent())
+        {
+            CollectingEvent ce = colObj.getCollectingEvent();
+            if (ce != null && ce.getId() != null)
+            {
+                delaySaveCE(colObj.getCollectingEvent()); // need to save attach and merge does not work.
+            }
+        }
+        return super.afterSaveCommit(dataObj, session);
+    }
+
+    protected void delaySaveCE(final CollectingEvent ce)
+    {
+        SwingWorker<Integer, Integer> saveWorker = new SwingWorker<Integer, Integer>()
+        {
+            @Override
+            protected Integer doInBackground() throws Exception
+            {
+                DataProviderSessionIFace session = null;
+                try
+                {
+                    session = DataProviderFactory.getInstance().createSession();
+                    session.beginTransaction();
+                    if (ce.getId() != null)
+                    {
+                        session.saveOrUpdate(session.merge(ce));
+                    } else
+                    {
+                        session.saveOrUpdate(ce);
+                    }
+                    session.commit();
+                    
+                } catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(CollectionObjectBusRules.class, ex);
+
+                } finally
+                {
+                    if (session != null)
+                    {
+                        session.close();
+                    }
+                }
+                
+                return null;
+            }
+
+            @Override
+            protected void done()
+            {
+                super.done();
+                
+            }
+        };
+        saveWorker.execute();
     }
 
     /* (non-Javadoc)
