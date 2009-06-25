@@ -1392,73 +1392,79 @@ public class QueryTask extends BaseTask
 		{
 			SearchResultReportServiceInfo selectedRep = null;
 			JTable dataTbl = (JTable) cmdAction.getProperties().get("jtable");
-			ResultSetTableModel rsm = (ResultSetTableModel) dataTbl.getModel();
-			QueryForIdResultsIFace results = rsm.getResults();
-			QueryBldrPane qb = results instanceof QBQueryForIdResultsHQL ? ((QBQueryForIdResultsHQL) results)
-					.getQueryBuilder()
-					: null;
-			int tableId = ((RecordSet) cmdAction.getData()).getDbTableId();
-			List<SearchResultReportServiceInfo> reps = new Vector<SearchResultReportServiceInfo>(
-					((ReportsBaseTask) ContextMgr
-							.getTaskByClass(ReportsTask.class)).getReports(
-							tableId, qb));
-			if (reps.size() == 0)
+			if (dataTbl != null)
 			{
-				log.error("no reports for query. Should't have gotten here.");
-			} else if (rsm.isLoadingCells())
-			{
-				UIRegistry
-						.writeTimedSimpleGlassPaneMsg(
-								UIRegistry
-										.getResourceString("QB_NO_REPORTS_WHILE_LOADING_RESULTS"),
-								5000, null, null, true);
-			} else
-			{
-				ChooseFromListDlg<SearchResultReportServiceInfo> dlg = new ChooseFromListDlg<SearchResultReportServiceInfo>(
-						(Frame) UIRegistry.getTopWindow(), UIRegistry
-								.getResourceString("REP_CHOOSE_SP_REPORT"),
-						reps);
-				dlg.setVisible(true);
-				if (dlg.isCancelled())
-				{
-					return;
-				}
-				selectedRep = dlg.getSelectedObject();
-				dlg.dispose();
+    			ResultSetTableModel rsm = (ResultSetTableModel) dataTbl.getModel();
+    			if (rsm != null)
+    			{
+        			QueryForIdResultsIFace results = rsm.getResults();
+        			QueryBldrPane qb = results instanceof QBQueryForIdResultsHQL ? ((QBQueryForIdResultsHQL) results)
+        					.getQueryBuilder()
+        					: null;
+        			int tableId = ((RecordSet) cmdAction.getData()).getDbTableId();
+        			List<SearchResultReportServiceInfo> reps = new Vector<SearchResultReportServiceInfo>(
+        					((ReportsBaseTask) ContextMgr
+        							.getTaskByClass(ReportsTask.class)).getReports(
+        							tableId, qb));
+        			if (reps.size() == 0)
+        			{
+        				log.error("no reports for query. Should't have gotten here.");
+        			} else if (rsm.isLoadingCells())
+        			{
+        				UIRegistry
+        						.writeTimedSimpleGlassPaneMsg(
+        								UIRegistry
+        										.getResourceString("QB_NO_REPORTS_WHILE_LOADING_RESULTS"),
+        								5000, null, null, true);
+        			} else
+        			{
+        				ChooseFromListDlg<SearchResultReportServiceInfo> dlg = new ChooseFromListDlg<SearchResultReportServiceInfo>(
+        						(Frame) UIRegistry.getTopWindow(), UIRegistry
+        								.getResourceString("REP_CHOOSE_SP_REPORT"),
+        						reps);
+        				dlg.setVisible(true);
+        				if (dlg.isCancelled())
+        				{
+        					return;
+        				}
+        				selectedRep = dlg.getSelectedObject();
+        				dlg.dispose();
+        			}
+        			if (selectedRep == null || selectedRep.getFileName() == null)
+        			{
+        				return;
+        			}
+        
+        			Object src;
+        			if (selectedRep.isLiveData())
+        			{
+        				// XXX - probably a smoother way to handle these generic issues.
+        				// (type safety warning)
+        				List<? extends ERTICaptionInfo> captions = rsm.getResults()
+        						.getVisibleCaptionInfo();
+        				src = new QBLiveDataSource(rsm,
+        						(List<ERTICaptionInfoQB>) captions, selectedRep
+        								.getRepeats());
+        			} else
+        			{
+        				src = rsm.getRecordSet(null, true);
+        			}
+        			final CommandAction cmd = new CommandAction(
+        					ReportsBaseTask.REPORTS, ReportsBaseTask.PRINT_REPORT, src);
+        			cmd.setProperty("title", rsm.getResults().getTitle());
+        			cmd.setProperty("file", selectedRep.getFileName());
+        			if (selectedRep.isRequiresNewConnection())
+        			{
+        				RecordSet repRS = new RecordSet();
+        				repRS.initialize();
+        				repRS.set(selectedRep.getReportName(), SpReport
+        						.getClassTableId(), RecordSet.GLOBAL);
+        				repRS.addItem(selectedRep.getSpReportId());
+        				cmd.setProperty("spreport", repRS);
+        			}
+        			CommandDispatcher.dispatch(cmd);
+    			}
 			}
-			if (selectedRep == null || selectedRep.getFileName() == null)
-			{
-				return;
-			}
-
-			Object src;
-			if (selectedRep.isLiveData())
-			{
-				// XXX - probably a smoother way to handle these generic issues.
-				// (type safety warning)
-				List<? extends ERTICaptionInfo> captions = rsm.getResults()
-						.getVisibleCaptionInfo();
-				src = new QBLiveDataSource(rsm,
-						(List<ERTICaptionInfoQB>) captions, selectedRep
-								.getRepeats());
-			} else
-			{
-				src = rsm.getRecordSet(null, true);
-			}
-			final CommandAction cmd = new CommandAction(
-					ReportsBaseTask.REPORTS, ReportsBaseTask.PRINT_REPORT, src);
-			cmd.setProperty("title", rsm.getResults().getTitle());
-			cmd.setProperty("file", selectedRep.getFileName());
-			if (selectedRep.isRequiresNewConnection())
-			{
-				RecordSet repRS = new RecordSet();
-				repRS.initialize();
-				repRS.set(selectedRep.getReportName(), SpReport
-						.getClassTableId(), RecordSet.GLOBAL);
-				repRS.addItem(selectedRep.getSpReportId());
-				cmd.setProperty("spreport", repRS);
-			}
-			CommandDispatcher.dispatch(cmd);
 		}
     }
 
