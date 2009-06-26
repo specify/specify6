@@ -30,9 +30,9 @@ import edu.ku.brc.specify.ui.db.ResultSetTableModel;
  * @code_status Alpha
  *
  */
+@SuppressWarnings("serial")
 public class QBResultsTablePanel extends ESResultsTablePanel
 {
-    
     public QBResultsTablePanel(final ExpressSearchResultsPaneIFace esrPane,
                                final QueryForIdResultsIFace    results,
                                final boolean                   installServices,
@@ -50,5 +50,11 @@ public class QBResultsTablePanel extends ESResultsTablePanel
         return new QBResultSetTableModel(this, results);
     }
     
-    
+    /**
+     * @return the tableModel
+     */
+    public QBResultSetTableModel getTableModel()
+    {
+    	return (QBResultSetTableModel )resultSetTableModel;
+    }
 }

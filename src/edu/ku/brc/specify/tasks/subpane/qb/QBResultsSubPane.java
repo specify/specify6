@@ -19,6 +19,8 @@
 */
 package edu.ku.brc.specify.tasks.subpane.qb;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.ui.db.QueryForIdResultsIFace;
 import edu.ku.brc.specify.tasks.subpane.ESResultsSubPane;
@@ -30,9 +32,12 @@ import edu.ku.brc.specify.tasks.subpane.ESResultsTablePanel;
  * @code_status Alpha
  *
  */
+@SuppressWarnings("serial")
 public class QBResultsSubPane extends ESResultsSubPane
 {
-    public QBResultsSubPane(final String name,
+    protected AtomicReference<QBResultsTablePanel> resultsTable = new AtomicReference<QBResultsTablePanel>(null);
+    
+	public QBResultsSubPane(final String name,
                             final Taskable task,
                             final boolean includeExplainPane)
     {
@@ -45,8 +50,8 @@ public class QBResultsSubPane extends ESResultsSubPane
     @Override
     protected ESResultsTablePanel createResultsTable(QueryForIdResultsIFace results)
     {
-        // TODO Auto-generated method stub
-        return new QBResultsTablePanel(this, results, results.shouldInstallServices(), results.isExpanded());
+    	resultsTable.set(new QBResultsTablePanel(this, results, results.shouldInstallServices(), results.isExpanded()));
+    	return resultsTable.get();
     }
 
 	/* (non-Javadoc)
@@ -58,5 +63,9 @@ public class QBResultsSubPane extends ESResultsSubPane
 		return "QB_Results";
 	}
 
+	public QBResultsTablePanel getResultsTable() 
+	{
+		return resultsTable.get();
+	}
     
 }

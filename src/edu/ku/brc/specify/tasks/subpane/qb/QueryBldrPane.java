@@ -96,6 +96,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.NavBoxLayoutManager;
+import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.UsageTracker;
@@ -3936,6 +3937,35 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         {
             saveBtn.setEnabled(false);
         }
+
+        if (runningResults.get() != null)
+        {
+            runningResults.get().cancel();
+        }
+        
+        if (completedResults.get() != null)
+        {
+        	completedResults.get().cancel();
+        }
+        
+        //This is safe as long as we continue to allow only qb result.
+        //and the qbresult pane gets the same name.
+        //and the qbresult pane always returns true for aboutToShutdown()
+        SubPaneIFace qbResultPane = SubPaneMgr.getInstance().getSubPaneByName(getResourceString("ES_QUERY_RESULTS"));
+        if (qbResultPane != null)
+        {
+        	QBResultsTablePanel tblPane = ((QBResultsSubPane )qbResultPane).getResultsTable();
+        	if (tblPane != null)
+        	{
+        		QBResultSetTableModel tblModel = tblPane.getTableModel();
+        		if (tblModel != null)
+        		{
+        			tblModel.cancelBackgroundLoads();
+        		}
+        	}
+        	SubPaneMgr.getInstance().removePane(qbResultPane);
+        }
+        
         query = null;
         if (queryNavBtn != null)
         {
