@@ -407,6 +407,11 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             public void actionPerformed(ActionEvent ae)
             {
                 BaseQRI qri = (BaseQRI) listBoxList.get(currentInx).getSelectedValue();
+                if (qri.isInUse)
+                {
+                	return; 
+                }
+                
                 FieldQRI fieldQRI = buildFieldQRI(qri);
             	SpQueryField qf = new SpQueryField();
             	qf.initialize();
@@ -420,32 +425,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 }
                 else
                 {
-                	if (selectedQFP != null)
-                	{
-                		if (selectedQFP.getFieldQRI() != null)
-                		{
-                			selectedQFP.getFieldQRI().setIsInUse(false);
-                		}
-                		if (selectedQFP.getQueryField() != null)
-                		{
-                			//removeReference doesn't work. Something off with the equals method or Comparable<?> stuff or something.
-                			//query.removeReference(selectedQFP.getQueryField(), "fields");
-                			removeFieldFromQuery(selectedQFP.getQueryField());
-                			removeSchemaItemMapping(selectedQFP.getItemMapping());
-                		}
-                		if (!isConditionForSchemaMap(QueryBldrPane.this.selectedQFP))
-                		{
-                			SpExportSchemaItemMapping newMapping = new SpExportSchemaItemMapping();
-                			newMapping.initialize();
-                			newMapping.setExportSchemaItem(selectedQFP.getSchemaItem());
-                			newMapping.setExportSchemaMapping(schemaMapping);
-                			newMapping.setQueryField(qf);
-                			schemaMapping.getMappings().add(newMapping);
-                			qf.setMapping(newMapping);
-                			QueryBldrPane.this.selectedQFP.setField(fieldQRI, qf);
-                            fieldQRI.setIsInUse(true);
-                		}
-                	}
+                	addNewMapping(fieldQRI, qf);
                 }
             }
         });
@@ -631,6 +611,43 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         add(bottom, BorderLayout.SOUTH);
 
         setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+    }
+    
+    /**
+     * @param fieldQRI
+     * @param qf
+     * 
+     * Adds a new mapping or condition for schema export.
+     */
+    protected void addNewMapping(FieldQRI fieldQRI, SpQueryField qf)
+    {
+    	if (selectedQFP != null)
+    	{
+    		if (selectedQFP.getFieldQRI() != null)
+    		{
+    			selectedQFP.getFieldQRI().setIsInUse(false);
+    		}
+    		if (selectedQFP.getQueryField() != null)
+    		{
+    			//removeReference doesn't work. Something off with the equals method or Comparable<?> stuff or something.
+    			//query.removeReference(selectedQFP.getQueryField(), "fields");
+    			removeFieldFromQuery(selectedQFP.getQueryField());
+    			removeSchemaItemMapping(selectedQFP.getItemMapping());
+    		}
+    		if (!isConditionForSchemaMap(QueryBldrPane.this.selectedQFP))
+    		{
+    			SpExportSchemaItemMapping newMapping = new SpExportSchemaItemMapping();
+    			newMapping.initialize();
+    			newMapping.setExportSchemaItem(selectedQFP.getSchemaItem());
+    			newMapping.setExportSchemaMapping(schemaMapping);
+    			newMapping.setQueryField(qf);
+    			schemaMapping.getMappings().add(newMapping);
+    			qf.setMapping(newMapping);
+    			QueryBldrPane.this.selectedQFP.setField(fieldQRI, qf);
+                fieldQRI.setIsInUse(true);
+    		}
+    		updateUIAfterAddOrMap(fieldQRI, null, false, false);
+    	}
     }
     
     /**
@@ -2611,37 +2628,14 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 			}
 		} else
 		{
-			if (!getExportMappingQueryName())
+			if (!query.isNamed() || !getExportMappingQueryName())
 			{
 				return false;
 			}
 		}
         
         UsageTracker.incrUsageCount("QB.SaveQuery." + query.getContextName());
-        
-//        if (schemaMapping != null)
-//        {
-//        	for (SpExportSchemaItemMapping esim : schemaMapping.getMappings())
-//        	{
-//        		esim.setExportSchemaMapping(null);
-//        	}
-//        	schemaMapping.getMappings().clear();
-//        	for (QueryFieldPanel qfp : queryFieldItems)
-//        	{
-//        		if (qfp.getSchemaItem() != null && qfp.getQueryField() != null)
-//        		{
-//        			SpExportSchemaItemMapping mapping = new SpExportSchemaItemMapping();
-//        			mapping.initialize();
-//        			mapping.setExportSchemaItem(qfp.getSchemaItem());
-//        			mapping.setQueryField(qfp.getQueryField());
-//        			qfp.getQueryField().getMappings().clear();
-//        			qfp.getQueryField().getMappings().add(mapping);
-//        			mapping.setExportSchemaMapping(schemaMapping);
-//        			schemaMapping.getMappings().add(mapping);
-//        		}
-//        	}
-//        }
-        
+                
         TableQRI tableQRI = (TableQRI) tableList.getSelectedValue();
         if (tableQRI != null)
         {
@@ -3119,32 +3113,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                                         }
                                         else
                                         {
-                                        	if (selectedQFP != null)
-                                        	{
-                                        		if (selectedQFP.getFieldQRI() != null)
-                                        		{
-                                        			selectedQFP.getFieldQRI().setIsInUse(false);
-                                        		}
-                                        		if (selectedQFP.getQueryField() != null)
-                                        		{
-                                        			//removeReference doesn't work. Something off with the equals method or Comparable<?> stuff or something.
-                                        			//query.removeReference(selectedQFP.getQueryField(), "fields");
-                                        			removeFieldFromQuery(selectedQFP.getQueryField());
-                                        			removeSchemaItemMapping(selectedQFP.getItemMapping());
-                                        		}
-                                        		if (!isConditionForSchemaMap(QueryBldrPane.this.selectedQFP))
-                                        		{
-                                        			SpExportSchemaItemMapping newMapping = new SpExportSchemaItemMapping();
-                                        			newMapping.initialize();
-                                        			newMapping.setExportSchemaItem(selectedQFP.getSchemaItem());
-                                        			newMapping.setExportSchemaMapping(schemaMapping);
-                                        			newMapping.setQueryField(qf);
-                                        			schemaMapping.getMappings().add(newMapping);
-                                        			qf.setMapping(newMapping);
-                                        			QueryBldrPane.this.selectedQFP.setField(fieldQRI, qf);
-                                                    fieldQRI.setIsInUse(true);
-                                        		}
-                                        	}
+                                        	addNewMapping(fieldQRI, qf);
                                         }
                                     }
                                 }
@@ -3708,6 +3677,62 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         return new QueryFieldPanel(container, fieldQRI, colDefStr, saveBtn, fld, null);
     }
     
+    protected void updateUIAfterAddOrMap(final FieldQRI fieldQRI, final QueryFieldPanel qfp, final boolean loading, final boolean isAdd)
+    {
+        SwingUtilities.invokeLater(new Runnable()
+        {
+            public void run()
+            {
+                if (currentInx > -1)
+                {
+                    if (isAdd)
+                    {
+                    	queryFieldsPanel.add(qfp);
+                    	queryFieldsPanel.validate();
+                    }
+                    if (fieldQRI instanceof RelQRI)
+                    {
+                        BaseQRI qri = fieldQRI.getTable();
+                        for (JList lb : listBoxList)
+                        {
+                            if (lb.isVisible())
+                            {
+                                if (((DefaultListModel) lb.getModel()).contains(qri))
+                                {
+                                    lb.repaint();
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        listBoxList.get(currentInx).repaint();
+                    }
+                    
+                    updateAddBtnState();
+                    selectQFP(qfp);
+                    queryFieldsPanel.repaint();
+                    if (!loading)
+                    {
+                        saveBtn.setEnabled(canSave());
+                        updateSearchBtn();
+                    }
+                    //Sorry, but a new context can't be selected if any fields are selected from the current context.
+                    tableList.setEnabled(queryFieldItems.size() == 0);
+                    if (fieldQRI instanceof TreeLevelQRI && distinctChk.isSelected() && countOnly)
+                    {
+                    	countOnly = false;
+                     	countOnlyChk.setSelected(false);
+                    	UIRegistry.displayLocalizedStatusBarText("QB_NO_COUNT_WITH_DISTINCT_WITH_TREELEVEL");
+                    }
+                    else
+                    {
+                    	UIRegistry.displayStatusBarText(null);
+                    }
+                }
+            }
+        });
+    }
     /**
      * Add QueryFieldItem to the list created with a TableFieldPair.
      * 
@@ -3729,57 +3754,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             queryFieldItems.add(qfp);
             qualifyFieldLabels();
             fieldQRI.setIsInUse(true);
-            
-            SwingUtilities.invokeLater(new Runnable()
-            {
-                public void run()
-                {
-                    if (currentInx > -1)
-                    {
-                        queryFieldsPanel.add(qfp);
-                        queryFieldsPanel.validate();
-                        if (fieldQRI instanceof RelQRI)
-                        {
-                            BaseQRI qri = fieldQRI.getTable();
-                            for (JList lb : listBoxList)
-                            {
-                                if (lb.isVisible())
-                                {
-                                    if (((DefaultListModel) lb.getModel()).contains(qri))
-                                    {
-                                        lb.repaint();
-                                    }
-                                }
-                            }
-                        }
-                        else
-                        {
-                            listBoxList.get(currentInx).repaint();
-                        }
-                        
-                        updateAddBtnState();
-                        selectQFP(qfp);
-                        queryFieldsPanel.repaint();
-                        if (!loading)
-                        {
-                            saveBtn.setEnabled(canSave());
-                            updateSearchBtn();
-                        }
-                        //Sorry, but a new context can't be selected if any fields are selected from the current context.
-                        tableList.setEnabled(queryFieldItems.size() == 0);
-                        if (fieldQRI instanceof TreeLevelQRI && distinctChk.isSelected() && countOnly)
-                        {
-                        	countOnly = false;
-                         	countOnlyChk.setSelected(false);
-                        	UIRegistry.displayLocalizedStatusBarText("QB_NO_COUNT_WITH_DISTINCT_WITH_TREELEVEL");
-                        }
-                        else
-                        {
-                        	UIRegistry.displayStatusBarText(null);
-                        }
-                    }
-                }
-            });
+            updateUIAfterAddOrMap(fieldQRI, qfp, loading, true);
         }
     }
 
