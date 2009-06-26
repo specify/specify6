@@ -124,25 +124,28 @@ public class ChildNodeCounter implements SQLExecutionListener, CustomQueryListen
                 
             case 1:
             {
-                List<Object> row = ((List<List<Object>>)data).get(0);
-                if (row != null && row.size() > 2)
+                if (((List<List<Object>>)data).size() > 0)
                 {
-                    if (row.get(1) == null || row.get(2) == null)
-                    {
-                    	//This should never happen if trees have been built correctly
-                    	//... unless we are forced to allow incremental node updates to be turned off
-                    	//for performance reasons.
-                    	return null;
-                    }
+                	List<Object> row = ((List<List<Object>>)data).get(0);
+                	if (row != null && row.size() > 2)
+                	{
+                		if (row.get(1) == null || row.get(2) == null)
+                		{
+                			//This should never happen if trees have been built correctly
+                			//... unless we are forced to allow incremental node updates to be turned off
+                			//for performance reasons.
+                			return null;
+                		}
                     
-                	//int treeDefId  = (Integer)row.get(0);
-                    int topNodeNum = (Integer)row.get(1);
-                    int botNodenum = (Integer)row.get(2);
+                		//int treeDefId  = (Integer)row.get(0);
+                		int topNodeNum = (Integer)row.get(1);
+                		int botNodenum = (Integer)row.get(2);
                     
-                    if (topNodeNum < botNodenum)
-                    {
-                        return String.format(countQuery, topNodeNum, botNodenum);
-                    }
+                		if (topNodeNum < botNodenum)
+                		{
+                			return String.format(countQuery, topNodeNum, botNodenum);
+                		}
+                	}
                 }
             }
         }
