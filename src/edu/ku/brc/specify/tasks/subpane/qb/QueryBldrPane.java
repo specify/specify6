@@ -3948,7 +3948,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         	completedResults.get().cancel();
         }
         
-        //This is safe as long as we continue to allow only qb result.
+        //This is safe as long as we continue to allow only 1 qb result.
         //and the qbresult pane gets the same name.
         //and the qbresult pane always returns true for aboutToShutdown()
         SubPaneIFace qbResultPane = SubPaneMgr.getInstance().getSubPaneByName(getResourceString("ES_QUERY_RESULTS"));
