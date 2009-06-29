@@ -223,7 +223,7 @@ public class TreeTaskMgr implements CommandListener
                 {
                     DBTableInfo treeDefTI = DBTableIdMgr.getInstance().getByClassName(tdi.getClass().getName());
                     
-                    boolean isLocked = TaskSemaphoreMgr.isLocked("def", treeDefTI.getClassObj().getSimpleName(), TaskSemaphoreMgr.SCOPE.Discipline);
+                    boolean isLocked = TaskSemaphoreMgr.isLockedOrInUse("def", treeDefTI.getClassObj().getSimpleName(), TaskSemaphoreMgr.SCOPE.Discipline);
                     
                     
                     Vector<RolloverCommand> rocs = unlockBtnHash.get(treeTask);

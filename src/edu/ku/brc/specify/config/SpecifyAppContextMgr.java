@@ -2854,37 +2854,41 @@ public class SpecifyAppContextMgr extends AppContextMgr
         return null;
     }
     
-    /**
-     * @param view
-     * @param isNewForm
-     * @return
+    /*
+     * 
+     * Commenting  isLockOK() because it is never used
      */
-    protected boolean isLockOK(final String    lockTitle, 
-                               final ViewIFace view, 
-                               final boolean   isNewForm)
-    {
-        Class<?> treeDefClass = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getTreeDefClass(view);
-        if (treeDefClass != null)
-        {
-            if (TaskSemaphoreMgr.isLocked(lockTitle, treeDefClass.getSimpleName(), TaskSemaphoreMgr.SCOPE.Discipline))
-            {
-                if (isNewForm)
-                {
-                    UIRegistry.showError("The tree is locked!");
-                    return false;
-                    
-                }
-                return false;
-            } 
-            TaskSemaphoreMgr.USER_ACTION action = TaskSemaphoreMgr.lock(lockTitle, treeDefClass.getSimpleName(), "def", TaskSemaphoreMgr.SCOPE.Discipline, false);
-            if (action != TaskSemaphoreMgr.USER_ACTION.OK)
-            {
-                UIRegistry.showError("Unable to Lock the tree!");
-                return false;
-            }
-        }
-        return true;
-    }
+//    /**
+//     * @param view
+//     * @param isNewForm
+//     * @return
+//     */
+//    protected boolean isLockOK(final String    lockTitle, 
+//                               final ViewIFace view, 
+//                               final boolean   isNewForm)
+//    {
+//        Class<?> treeDefClass = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getTreeDefClass(view);
+//        if (treeDefClass != null)
+//        {
+//            if (TaskSemaphoreMgr.isLocked(lockTitle, treeDefClass.getSimpleName(), TaskSemaphoreMgr.SCOPE.Discipline))
+//            {
+//                if (isNewForm)
+//                {
+//                    UIRegistry.showError("The tree is locked!");
+//                    return false;
+//                    
+//                }
+//                return false;
+//            } 
+//            TaskSemaphoreMgr.USER_ACTION action = TaskSemaphoreMgr.lock(lockTitle, treeDefClass.getSimpleName(), "def", TaskSemaphoreMgr.SCOPE.Discipline, false);
+//            if (action != TaskSemaphoreMgr.USER_ACTION.OK)
+//            {
+//                UIRegistry.showError("Unable to Lock the tree!");
+//                return false;
+//            }
+//        }
+//        return true;
+//    }
 
     /**
      * Checks to see if the view can be opened.

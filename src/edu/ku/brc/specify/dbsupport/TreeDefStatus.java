@@ -189,7 +189,7 @@ public class TreeDefStatus
     public boolean lockTree(TaskSemaphoreMgrCallerIFace lockCallback)
     {
 		TaskSemaphoreMgr.USER_ACTION action = TaskSemaphoreMgr.lock(getTreeLockTitle(), 
-				getTreeLockName(), null, TaskSemaphoreMgr.SCOPE.Discipline, false, lockCallback);
+				getTreeLockName(), null, TaskSemaphoreMgr.SCOPE.Discipline, false, lockCallback, true);
 		if (action == USER_ACTION.Override)
 		{
 			if (TaskSemaphoreMgr.unlock(getTreeLockTitle(), getTreeLockName(), TaskSemaphoreMgr.SCOPE.Discipline))

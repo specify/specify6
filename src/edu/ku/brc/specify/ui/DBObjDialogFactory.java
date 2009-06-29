@@ -428,7 +428,7 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
                 // Now grab the Tree Form Lock
                 if (BaseTreeBusRules.ALLOW_CONCURRENT_FORM_ACCESS)
                 {
-                	if (!TaskSemaphoreMgr.incrementUsageCount(title, treeFormSemaphoreName, SCOPE.Discipline))
+                	if (!TaskSemaphoreMgr.incrementUsageCount(title, treeSemaphoreName, SCOPE.Discipline))
                 	{
                 		action = USER_ACTION.Error;
                 	}
@@ -477,7 +477,7 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
             
             if (BaseTreeBusRules.ALLOW_CONCURRENT_FORM_ACCESS)
             {
-            	return TaskSemaphoreMgr.decrementUsageCount(title, treeFormSemaphoreName, SCOPE.Discipline);
+            	return TaskSemaphoreMgr.decrementUsageCount(title, treeSemaphoreName, SCOPE.Discipline);
             }
             
             

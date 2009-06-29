@@ -302,7 +302,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
             final boolean isEditable = perms == null || perms.canModify();
             
             final TaskSemaphoreMgr.USER_ACTION action = isViewOnly ? TaskSemaphoreMgr.USER_ACTION.ViewMode 
-            		: TaskSemaphoreMgr.lock(titleArg, treeDefClass.getSimpleName(), "def", TaskSemaphoreMgr.SCOPE.Discipline, true);
+            		: TaskSemaphoreMgr.lock(titleArg, treeDefClass.getSimpleName(), "def", TaskSemaphoreMgr.SCOPE.Discipline, true, null, true);
             final boolean isViewMode = action == TaskSemaphoreMgr.USER_ACTION.ViewMode;
             
             if ((isViewable && (action == TaskSemaphoreMgr.USER_ACTION.ViewMode || action == TaskSemaphoreMgr.USER_ACTION.OK)) || 
@@ -443,7 +443,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
             {
                 if (!currentDefInUse)
                 {
-                    TaskSemaphoreMgr.USER_ACTION action = TaskSemaphoreMgr.lock(titleArg, treeDefClass.getSimpleName(), "def", TaskSemaphoreMgr.SCOPE.Discipline, false);
+                    TaskSemaphoreMgr.USER_ACTION action = TaskSemaphoreMgr.lock(titleArg, treeDefClass.getSimpleName(), "def", TaskSemaphoreMgr.SCOPE.Discipline, false, null, true);
                     if (action == TaskSemaphoreMgr.USER_ACTION.OK)
                     {
                         SwingWorker bgWorker = new SwingWorker()
@@ -616,7 +616,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
 	                    String lockName     = treeDefClass.getSimpleName();
 	                    String formLockName = lockName + "Form";
 	                    
-	                    if (!TaskSemaphoreMgr.isLocked(trTitle, formLockName, TaskSemaphoreMgr.SCOPE.Discipline))
+	                    if (!TaskSemaphoreMgr.isLockedOrInUse(trTitle, formLockName, TaskSemaphoreMgr.SCOPE.Discipline))
 	                    {
     	                    ((TreeTableViewer<?,?,?>)visibleSubPane).setDoUnlock(false);
     	                    TreeDefinitionEditor<T,D,I> defEditor = createDefEditor(tabTitle);

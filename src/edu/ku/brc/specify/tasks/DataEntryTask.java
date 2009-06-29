@@ -396,7 +396,7 @@ public class DataEntryTask extends BaseTask
                         if (BaseTreeBusRules.ALLOW_CONCURRENT_FORM_ACCESS)
                         {
                         	//XXX treeviewer pane vs. data form pane???
-                        	TaskSemaphoreMgr.decrementUsageCount(title, treeDefClass.getSimpleName() + "Form", SCOPE.Discipline);
+                        	TaskSemaphoreMgr.decrementUsageCount(title, treeDefClass.getSimpleName(), SCOPE.Discipline);
                         } else
                         {
                         	TaskSemaphoreMgr.unlock("tabtitle", treeDefClass.getSimpleName()+"Form", TaskSemaphoreMgr.SCOPE.Discipline);
