@@ -50,6 +50,8 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.event.DocumentEvent;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -212,12 +214,18 @@ public class TaxonLoadSetupPanel extends BaseSetupPanel
         if (fileName.isEmpty())
         {
             TaxonFileDesc tfd = (TaxonFileDesc)fileCBX.getSelectedItem();
-            fileName = tfd.getFileName();
+            if (tfd != null)
+            {
+                fileName = tfd.getFileName();
+            }
         }
         
-        props.put("othertaxonfile", !otherTF.getText().isEmpty());
-        props.put("taxonfilename", fileName);
-        props.put("preloadtaxon", preloadChk.isSelected());
+        if (!otherTF.getText().isEmpty() || StringUtils.isNotEmpty(fileName))
+        {
+            props.put("othertaxonfile", !otherTF.getText().isEmpty());
+            props.put("taxonfilename", fileName != null ? fileName : "");
+            props.put("preloadtaxon", preloadChk.isSelected());
+        }
         
     }
 
@@ -254,8 +262,11 @@ public class TaxonLoadSetupPanel extends BaseSetupPanel
             }
             
             fileCBX.setModel(model);
-            fileCBX.setSelectedIndex(0);
-        
+            if (model.getSize() > 0)
+            {
+                fileCBX.setSelectedIndex(0);
+            }
+            
             if (firstTime)
             {
                 firstTime = false;

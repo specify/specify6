@@ -378,7 +378,7 @@ public class SpecifyDBSetupWizard extends JPanel
                             if (disciplineType != null && disciplineType.isPaleo() && 
                                 panels.get(step-1) instanceof TaxonLoadSetupPanel)
                             {
-                                step--;
+                                //step--;
                             }
                         }
                         
@@ -466,7 +466,7 @@ public class SpecifyDBSetupWizard extends JPanel
                         panels.get(step) instanceof TreeDefSetupPanel &&
                         ((TreeDefSetupPanel)panels.get(step)).getClassType() == TaxonTreeDef.class)
                     {
-                        step++;
+                        //step++;
                     }
                     
                     if (panels.get(step) == accessionPanel)
