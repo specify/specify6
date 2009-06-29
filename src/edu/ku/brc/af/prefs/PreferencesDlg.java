@@ -88,6 +88,9 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
 {
     protected static final Logger log = Logger.getLogger(PreferencesDlg.class);
     
+    protected int MILLI_SEC_DELAY = 10; // for Fade In/Out
+    protected int MAX_DELAY       = (int)(MILLI_SEC_DELAY * 1.5);
+    
     public static final String PREFERENCES = "Preferences"; //$NON-NLS-1$
     
     protected SimpleGlassPane       glassPane;
@@ -363,7 +366,7 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
                         winDim.height = Math.max(winDim.height, 250);
                         setSize(winDim);
                         
-                        new Timer(10, new FadeInAnimation(comp, 7)).start();
+                        new Timer(MILLI_SEC_DELAY, new FadeInAnimation(comp, 7)).start();
                     }
                 }
             } else
@@ -402,7 +405,7 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
                     {
                         ((PrefsPanelIFace)currentComp).setShadeColor(new Color(255, 255, 255, 0));
                          
-                        new Timer(10, new FadeOutAnimation(comp, oldSize, 12)).start();
+                        new Timer(MILLI_SEC_DELAY, new FadeOutAnimation(comp, oldSize, 12)).start();
                     }
                 }
 
@@ -653,6 +656,8 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
         private int        delta;
         private Component  comp;
         private int        alpha = 255;
+        private Long       startTime = null;
+        
 
         FadeInAnimation(final Component comp, final int delta)
         {
@@ -664,6 +669,16 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
         {
             
             alpha -= delta;
+            
+            if (startTime != null)
+            {
+                int elapsedTime = (int)(System.currentTimeMillis() - startTime);
+                if (elapsedTime > MAX_DELAY)
+                {
+                    alpha = 0;
+                }
+            }
+            startTime = System.currentTimeMillis();
             
             ((PrefsPanelIFace)comp).setShadeColor(new Color(255, 255, 255, Math.max(alpha, 0)));
             
@@ -682,7 +697,8 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
         private int        alpha = 0;
         
         private Component  comp;
-        private Dimension oldSize;
+        private Dimension  oldSize;
+        private Long       startTime = null;
 
         /**
          * @param currComp
@@ -703,6 +719,16 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
         public void actionPerformed(ActionEvent e)
         {
             alpha += delta;
+            
+            if (startTime != null)
+            {
+                int elapsedTime = (int)(System.currentTimeMillis() - startTime);
+                if (elapsedTime > MAX_DELAY)
+                {
+                    alpha = 255;
+                }
+            }
+            startTime = System.currentTimeMillis();
             
             Color bc = currentComp.getBackground();
             ((PrefsPanelIFace)currentComp).setShadeColor(new Color(bc.getRed(), bc.getGreen(), bc.getBlue(), Math.min(alpha, 255)));
