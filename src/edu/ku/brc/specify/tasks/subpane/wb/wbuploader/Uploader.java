@@ -4231,7 +4231,7 @@ public class Uploader implements ActionListener, KeyListener
 		USER_ACTION result = TaskSemaphoreMgr.lock(getLockTitle(),
 				"WORKBENCHUPLOAD", null, SCOPE.Discipline, false,
 				new UploadLocker(canOverrideLock(), canRemoveLock(), caller,
-						doLock));
+						doLock), false);
 		if (result == USER_ACTION.Override)
 		{
 			override = true;
