@@ -28,6 +28,8 @@ import java.util.List;
 
 import javax.swing.SwingUtilities;
 
+import org.apache.log4j.Logger;
+
 import edu.ku.brc.dbsupport.CustomQueryIFace;
 import edu.ku.brc.dbsupport.CustomQueryListener;
 import edu.ku.brc.dbsupport.JPAQuery;
@@ -48,15 +50,17 @@ import edu.ku.brc.specify.ui.treetables.TreeTableViewer;
  */
 public class ChildNodeCounter implements SQLExecutionListener, CustomQueryListener
 {
-    protected TreeNode node;
-    protected int      step    = 0;
-    protected int      valStep = 2;
-    protected boolean  isHQL   = false;
-    
-    protected String nodeNumQuery;
-    protected String countQuery;
-    protected int    slotIndex;
-    protected TreeTableViewer<?, ?, ?> viewer;
+    protected static final Logger		log		= Logger.getLogger(ChildNodeCounter.class);
+
+	protected TreeNode					node;
+	protected int						step	= 0;
+	protected int						valStep	= 2;
+	protected boolean					isHQL	= false;
+
+	protected String					nodeNumQuery;
+	protected String					countQuery;
+	protected int						slotIndex;
+	protected TreeTableViewer<?, ?, ?>	viewer;
     
     /**
      * Constructor.
@@ -134,6 +138,7 @@ public class ChildNodeCounter implements SQLExecutionListener, CustomQueryListen
                 			//This should never happen if trees have been built correctly
                 			//... unless we are forced to allow incremental node updates to be turned off
                 			//for performance reasons.
+                			log.warn("null node number: skipping count");
                 			return null;
                 		}
                     
@@ -146,6 +151,10 @@ public class ChildNodeCounter implements SQLExecutionListener, CustomQueryListen
                 			return String.format(countQuery, topNodeNum, botNodenum);
                 		}
                 	}
+                }
+                else
+                {
+                	log.warn("object list is empty: skipping count");
                 }
             }
         }
