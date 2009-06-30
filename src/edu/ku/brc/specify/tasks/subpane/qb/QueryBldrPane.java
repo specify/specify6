@@ -1319,7 +1319,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         }
         
         String result = sqlStr.toString();
-        
+        log.info(result);
          return new HQLSpecs(result, paramsToSet, sortElements);
     }
   
@@ -2629,7 +2629,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 			}
 		} else
 		{
-			if (!query.isNamed() || !getExportMappingQueryName())
+			if (!query.isNamed() && !getExportMappingQueryName())
 			{
 				return false;
 			}
