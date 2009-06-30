@@ -2384,7 +2384,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             // XXX Temporary Fix!
             SpecifyUser spUser = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
             
-            
             if (spUser != null)
             {
                 String dbPassword = spUser.getPassword();
@@ -2395,9 +2394,22 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                          dbPassword.length() < 25))
                 {
                     String encryptedPassword = Encryption.encrypt(spUser.getPassword(), spUser.getPassword());
-                    String updateSQL         = String.format("UPDATE specifyuser set Password ='%s'", encryptedPassword);
-                    int rv = BasicSQLUtils.update(updateSQL);
-                    log.debug("Password " + (rv == 1 ? "was" : "was NOT") + " converted.");
+                    spUser.setPassword(encryptedPassword);
+                    DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                    try
+                    {
+                        session.beginTransaction();
+                        session.saveOrUpdate(session.merge(spUser));
+                        session.commit();
+                        
+                    } catch (Exception ex)
+                    {
+                        session.rollback();
+                        ex.printStackTrace();
+                    } finally
+                    {
+                        session.close();     
+                    }
                 }
             }
         }

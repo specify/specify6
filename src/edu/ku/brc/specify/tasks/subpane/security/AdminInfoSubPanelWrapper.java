@@ -32,11 +32,11 @@ import edu.ku.brc.af.ui.db.ViewBasedDisplayPanel;
 import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.SpPermission;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.specify.datamodel.busrules.SpecifyUserBusRules;
 
 /**
  * Wraps a JPanel with a permission editor (if panel for group or user) 
@@ -211,6 +211,9 @@ public class AdminInfoSubPanelWrapper
         
         Object obj = mv.getData();
         
+        SpecifyUserBusRules busRules = new SpecifyUserBusRules();
+        busRules.initialize(mv.getCurrentView());
+        
         // Couldn't call BuinessRules because of a double session
         // need to look into it later
         //BusinessRulesIFace br = mv.getCurrentViewAsFormViewObj().getBusinessRules();
@@ -219,6 +222,8 @@ public class AdminInfoSubPanelWrapper
         if (obj instanceof SpecifyUser)
         {
             user = (SpecifyUser)obj;
+            
+            busRules.beforeMerge(user, session);
             
             // Hibernate doesn't seem to be cascading the Merge
             // when Agent has been edited outside the session.
@@ -232,20 +237,13 @@ public class AdminInfoSubPanelWrapper
             }
             
             user = session.merge(user);
-            
-            String pwd = user.getPassword();
-            if (pwd.length() < 30)
-            {
-                user.setPassword(Encryption.encrypt(pwd, pwd));
-            }
-            session.saveOrUpdate(user);
+            busRules.beforeSave(user, session);
             
         } else
         {
             obj = session.merge(obj);
             session.saveOrUpdate(obj);
         }
-        
         
         principal = session.merge(principal);
         session.saveOrUpdate(principal);

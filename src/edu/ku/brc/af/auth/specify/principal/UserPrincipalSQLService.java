@@ -333,7 +333,7 @@ public class UserPrincipalSQLService
                 pstmt.setString(1, myUserId);
                 pstmt.setString(2, princId);
                 pstmt.setString(3, princId);
-                log.debug("findGroups() executing query:" + pstmt.toString()); //$NON-NLS-1$
+                //log.debug("findGroups() executing query:" + pstmt.toString()); //$NON-NLS-1$
                 ResultSet rs = pstmt.executeQuery();
                 while (rs.next())
                 {
