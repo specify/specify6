@@ -77,7 +77,7 @@ public class DBSchema
         tables = new TreeMap<String, Table>();
         for (DBTableInfo tbl : scheme.getTables())
         {
-            Table newTbl = new Table(this, tbl);
+        	Table newTbl = new Table(this, tbl);
             tables.put(newTbl.getName().toLowerCase(), newTbl);
         }
         // add foreign keys

@@ -127,8 +127,15 @@ public class Table implements Comparable<Table>
         {
             addField(new Field(fld));
         }
-        keyFld = new Field(this.tableInfo.getIdFieldName(), this.tableInfo.getIdType());
-        addField(keyFld);
+        if (this.tableInfo.getIdFieldName() != null)
+        {
+        	keyFld = new Field(this.tableInfo.getIdFieldName(), this.tableInfo.getIdType());
+            addField(keyFld);
+        }
+        else
+        {
+        	keyFld = null;
+        }
 
         relationships = new Vector<Relationship>();
     }
