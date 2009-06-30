@@ -599,24 +599,24 @@ public class UIRegistry
     public static String getAppDataDir()
     {
         File dir;
-        log.debug("1 AppDataDir["+instance.appDataDir+"]");
+        //log.debug("1 AppDataDir["+instance.appDataDir+"]");
         if (instance.appDataDir == null)
         {
             dir = new File(getUserHomeAppDir());
         } else
         {
-            log.debug("2 AppDataDir["+instance.appDataDir+"]");
+            //log.debug("2 AppDataDir["+instance.appDataDir+"]");
             if (instance.appDataDir.equals("."))
             {
-                log.debug("************* dot");
+                //log.debug("************* dot");
                 dir = new File(UIHelper.stripSubDirs((new File(".").getAbsolutePath()), 1) + File.separator + instance.appName);
             } else
             {
-                log.debug("3 AppDataDir["+instance.appDataDir+"]");
+                //log.debug("3 AppDataDir["+instance.appDataDir+"]");
                 dir = new File(instance.appDataDir + File.separator + instance.appName);
             }
         }
-        log.debug("AppDataDir["+dir.getAbsolutePath()+"]");
+        //log.debug("AppDataDir["+dir.getAbsolutePath()+"]");
         
         if (!dir.exists())
         {
@@ -648,7 +648,7 @@ public class UIRegistry
      */
     public static String getUserHomeDir()
     {
-        log.error("isMobile() "+isMobile()+"["+UIRegistry.getDefaultWorkingPath()+"]");
+        //log.error("isMobile() "+isMobile()+"["+UIRegistry.getDefaultWorkingPath()+"]");
         
         return isMobile() ? UIRegistry.getDefaultWorkingPath() : getDefaultUserHomeDir();
     }
@@ -665,7 +665,7 @@ public class UIRegistry
         {
             String appDataLoc = System.getenv("LOCALAPPDATA");
             
-            return StringUtils.isNotEmpty(appDataLoc) ? appDataLoc : System.getenv("APPDATA");
+            return StringUtils.isNotEmpty(appDataLoc) ? appDataLoc : homeDir;
             
         } else if (osType == UIHelper.OSTYPE.MacOSX)
         {
