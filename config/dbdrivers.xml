@@ -17,8 +17,8 @@ There are three types of connection strings:
     </db>
     
     <db name="MySQLEmbedded" driver="com.mysql.jdbc.Driver" dialect="org.hibernate.dialect.MySQLDialect">
-        <connection type="open"><![CDATA[jdbc:mysql:mxj://SERVER:3336/DATABASE?characterEncoding=UTF-8&server.basedir=DATADIR&createDatabaseIfNotExist=true&autoReconnect=true&server.initialize-user=true]]></connection>
-        <connection type="opensys"><![CDATA[jdbc:mysql:mxj://SERVER:3336/?characterEncoding=UTF-8&server.basedir=DATADIR&createDatabaseIfNotExist=true&autoReconnect=true&server.initialize-user=true]]></connection>
+        <connection type="open"><![CDATA[jdbc:mysql:mxj://SERVER:3337/DATABASE?characterEncoding=UTF-8&server.basedir=DATADIR&createDatabaseIfNotExist=true&autoReconnect=true&server.initialize-user=true]]></connection>
+        <connection type="opensys"><![CDATA[jdbc:mysql:mxj://SERVER:3337/?characterEncoding=UTF-8&server.basedir=DATADIR&createDatabaseIfNotExist=true&autoReconnect=true&server.initialize-user=true]]></connection>
     </db>
     
     <!-- 

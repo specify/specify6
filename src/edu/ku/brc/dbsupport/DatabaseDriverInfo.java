@@ -97,7 +97,7 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
     protected String subForDataDir(final String connStr)
     {
         String dataDir = UIRegistry.getEmbeddedDBPath();
-        if (dataDir != null)
+        if (StringUtils.isNotEmpty(dataDir))
         {
             dataDir = new File(dataDir).getAbsolutePath();
             

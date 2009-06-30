@@ -27,6 +27,8 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Insets;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -37,6 +39,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
@@ -44,34 +49,49 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.services.geolocate.client.GeoLocate;
+import edu.ku.brc.services.geolocate.client.GeographicPoint;
 import edu.ku.brc.services.geolocate.client.GeorefResult;
 import edu.ku.brc.services.geolocate.client.GeorefResultSet;
 import edu.ku.brc.services.mapping.LocalityMapper.MapperListener;
+import edu.ku.brc.specify.ui.ClickAndGoSelectListener;
+import edu.ku.brc.specify.ui.WorldWindPanel;
 import edu.ku.brc.ui.BiColorTableCellRenderer;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import gov.nasa.worldwind.event.SelectEvent;
+import gov.nasa.worldwind.event.SelectListener;
+import gov.nasa.worldwind.geom.Position;
+import gov.nasa.worldwind.layers.MarkerLayer;
+import gov.nasa.worldwind.render.GlobeAnnotation;
+import gov.nasa.worldwind.render.markers.BasicMarker;
+import gov.nasa.worldwind.view.OrbitView;
 
 /**
  * A UI panel for use in displaying the results of a GEOLocate web service query.
  * 
  * @author jstewart
+ * @author rods
  * @code_status Alpha
  */
-public class GeoLocateResultsDisplay extends JPanel implements MapperListener
+public class GeoLocateResultsDisplay extends JPanel implements MapperListener, SelectListener
 {
-    protected static final int MAP_WIDTH  = 400;
-    protected static final int MAP_HEIGHT = 250;
+    protected static final int MAP_WIDTH  = 500;
+    protected static final int MAP_HEIGHT = 500;
 
     protected ResultsTableModel tableModel;
-    protected JTable resultsTable;
+    protected JTable            resultsTable;
     
-    protected JLabel mapLabel;
+    protected JLabel             mapLabel;
     
     protected JTextField localityStringField;
     protected JTextField countyField;
     protected JTextField stateField;
     protected JTextField countryField;
+    
+    private WorldWindPanel wwPanel       = null;
+    protected GeorefResult userDefGeoRef = null;
+    protected Position     lastClickPos  = null;
     
     /**
      * Constructor.
@@ -80,7 +100,7 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener
     {
         super();
         
-        setLayout(new FormLayout("p,10px,400px,10px,C:p:g", "p,2px,p,2px,p,2px,p,10px,p:g")); //$NON-NLS-1$ //$NON-NLS-2$
+        setLayout(new FormLayout("p,10px,400px,10px,f:p:g", "p,2px,p,2px,p,2px,p,10px,f:p:g")); //$NON-NLS-1$ //$NON-NLS-2$
         
         CellConstraints cc = new CellConstraints();
         
@@ -98,7 +118,48 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener
         // add the JLabel to show the map
         mapLabel = createLabel(getResourceString("GeoLocateResultsDisplay.LOADING_MAP")); //$NON-NLS-1$
         mapLabel.setPreferredSize(new Dimension(MAP_WIDTH, MAP_HEIGHT));
-        add(mapLabel, cc.xywh(5,1,1,9));
+        if (false)
+        {
+            add(mapLabel, cc.xywh(5,1,1,9));
+        } else
+        {
+            wwPanel = new WorldWindPanel();
+            wwPanel.setPreferredSize(new Dimension(MAP_WIDTH, MAP_HEIGHT));
+            wwPanel.getWorld().addSelectListener(new ClickAndGoSelectListener(wwPanel.getWorld(), MarkerLayer.class));
+            wwPanel.getWorld().addSelectListener(this);
+            
+            wwPanel.getWorld().getInputHandler().addMouseListener(new MouseAdapter()
+            {
+                /* (non-Javadoc)
+                 * @see java.awt.event.MouseAdapter#mouseClicked(java.awt.event.MouseEvent)
+                 */
+                @Override
+                public void mouseClicked(final MouseEvent e)
+                {
+                    super.mouseClicked(e);
+                    
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run()
+                        {
+                            Position pos = wwPanel.getWorld().getCurrentPosition();
+                            if (!pos.equals(lastClickPos))
+                            {
+                                if (userDefGeoRef == null)
+                                {
+                                    addUserDefinedMarker();
+                                } else 
+                                {
+                                    repositionUserDefMarker();
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+            
+            add(wwPanel, cc.xywh(5,1,1,9));
+        }
 
         // add the results table
         tableModel   = new ResultsTableModel();
@@ -107,6 +168,14 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener
         resultsTable.setShowHorizontalLines(false);
         resultsTable.setRowSelectionAllowed(true);
         resultsTable.setDefaultRenderer(String.class, new BiColorTableCellRenderer(false));
+        
+        resultsTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e)
+            {
+                wwPanel.flyToMarker(resultsTable.getSelectedRow());
+            }
+        });
 
         // add a cell renderer that uses the tooltip to show the text of the "parse pattern" column in case
         // it is too long to show and gets truncated by the standard cell renderer
@@ -130,6 +199,46 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener
         rowIndex+=2;
     }
     
+    /**
+     * 
+     */
+    private void addUserDefinedMarker()
+    {
+        Position pos = wwPanel.getWorld().getCurrentPosition();
+        GeographicPoint pnt = new GeographicPoint();
+        pnt.setLatitude(pos.getLatitude().getDegrees());
+        pnt.setLongitude(pos.getLongitude().getDegrees());
+        userDefGeoRef = new GeorefResult();
+        userDefGeoRef.setWGS84Coordinate(pnt);
+        userDefGeoRef.setParsePattern("(User Defined)"); // XXX I18N
+        tableModel.add(userDefGeoRef);
+        resultsTable.repaint();
+        wwPanel.placeMarkers(tableModel.getResults());
+    }
+    
+    private void repositionUserDefMarker()
+    {
+        Position pos = wwPanel.getWorld().getCurrentPosition();
+        GeographicPoint pnt = userDefGeoRef.getWGS84Coordinate();
+        pnt.setLatitude(pos.getLatitude().getDegrees());
+        pnt.setLongitude(pos.getLongitude().getDegrees());
+        
+        tableModel.fireTableCellUpdated(tableModel.getRowCount()-1, 1);
+        tableModel.fireTableCellUpdated(tableModel.getRowCount()-1, 2);
+        //Marker marker = wwPanel.getMarkers().get(wwPanel.getMarkers().size()-1);
+        //marker.setPosition(pos);
+        wwPanel.placeMarkers(tableModel.getResults());
+        wwPanel.getWorld().repaint();
+        resultsTable.repaint();
+    }
+    
+    /**
+     * @param localityString
+     * @param county
+     * @param state
+     * @param country
+     * @param georefResults
+     */
     public void setGeoLocateQueryAndResults(String localityString, String county, String state, String country, GeorefResultSet georefResults)
     {
         localityStringField.setText(localityString);
@@ -143,9 +252,15 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener
         
         tableModel.setResultSet(georefResults.getResultSet());
         
-        mapLabel.setText(getResourceString("GeoLocateResultsDisplay.LOADING_MAP")); //$NON-NLS-1$
+        if (wwPanel != null)
+        {
+            wwPanel.placeMarkers(georefResults.getResultSet());
+        } else
+        {
+            mapLabel.setText(getResourceString("GeoLocateResultsDisplay.LOADING_MAP")); //$NON-NLS-1$
+        }
         GeoLocate.getMapOfGeographicPoints(georefResults.getResultSet(), GeoLocateResultsDisplay.this);
-
+        
         // set the table height to at most 10 rows
         Dimension size = resultsTable.getPreferredScrollableViewportSize();
         size.height = Math.min(size.height, resultsTable.getRowHeight()*10);
@@ -194,7 +309,7 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener
      */
     public void exceptionOccurred(Exception e)
     {
-        mapLabel.setText(getResourceString("GeoLocateResultsDisplay.ERROR_GETTING_MAP")); //$NON-NLS-1$
+        if (mapLabel != null) mapLabel.setText(getResourceString("GeoLocateResultsDisplay.ERROR_GETTING_MAP")); //$NON-NLS-1$
         JStatusBar statusBar = UIRegistry.getStatusBar();
         statusBar.setErrorMessage(getResourceString("GeoLocateResultsDisplay.ERROR_GETTING_MAP"), e); //$NON-NLS-1$
     }
@@ -211,6 +326,42 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener
         repaint();
     }
     
+    /* (non-Javadoc)
+     * @see gov.nasa.worldwind.event.SelectListener#selected(gov.nasa.worldwind.event.SelectEvent)
+     */
+    @Override
+    public void selected(final SelectEvent event)
+    {
+        if (event.getEventAction().equals(SelectEvent.LEFT_CLICK))
+        {
+            // This is a left click
+            if (event.hasObjects() && event.getTopPickedObject().hasPosition())
+            {
+                lastClickPos = wwPanel.getWorld().getCurrentPosition();
+                
+                // There is a picked object with a position
+                if (wwPanel.getWorld().getView() instanceof OrbitView)
+                {
+                    if (event.getTopObject().getClass().equals(BasicMarker.class))
+                    {
+                        int inx = wwPanel.getMarkers().indexOf(event.getTopObject());
+                        if (inx > -1)
+                        {
+                            resultsTable.setRowSelectionInterval(inx, inx);
+                        }
+                    } else if (event.getTopObject().getClass().equals(GlobeAnnotation.class))
+                    {
+                        int inx = wwPanel.getAnnotations().indexOf(event.getTopObject());
+                        if (inx > -1)
+                        {
+                            resultsTable.setRowSelectionInterval(inx, inx);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     /**
      * Adds a new row to this object's content area.
      * 
@@ -231,6 +382,14 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener
         add(tf, cc.xy(column+2,row));
         return tf;
     }
+    
+    /**
+     * Cleans up the panel.
+     */
+    public void shutdown()
+    {
+        wwPanel.shutdown();
+    }
 
     /**
      * Creates a {@link JTextField} customized for use in this UI widget.
@@ -248,6 +407,9 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener
         return tf;
     }
     
+    //-----------------------------------------------------------------
+    //
+    //-----------------------------------------------------------------
     protected class ResultsTableModel extends AbstractTableModel
     {
         protected List<GeorefResult> results;
@@ -258,11 +420,30 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener
             fireTableDataChanged();
         }
         
+        public void add(final GeorefResult grr)
+        {
+            results.add(grr);
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run()
+                {
+                    fireTableDataChanged();
+                }
+            });
+        }
+        
         public GeorefResult getResult(int index)
         {
             return results.get(index);
         }
         
+        /**
+         * @return the results
+         */
+        public List<GeorefResult> getResults()
+        {
+            return results;
+        }
+
         @Override
         public Class<?> getColumnClass(int columnIndex)
         {
@@ -350,6 +531,5 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener
             }
             return null;
         }
-        
     }
 }

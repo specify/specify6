@@ -2460,7 +2460,18 @@ public class FormViewObj implements Viewable,
                 Integer dataObjId = ((FormDataObjIFace)dataObjArg).getId();
                 if (dataObjId != null)
                 {
-                    Integer count = session.getDataCount(dataObjArg.getClass(), "id", dataObjId, DataProviderSessionIFace.CompareType.Equals);
+                    DataProviderSessionIFace session1 = DataProviderFactory.getInstance().createSession();
+                    Integer count = null;
+                    try
+                    {
+                        count = session1.getDataCount(dataObjArg.getClass(), "id", dataObjId, DataProviderSessionIFace.CompareType.Equals);
+                    } catch (Exception ex)
+                    {
+                        ex.printStackTrace();
+                    } finally
+                    {
+                        if (session1 != null) session1.close();
+                    }
                     if (count == null || count == 0)
                     {
                         UIRegistry.showLocalizedError("FormViewObj.DATA_OBJ_MISSING");

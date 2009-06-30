@@ -39,7 +39,6 @@ import javax.persistence.UniqueConstraint;
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "accessionauthorization", uniqueConstraints = { 
         @UniqueConstraint(columnNames = { "PermitID", "AccessionID" }), 
-        @UniqueConstraint(columnNames = { "RepositoryAgreementID" })
 })
 public class AccessionAuthorization extends DataModelObjBase implements java.io.Serializable,
         Comparable<AccessionAuthorization>

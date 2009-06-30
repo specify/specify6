@@ -8229,6 +8229,11 @@ public class BuildSampleDatabase
             e.printStackTrace();
         }
         
+        if (StringUtils.isEmpty(UIRegistry.getAppName()))
+        {
+            UIRegistry.setAppName("Specify");
+        }
+        
         SwingUtilities.invokeLater(new Runnable()
         {
             public void run()

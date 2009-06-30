@@ -5015,7 +5015,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     continue;
                 }
 
-                if (false)
+                /*if (false)
                 {
                     String stratGTPIdStr = "SELECT co.CollectionObjectID, ce.CollectingEventID, s.StratigraphyID, g.GeologicTimePeriodID FROM collectionobject co " +
                         "LEFT JOIN collectingevent ce ON co.CollectingEventID = ce.CollectingEventID  " +
@@ -5037,7 +5037,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                         gtpId = rs2.getInt(4);
                     }
                     rs2.close();
-                }
+                }*/
 
                 String catalogNumber = null;
                 String colObjId = null;
@@ -6375,6 +6375,24 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             errorsToShow = errorsToShow | BasicSQLUtils.SHOW_PM_LOOKUP | BasicSQLUtils.SHOW_NULL_PM;
         }
         BasicSQLUtils.setShowErrors(errorsToShow);
+        
+        tblWriter.append("<H3>Taxon with null RankIDs</H3>");
+        tblWriter.startTable();
+        String missingRankSQL = "SELECT * FROM taxonname WHERE RankID IS NULL";
+        Vector<Object[]> rows = BasicSQLUtils.query(missingRankSQL);
+        for (Object[] row : rows)
+        {
+            tblWriter.append("<TR>");
+            for (Object obj : row)
+            {
+                tblWriter.append("<TD>");
+                tblWriter.append(obj != null ? obj.toString() : "null");
+                tblWriter.append("</TD>");
+            }
+            tblWriter.append("</TR>");
+        }
+        tblWriter.endTable();
+        tblWriter.append("<BR>");
         
         IdHashMapper.setTblWriter(tblWriter);
 

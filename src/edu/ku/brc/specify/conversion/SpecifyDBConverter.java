@@ -267,6 +267,7 @@ public class SpecifyDBConverter
     protected boolean showStatsFromOldCollection(final Connection oldDBConn)
     {
         String[] queries = {"SELECT count(*) FROM collectionobject co1 LEFT JOIN collectionobject co2 ON co1.DerivedFromID = co2.CollectionObjectID WHERE co1.DerivedFromID is not NULL AND co2.CollectionObjectID is NULL",
+                            "SELECT COUNT(*) FROM taxonname WHERE RankID iS NULL",
                             "SELECT count(*) FROM collectionobject",
                             "SELECT count(*) FROM collectionobjectcatalog",
                             "SELECT count(*) FROM taxonname",
@@ -276,6 +277,7 @@ public class SpecifyDBConverter
                             "SELECT count(*) FROM agent WHERE LENGTH(LastName) > 50"};
         
         String[] descs = {"Stranded Preparations",
+                          "Number of Taxon with a NULL RankId",
                           "CollectionObjects",
                           "Collection Object Catalogs",
                           "Taxon",

@@ -78,6 +78,9 @@ public class GeoLocateResultsChooser extends CustomDialog
         rowIndex = -1;
     }
     
+    /**
+     * @return
+     */
     public List<GeorefResult> getResultsChosen()
     {
         if (!hasBeenShown)
@@ -89,6 +92,9 @@ public class GeoLocateResultsChooser extends CustomDialog
         return chosenResults;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.CustomDialog#setVisible(boolean)
+     */
     @Override
     public void setVisible(boolean visible)
     {
@@ -108,6 +114,9 @@ public class GeoLocateResultsChooser extends CustomDialog
         super.setVisible(visible);
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.CustomDialog#applyButtonPressed()
+     */
     @Override
     protected void applyButtonPressed()
     {
@@ -124,6 +133,8 @@ public class GeoLocateResultsChooser extends CustomDialog
         // otherwise, move on to the next record
         if (onLastRecord())
         {
+            resultsDisplayPanel.shutdown();
+            
             super.okButtonPressed();
         }
         else
@@ -135,6 +146,8 @@ public class GeoLocateResultsChooser extends CustomDialog
     @Override
     protected void okButtonPressed()
     {
+        resultsDisplayPanel.shutdown();
+        
         // remember, we're using the 'OK' button for "Dismiss" to accept the
         // currently selected result and hide the dialog
 
@@ -149,6 +162,9 @@ public class GeoLocateResultsChooser extends CustomDialog
         super.okButtonPressed();
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.CustomDialog#cancelButtonPressed()
+     */
     @Override
     protected void cancelButtonPressed()
     {
@@ -159,6 +175,8 @@ public class GeoLocateResultsChooser extends CustomDialog
         // otherwise, move on to the next record
         if (onLastRecord())
         {
+            resultsDisplayPanel.shutdown();
+            
             super.okButtonPressed();
         }
         else

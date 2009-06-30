@@ -248,7 +248,7 @@ public class DBConnection
             }
             Class.forName(dbDriver); // load driver
             
-            //log.debug("["+dbConnectionStr+"]["+dbUsername+"]["+dbPassword+"] ");
+            log.debug("["+dbConnectionStr+"]["+dbUsername+"]["+dbPassword+"] ");
             con = DriverManager.getConnection(dbConnectionStr, dbUsername, dbPassword);
             
         } catch (SQLException sqlEX)
@@ -562,6 +562,10 @@ public class DBConnection
         }
     }
     
+    /**
+     * @return
+     * @throws IOException
+     */
     public static File getMobileTempDir() throws IOException
     {
         if (mobileTmpDir == null)
@@ -610,6 +614,9 @@ public class DBConnection
         return false;
     }
 
+    /**
+     * @return
+     */
     private static boolean copyToMobileDisk()
     {
         if (mobileTmpDir != null && isCopiedToMachineDisk)
