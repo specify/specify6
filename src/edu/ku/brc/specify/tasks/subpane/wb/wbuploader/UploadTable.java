@@ -1003,6 +1003,18 @@ public class UploadTable implements Comparable<UploadTable>
     }
     
     /**
+     * @param ufld
+     * @return true if ufld represents a latitude field.
+     * 
+     * Assumes the field's type has already been determined BigDecimal.
+     */
+    protected boolean isLatFld(final UploadField ufld)
+    {
+        String name = ufld.getField().getName();
+        name = name.substring(0, name.length()-1);
+        return name.equalsIgnoreCase("latitude");
+    }
+    /**
      * @param fld
      * @return true if 
      */
@@ -1130,7 +1142,14 @@ public class UploadTable implements Comparable<UploadTable>
                     		}
                     	}
                     }
-                    arg[0] = new BigDecimal(fldStr);
+                    BigDecimal val = new BigDecimal(fldStr);
+                    Double maxVal =  isLatFld(ufld) ? new Double("90") : new Double("180");
+                    if (Math.abs(val.doubleValue()) > maxVal)
+                    {
+            			throw new UploaderException(getResourceString("WB_UPLOAD_INVALID_GEOREF_VALUE"), UploaderException.INVALID_DATA);
+                    }
+                    arg[0] = val;
+                    
                 }
             }
             else if (fldClass == Boolean.class)
@@ -2150,7 +2169,7 @@ public class UploadTable implements Comparable<UploadTable>
                     if (fld.getField().getName().equalsIgnoreCase("latitude1") || fld.getField().getName().equalsIgnoreCase("latitude1")
                             || fld.getField().getName().equalsIgnoreCase("longitude1") || fld.getField().getName().equalsIgnoreCase("longitude2"))
                     {
-                        LatLonConverter.FORMAT fmt = gc.getLatLonFormat(StringUtils.stripToNull(uploadData.get(row, fld.getIndex())));
+                        LatLonConverter.FORMAT fmt = gc.getLatLonFormat(StringUtils.stripToNull(fld.getValue()));
                         if (llFmt == null)
                         {
                             llFmt = fmt;
