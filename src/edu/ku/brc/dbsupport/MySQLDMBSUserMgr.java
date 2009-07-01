@@ -312,12 +312,19 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
                                 if (tokens[inx].equals("SELECT"))
                                 {
                                     perms |= PERM_SELECT;
+                                    
                                 } else if (tokens[inx].equals("UPDATE"))
                                 {
                                     perms |= PERM_UPDATE;
+                                    
                                 } else if (tokens[inx].equals("DELETE"))
                                 {
                                     perms |= PERM_DELETE;
+                                    
+                                } else if (tokens[inx].equals("LOCK_TABLES"))
+                                {
+                                    perms |= PERM_LOCK_TABLES;
+                                    
                                 } else if (tokens[inx].equals("INSERT"))
                                 {
                                     perms |= PERM_INSERT;
@@ -413,6 +420,10 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
                     if ((permissions & PERM_DELETE) == PERM_DELETE)
                     {
                         sb.append("DELETE,");
+                    }
+                    if ((permissions & PERM_DELETE) == PERM_LOCK_TABLES)
+                    {
+                        sb.append("LOCK_TABLES,");
                     }
                     if ((permissions & PERM_INSERT) == PERM_INSERT)
                     {

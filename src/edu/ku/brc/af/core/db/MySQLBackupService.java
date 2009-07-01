@@ -342,10 +342,18 @@ public class MySQLBackupService extends BackupServiceFactory
                     while ((line = errIn.readLine()) != null)
                     {
                     	System.err.println(line);
-                        if (line.startsWith("ERR"))
+                        if (line.startsWith("ERR") || StringUtils.contains(line, "Got error"))
                         {
                             sb.append(line);
                             sb.append("\n");
+                            
+                            if (StringUtils.contains(line, "1044") && 
+                                StringUtils.contains(line, "LOCK TABLES"))
+                            {
+                                sb.append("\n");
+                                sb.append(UIRegistry.getResourceString("MySQLBackupService.LCK_TBL_ERR"));
+                                sb.append("\n");
+                            }
                         }
                     }
                     errorMsg = sb.toString();

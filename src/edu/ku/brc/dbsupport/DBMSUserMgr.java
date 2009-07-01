@@ -34,14 +34,15 @@ public abstract class DBMSUserMgr
 {
     public static String factoryName = "edu.ku.brc.dbsupport.DBMSUserMgr"; //$NON-NLS-1$
     
-    public static final int PERM_NONE   = 0;
-    public static final int PERM_SELECT = 1;
-    public static final int PERM_UPDATE = 2;
-    public static final int PERM_DELETE = 4;
-    public static final int PERM_INSERT = 8;
-    public static final int PERM_BASIC  = 15;
+    public static final int PERM_NONE        = 0;
+    public static final int PERM_SELECT      = 1;
+    public static final int PERM_UPDATE      = 2;
+    public static final int PERM_DELETE      = 4;
+    public static final int PERM_INSERT      = 8;
+    public static final int PERM_LOCK_TABLES = 16;
+    public static final int PERM_BASIC       = 31;
     
-    public static final int PERM_ALL    = 16;
+    public static final int PERM_ALL         = 32; // Literally 'all' the permissions
     
     private static DBMSUserMgr instance = null;
    
