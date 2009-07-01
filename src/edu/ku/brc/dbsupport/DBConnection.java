@@ -281,9 +281,14 @@ public class DBConnection
     {
         try
         {
-            if (connections.indexOf(this) > -1)
+            if (connections.size() == 1 && this == getInstance())
             {
                 connections.remove(this);
+                
+            } else if (connections.indexOf(this) > -1)
+            {
+                connections.remove(this);
+                
             } else
             {
                 String msg = "The DBConnection ["+this+"] has already been removed!";
@@ -318,7 +323,6 @@ public class DBConnection
         {
             log.error(ex);
         }
-        
     }
     
     /**
@@ -493,15 +497,6 @@ public class DBConnection
         }
         
         return connection;
-    }
-    
-    /* (non-Javadoc)
-     * @see java.lang.Object#finalize()
-     */
-    public void finalize()
-    {
-        //DataProviderFactory.getInstance().shutdown();
-        close();
     }
     
     /**
