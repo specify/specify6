@@ -286,7 +286,7 @@ public class UploadTableTree extends UploadTable
         
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         QueryIFace q = session.createQuery("from " + tblClass.getName() + " where rankId=" + parentDefItem.getRankId().toString()
-                + " and name='" + getDefaultParentName() + "'", false);
+                + " and name='" + getDefaultParentName().replace("'", "''") + "'", false);
         try
         {
             Treeable result = (Treeable)q.uniqueResult();
