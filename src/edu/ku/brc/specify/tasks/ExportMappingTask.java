@@ -8,9 +8,12 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import org.dom4j.Element;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.NavBox;
@@ -19,9 +22,11 @@ import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
+import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.SpExportSchema;
+import edu.ku.brc.specify.datamodel.SpExportSchemaItem;
 import edu.ku.brc.specify.datamodel.SpExportSchemaMapping;
 import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.tasks.subpane.qb.QueryBldrPane;
@@ -44,6 +49,7 @@ public class ExportMappingTask extends QueryTask
 	{
 		super("ExportMappingTask",
 				getResourceString("ExportMappingTask.TaskTitle"));
+		//importSchemaDefinition(new File("C:/darwincoreWithDiGIRv1.3.xsd"));
 	}
 
 	/*
@@ -375,4 +381,71 @@ public class ExportMappingTask extends QueryTask
 			}
 		}
 	}
+	
+	protected boolean importSchemaDefinition(File xsdFile)
+	{
+		Element xsd = null;
+		try
+		{
+			xsd = XMLHelper.readFileToDOM4J(xsdFile);
+		}
+		catch (Exception ex)
+		{
+			UIRegistry.displayErrorDlg(ex.getLocalizedMessage()); //XXX i18n
+			return false;
+		}
+		if (xsd != null)
+		{
+			boolean doRollback = false;
+			DataProviderSessionIFace session = null;
+			try 
+			{
+				SpExportSchema schema = new SpExportSchema();
+				schema.initialize();
+				schema.setSchemaName(xsd.getName());
+				schema.setSchemaVersion(xsd.attributeValue("version", null));
+				schema.setDiscipline(AppContextMgr.getInstance().getClassObject(Discipline.class));
+				for (Object itemObj : xsd.selectNodes("xsd:element"))
+				{
+					SpExportSchemaItem item = createSchemaItem((Element ) itemObj);
+					item.setSpExportSchema(schema);
+					schema.getSpExportSchemaItems().add(item);
+				}
+				session = DataProviderFactory.getInstance().createSession();
+				session.beginTransaction();
+				doRollback = true;
+				session.save(schema);
+				session.commit();
+				doRollback = false;
+				return true;
+			}
+			catch (Exception ex)
+			{
+				if (doRollback)
+				{
+					session.rollback();
+				}
+				UIRegistry.displayErrorDlg(ex.getLocalizedMessage()); //XXX i18n
+			}
+			finally
+			{
+				if (session != null)
+				{
+					session.close();
+				}
+			}
+		}
+		UIRegistry.displayErrorDlg("Unable to import schema"); //XXX i18n
+		return false;
+	}
+	
+	protected SpExportSchemaItem createSchemaItem(Element itemElement) throws Exception
+	{
+		SpExportSchemaItem result = new SpExportSchemaItem();
+		result.initialize();
+		result.setFieldName(itemElement.attributeValue("name"));
+		result.setDataType(itemElement.attributeValue("type"));
+		return result;
+	}
 }
+
