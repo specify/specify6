@@ -658,7 +658,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
         {
             if (updateGeoRefInfo)
             {
-                updateGeoRefTextFldsIfNecessary(wbdi);
+                updateGeoRefTextFldsIfNecessary(wbdi.getWorkbenchTemplateMappingItem());
             }
             if (wbdi.getValidationStatus() == WorkbenchDataItem.VAL_ERROR)
             {
@@ -675,9 +675,8 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
     /**
      * @param wbdi
      */
-    protected void updateGeoRefTextFldsIfNecessary(final WorkbenchDataItem wbdi)
+    public void updateGeoRefTextFldsIfNecessary(final WorkbenchTemplateMappingItem map)
     {
-        WorkbenchTemplateMappingItem map = wbdi.getWorkbenchTemplateMappingItem();
         if (map.getTableName().equals("locality"))
         {
             

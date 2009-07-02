@@ -3,11 +3,16 @@
  */
 package edu.ku.brc.specify.tasks.subpane.qb;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.List;
+
+import org.apache.commons.io.FileUtils;
 
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.ui.db.ERTICaptionInfo;
@@ -59,6 +64,10 @@ public class ExportToMySQLDB
 		{
 			return "double";
 		}
+		if (dataType.equals(Timestamp.class))
+		{
+			return "datetime";
+		}
 		return null;
 	}
 	
@@ -69,16 +78,25 @@ public class ExportToMySQLDB
 	protected static String getFieldName(ERTICaptionInfo column)
 	{
 		//XXX TESTING!!!!!!!
-		return "_" + column.getColLabel();
+		return /*"_" + */column.getColLabel();
 	}
 	
+	/**
+	 * @param name
+	 * @return name with invalid characters removed or subbstituted
+	 */
+	protected static String fixNameForMySQL(String name)
+	{
+        //XXX probably lots of other possibilities to fix
+		return name.trim().replaceAll(" ", "_");
+	}
 	/**
 	 * @param column
 	 * @return a mysql field declaration for column.
 	 */
 	protected static String getFieldDef(ERTICaptionInfo column)
 	{
-		return getFieldName(column) +  " " + getFieldTypeDef(column.getFieldInfo());
+		return "`" + getFieldName(column) +  "` " + getFieldTypeDef(column.getFieldInfo());
 	}
 	
 	/**
@@ -160,17 +178,19 @@ public class ExportToMySQLDB
 	 * @throws Exception
 	 * 
 	 * Exports rows to a table named tblName in toConnection's db.
+	 * NOTE: toConnection is closed by this method.
 	 */
 	public static void exportToTable(Connection toConnection, List<ERTICaptionInfoQB> columns,
-			QBDataSource rows, String tblName, List<QBDataSourceListenerIFace> listeners,
+			QBDataSource rows, String originalTblName, List<QBDataSourceListenerIFace> listeners,
 			boolean idColumnPresent, boolean overwrite, boolean update) throws Exception
 	{
-	    for (QBDataSourceListenerIFace listener : listeners)
+		for (QBDataSourceListenerIFace listener : listeners)
 	    {
 	    	listener.loading();
 	    	listener.rowCount(rows.size());
 	    }
 	    boolean newTable = false;
+	    String tblName = fixNameForMySQL(originalTblName);
 	    if (overwrite || !tableExists(toConnection, tblName))
 	    {
 	    	createTable(toConnection, columns, tblName, idColumnPresent);
@@ -178,38 +198,51 @@ public class ExportToMySQLDB
 	    }
 	    
 		Statement stmt = toConnection.createStatement();
-	    for (QBDataSourceListenerIFace listener : listeners)
-	    {
-	    	listener.filling();
-	    }
-	    int rowNum = 0;
-	    while(rows.getNext())
+	    try
 		{
 			for (QBDataSourceListenerIFace listener : listeners)
 			{
-				listener.currentRow(rowNum++);
+				listener.filling();
 			}
-			
-			if (update && !newTable)
+			int rowNum = 0;
+			while (rows.getNext())
 			{
-				//XXX Not totally sure this is safe.
-				//If duplicate ids are allowed/possible, can export query return one of several objects with same id?
-				//If co 123 was repeated three times due to preps or something in original export, can a lastExport -sensitive
-				//re-export return only of the preps (which would result in the loss of the other two after the delete below)
-				//or will the query always get all of the dups???
-				//Maybe safer to prevent duplicates.
-				
-				//XXX and WHAT ABOUT DELETES anyway? Need lots of extra work to detect when records have been deleted and
-				//remove them from the exported cache...
-				stmt.execute("delete from " + tblName + " where " + getIdFieldName(tblName) + " = " + rows.getFieldValue(0));
+				for (QBDataSourceListenerIFace listener : listeners)
+				{
+					listener.currentRow(rowNum++);
+				}
+
+				if (update && !newTable)
+				{
+					// XXX Not totally sure this is safe.
+					// If duplicate ids are allowed/possible, can export query
+					// return one of several objects with same id?
+					// If co 123 was repeated three times due to preps or
+					// something in original export, can a lastExport -sensitive
+					// re-export return only of the preps (which would result in
+					// the loss of the other two after the delete below)
+					// or will the query always get all of the dups???
+					// Maybe safer to prevent duplicates.
+
+					// XXX and WHAT ABOUT DELETES anyway? Need lots of extra
+					// work to detect when records have been deleted and
+					// remove them from the exported cache...
+					stmt.execute("delete from " + tblName + " where "
+							+ getIdFieldName(tblName) + " = "
+							+ rows.getFieldValue(0));
+				}
+				stmt.execute(getInsertSql(rows, tblName));
 			}
-	    	stmt.execute(getInsertSql(rows, tblName));
+			for (QBDataSourceListenerIFace listener : listeners)
+			{
+				listener.done(rowNum);
+			}
 		}
-	    for (QBDataSourceListenerIFace listener : listeners)
+	    finally
 	    {
-	    	listener.done(rowNum);
+	    	stmt.close();
+	    	toConnection.close(); 
 	    }
-		stmt.close();
 	}
 	
 	/**
@@ -252,4 +285,47 @@ public class ExportToMySQLDB
 		return result.toString();
 	}
 	
+//	protected static boolean exportRowsToTabDelimitedText(File file,
+//			List<String> headers, String tableName)
+//	{
+//		Connection conn = DBConnection.getInstance().getConnection();
+//		Statement stmt = conn.createStatement();
+//		try
+//		{
+//			if (headers != null)
+//			{
+//				String headerLine = "";
+//				for (String header : headers)
+//				{
+//					if (headerLine.length() > 0)
+//					{
+//						headerLine += "\t";
+//					}
+//					headerLine += header;
+//				}
+//				if (headerLine.length() > 0)
+//				{
+//					FileUtils.writeStringToFile(file, headerLine);
+//				}
+//			}
+//			ResultSet rows = stmt.executeQuery("select * from " + tableName);
+//			rows.first();
+//			while (!rows.isAfterLast())
+//			{
+//				FileUtils.writeStringToFile(file, getTabDelimLine(rows));
+//				rows.next();
+//			}
+//		} finally
+//		{
+//			stmt.close();
+//			conn.close();
+//		}
+//	}
+//	
+//	protected static String getTabDelimLine(ResultSet rows)
+//	{
+//		String result = "";
+//		for (int c = 0; c < rows.ge)
+//		return result;
+//	}
 }

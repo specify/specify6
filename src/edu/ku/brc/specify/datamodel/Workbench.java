@@ -54,6 +54,7 @@ import edu.ku.brc.af.core.db.DBTableIdMgr;
     {   
         @Index (name="WorkbenchNameIDX", columnNames={"name"})
     })
+@SuppressWarnings("serial")
 public class Workbench extends DataModelObjBase implements java.io.Serializable, Comparable<Workbench>
 {
 

@@ -2705,7 +2705,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 {
                     for (WorkbenchTemplateMappingItem wbtmi : items)
                     {
-                        if (delItem.getWorkbenchTemplateMappingItemId().longValue() == wbtmi.getWorkbenchTemplateMappingItemId().longValue())
+                    	if (delItem.getWorkbenchTemplateMappingItemId().longValue() == wbtmi.getWorkbenchTemplateMappingItemId().longValue())
                         {
                             //log.debug("del ["+wbtmi.getCaption()+"]["+wbtmi.getWorkbenchTemplateMappingItemId().longValue()+"]");
                             //wbtmi.setWorkbenchTemplate(null);
@@ -2732,6 +2732,35 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 }
                 
                 session.saveOrUpdate(workbenchTemplate);
+                
+                //Check to see if geo/ref data needs to be updated
+                WorkbenchTemplateMappingItem aGeoRefMapping = null;
+                for (WorkbenchTemplateMappingItem wbtmi : items)
+                {
+                    if (aGeoRefMapping == null && wbtmi.getTableName().equals("locality"))
+                    {
+                        if (wbtmi.getFieldName().equalsIgnoreCase("latitude1") || wbtmi.getFieldName().equalsIgnoreCase("latitude2")
+                                || wbtmi.getFieldName().equalsIgnoreCase("longitude1") || wbtmi.getFieldName().equalsIgnoreCase("longitude2"))
+                        {
+                        	aGeoRefMapping = wbtmi;
+                        	break;
+                        }
+                    }
+                }
+                if (aGeoRefMapping != null)
+                {
+                	for (Workbench wb : wbTemplate.getWorkbenches())
+                	{
+                		Workbench mwb = session.merge(wb);
+                		mwb.forceLoad();
+                		for (WorkbenchRow wbRow : mwb.getWorkbenchRows())
+                		{
+                			wbRow.updateGeoRefTextFldsIfNecessary(aGeoRefMapping);
+                		}
+                		session.saveOrUpdate(mwb);
+                	}
+                }
+                
                 session.commit();
                 session.flush();
                 

@@ -2130,7 +2130,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 				try
 				{
 					//XXX This only works if the Master user is given create privilege...
-					ExportToMySQLDB.exportToTable(cols, src, "dumped", listeners, includeRecordIds, rebuildExistingTbl, true);
+					ExportToMySQLDB.exportToTable(cols, src, exportQuery.getName(), listeners, includeRecordIds, rebuildExistingTbl, true);
 					success = true;
 				}
 				catch (Exception ex)
