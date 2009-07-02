@@ -216,8 +216,16 @@ public class XLSExport implements DataExport
                 workSheet.setColumnWidth(i, StringUtils.isNotEmpty(headers[i]) ? (256 * headers[i].length()) : 2560);
             }
             
-            //first row should always be the template
-            mappings = writeMappings((WorkbenchTemplate)data.get(0));
+            WorkbenchTemplate wbTemplate = null;
+            if (data.get(0) instanceof WorkbenchTemplate)
+            {
+            	wbTemplate = (WorkbenchTemplate )data.get(0);
+            }
+            else
+            {
+            	wbTemplate = ((WorkbenchRow )data.get(0)).getWorkbench().getWorkbenchTemplate();
+            }
+            mappings = writeMappings(wbTemplate);
         }
         
         if (data.size() > 1)
