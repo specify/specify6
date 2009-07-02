@@ -1036,7 +1036,7 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
 		{
 			return false;
 		}
-		if (BaseTreeBusRules.ALLOW_CONCURRENT_FORM_ACCESS)
+		if (BaseTreeBusRules.ALLOW_CONCURRENT_FORM_ACCESS && viewable != null)
 		{
 			return getRequiredLocks();
 		}
@@ -1116,7 +1116,7 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
 			}
 		} finally
 		{
-			if (BaseTreeBusRules.ALLOW_CONCURRENT_FORM_ACCESS)
+			if (BaseTreeBusRules.ALLOW_CONCURRENT_FORM_ACCESS && viewable != null)
 			{
 				this.freeLocks();
 			}
@@ -1494,7 +1494,7 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
 		{
 			return false;
 		}
-		if (BaseTreeBusRules.ALLOW_CONCURRENT_FORM_ACCESS)
+		if (BaseTreeBusRules.ALLOW_CONCURRENT_FORM_ACCESS && viewable != null)
 		{
 			freeLocks();
 		}
@@ -1511,7 +1511,7 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
 			DataProviderSessionIFace session)
 	{
 		super.afterSaveFailure(dataObj, session);
-		if (BaseTreeBusRules.ALLOW_CONCURRENT_FORM_ACCESS)
+		if (BaseTreeBusRules.ALLOW_CONCURRENT_FORM_ACCESS && viewable != null)
 		{
 			freeLocks();
 		}
