@@ -36,6 +36,8 @@ import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -75,6 +77,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JToolBar;
+import javax.swing.KeyStroke;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
@@ -283,29 +286,10 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         //UIHelper.attachUnhandledException();
         
         // we simply need to create this class, not use it
-        //@SuppressWarnings("unused") MacOSAppHandler macoshandler = new MacOSAppHandler(this);
         new MacOSAppHandler(this);
 
         // Name factories
         setUpSystemProperties();
-    }
-    
-    /**
-     * Starts up Specify with the initializer that enables the user to create a new empty database. 
-     */
-    public void startWithInitializer(final boolean doLoginOnly, final boolean assumeDerby)
-    {
-        preStartUp();
-        
-        if (true)
-        {
-            SpecifyInitializer specifyInitializer = new SpecifyInitializer(doLoginOnly, assumeDerby);
-            specifyInitializer.setup(this);
-            
-        } else
-        {
-            startUp();
-        }
     }
     
     /**
@@ -899,7 +883,11 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             menu.addSeparator();
             String title = "Specify.EXIT"; //$NON-NLS-1$
             String mnu = "Specify.Exit_MNEU"; //$NON-NLS-1$
-            mi = UIHelper.createLocalizedMenuItem(menu, title, mnu, title, true, null); 
+            mi = UIHelper.createLocalizedMenuItem(menu, title, mnu, title, true, null);
+            if (!UIHelper.isMacOS())
+            {
+                mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, InputEvent.CTRL_DOWN_MASK));
+            }
             mi.addActionListener(new ActionListener()
                     {
                         public void actionPerformed(ActionEvent ae)
@@ -1086,10 +1074,18 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         String ttl = UIRegistry.getResourceString("Specify.SBP_CLOSE_CUR_MENU"); 
         String mnu = UIRegistry.getResourceString("Specify.SBP_CLOSE_CUR_MNEU"); 
         mi = UIHelper.createMenuItemWithAction(menu, ttl, mnu, ttl, true, getAction("CloseCurrent")); 
+        if (!UIHelper.isMacOS())
+        {
+            mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, InputEvent.CTRL_DOWN_MASK));
+        }
 
         ttl = UIRegistry.getResourceString("Specify.SBP_CLOSE_ALL_MENU"); 
         mnu = UIRegistry.getResourceString("Specify.SBP_CLOSE_ALL_MNEU"); 
         mi = UIHelper.createMenuItemWithAction(menu, ttl, mnu, ttl, true, getAction("CloseAll")); 
+        if (!UIHelper.isMacOS())
+        {
+            mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK));
+        }
         
         ttl = UIRegistry.getResourceString("Specify.SBP_CLOSE_ALLBUT_MENU"); 
         mnu = UIRegistry.getResourceString("Specify.SBP_CLOSE_ALLBUT_MNEU"); 
@@ -2353,6 +2349,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                            final boolean startOver, 
                            final boolean firstTime)
     {
+        UIHelper.checkForOpenGL();
         
         log.debug("restartApp"); //$NON-NLS-1$
         if (dbLoginPanel != null)
@@ -2909,17 +2906,8 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
       
       RolloverCommand.setHoverImg(IconManager.getIcon("DropIndicator")); //$NON-NLS-1$
       
-      if (doConfig)
-      {
-          // For a WorkBench Only Release  
-          specify.startWithInitializer(true, true);  // true, true means doLoginOnly and assume Derby
-          
-      } else
-      {
-          // THis type of start up ALWAYS assumes the .Specify directory is in there "home" directory.
-          specify.preStartUp();
-          specify.startUp();    
-      }
+      specify.preStartUp();
+      specify.startUp();
   }
   
   /**

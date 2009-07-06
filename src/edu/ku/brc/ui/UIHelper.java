@@ -84,6 +84,7 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
+import javax.media.opengl.GLCanvas;
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
 import javax.swing.Action;
@@ -145,6 +146,7 @@ import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 
 import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.ui.db.DatabaseLoginDlg;
 import edu.ku.brc.af.ui.db.DatabaseLoginListener;
@@ -3460,7 +3462,55 @@ public final class UIHelper
         actionMap.put(actionName, action);
     }
 
+
+    /**
+     * @param l
+     */
+    public static boolean checkForOpenGL()
+    {
+        String HAS_OPENGL_PREF = "SYSTEM.HasOpenGL";
+        String USE_WORLDWIND   = "USE.WORLDWIND";
         
-                                
+        Boolean hasOpenGL = AppPreferences.getLocalPrefs().getBoolean(HAS_OPENGL_PREF, null);
+        if (hasOpenGL == null)
+        {
+            JFrame frame = null;
+            try
+            {
+                GLCanvas canvas = new GLCanvas();
+                frame = new JFrame();
+                frame.getContentPane().add(canvas);
+                
+                JFrame topFrame = (JFrame)UIRegistry.getTopWindow();
+                if (topFrame != null)
+                {
+                    Rectangle screenRect = topFrame.getGraphicsConfiguration().getBounds();
+                    frame.setBounds(screenRect.width, screenRect.height, 50, 50);
+                    
+                } else
+                {
+                    frame.setBounds(-100, -100, 50, 50);
+                }
+                frame.setVisible(true);
+                
+                hasOpenGL = true;
+                
+            } catch (javax.media.opengl.GLException ex)
+            {
+                hasOpenGL = false;
+                
+            } finally
+            {
+                AppPreferences.getLocalPrefs().putBoolean(HAS_OPENGL_PREF, hasOpenGL);
+                AppPreferences.getLocalPrefs().putBoolean(USE_WORLDWIND, hasOpenGL);
+                
+                if (frame != null && frame.isVisible())
+                {
+                    frame.setVisible(false);
+                }
+            }
+        }
+        return hasOpenGL;  
+    }
     
 }

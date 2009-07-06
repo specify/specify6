@@ -48,6 +48,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.services.geolocate.client.GeoLocate;
 import edu.ku.brc.services.geolocate.client.GeographicPoint;
 import edu.ku.brc.services.geolocate.client.GeorefResult;
@@ -84,10 +85,10 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
     
     protected JLabel             mapLabel;
     
-    protected JTextField localityStringField;
-    protected JTextField countyField;
-    protected JTextField stateField;
-    protected JTextField countryField;
+    protected JTextField   localityStringField;
+    protected JTextField   countyField;
+    protected JTextField   stateField;
+    protected JTextField   countryField;
     
     private WorldWindPanel wwPanel       = null;
     protected GeorefResult userDefGeoRef = null;
@@ -118,9 +119,12 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
         // add the JLabel to show the map
         mapLabel = createLabel(getResourceString("GeoLocateResultsDisplay.LOADING_MAP")); //$NON-NLS-1$
         mapLabel.setPreferredSize(new Dimension(MAP_WIDTH, MAP_HEIGHT));
-        if (false)
+        
+        boolean useWorldWind = AppPreferences.getLocalPrefs().getBoolean("USE.WORLDWIND", false);
+        if (!useWorldWind)
         {
             add(mapLabel, cc.xywh(5,1,1,9));
+            
         } else
         {
             wwPanel = new WorldWindPanel();
@@ -169,13 +173,16 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
         resultsTable.setRowSelectionAllowed(true);
         resultsTable.setDefaultRenderer(String.class, new BiColorTableCellRenderer(false));
         
-        resultsTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e)
-            {
-                wwPanel.flyToMarker(resultsTable.getSelectedRow());
-            }
-        });
+        if (wwPanel != null)
+        {
+            resultsTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+                @Override
+                public void valueChanged(ListSelectionEvent e)
+                {
+                    wwPanel.flyToMarker(resultsTable.getSelectedRow());
+                }
+            });
+        }
 
         // add a cell renderer that uses the tooltip to show the text of the "parse pattern" column in case
         // it is too long to show and gets truncated by the standard cell renderer
@@ -388,7 +395,10 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
      */
     public void shutdown()
     {
-        wwPanel.shutdown();
+        if (wwPanel != null)
+        {
+            wwPanel.shutdown();
+        }
     }
 
     /**
