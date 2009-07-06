@@ -7,9 +7,11 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -18,6 +20,7 @@ import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.ui.db.ERTICaptionInfo;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author timbo
@@ -85,7 +88,7 @@ public class ExportToMySQLDB
 	 * @param name
 	 * @return name with invalid characters removed or subbstituted
 	 */
-	protected static String fixNameForMySQL(String name)
+	public static String fixNameForMySQL(String name)
 	{
         //XXX probably lots of other possibilities to fix
 		return name.trim().replaceAll(" ", "_");
@@ -219,7 +222,7 @@ public class ExportToMySQLDB
 					// return one of several objects with same id?
 					// If co 123 was repeated three times due to preps or
 					// something in original export, can a lastExport -sensitive
-					// re-export return only of the preps (which would result in
+					// re-export return only 1 of the preps (which would result in
 					// the loss of the other two after the delete below)
 					// or will the query always get all of the dups???
 					// Maybe safer to prevent duplicates.
@@ -261,7 +264,7 @@ public class ExportToMySQLDB
 			String tblName, List<QBDataSourceListenerIFace> listeners,
 			boolean idColumnPresent, boolean overwrite, boolean update) throws Exception
 	{
-		exportToTable(DBConnection.getInstance().getConnection(), columns, rows, tblName, listeners, idColumnPresent, overwrite, update);
+		exportToTable(DBConnection.getInstance().createConnection(), columns, rows, tblName, listeners, idColumnPresent, overwrite, update);
 	}
 	
 	/**
@@ -285,47 +288,101 @@ public class ExportToMySQLDB
 		return result.toString();
 	}
 	
-//	protected static boolean exportRowsToTabDelimitedText(File file,
-//			List<String> headers, String tableName)
-//	{
-//		Connection conn = DBConnection.getInstance().getConnection();
-//		Statement stmt = conn.createStatement();
-//		try
-//		{
-//			if (headers != null)
-//			{
-//				String headerLine = "";
-//				for (String header : headers)
-//				{
-//					if (headerLine.length() > 0)
-//					{
-//						headerLine += "\t";
-//					}
-//					headerLine += header;
-//				}
-//				if (headerLine.length() > 0)
-//				{
-//					FileUtils.writeStringToFile(file, headerLine);
-//				}
-//			}
-//			ResultSet rows = stmt.executeQuery("select * from " + tableName);
-//			rows.first();
-//			while (!rows.isAfterLast())
-//			{
-//				FileUtils.writeStringToFile(file, getTabDelimLine(rows));
-//				rows.next();
-//			}
-//		} finally
-//		{
-//			stmt.close();
-//			conn.close();
-//		}
-//	}
-//	
-//	protected static String getTabDelimLine(ResultSet rows)
-//	{
-//		String result = "";
-//		for (int c = 0; c < rows.ge)
-//		return result;
-//	}
+	protected static boolean exportRowsToTabDelimitedText(File file,
+			List<String> headers, String tableName)
+	{
+		try
+		{
+			Connection conn = DBConnection.getInstance().createConnection();
+			Statement stmt = null;
+			try
+			{
+				//XXX testing - probably no good for large tables.
+				List<String> lines = new LinkedList<String>();
+				stmt = conn.createStatement();
+				ResultSet rows = stmt.executeQuery("select * from " + tableName);
+				String headerLine = "";
+				if (headers != null)
+				{
+					for (String header : headers)
+					{
+						if (headerLine.length() > 0)
+						{
+							headerLine += "\t";
+						}
+						headerLine += header;
+					}
+				}
+				else
+				{
+					for (int c = 1; c <= rows.getMetaData().getColumnCount(); c++)
+					{
+						if (headerLine.length() > 0)
+						{
+							headerLine += "\t";
+						}
+						headerLine += rows.getMetaData().getColumnName(c);
+					}
+				}
+				if (headerLine.length() > 0)
+				{
+					//System.out.println(headerLine);				
+					//FileUtils.writeStringToFile(file, headerLine);
+					lines.add(headerLine);
+				}
+				while (rows.next())
+				{
+					//System.out.println(getTabDelimLine(rows));
+					//FileUtils.writeStringToFile(file, getTabDelimLine(rows));
+					lines.add(getTabDelimLine(rows));
+				}
+				FileUtils.writeLines(file, lines);
+				return true;
+			} finally
+			{
+				if (stmt != null)
+				{
+					stmt.close();
+				}
+				conn.close();
+			}
+		} catch (Exception ex)
+		{
+			UIRegistry.displayErrorDlg(ex.getClass().getSimpleName() + ": " + ex.getLocalizedMessage());
+			return false;
+		}
+	}
+	
+	protected static String getTabDelimLine(ResultSet rows) throws SQLException
+	{
+		StringBuilder result = new StringBuilder();
+		for (int c = 1; c <= rows.getMetaData().getColumnCount(); c++)
+		{
+			if (c > 1)
+			{
+				result.append("\t");
+			}
+			String val = rows.getString(c);
+			if (val != null)
+			{
+				int type = rows.getMetaData().getColumnType(c);
+				// remove tabs and line returns
+				// If link to origianl specify db model field was available
+				// would only
+				// need to do this for 'remarks' fields.
+				if (type == java.sql.Types.LONGNVARCHAR
+						|| type == java.sql.Types.LONGVARCHAR
+						|| type == java.sql.Types.VARCHAR
+						|| type == java.sql.Types.CHAR
+						|| type == java.sql.Types.NCHAR)// hopefully don't need
+														// to worry about blobs.
+				{
+					val.replace("\t", " ");
+					val.replace("\n", " ");
+				}
+				result.append(val);
+			}
+		}
+		return result.toString();
+	}
 }

@@ -38,6 +38,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -2112,6 +2113,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 					SwingUtilities.invokeLater(new Runnable(){
 						public void run()
 						{
+							progDlg.getProcessProgress().setIndeterminate(false);
 							progDlg.setProcess(0, rowCount);
 						}
 					});
@@ -2148,6 +2150,12 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 			{
 				if (success)
 				{
+					//XXX export to tab delim file here for demo/testing 
+					File file = new File(UIRegistry.getDefaultWorkingPath() + File.separator + exportQuery.getName() + ".txt");
+					boolean dumped = ExportToMySQLDB.exportRowsToTabDelimitedText(file, null, 
+							ExportToMySQLDB.fixNameForMySQL(exportQuery.getName()));
+					System.out.println("exported to tabbed text: " + UIRegistry.getDefaultWorkingPath() + File.separator + exportQuery.getName() + ".txt");
+					//file.
 					UIRegistry.displayInfoMsgDlgLocalized("QB_EXPORT_TO_DB_SUCCESS");
 					boolean transOpen = false;
 					DataProviderSessionIFace theSession = DataProviderFactory.getInstance().createSession();;
