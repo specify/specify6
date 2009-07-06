@@ -67,6 +67,7 @@ import java.awt.event.MouseMotionListener;
 import java.io.File;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -3464,53 +3465,75 @@ public final class UIHelper
 
 
     /**
-     * @param l
+     * Checks to see if OpenGL works. This is rather a bizarre way to check, but I couldn't find
+     * a simple call to check to see if it would actually render. This seemed to be the only way.
      */
     public static boolean checkForOpenGL()
     {
-        String HAS_OPENGL_PREF = "SYSTEM.HasOpenGL";
-        String USE_WORLDWIND   = "USE.WORLDWIND";
-        
-        Boolean hasOpenGL = AppPreferences.getLocalPrefs().getBoolean(HAS_OPENGL_PREF, null);
-        if (hasOpenGL == null)
-        {
-            JFrame frame = null;
-            try
-            {
-                GLCanvas canvas = new GLCanvas();
-                frame = new JFrame();
-                frame.getContentPane().add(canvas);
-                
-                JFrame topFrame = (JFrame)UIRegistry.getTopWindow();
-                if (topFrame != null)
-                {
-                    Rectangle screenRect = topFrame.getGraphicsConfiguration().getBounds();
-                    frame.setBounds(screenRect.width, screenRect.height, 50, 50);
-                    
-                } else
-                {
-                    frame.setBounds(-100, -100, 50, 50);
-                }
-                frame.setVisible(true);
-                
-                hasOpenGL = true;
-                
-            } catch (javax.media.opengl.GLException ex)
-            {
-                hasOpenGL = false;
-                
-            } finally
-            {
-                AppPreferences.getLocalPrefs().putBoolean(HAS_OPENGL_PREF, hasOpenGL);
-                AppPreferences.getLocalPrefs().putBoolean(USE_WORLDWIND, hasOpenGL);
-                
-                if (frame != null && frame.isVisible())
-                {
-                    frame.setVisible(false);
-                }
-            }
-        }
-        return hasOpenGL;  
+        final String HAS_OPENGL_PREF = "SYSTEM.HasOpenGL";
+        final String USE_WORLDWIND   = "USE.WORLDWIND";
+    	
+    	try 
+    	{
+			SwingUtilities.invokeAndWait(new Runnable() 
+			{
+				@Override
+				public void run() 
+				{
+			        Boolean hasOpenGL = AppPreferences.getLocalPrefs().getBoolean(HAS_OPENGL_PREF, null);
+			        if (hasOpenGL == null)
+			        {
+			            JDialog frame = null;
+			            try
+			            {
+			                GLCanvas canvas = new GLCanvas();
+			                frame = new JDialog();
+			                frame.getContentPane().add(canvas);
+			                
+			                JFrame topFrame = (JFrame)UIRegistry.getTopWindow();
+			                if (topFrame != null)
+			                {
+			                    Rectangle screenRect = topFrame.getGraphicsConfiguration().getBounds();
+			                    frame.setBounds(screenRect.width, screenRect.height+50, 50, 50);
+			                    
+			                } else
+			                {
+			                    frame.setBounds(-100, -100, 50, 50);
+			                }
+			                frame.setVisible(true);
+			                
+			                hasOpenGL = true;
+			                
+			            } catch (javax.media.opengl.GLException ex)
+			            {
+			                hasOpenGL = false;
+			                
+			            } finally
+			            {
+			                AppPreferences.getLocalPrefs().putBoolean(HAS_OPENGL_PREF, hasOpenGL);
+			                AppPreferences.getLocalPrefs().putBoolean(USE_WORLDWIND, hasOpenGL);
+			                
+			                if (frame != null && frame.isVisible())
+			                {
+			                    frame.setVisible(false);
+			                }
+			            }
+			        }
+				}
+				
+			});
+		} catch (java.lang.Error e) 
+		{
+			AppPreferences.getLocalPrefs().putBoolean(HAS_OPENGL_PREF, false);
+            AppPreferences.getLocalPrefs().putBoolean(USE_WORLDWIND, false);
+            
+		} catch (InterruptedException e) 
+		{
+		} catch (InvocationTargetException e) 
+		{
+		}
+
+        return AppPreferences.getLocalPrefs().getBoolean(HAS_OPENGL_PREF, false);  
     }
     
 }
