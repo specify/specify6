@@ -227,6 +227,28 @@ public class SystemPrefs extends GenericPrefsPanel
                 }
             }
          });
+        
+        // Not sure why the form isn't picking up the pref automatically
+        final ValCheckBox useWWChk  = form.getCompById("USE.WORLDWIND");
+        final ValCheckBox hasOGLChk = form.getCompById("SYSTEM.HasOpenGL");
+        
+        useWWChk.setSelected(localPrefs.getBoolean("USE.WORLDWIND", false));
+        hasOGLChk.setSelected(localPrefs.getBoolean("SYSTEM.HasOpenGL", false));
+        hasOGLChk.setEnabled(false);
+        
+        /*
+        JButton     btn             = form.getCompById("checkForOpenGLBtn");
+        btn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                AppPreferences.getLocalPrefs().remove("SYSTEM.HasOpenGL"); // clear prop so it is checked
+                boolean hasOpenGL = UIHelper.checkForOpenGL();
+                useWWChk.setEnabled(hasOpenGL);
+                useWWChk.setSelected(hasOpenGL);
+                hasOGLChk.setSelected(hasOpenGL);
+            }
+         });*/
     }
     
     protected void clearCache()

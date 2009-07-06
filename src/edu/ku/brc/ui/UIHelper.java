@@ -3475,7 +3475,7 @@ public final class UIHelper
     	
     	try 
     	{
-			SwingUtilities.invokeAndWait(new Runnable() 
+			SwingUtilities.invokeLater(new Runnable() 
 			{
 				@Override
 				public void run() 
@@ -3524,13 +3524,10 @@ public final class UIHelper
 			});
 		} catch (java.lang.Error e) 
 		{
+		    e.printStackTrace();
+		    
 			AppPreferences.getLocalPrefs().putBoolean(HAS_OPENGL_PREF, false);
             AppPreferences.getLocalPrefs().putBoolean(USE_WORLDWIND, false);
-            
-		} catch (InterruptedException e) 
-		{
-		} catch (InvocationTargetException e) 
-		{
 		}
 
         return AppPreferences.getLocalPrefs().getBoolean(HAS_OPENGL_PREF, false);  

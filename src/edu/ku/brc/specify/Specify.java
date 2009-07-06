@@ -640,7 +640,10 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         topFrame.setLocationRelativeTo(null);
         Toolkit.getDefaultToolkit().setDynamicLayout(true);
         UIRegistry.register(UIRegistry.GLASSPANE, glassPane);
-
+        
+        AppPreferences.getLocalPrefs().remove("SYSTEM.HasOpenGL"); // clear prop so it is checked
+        UIHelper.checkForOpenGL();
+        
         JPanel top = new JPanel();
         top.setLayout(new BorderLayout());
         add(top, BorderLayout.NORTH);
@@ -2349,8 +2352,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                            final boolean startOver, 
                            final boolean firstTime)
     {
-        UIHelper.checkForOpenGL();
-        
         log.debug("restartApp"); //$NON-NLS-1$
         if (dbLoginPanel != null)
         {

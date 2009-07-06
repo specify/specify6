@@ -435,6 +435,21 @@
                         </rows>
                     </cell>
                 </row>
+                <row>
+                    <cell type="separator" label="OPENGL_WW" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="panel" id="p1" name="ip1" coldef="p,10px,p,f:p:g" rowdef="p" colspan="4">
+                        <rows>
+                            <row>
+                                <cell type="field" id="USE.WORLDWIND" name="USE.WORLDWIND" uitype="checkbox" label="USE_WORLDWIND"/>
+                                <cell type="field" id="SYSTEM.HasOpenGL" name="SYSTEM.HasOpenGL" uitype="checkbox" label="HAS_OPENGL"/>
+                                <!-- <cell type="field" uitype="button" ignore="true" id="checkForOpenGLBtn" name="checkForOpenGLBtn" initialize="title=CHECK_FOR_OPENGL;"/>  -->
+                            </row>
+                        </rows>
+                    </cell>
+                </row>
+                
             </rows>
         </viewdef>
 
