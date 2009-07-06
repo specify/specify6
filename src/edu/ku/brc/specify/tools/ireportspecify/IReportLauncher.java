@@ -141,7 +141,7 @@ public class IReportLauncher implements DatabaseLoginListener
                         Thread.currentThread().setContextClassLoader(MainFrame.reportClassLoader);
                         iReportMainFrame = new MainFrameSpecify(MainFrameSpecify.getDefaultArgs(), false, false);
                     }
-                    iReportMainFrame.refreshSpQBConnections();
+                    iReportMainFrame.refreshSpJRConnections();
                     iReportMainFrame.setVisible(true);
                 }
                 catch (Exception e)

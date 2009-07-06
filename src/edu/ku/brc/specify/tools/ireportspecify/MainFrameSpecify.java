@@ -81,13 +81,18 @@ import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
+import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.SpAppResource;
 import edu.ku.brc.specify.datamodel.SpAppResourceDir;
 import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpReport;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.tasks.ReportsBaseTask;
-import edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceConnection;
+import edu.ku.brc.specify.tasks.subpane.JRConnectionFieldDef;
+import edu.ku.brc.specify.tasks.subpane.SpJRIReportConnection;
+import edu.ku.brc.specify.tasks.subpane.qb.QBJRIReportConnection;
+import edu.ku.brc.specify.tasks.subpane.wb.WBJRIReportConnection;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
@@ -127,13 +132,14 @@ public class MainFrameSpecify extends MainFrame
         setEmbeddedIreport(embedded);
     }
 
-    public void refreshSpQBConnections()
+    public void refreshSpJRConnections()
     {
         refreshingConnections = true;
         try
         {
             this.getConnections().clear();
             addSpQBConns();
+            addSpWBConns();
         }
         finally
         {
@@ -224,12 +230,72 @@ public class MainFrameSpecify extends MainFrame
         if (!AppContextMgr.isSecurityOn() ||
                 DBTableIdMgr.getInstance().getInfoById(q.getContextTableId()).getPermissions().canView())
         {
-            QBJRDataSourceConnection newq = new QBJRDataSourceConnection(q);
+            QBJRIReportConnection newq = new QBJRIReportConnection(q);
             newq.loadProperties(null);
             this.getConnections().add(newq);
         }
     }
     
+    /**
+     * @param wb
+     * 
+     * creates and adds a JR data connection for wb
+     * 
+     */
+    @SuppressWarnings("unchecked")  //iReport doesn't parameterize generics.
+    protected void addSpWBConn(final Workbench wb)
+    {
+        if (!AppContextMgr.isSecurityOn() ||
+                DBTableIdMgr.getInstance().getInfoById(Workbench.getClassTableId()).getPermissions().canView())
+        {
+            WBJRIReportConnection newWb = new WBJRIReportConnection(wb);
+            newWb.loadProperties(null);
+            this.getConnections().add(newWb);
+        }
+    }
+
+    /**
+     * adds JR data connections for specify workbenches.
+     */
+    protected void addSpWBConns()
+    {
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        try
+        {
+            // XXX Added userId condition to be consistent with WorkbenchTask, but, Users will probably want to share queries??
+            String sqlStr = "From Workbench where specifyUserId = "
+                    + AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getSpecifyUserId();
+            List<?> wbs = session.createQuery(sqlStr, false).list();
+            Collections.sort(wbs, new Comparator<Object>() {
+
+                /* (non-Javadoc)
+                 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+                 */
+                //@Override
+                public int compare(Object o1, Object o2)
+                {
+                    return o1.toString().compareTo(o2.toString());
+                }
+            });
+            for (Object wb : wbs)
+            {
+                addSpWBConn((Workbench )wb);
+            }
+        }
+        catch (Exception e)
+        {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(MainFrameSpecify.class, e);
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+        finally
+        {
+            session.close();
+        }
+        
+    }
+
     /**
      * @return default map for specify iReport implementation
      */
@@ -407,15 +473,16 @@ public class MainFrameSpecify extends MainFrame
                 rep.setAppResource(freshRes);
                 spRep.setAppResource((SpAppResource) freshRes);
                 spRep.setRepeats(apr.getRepeats());
-                SpQuery q = rep.getConnection().getQuery();
+                DataModelObjBase obj = rep.getConnection().getSpObject();
                 // getting a fresh copy of the Query might be helpful
                 // in case one of its reports was deleted, but is probably
                 // no longer necessary with AppContextMgr.getInstance().setContext() call
                 // in the save method.
-                SpQuery freshQ = session.get(SpQuery.class, q.getId());
-                if (freshQ != null)
+                DataModelObjBase freshObject = session.get(obj.getClass(), obj.getId());
+                if (freshObject != null)
                 {
-                    spRep.setQuery(freshQ);
+                    //spRep.setQuery(freshQ);
+                    spRep.setReportObject(freshObject);
                     spRep.setSpecifyUser(AppContextMgr.getInstance().getClassObject(SpecifyUser.class));
                     session.beginTransaction();
                     transOpen = true;
@@ -469,6 +536,12 @@ public class MainFrameSpecify extends MainFrame
         doSave(jrf, false);
     }
     
+    /**
+     * @param jrf frame containing report to save
+     * @param saveAs
+     * 
+     * save a report.
+     */
     protected void doSave(JReportFrame jrf, boolean saveAs)
     {
         //Reloading the context to prevent weird Hibernate issues that occur when resources are deleted in a
@@ -813,6 +886,9 @@ public class MainFrameSpecify extends MainFrame
         return null;
     }
     
+    /**
+     * @param reportId id of deleted report
+     */
     protected void removeFrameForDeletedReport(final Integer reportId)
     {
         if (reportId != null)
@@ -983,12 +1059,13 @@ public class MainFrameSpecify extends MainFrame
     	String result = new String(xml);
     	if (spRep != null)
     	{
-    		QBJRDataSourceConnection c = getConnectionByQuery(spRep.getQuery());
+    		//QBJRIReportConnection c = getConnectionByQuery(spRep.getQuery());
+    		SpJRIReportConnection c = getConnectionByObject(spRep.getReportObject());
     		if (c != null)
     		{
     			for (int f = 0; f < c.getFields(); f++)
     			{
-    				QBJRDataSourceConnection.QBJRFieldDef fld = c.getField(f);
+    				JRConnectionFieldDef fld = c.getField(f);
     				result = result.replace("$F{" + fld.getFldName() + "}", "$F{" + fld.getFldTitle() + "}");
     			}
     		}
@@ -1004,11 +1081,11 @@ public class MainFrameSpecify extends MainFrame
     protected static String modifyXMLForSaving(String xml, final ReportSpecify rep) 
     {
 		String result = new String(xml);
-    	QBJRDataSourceConnection c = rep.getConnection();
+		SpJRIReportConnection c = rep.getConnection();
 		if (c != null) 
 		{
 			for (int f = 0; f < c.getFields(); f++) {
-				QBJRDataSourceConnection.QBJRFieldDef fld = c.getField(f);
+				JRConnectionFieldDef fld = c.getField(f);
  				result = result.replace("$F{" + fld.getFldTitle() + "}", "$F{" + fld.getFldName() + "}");
 			}
 		}
@@ -1025,7 +1102,7 @@ public class MainFrameSpecify extends MainFrame
     	for (Object jrfObj : report.getFields())
     	{
     		JRField jrf = (JRField )jrfObj;
-    		QBJRDataSourceConnection.QBJRFieldDef qbjrf = report.getConnection().getFieldByName(jrf.getName());
+    		JRConnectionFieldDef qbjrf = report.getConnection().getFieldByName(jrf.getName());
     		if (qbjrf != null)
     		{
     			jrf.setName(qbjrf.getFldTitle());
@@ -1043,7 +1120,7 @@ public class MainFrameSpecify extends MainFrame
     	for (Object jrfObj : report.getFields())
     	{
     		JRField jrf = (JRField )jrfObj;
-    		QBJRDataSourceConnection.QBJRFieldDef qbjrf = report.getConnection().getFieldByTitle(jrf.getName());
+    		JRConnectionFieldDef qbjrf = report.getConnection().getFieldByTitle(jrf.getName());
     		if (qbjrf != null)
     		{
     			jrf.setName(qbjrf.getFldName());
@@ -1064,7 +1141,8 @@ public class MainFrameSpecify extends MainFrame
             try
             {
                 ReportSpecify report = makeReport(rep);
-                report.setConnection(getConnectionByQuery(report.getSpReport().getQuery()));
+                //report.setConnection(getConnectionByQuery(report.getSpReport().getQuery()));
+                report.setConnection(getConnectionByObject(report.getSpReport().getReportObject()));
                 modifyFieldsForEditing(report);
                 updateReportFields(report);
                 report.setUsingMultiLineExpressions(false); // this.isUsingMultiLineExpressions());
@@ -1095,19 +1173,23 @@ public class MainFrameSpecify extends MainFrame
         return reportFrame;
     }
 
-    protected QBJRDataSourceConnection getConnectionByQuery(final SpQuery query)
+    /**
+     * @param object
+     * @return connection for object.
+     */
+    protected SpJRIReportConnection getConnectionByObject(final DataModelObjBase object)
     {
         for (int c = 0; c < getConnections().size(); c++)
         {
-            QBJRDataSourceConnection conn = (QBJRDataSourceConnection )getConnections().get(c);
-            if (conn.getName().equals(query.getName()))
+            SpJRIReportConnection conn = (SpJRIReportConnection )getConnections().get(c);
+            if (conn.getName().equals(object.getIdentityTitle()))
             {
                 return conn;
             }
         }
         return null;
     }
-    
+
     
     /**
      * @param rep
@@ -1203,13 +1285,17 @@ public class MainFrameSpecify extends MainFrame
         }
     }
 
-    private ReportSpecify makeNewReport(final QBJRDataSourceConnection connection)
+    /**
+     * @param connection
+     * @return
+     */
+    private ReportSpecify makeNewReport(final SpJRIReportConnection connection)
     {
         ReportSpecify report = new ReportSpecify();
         report.setConnection(connection);
         for (int f=0; f < connection.getFields(); f++)
         {
-            QBJRDataSourceConnection.QBJRFieldDef fDef = connection.getField(f);
+        	JRConnectionFieldDef fDef = connection.getField(f);
             report.addField(new JRField(fDef.getFldTitle(), fDef.getFldClass().getName()));
         }
         return report;
@@ -1224,7 +1310,7 @@ public class MainFrameSpecify extends MainFrame
      */
     protected void updateReportFields(final ReportSpecify report)
     {
-    	QBJRDataSourceConnection c = report.getConnection();
+    	SpJRIReportConnection c = report.getConnection();
     	if (c != null)
     	{
     		//first remove fields that are not in the connection.
@@ -1287,12 +1373,12 @@ public class MainFrameSpecify extends MainFrame
                 return null;
             }
         }
-        List<QBJRDataSourceConnection> spConns = new Vector<QBJRDataSourceConnection>();
+        List<SpJRIReportConnection> spConns = new Vector<SpJRIReportConnection>();
         for (Object conn : this.getConnections())
         {
-            if (conn instanceof QBJRDataSourceConnection)
+            if (conn instanceof SpJRIReportConnection)
             {
-                spConns.add((QBJRDataSourceConnection)conn);
+                spConns.add((SpJRIReportConnection)conn);
             }
         }
         if (spConns.size() == 0)
@@ -1300,7 +1386,7 @@ public class MainFrameSpecify extends MainFrame
             JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), UIRegistry.getResourceString("REP_NO_QUERIES_FOR_DATA_SOURCES"), "", JOptionPane.INFORMATION_MESSAGE);
             return null;
         }
-        ChooseFromListDlg<QBJRDataSourceConnection> dlg = new ChooseFromListDlg<QBJRDataSourceConnection>(this, 
+        ChooseFromListDlg<SpJRIReportConnection> dlg = new ChooseFromListDlg<SpJRIReportConnection>(this, 
                 UIRegistry.getResourceString("REP_CHOOSE_SP_QUERY"), 
                 spConns);
         dlg.setVisible(true);
@@ -1422,7 +1508,7 @@ public class MainFrameSpecify extends MainFrame
     {
         if (!refreshingConnections)
         {
-            this.refreshSpQBConnections(); //in case new query has been in concurrent instance of Specify6
+            this.refreshSpJRConnections(); //in case new query has been in concurrent instance of Specify6
         }
         return super.getConnections();
     }

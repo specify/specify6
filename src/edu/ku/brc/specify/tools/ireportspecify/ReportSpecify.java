@@ -22,7 +22,7 @@ package edu.ku.brc.specify.tools.ireportspecify;
 import it.businesslogic.ireport.Report;
 import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.specify.datamodel.SpReport;
-import edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceConnection;
+import edu.ku.brc.specify.tasks.subpane.SpJRIReportConnection;
 
 /**
  * @author timbo
@@ -34,7 +34,7 @@ import edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceConnection;
 public class ReportSpecify extends Report
 {
     protected AppResourceIFace appResource = null;
-    protected QBJRDataSourceConnection connection = null;
+    protected SpJRIReportConnection connection = null;
     protected SpReport spReport = null;
     
     /**
@@ -85,14 +85,14 @@ public class ReportSpecify extends Report
     /**
      * @return the connection
      */
-    public QBJRDataSourceConnection getConnection()
+    public SpJRIReportConnection getConnection()
     {
         return connection;
     }
     /**
      * @param connection the connection to set
      */
-    public void setConnection(QBJRDataSourceConnection connection)
+    public void setConnection(SpJRIReportConnection connection)
     {
         this.connection = connection;
     }

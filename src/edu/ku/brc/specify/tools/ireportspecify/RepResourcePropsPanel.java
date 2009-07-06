@@ -55,6 +55,7 @@ import edu.ku.brc.ui.UIRegistry;
  *
  *A tentative user interface for specifying properties Report resources.
  */
+@SuppressWarnings("serial")
 public class RepResourcePropsPanel extends JPanel
 {
     /**

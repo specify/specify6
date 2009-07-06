@@ -78,6 +78,8 @@ public class SpReport extends DataModelObjBase
     protected String            remarks;
     
     protected SpQuery           query;
+    protected Workbench			workbench;
+    
     protected SpAppResource     appResource;
     protected SpecifyUser       specifyUser;
 
@@ -105,6 +107,7 @@ public class SpReport extends DataModelObjBase
         name             = null;
         remarks          = null;
         query            = null;
+        workbench        = null;
         appResource      = null;
         specifyUser      = null;
         repeatCount      = null;
@@ -132,21 +135,54 @@ public class SpReport extends DataModelObjBase
         this.name = name;
     }
 
+    /**
+     * @param owner
+     */
     public void setSpecifyUser(SpecifyUser owner)
     {
         this.specifyUser = owner;
     }
 
-    public void setQuery(SpQuery query)
+    /**
+     * @param query
+     */
+    protected void setQuery(SpQuery query)
     {
-        this.query = query;
+        workbench = null; //call it a business rule
+    	this.query = query;
     }
 
+    /**
+     * @param repo
+     */
+    public void setReportObject(DataModelObjBase repo)
+    {
+        if (repo instanceof SpQuery)
+        {
+        	setQuery((SpQuery )repo);
+        }
+        else if (repo instanceof Workbench)
+        {
+        	setWorkbench((Workbench )repo);
+        }
+        else
+        {
+        	log.error("unable to set report object of class " + repo.getClass().getName());
+        }
+    }
+
+    
+    /**
+     * @param appResource
+     */
     public void setAppResource(SpAppResource appResource)
     {
         this.appResource = appResource;
     }
 
+    /**
+     * @param remarks
+     */
     public void setRemarks(String remarks)
     {
         this.remarks = remarks;
@@ -172,12 +208,34 @@ public class SpReport extends DataModelObjBase
     }
 
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "SpQueryID", unique = false, nullable = false, insertable = true, updatable = true)
+    @JoinColumn(name = "SpQueryID", unique = false, nullable = true, insertable = true, updatable = true)
     public SpQuery getQuery()
     {
         return query;
     }
+    
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "WorkbenchID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Workbench getWorkbench()
+    {
+        return workbench;
+    }
 
+    protected void setWorkbench(Workbench workbench)
+    {
+    	this.workbench = workbench;
+    }
+    
+    @Transient
+    public DataModelObjBase getReportObject()
+    {
+    	if (query != null)
+    	{
+    		return query;
+    	}
+    	return workbench;
+    }
+    
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "AppResourceID", unique = false, nullable = false, insertable = true, updatable = true)
     public SpAppResource getAppResource()
@@ -266,7 +324,8 @@ public class SpReport extends DataModelObjBase
     @Override
     public void forceLoad()
     {
-        getQuery().forceLoad(false);
+        //getQuery().forceLoad(false);
+        getReportObject().forceLoad();
         getAppResource();
         getSpecifyUser();
     }

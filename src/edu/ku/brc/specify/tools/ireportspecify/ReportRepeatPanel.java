@@ -36,8 +36,8 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceConnection;
-import edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceConnection.QBJRFieldDef;
+import edu.ku.brc.specify.tasks.subpane.JRConnectionFieldDef;
+import edu.ku.brc.specify.tasks.subpane.SpJRIReportConnection;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -48,6 +48,7 @@ import edu.ku.brc.ui.UIRegistry;
  * @code_status Alpha
  *
  */
+@SuppressWarnings("serial")
 public class ReportRepeatPanel extends JPanel
 {
     private static final Logger log = Logger.getLogger(ReportRepeatPanel.class);
@@ -55,7 +56,7 @@ public class ReportRepeatPanel extends JPanel
     /**
      * List of fields that can be used to determine repeats.
      */
-    protected final Vector<QBJRFieldDef> validFields; 
+    protected final Vector<JRConnectionFieldDef> validFields; 
     protected JTextField constantTxt;
     protected JComboBox fldCombo;
     protected JComboBox typeCombo;
@@ -69,7 +70,7 @@ public class ReportRepeatPanel extends JPanel
     /**
      * @param connection
      */
-    public ReportRepeatPanel(final QBJRDataSourceConnection connection, final JButton cancelBtn)
+    public ReportRepeatPanel(final SpJRIReportConnection connection, final JButton cancelBtn)
     {
         super();
         validFields = bldValidFields(connection);
@@ -79,9 +80,9 @@ public class ReportRepeatPanel extends JPanel
     /**
      * @return list of fields that can be used to determine repeats. (ie: numeric fields)
      */
-    protected Vector<QBJRFieldDef> bldValidFields(final QBJRDataSourceConnection connection)
+    protected Vector<JRConnectionFieldDef> bldValidFields(final SpJRIReportConnection connection)
     {
-        Vector<QBJRFieldDef> result = new Vector<QBJRFieldDef>();
+        Vector<JRConnectionFieldDef> result = new Vector<JRConnectionFieldDef>();
        //testing only...
 //        if (connection == null)
 //        {
@@ -92,7 +93,7 @@ public class ReportRepeatPanel extends JPanel
 //        }
         for (int f = 0; f < connection.getFields(); f++)
         {
-            QBJRFieldDef fld = connection.getField(f);
+        	JRConnectionFieldDef fld = connection.getField(f);
             if (Number.class.isAssignableFrom(fld.getFldClass()))
             {
                 result.add(fld);
@@ -238,7 +239,7 @@ public class ReportRepeatPanel extends JPanel
         }
         if (typeCombo.getSelectedIndex() == FIELD)
         {
-            return ((QBJRFieldDef )fldCombo.getSelectedItem()).getFldName();
+            return ((JRConnectionFieldDef )fldCombo.getSelectedItem()).getFldName();
         }
         log.error("Unrecognized repeat type: " + typeCombo.getSelectedItem());
         return null;
