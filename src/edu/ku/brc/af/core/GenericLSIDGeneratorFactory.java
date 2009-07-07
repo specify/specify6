@@ -34,7 +34,7 @@ public class GenericLSIDGeneratorFactory
 {
     public static final String factoryName = "edu.ku.brc.af.core.CollectionObjLSIDGenFactory"; //$NON-NLS-1$
     
-    public enum CATEGORY_TYPE {Specimen, Taxonomy, Geography, Locality, Publication, Image, Video, Media}
+    public enum CATEGORY_TYPE {Specimen, Taxonomy, Geography, LithoStrat, Locality, Person, Publication, Image, Video, Media}
     
     protected static GenericLSIDGeneratorFactory instance = null;
     
