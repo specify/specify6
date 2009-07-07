@@ -216,7 +216,7 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
         formTypesCBX.getComboBox().setSelectedIndex(selectedInx);
         
         formTypesCBX.getComboBox().addActionListener(new ActionListener() {
-            @SuppressWarnings("unchecked") //$NON-NLS-1$
+            @Override
             public void actionPerformed(ActionEvent e)
             {
                 form.getValidator().dataChanged(null, null, null);
@@ -517,7 +517,7 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
         }
         
         bnrIconSizeCBX.getComboBox().addActionListener(new ActionListener() {
-            @SuppressWarnings("unchecked") //$NON-NLS-1$
+            @Override
             public void actionPerformed(ActionEvent e)
             {
                 form.getUIComponent().validate();

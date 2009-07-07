@@ -3487,11 +3487,11 @@ public final class UIHelper
 			        Boolean hasOpenGL = localPrefs.getBoolean(HAS_OPENGL_PREF, null);
 			        if (hasOpenGL == null)
 			        {
-			            JDialog frame = null;
+			            final JDialog frame = new JDialog();
 			            try
 			            {
 			                GLCanvas canvas = new GLCanvas();
-			                frame = new JDialog();
+			                
 			                frame.getContentPane().add(canvas);
 			                
 			                JFrame topFrame = (JFrame)UIRegistry.getTopWindow();
@@ -3524,10 +3524,17 @@ public final class UIHelper
 			                    localPrefs.putBoolean(USE_WORLDWIND, hasOpenGL);    
                             }
 			                
-			                if (frame != null && frame.isVisible())
+			                SwingUtilities.invokeLater(new Runnable() 
 			                {
-			                    frame.setVisible(false);
-			                }
+			                    @Override
+			                    public void run() 
+			                    {
+        			                if (frame != null)
+        			                {
+        			                    frame.setVisible(false);
+        			                }
+			                    }
+			                });
 			            }
 			        }
 				}

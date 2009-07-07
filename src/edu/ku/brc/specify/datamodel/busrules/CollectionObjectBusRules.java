@@ -230,7 +230,6 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
         if (AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent())
         {
             CollectingEvent ce = colObj.getCollectingEvent();
-            System.err.println(ce.getCollectors().size());
             if (ce != null)
             {
                 try
@@ -286,6 +285,17 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
             }
         }
         return ok;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#afterSaveCommit(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public boolean afterSaveCommit(final Object dataObj, final DataProviderSessionIFace session)
+    {
+        setLSID((FormDataObjIFace)dataObj);
+
+        return super.afterSaveCommit(dataObj, session);
     }
 
     /* (non-Javadoc)

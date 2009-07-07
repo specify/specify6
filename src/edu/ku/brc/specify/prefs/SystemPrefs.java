@@ -185,7 +185,6 @@ public class SystemPrefs extends GenericPrefsPanel
                 return null;
             }
             
-            @SuppressWarnings("unchecked")
             @Override
             public void finished()
             {

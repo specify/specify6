@@ -34,14 +34,18 @@ import javax.swing.JButton;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.core.GenericLSIDGeneratorFactory;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBTableChildIFace;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
+import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.config.SpecifyLSIDGeneratorFactory;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -63,7 +67,7 @@ public class BaseBusRules implements BusinessRulesIFace
     protected Class<?>[]   dataClasses;
     
     /**
-     * The data class that is used within the busniess rules.
+     * The data class that is used within the business rules.
      * @param dataClass the data class
      */
     public BaseBusRules(final Class<?> ... dataClasses)
@@ -871,6 +875,34 @@ public class BaseBusRules implements BusinessRulesIFace
     public STATUS processBusinessRules(Object parentDataObj, Object dataObj, boolean isExistingObject)
     {
         return processBusinessRules(dataObj);
+    }
+    
+    /**
+     * @param data
+     */
+    protected void setLSID(final FormDataObjIFace data)
+    {
+        boolean doLSID = ((SpecifyLSIDGeneratorFactory)SpecifyLSIDGeneratorFactory.getInstance()).isPrefOn(data.getTableId());
+        if (doLSID)
+        {
+            AppPreferences remote = AppPreferences.getRemote();
+            
+            String                prefix       = "Prefs.LSID.";
+            boolean               doVersioning = remote.getBoolean(prefix + "UseVersioning", false);
+            UIFieldFormatterIFace formatter    = null;
+            
+            if (data.getTableId() == 1)
+            {
+                DBFieldInfo fi = DBTableIdMgr.getInstance().getInfoById(1).getFieldByColumnName("CatalogNumber");
+                formatter = fi.getFormatter();
+            }
+            
+            String lsid = ((SpecifyLSIDGeneratorFactory)GenericLSIDGeneratorFactory.getInstance()).setLSIDOnId(data, doVersioning, formatter);
+            if (lsid != null)
+            {
+                FormHelper.setValue(data, "GUID", lsid);
+            }
+        }
     }
 
     /* (non-Javadoc)

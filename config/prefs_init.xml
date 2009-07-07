@@ -68,10 +68,19 @@
     </section>
     
     <section title="Loans">
-        <pref name="LOANS" title="LOANS" icon="Loan" panelClass="edu.ku.brc.specify.prefs.LoansPrefsPanel" viewsetname="Preferences" viewname="LoansPrefs" help="PrefsLogin">
+        <pref name="LOANS" title="LOANS" icon="Loan" panelClass="edu.ku.brc.specify.prefs.LoansPrefsPanel" viewsetname="Preferences" viewname="LoansPrefs" help="PrefsLoans">
             <defperm name="Manager"       perm="true,true,true,true"/>
             <defperm name="FullAccess"    perm="true,true,true,true"/>
             <defperm name="LimitedAccess" perm="true,true,true,true"/>
+            <defperm name="Guest"         perm="false,false,false,false"/>
+        </pref>
+    </section>
+    
+    <section title="LSIDs">
+        <pref name="LSIDs" title="LSIDS" icon="SpecifyLargeIcon" panelClass="edu.ku.brc.specify.prefs.LSIDPrefsPanel" help="PrefsLSIDs">
+            <defperm name="Manager"       perm="true,true,true,true"/>
+            <defperm name="FullAccess"    perm="false,false,false,false"/>
+            <defperm name="LimitedAccess" perm="false,false,false,false"/>
             <defperm name="Guest"         perm="false,false,false,false"/>
         </pref>
     </section>

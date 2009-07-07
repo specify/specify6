@@ -646,7 +646,8 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         Toolkit.getDefaultToolkit().setDynamicLayout(true);
         UIRegistry.register(UIRegistry.GLASSPANE, glassPane);
         
-        AppPreferences.getLocalPrefs().remove("SYSTEM.HasOpenGL"); // clear prop so it is checked
+        // Don't check everytime, too annoying
+        //AppPreferences.getLocalPrefs().remove("SYSTEM.HasOpenGL"); // clear prop so it is checked
         UIHelper.checkForOpenGL();
         
         JPanel top = new JPanel();

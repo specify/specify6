@@ -19,6 +19,7 @@
 */
 package edu.ku.brc.specify.datamodel.busrules;
 
+import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.LithoStrat;
@@ -123,6 +124,17 @@ public class LithoStratBusRules extends BaseTreeBusRules<LithoStrat, LithoStratT
         }
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#afterSaveCommit(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public boolean afterSaveCommit(final Object dataObj, final DataProviderSessionIFace session)
+    {
+        setLSID((FormDataObjIFace)dataObj);
+
+        return super.afterSaveCommit(dataObj, session);
+    }
+    
     /**
      * Handles the {@link #beforeSave(Object)} method if the passed in {@link Object}
      * is an instance of {@link LithoStrat}.  The real work of this method is to
