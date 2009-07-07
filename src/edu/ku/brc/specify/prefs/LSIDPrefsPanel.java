@@ -34,6 +34,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.core.GenericLSIDGeneratorFactory;
 import edu.ku.brc.af.core.GenericLSIDGeneratorFactory.CATEGORY_TYPE;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.GenericPrefsPanel;
@@ -128,7 +129,7 @@ public class LSIDPrefsPanel extends GenericPrefsPanel
             public void actionPerformed(ActionEvent e)
             {
                 savePrefs();
-                ((SpecifyLSIDGeneratorFactory)SpecifyLSIDGeneratorFactory.getInstance()).buildLSIDs();
+                GenericLSIDGeneratorFactory.getInstance().buildLSIDs();
             }
         });
         

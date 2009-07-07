@@ -22,6 +22,9 @@ package edu.ku.brc.af.core;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
+import edu.ku.brc.af.ui.forms.FormDataObjIFace;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
+
 /**
  * Base Factory class (not Abstract) for generating LSID for Collection Objects. 
  *
@@ -63,19 +66,20 @@ public class GenericLSIDGeneratorFactory
     }
     
     /**
-     * Generic GBIG LSID
-     * @param uriStr
+     * Generic GBIF LSID.
+     * 
+     * @param lsidAuthority
      * @param institutionCode
      * @param collectionCode
      * @param catalogNumer
      * @return
      */
-    public String createLSID(final String uriStr, 
+    public String createLSID(final String lsidAuthority, 
                              final String institutionCode, 
                              final String collectionCode, 
                              final String catalogNumer)
     {
-        return String.format("urn:lsid:%s:%s:%s", institutionCode, collectionCode, catalogNumer);
+        return String.format("urn:lsid:%s:%s:%s:%s", lsidAuthority, institutionCode, collectionCode, catalogNumer);
     }
     
     /**
@@ -88,6 +92,29 @@ public class GenericLSIDGeneratorFactory
     public String createLSID(final CATEGORY_TYPE category, final String id)
     {
         return null;
+    }
+    
+    /**
+     * This sets a LSID on a data object
+     * @param data the data object
+     * @param doVersioning whether to add the versioning to the end
+     * @param formatter the field formatter if it has or needs one.
+     * @return the LSID it assigned
+     */
+    public String setLSIDOnId(final FormDataObjIFace      data,
+                              final boolean               doVersioning,
+                              final UIFieldFormatterIFace formatter)
+    {
+        return null;
+    }
+    
+    /**
+     * This builds (fills in) all the empty GUID fields in any table that requires it.
+     * This is usually for the the tables represented by the enum CATEGORY_TYPE.
+     */
+    public void buildLSIDs()
+    {
+        
     }
     
     /**

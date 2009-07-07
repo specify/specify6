@@ -897,7 +897,7 @@ public class BaseBusRules implements BusinessRulesIFace
                 formatter = fi.getFormatter();
             }
             
-            String lsid = ((SpecifyLSIDGeneratorFactory)GenericLSIDGeneratorFactory.getInstance()).setLSIDOnId(data, doVersioning, formatter);
+            String lsid = GenericLSIDGeneratorFactory.getInstance().setLSIDOnId(data, doVersioning, formatter);
             if (lsid != null)
             {
                 FormHelper.setValue(data, "GUID", lsid);

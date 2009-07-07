@@ -240,14 +240,10 @@ public class SpecifyLSIDGeneratorFactory extends GenericLSIDGeneratorFactory
         }
     }
     
-    /**
-     * @param category
-     * @param doVersioning
-     * @param isColObj
-     * @param formatter
-     * @param recId
-     * @return
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.GenericLSIDGeneratorFactory#setLSIDOnId(edu.ku.brc.af.ui.forms.FormDataObjIFace, boolean, edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace)
      */
+    @Override
     public String setLSIDOnId(final FormDataObjIFace      data,
                               final boolean               doVersioning,
                               final UIFieldFormatterIFace formatter)
