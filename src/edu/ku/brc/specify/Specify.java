@@ -107,6 +107,7 @@ import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.auth.UserAndMasterPasswordMgr;
 import edu.ku.brc.af.auth.specify.SpecifySecurityMgr;
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.GenericLSIDGeneratorFactory;
 import edu.ku.brc.af.core.FrameworkAppIFace;
 import edu.ku.brc.af.core.MacOSAppHandler;
 import edu.ku.brc.af.core.MainPanel;
@@ -160,6 +161,8 @@ import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.config.SpecifyAppPrefs;
 import edu.ku.brc.specify.config.init.RegisterSpecify;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.conversion.ConversionLogger;
+import edu.ku.brc.specify.conversion.ConversionLogger.TableWriter;
 import edu.ku.brc.specify.datamodel.AccessionAttachment;
 import edu.ku.brc.specify.datamodel.AgentAttachment;
 import edu.ku.brc.specify.datamodel.Attachment;
@@ -189,6 +192,7 @@ import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonAttachment;
 import edu.ku.brc.specify.extras.ViewToSchemaReview;
 import edu.ku.brc.specify.prefs.SystemPrefs;
+import edu.ku.brc.specify.rstools.SpAnalysis;
 import edu.ku.brc.specify.tasks.subpane.JasperReportsCache;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
 import edu.ku.brc.specify.tools.FormDisplayer;
@@ -566,6 +570,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         
         System.setProperty(DBMSUserMgr.factoryName,                     "edu.ku.brc.dbsupport.MySQLDMBSUserMgr");
         System.setProperty(SchemaUpdateService.factoryName,             "edu.ku.brc.specify.dbsupport.SpecifySchemaUpdateService");   // needed for updating the schema
+        System.setProperty(GenericLSIDGeneratorFactory.factoryName,     "edu.ku.brc.specify.config.SpecifyLSIDGeneratorFactory");
     }
 
     /**
@@ -653,7 +658,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         menuBar = createMenus();
         if (menuBar != null)
         {
-            //top.add(menuBar, BorderLayout.NORTH);
             topFrame.setJMenuBar(menuBar);
         }
         UIRegistry.register(UIRegistry.MENUBAR, menuBar);
@@ -1864,9 +1868,31 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
      */
     public void doAbout()
     {
-        if (true)
+        if (false)
         {
-            localities();
+            if (GenericLSIDGeneratorFactory.getInstance().isReady())
+            {
+                System.err.println("["+
+                        GenericLSIDGeneratorFactory.getInstance().getLSID(GenericLSIDGeneratorFactory.CATEGORY_TYPE.Specimen, "1001") + "]");
+                return;
+            } else
+            {
+                System.err.println(GenericLSIDGeneratorFactory.getInstance().getErrorMsg());
+                GenericLSIDGeneratorFactory.getInstance().reset();
+            }
+        }
+        
+        if (false)
+        {
+            ConversionLogger cnvLgr = new ConversionLogger();
+            cnvLgr.initialize("dups");
+            TableWriter tblWriter = cnvLgr.getWriter("Duplicates.html", "Duplicates");
+            SpAnalysis spa = new SpAnalysis();
+            spa.checkAgents(tblWriter);
+            spa.checkAddress(tblWriter);
+            tblWriter.close();
+            cnvLgr.closeAll();
+            System.out.println("Done");
             return;
         }
         
@@ -1876,7 +1902,8 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             statsTrackerTask.sendStats(false, false); // false means don't do it silently
             return;
         }
-        if (true)
+        
+        if (false)
         {
             ViewToSchemaReview.checkViews();
         }

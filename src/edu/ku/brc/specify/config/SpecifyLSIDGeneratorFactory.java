@@ -22,7 +22,7 @@ package edu.ku.brc.specify.config;
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.core.CollectionObjLSIDGenFactory;
+import edu.ku.brc.af.core.GenericLSIDGeneratorFactory;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Institution;
 
@@ -35,12 +35,12 @@ import edu.ku.brc.specify.datamodel.Institution;
  * Jan 9, 2009
  *
  */
-public class SpecifyCollectionObjLSIDGenFactory extends CollectionObjLSIDGenFactory
+public class SpecifyLSIDGeneratorFactory extends GenericLSIDGeneratorFactory
 {
     protected StringBuilder errMsg   = new StringBuilder();
     protected Boolean       isReady  = null;
     
-    protected String        uriStr   = null;
+    protected String        lsidAuthority = null;
     protected String        instCode = null;
     protected String        colCode  = null;
 
@@ -50,25 +50,26 @@ public class SpecifyCollectionObjLSIDGenFactory extends CollectionObjLSIDGenFact
     @Override
     public boolean isReady()
     {
+        isReady = null;
         if (isReady == null)
         {
             errMsg.setLength(0);
             Institution inst = AppContextMgr.getInstance().getClassObject(Institution.class);
             if (inst != null)
             {
-                uriStr = inst.getUri();
-                if (StringUtils.isEmpty(uriStr))
+                lsidAuthority = inst.getLsidAuthority();
+                if (StringUtils.isEmpty(lsidAuthority))
                 {
-                    errMsg.append("Institution URI is empty.\n");  // I18N
+                    errMsg.append("LSID Authority is empty.\n");  // I18N
                 }
                 instCode = inst.getCode();
-                if (StringUtils.isEmpty(uriStr))
+                if (StringUtils.isEmpty(instCode))
                 {
-                    errMsg.append("Institution Code is empty.\n");  
+                    errMsg.append("Institution Code is empty.\n");  // I18N
                 }
             } else
             {
-                errMsg.append("Institution cannot be null to generate the LSID.\n");  
+                errMsg.append("Institution cannot be null to generate the LSID.\n");  // I18N
                 return isReady = false;
             }
             
@@ -78,11 +79,11 @@ public class SpecifyCollectionObjLSIDGenFactory extends CollectionObjLSIDGenFact
                 colCode = collection.getCode();
                 if (StringUtils.isEmpty(colCode))
                 {
-                    errMsg.append("Collection Code is empty.\n");  
+                    errMsg.append("Collection Code is empty.\n");  // I18N
                 }
             } else
             {
-                errMsg.append("Collection cannot be null to generate the LSID.\n");  
+                errMsg.append("Collection cannot be null to generate the LSID.\n");  // I18N
                 return isReady = false;
             }
             isReady = errMsg.length() == 0;
@@ -112,11 +113,11 @@ public class SpecifyCollectionObjLSIDGenFactory extends CollectionObjLSIDGenFact
      * @see edu.ku.brc.af.core.CollectionObjLSIDGenFactory#getLSID(java.lang.String)
      */
     @Override
-    public String getLSID(final String catalogNumer)
+    public String getLSID(final CATEGORY_TYPE category, final String id)
     {
-        if (isReady)
+        if (isReady() && category != null && StringUtils.isNotEmpty(id))
         {
-            return String.format("urn:lsid:%s:%s:%s:%s", uriStr, instCode, colCode, catalogNumer);
+            return String.format("urn:lsid:%s:%s-%s-%s:%s", lsidAuthority, instCode, colCode, category.toString(), id);
         }
         return null;
     }

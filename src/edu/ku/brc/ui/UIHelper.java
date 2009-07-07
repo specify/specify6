@@ -67,7 +67,6 @@ import java.awt.event.MouseMotionListener;
 import java.io.File;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -3470,8 +3469,13 @@ public final class UIHelper
      */
     public static boolean checkForOpenGL()
     {
+        final AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+        
         final String HAS_OPENGL_PREF = "SYSTEM.HasOpenGL";
         final String USE_WORLDWIND   = "USE.WORLDWIND";
+        
+        final Boolean initialUseWordWind = localPrefs.getBoolean(USE_WORLDWIND, null);
+        final Boolean initialHasOpenGL   = localPrefs.getBoolean(HAS_OPENGL_PREF, null);
     	
     	try 
     	{
@@ -3480,7 +3484,7 @@ public final class UIHelper
 				@Override
 				public void run() 
 				{
-			        Boolean hasOpenGL = AppPreferences.getLocalPrefs().getBoolean(HAS_OPENGL_PREF, null);
+			        Boolean hasOpenGL = localPrefs.getBoolean(HAS_OPENGL_PREF, null);
 			        if (hasOpenGL == null)
 			        {
 			            JDialog frame = null;
@@ -3504,14 +3508,21 @@ public final class UIHelper
 			                
 			                hasOpenGL = true;
 			                
-			            } catch (javax.media.opengl.GLException ex)
-			            {
-			                hasOpenGL = false;
-			                
+                        } catch (javax.media.opengl.GLException ex)
+                        {
+                            hasOpenGL = false;
+                            
+                        } catch (Exception ex)
+                        {
+                            hasOpenGL = false;
+                            
 			            } finally
 			            {
-			                AppPreferences.getLocalPrefs().putBoolean(HAS_OPENGL_PREF, hasOpenGL);
-			                AppPreferences.getLocalPrefs().putBoolean(USE_WORLDWIND, hasOpenGL);
+			                localPrefs.putBoolean(HAS_OPENGL_PREF, hasOpenGL);
+			                if (initialUseWordWind == null || (initialHasOpenGL != null && hasOpenGL != initialHasOpenGL))
+                            {
+			                    localPrefs.putBoolean(USE_WORLDWIND, hasOpenGL);    
+                            }
 			                
 			                if (frame != null && frame.isVisible())
 			                {
@@ -3526,11 +3537,14 @@ public final class UIHelper
 		{
 		    e.printStackTrace();
 		    
-			AppPreferences.getLocalPrefs().putBoolean(HAS_OPENGL_PREF, false);
-            AppPreferences.getLocalPrefs().putBoolean(USE_WORLDWIND, false);
+			localPrefs.putBoolean(HAS_OPENGL_PREF, false);
+			if (initialUseWordWind == null || (initialHasOpenGL != null && initialHasOpenGL))
+            {
+                localPrefs.putBoolean(USE_WORLDWIND, false);    
+            }
 		}
 
-        return AppPreferences.getLocalPrefs().getBoolean(HAS_OPENGL_PREF, false);  
+        return localPrefs.getBoolean(HAS_OPENGL_PREF, false);  
     }
     
 }

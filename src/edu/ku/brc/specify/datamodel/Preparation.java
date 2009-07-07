@@ -83,6 +83,7 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
     protected Byte                        preparedDatePrecision;   // Accurate to Year, Month, Day
     protected String                      status;
     protected String                      sampleNumber;
+    protected String                      description;             // from Specify 5
     
     protected Float                       number1;
     protected Float                       number2;
@@ -129,16 +130,18 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
     public void initialize()
     {
         super.init();
+        
         preparationId = null;
-        text1 = null;
-        text2 = null;
-        countAmt = null;
+        text1        = null;
+        text2        = null;
+        countAmt     = null;
         storageLocation = null;
-        remarks = null;
+        remarks      = null;
         preparedDate = null;
         preparedDatePrecision = null;
-        status = null;
+        status       = null;
         sampleNumber = null;
+        description  = null;
         
         number1      = null;
         number2      = null;
@@ -435,6 +438,20 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
     public void setSampleNumber(String sampleNumber)
     {
         this.sampleNumber = sampleNumber;
+    }
+
+    /**
+     * Image, Sound, Preparation, Container(Container Label?)
+     */
+    @Column(name = "Description", unique = false, nullable = true, insertable = true, updatable = true, length = 255)
+    public String getDescription() 
+    {
+        return this.description;
+    }
+
+    public void setDescription(String description) 
+    {
+        this.description = description;
     }
 
     /**

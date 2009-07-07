@@ -30,11 +30,13 @@ import java.security.PrivilegedAction;
  * @author rods
  *
  */
-public class CollectionObjLSIDGenFactory
+public class GenericLSIDGeneratorFactory
 {
     public static final String factoryName = "edu.ku.brc.af.core.CollectionObjLSIDGenFactory"; //$NON-NLS-1$
     
-    protected static CollectionObjLSIDGenFactory instance = null;
+    public enum CATEGORY_TYPE {Specimen, Taxonomy, Geography, Locality, Publication, Image, Video, Media}
+    
+    protected static GenericLSIDGeneratorFactory instance = null;
     
     /**
      * @return true if the Factory is ready to generate LSIDs. (Default is true).
@@ -61,6 +63,7 @@ public class CollectionObjLSIDGenFactory
     }
     
     /**
+     * Generic GBIG LSID
      * @param uriStr
      * @param institutionCode
      * @param collectionCode
@@ -72,16 +75,17 @@ public class CollectionObjLSIDGenFactory
                           final String collectionCode, 
                           final String catalogNumer)
     {
-        return String.format("urn:lsid:%s:%s:%s:%s", uriStr, institutionCode, collectionCode, catalogNumer);
+        return String.format("urn:lsid:%s:%s:%s", institutionCode, collectionCode, catalogNumer);
     }
     
     /**
      * Default implementation to be overridden for an internal implementation. 
      * Returns null if not overridden.
-     * @param catalogNumer the catalog number
+     * @param category the LSID category
+     * @param id the unique identifier
      * @return the LSID
      */
-    public String getLSID(final String catalogNumer)
+    public String getLSID(final CATEGORY_TYPE category, final String id)
     {
         return null;
     }
@@ -90,7 +94,7 @@ public class CollectionObjLSIDGenFactory
      * Returns the instance of the CollectionObjLSIDGenFactory.
      * @return the instance of the CollectionObjLSIDGenFactory.
      */
-    public static CollectionObjLSIDGenFactory getInstance()
+    public static GenericLSIDGeneratorFactory getInstance()
     {
         if (instance != null)
         {
@@ -108,7 +112,7 @@ public class CollectionObjLSIDGenFactory
         {
             try 
             {
-                instance = (CollectionObjLSIDGenFactory)Class.forName(factoryNameStr).newInstance();
+                instance = (GenericLSIDGeneratorFactory)Class.forName(factoryNameStr).newInstance();
                 return instance;
                  
             } catch (Exception e) 

@@ -58,6 +58,7 @@ public class Institution extends UserGroupScope implements java.io.Serializable
      protected String        altName;
      protected String        code;
      protected String        uri;
+     protected String        lsidAuthority;
      protected String        iconURI;
      protected String        ipr;
      protected String        copyright;
@@ -103,6 +104,7 @@ public class Institution extends UserGroupScope implements java.io.Serializable
         altName           = null;
         code              = null;
         uri               = null;
+        lsidAuthority     = null;
         iconURI           = null;
         ipr               = null;
         copyright         = null;
@@ -289,6 +291,15 @@ public class Institution extends UserGroupScope implements java.io.Serializable
     }
 
     /**
+     * @return the lsidAuthority
+     */
+    @Column(name = "LsidAuthority", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+    public String getLsidAuthority()
+    {
+        return lsidAuthority;
+    }
+
+    /**
      * @param abbrev the abbrev to set
      */
     @Column(name = "Code", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
@@ -453,6 +464,14 @@ public class Institution extends UserGroupScope implements java.io.Serializable
     public void setUri(String uri)
     {
         this.uri = uri;
+    }
+
+    /**
+     * @param lsidAuthority the lsidAuthority to set
+     */
+    public void setLsidAuthority(String lsidAuthority)
+    {
+        this.lsidAuthority = lsidAuthority;
     }
 
     /**

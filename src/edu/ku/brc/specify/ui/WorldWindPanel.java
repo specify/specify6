@@ -26,9 +26,7 @@ import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.WorldWindow;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
-import gov.nasa.worldwind.event.RenderingExceptionListener;
 import gov.nasa.worldwind.examples.GazetteerPanel;
-import gov.nasa.worldwind.exception.WWAbsentRequirementException;
 import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.LatLon;
 import gov.nasa.worldwind.geom.Position;
@@ -59,7 +57,6 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 /**
@@ -102,7 +99,7 @@ public class WorldWindPanel extends JPanel
         if (world == null)
         {
             world = new WorldWindowGLCanvas();
-            world.addRenderingExceptionListener(new RenderingExceptionListener()
+            /*world.addRenderingExceptionListener(new RenderingExceptionListener()
             {
                 public void exceptionThrown(Throwable t)
                 {
@@ -118,7 +115,7 @@ public class WorldWindPanel extends JPanel
                         System.exit(-1);
                     }
                 }
-            });
+            });*/
             
             initWorldWindLayerModel();
         }
