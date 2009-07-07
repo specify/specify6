@@ -742,11 +742,18 @@ public class QueryFieldPanel extends JPanel implements ActionListener
         return new SortElement(pos, direction);
     }
     
+    /**
+     * @return true if a condition has been specified for the field.
+     */
     protected boolean hasCriteria()
     {
         if (fieldQRI.getDataClass().equals(Boolean.class))
         {
             return !operatorCBX.getSelectedItem().equals(SpQueryField.OperatorType.DONTCARE);
+        }
+        if (operatorCBX.getSelectedItem().equals(SpQueryField.OperatorType.EMPTY))
+        {
+        	return true;
         }
         return StringUtils.isNotEmpty(getCriteriaText(true).trim());
     }
