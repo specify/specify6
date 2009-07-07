@@ -50,7 +50,6 @@ public class SpecifyLSIDGeneratorFactory extends GenericLSIDGeneratorFactory
     @Override
     public boolean isReady()
     {
-        isReady = null;
         if (isReady == null)
         {
             errMsg.setLength(0);
@@ -113,7 +112,7 @@ public class SpecifyLSIDGeneratorFactory extends GenericLSIDGeneratorFactory
      * @see edu.ku.brc.af.core.CollectionObjLSIDGenFactory#getLSID(java.lang.String)
      */
     @Override
-    public String getLSID(final CATEGORY_TYPE category, final String id)
+    public String createLSID(final CATEGORY_TYPE category, final String id)
     {
         if (isReady() && category != null && StringUtils.isNotEmpty(id))
         {
@@ -126,12 +125,12 @@ public class SpecifyLSIDGeneratorFactory extends GenericLSIDGeneratorFactory
      * @see edu.ku.brc.af.core.GenericLSIDGeneratorFactory#getLSID(edu.ku.brc.af.core.GenericLSIDGeneratorFactory.CATEGORY_TYPE, java.lang.String, int)
      */
     @Override
-    public String getLSID(final CATEGORY_TYPE category, final String id, final int version)
+    public String createLSID(final CATEGORY_TYPE category, final String id, final int version)
     {
         if (isReady() && category != null && StringUtils.isNotEmpty(id))
         {
             return String.format("urn:lsid:%s:%s-%s-%s:%s:%d", lsidAuthority, instCode, colCode, category.toString(), id, version);
         }
-        return super.getLSID(category, id, version);
+        return super.createLSID(category, id, version);
     }
 }

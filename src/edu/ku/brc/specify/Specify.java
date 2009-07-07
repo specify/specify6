@@ -1873,7 +1873,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             if (GenericLSIDGeneratorFactory.getInstance().isReady())
             {
                 System.err.println("["+
-                        GenericLSIDGeneratorFactory.getInstance().getLSID(GenericLSIDGeneratorFactory.CATEGORY_TYPE.Specimen, "1001") + "]");
+                        GenericLSIDGeneratorFactory.getInstance().createLSID(GenericLSIDGeneratorFactory.CATEGORY_TYPE.Specimen, "1001") + "]");
                 return;
             } else
             {

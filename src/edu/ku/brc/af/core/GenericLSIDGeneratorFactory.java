@@ -70,10 +70,10 @@ public class GenericLSIDGeneratorFactory
      * @param catalogNumer
      * @return
      */
-    public String getLSID(final String uriStr, 
-                          final String institutionCode, 
-                          final String collectionCode, 
-                          final String catalogNumer)
+    public String createLSID(final String uriStr, 
+                             final String institutionCode, 
+                             final String collectionCode, 
+                             final String catalogNumer)
     {
         return String.format("urn:lsid:%s:%s:%s", institutionCode, collectionCode, catalogNumer);
     }
@@ -85,7 +85,7 @@ public class GenericLSIDGeneratorFactory
      * @param id the unique identifier
      * @return the LSID
      */
-    public String getLSID(final CATEGORY_TYPE category, final String id)
+    public String createLSID(final CATEGORY_TYPE category, final String id)
     {
         return null;
     }
@@ -98,7 +98,7 @@ public class GenericLSIDGeneratorFactory
      * @param version the version
      * @return the LSID
      */
-    public String getLSID(final CATEGORY_TYPE category, final String id, final int version)
+    public String createLSID(final CATEGORY_TYPE category, final String id, final int version)
     {
         return null;
     }
