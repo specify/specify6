@@ -414,6 +414,11 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 	return; 
                 }
                 
+                if (exportSchema != null && QueryBldrPane.this.selectedQFP == null)
+                {
+                	return;
+                }
+                
                 FieldQRI fieldQRI = buildFieldQRI(qri);
             	SpQueryField qf = new SpQueryField();
             	qf.initialize();

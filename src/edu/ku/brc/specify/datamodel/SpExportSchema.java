@@ -154,7 +154,7 @@ public class SpExportSchema extends DataModelObjBase
     /**
      * @return the schemaName
      */
-    @Column(name = "SchemaName", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
+    @Column(name = "SchemaName", unique = false, nullable = true, insertable = true, updatable = true, length = 80)
     public String getSchemaName()
     {
         return schemaName;
@@ -163,7 +163,7 @@ public class SpExportSchema extends DataModelObjBase
     /**
      * @return the schemaVersion
      */
-    @Column(name = "SchemaVersion", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
+    @Column(name = "SchemaVersion", unique = false, nullable = true, insertable = true, updatable = true, length = 80)
     public String getSchemaVersion()
     {
         return schemaVersion;

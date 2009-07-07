@@ -13,15 +13,31 @@ import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
+import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
+import edu.ku.brc.helpers.UIFileFilter;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Discipline;
@@ -31,6 +47,7 @@ import edu.ku.brc.specify.datamodel.SpExportSchemaMapping;
 import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.tasks.subpane.qb.QueryBldrPane;
 import edu.ku.brc.ui.ChooseFromListDlg;
+import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -41,16 +58,57 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class ExportMappingTask extends QueryTask
 {
-	protected SpExportSchema exportSchema = null;
-	protected SpExportSchemaMapping schemaMapping = null;
-	protected final AtomicBoolean addingMapping = new AtomicBoolean(false);
+	protected SpExportSchema		exportSchema	= null;
+	protected SpExportSchemaMapping	schemaMapping	= null;
+	protected final AtomicBoolean	addingMapping	= new AtomicBoolean(false);
+	
+	protected static final String	DEF_IMP_PREF	= "ExportSchemaMapping.SchemaImportDir";
 	
 	public ExportMappingTask()
 	{
 		super("ExportMappingTask",
 				getResourceString("ExportMappingTask.TaskTitle"));
-		//importSchemaDefinition(new File("C:/darwincoreWithDiGIRv1.3.xsd"));
 	}
+
+	
+	
+	@Override
+	public List<ToolBarItemDesc> getToolBarItems() 
+	{
+		return null;
+	}
+
+
+
+	@Override
+	public List<MenuItemDesc> getMenuItems() 
+	{
+	       String menuDesc = "Specify.SYSTEM_MENU";
+	        
+	        menuItems = new Vector<MenuItemDesc>();
+	        
+	        if (permissions == null || permissions.canModify())
+	        {
+	            String    menuTitle = "ExportMappingTask.ExMapMenu"; //$NON-NLS-1$
+	            String    mneu      = "ExportMappingTask.ExMapMneu"; //$NON-NLS-1$
+	            String    desc      = "ExportMappingTask.ExMapDesc"; //$NON-NLS-1$
+	            JMenuItem mi        = UIHelper.createLocalizedMenuItem(menuTitle, mneu, desc, true, null);
+	            mi.addActionListener(new ActionListener()
+	            {
+	                public void actionPerformed(ActionEvent ae)
+	                {
+	                    ExportMappingTask.this.requestContext();
+	                }
+	            });
+	            MenuItemDesc rsMI = new MenuItemDesc(mi, menuDesc);
+	            rsMI.setPosition(MenuItemDesc.Position.After);
+	            menuItems.add(rsMI);
+	        }
+	        return menuItems;
+
+	}
+
+
 
 	/*
 	 * (non-Javadoc)
@@ -246,7 +304,6 @@ public class ExportMappingTask extends QueryTask
 	 */
 	protected void addMapping()
 	{
-		UIRegistry.displayErrorDlg("add mapping?");
 		if (queryBldrPane == null || queryBldrPane.aboutToShutdown())
 		{
 			SpExportSchema selectedSchema = chooseExportSchema();
@@ -270,9 +327,64 @@ public class ExportMappingTask extends QueryTask
 		}
 	}
 
+    /**
+     * Returns a path from the prefs and if it isn't valid then it return the User's Home Directory.
+     * @param prefKey the Preferences key to look up
+     * @return the path as a string
+     */
+    public static  String getDefaultSchemaImportDir()
+    {
+        AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+        String path = localPrefs.get(DEF_IMP_PREF, null);
+        if (path != null)
+        {
+        	File pathDir = new File(path);
+        	if (pathDir.exists() && pathDir.isDirectory())
+        	{
+        		return path;
+        	}
+        }
+        return UIRegistry.getDefaultWorkingPath() + File.separator + "config";
+    }
+
 	protected void importSchema()
 	{
-		UIRegistry.displayErrorDlg("Import schema?");
+        JFileChooser chooser = new JFileChooser(getDefaultSchemaImportDir());
+        chooser.setDialogTitle(getResourceString("ExportMappingTask.IMPORT_SCHEMADEF_TITLE"));
+        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        chooser.setMultiSelectionEnabled(false);
+        chooser.setFileFilter(new UIFileFilter("xsd", getResourceString("ExportMappingTask.SCHEMA_DEFS")));
+        
+        if (chooser.showOpenDialog(UIRegistry.get(UIRegistry.FRAME)) != JFileChooser.APPROVE_OPTION)
+        {
+            UIRegistry.getStatusBar().setText("");
+            return;
+        }
+
+        File file = chooser.getSelectedFile();
+        if (file == null)
+        {
+            UIRegistry.getStatusBar().setText(getResourceString("ExportMappingTask.NO_FILE"));
+            return;
+        }
+        
+        String path = chooser.getCurrentDirectory().getPath();
+        //String path = FilenameUtils.getPath(file.getPath());
+        if (StringUtils.isNotEmpty(path))
+        {
+            AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+            localPrefs.put(DEF_IMP_PREF, path);
+        }
+        
+		if (importSchemaDefinition(file))
+		{
+			UIRegistry.displayInfoMsgDlgLocalized("ExportMappingTask.SchemaImportSuccess", (Object[] )null);
+		}
+		else
+		{
+			UIRegistry.displayInfoMsgDlgLocalized("ExportMappingTask.SchemaImportFailure", (Object[] )null);
+		}
+		//importSchemaDefinition(new File("C:/darwincoreWithDiGIRv1.3.xsd"));
 	}
 
 	/*
@@ -382,6 +494,13 @@ public class ExportMappingTask extends QueryTask
 		}
 	}
 	
+	/**
+	 * @param xsdFile
+	 * @return true if the schema was imported
+	 * 
+	 * Reads xsdFile and adds record to SpExportSchema describing the schema 
+	 * and adds a record to SpExportSchemaMappings for each concept in the schema.
+	 */
 	protected boolean importSchemaDefinition(File xsdFile)
 	{
 		Element xsd = null;
@@ -396,14 +515,55 @@ public class ExportMappingTask extends QueryTask
 		}
 		if (xsd != null)
 		{
+			PanelBuilder pb = new PanelBuilder(new FormLayout("5dlu, p, 2dlu, p, 5dlu", "p, 2dlu, p, 2dlu, p"));
+			CellConstraints cc = new CellConstraints();
+			JLabel lbl = new JLabel("ExportMappingTask.SchemaDescTitle");
+			lbl.setHorizontalAlignment(SwingConstants.RIGHT);
+			pb.add(lbl, cc.xy(2, 1));
+			lbl = new JLabel("ExportMappingTask.SchemaTitleTitle");
+			lbl.setHorizontalAlignment(SwingConstants.RIGHT);
+			pb.add(lbl, cc.xy(2, 3));
+			lbl = new JLabel("ExportMappingTask.SchemaVersionTitle");
+			lbl.setHorizontalAlignment(SwingConstants.RIGHT);
+			pb.add(lbl, cc.xy(2, 5));
+			JTextField namespace = new JTextField(xsd.attributeValue("targetNamespace"));
+			namespace.setEditable(false);
+			pb.add(namespace, cc.xy(4, 1));
+			JTextField title = new JTextField();
+			pb.add(title, cc.xy(4, 3));
+			JTextField version = new JTextField();
+			pb.add(version, cc.xy(4, 5));
+			CustomDialog cd = new CustomDialog((Frame )UIRegistry.get(UIRegistry.FRAME), "ExportMappingTask.SchemaInfoTitle", true,
+					CustomDialog.OKCANCEL, pb.getPanel());
+			
+			boolean tryAgain = true;
+			while (tryAgain)
+			{
+				UIHelper.centerAndShow(cd);
+				if (!cd.isCancelled())
+				{
+					tryAgain = StringUtils.isBlank(title.getText()) || StringUtils.isBlank(version.getText());
+					if (tryAgain)
+					{
+						UIRegistry.displayInfoMsgDlgLocalized("ExportMappingTask.FillAllFlds", (Object[] )null);
+					}
+				}
+				else
+				{
+					return false;
+				}
+			}
+			
 			boolean doRollback = false;
 			DataProviderSessionIFace session = null;
 			try 
 			{
 				SpExportSchema schema = new SpExportSchema();
 				schema.initialize();
-				schema.setSchemaName(xsd.getName());
-				schema.setSchemaVersion(xsd.attributeValue("version", null));
+				//XXX possibly need ui here for user to set version or remarks???
+				schema.setSchemaName(title.getText());
+				schema.setSchemaVersion(version.getText());
+				schema.setDescription(xsd.attributeValue("targetNamespace"));
 				schema.setDiscipline(AppContextMgr.getInstance().getClassObject(Discipline.class));
 				for (Object itemObj : xsd.selectNodes("xsd:element"))
 				{
@@ -437,6 +597,29 @@ public class ExportMappingTask extends QueryTask
 		}
 		UIRegistry.displayErrorDlg("Unable to import schema"); //XXX i18n
 		return false;
+	}
+	
+	protected JPanel bldSchemaImportPane(String schemaNamespace)
+	{
+		PanelBuilder pb = new PanelBuilder(new FormLayout("5dlu, p, 2dlu, p, 5dlu", "p, 2dlu, p, 2dlu, p"));
+		CellConstraints cc = new CellConstraints();
+		JLabel lbl = new JLabel("Schema:");
+		lbl.setHorizontalAlignment(SwingConstants.RIGHT);
+		pb.add(lbl, cc.xy(2, 1));
+		lbl = new JLabel("Schema Title:");
+		lbl.setHorizontalAlignment(SwingConstants.RIGHT);
+		pb.add(lbl, cc.xy(2, 3));
+		lbl = new JLabel("Schema Version:");
+		lbl.setHorizontalAlignment(SwingConstants.RIGHT);
+		pb.add(lbl, cc.xy(2, 5));
+		JTextField namespace = new JTextField(schemaNamespace);
+		namespace.setEditable(false);
+		pb.add(namespace, cc.xy(4, 1));
+		JTextField title = new JTextField();
+		pb.add(title, cc.xy(4, 3));
+		JTextField version = new JTextField();
+		pb.add(version, cc.xy(4, 5));
+		return pb.getPanel();
 	}
 	
 	protected SpExportSchemaItem createSchemaItem(Element itemElement) throws Exception
