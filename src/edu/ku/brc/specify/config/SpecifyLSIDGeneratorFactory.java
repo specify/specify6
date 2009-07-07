@@ -122,4 +122,16 @@ public class SpecifyLSIDGeneratorFactory extends GenericLSIDGeneratorFactory
         return null;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.GenericLSIDGeneratorFactory#getLSID(edu.ku.brc.af.core.GenericLSIDGeneratorFactory.CATEGORY_TYPE, java.lang.String, int)
+     */
+    @Override
+    public String getLSID(final CATEGORY_TYPE category, final String id, final int version)
+    {
+        if (isReady() && category != null && StringUtils.isNotEmpty(id))
+        {
+            return String.format("urn:lsid:%s:%s-%s-%s:%s:%d", lsidAuthority, instCode, colCode, category.toString(), id, version);
+        }
+        return super.getLSID(category, id, version);
+    }
 }

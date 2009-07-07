@@ -91,6 +91,19 @@ public class GenericLSIDGeneratorFactory
     }
     
     /**
+     * Default implementation to be overridden for an internal implementation. 
+     * Returns null if not overridden.
+     * @param category the LSID category
+     * @param id the unique identifier
+     * @param version the version
+     * @return the LSID
+     */
+    public String getLSID(final CATEGORY_TYPE category, final String id, final int version)
+    {
+        return null;
+    }
+    
+    /**
      * Returns the instance of the CollectionObjLSIDGenFactory.
      * @return the instance of the CollectionObjLSIDGenFactory.
      */
