@@ -403,34 +403,7 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
             if (connection != null)
             {
                 StringBuilder sb = new StringBuilder("GRANT ");
-                if ((permissions & PERM_ALL) == PERM_ALL)
-                {
-                    sb.append("ALL ");
-                    
-                } else
-                {
-                    if ((permissions & PERM_SELECT) == PERM_SELECT)
-                    {
-                        sb.append("SELECT,");
-                    }
-                    if ((permissions & PERM_UPDATE) == PERM_UPDATE)
-                    {
-                        sb.append("UPDATE,");
-                    }
-                    if ((permissions & PERM_DELETE) == PERM_DELETE)
-                    {
-                        sb.append("DELETE,");
-                    }
-                    if ((permissions & PERM_DELETE) == PERM_LOCK_TABLES)
-                    {
-                        sb.append("LOCK_TABLES,");
-                    }
-                    if ((permissions & PERM_INSERT) == PERM_INSERT)
-                    {
-                        sb.append("INSERT,");
-                    }
-                    sb.setLength(sb.length()-1); // chomp comma
-                }
+                appendPerms(sb, permissions);
                 sb.append(String.format(" ON %s.* TO '%s'@'%s'",dbName, username, hostName));
                 
                 stmt = connection.createStatement();
@@ -485,6 +458,39 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
             } catch (Exception ex) {}
         }
 	}
+	
+	/**
+	 * Appends the MySQL permissions to the StringBuilder
+	 * @param sb the StringBuilder
+	 * @param permissions the permissions mask
+	 */
+	protected void appendPerms(final StringBuilder sb, final int permissions)
+	{
+	    if ((permissions & PERM_ALL) == PERM_ALL)
+        {
+            sb.append("ALL ");
+            
+        } else
+        {
+            if ((permissions & PERM_SELECT) == PERM_SELECT)
+            {
+                sb.append("SELECT,");
+            }
+            if ((permissions & PERM_UPDATE) == PERM_UPDATE)
+            {
+                sb.append("UPDATE,");
+            }
+            if ((permissions & PERM_DELETE) == PERM_DELETE)
+            {
+                sb.append("DELETE,");
+            }
+            if ((permissions & PERM_INSERT) == PERM_INSERT)
+            {
+                sb.append("INSERT,");
+            }
+            sb.setLength(sb.length()-1); // chomp comma
+        }
+	}
 
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.dbsupport.DBMSUserMgrIFace#createUser(java.lang.String, java.lang.String, java.lang.String, int)
@@ -498,30 +504,7 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
 			if (connection != null)
 			{
 				StringBuilder sb = new StringBuilder("GRANT ");
-                if ((permissions & PERM_ALL) == PERM_ALL)
-                {
-                    sb.append("ALL ");
-                    
-                } else
-                {
-                    if ((permissions & PERM_SELECT) == PERM_SELECT)
-                    {
-                        sb.append("SELECT,");
-                    }
-                    if ((permissions & PERM_UPDATE) == PERM_UPDATE)
-                    {
-                        sb.append("UPDATE,");
-                    }
-                    if ((permissions & PERM_DELETE) == PERM_DELETE)
-                    {
-                        sb.append("DELETE,");
-                    }
-                    if ((permissions & PERM_INSERT) == PERM_INSERT)
-                    {
-                        sb.append("INSERT,");
-                    }
-                    sb.setLength(sb.length()-1); // chomp comma
-                }
+				appendPerms(sb, permissions);
                 sb.append(String.format(" ON %s.* TO '%s'@'%s' IDENTIFIED BY '%s'",dbName, username, hostName, password));
 				
                 stmt = connection.createStatement();
