@@ -488,6 +488,10 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
             {
                 sb.append("INSERT,");
             }
+            if ((permissions & PERM_LOCK_TABLES) == PERM_LOCK_TABLES)
+            {
+                sb.append("LOCK TABLES,");
+            }
             sb.setLength(sb.length()-1); // chomp comma
         }
 	}
