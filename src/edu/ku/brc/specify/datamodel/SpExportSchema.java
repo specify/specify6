@@ -28,10 +28,14 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 
 /**
  * @author rod
@@ -184,14 +188,13 @@ public class SpExportSchema extends DataModelObjBase
         return spExportSchemaItems;
     }
     
-    @OneToMany(mappedBy = "spExportSchema")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @ManyToMany(mappedBy = "spExportSchemas")
+    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<SpExportSchemaMapping> getSpExportSchemaMappings()
     {
     	return spExportSchemaMappings;
     }
-    
-    
+        
     /**
      * @return the schemaItem
      */

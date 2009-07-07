@@ -13,10 +13,13 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.apache.log4j.Logger;
 
 /**
  * @author timbo
@@ -29,10 +32,13 @@ import javax.persistence.Transient;
 @org.hibernate.annotations.Table(appliesTo="spexportschemamapping")
 public class SpExportSchemaMapping extends DataModelObjBase
 {
-    protected Integer							spExportSchemaMappingId;
-	protected SpExportSchema					spExportSchema;
-	protected String                            mappingName;
-	protected String                            description;
+    protected static final Logger				log	= Logger
+															.getLogger(SpExportSchemaMapping.class);
+
+	protected Integer							spExportSchemaMappingId;
+	protected Set<SpExportSchema>				spExportSchemas;
+	protected String							mappingName;
+	protected String							description;
 	protected Timestamp							timestampExported;
 	protected Set<SpExportSchemaItemMapping>	mappings;
 
@@ -78,21 +84,68 @@ public class SpExportSchemaMapping extends DataModelObjBase
 	}
 
 	/**
-	 * @return the exportSchemaItem
+	 * @return the exportSchemas
+	 * 
+	 * Setting a many-many between SpExportSchema and SpExportSchemaMapping just in case
+	 * anybody ever wants to create an export schema with items mapped to more than one schema,
+	 * which apparently is supported by Tapir.
+	 * 
+	 * The Specify app doesn't support this now, but with some (or a lot of) UI work it could.
+	 * 
 	 */
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "ExportSchemaID", unique = false, nullable = false, insertable = true, updatable = true)
-	public SpExportSchema getSpExportSchema()
+   @ManyToMany(cascade = {}, fetch = FetchType.LAZY)
+   @JoinTable(name = "sp_schema_mapping", joinColumns = 
+           { 
+               @JoinColumn(name = "SpExportSchemaMappingID", unique = false, nullable = false, insertable = true, updatable = false) 
+           }, 
+           inverseJoinColumns = 
+           { 
+               @JoinColumn(name = "SpExportSchemaID", unique = false, nullable = false, insertable = true, updatable = false) 
+           })
+	public Set<SpExportSchema> getSpExportSchemas()
 	{
-		return spExportSchema;
+		return spExportSchemas;
 	}
 	/**
 	 * @param spExportSchema the spExportSchema to set
 	 */
-	public void setSpExportSchema(SpExportSchema spExportSchema)
+	public void setSpExportSchemas(Set<SpExportSchema> spExportSchemas)
 	{
-		this.spExportSchema = spExportSchema;
+		this.spExportSchemas = spExportSchemas;
 	}
+
+    /**
+     * @return the single export schema.
+     */
+    @Transient
+	public SpExportSchema getSpExportSchema()
+    {
+    	if (spExportSchemas.size() > 0)
+    	{
+    		if (spExportSchemas.size() > 1)
+    		{
+    			log.warn("getSpExportSchema() called for object with more than one schema.");
+    		}
+    		return spExportSchemas.iterator().next();
+    	}
+    	return null;
+    }
+
+    /**
+     * @param schema the export schema to set.
+     */
+    public void setSpExportSchema(SpExportSchema schema)
+    {
+    	if (spExportSchemas.size() > 1)
+    	{
+			log.warn("setSpExportSchema() called for object with more than one schema.");
+    	}
+    	spExportSchemas.clear();
+    	if (schema != null)
+    	{
+    		spExportSchemas.add(schema);
+    	}
+    }
 	
     /**
      * @return the mappings.
@@ -193,7 +246,7 @@ public class SpExportSchemaMapping extends DataModelObjBase
 	{
 		super.init();
 		spExportSchemaMappingId = null;
-		spExportSchema = null;
+		spExportSchemas = new HashSet<SpExportSchema>();;
 		mappingName = null;
 		description = null;
 		timestampExported = null;
@@ -207,7 +260,10 @@ public class SpExportSchemaMapping extends DataModelObjBase
 	public void forceLoad()
 	{
 		super.forceLoad();
-		this.getSpExportSchema();
+		for (SpExportSchema schema : getSpExportSchemas())
+		{
+			schema.getId();
+		}
 		for (SpExportSchemaItemMapping map : getMappings())
 		{
 			map.getExportSchemaItem();
