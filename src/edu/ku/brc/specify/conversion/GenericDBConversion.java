@@ -6379,7 +6379,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         tblWriter.append("<H3>Taxon with null RankIDs</H3>");
         tblWriter.startTable();
         String missingRankSQL = "SELECT * FROM taxonname WHERE RankID IS NULL";
-        Vector<Object[]> rows = BasicSQLUtils.query(missingRankSQL);
+        Vector<Object[]> rows = BasicSQLUtils.query(oldDBConn, missingRankSQL);
         for (Object[] row : rows)
         {
             tblWriter.append("<TR>");

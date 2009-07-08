@@ -131,6 +131,7 @@ import edu.ku.brc.ui.ToggleButtonChooserPanel;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.dnd.SimpleGlassPane;
 import edu.ku.brc.ui.dnd.Trash;
 import edu.ku.brc.util.Pair;
 
@@ -1845,7 +1846,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     {
         if (workbench != null)
         {
-            UIRegistry.writeSimpleGlassPaneMsg(String.format(getResourceString("WB_LOADING_DATASET"), new Object[] {workbench.getName()}), GLASSPANE_FONT_SIZE);
+            final SimpleGlassPane glassPane = UIRegistry.writeSimpleGlassPaneMsg(String.format(getResourceString("WB_LOADING_DATASET"), new Object[] {workbench.getName()}), GLASSPANE_FONT_SIZE);
             
             // Make sure we have a session but use an existing one if it is passed in
             DataProviderSessionIFace tmpSession = session;
@@ -1870,24 +1871,38 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                              finiSession.attach(workbench);
                          }
                          final int rowCount = workbench.getWorkbenchRows().size() + 1;
-                         SwingUtilities.invokeLater(new Runnable() {
+                         /*SwingUtilities.invokeLater(new Runnable() {
                              public void run()
                              {
                                  UIRegistry.getStatusBar().setProgressRange(workbench.getName(), 0, rowCount);
                                  UIRegistry.getStatusBar().setIndeterminate(workbench.getName(), false);
                              }
-                         });
+                         });*/
                          
                          //force load the workbench here instead of calling workbench.forceLoad() because
                          //is so time-consuming and needs progress bar.
                          //workbench.getWorkbenchTemplate().forceLoad();
                          workbench.getWorkbenchTemplate().checkMappings(getDatabaseSchema());
-                         UIRegistry.getStatusBar().incrementValue(workbench.getName());
+                         //UIRegistry.getStatusBar().incrementValue(workbench.getName());
+                         int count = 1;
+                         // Adjust paint increment for number of rows in DataSet
+                         int mod;
+                         if (rowCount < 100) mod = 10;
+                         else if (rowCount < 500) mod = 20;
+                         else  if (rowCount < 1000) mod = 40;
+                         else mod = 50;
                          for (WorkbenchRow row : workbench.getWorkbenchRows())
                          {
                              row.forceLoad();
-                             UIRegistry.getStatusBar().incrementValue(workbench.getName());
+                             //UIRegistry.getStatusBar().incrementValue(workbench.getName());
+                             
+                             if (count % mod == 0)
+                             {
+                                 glassPane.setProgress((int)( (100.0 * count) / rowCount));
+                             }
+                             count++;
                          }
+                         glassPane.setProgress(100);
                          
                          // do the conversion code right here!
                          boolean convertedAnImage = false;
@@ -1983,12 +1998,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 public void finished()
                 {
                     UIRegistry.clearSimpleGlassPaneMsg();
-//                    SwingUtilities.invokeLater(new Runnable() {
-//                        public void run()
-//                        {
-                            UIRegistry.getStatusBar().setProgressDone(workbench.getName());
-//                        }
-//                    });
+                    //UIRegistry.getStatusBar().setProgressDone(workbench.getName());
                 }
             };
             worker.start();

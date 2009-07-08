@@ -38,10 +38,10 @@ import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.Vector;
 
-import javax.swing.JPanel;
 import javax.swing.Timer;
 
 import edu.ku.brc.ui.DataFlavorTableExt;
+import edu.ku.brc.ui.ProgressGlassPane;
 import edu.ku.brc.ui.RolloverCommand;
 
 /**
@@ -57,7 +57,7 @@ import edu.ku.brc.ui.RolloverCommand;
  *
  */
 @SuppressWarnings("serial")
-public class GhostGlassPane extends JPanel
+public class GhostGlassPane extends ProgressGlassPane
 {
     public enum ImagePaintMode {CENTERED, DRAG, ABSOLUTE}
     private static final boolean DEBUG = false;

@@ -44,10 +44,11 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang.StringUtils;
+
+import edu.ku.brc.ui.ProgressGlassPane;
 
 /**
  * Simple glass pane that writes and centers text while fading the background.
@@ -59,7 +60,7 @@ import org.apache.commons.lang.StringUtils;
  * Created Date: Sep 2, 2008
  *
  */
-public class SimpleGlassPane extends JPanel implements AWTEventListener
+public class SimpleGlassPane extends ProgressGlassPane implements AWTEventListener
 {
     private String text;
     private int    pointSize;
@@ -91,7 +92,7 @@ public class SimpleGlassPane extends JPanel implements AWTEventListener
      */
     public SimpleGlassPane(final String text, 
                            final int pointSize,
-                           final boolean doBlockMouseEvents)
+                           @SuppressWarnings("unused") final boolean doBlockMouseEvents)
     {
         this.text      = text;
         this.pointSize = pointSize;
@@ -346,7 +347,9 @@ public class SimpleGlassPane extends JPanel implements AWTEventListener
             // Copy our intermediate image to the screen
             g.drawImage(img, rect.x, rect.y, null);
         }
-        
+
+        super.paintComponent(graphics);
+
         if (StringUtils.isNotEmpty(text))
         {
             Graphics2D g2 = (Graphics2D)graphics;

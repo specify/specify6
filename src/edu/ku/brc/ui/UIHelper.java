@@ -3476,6 +3476,13 @@ public final class UIHelper
         
         final Boolean initialUseWordWind = localPrefs.getBoolean(USE_WORLDWIND, null);
         final Boolean initialHasOpenGL   = localPrefs.getBoolean(HAS_OPENGL_PREF, null);
+        
+        if (isMacOS())
+        {
+            localPrefs.putBoolean(HAS_OPENGL_PREF, true);  
+            localPrefs.putBoolean(USE_WORLDWIND, true);
+            return true;
+        }
     	
     	try 
     	{
