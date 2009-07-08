@@ -11,6 +11,7 @@
 	color: #990033
 }
 .style6 {color: #990000; font-style: italic; }
+.style7 {color: #990000}
 -->
 </style>
 </head>
@@ -25,31 +26,24 @@
 <tr><td width="32"><img src="../../images/spwizard32.png" width="32" height="32" /></td>
 <td width="296"><h2>Setup Wizard</h2>  </td></tr>
 </table>
-<p>The Specify Setup Wizard is used to create a new, empty database within Specify. It walks you through the creation of a database and insertion of a schema within MySQL, the creation of an administrative level database and Specify user and the initialization of the database structure. It also allows you to download that start of Taxon and Geography authority files.</p>
+<p>The Specify Wizard is used to create a new, empty database within Specify. It walks you through the creation of a database and insertion of a schema within MySQL, the creation of an administrative level database and Specify user and the initialization of the database structure. It also allows you to download that start of Taxon and Geography authority files.</p>
 <p>Before running the Wizard,   Java and MySQL must be installed. MySQL must include  an administrative (root) login account with all MySQL permissions.</p>
 <p>The Setup Wizard should NOT be run if collection data already exists in Specify. It creates a new, blank database and will permanently erase all existing data. The Wizard should only be run one time, for the initial Specify installation and setup, then can be deleted from your computer.</p>
 <p>Fields that must contain data before moving to the next Wizard window (required fields) are displayed with a <strong>bold</strong> font.</p>
-<h4>MySQL requirements for creating a Specify database and Master credentials using the Specify Setup Wizard</h4>
-<p>The first  Wizard window creates a blank Specify database within MySQL and inserts the schema (empty tables, fields and relationships) for the database. The Specify Setup Wizard can <strong>NOT</strong> be used to perform these two tasks if:</p>
+<h4>MySQL requirements for creating a Specify database and Master credentials using the Specify Wizard</h4>
+<p>The first   Wizard window creates a blank Specify database within MySQL and inserts the schema (empty tables, fields and relationships) for the database. The second Wizard window creates a Specify Master username and password. The Specify Wizard can <strong>NOT</strong> be used to perform these two tasks if:</p>
 <ol>
-  <li>The MySQLinstallation is located ona different computer or  server.</li>
-  <li>The default data management engine for an existing MySQL installation is NOT InnoDB. </li>
+  <li>The default data management engine for an existing MySQL installation is NOT InnoDB.</li>
+  <li>The Specify Setup will be on a dedicated server, or desktop computer accessed by other desktops.</li>
+  <li>You wish to create your own database rather than use the Wizard to create the Specify database and insert the schema.</li>
 </ol>
-<p>If you are accessing MySQL on a remote server or have previously installed a MySQL instance configured to use a  data engine other than InnoDB as its default, you will need to create a blank Specify database   with MySQL software tools and insert a Specify schema <em>before</em> running the Specify Setup Wizard. The Specify team provides both an explanation and script for performing these tasks from within MySQL on the Specify website at <a href="http://specifysoftware.org/content/creating-specify-database-within-mysql">http://specifysoftware.org/content/creating-specify-database-within-mysql</a>. </p>
+<p>1. If your default MySQL engine is not InnoDB it can be changed using the guidelines found on the Specify website at <a href="http://specifysoftware.org/content/changing-default-mysql-engine-innodb">http://specifysoftware.org/content/changing-default-mysql-engine-innodb</a>. If you are unable to change your default MySQL engine, you will need to create a blank Specify database   with MySQL software tools and insert a Specify schema <em>before</em> running the Specify Setup Wizard. The Specify team provides both an explanation and script for performing these tasks from within MySQL on the Specify website at <a href="http://specifysoftware.org/content/creating-specify-database-within-mysql">http://specifysoftware.org/content/creating-specify-database-within-mysql</a>. </p>
 <p><em><strong>Note:</strong></em> The MySQL step-by-step installation guide available on the Specify web site, specifies to make INNOdb the default data storage engine when installing Specify for the first time.  Institutions with legacy installations of MySQL may have had it configured originally for a different data engine, and in that case the Wizard should not be used to create a new Specify database in that installation of MYSQL, until after the above procedure and script is run. </p>
 <p>When you are running the Wizard, rather than creating the database and inserting the schema in the first Wizard window, you will verify that Specify can access your existing database and schema in the <em>Advanced</em> section by clicking on the <em>Test IT Login</em> button. </p>
-<p>The second Wizard window creates a 'Master' Username and Password that Specify will use to access the Specify database from within MySQL. The Specify Setup Wizard can <strong>NOT</strong> create a Master Username and Password if:</p>
-<ol>
-  <li>MySQL is being accessed on a remote server.</li>
-</ol>
-<p>If you are accessing a remote server you will need to create your Specify Master Username and Password from within the MySQL command line tool before running the Specify Setup Wizard. The following MySQL commands can be used to create the credentials. When entering the commands from within MySQL replace the red text with the appropriate names for your MySQL setup. Type this command:</p>
-<div style="margin-left: 1em;">
-<p>&gt; GRANT SELECT, INSERT, UPDATE, DELETE PRIVILEGES ON *.* TO '<span class="style6">Master Username</span>'@'<span class="style6">name of remote server</span>' IDENTIFIED BY '<span class="style6">Master Password</span>';</p></div>
-<p>Type the <em>Return</em> key and enter the second command:<br />
-<div style="margin-left: 1em;">
-  &gt; flush privileges;</p>
-</div>
-<p>Then in the second Wizard window, rather than creating the Master credentials, you will  verify  your Master credentials in the Advanced section by clicking the <em>Test Master Login</em> button.</p>
+<p>2. If the Specify database will be accessed by other 'client' computers you will first need to manually create a Specify Master username and password in MySQL before running the Specify Wizard. Instructions for setting up the Specify Master username and password in MySQL can be found on the Specify website at<a href="http://specifysoftware.org/content/specify-system-setup"> http://specifysoftware.org/content/specify-system-setup</a>.</p>
+<p>When running the Specify Wizard enter the MySQL information on the first Wizard screen and click the <em>Create Specify Database</em> button to create the database and insert the schema. On the second Specify Wizard window enter the Specify Master credentials, then click the <em>Test Master Login</em> button to verify the Specify Master credentials were created from within MySQL.</p>
+<div style="margin-left: 1em;"></div>
+<p>3. If you wish to create your own Specify database from within MySQL rather than using the Specify Wizard the Specify team provides both an explanation and script for performing this task from within MySQL on the Specify website at <a href="http://specifysoftware.org/content/creating-specify-database-within-mysql">http://specifysoftware.org/content/creating-specify-database-within-mysql</a>. </p>
 <p><a name="mysql_username" id="mysql_username"></a></p>
 <p align="center"><img src="../../images/window1.png" /></p>
 <p align="center"><span class="imgcaption">Enter MySQL IT Username and Password</span></p>
