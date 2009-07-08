@@ -1383,7 +1383,7 @@ public class UIRegistry
      * @param msg the message
      * @param pointSize the Font point size for the message to be writen in
      */
-    public static void writeGlassPaneMsg(final String msg, final int pointSize)
+    public static GhostGlassPane writeGlassPaneMsg(final String msg, final int pointSize)
     {
         GhostGlassPane glassPane = getGlassPane();
         if (glassPane != null)
@@ -1456,6 +1456,8 @@ public class UIRegistry
             glassPane.paintImmediately(glassPane.getBounds());
             showingGlassPane = true;
         }
+        
+        return glassPane;
     }
     
     /**

@@ -52,7 +52,7 @@ public class ProgressGlassPane extends JComponent
     
     private Color[] GRADIENT_COLORS    = new Color[] { Color.GRAY, Color.DARK_GRAY, Color.BLACK, Color.GRAY };
 
-    private int                  progress           = 0;
+    private int                  progress           = -1;
     private int                  textOffset         = 50;
     private Color                color              = new Color(30, 144, 255);
 
