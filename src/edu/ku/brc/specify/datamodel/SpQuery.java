@@ -374,7 +374,17 @@ public class SpQuery extends DataModelObjBase implements Cloneable
         }
     }
     
-    /**
+    
+    /* (non-Javadoc)
+	 * @see edu.ku.brc.specify.datamodel.DataModelObjBase#forceLoad()
+	 */
+	@Override
+	public void forceLoad()
+	{
+		forceLoad(false);
+	}
+
+	/**
      * @param sb
      */
     public void toXML(final StringBuilder sb)
