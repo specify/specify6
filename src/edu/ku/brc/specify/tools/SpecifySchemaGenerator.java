@@ -36,12 +36,16 @@ import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.UIRegistry;
 
 
 /**
  * This class provides the ability to create a DB schema from a Hibernate OR mapping.
  *
- * @code_status Beta
+ * @code_status Complete
+ * @author rods
  * @author jstewart
  */
 public class SpecifySchemaGenerator
@@ -78,13 +82,13 @@ public class SpecifySchemaGenerator
      * @param doUpdate tells it to update the schema instead of creating it
      * @throws SQLException
      */
-    public static void updateSchema(final DatabaseDriverInfo dbdriverInfo, 
-                                    final String             hostname,
-                                    final String             databaseName,
-                                    final String             userName,
-                                    final String             password) throws SQLException
+    public static boolean updateSchema(final DatabaseDriverInfo dbdriverInfo, 
+                                       final String             hostname,
+                                       final String             databaseName,
+                                       final String             userName,
+                                       final String             password) throws SQLException
     {
-        generateSchema(dbdriverInfo, hostname, databaseName, userName, password, true);
+        return generateSchema(dbdriverInfo, hostname, databaseName, userName, password, true);
     }
     
     /**
@@ -97,12 +101,12 @@ public class SpecifySchemaGenerator
      * @param doUpdate tells it to update the schema instead of creating it
      * @throws SQLException
      */
-    public static void generateSchema(final DatabaseDriverInfo dbdriverInfo, 
-                                      final String             hostname,
-                                      final String             databaseName,
-                                      final String             userName,
-                                      final String             password,
-                                      final boolean            doUpdate) throws SQLException
+    public static boolean generateSchema(final DatabaseDriverInfo dbdriverInfo, 
+                                         final String             hostname,
+                                         final String             databaseName,
+                                         final String             userName,
+                                         final String             password,
+                                         final boolean            doUpdate) throws SQLException
     {
         log.debug("generateSchema hostname:" + hostname);
         log.debug("generateSchema databaseName:" + databaseName);
@@ -114,29 +118,38 @@ public class SpecifySchemaGenerator
         // Now connect to other databases and "create" the Derby database
         DBConnection dbConn = DBConnection.createInstance(dbdriverInfo.getDriverClassName(), dbdriverInfo.getDialectClassName(), databaseName, connectionStr, userName, password);
 
-        log.debug("calling dropAndCreateDB(" + dbConn.toString() + ", " + databaseName +")");
-        if (!doUpdate)
+        if (dbConn.getConnection() != null)
         {
-            dropAndCreateDB(dbConn, databaseName);
-        }
-        
-        connectionStr = dbdriverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostname, databaseName, userName, password, dbdriverInfo.getName());
-        
-        log.debug("Preparing to doGenSchema: " + connectionStr);
-        
-        // Generate the schema
-        doGenSchema(dbdriverInfo,
-                    connectionStr,
-                    userName,
-                    password,
-                    doUpdate);
-        
-        String       connStr           = dbdriverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostname, databaseName);
-        DBConnection dbConnForDatabase = DBConnection.createInstance(dbdriverInfo.getDriverClassName(), dbdriverInfo.getDialectClassName(), databaseName, connStr, userName, password);
-        if (!doUpdate)
+            log.debug("calling dropAndCreateDB(" + dbConn.toString() + ", " + databaseName +")");
+            if (!doUpdate)
+            {
+                dropAndCreateDB(dbConn, databaseName);
+            }
+            
+            connectionStr = dbdriverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostname, databaseName, userName, password, dbdriverInfo.getName());
+            
+            log.debug("Preparing to doGenSchema: " + connectionStr);
+            
+            // Generate the schema
+            doGenSchema(dbdriverInfo,
+                        connectionStr,
+                        userName,
+                        password,
+                        doUpdate);
+            
+            String       connStr           = dbdriverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostname, databaseName);
+            DBConnection dbConnForDatabase = DBConnection.createInstance(dbdriverInfo.getDriverClassName(), dbdriverInfo.getDialectClassName(), databaseName, connStr, userName, password);
+            if (!doUpdate)
+            {
+                fixFloatFields(dbConnForDatabase);
+            }
+        } else
         {
-            fixFloatFields(dbConnForDatabase);
+            UIRegistry.showLocalizedError("SpecifySchemaGenerator.IT_UP_ERROR");
+            CommandDispatcher.dispatch(new CommandAction("App", "AppReqExit", null));
+            return false;
         }
+        return true;
     }
 
     /**

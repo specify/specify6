@@ -31,7 +31,6 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -74,15 +73,15 @@ public abstract class SchemaUpdateService
         CellConstraints cc = new CellConstraints();
         PanelBuilder    pb = new PanelBuilder(new FormLayout("p,2px,p", "p,4px,p"));
         
-        pb.add(UIHelper.createI18NFormLabel("username"), cc.xy(1, 1));
+        pb.add(UIHelper.createI18NFormLabel("IT_Username"), cc.xy(1, 1));
         pb.add(userNameTF, cc.xy(3, 1));
         
-        pb.add(UIHelper.createI18NFormLabel("password"), cc.xy(1, 3));
+        pb.add(UIHelper.createI18NFormLabel("IT_Password"), cc.xy(1, 3));
         pb.add(passwordTF, cc.xy(3, 3));
         
         pb.setDefaultDialogBorder();
         
-        CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getMostRecentWindow(), "", true, pb.getPanel());
+        CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getMostRecentWindow(), UIRegistry.getResourceString("IT_LOGIN"), true, pb.getPanel());
         dlg.setVisible(true);
         if (!dlg.isCancelled())
         {

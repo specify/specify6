@@ -949,7 +949,7 @@ public class DatabaseLoginPanel extends JTiledPanel
                         DBConnection.getInstance().setDriverName(((DatabaseDriverInfo)dbDriverCBX.getSelectedItem()).getName());
                         
                         // This needs to be done before Hibernate starts up
-                        //SchemaUpdateService.getInstance().updateSchema(UIHelper.getInstall4JInstallString());
+                        SchemaUpdateService.getInstance().updateSchema(UIHelper.getInstall4JInstallString());
                     }
                 }
                 return null;

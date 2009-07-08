@@ -19,19 +19,14 @@
 */
 package edu.ku.brc.specify.dbsupport;
 
-import static edu.ku.brc.helpers.XMLHelper.getAttr;
-
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.Vector;
 
 import org.dom4j.Element;
-import org.jfree.util.Log;
 
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DBMSUserMgr;
@@ -40,6 +35,8 @@ import edu.ku.brc.dbsupport.SchemaUpdateService;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -65,9 +62,10 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
      * @see edu.ku.brc.dbsupport.SchemaUpdateService#updateSchema(java.lang.String)
      */
     @Override
-    public boolean updateSchema(final String versionNumber)
+    public boolean updateSchema(final String appVerNumArg)
     {
         String  dbVersion = null;
+        String  appVerNum = appVerNumArg;
         
         Element root;
         try
@@ -75,7 +73,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             root = XMLHelper.readFileToDOM4J(new FileInputStream(XMLHelper.getConfigDirPath("schema_version.xml")));//$NON-NLS-1$
             if (root != null)
             {
-                Element dbElement = (Element)root;//.selectObject("version");
+                Element dbElement = (Element)root;
                 if (dbElement != null)
                 {
                     dbVersion = dbElement.getTextTrim();
@@ -98,13 +96,15 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
             if (dbMgr.connect(dbConn.getUserName(), dbConn.getPassword(), dbConn.getServerName(), dbConn.getDatabaseName()))
             {
                 // Here checks to see if this is the first ever
-                boolean doUpdate      = false;
-                boolean doInsert      = false;
-                String  appVersion    = null;
-                String  schemaVersion = null;
-                Integer spverId       = null;
-                Integer versionNum    = 1;
+                boolean doUpdateAppVer = false;
+                boolean doSchemaUpdate = false;
+                boolean doInsert       = false;
+                String  appVersion     = null;
+                String  schemaVersion  = null;
+                Integer spverId        = null;
+                Integer recVerNum     = 1;
                 
+
                 if (dbMgr.doesDBHaveTable("spversion"))
                 {
                     Vector<Object[]> rows = BasicSQLUtils.query(dbConn.getConnection(), "SELECT AppVersion, SchemaVersion, SpVersionID, Version FROM spversion");
@@ -114,15 +114,24 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         appVersion    = row[0].toString();
                         schemaVersion = row[1].toString();
                         spverId       = (Integer)row[2];
-                        versionNum    = (Integer)row[3];
+                        recVerNum     = (Integer)row[3];
+                        
+                        if (appVerNum == null) // happens for developers
+                        {
+                            appVerNum = appVersion;
+                        }
                         
                         if (appVersion == null && schemaVersion == null)
                         {
-                            doUpdate = true;
+                            doUpdateAppVer = true;
                             
-                        } else if (appVersion.equals(versionNumber) || (schemaVersion.equals(dbVersion) && dbVersion != null))
+                        } else if (!appVersion.equals(appVerNum))
                         {
-                            doUpdate = true;
+                            doUpdateAppVer = true;
+                            
+                        } else if (dbVersion != null && !schemaVersion.equals(dbVersion))
+                        {
+                            doSchemaUpdate = true;
                         }
                         
                     }
@@ -136,27 +145,39 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
 
                 try
                 {
-                    if (doUpdate || doInsert)
+                    if (doSchemaUpdate || doInsert || doUpdateAppVer)
                     {
-                        Pair<String, String> usrPwd = getITConnection();
-                        if (dbConn != null)
+                        if (doSchemaUpdate || doInsert)
                         {
-                            DBConnection dbc = DBConnection.getInstance();
-    
-                            SpecifySchemaGenerator.updateSchema(DatabaseDriverInfo.getDriver(dbc.getDriver()), dbc.getServerName(), dbc.getDatabaseName(), usrPwd.first,usrPwd.second);
+                            Pair<String, String> usrPwd = getITConnection();
+                            if (usrPwd != null)
+                            {
+                                DBConnection dbc = DBConnection.getInstance();
+        
+                                boolean ok = SpecifySchemaGenerator.updateSchema(DatabaseDriverInfo.getDriver(dbc.getDriver()), dbc.getServerName(), dbc.getDatabaseName(), usrPwd.first,usrPwd.second);
+                                if (!ok)
+                                {
+                                    return false;
+                                }
+                            } else
+                            {
+                                CommandDispatcher.dispatch(new CommandAction("App", "AppReqExit", null));
+                                return false;
+                                
+                            }
                         }
                         
                         if (doInsert || (appVersion == null && schemaVersion == null))
                         {
-                            String sql = "INSERT INTO spversion (AppName, AppVersion, SchemaVersion, TimestampCreated, TimestampModified, Version) VALUES('Specify', '"+versionNumber+"', '"+dbVersion+"', '" + 
-                                                                 dateTimeFormatter.format(now) + "', '" + dateTimeFormatter.format(now) + "', "+versionNum+")";
+                            String sql = "INSERT INTO spversion (AppName, AppVersion, SchemaVersion, TimestampCreated, TimestampModified, Version) VALUES('Specify', '"+appVerNum+"', '"+dbVersion+"', '" + 
+                                                                 dateTimeFormatter.format(now) + "', '" + dateTimeFormatter.format(now) + "', "+recVerNum+")";
                             System.err.println(sql);
                             BasicSQLUtils.update(dbConn.getConnection(), sql);
                             
-                        } else if (appVersion.equals(versionNumber) || (schemaVersion.equals(dbVersion) && dbVersion != null))
+                        } else if (doSchemaUpdate || doUpdateAppVer)
                         {
-                            versionNum++;
-                            String sql = "UPDATE spversion SET AppVersion='"+versionNumber+"', SchemaVersion='"+dbVersion+"', Version="+versionNum+" WHERE SpVersionID = "+ spverId;
+                            recVerNum++;
+                            String sql = "UPDATE spversion SET AppVersion='"+appVerNum+"', SchemaVersion='"+dbVersion+"', Version="+recVerNum+" WHERE SpVersionID = "+ spverId;
                             System.err.println(sql);
                             BasicSQLUtils.update(dbConn.getConnection(), sql);
                         }
