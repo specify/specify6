@@ -262,6 +262,11 @@ public class DatabasePanel extends BaseSetupPanel
         String dbPwd      = passwordTxt.getText();
         String hostName   = hostNameTxt.getText();
         
+        // Set up the DBConnection for later
+        DatabaseDriverInfo driverInfo = (DatabaseDriverInfo)drivers.getSelectedItem();
+        String newConnStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostName, "", dbUserName, dbPwd, driverInfo.getName());
+        DBConnection.checkForEmbeddedDir(newConnStr);
+        
         if (mgr.connectToDBMS(dbUserName, dbPwd, hostName))
         {
             nextBtn.setEnabled(isOK == null || isOK || manualLoginOK);
@@ -284,8 +289,8 @@ public class DatabasePanel extends BaseSetupPanel
         final String hostName   = hostNameTxt.getText();
         
         final DatabaseDriverInfo driverInfo = (DatabaseDriverInfo)drivers.getSelectedItem();
-        String newConnStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostName, dbName, dbUserName, dbPwd, driverInfo.getName());
-        DBConnection.checkForEmbeddedDir(newConnStr);
+        String connStrInitial = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostName, dbName, dbUserName, dbPwd, driverInfo.getName());
+        DBConnection.checkForEmbeddedDir(connStrInitial);
         
         if ((isOK == null || !isOK) && verifyDatabase(properties))
         {
