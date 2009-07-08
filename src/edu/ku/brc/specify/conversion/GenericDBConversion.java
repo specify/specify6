@@ -4860,7 +4860,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                                   "CollectionObjectID", "VisibilitySetBy", "ContainerOwnerID", "InventoryDate",
                                   "ObjectCondition", "Notifications", "ProjectNumber", "Restrictions", "YesNo3",
                                   "YesNo4", "YesNo5", "YesNo6", "FieldNotebookPageID", "ColObjAttributesID",
-                                  "DNASequenceID", "AppraisalID", "TotalValue" };
+                                  "DNASequenceID", "AppraisalID", "TotalValue", "Description" };
 
         Hashtable<String, String> fieldsToSkipHash = new Hashtable<String, String>();
         for (String fName : fieldsToSkip)
@@ -7163,12 +7163,18 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             {
                 int     oldCEId = rs.getInt(1);
                 Integer lithoId = lithoStratIdMapper.get(oldCEId);
-                Integer gtpId   = stratGTPIdHash.get(lithoId);
                 
                 if (lithoId == null)
                 {
                     continue;
                 }
+                
+                Integer gtpId = stratGTPIdHash.get(lithoId);
+                if (gtpId == null)
+                {
+                    continue;
+                }
+                
                 
                 try
                 {

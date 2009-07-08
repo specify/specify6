@@ -19,6 +19,8 @@
 */
 package edu.ku.brc.specify.config;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -183,7 +185,7 @@ public class SpecifyLSIDGeneratorFactory extends GenericLSIDGeneratorFactory
     /**
      * 
      */
-    public void buildLSIDs()
+    public void buildLSIDs(final PropertyChangeListener pcl)
     {
         UIFieldFormatterIFace formatter = null;
         DBFieldInfo fi = DBTableIdMgr.getInstance().getInfoById(1).getFieldByColumnName("CatalogNumber");
@@ -194,13 +196,21 @@ public class SpecifyLSIDGeneratorFactory extends GenericLSIDGeneratorFactory
         }
         
         reset();
+        
         if (isReady())
         {
             boolean doVersioning = AppPreferences.getRemote().getBoolean(PREF_NAME_PREFIX + "UseVersioning", false);
             
+            int count = 1;
             for (CATEGORY_TYPE cat : CATEGORY_TYPE.values())
             {
                 String pName = PREF_NAME_PREFIX + cat.toString();
+                
+                if (pcl != null)
+                {
+                    pcl.propertyChange(new PropertyChangeEvent(this, "COUNT", 0, count++));
+                }
+                
                 
                 if (AppPreferences.getRemote().getBoolean(pName, false))
                 {
@@ -220,6 +230,11 @@ public class SpecifyLSIDGeneratorFactory extends GenericLSIDGeneratorFactory
                          
                     } finally
                     {
+                        if (pcl != null)
+                        {
+                            pcl.propertyChange(new PropertyChangeEvent(this, "COUNT", 0, count));
+                        }
+                        
                         try
                         {
                             if (stmt != null)
@@ -233,6 +248,7 @@ public class SpecifyLSIDGeneratorFactory extends GenericLSIDGeneratorFactory
                         } catch (SQLException e) {}
                     }
                 }
+                count++;
             }
         } else
         {

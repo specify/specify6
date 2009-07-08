@@ -136,7 +136,7 @@ public class UIRegistry
     protected static boolean          isRelease        = false;
     protected static boolean          isTesting        = false;
     protected static int              STD_WAIT_TIME    = 2000; // 2 Seconds
-    protected static int              STD_FONT_SIZE    = 20;   // 20 point size
+    public    static int              STD_FONT_SIZE    = 20;   // 20 point size
     
 
     // Data Members

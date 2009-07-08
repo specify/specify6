@@ -356,34 +356,38 @@ public class UsageTracker
     public synchronized static String getInstallId()
     {
         AppPreferences appPrefs = AppPreferences.getLocalPrefs();
-        
-        // get the first part of the install ID
-        String installIdStart = appPrefs.get("InstallIdStart", null); //$NON-NLS-1$
-        if (installIdStart == null)
+        if (appPrefs.isAvailable())
         {
-            // create a new ID start (this is the first time the app has run)
-            Random r = new Random(System.currentTimeMillis());
-            UUID idStart = new UUID(r.nextLong(),r.nextLong());
-            installIdStart = idStart.toString();
-            appPrefs.put("InstallIdStart", installIdStart); //$NON-NLS-1$
+            
+            // get the first part of the install ID
+            String installIdStart = appPrefs.get("InstallIdStart", null); //$NON-NLS-1$
+            if (installIdStart == null)
+            {
+                // create a new ID start (this is the first time the app has run)
+                Random r = new Random(System.currentTimeMillis());
+                UUID idStart = new UUID(r.nextLong(),r.nextLong());
+                installIdStart = idStart.toString();
+                appPrefs.put("InstallIdStart", installIdStart); //$NON-NLS-1$
+            }
+            
+            // get the last part of the install ID
+            String installIdEnd  = appPrefs.get("InstallIdEnd", null); //$NON-NLS-1$
+            File   pluginRegFile = XMLHelper.getConfigDir("plugin_registry.xml"); //$NON-NLS-1$
+            long   lastMod       = pluginRegFile.lastModified();
+            String lastModString = Long.toHexString(lastMod);
+            
+            if (installIdEnd == null || !installIdEnd.equals(lastModString))
+            {
+                // somebody must have copied this install to a new storage
+                // reset the InstallIdEnd preference
+                clearUsageStats();
+                appPrefs.put("InstallIdEnd", lastModString); //$NON-NLS-1$
+                installIdEnd = lastModString;
+            }
+            String installId = installIdStart + "--" + installIdEnd;  //$NON-NLS-1$
+            return installId;
         }
-        
-        // get the last part of the install ID
-        String installIdEnd  = appPrefs.get("InstallIdEnd", null); //$NON-NLS-1$
-        File   pluginRegFile = XMLHelper.getConfigDir("plugin_registry.xml"); //$NON-NLS-1$
-        long   lastMod       = pluginRegFile.lastModified();
-        String lastModString = Long.toHexString(lastMod);
-        
-        if (installIdEnd == null || !installIdEnd.equals(lastModString))
-        {
-            // somebody must have copied this install to a new storage
-            // reset the InstallIdEnd preference
-            clearUsageStats();
-            appPrefs.put("InstallIdEnd", lastModString); //$NON-NLS-1$
-            installIdEnd = lastModString;
-        }
-        String installId = installIdStart + "--" + installIdEnd;  //$NON-NLS-1$
-        return installId;
+        return null;
     }
     
     /**

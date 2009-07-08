@@ -289,8 +289,14 @@ public class GhostGlassPane extends ProgressGlassPane
     @Override
     protected void paintComponent(Graphics g)
     {
-        if (dragged == null || !isVisible())
+        if (!isVisible())
         {
+            return;
+        }
+        
+        if (dragged == null)
+        {
+            super.paintComponent(g);
             return;
         }
 
@@ -322,6 +328,9 @@ public class GhostGlassPane extends ProgressGlassPane
         }
 
         g2.drawImage(dragged, newPnt.x, newPnt.y, (int)widthZoom, (int)heightZoom, null);
+        
+        super.paintComponent(g2);
+        
         g2.dispose();
     }
 
@@ -560,6 +569,8 @@ public class GhostGlassPane extends ProgressGlassPane
         {
 
             long elapsed = System.currentTimeMillis() - start;
+            System.err.println(elapsed);
+            
             if (stopNow || elapsed > ANIMATION_DELAY)
             {
                 ((Timer) e.getSource()).stop();

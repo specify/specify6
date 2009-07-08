@@ -30,7 +30,6 @@ import java.awt.FontMetrics;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.LinearGradientPaint;
 import java.awt.Paint;
 import java.awt.Point;
 import java.awt.RenderingHints;
@@ -40,17 +39,16 @@ import javax.swing.JComponent;
 /**
  * 
  * @author Romain Guy
+ * 
+ * (Heavily altered by rods)
  */
 public class ProgressGlassPane extends JComponent
 {
     private static final int     BAR_WIDTH          = 400;
     private static final int     BAR_HEIGHT         = 20;
 
-    private static final float[] GRADIENT_FRACTIONS = new float[] { 0.0f, 0.499f, 0.5f, 1.0f };
     private static final Color   GRADIENT_COLOR2    = Color.WHITE;
     private static final Color   GRADIENT_COLOR1    = Color.GRAY;
-    
-    private Color[] GRADIENT_COLORS    = new Color[] { Color.GRAY, Color.DARK_GRAY, Color.BLACK, Color.GRAY };
 
     private int                  progress           = -1;
     private int                  textOffset         = 50;
@@ -63,9 +61,6 @@ public class ProgressGlassPane extends JComponent
     {
         setBackground(Color.WHITE);
         setFont(new Font("Default", Font.BOLD, 16));
-        
-        Color color = new Color(30, 144, 255);
-        GRADIENT_COLORS    = new Color[] { color, color.darker(), color.darker().darker(), color };
     }
 
     public int getProgress()
@@ -80,6 +75,8 @@ public class ProgressGlassPane extends JComponent
         
         if (progress > -1)
         {
+            progress = Math.min(100, progress);
+            
             // computes the damaged area
             FontMetrics metrics = getGraphics().getFontMetrics(getFont());
             int w = (int) (BAR_WIDTH * ((float) oldProgress / 100.0f));
@@ -125,10 +122,6 @@ public class ProgressGlassPane extends JComponent
     
             y += textOffset;
     
-            // draws the text
-            // g2.setColor(TEXT_COLOR);
-            // g2.drawString(message, x, y);
-    
             // goes to the position of the progress bar
             y += metrics.getDescent();
     
@@ -145,23 +138,14 @@ public class ProgressGlassPane extends JComponent
             g2.fillRect(x, y, BAR_WIDTH, BAR_HEIGHT);
     
             // actual progress
-            boolean oldWay = false;
-            if (oldWay)
-            {
-                gradient = new LinearGradientPaint(x, y, x, y + h, GRADIENT_FRACTIONS, GRADIENT_COLORS);
-                g2.setPaint(gradient);
-                g2.fillRect(x, y, w, h);
-            } else
-            {
-                g2.setComposite(AlphaComposite.SrcOver.derive(0.90f));
-                
-                Color grad_top = color.brighter();
-                Color grad_bot = color.darker();        
-                GradientPaint bg = new GradientPaint(new Point(x,y), grad_top,
-                                                     new Point(x,y+h), grad_bot);
-                g2.setPaint(bg);
-                g2.fillRect(x, y, w, h);
-            }
+            g2.setComposite(AlphaComposite.SrcOver.derive(0.90f));
+            
+            Color grad_top = color.brighter();
+            Color grad_bot = color.darker();        
+            GradientPaint bg = new GradientPaint(new Point(x,y), grad_top,
+                                                 new Point(x,y+h), grad_bot);
+            g2.setPaint(bg);
+            g2.fillRect(x, y, w, h);
     
             g2.setPaint(paint);
     

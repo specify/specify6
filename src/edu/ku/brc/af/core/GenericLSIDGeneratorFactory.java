@@ -19,6 +19,7 @@
 */
 package edu.ku.brc.af.core;
 
+import java.beans.PropertyChangeListener;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
@@ -111,8 +112,9 @@ public class GenericLSIDGeneratorFactory
     /**
      * This builds (fills in) all the empty GUID fields in any table that requires it.
      * This is usually for the the tables represented by the enum CATEGORY_TYPE.
+     * @param pcl PropertyChangeListener for progress
      */
-    public void buildLSIDs()
+    public void buildLSIDs(PropertyChangeListener pcl)
     {
         
     }
