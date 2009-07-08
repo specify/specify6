@@ -65,7 +65,7 @@ public abstract class SchemaUpdateService
      * @return a username/password pair if valid or null if canceled
      * @throws SQLException
      */
-    public static Pair<String, String> getITConnection() throws SQLException
+    public static Pair<String, String> getITUsernamePwd() throws SQLException
     {
         JTextField     userNameTF = new JTextField(15);
         JPasswordField passwordTF = new JPasswordField();

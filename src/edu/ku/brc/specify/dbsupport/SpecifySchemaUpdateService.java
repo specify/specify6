@@ -19,6 +19,9 @@
 */
 package edu.ku.brc.specify.dbsupport;
 
+import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.sql.SQLException;
@@ -26,8 +29,11 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Vector;
 
+import javax.swing.JOptionPane;
+
 import org.dom4j.Element;
 
+import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DBMSUserMgr;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
@@ -37,6 +43,7 @@ import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -127,11 +134,27 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                             
                         } else if (!appVersion.equals(appVerNum))
                         {
-                            doUpdateAppVer = true;
+                            if (checkVersion(dbVersion, appVerNum, "SpecifySchemaUpdateService.APP_VER_ERR", "SpecifySchemaUpdateService.APP_VER_NEQ"))
+                            {
+                                doUpdateAppVer = true;
+                            } else
+                            {
+                                CommandDispatcher.dispatch(new CommandAction("App", "AppReqExit", null));
+                                return false;
+                            }
                             
-                        } else if (dbVersion != null && !schemaVersion.equals(dbVersion))
+                        } 
+                        
+                        if (dbVersion != null && !schemaVersion.equals(dbVersion))
                         {
-                            doSchemaUpdate = true;
+                            if (checkVersion(schemaVersion, dbVersion, "SpecifySchemaUpdateService.DB_VER_ERR", "SpecifySchemaUpdateService.DB_VER_NEQ"))
+                            {
+                                doSchemaUpdate = true;
+                            } else
+                            {
+                                CommandDispatcher.dispatch(new CommandAction("App", "AppReqExit", null));
+                                return false;
+                            }
                         }
                         
                     }
@@ -149,7 +172,13 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                     {
                         if (doSchemaUpdate || doInsert)
                         {
-                            Pair<String, String> usrPwd = getITConnection();
+                            if (!askToUpdateSchema())
+                            {
+                                CommandDispatcher.dispatch(new CommandAction("App", "AppReqExit", null));
+                                return false;
+                            }
+                            
+                            Pair<String, String> usrPwd = getITUsernamePwd();
                             if (usrPwd != null)
                             {
                                 DBConnection dbc = DBConnection.getInstance();
@@ -163,7 +192,6 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                             {
                                 CommandDispatcher.dispatch(new CommandAction("App", "AppReqExit", null));
                                 return false;
-                                
                             }
                         }
                         
@@ -171,14 +199,14 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                         {
                             String sql = "INSERT INTO spversion (AppName, AppVersion, SchemaVersion, TimestampCreated, TimestampModified, Version) VALUES('Specify', '"+appVerNum+"', '"+dbVersion+"', '" + 
                                                                  dateTimeFormatter.format(now) + "', '" + dateTimeFormatter.format(now) + "', "+recVerNum+")";
-                            System.err.println(sql);
+                            //System.err.println(sql);
                             BasicSQLUtils.update(dbConn.getConnection(), sql);
                             
                         } else if (doSchemaUpdate || doUpdateAppVer)
                         {
                             recVerNum++;
                             String sql = "UPDATE spversion SET AppVersion='"+appVerNum+"', SchemaVersion='"+dbVersion+"', Version="+recVerNum+" WHERE SpVersionID = "+ spverId;
-                            System.err.println(sql);
+                            //System.err.println(sql);
                             BasicSQLUtils.update(dbConn.getConnection(), sql);
                         }
                         return true;
@@ -194,6 +222,58 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 }
             }
         }
+        return false;
+    }
+    
+    /**
+     * Launches dialog for Importing and Exporting Forms and Resources.
+     */
+    public static boolean askToUpdateSchema()
+    {
+        if (SubPaneMgr.getInstance().aboutToShutdown())
+        {
+            Object[] options = { getResourceString("CONTINUE"),  //$NON-NLS-1$
+                                 getResourceString("CANCEL")  //$NON-NLS-1$
+                  };
+            return JOptionPane.YES_OPTION == JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
+                                                             getLocalizedMessage("SpecifySchemaUpdateService.DB_SCH_UP"),  //$NON-NLS-1$
+                                                             getResourceString("SpecifySchemaUpdateService.DB_SCH_UP_TITLE"),  //$NON-NLS-1$
+                                                             JOptionPane.YES_NO_OPTION,
+                                                             JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+        }
+        return false;
+
+    }
+    
+    /**
+     * Check to make sure two version number are double and the new one is greater or equals to the existing one.
+     * @param prevVersionArg the existing version number
+     * @param newVersionArg the new version number
+     * @param notNumericErrKey I18N localization key
+     * @param newVerBadErrKey  I18N localization key
+     * @return true if OK
+     */
+    protected boolean checkVersion(final String prevVersionArg, 
+                                   final String newVersionArg,
+                                   final String notNumericErrKey,
+                                   final String newVerBadErrKey)
+    {
+        try
+        {
+            double prevVersion = Double.parseDouble(prevVersionArg);
+            double newVersion  = Double.parseDouble(newVersionArg);
+            if (prevVersion > newVersion)
+            {
+                UIRegistry.showLocalizedError(newVerBadErrKey, newVersionArg, prevVersionArg);
+                return false;
+            } 
+            return true;
+            
+        } catch (NumberFormatException ex)
+        {
+            UIRegistry.showLocalizedError(notNumericErrKey);
+        }
+        
         return false;
     }
 
