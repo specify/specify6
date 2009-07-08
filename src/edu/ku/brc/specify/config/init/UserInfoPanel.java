@@ -19,7 +19,6 @@
 */
 package edu.ku.brc.specify.config.init;
 
-import static edu.ku.brc.ui.UIHelper.createDuplicateJGoodiesDef;
 import static edu.ku.brc.ui.UIHelper.createI18NFormLabel;
 
 import javax.swing.JButton;
@@ -33,7 +32,6 @@ import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.util.Pair;
 
 /**
  * @author rod
@@ -122,7 +120,6 @@ public class UserInfoPanel extends GenericFormPanel
             String dbUsername  = properties.getProperty("dbUserName");
             String saUserName  = properties.getProperty("saUserName");
             String usrUserName = ((JTextField)comps.get("usrUsername")).getText();
-            System.out.println(usrUserName);
             
             if (usrUserName.equals(saUserName))
             {

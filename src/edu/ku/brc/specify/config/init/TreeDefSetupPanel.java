@@ -42,9 +42,10 @@ import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JLabel;
+import javax.swing.JEditorPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
@@ -65,6 +66,7 @@ import edu.ku.brc.specify.config.DisciplineType.STD_DISCIPLINES;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.StorageTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -82,7 +84,7 @@ public class TreeDefSetupPanel extends BaseSetupPanel implements SetupPanelIFace
     protected JTable                           table;
     protected DefaultTableModel                model;
     protected JComboBox                        directionCBX;
-    protected JLabel                           fullnameDisplayTxt;
+    protected JEditorPane                      fullnameDisplayTxt;
     protected DisciplinePanel                  disciplinePanel;
     
     protected Vector<TreeDefRow>               treeDefList = new Vector<TreeDefRow>();
@@ -124,10 +126,12 @@ public class TreeDefSetupPanel extends BaseSetupPanel implements SetupPanelIFace
 
             
             table              = new JTable(model);
-            directionCBX       = new JComboBox(new String[] {getResourceString("FORWARD"), getResourceString("REVERSE")});
-            fullnameDisplayTxt = new JLabel();
+            directionCBX       = UIHelper.createComboBox(new String[] {getResourceString("FORWARD"), getResourceString("REVERSE")});
+            fullnameDisplayTxt = new JEditorPane();
             fullnameDisplayTxt.setBackground(Color.WHITE);
             fullnameDisplayTxt.setOpaque(true);
+            fullnameDisplayTxt.setContentType( "text/html" );
+            fullnameDisplayTxt.setEditable(false);
             
             table.setRowSelectionAllowed(false);
             table.setColumnSelectionAllowed(false);
@@ -141,22 +145,22 @@ public class TreeDefSetupPanel extends BaseSetupPanel implements SetupPanelIFace
                 }
             });
             
-           
-            CellConstraints cc = new CellConstraints();
-            PanelBuilder    pb = new PanelBuilder(new FormLayout("p,2px,p,f:p:g", "p,4px,min(p;250px),4px,p,4px,p"), this);
+            JScrollPane     spex = new JScrollPane(fullnameDisplayTxt, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+            CellConstraints cc   = new CellConstraints();
+            PanelBuilder    pb   = new PanelBuilder(new FormLayout("p,2px,p,250px,f:p:g", "p,4px,min(p;250px),4px,p,4px,65px,2px,p"), this);
             
             JScrollPane sp = createScrollPane(table);
             sp.getViewport().setBackground(Color.WHITE);
             
             String lbl = getLocalizedMessage(descKey, classTitle);
             pb.add(createLabel(lbl, SwingConstants.CENTER), cc.xyw(1, 1, 4));
-            pb.add(sp, cc.xyw(1, 3, 4));
+            pb.add(sp, cc.xyw(1, 3, 5));
             
             pb.add(createI18NFormLabel("DIRECTION"), cc.xy(1, 5));
             pb.add(directionCBX, cc.xy(3, 5));
             
             pb.add(createI18NFormLabel("EXAMPLE"), cc.xy(1, 7));
-            pb.add(fullnameDisplayTxt, cc.xyw(3, 7, 2));
+            pb.add(spex, cc.xywh(3, 7, 2, 3));
             
             makeTableHeadersCentered(table, true);
             
