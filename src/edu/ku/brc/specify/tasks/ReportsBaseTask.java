@@ -89,7 +89,9 @@ import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpAppResource;
+import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpReport;
+import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.tasks.subpane.LabelsPane;
 import edu.ku.brc.specify.tasks.subpane.qb.QueryBldrPane;
 import edu.ku.brc.specify.tasks.subpane.qb.SearchResultReportServiceInfo;
@@ -367,14 +369,23 @@ public class ReportsBaseTask extends BaseTask
                 if (rep != null)
                 {
                     rep.forceLoad();
-                    if (rep.getQuery().getContextTableId() != -1)
+                    if (rep.getReportObject() instanceof SpQuery)
                     {
-                        tblContext = new Integer(rep.getQuery().getContextTableId());
-                        //XXX tableid property needs to be -1 (I think) for report running routines
-                        //to distinguish SpReports from other reports. So need a duplicate way to know tableid
-                        //This is dumb. Report running code needs to be re-thunk.
-                        cmdAction.getProperties().put("tblcontext", tblContext); 
-                        cmdAction.getProperties().put("queryid", rep.getQuery().getId());
+                    	SpQuery q = (SpQuery )rep.getReportObject();
+                    	if (q.getContextTableId() != -1)
+                    	{
+                    		tblContext = new Integer(q.getContextTableId());
+                    		//XXX tableid property needs to be -1 (I think) for report running routines
+                    		//to distinguish SpReports from other reports. So need a duplicate way to know tableid
+                    		//This is dumb. Report running code needs to be re-thunk.
+                    		cmdAction.getProperties().put("tblcontext", tblContext); 
+                    		cmdAction.getProperties().put("queryid", q.getId());
+                    	}
+                    }
+                    else if (rep.getReportObject() instanceof Workbench)
+                    {
+                    	cmdAction.getProperties().put("tblcontext", Workbench.getClassTableId());
+                    	cmdAction.getProperties().put("workbenchid", rep.getReportObject().getId());
                     }
                     repRS  = new RecordSet();
                     repRS.initialize();

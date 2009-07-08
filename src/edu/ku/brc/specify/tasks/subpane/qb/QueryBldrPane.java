@@ -83,6 +83,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.MouseInputAdapter;
 
+import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.util.JRLoader;
@@ -129,12 +130,14 @@ import edu.ku.brc.specify.datamodel.SpQueryField;
 import edu.ku.brc.specify.datamodel.SpReport;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Treeable;
+import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.dbsupport.RecordTypeCodeBuilder;
 import edu.ku.brc.specify.tasks.ExportMappingTask;
 import edu.ku.brc.specify.tasks.QueryTask;
 import edu.ku.brc.specify.tasks.ReportsBaseTask;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
 import edu.ku.brc.specify.tasks.subpane.JasperCompilerRunnable;
+import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchJRDataSource;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
@@ -2230,25 +2233,40 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      */
     public static void runReport(final SpReport report, final String title, final RecordSetIFace rs)
     {
-        UsageTracker.incrUsageCount("QB.RunReport." + report.getQuery().getContextName());
-        QueryTask qt = (QueryTask )ContextMgr.getTaskByClass(QueryTask.class);
-        final TableTree tblTree;
-        final Hashtable<String, TableTree> ttHash;
-        if (qt != null)
+        //XXX This is now also used to run Workbench reports. Really should extract the general stuff out
+    	//to a higher level...
+    	boolean isQueryBuilderRep = report.getReportObject() instanceof SpQuery;
+        if (isQueryBuilderRep)
         {
-            Pair<TableTree, Hashtable<String, TableTree>> trees = qt.getTableTrees();
-            tblTree = trees.getFirst();
-            ttHash = trees.getSecond();
+        	UsageTracker.incrUsageCount("QB.RunReport." + report.getQuery().getContextName());
         }
         else
         {
-            log.error("Cound not find the Query task when running report " + report.getName());
-            //blow up
-            throw new RuntimeException("Cound not find the Query task when running report " + report.getName());
+        	UsageTracker.incrUsageCount("WB.RunReport");
+        }
+        TableTree tblTree = null;
+        Hashtable<String, TableTree> ttHash = null;
+        QueryParameterPanel qpp = null;
+        if (isQueryBuilderRep)
+        {
+        	UsageTracker.incrUsageCount("QB.RunReport." + report.getQuery().getContextName());
+        	QueryTask qt = (QueryTask )ContextMgr.getTaskByClass(QueryTask.class);
+        	if (qt != null)
+        	{
+        		Pair<TableTree, Hashtable<String, TableTree>> trees = qt.getTableTrees();
+        		tblTree = trees.getFirst();
+        		ttHash = trees.getSecond();
+        	}
+        	else
+        	{
+        		log.error("Could not find the Query task when running report " + report.getName());
+        		//blow up
+        		throw new RuntimeException("Could not find the Query task when running report " + report.getName());
+        	}
+            qpp = new QueryParameterPanel();
+            qpp.setQuery(report.getQuery(), tblTree, ttHash);
         }
         boolean go = true;
-        QueryParameterPanel qpp = new QueryParameterPanel();
-        qpp.setQuery(report.getQuery(), tblTree, ttHash);
         try
         {
             JasperCompilerRunnable jcr = new JasperCompilerRunnable(null, report.getName(), null);
@@ -2260,10 +2278,11 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             //if isCompileRequired() is still true, then an error probably occurred compiling the report.
             JasperReport jr = !jcr.isCompileRequired() ? (JasperReport) JRLoader.loadObject(jcr.getCompiledFile()) : null;
             ReportParametersPanel rpp = jr != null ? new ReportParametersPanel(jr, true) : null;
-            if (rs == null && (qpp.getHasPrompts() || (rpp != null && rpp.getParamCount() > 0)))
+            JRDataSource src;
+            if (rs == null && ((qpp != null && qpp.getHasPrompts()) || (rpp != null && rpp.getParamCount() > 0)))
             {
                 Component pane = null;
-                if (qpp.getHasPrompts() && rpp != null && rpp.getParamCount() > 0)
+                if (qpp != null && qpp.getHasPrompts() && rpp != null && rpp.getParamCount() > 0)
                 {
                     pane = new JTabbedPane();
                     ((JTabbedPane) pane).addTab(UIRegistry
@@ -2271,7 +2290,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     ((JTabbedPane) pane).addTab(UIRegistry
                             .getResourceString("QB_REP_RUN_PARAM_TAB_TITLE"), rpp);
                 }
-                else if (qpp.getHasPrompts())
+                else if (qpp != null && qpp.getHasPrompts())
                 {
                     pane = qpp;
                 }
@@ -2293,45 +2312,54 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             }
             if (go)
             {
-                TableQRI rootQRI = null;
-                int cId = report.getQuery().getContextTableId();
-                for (TableTree tt : ttHash.values())
+                if (isQueryBuilderRep)
                 {
-                    if (cId == tt.getTableInfo().getTableId())
-                    {
-                        rootQRI = tt.getTableQRI();
-                        break;
-                    }
-                }
-                Vector<QueryFieldPanel> qfps = new Vector<QueryFieldPanel>(qpp.getFields());
-                for (int f = 0; f < qpp.getFields(); f++)
-                {
-                    qfps.add(qpp.getField(f));
-                }
+                	TableQRI rootQRI = null;
+                	int cId = report.getQuery().getContextTableId();
+                	for (TableTree tt : ttHash.values())
+                	{
+                		if (cId == tt.getTableInfo().getTableId())
+                		{
+                			rootQRI = tt.getTableQRI();
+                			break;
+                		}
+                	}
+                	Vector<QueryFieldPanel> qfps = new Vector<QueryFieldPanel>(qpp.getFields());
+                	for (int f = 0; f < qpp.getFields(); f++)
+                	{
+                		qfps.add(qpp.getField(f));
+                	}
 
-                HQLSpecs sql = null;
+                	HQLSpecs sql = null;
 
-                // XXX need to allow modification of SelectDistinct(etc) ???
-                boolean includeRecordIds = true;
+                	// XXX need to allow modification of SelectDistinct(etc) ???
+                	boolean includeRecordIds = true;
 
-                try
-                {
-                    //XXX Is it safe to assume that query is not an export query? 
-                	sql = QueryBldrPane.buildHQL(rootQRI, !includeRecordIds, qfps, tblTree, rs, 
+                	try
+                	{
+                		//XXX Is it safe to assume that query is not an export query? 
+                		sql = QueryBldrPane.buildHQL(rootQRI, !includeRecordIds, qfps, tblTree, rs, 
                     		report.getQuery().getSearchSynonymy() == null ? false : report.getQuery().getSearchSynonymy(),
                     				false, null);
-                }
-                catch (Exception ex)
-                {
-                    UsageTracker.incrHandledUsageCount();
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryBldrPane.class, ex);
-                    UIRegistry.getStatusBar().setErrorMessage(ex.getLocalizedMessage(), ex);
-                    return;
-                }
-                QBDataSource src = new QBDataSource(sql.getHql(), sql.getArgs(), sql
+                	}
+                	catch (Exception ex)
+                	{
+                		UsageTracker.incrHandledUsageCount();
+                		edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryBldrPane.class, ex);
+                		UIRegistry.getStatusBar().setErrorMessage(ex.getLocalizedMessage(), ex);
+                		return;
+                	}
+                
+                	src = new QBDataSource(sql.getHql(), sql.getArgs(), sql
                         .getSortElements(), getColumnInfo(qfps, true, rootQRI.getTableInfo()),
                         includeRecordIds, report.getRepeats());
-                src.startDataAcquisition();
+                	((QBDataSource )src).startDataAcquisition();
+                }
+                else 
+                {
+                	src = new WorkbenchJRDataSource((Workbench )report.getReportObject(), true);
+                }
+                
                 final CommandAction cmd = new CommandAction(ReportsBaseTask.REPORTS,
                         ReportsBaseTask.PRINT_REPORT, src);
                 cmd.setProperty("title", title);

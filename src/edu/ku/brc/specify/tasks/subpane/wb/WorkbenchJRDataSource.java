@@ -51,11 +51,11 @@ public class WorkbenchJRDataSource implements JRDataSource
      * Constructor with Workbench.
      * @param workbench the workbench
      */
-    public WorkbenchJRDataSource(final Workbench workbench)
+    public WorkbenchJRDataSource(final Workbench workbench, final boolean useLongFieldNames)
     {
         this.workbench = workbench;
         workbenchRows = workbench.getWorkbenchRowsAsList();
-        createMap();
+        createMap(useLongFieldNames);
     }
 
     /**
@@ -63,24 +63,30 @@ public class WorkbenchJRDataSource implements JRDataSource
      * @param workbench the workbench
      * @param workbenchRows the rows to use
      */
-    public WorkbenchJRDataSource(final Workbench workbench, final List<WorkbenchRow> workbenchRows)
+    public WorkbenchJRDataSource(final Workbench workbench, final List<WorkbenchRow> workbenchRows,
+    		final boolean useLongFieldNames)
     {
         this.workbench = workbench;
         this.workbenchRows = workbenchRows;
         Collections.sort(workbenchRows);
 
-        createMap();
+        createMap(useLongFieldNames);
     }
 
     /**
      * Maps the name to the column index.
      */
-    protected void createMap()
+    protected void createMap(final boolean useLongFieldNames)
     {
         for (WorkbenchTemplateMappingItem wbtmi : workbench.getWorkbenchTemplate()
                 .getWorkbenchTemplateMappingItems())
         {
-            map.put(wbtmi.getFieldName(), wbtmi.getViewOrder());
+            String fldName = wbtmi.getFieldName();
+            if (useLongFieldNames) 
+            {
+            	fldName = wbtmi.getTableName() + "." + fldName;
+            }
+        	map.put(fldName, wbtmi.getViewOrder());
             //System.out.println(wbtmi.getFieldName() + ", " + wbtmi.getViewOrder());
         }
     }

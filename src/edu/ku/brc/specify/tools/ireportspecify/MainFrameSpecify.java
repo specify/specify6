@@ -156,7 +156,7 @@ public class MainFrameSpecify extends MainFrame
         try
         {
             // XXX Added userId condition to be consistent with QueryTask, but, Users will probably want to share queries??
-            String sqlStr = "From SpQuery where specifyUserId = "
+            String sqlStr = "from SpQuery where specifyUserId = "
                     + AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getSpecifyUserId();
             List<?> qs = session.createQuery(sqlStr, false).list();
             Collections.sort(qs, new Comparator<Object>() {
@@ -170,9 +170,17 @@ public class MainFrameSpecify extends MainFrame
                     return o1.toString().compareTo(o2.toString());
                 }
             });
+            SpQuery prevQ = null;
             for (Object q : qs)
             {
-                addSpQBConn((SpQuery )q);
+                SpQuery spq = (SpQuery )q;
+            	//list may contain duplicates.
+                if (prevQ == null || !prevQ.getId().equals(spq.getId()))
+            	{
+            		addSpQBConn((SpQuery )q);
+            	}
+            	prevQ = spq;
+                
             }
         }
         catch (Exception e)
@@ -1360,6 +1368,7 @@ public class MainFrameSpecify extends MainFrame
      * @see it.businesslogic.ireport.gui.MainFrame#newWizard()
      */
     @Override
+    @SuppressWarnings("unchecked") //IReport code doesn't use generic params.
     public Report newWizard()
     {
         if (AppContextMgr.isSecurityOn())
@@ -1374,7 +1383,8 @@ public class MainFrameSpecify extends MainFrame
             }
         }
         List<SpJRIReportConnection> spConns = new Vector<SpJRIReportConnection>();
-        for (Object conn : this.getConnections())
+        Vector cons = this.getConnections();
+        for (Object conn : cons)
         {
             if (conn instanceof SpJRIReportConnection)
             {

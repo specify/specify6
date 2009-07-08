@@ -2245,9 +2245,21 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         session.close();
         
         String actionStr = cmdAction.getPropertyAsString("action");
-        if (StringUtils.isNotEmpty(actionStr) && actionStr.equals("PrintBasicLabel")) // Research into JRDataSources 
+        if (StringUtils.isNotEmpty(actionStr)) 
         {
-            if (askUserForReportProps())
+            boolean isBasicLabel = actionStr.equals("PrintBasicLabel");
+        	boolean go = false;
+        	if (isBasicLabel)
+            {
+        		go = askUserForReportProps();
+            }
+        	else
+        	{
+        		//XXX general prop getting stuff will be handled in ReportTask???
+        		go = true;        		
+        	}
+        	
+        	if (go)
             {
                 RecordSet rs = new RecordSet();
                 rs.initialize();
@@ -2258,21 +2270,29 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 session.attach(workbench);
 
                 workbench.forceLoad();
-                WorkbenchJRDataSource dataSrc = new WorkbenchJRDataSource(workbench, workbench.getWorkbenchRowsAsList());
+                WorkbenchJRDataSource dataSrc = new WorkbenchJRDataSource(workbench, workbench.getWorkbenchRowsAsList(), !isBasicLabel);
                 session.close();
 
                 final CommandAction cmd = new CommandAction(ReportsBaseTask.REPORTS, ReportsBaseTask.PRINT_REPORT, dataSrc);
-                cmd.setProperty("title", "Labels");
-                cmd.setProperty("file", "basic_label.jrxml");
-                // params hard-coded for harvard demo:
-                cmd.setProperty("params", "title="
+                
+                if (isBasicLabel)
+                {
+                	cmd.setProperty("title", "Labels");
+                	cmd.setProperty("file", "basic_label.jrxml");
+                	// params hard-coded for harvard demo:
+                	cmd.setProperty("params", "title="
                         + AppPreferences.getLocalPrefs().get("reportProperties.title", "")
                         + ";subtitle="
                         + AppPreferences.getLocalPrefs().get("reportProperties.subTitle", "")
                         + ";footer="
                         + AppPreferences.getLocalPrefs().get("reportProperties.footer", ""));
+                    cmd.setProperty("icon", IconManager.getIcon("Labels16"));
+                }
+                else
+                {
+                	//XXX icon and file props??? 
+                }
                 cmd.setProperty(NavBoxAction.ORGINATING_TASK, this);
-                cmd.setProperty("icon", IconManager.getIcon("Labels16"));
                 
                 SwingUtilities.invokeLater(new Runnable()
                 {
