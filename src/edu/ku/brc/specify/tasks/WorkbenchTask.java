@@ -1887,7 +1887,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                          int count = 1;
                          // Adjust paint increment for number of rows in DataSet
                          int mod;
-                         if (rowCount < 100) mod = 10;
+                         if (rowCount < 50) mod = 1;
+                         else if (rowCount < 100) mod = 10;
                          else if (rowCount < 500) mod = 20;
                          else  if (rowCount < 1000) mod = 40;
                          else mod = 50;

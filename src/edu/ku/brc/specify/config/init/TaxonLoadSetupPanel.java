@@ -50,6 +50,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.event.DocumentEvent;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -214,7 +215,7 @@ public class TaxonLoadSetupPanel extends BaseSetupPanel
         if (fileName.isEmpty())
         {
             TaxonFileDesc tfd = (TaxonFileDesc)fileCBX.getSelectedItem();
-            if (tfd != null)
+            if (tfd != null && FilenameUtils.isExtension(tfd.getFileName().toLowerCase(), "xls"))
             {
                 fileName = tfd.getFileName();
             }
@@ -350,7 +351,7 @@ public class TaxonLoadSetupPanel extends BaseSetupPanel
         if (!otherTF.isFocusOwner())
         {
             String filePath = otherTF.getText();
-            if (!filePath.isEmpty())
+            if (!filePath.isEmpty() && FilenameUtils.isExtension(filePath.toLowerCase(), "xls"))
             {
                 File f = new File(filePath);
                 return f.exists();
