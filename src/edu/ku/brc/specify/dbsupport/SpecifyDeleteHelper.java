@@ -46,9 +46,7 @@ import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Accession;
-import edu.ku.brc.specify.datamodel.AddressOfRecord;
 import edu.ku.brc.specify.datamodel.Agent;
-import edu.ku.brc.specify.datamodel.Borrow;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
@@ -190,6 +188,7 @@ public class SpecifyDeleteHelper
         
         getSubTables(root, cls, id, sqlStr, delStr, 0, null);
         
+        debug = false;
         if (debug)
         {
             System.out.println("\n------------------------------------------\n");
@@ -274,16 +273,10 @@ public class SpecifyDeleteHelper
         
         Hashtable<String, Boolean> inUseHash = inUseHashArg == null && level == 1 ? new Hashtable<String, Boolean>() : inUseHashArg;
         
-        if (tblInfo.getTableId() == 1)
-        {
-            int x = 0;
-            x++;
-        }
-        
         for (Method method : cls.getMethods())
         {
             String methodName = method.getName();
-            System.out.println(methodName);
+            //System.out.println(methodName);
             
             // Skip if it is a not a getter
             if (!methodName.startsWith("get"))
@@ -297,18 +290,6 @@ public class SpecifyDeleteHelper
                 continue;
             }
 
-            if (methodName.equals("getPickListItems"))
-            {
-                int x = 0;
-                x++;
-            }
-
-            if (StringUtils.contains(methodName, "TaxonCitation"))
-            {
-                int x = 0;
-                x++;
-            }
-            
             if (methodName.endsWith("TreeDef"))
             {
                 if (doTrees)
@@ -533,21 +514,11 @@ public class SpecifyDeleteHelper
         
         for (DBTableInfo ti : DBTableIdMgr.getInstance().getTables())
         {
-            if (ti.getTableId() == 75 && tblInfo.getTableId() == 4)
-            {
-                int x = 0;
-                x++;
-            }
             if (ti != tblInfo)
             {
                 for (DBRelationshipInfo ri : ti.getRelationships())
                 {
-                    /*System.out.println(ri.getName());
-                    if (ri.getDataClass() == Taxon.class)
-                    {
-                        int x = 0;
-                        x++;
-                    }*/
+                    /*System.out.println(ri.getName());*/
 
                     if (ri.getDataClass() != Agent.class)
                     {
@@ -566,20 +537,12 @@ public class SpecifyDeleteHelper
                                 System.out.println(sql);
                             }
                             
-                            if (ti.getTableId() == Borrow.getClassTableId() ||
-                                ti.getTableId() == AddressOfRecord.getClassTableId())
-                            {
-                                int x= 0;
-                                x++;
-                            }
                             if (inUseHash != null) inUseHash.put(ti.getClassName(), true);
                             getSubTables(child, ti.getClassObj(), id, sql, delSql, level+1, inUseHash);
                             
                         } else if (ri.getDataClass() == tblInfo.getClassObj() && !hashOK && StringUtils.isEmpty(ri.getOtherSide()))
                         {
                             if (debug) System.out.println("Skipping "+ti.getClassObj().getSimpleName()+" for "+tblInfo.getClassObj().getSimpleName());
-                            int x = 0;
-                            x++;
                         }
                     } else
                     {
@@ -714,12 +677,6 @@ public class SpecifyDeleteHelper
             return;
         }
         
-        if (si.getTableInfo().getTableId() == 1)
-        {
-            int x = 0;
-            x++;
-        }
-        
         if (debugUpdate)
         {  
             printLevel(level);
@@ -782,14 +739,6 @@ public class SpecifyDeleteHelper
                             {
                                 String delSql = si.getDelSql() + itemId;
 
-                                //System.err.println(delSql);
-                                /*if (delSql.indexOf("FROM discipline") > -1)
-                                {
-                                    System.err.println(delSql);
-                                    int x= 0;
-                                    x++;
-                                }*/
-                                
                                 if (StringUtils.contains(si.getDelSql(), "XXX"))
                                 {
                                     delSql = StringUtils.replace(si.getDelSql(), "XXX", Integer.toString(itemId));

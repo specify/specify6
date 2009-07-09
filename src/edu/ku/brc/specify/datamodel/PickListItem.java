@@ -111,12 +111,12 @@ public class PickListItem extends DataModelObjBase implements PickListItemIFace,
     @Id
     @GeneratedValue
     @Column(name = "PickListItemID", unique = false, nullable = false, insertable = true, updatable = true)
-    protected Integer getPickListItemId()
+    public Integer getPickListItemId()
     {
         return pickListItemId;
     }
 
-    protected void setPickListItemId(Integer pickListItemId)
+    public void setPickListItemId(Integer pickListItemId)
     {
         this.pickListItemId = pickListItemId;
     }
