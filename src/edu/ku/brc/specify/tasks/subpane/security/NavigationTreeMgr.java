@@ -121,7 +121,15 @@ public class NavigationTreeMgr
             Object                  object  = wrapper.getDataObj();
             SpecifyUser             user    = (SpecifyUser) object;
             
-            result = user.getUserGroupCount() > 1; 
+            int cnt = user.getUserGroupCount();
+            if (cnt > 1)
+            {
+                result = cnt > 2 || !user.isInAdminGroup();
+                
+            } else
+            {
+                result = true;
+            }
             
         } catch (final Exception e1)
         {

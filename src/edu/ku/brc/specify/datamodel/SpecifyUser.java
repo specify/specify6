@@ -660,6 +660,21 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
     }
     
     /**
+     * @return true if the user is in the admin group
+     */
+    public boolean isInAdminGroup() 
+    {
+        for (SpPrincipal principal : getSpPrincipals())
+        {
+            if (AdminPrincipal.class.getCanonicalName().equals(principal.getGroupSubClass()))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
      * Returns the user principal, that is, that principal that is from the sub-class UserPrincipal.
      * This principal represents the user (as opposed as a user group) in JAAS 
      * @return the user principal
