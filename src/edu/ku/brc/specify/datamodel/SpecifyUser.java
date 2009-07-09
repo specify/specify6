@@ -662,6 +662,7 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
     /**
      * @return true if the user is in the admin group
      */
+    @Transient
     public boolean isInAdminGroup() 
     {
         for (SpPrincipal principal : getSpPrincipals())
