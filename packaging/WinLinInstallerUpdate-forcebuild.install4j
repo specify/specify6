@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<install4j version="4.2.2" transformSequenceNumber="2">
+<install4j version="4.2.3" transformSequenceNumber="2">
   <directoryPresets config="../InstallerFiles/images" />
-  <application name="Specify" distributionSourceDir="" applicationId="5397-6897-2502-8965" mediaDir="../MediaUpdate" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}_Beta_update" compression="6" lzmaCompression="false" pack200Compression="false" excludeSignedFromPacking="true" keepModificationTimes="false" missingFilesStrategy="warn" shortName="Specify" publisher="Biodiversity Research Center, University of Kansas" publisherWeb="http://www.specifysoftware.org" version="6.2.66" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="true" macSignature="????" installerName="" javaMinVersion="1.6" javaMaxVersion="1.6" allowBetaVM="false" jdkMode="runtimeJre" jdkName="">
+  <application name="Specify" distributionSourceDir="" applicationId="5397-6897-2502-8965" mediaDir="../MediaUpdate" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}_Beta_update" compression="6" lzmaCompression="false" pack200Compression="false" excludeSignedFromPacking="true" keepModificationTimes="false" missingFilesStrategy="warn" shortName="Specify" publisher="Biodiversity Research Center, University of Kansas" publisherWeb="http://www.specifysoftware.org" version="6.2.73" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="true" macSignature="????" installerName="" javaMinVersion="1.6" javaMaxVersion="1.6" allowBetaVM="false" jdkMode="runtimeJre" jdkName="">
     <languages skipLanguageSelection="false" languageSelectionInPrincipalLanguage="false">
       <principalLanguage id="en" customLocalizationFile="" />
       <additionalLanguages />
@@ -43,16 +43,19 @@
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
-      <java mainClass="edu.ku.brc.specify.Specify" vmParameters="-Xmx768m" arguments="-Dappdir=.." allowVMPassthroughParameters="true" preferredVM="">
+      <java mainClass="edu.ku.brc.specify.Specify" vmParameters="-Xmx768m" arguments="-Dappdir=.." allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
         <classPath>
           <archive location="specify.jar" failOnError="true" />
           <scanDirectory location="libs" failOnError="true" />
           <scanDirectory location="hibernate_libs" failOnError="true" />
           <scanDirectory location="iReportLibs" failOnError="true" />
+          <scanDirectory location="wwlib" failOnError="true" />
           <archive location="non-mac-application-adapter.jar" failOnError="true" />
           <directory location="help" failOnError="false" />
         </classPath>
-        <nativeLibraryDirectories />
+        <nativeLibraryDirectories>
+          <directory name="wwlib" />
+        </nativeLibraryDirectories>
       </java>
       <includedFiles />
       <unextractableFiles />
@@ -70,15 +73,19 @@
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
-      <java mainClass="edu.ku.brc.specify.utilapps.BuildSampleDatabase" vmParameters="-Xmx512m" arguments="-Dappdir=.." allowVMPassthroughParameters="true" preferredVM="">
+      <java mainClass="edu.ku.brc.specify.utilapps.BuildSampleDatabase" vmParameters="-Xmx512m" arguments="-Dappdir=.." allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
         <classPath>
           <archive location="specify.jar" failOnError="true" />
           <scanDirectory location="libs" failOnError="true" />
           <scanDirectory location="hibernate_libs" failOnError="true" />
           <scanDirectory location="iReportLibs" failOnError="true" />
+          <scanDirectory location="wwlib" failOnError="true" />
           <archive location="non-mac-application-adapter.jar" failOnError="true" />
+          <directory location="help" failOnError="false" />
         </classPath>
-        <nativeLibraryDirectories />
+        <nativeLibraryDirectories>
+          <directory name="wwlib" />
+        </nativeLibraryDirectories>
       </java>
       <includedFiles />
       <unextractableFiles />
@@ -96,15 +103,19 @@
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
-      <java mainClass="edu.ku.brc.specify.tools.schemalocale.SchemaLocalizerFrame" vmParameters="-Xmx512m" arguments="-Dappdir=.." allowVMPassthroughParameters="true" preferredVM="">
+      <java mainClass="edu.ku.brc.specify.tools.schemalocale.SchemaLocalizerFrame" vmParameters="-Xmx512m" arguments="-Dappdir=.." allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
         <classPath>
           <archive location="specify.jar" failOnError="true" />
           <scanDirectory location="libs" failOnError="true" />
           <scanDirectory location="hibernate_libs" failOnError="true" />
           <scanDirectory location="iReportLibs" failOnError="true" />
+          <scanDirectory location="wwlib" failOnError="true" />
           <archive location="non-mac-application-adapter.jar" failOnError="true" />
+          <directory location="help" failOnError="false" />
         </classPath>
-        <nativeLibraryDirectories />
+        <nativeLibraryDirectories>
+          <directory name="wwlib" />
+        </nativeLibraryDirectories>
       </java>
       <includedFiles />
       <unextractableFiles />
@@ -122,15 +133,19 @@
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
-      <java mainClass="edu.ku.brc.specify.tools.ireportspecify.MainFrameSpecify" vmParameters="-Xmx512m" arguments="-Dappdir=.." allowVMPassthroughParameters="true" preferredVM="">
+      <java mainClass="edu.ku.brc.specify.tools.ireportspecify.MainFrameSpecify" vmParameters="-Xmx512m" arguments="-Dappdir=.." allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
         <classPath>
           <archive location="specify.jar" failOnError="true" />
           <scanDirectory location="libs" failOnError="true" />
           <scanDirectory location="hibernate_libs" failOnError="true" />
           <scanDirectory location="iReportLibs" failOnError="true" />
+          <scanDirectory location="wwlib" failOnError="true" />
           <archive location="non-mac-application-adapter.jar" failOnError="true" />
+          <directory location="help" failOnError="false" />
         </classPath>
-        <nativeLibraryDirectories />
+        <nativeLibraryDirectories>
+          <directory name="wwlib" />
+        </nativeLibraryDirectories>
       </java>
       <includedFiles />
       <unextractableFiles />
@@ -148,15 +163,19 @@
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
-      <java mainClass="edu.ku.brc.specify.conversion.SpecifyDBConverter" vmParameters="-Xmx768m" arguments="-Dappdir=.." allowVMPassthroughParameters="true" preferredVM="">
+      <java mainClass="edu.ku.brc.specify.conversion.SpecifyDBConverter" vmParameters="-Xmx768m" arguments="-Dappdir=.." allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
         <classPath>
           <archive location="specify.jar" failOnError="true" />
           <scanDirectory location="libs" failOnError="true" />
           <scanDirectory location="hibernate_libs" failOnError="true" />
           <scanDirectory location="iReportLibs" failOnError="true" />
+          <scanDirectory location="wwlib" failOnError="true" />
           <archive location="non-mac-application-adapter.jar" failOnError="true" />
+          <directory location="help" failOnError="false" />
         </classPath>
-        <nativeLibraryDirectories />
+        <nativeLibraryDirectories>
+          <directory name="wwlib" />
+        </nativeLibraryDirectories>
       </java>
       <includedFiles />
       <unextractableFiles />
@@ -174,15 +193,19 @@
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
-      <java mainClass="edu.ku.brc.specify.conversion.ConvertVerifier" vmParameters="-Xmx512m" arguments="-Dappdir=.." allowVMPassthroughParameters="true" preferredVM="">
+      <java mainClass="edu.ku.brc.specify.conversion.ConvertVerifier" vmParameters="-Xmx512m" arguments="-Dappdir=.." allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
         <classPath>
           <archive location="specify.jar" failOnError="true" />
           <scanDirectory location="libs" failOnError="true" />
           <scanDirectory location="hibernate_libs" failOnError="true" />
           <scanDirectory location="iReportLibs" failOnError="true" />
+          <scanDirectory location="wwlib" failOnError="true" />
           <archive location="non-mac-application-adapter.jar" failOnError="true" />
+          <directory location="help" failOnError="false" />
         </classPath>
-        <nativeLibraryDirectories />
+        <nativeLibraryDirectories>
+          <directory name="wwlib" />
+        </nativeLibraryDirectories>
       </java>
       <includedFiles />
       <unextractableFiles />
@@ -200,16 +223,19 @@
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
-      <java mainClass="edu.ku.brc.specify.config.init.SpecifyDBSetupWizardFrame" vmParameters="-Xmx1024m" arguments="-Dappdir=.." allowVMPassthroughParameters="true" preferredVM="">
+      <java mainClass="edu.ku.brc.specify.config.init.SpecifyDBSetupWizardFrame" vmParameters="-Xmx1024m" arguments="-Dappdir=.." allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
         <classPath>
           <archive location="specify.jar" failOnError="true" />
           <scanDirectory location="libs" failOnError="true" />
           <scanDirectory location="hibernate_libs" failOnError="true" />
           <scanDirectory location="iReportLibs" failOnError="true" />
+          <scanDirectory location="wwlib" failOnError="true" />
           <archive location="non-mac-application-adapter.jar" failOnError="true" />
           <directory location="help" failOnError="false" />
         </classPath>
-        <nativeLibraryDirectories />
+        <nativeLibraryDirectories>
+          <directory name="wwlib" />
+        </nativeLibraryDirectories>
       </java>
       <includedFiles />
       <unextractableFiles />
@@ -227,16 +253,19 @@
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
-      <java mainClass="edu.ku.brc.specify.Specify" vmParameters="-Xmx1024m" arguments="-Dappdir=.." allowVMPassthroughParameters="true" preferredVM="">
+      <java mainClass="edu.ku.brc.specify.Specify" vmParameters="-Xmx1024m" arguments="-Dappdir=.." allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
         <classPath>
           <archive location="specify.jar" failOnError="true" />
           <scanDirectory location="libs" failOnError="true" />
           <scanDirectory location="hibernate_libs" failOnError="true" />
           <scanDirectory location="iReportLibs" failOnError="true" />
+          <scanDirectory location="wwlib" failOnError="true" />
           <archive location="non-mac-application-adapter.jar" failOnError="true" />
           <directory location="help" failOnError="false" />
         </classPath>
-        <nativeLibraryDirectories />
+        <nativeLibraryDirectories>
+          <directory name="wwlib" />
+        </nativeLibraryDirectories>
       </java>
       <includedFiles />
       <unextractableFiles />
@@ -254,16 +283,19 @@
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
-      <java mainClass="edu.ku.brc.specify.BackupAndRestoreApp" vmParameters="-Xmx768m" arguments="-Dappdir=.." allowVMPassthroughParameters="true" preferredVM="">
+      <java mainClass="edu.ku.brc.specify.BackupAndRestoreApp" vmParameters="-Xmx768m" arguments="-Dappdir=.." allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
         <classPath>
           <archive location="specify.jar" failOnError="true" />
           <scanDirectory location="libs" failOnError="true" />
           <scanDirectory location="hibernate_libs" failOnError="true" />
           <scanDirectory location="iReportLibs" failOnError="true" />
+          <scanDirectory location="wwlib" failOnError="true" />
           <archive location="non-mac-application-adapter.jar" failOnError="true" />
           <directory location="help" failOnError="false" />
         </classPath>
-        <nativeLibraryDirectories />
+        <nativeLibraryDirectories>
+          <directory name="wwlib" />
+        </nativeLibraryDirectories>
       </java>
       <includedFiles />
       <unextractableFiles />
@@ -281,16 +313,19 @@
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
-      <java mainClass="edu.ku.brc.specify.utilapps.RegisterApp" vmParameters="-Xmx768m" arguments="-Dappdir=.." allowVMPassthroughParameters="true" preferredVM="">
+      <java mainClass="edu.ku.brc.specify.utilapps.RegisterApp" vmParameters="-Xmx768m" arguments="-Dappdir=.." allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
         <classPath>
           <archive location="specify.jar" failOnError="true" />
           <scanDirectory location="libs" failOnError="true" />
           <scanDirectory location="hibernate_libs" failOnError="true" />
           <scanDirectory location="iReportLibs" failOnError="true" />
+          <scanDirectory location="wwlib" failOnError="true" />
           <archive location="non-mac-application-adapter.jar" failOnError="true" />
           <directory location="help" failOnError="false" />
         </classPath>
-        <nativeLibraryDirectories />
+        <nativeLibraryDirectories>
+          <directory name="wwlib" />
+        </nativeLibraryDirectories>
       </java>
       <includedFiles />
       <unextractableFiles />
@@ -298,8 +333,8 @@
         <scriptLines />
       </customScript>
     </launcher>
-    <launcher name="ImportFileSplitter" id="1238" external="false" excludeFromMenu="false" menuName="" icnsFile="../InstallerFiles/images/specify.icns" pngIcon16File="../InstallerFiles/images/specify16.png" pngIcon32File="../InstallerFiles/images/specify32.png" macServiceDependencies="" swtApp="false" fileset="">
-      <executable name="ImportFileSplitter" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="../" singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
+    <launcher name="ImportFileSplitter" id="1238" external="false" excludeFromMenu="false" menuName="" icnsFile="../InstallerFiles/images/specify.icns" pngIcon16File="../InstallerFiles/images/data_split16.png" pngIcon32File="../InstallerFiles/images/data_split32.png" macServiceDependencies="" swtApp="false" fileset="">
+      <executable name="ImportFileSplitter" type="1" iconSet="true" iconFile="../InstallerFiles/images/data_split.ico" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="../" singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
       <splashScreen show="true" autoOff="true" alwaysOnTop="false" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" java6SplashScreen="false">
@@ -308,15 +343,19 @@
           <versionLine x="330" y="260" text="Version: ${compiler:sys.version}" font="Arial" fontSize="12" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
-      <java mainClass="edu.ku.brc.specify.utilapps.ImportFileSplitter" vmParameters="-Xmx768m" arguments="-Dappdir=.. -Dcom.apple.macos.useSmallTabs=true -Dapple.laf.useScreenMenuBar=true -Xdock:icon=&quot;src/edu/ku/brc/specify/images/specify128.png&quot; -Dcom.apple.mrj.application.apple.menu.about.name=ImportFileSplitter" allowVMPassthroughParameters="true" preferredVM="">
+      <java mainClass="edu.ku.brc.specify.utilapps.ImportFileSplitter" vmParameters="-Xmx768m" arguments="-Dappdir=.. -Dcom.apple.macos.useSmallTabs=true -Dapple.laf.useScreenMenuBar=true -Xdock:icon=&quot;src/edu/ku/brc/specify/images/specify128.png&quot; -Dcom.apple.mrj.application.apple.menu.about.name=ImportFileSplitter" allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
         <classPath>
           <archive location="specify.jar" failOnError="true" />
           <scanDirectory location="libs" failOnError="true" />
           <scanDirectory location="hibernate_libs" failOnError="true" />
           <scanDirectory location="iReportLibs" failOnError="true" />
+          <scanDirectory location="wwlib" failOnError="true" />
+          <archive location="non-mac-application-adapter.jar" failOnError="true" />
           <directory location="help" failOnError="false" />
         </classPath>
-        <nativeLibraryDirectories />
+        <nativeLibraryDirectories>
+          <directory name="wwlib" />
+        </nativeLibraryDirectories>
       </java>
       <includedFiles />
       <unextractableFiles />
@@ -604,6 +643,7 @@
                   </java>
                 </serializedBean>
                 <initScript />
+                <visibiltyScript />
               </formComponent>
             </formComponents>
           </screen>
@@ -976,6 +1016,7 @@
                       </java>
                     </serializedBean>
                     <initScript />
+                    <visibiltyScript />
                   </formComponent>
                   <formComponent name="" id="990" beanClass="com.install4j.runtime.beans.formcomponents.SeparatorComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
                     <serializedBean>
@@ -984,6 +1025,7 @@
                       </java>
                     </serializedBean>
                     <initScript />
+                    <visibiltyScript />
                   </formComponent>
                   <formComponent name="" id="104" beanClass="com.install4j.runtime.beans.formcomponents.KeyValuePairComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
                     <serializedBean>
@@ -1014,6 +1056,7 @@
                       </java>
                     </serializedBean>
                     <initScript />
+                    <visibiltyScript />
                   </formComponent>
                   <formComponent name="" id="105" beanClass="com.install4j.runtime.beans.formcomponents.KeyValuePairComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
                     <serializedBean>
@@ -1044,6 +1087,7 @@
                       </java>
                     </serializedBean>
                     <initScript />
+                    <visibiltyScript />
                   </formComponent>
                   <formComponent name="" id="106" beanClass="com.install4j.runtime.beans.formcomponents.HyperlinkActionLabelComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
                     <serializedBean>
@@ -1064,6 +1108,7 @@
                     </serializedBean>
                     <initScript>boolean hasComment = ((String)context.getVariable("updaterComment")).length() &gt; 0;
 component.setVisible(hasComment);</initScript>
+                    <visibiltyScript />
                   </formComponent>
                   <formComponent name="" id="107" beanClass="com.install4j.runtime.beans.formcomponents.SpacerComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
                     <serializedBean>
@@ -1072,6 +1117,7 @@ component.setVisible(hasComment);</initScript>
                       </java>
                     </serializedBean>
                     <initScript />
+                    <visibiltyScript />
                   </formComponent>
                   <formComponent name="" id="108" beanClass="com.install4j.runtime.beans.formcomponents.MultilineLabelComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
                     <serializedBean>
@@ -1084,6 +1130,7 @@ component.setVisible(hasComment);</initScript>
                       </java>
                     </serializedBean>
                     <initScript />
+                    <visibiltyScript />
                   </formComponent>
                   <formComponent name="" id="1171" beanClass="com.install4j.runtime.beans.formcomponents.SpacerComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
                     <serializedBean>
@@ -1092,6 +1139,7 @@ component.setVisible(hasComment);</initScript>
                       </java>
                     </serializedBean>
                     <initScript />
+                    <visibiltyScript />
                   </formComponent>
                   <formComponent name="" id="109" beanClass="com.install4j.runtime.beans.formcomponents.DirectoryChooserComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
                     <serializedBean>
@@ -1113,6 +1161,7 @@ component.setVisible(hasComment);</initScript>
                       </java>
                     </serializedBean>
                     <initScript />
+                    <visibiltyScript />
                   </formComponent>
                   <formComponent name="" id="110" beanClass="com.install4j.runtime.beans.formcomponents.KeyValuePairComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
                     <serializedBean>
@@ -1128,6 +1177,7 @@ component.setVisible(hasComment);</initScript>
                       </java>
                     </serializedBean>
                     <initScript />
+                    <visibiltyScript />
                   </formComponent>
                 </formComponents>
               </screen>
@@ -1312,6 +1362,7 @@ if (wizardContext != null) {
                       </java>
                     </serializedBean>
                     <initScript />
+                    <visibiltyScript />
                   </formComponent>
                   <formComponent name="" id="121" beanClass="com.install4j.runtime.beans.formcomponents.SpacerComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
                     <serializedBean>
@@ -1324,6 +1375,7 @@ if (wizardContext != null) {
                       </java>
                     </serializedBean>
                     <initScript />
+                    <visibiltyScript />
                   </formComponent>
                   <formComponent name="" id="122" beanClass="com.install4j.runtime.beans.formcomponents.RadiobuttonsComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
                     <serializedBean>
@@ -1348,6 +1400,7 @@ if (wizardContext != null) {
                     <initScript>if (context.getBooleanVariable("isArchive")) {
     component.setVisible(false);
 }</initScript>
+                    <visibiltyScript />
                   </formComponent>
                   <formComponent name="" id="123" beanClass="com.install4j.runtime.beans.formcomponents.HyperlinkActionLabelComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
                     <serializedBean>
@@ -1367,6 +1420,7 @@ if (wizardContext != null) {
                       </java>
                     </serializedBean>
                     <initScript />
+                    <visibiltyScript />
                   </formComponent>
                   <formComponent name="" id="124" beanClass="com.install4j.runtime.beans.formcomponents.ProgressComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
                     <serializedBean>
@@ -1382,6 +1436,7 @@ if (wizardContext != null) {
                       </java>
                     </serializedBean>
                     <initScript />
+                    <visibiltyScript />
                   </formComponent>
                 </formComponents>
               </screen>
@@ -1407,7 +1462,16 @@ if (wizardContext != null) {
       <excludedComponents />
       <excludedBeans />
       <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
-      <exclude />
+      <exclude>
+        <entry location="wwlib/libjogl_awt.so" fileType="regular" />
+        <entry location="wwlib/libjogl_cg.jnilib" fileType="regular" />
+        <entry location="wwlib/libjogl.jnilib" fileType="regular" />
+        <entry location="wwlib/libjogl_cg.so" fileType="regular" />
+        <entry location="wwlib/libjogl_awt.jnilib" fileType="regular" />
+        <entry location="wwlib/libgluegen-rt.jnilib" fileType="regular" />
+        <entry location="wwlib/libgluegen-rt.so" fileType="regular" />
+        <entry location="wwlib/libjogl.so" fileType="regular" />
+      </exclude>
       <variables />
     </win32>
     <unixInstaller name="Unix Installer" id="179" mediaFileName="" installDir="Specify" overridePrincipalLanguage="false" requires64bit="false" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreFtpURL="" jreShared="false" customInstallBaseDir="" createUninstallIcon="true" contentFilesType="1" downloadURL="">
@@ -1415,7 +1479,16 @@ if (wizardContext != null) {
       <excludedComponents />
       <excludedBeans />
       <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
-      <exclude />
+      <exclude>
+        <entry location="wwlib/libjogl_cg.jnilib" fileType="regular" />
+        <entry location="wwlib/gluegen-rt.dll" fileType="regular" />
+        <entry location="wwlib/libjogl.jnilib" fileType="regular" />
+        <entry location="wwlib/libjogl_awt.jnilib" fileType="regular" />
+        <entry location="wwlib/libgluegen-rt.jnilib" fileType="regular" />
+        <entry location="wwlib/jogl_cg.dll" fileType="regular" />
+        <entry location="wwlib/jogl.dll" fileType="regular" />
+        <entry location="wwlib/jogl_awt.dll" fileType="regular" />
+      </exclude>
       <variables />
       <installerScript mode="1" file="">
         <scriptLines />
