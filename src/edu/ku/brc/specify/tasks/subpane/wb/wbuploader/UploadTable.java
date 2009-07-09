@@ -321,7 +321,10 @@ public class UploadTable implements Comparable<UploadTable>
      */
     protected boolean shouldSkipMatching()
     {
-        return isOneToOneChild();
+        return isOneToOneChild() || 
+        	(tblClass.equals(CollectingEvent.class) && 
+        		AppContextMgr.getInstance().getClassObject(
+                Collection.class).getIsEmbeddedCollectingEvent());
     }
     
     /**
