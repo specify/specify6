@@ -507,6 +507,17 @@ public class DivisionBusRules extends BaseBusRules implements CommandListener
     }
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#afterSaveCommit(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public boolean afterSaveCommit(Object dataObj, DataProviderSessionIFace session)
+    {
+        AppContextMgr.getInstance().setClassObject(Division.class, dataObj);
+        
+        return super.afterSaveCommit(dataObj, session);
+    }
+    
+    /* (non-Javadoc)
      * @see edu.ku.brc.ui.CommandListener#doCommand(edu.ku.brc.ui.CommandAction)
      */
     @Override

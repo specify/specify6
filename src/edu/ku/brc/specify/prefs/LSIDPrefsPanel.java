@@ -107,7 +107,7 @@ public class LSIDPrefsPanel extends GenericPrefsPanel
         
         String rowDef = UIHelper.createDuplicateJGoodiesDef("p", "2px", CATEGORY_TYPE.values().length+1);
         PanelBuilder pb = new PanelBuilder(new FormLayout("10px,p,f:p:g", rowDef + ",10px,p,10px,p"), this);
-        pb.addSeparator("Automatic LSID Generation", cc.xyw(1, 1, 3));
+        pb.addSeparator(getResourceString("LSSEP"), cc.xyw(1, 1, 3));
         int y = 3;
         for (CATEGORY_TYPE cat : CATEGORY_TYPE.values())
         {
@@ -123,7 +123,7 @@ public class LSIDPrefsPanel extends GenericPrefsPanel
             y += 2;
         }
         
-        pb.addSeparator("Additional Options", cc.xyw(1, y, 3));
+        pb.addSeparator(getResourceString("LSADD"), cc.xyw(1, y, 3));
         y += 2;
         
         String pName = PREF_NAME_PREFIX + "UseVersioning";
@@ -165,8 +165,6 @@ public class LSIDPrefsPanel extends GenericPrefsPanel
             final GhostGlassPane glassPane = UIRegistry.writeGlassPaneMsg(getResourceString("SETTING_LSIDS"), UIRegistry.STD_FONT_SIZE);
             glassPane.setProgress(0);
             
-            //UIRegistry.getStatusBar().setProgressRange(COUNT, 0, CATEGORY_TYPE.values().length);
-            
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run()
@@ -180,8 +178,6 @@ public class LSIDPrefsPanel extends GenericPrefsPanel
                             SubPaneMgr.getInstance().addPane(splash);
                             SubPaneMgr.getInstance().showPane(splash);
                         }
-                        
-                        
                         
                         final LSIDWorker worker = new LSIDWorker()
                         {
@@ -204,7 +200,6 @@ public class LSIDPrefsPanel extends GenericPrefsPanel
                             protected void done()
                             {
                                 glassPane.setProgress(100);
-                                //UIRegistry.getStatusBar().setProgressDone(COUNT);
                                 UIRegistry.clearGlassPaneMsg();
                             }
                         };
@@ -215,7 +210,6 @@ public class LSIDPrefsPanel extends GenericPrefsPanel
                                     public  void propertyChange(final PropertyChangeEvent evt) {
                                         if (COUNT.equals(evt.getPropertyName())) 
                                         {
-                                            //UIRegistry.getStatusBar().setValue(COUNT, (Integer)evt.getNewValue());
                                             glassPane.setProgress((int)((Integer)evt.getNewValue() * 100.0 / CATEGORY_TYPE.values().length));
                                         }
                                     }

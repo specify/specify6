@@ -125,6 +125,7 @@
    <mapID target="Load" url="SpecifyHelp/Security/loading.html"/> 
    <mapID target="PrefsLoan" url="SpecifyHelp/Prefs/Loans.html"/> 
    <mapID target="slicer" url="SpecifyHelp/Uploading/splitter.html"/> 
+   <mapID target="LSIDPrefs" url="SpecifyHelp/Prefs/LSIDs.html"/> 
 
 
 <!-- Index Bookmarks -->

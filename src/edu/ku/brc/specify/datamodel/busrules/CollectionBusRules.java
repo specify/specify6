@@ -656,4 +656,15 @@ public class CollectionBusRules extends BaseBusRules
             super.okToDelete(dataObj, session, deletable);
         }
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#afterSaveCommit(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public boolean afterSaveCommit(Object dataObj, DataProviderSessionIFace session)
+    {
+        AppContextMgr.getInstance().setClassObject(Collection.class, dataObj);
+        
+        return super.afterSaveCommit(dataObj, session);
+    }
 }

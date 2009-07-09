@@ -19,6 +19,9 @@
 */
 package edu.ku.brc.specify.config;
 
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.showError;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.sql.ResultSet;
@@ -39,7 +42,6 @@ import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Institution;
-import edu.ku.brc.ui.UIRegistry;
 
 
 /**
@@ -54,6 +56,8 @@ public class SpecifyLSIDGeneratorFactory extends GenericLSIDGeneratorFactory
 {
     protected static String PREF_NAME_PREFIX = "Prefs.LSID.";
     protected static int[]  TABLE_IDS = {1, 4, 3, 100, 2, 5, 69, 51};
+    
+    protected String       I18NPre   = SpecifyLSIDGeneratorFactory.class.getSimpleName();
 
     protected StringBuilder errMsg   = new StringBuilder();
     protected Boolean       isReady  = null;
@@ -77,16 +81,16 @@ public class SpecifyLSIDGeneratorFactory extends GenericLSIDGeneratorFactory
                 lsidAuthority = inst.getLsidAuthority();
                 if (StringUtils.isEmpty(lsidAuthority))
                 {
-                    errMsg.append("LSID Authority is empty.\n");  // I18N
+                    errMsg.append(getResourceString(I18NPre+".ERR_AUTH")+"\n");  
                 }
                 instCode = inst.getCode();
                 if (StringUtils.isEmpty(instCode))
                 {
-                    errMsg.append("Institution Code is empty.\n");  // I18N
+                    errMsg.append(getResourceString(I18NPre+".ERR_INCD")+"\n");  
                 }
             } else
             {
-                errMsg.append("Institution cannot be null to generate the LSID.\n");  // I18N
+                errMsg.append("Institution cannot be null to generate the LSID.\n");  // Should never happen
                 return isReady = false;
             }
             
@@ -96,11 +100,11 @@ public class SpecifyLSIDGeneratorFactory extends GenericLSIDGeneratorFactory
                 colCode = collection.getCode();
                 if (StringUtils.isEmpty(colCode))
                 {
-                    errMsg.append("Collection Code is empty.\n");  // I18N
+                    errMsg.append(getResourceString(I18NPre+".ERR_CLCD")+"\n");  
                 }
             } else
             {
-                errMsg.append("Collection cannot be null to generate the LSID.\n");  // I18N
+                errMsg.append("Collection cannot be null to generate the LSID.\n");// Should never happen
                 return isReady = false;
             }
             isReady = errMsg.length() == 0;
@@ -252,7 +256,7 @@ public class SpecifyLSIDGeneratorFactory extends GenericLSIDGeneratorFactory
             }
         } else
         {
-            UIRegistry.showError(errMsg.toString());
+            showError(errMsg.toString());
         }
     }
     

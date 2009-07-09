@@ -586,6 +586,8 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
     public boolean afterSaveCommit(final Object dataObj, final DataProviderSessionIFace session)
     {
         Discipline discipline = (Discipline)dataObj;
+        AppContextMgr.getInstance().setClassObject(Discipline.class, discipline);
+        
         for (Collection collection : discipline.getCollections())
         {
             int count = BasicSQLUtils.getCount("SELECT count(*) FROM picklist WHERE CollectionID = " + collection.getId());
