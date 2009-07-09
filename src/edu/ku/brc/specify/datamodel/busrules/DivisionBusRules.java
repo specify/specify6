@@ -421,7 +421,7 @@ public class DivisionBusRules extends BaseBusRules implements CommandListener
         
         STATUS nameStatus = isCheckDuplicateNumberOK("name", 
                                                       (FormDataObjIFace)dataObj, 
-                                                      Institution.class, 
+                                                      Division.class, 
                                                       "userGroupScopeId");
         
         return nameStatus != STATUS.OK ? STATUS.Error : STATUS.OK;
