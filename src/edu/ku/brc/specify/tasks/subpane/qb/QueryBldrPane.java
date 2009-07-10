@@ -2357,7 +2357,25 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 }
                 else 
                 {
-                	src = new WorkbenchJRDataSource((Workbench )report.getReportObject(), true);
+                    DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                    try
+                    {
+                		Workbench wb = session.get(Workbench.class, rs.getOnlyItem().getRecordId());
+                		if (wb != null)
+                		{
+                			wb.forceLoad();
+                			src = new WorkbenchJRDataSource(wb, true);
+                		}
+                		else
+                		{
+                			UIRegistry.displayErrorDlgLocalized("QueryBldrPane.WB_LOAD_ERROR_FOR_REPORT", rs.getName());
+                			return;
+                		}
+                    }
+                    finally
+                    {
+                    	session.close();
+                    }
                 }
                 
                 final CommandAction cmd = new CommandAction(ReportsBaseTask.REPORTS,

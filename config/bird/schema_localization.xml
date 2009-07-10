@@ -4,24 +4,6 @@
     <isHidden>false</isHidden>
     <isSystem>false</isSystem>
     <items>
-      <item name="stationFieldNumber" type="java.lang.String" isRequired="false">
-        <version>0</version>
-        <isHidden>false</isHidden>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en" country="" variant="">
-            <version>0</version>
-            <text>Field Number</text>
-          </str>
-        </names>
-        <descs>
-          <str language="en" country="" variant="">
-            <version>0</version>
-            <text>Station number or field number of the site where collecting event took place, A number or code recorded in field notes and/or written on field tags that identifies ALL material collected in a Collecting Event.</text>
-          </str>
-        </descs>
-        <spExportSchemaItems/>
-      </item>
       <item name="method" type="java.lang.String" isUIFormatter="false" pickListName="Method" isRequired="false">
         <version>0</version>
         <isHidden>false</isHidden>
@@ -36,6 +18,24 @@
           <str language="en" country="" variant="">
             <version>0</version>
             <text>A method, such as net or trap, which is used to obtain the specimen.</text>
+          </str>
+        </descs>
+        <spExportSchemaItems/>
+      </item>
+      <item name="stationFieldNumber" type="java.lang.String" isRequired="false">
+        <version>0</version>
+        <isHidden>false</isHidden>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en" country="" variant="">
+            <version>0</version>
+            <text>Field Number</text>
+          </str>
+        </names>
+        <descs>
+          <str language="en" country="" variant="">
+            <version>0</version>
+            <text>Station number or field number of the site where collecting event took place, A number or code recorded in field notes and/or written on field tags that identifies ALL material collected in a Collecting Event.</text>
           </str>
         </descs>
         <spExportSchemaItems/>
@@ -76,14 +76,14 @@
     <isHidden>false</isHidden>
     <isSystem>false</isSystem>
     <items>
-      <item name="text5" isUIFormatter="false" isRequired="false">
+      <item name="text4" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <isHidden>false</isHidden>
         <isSystem>false</isSystem>
         <names>
           <str language="en">
             <version>0</version>
-            <text>Stomach</text>
+            <text>Body</text>
           </str>
         </names>
         <descs/>
@@ -102,19 +102,6 @@
         <descs/>
         <spExportSchemaItems/>
       </item>
-      <item name="text1" isUIFormatter="false" pickListName="Age" isRequired="false">
-        <version>0</version>
-        <isHidden>false</isHidden>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>Age</text>
-          </str>
-        </names>
-        <descs/>
-        <spExportSchemaItems/>
-      </item>
       <item name="text6" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <isHidden>false</isHidden>
@@ -128,14 +115,14 @@
         <descs/>
         <spExportSchemaItems/>
       </item>
-      <item name="text4" isUIFormatter="false" isRequired="false">
+      <item name="text1" isUIFormatter="false" pickListName="Age" isRequired="false">
         <version>0</version>
         <isHidden>false</isHidden>
         <isSystem>false</isSystem>
         <names>
           <str language="en">
             <version>0</version>
-            <text>Body</text>
+            <text>Age</text>
           </str>
         </names>
         <descs/>
@@ -175,6 +162,19 @@
           <str language="en">
             <version>0</version>
             <text>Sex</text>
+          </str>
+        </names>
+        <descs/>
+        <spExportSchemaItems/>
+      </item>
+      <item name="text5" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <isHidden>false</isHidden>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Stomach</text>
           </str>
         </names>
         <descs/>

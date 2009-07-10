@@ -32,15 +32,19 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 
@@ -73,18 +77,18 @@ public class SpReport extends DataModelObjBase
         return getName();
     }
 
-    protected Integer           spReportId;
-    protected String            name;
-    protected String            remarks;
-    
-    protected SpQuery           query;
-    protected Workbench			workbench;
-    
-    protected SpAppResource     appResource;
-    protected SpecifyUser       specifyUser;
+    protected Integer			spReportId;
+	protected String			name;
+	protected String			remarks;
 
-    protected Integer           repeatCount;
-    protected String            repeatField;
+	protected SpQuery			query;
+	protected WorkbenchTemplate	workbenchTemplate;
+
+	protected SpAppResource		appResource;
+	protected SpecifyUser		specifyUser;
+
+	protected Integer			repeatCount;
+	protected String			repeatField;
     
  
     /**
@@ -100,19 +104,19 @@ public class SpReport extends DataModelObjBase
      */
     @Override
     public void initialize()
-    {
-        super.init();
-        
-        spReportId       = null;
-        name             = null;
-        remarks          = null;
-        query            = null;
-        workbench        = null;
-        appResource      = null;
-        specifyUser      = null;
-        repeatCount      = null;
-        repeatField      = null;
-    }
+	{
+		super.init();
+
+		spReportId = null;
+		name = null;
+		remarks = null;
+		query = null;
+		workbenchTemplate = null;
+		appResource = null;
+		specifyUser = null;
+		repeatCount = null;
+		repeatField = null;
+	}
     
     @Id
     @GeneratedValue
@@ -148,7 +152,11 @@ public class SpReport extends DataModelObjBase
      */
     protected void setQuery(SpQuery query)
     {
-        workbench = null; //call it a business rule
+        if (workbenchTemplate != null)
+        {
+        	workbenchTemplate = null; //call it a business rule
+        	log.warn("Setting query for a report with a previously assigned workbenchTemplate. This is not supposed to happen." );
+        }
     	this.query = query;
     }
 
@@ -163,7 +171,17 @@ public class SpReport extends DataModelObjBase
         }
         else if (repo instanceof Workbench)
         {
-        	setWorkbench((Workbench )repo);
+        	Workbench wb = (Workbench )repo;
+        	try
+        	{
+        		setWorkbenchTemplate((WorkbenchTemplate )wb.getWorkbenchTemplate().clone());
+        	} catch (CloneNotSupportedException cnsex)
+        	{
+                UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpReport.class, cnsex);
+                cnsex.printStackTrace();
+                throw new RuntimeException(cnsex);
+        	}
         }
         else
         {
@@ -207,6 +225,9 @@ public class SpReport extends DataModelObjBase
         return remarks;
     }
 
+    /**
+     * @return the query
+     */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "SpQueryID", unique = false, nullable = true, insertable = true, updatable = true)
     public SpQuery getQuery()
@@ -214,18 +235,31 @@ public class SpReport extends DataModelObjBase
         return query;
     }
     
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "WorkbenchID", unique = false, nullable = true, insertable = true, updatable = true)
-    public Workbench getWorkbench()
+    /**
+     * @return the workbenchTemplate
+     */
+//    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+//    @JoinColumn(name = "WorkbenchTemplateID", unique = false, nullable = true, insertable = true, updatable = true)
+//    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @OneToOne
+    @Cascade( {CascadeType.DELETE} )
+    @JoinColumn(name="WorkbenchTemplateID")
+    public WorkbenchTemplate getWorkbenchTemplate()
     {
-        return workbench;
+        return workbenchTemplate;
     }
 
-    protected void setWorkbench(Workbench workbench)
+    /**
+     * @param workbenchTemplate the workbenchTemplate to set
+     */
+    protected void setWorkbenchTemplate(WorkbenchTemplate workbenchTemplate)
     {
-    	this.workbench = workbench;
+    	this.workbenchTemplate = workbenchTemplate;
     }
     
+    /**
+     * @return the object the report is based on
+     */
     @Transient
     public DataModelObjBase getReportObject()
     {
@@ -233,9 +267,12 @@ public class SpReport extends DataModelObjBase
     	{
     		return query;
     	}
-    	return workbench;
+    	return workbenchTemplate;
     }
     
+    /**
+     * @return the appResource
+     */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "AppResourceID", unique = false, nullable = false, insertable = true, updatable = true)
     public SpAppResource getAppResource()
@@ -244,7 +281,7 @@ public class SpReport extends DataModelObjBase
     }
 
     /**
-     * 
+     * return the specifyUser
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "SpecifyUserID", unique = false, nullable = false, insertable = true, updatable = true)
@@ -279,12 +316,18 @@ public class SpReport extends DataModelObjBase
         return repeatField;
     }
     
+    /**
+     * @return the repeatCount or the name of the field which determines repeatCount 
+     */
     @Transient
     public Object getRepeats()
     {
         return repeatCount != null ? repeatCount : repeatField;
     }
     
+    /**
+     * @param repeats the count or field to set.
+     */
     public void setRepeats(Object repeats)
     {
         if (repeats == null)
@@ -309,6 +352,7 @@ public class SpReport extends DataModelObjBase
             setRepeatField(null);            
         }
     }
+    
     /**
      * @param repeatField the repeatField to set.
      */

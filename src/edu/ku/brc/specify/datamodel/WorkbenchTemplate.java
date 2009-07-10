@@ -19,10 +19,12 @@
 */
 package edu.ku.brc.specify.datamodel;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.TreeSet;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -312,6 +314,35 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
     public int compareTo(WorkbenchTemplate obj)
     {
         return name.compareTo(obj.name);
+    }
+    
+    /**
+     * @param template
+     * @return return if the template's mappings are a subset of this object's mappings
+     */
+    public boolean containsAllMappings(WorkbenchTemplate template)
+    {
+    	Comparator<WorkbenchTemplateMappingItem> comp = new Comparator<WorkbenchTemplateMappingItem>() {
+
+			@Override
+			public int compare(WorkbenchTemplateMappingItem arg0,
+					WorkbenchTemplateMappingItem arg1)
+			{
+				int result = arg0.getTableName().compareTo(arg1.getTableName());
+				if (result == 0)
+				{
+					result = arg0.getFieldName().compareTo(arg1.getFieldName());
+				}
+				return result;
+			}
+    		
+    	};
+    	TreeSet<WorkbenchTemplateMappingItem> theseMaps = new TreeSet<WorkbenchTemplateMappingItem>(comp);
+    	//TreeSet<WorkbenchTemplateMappingItem> thoseMaps = new TreeSet<WorkbenchTemplateMappingItem>(comp);
+    	theseMaps.addAll(workbenchTemplateMappingItems);
+    	//thoseMaps.addAll(template.workbenchTemplateMappingItems);
+    	//return theseMaps.containsAll(thoseMaps);
+    	return theseMaps.containsAll(template.workbenchTemplateMappingItems);
     }
     
     /* (non-Javadoc)

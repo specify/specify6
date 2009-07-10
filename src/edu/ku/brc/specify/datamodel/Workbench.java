@@ -27,7 +27,6 @@ import java.util.Vector;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -76,7 +75,6 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
     protected SpPrincipal            group;
     protected String                 srcFilePath;
     protected String                 lockedByUserName;
-    protected Set<SpReport>		     reports;
     
 
      // Transient Data
@@ -123,7 +121,6 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
         specifyUser           = null;
         group                 = null;
         lockedByUserName      = null;
-        reports               = null;
         
         rows.clear();
         //deletedRows.clear();
@@ -376,18 +373,6 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
     }
     
     
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "workbench")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    public Set<SpReport> getReports()
-    {
-        return reports;
-    }
-
-    public void setReports(Set<SpReport> reports)
-    {
-        this.reports = reports;
-    }
-
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */

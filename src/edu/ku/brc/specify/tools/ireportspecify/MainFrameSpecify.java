@@ -1444,7 +1444,7 @@ public class MainFrameSpecify extends MainFrame
                 		count++;
                 	}
                 }
-                else if (repName.startsWith(base));
+                else if (repName.startsWith(base))
                 {
                     String end = repName.substring(base.length());
                     try

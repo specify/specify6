@@ -31,19 +31,6 @@
     <isHidden>false</isHidden>
     <isSystem>false</isSystem>
     <items>
-      <item name="text6" isUIFormatter="false" isRequired="false">
-        <version>0</version>
-        <isHidden>false</isHidden>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>Salinity</text>
-          </str>
-        </names>
-        <descs/>
-        <spExportSchemaItems/>
-      </item>
       <item name="text2" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <isHidden>false</isHidden>
@@ -65,58 +52,6 @@
           <str language="en">
             <version>0</version>
             <text>Clarity</text>
-          </str>
-        </names>
-        <descs/>
-        <spExportSchemaItems/>
-      </item>
-      <item name="text9" isUIFormatter="false" pickListName="HabitatType" isRequired="false">
-        <version>0</version>
-        <isHidden>false</isHidden>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>Habitat Type</text>
-          </str>
-        </names>
-        <descs/>
-        <spExportSchemaItems/>
-      </item>
-      <item name="text7" isUIFormatter="false" isRequired="false">
-        <version>0</version>
-        <isHidden>false</isHidden>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>Turbidity</text>
-          </str>
-        </names>
-        <descs/>
-        <spExportSchemaItems/>
-      </item>
-      <item name="text8" isUIFormatter="false" isRequired="false">
-        <version>0</version>
-        <isHidden>false</isHidden>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>Vegetation</text>
-          </str>
-        </names>
-        <descs/>
-        <spExportSchemaItems/>
-      </item>
-      <item name="text1" isUIFormatter="false" isRequired="false">
-        <version>0</version>
-        <isHidden>false</isHidden>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>Min Depth</text>
           </str>
         </names>
         <descs/>
@@ -148,6 +83,71 @@
         <descs/>
         <spExportSchemaItems/>
       </item>
+      <item name="text8" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <isHidden>false</isHidden>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Vegetation</text>
+          </str>
+        </names>
+        <descs/>
+        <spExportSchemaItems/>
+      </item>
+      <item name="text9" isUIFormatter="false" pickListName="HabitatType" isRequired="false">
+        <version>0</version>
+        <isHidden>false</isHidden>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Habitat Type</text>
+          </str>
+        </names>
+        <descs/>
+        <spExportSchemaItems/>
+      </item>
+      <item name="text1" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <isHidden>false</isHidden>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Min Depth</text>
+          </str>
+        </names>
+        <descs/>
+        <spExportSchemaItems/>
+      </item>
+      <item name="text7" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <isHidden>false</isHidden>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Turbidity</text>
+          </str>
+        </names>
+        <descs/>
+        <spExportSchemaItems/>
+      </item>
+      <item name="text6" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <isHidden>false</isHidden>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Salinity</text>
+          </str>
+        </names>
+        <descs/>
+        <spExportSchemaItems/>
+      </item>
     </items>
     <names/>
     <descs/>
@@ -157,19 +157,6 @@
     <isHidden>false</isHidden>
     <isSystem>false</isSystem>
     <items>
-      <item name="text4" isUIFormatter="false" pickListName="BiologicalStage" isRequired="false">
-        <version>0</version>
-        <isHidden>false</isHidden>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>Stage</text>
-          </str>
-        </names>
-        <descs/>
-        <spExportSchemaItems/>
-      </item>
       <item name="text14" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <isHidden>false</isHidden>
@@ -178,19 +165,6 @@
           <str language="en">
             <version>0</version>
             <text>Text14</text>
-          </str>
-        </names>
-        <descs/>
-        <spExportSchemaItems/>
-      </item>
-      <item name="text1" isUIFormatter="false" pickListName="BiologicalSex" isRequired="false">
-        <version>0</version>
-        <isHidden>false</isHidden>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>Sex</text>
           </str>
         </names>
         <descs/>
@@ -209,6 +183,32 @@
         <descs/>
         <spExportSchemaItems/>
       </item>
+      <item name="text3" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <isHidden>false</isHidden>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>ReproCondition</text>
+          </str>
+        </names>
+        <descs/>
+        <spExportSchemaItems/>
+      </item>
+      <item name="text6" isUIFormatter="false" isRequired="false">
+        <version>0</version>
+        <isHidden>false</isHidden>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>SL</text>
+          </str>
+        </names>
+        <descs/>
+        <spExportSchemaItems/>
+      </item>
       <item name="text5" isUIFormatter="false" isRequired="false">
         <version>0</version>
         <isHidden>false</isHidden>
@@ -217,6 +217,19 @@
           <str language="en">
             <version>0</version>
             <text>TL</text>
+          </str>
+        </names>
+        <descs/>
+        <spExportSchemaItems/>
+      </item>
+      <item name="text4" isUIFormatter="false" pickListName="BiologicalStage" isRequired="false">
+        <version>0</version>
+        <isHidden>false</isHidden>
+        <isSystem>false</isSystem>
+        <names>
+          <str language="en">
+            <version>0</version>
+            <text>Stage</text>
           </str>
         </names>
         <descs/>
@@ -248,27 +261,14 @@
         <descs/>
         <spExportSchemaItems/>
       </item>
-      <item name="text6" isUIFormatter="false" isRequired="false">
+      <item name="text1" isUIFormatter="false" pickListName="BiologicalSex" isRequired="false">
         <version>0</version>
         <isHidden>false</isHidden>
         <isSystem>false</isSystem>
         <names>
           <str language="en">
             <version>0</version>
-            <text>SL</text>
-          </str>
-        </names>
-        <descs/>
-        <spExportSchemaItems/>
-      </item>
-      <item name="text3" isUIFormatter="false" isRequired="false">
-        <version>0</version>
-        <isHidden>false</isHidden>
-        <isSystem>false</isSystem>
-        <names>
-          <str language="en">
-            <version>0</version>
-            <text>ReproCondition</text>
+            <text>Sex</text>
           </str>
         </names>
         <descs/>
