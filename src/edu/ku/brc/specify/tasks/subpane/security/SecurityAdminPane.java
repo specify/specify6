@@ -198,7 +198,7 @@ public class SecurityAdminPane extends BaseSubPane
         PanelBuilder btnPB = new PanelBuilder(new FormLayout("p,4px,p,4px,p,4px,p,f:p:g", "p"));
         JButton addUserBtn = UIHelper.createIconBtn("add-person", IconManager.IconSize.NonStd, "Add New User to Group", null); // I18N
         JButton addExtUserBtn = UIHelper.createIconBtn("addext-person", IconManager.IconSize.NonStd, "Add Existing User to Group", null); // I18N
-        JButton rmvUserBtn = UIHelper.createIconBtn("rmv-person", IconManager.IconSize.NonStd, "Remove User from Group (does not delete the user)", null);
+        //JButton rmvUserBtn = UIHelper.createIconBtn("rmv-person", IconManager.IconSize.NonStd, "Remove User from Group (does not delete the user)", null);
         JButton delUserBtn = UIHelper.createIconBtn("del-person", IconManager.IconSize.NonStd, "Delete User from Group", null);
         btnPB.add(addUserBtn,    cc.xy(1, 1));
         btnPB.add(addExtUserBtn, cc.xy(3, 1));
@@ -1045,7 +1045,7 @@ public class SecurityAdminPane extends BaseSubPane
     /**
      * 
      */
-    protected void refreshTreeNode(DataProviderSessionIFace session)
+    protected void refreshTreeNode(@SuppressWarnings("unused") DataProviderSessionIFace session)
     {
         if (currentDisplayPanel.setData(objWrapper, secondObjWrapper) && currentEditorPanel != null)
         {

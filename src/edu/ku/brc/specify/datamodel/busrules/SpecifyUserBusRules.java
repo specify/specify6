@@ -73,6 +73,12 @@ public class SpecifyUserBusRules extends BaseBusRules
         final JButton            showPwdBtn   = formViewObj.getCompById("ShowPwd");
         final PasswordStrengthUI pwdStrenthUI = formViewObj.getCompById("6");
         
+        // This is in case the BusRules are used without the form.
+        if (pwdTxt == null || keyTxt == null || genBtn == null || showPwdBtn == null || pwdStrenthUI == null)
+        {
+            return;
+        }
+        
         final char echoChar = pwdTxt.getEchoChar();
         currEcho = echoChar;
         
