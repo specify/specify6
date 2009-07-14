@@ -3039,7 +3039,7 @@ public class FormViewObj implements Viewable,
                                 int inx = rsController.getCurrentIndex();
                                 if (inx > -1 && inx < list.size())
                                 {
-                                    carryFwdDataObj = list.get(inx-1);
+                                    carryFwdDataObj = list.get(Math.max(0, inx-1));
                                     doClear = false;
                                 }
                             }
