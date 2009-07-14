@@ -246,7 +246,15 @@ public class NavigationTreeMgr
             // loaded by then. Notice we don't attach the user to the session anywhere in this code... 
 
             // We can delete a user if that's the only group it belongs to
-            result = user.getUserGroupCount() == 1; 
+            int cnt = user.getUserGroupCount();
+            if (cnt > 1)
+            {
+                result = cnt > 2 || !user.isInAdminGroup();
+                
+            } else
+            {
+                result = true;
+            }
         } 
         catch (final Exception e1)
         {
