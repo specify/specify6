@@ -495,6 +495,7 @@ public class BuildSampleDatabase
         {
             stgTreeDef = createStorageTreeDef("Storage");
             institution.setStorageTreeDef(stgTreeDef);
+            stgTreeDef.getInstitutions().add(institution);
             persist(stgTreeDef);
         }
         

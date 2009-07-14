@@ -185,7 +185,7 @@ public class MasterUserPanel extends GenericFormPanel
         String saUserName = ((JTextField)comps.get("saUserName")).getText();
         String saPassword = ((JTextField)comps.get("saPassword")).getText();
 
-        if (isEmbedded)
+        if (!isEmbedded)
         {
             if (mgr.connect(saUserName, saPassword, hostName, dbName))
             {

@@ -261,6 +261,7 @@ public class DatabasePanel extends BaseSetupPanel
         String dbUserName = usernameTxt.getText();
         String dbPwd      = passwordTxt.getText();
         String hostName   = hostNameTxt.getText();
+        String dbName     = dbNameTxt.getText();
         
         // Set up the DBConnection for later
         DatabaseDriverInfo driverInfo = (DatabaseDriverInfo)drivers.getSelectedItem();
@@ -269,6 +270,17 @@ public class DatabasePanel extends BaseSetupPanel
         
         if (mgr.connectToDBMS(dbUserName, dbPwd, hostName))
         {
+            newConnStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostName, dbName, dbUserName, dbPwd, driverInfo.getName());
+            
+            DBConnection dbc = DBConnection.getInstance();
+            dbc.setConnectionStr(newConnStr);
+            dbc.setDriver(driverInfo.getDriverClassName());
+            dbc.setDialect(driverInfo.getDialectClassName());
+            dbc.setDriverName(driverInfo.getName());
+            dbc.setServerName(hostName);
+            dbc.setUsernamePassword(dbUserName, dbPwd);
+            dbc.setDatabaseName(dbName);
+            
             nextBtn.setEnabled(isOK == null || isOK || manualLoginOK);
             mgr.close();
             return true;
