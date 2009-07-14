@@ -559,6 +559,16 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
             statusBar.incrementValue(getClass().getSimpleName());
         }
         
+        if (resultSet == null || results == null)
+        {
+            log.error("The " + (resultSet == null ? "resultSet" : "results") + " is null.");
+            if (propertyListener != null)
+            {
+                propertyListener.propertyChange(new PropertyChangeEvent(this, "rowCount", null, 0));
+            }
+            return;
+        }
+        
         List<ERTICaptionInfo> captions = results.getVisibleCaptionInfo();
         
         // This can do one of two things:
