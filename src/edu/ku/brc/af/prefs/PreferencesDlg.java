@@ -605,13 +605,18 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
         currentComp.setVisible(false);
         mainPanel.add(comp, BorderLayout.CENTER);
         comp.invalidate();
+        comp.validate();
+        comp.invalidate();
+        comp.doLayout();
+        comp.repaint();
         doLayout();
         repaint();
         currentComp = comp;
         currentComp.setVisible(true);
         
         
-        Dimension winDim = getSize();
+        Dimension oldWinDim = getSize();
+        Dimension winDim    = getSize();
         winDim.width += currentComp.getPreferredSize().width - oldSize.width;
         winDim.width  = Math.max(winDim.width, 400);
         winDim.height = Math.max(winDim.height, 250);
@@ -619,11 +624,12 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
         Dimension pSize = prefsToolbar.getPreferredSize();
         winDim.width  = Math.max(winDim.width, pSize.width+30);
         
+        if (winDim.equals(oldWinDim)) // needed because JGoodies doesn't want to relayout when it is the same size.
+        {
+            winDim.height +=2;
+        }
         setSize(winDim);
         currentComp.setSize(new Dimension(currentComp.getPreferredSize().width, oldSize.height));
-        
-        // With Animation
-        //startAnimation(this, comp, currentComp.getPreferredSize().height - oldSize.height, false);
         
         ((PrefsPanelIFace)comp).setShadeColor(null);
         
@@ -740,7 +746,9 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
                 
                 showAndResizePane(comp, oldSize);
             }
+            currentComp.validate();
             currentComp.repaint();
+            comp.repaint();
          }
     }
 
