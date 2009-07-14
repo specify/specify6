@@ -59,6 +59,7 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.ui.forms.ViewFactory;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatter;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterField;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
@@ -749,17 +750,22 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
         if (!isViewOnly && !isPartialOK && !isNew && valState == UIValidatable.ErrorType.Error && isEnabled())
         {
             Dimension size;
-            if (editTF != null)
+            if (comps != null && comps.length > 0)
+            {
+                size = getSize();
+                Component lastComp = comps[comps.length-1];
+                size.width = lastComp.getBounds().x + lastComp.getBounds().width;
+                size.height--;
+                
+            } else if (editTF != null)
             {
                 size = editTF.getSize();
-            } else if (comps != null && comps.length == 1)
-            {
-                size = comps[0].getSize();
+                
             } else
             {
                 size = getSize();
             }
-            UIHelper.drawRoundedRect((Graphics2D)g, valTextColor.getColor(), size, 1);
+            UIHelper.drawRoundedRect((Graphics2D)g, valTextColor.getColor(), size, 0);
         }
     }
 
@@ -838,9 +844,18 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
     {
         if (formatter.isIncrementer() && cardPanel != null && isAutoFmtOn != turnOn)
         {
-            cardLayout.show(cardPanel, turnOn ? "view" : "edit");   
+            cardLayout.show(cardPanel, turnOn ? "view" : "edit");
+         
+            isAutoFmtOn = turnOn;
+            setChanged(true);
+            if (changeListener != null)
+            {
+                changeListener.stateChanged(new ChangeEvent(this));
+            }
+        } else
+        {
+            isAutoFmtOn = turnOn;
         }
-        isAutoFmtOn = turnOn;
     }
 
     //--------------------------------------------------
@@ -944,7 +959,7 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
         int inx = 0;
         for (UIFieldFormatterField f : fields)
         {
-            if (!f.isIncrementer() && f.getType() != FieldType.constant && f.getType() != FieldType.separator)
+            if ((!f.isIncrementer() || !isAutoFmtOn) && f.getType() != FieldType.constant && f.getType() != FieldType.separator)
             {
                 JFormattedDoc doc = documents.get(inx);
                 int len = f.getSize();
@@ -986,11 +1001,11 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
                 // Only validate against the formatter if the it is the right length
                 if (valState == UIValidatable.ErrorType.Valid)
                 {
-                    valState = formatter.isValid(data) ? UIValidatable.ErrorType.Valid : UIValidatable.ErrorType.Error;
+                    valState = UIFieldFormatter.isValid(formatter, data, !isAutoFmtOn) ? UIValidatable.ErrorType.Valid : UIValidatable.ErrorType.Error;
                 }
             } else
             {
-                valState = UIValidatable.ErrorType.Valid;
+                valState = UIFieldFormatter.isValid(formatter, data, !isAutoFmtOn) ? UIValidatable.ErrorType.Valid : UIValidatable.ErrorType.Error;
             }
         } else
         {
@@ -1001,8 +1016,6 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
         {
             repaint();
         }
-        //System.err.println("#### validateState "+ getText()+"  "+ requiredLength+"  "+valState);
-       
         return valState;
     }
 

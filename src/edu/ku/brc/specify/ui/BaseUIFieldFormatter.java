@@ -524,7 +524,7 @@ public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
                    value.length() == length && 
                    StringUtils.isNumeric(value);
         }
-        return UIFieldFormatter.isValid(this, value);
+        return UIFieldFormatter.isValid(this, value, false);
     }
 
     /* (non-Javadoc)

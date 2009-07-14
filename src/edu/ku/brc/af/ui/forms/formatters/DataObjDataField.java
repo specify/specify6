@@ -235,12 +235,12 @@ public class DataObjDataField implements Cloneable
 		    {
     			// there's a dot on field name, which means it represents a field in a related table
     			// split name into relation.fieldName
-    		    DBRelationshipInfo relInfo = tableInfo.getRelationshipByName(parts[0]);
-    		    if (relInfo != null)
+    		    DBRelationshipInfo reltnInfo = tableInfo.getRelationshipByName(parts[0]);
+    		    if (reltnInfo != null)
     		    {
-    		        setRelInfo(relInfo);
+    		        setRelInfo(reltnInfo);
     		        
-        			DBTableInfo otherTable = DBTableIdMgr.getInstance().getByClassName(relInfo.getClassName());
+        			DBTableInfo otherTable = DBTableIdMgr.getInstance().getByClassName(reltnInfo.getClassName());
         			if (otherTable != null)
         			{
         			    DBFieldInfo fi = otherTable.getFieldByName(parts[1]);
@@ -253,7 +253,7 @@ public class DataObjDataField implements Cloneable
                         }
         			} else
         			{
-        			    log.error("Couldn't find tableinfo for ["+relInfo.getClassName()+"]");
+        			    log.error("Couldn't find tableinfo for ["+reltnInfo.getClassName()+"]");
         			}
     		    } else
     		    {

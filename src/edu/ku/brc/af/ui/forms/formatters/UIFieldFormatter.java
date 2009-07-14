@@ -724,7 +724,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     @Override
     public boolean isValid(final String text)
     {
-        return isValid(this, text);
+        return isValid(this, text, false);
     }
     
     /**
@@ -825,7 +825,9 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
      * @param text the text to be validated.
      * @return true if it is valid
      */
-    public static boolean isValid(final UIFieldFormatterIFace formatter, final String text)
+    public static boolean isValid(final UIFieldFormatterIFace formatter, 
+                                  final String  text,
+                                  final boolean doValidateAll)
     {
         if (isNotEmpty(text))
         {
@@ -843,7 +845,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
                 {
                     if (pos < txtLen)
                     {
-                        if (!field.isIncrementer())
+                        if (!field.isIncrementer() || doValidateAll)
                         {
                             //numeric, alphanumeric, alpha, separator, year
                             String val = text.substring(pos, Math.min(pos+field.getSize(), txtLen));

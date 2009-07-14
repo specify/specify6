@@ -69,6 +69,7 @@ import edu.ku.brc.af.ui.forms.validation.ValComboBox;
 import edu.ku.brc.af.ui.forms.validation.ValSpinner;
 import edu.ku.brc.af.ui.forms.validation.ValTextField;
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.ui.UIHelper;
 
 /**
@@ -310,13 +311,9 @@ public class DataObjAggregatorDlg extends CustomDialog implements DataChangeList
         
         if (isNew)
         {
-            nameText.getDocument().addDocumentListener(new DocumentListener() {
-                
-                public void removeUpdate(DocumentEvent e)  { changed(e); }
-                public void insertUpdate(DocumentEvent e)  { changed(e); }
-                public void changedUpdate(DocumentEvent e) { changed(e); }
-                
-                protected void changed(@SuppressWarnings("unused") DocumentEvent e)
+            nameText.getDocument().addDocumentListener(new DocumentAdaptor() {
+                @Override
+                public void changedUpdate(DocumentEvent e)
                 {
                     isNameInError = dataObjFieldFormatMgrCache.getAggregator(nameText.getText()) != null;
                     validator.validateForm();
