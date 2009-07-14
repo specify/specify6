@@ -60,13 +60,16 @@
       <picklistitem title="Complete" value="complete"/>
     </items>
   </picklist>
-  <picklist name="ShipmentMethod" issystem="true" type="0" readonly="true" sizelimit="5">
+  <picklist name="ShipmentMethod" issystem="true" type="0" readonly="true" sizelimit="8">
     <items>
-      <picklistitem title="DHL" value="dhl"/>
-      <picklistitem title="Fed Ex" value="fedex"/>
-      <picklistitem title="By Hand" value="hand"/>
-      <picklistitem title="UPS" value="ups"/>
-      <picklistitem title="USPS" value="usps"/>
+      <picklistitem title="Air" value="Air"/>
+      <picklistitem title="Express" value="Express"/>
+      <picklistitem title="Library rate" value="Library rate"/>
+      <picklistitem title="Sea mail" value="Sea mail"/>
+      <picklistitem title="First class" value="First class"/>
+      <picklistitem title="Ground" value="Ground"/>
+      <picklistitem title="Priority" value="Priority"/>
+      <picklistitem title="NA/Unknown" value="NA/Unknown"/>
     </items>
   </picklist>
   <picklist name="AccessionType" issystem="true" type="0" readonly="true" sizelimit="2">
