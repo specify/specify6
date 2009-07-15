@@ -262,7 +262,27 @@ public class PreparationAttr extends CollectionMember implements AttributeIFace,
     {
         this.preparation = preparation;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()
+     */
+    @Override
+    @Transient
+    public Short getParentTableId()
+    {
+        return (short)Preparation.getClassTableId();
+    }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentId()
+     */
+    @Override
+    @Transient
+    public Integer getParentId()
+    {
+        return preparation != null ? preparation.getId() : null;
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */

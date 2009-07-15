@@ -222,6 +222,26 @@ public class GroupPerson extends CollectionMember implements java.io.Serializabl
     }
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()
+     */
+    @Override
+    @Transient
+    public Short getParentTableId()
+    {
+        return (short)Agent.getClassTableId();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentId()
+     */
+    @Override
+    @Transient
+    public Integer getParentId()
+    {
+        return member != null ? member.getId() : group != null ? group.getId() : null;
+    }
+    
+    /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getIdentityTitle()
      */
     @Override

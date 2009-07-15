@@ -408,7 +408,58 @@ public class Shipment extends CollectionMember implements java.io.Serializable
     public void setExchangeOut(ExchangeOut exchangeOut) {
         this.exchangeOut = exchangeOut;
     }
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()
+     */
+    @Override
+    @Transient
+   public Short getParentTableId()
+    {
+        if (borrow != null)
+        {
+            return (short)Borrow.getClassTableId();
+        }
+        if (loan != null)
+        {
+            return (short)Loan.getClassTableId();
+        }
+        if (exchangeOut != null)
+        {
+            return (short)ExchangeOut.getClassTableId();
+        }
+        if (gift != null)
+        {
+            return (short)Gift.getClassTableId();
+        }
+        return null;
+    }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentId()
+     */
+    @Override
+    @Transient
+    public Integer getParentId()
+    {
+        if (borrow != null)
+        {
+            return borrow.getId();
+        }
+        if (loan != null)
+        {
+            return loan.getId();
+        }
+        if (exchangeOut != null)
+        {
+            return exchangeOut.getId();
+        }
+        if (gift != null)
+        {
+            return gift.getId();
+        }
+        return null;
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */

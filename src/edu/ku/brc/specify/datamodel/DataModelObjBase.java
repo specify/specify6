@@ -608,12 +608,37 @@ public abstract class DataModelObjBase implements FormDataObjIFace,
     }
 
     //---------------------------------------------------------------------------
+    // Audit Support Support
+    //---------------------------------------------------------------------------
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.FormDataObjIFace#getParentId()
+     */
+    @Override
+    @Transient
+    public Integer getParentId()
+    {
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.FormDataObjIFace#getParentTableId()
+     */
+    @Override
+    @Transient
+    public Short getParentTableId()
+    {
+        return null;
+    }
+    
+    //---------------------------------------------------------------------------
     // Property Change Support
     //---------------------------------------------------------------------------
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#addPropertyChangeListener(java.beans.PropertyChangeListener)
      */
+    @Override
     public void addPropertyChangeListener(PropertyChangeListener listener)
     {
         if (changes == null)
@@ -623,9 +648,11 @@ public abstract class DataModelObjBase implements FormDataObjIFace,
         changes.addPropertyChangeListener(listener);
     }
 
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#addPropertyChangeListener(java.lang.String, java.beans.PropertyChangeListener)
      */
+    @Override
     public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener)
     {
         if (changes == null)
@@ -704,6 +731,7 @@ public abstract class DataModelObjBase implements FormDataObjIFace,
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#removePropertyChangeListener(java.beans.PropertyChangeListener)
      */
+    @Override
     public void removePropertyChangeListener(PropertyChangeListener listener)
     {
         if (changes == null)
@@ -716,6 +744,7 @@ public abstract class DataModelObjBase implements FormDataObjIFace,
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#removePropertyChangeListener(java.lang.String, java.beans.PropertyChangeListener)
      */
+    @Override
     public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener)
     {
         if (changes == null)

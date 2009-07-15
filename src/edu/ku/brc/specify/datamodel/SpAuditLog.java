@@ -46,6 +46,8 @@ public class SpAuditLog extends DataModelObjBase implements java.io.Serializable
     protected Integer           spAuditLogId;
     protected Short             tableNum;
     protected Integer           recordId;
+    protected Short             parentTableNum;
+    protected Integer           parentRecordId;
     protected Integer           recordVersion;
     protected Byte              action;
     
@@ -73,6 +75,8 @@ public class SpAuditLog extends DataModelObjBase implements java.io.Serializable
         spAuditLogId    = null;
         tableNum        = null;
         recordId        = null;
+        parentTableNum  = null;
+        parentRecordId  = null;
         recordVersion   = null;
         action          = null;
         
@@ -169,6 +173,40 @@ public class SpAuditLog extends DataModelObjBase implements java.io.Serializable
 	}
 
 	/**
+     * @return the parentTableNum
+     */
+    @Column(name = "ParentTableNum", unique = false, nullable = true, insertable = true, updatable = true)
+    public Short getParentTableNum()
+    {
+        return parentTableNum;
+    }
+
+    /**
+     * @param parentTableNum the parentTableNum to set
+     */
+    public void setParentTableNum(Short parentTableNum)
+    {
+        this.parentTableNum = parentTableNum;
+    }
+
+    /**
+     * @return the parentRecordId
+     */
+    @Column(name = "ParentRecordId", unique = false, nullable = true, insertable = true, updatable = true)
+    public Integer getParentRecordId()
+    {
+        return parentRecordId;
+    }
+
+    /**
+     * @param parentRecordId the parentRecordId to set
+     */
+    public void setParentRecordId(Integer parentRecordId)
+    {
+        this.parentRecordId = parentRecordId;
+    }
+
+    /**
      * @return the action
      */
     @Column(name = "Action", unique = false, nullable = false, insertable = true, updatable = true)

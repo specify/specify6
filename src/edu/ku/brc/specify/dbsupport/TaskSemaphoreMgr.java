@@ -43,7 +43,6 @@ import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.SpTaskSemaphore;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
-import edu.ku.brc.specify.datamodel.busrules.BaseTreeBusRules;
 import edu.ku.brc.ui.UIRegistry;
 
 /**

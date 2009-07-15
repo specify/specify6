@@ -756,7 +756,27 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
     {
         return collectionName;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()
+     */
+    @Override
+    @Transient
+    public Short getParentTableId()
+    {
+        return (short)Discipline.getClassTableId();
+    }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentId()
+     */
+    @Override
+    @Transient
+    public Integer getParentId()
+    {
+        return discipline != null ? discipline.getId() : null;
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */

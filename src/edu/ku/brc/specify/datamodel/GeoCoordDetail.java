@@ -371,6 +371,26 @@ public class GeoCoordDetail extends DataModelObjBase
         this.locality = locality;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()
+     */
+    @Override
+    @Transient
+    public Short getParentTableId()
+    {
+        return (short)Locality.getClassTableId();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentId()
+     */
+    @Override
+    @Transient
+    public Integer getParentId()
+    {
+        return locality != null ? locality.getId() : null;
+    }
+    
     /**
      * @param source the source to set
      */

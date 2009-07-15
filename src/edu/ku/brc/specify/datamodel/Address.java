@@ -39,6 +39,7 @@ import javax.persistence.Transient;
 
 import org.apache.commons.lang.StringUtils;
 
+import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.util.Orderable;
 
 /**
@@ -515,7 +516,50 @@ public class Address extends DataModelObjBase implements Orderable,
     {
         this.divisions = divisions;
     }
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentId()
+     */
+    @Override
+    @Transient
+    public Short getParentTableId()
+    {
+        if (agent != null)
+        {
+            return (short)Agent.getClassTableId();
+        }
+        if (insitutions != null && insitutions.size() == 1)
+        {
+            return (short)Institution.getClassTableId();
+        }
+        if (divisions != null && divisions.size() == 1)
+        {
+            return (short)Division.getClassTableId();
+        }
+        return null;
+    }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentId()
+     */
+    @Override
+    @Transient
+    public Integer getParentId()
+    {
+        if (agent != null)
+        {
+            return agent.getId();
+        }
+        if (insitutions != null && insitutions.size() == 1)
+        {
+            return ((FormDataObjIFace)insitutions.toArray()[0]).getId();
+        }
+        if (divisions != null && divisions.size() == 1)
+        {
+            return ((FormDataObjIFace)divisions.toArray()[0]).getId();
+        }
+        return null;
+    }
+    
     @Override
     @Transient
     public String getIdentityTitle()

@@ -144,6 +144,26 @@ public class Exsiccata extends DataModelObjBase implements java.io.Serializable
         this.exsiccataItems = exsiccataItems;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()
+     */
+    @Override
+    @Transient
+    public Short getParentTableId()
+    {
+        return (short)ReferenceWork.getClassTableId();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentId()
+     */
+    @Override
+    @Transient
+    public Integer getParentId()
+    {
+        return referenceWork != null ? referenceWork.getId() : null;
+    }
+    
     /**
      * Generic Getter for the ID Property.
      * @returns ID Property.

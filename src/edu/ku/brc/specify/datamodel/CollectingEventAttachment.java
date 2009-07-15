@@ -55,11 +55,11 @@ public class CollectingEventAttachment extends CollectionMember implements Objec
                                                                            Serializable,
                                                                            Comparable<CollectingEventAttachment>
 {
-    protected Integer    collectingEventAttachmentId;
-    protected CollectingEvent     collectingEvent;
-    protected Attachment attachment;
-    protected Integer    ordinal;
-    protected String     remarks;
+    protected Integer         collectingEventAttachmentId;
+    protected CollectingEvent collectingEvent;
+    protected Attachment      attachment;
+    protected Integer         ordinal;
+    protected String          remarks;
     
     public CollectingEventAttachment()
     {
@@ -203,6 +203,26 @@ public class CollectingEventAttachment extends CollectionMember implements Objec
     public void setObject(CollectingEvent object)
     {
         setCollectingEvent(object);
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()
+     */
+    @Override
+    @Transient
+    public Short getParentTableId()
+    {
+        return (short)CollectingEvent.getClassTableId();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentId()
+     */
+    @Override
+    @Transient
+    public Integer getParentId()
+    {
+        return collectingEvent != null ? collectingEvent.getId() : null;
     }
     
     /* (non-Javadoc)

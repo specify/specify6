@@ -168,7 +168,27 @@ public class ExsiccataItem extends DataModelObjBase implements java.io.Serializa
     public void setCollectionObject(CollectionObject collectionObject) {
         this.collectionObject = collectionObject;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()
+     */
+    @Override
+    @Transient
+    public Short getParentTableId()
+    {
+        return (short)Exsiccata.getClassTableId();
+    }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentId()
+     */
+    @Override
+    @Transient
+    public Integer getParentId()
+    {
+        return exsiccata != null ? exsiccata.getId() : null;
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */

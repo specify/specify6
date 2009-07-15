@@ -485,7 +485,26 @@ public class Discipline extends UserGroupScope implements java.io.Serializable, 
         return buffer.toString();*/
         return StringUtils.isNotEmpty(name) ? name :  type;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()
+     */
+    @Override
+    @Transient
+    public Short getParentTableId()
+    {
+        return (short)Division.getClassTableId();
+    }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentId()
+     */
+    @Override
+    @Transient
+    public Integer getParentId()
+    {
+        return division != null ? division.getId() : null;
+    }
     
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getIdentityTitle()

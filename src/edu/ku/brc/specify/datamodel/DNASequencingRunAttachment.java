@@ -162,6 +162,26 @@ public class DNASequencingRunAttachment extends DataModelObjBase implements Obje
     }
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()
+     */
+    @Override
+    @Transient
+    public Short getParentTableId()
+    {
+        return (short)DNASequencingRun.getClassTableId();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentId()
+     */
+    @Override
+    @Transient
+    public Integer getParentId()
+    {
+        return dnaSequencingRun != null ? dnaSequencingRun.getId() : null;
+    }
+    
+    /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getDataClass()
      */
     @Override

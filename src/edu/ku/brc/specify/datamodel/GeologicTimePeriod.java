@@ -495,7 +495,27 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
     {
         this.chronosStratsPaleoContext = chronosStratsPaleoContext;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()
+     */
+    @Override
+    @Transient
+    public Short getParentTableId()
+    {
+        return (short)GeologicTimePeriod.getClassTableId();
+    }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentId()
+     */
+    @Override
+    @Transient
+    public Integer getParentId()
+    {
+        return parent != null ? parent.getId() : null;
+    }
+    
     @Transient
     public Integer getTreeId()
     {

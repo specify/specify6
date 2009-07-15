@@ -88,7 +88,7 @@ public class Attachment extends DataModelObjBase implements Serializable
     protected Set<CollectionObjectAttachment>        collectionObjectAttachments;
     protected Set<ConservDescriptionAttachment>      conservDescriptionAttachments;
     protected Set<ConservEventAttachment>            conservEventAttachments;
-    protected Set<DNASequencingRunAttachment>             dnaSequenceAttachments;
+    protected Set<DNASequencingRunAttachment>        dnaSequenceAttachments;
     protected Set<FieldNotebookAttachment>           fieldNotebookAttachments;
     protected Set<FieldNotebookPageAttachment>       fieldNotebookPageAttachments;
     protected Set<FieldNotebookPageSetAttachment>    fieldNotebookPageSetAttachments;

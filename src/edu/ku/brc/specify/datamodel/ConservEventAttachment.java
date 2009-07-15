@@ -200,6 +200,26 @@ public class ConservEventAttachment extends DataModelObjBase implements ObjectAt
     }
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()
+     */
+    @Override
+    @Transient
+    public Short getParentTableId()
+    {
+        return (short)ConservEvent.getClassTableId();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentId()
+     */
+    @Override
+    @Transient
+    public Integer getParentId()
+    {
+        return conservEvent != null ? conservEvent.getId() : null;
+    }
+    
+    /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getIdentityTitle()
      */
     @Override

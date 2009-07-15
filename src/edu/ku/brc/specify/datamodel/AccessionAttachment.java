@@ -51,7 +51,7 @@ public class AccessionAttachment extends DataModelObjBase implements ObjectAttac
                                                                      Comparable<AccessionAttachment>
 {
     protected Integer    accessionAttachmentId;
-    protected Accession     accession;
+    protected Accession  accession;
     protected Attachment attachment;
     protected Integer    ordinal;
     protected String     remarks;
@@ -198,6 +198,26 @@ public class AccessionAttachment extends DataModelObjBase implements ObjectAttac
     public void setObject(Accession object)
     {
         setAccession(object);
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()
+     */
+    @Override
+    @Transient
+    public Short getParentTableId()
+    {
+        return (short)Accession.getClassTableId();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentId()
+     */
+    @Override
+    @Transient
+    public Integer getParentId()
+    {
+        return accession != null ? accession.getId() : null;
     }
     
     /* (non-Javadoc)

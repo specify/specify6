@@ -405,7 +405,7 @@ public class IconViewObj implements Viewable
         }
         else
         {
-            ViewBasedDisplayIFace dialog = FormHelper.createDataObjectDialog(altView, mainComp, selection, MultiView.isOptionOn(viewOptions, MultiView.IS_EDITTING), false);
+            ViewBasedDisplayIFace dialog = FormHelper.createDataObjectDialog(mainComp, selection, MultiView.isOptionOn(viewOptions, MultiView.IS_EDITTING), false);
             if (dialog != null)
             {
                 dialog.setData(selection);
@@ -446,7 +446,7 @@ public class IconViewObj implements Viewable
                     return;
                 }
                 
-                ViewBasedDisplayIFace dialog = FormHelper.createDataObjectDialog(altView, mainComp, selection, MultiView.isOptionOn(viewOptions, MultiView.IS_EDITTING), false);
+                ViewBasedDisplayIFace dialog = FormHelper.createDataObjectDialog(mainComp, selection, MultiView.isOptionOn(viewOptions, MultiView.IS_EDITTING), false);
                 if (dialog != null)
                 {
                     dialog.setData(selection);
@@ -547,7 +547,7 @@ public class IconViewObj implements Viewable
     public void setNewObject(final FormDataObjIFace newDataObj)
     {
         // get an edit dialog for the object
-        ViewBasedDisplayIFace dialog = FormHelper.createDataObjectDialog(altView, mainComp, newDataObj, true, true);
+        ViewBasedDisplayIFace dialog = FormHelper.createDataObjectDialog(mainComp, newDataObj, true, true);
         if (dialog == null)
         {
             log.error("Unable to create a dialog for data entry.  [" + newDataObj.getClass().getName() + "]");

@@ -695,7 +695,27 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
    public void setPreparationAttribute(PreparationAttribute preparationAttribute) {
        this.preparationAttribute = preparationAttribute;
    }
+   
+   /* (non-Javadoc)
+    * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()
+    */
+   @Override
+   @Transient
+   public Short getParentTableId()
+   {
+       return (short)CollectionObject.getClassTableId();
+   }
 
+   /* (non-Javadoc)
+    * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentId()
+    */
+   @Override
+   @Transient
+   public Integer getParentId()
+   {
+       return collectionObject != null ? collectionObject.getId() : null;
+   }
+   
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */

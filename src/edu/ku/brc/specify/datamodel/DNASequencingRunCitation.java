@@ -281,7 +281,26 @@ public class DNASequencingRunCitation extends DataModelObjBase
 	{
 		this.sequencingRun = sequencingRun;
 	}
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()
+     */
+    @Override
+    @Transient
+    public Short getParentTableId()
+    {
+        return (short)DNASequencingRun.getClassTableId();
+    }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentId()
+     */
+    @Override
+    @Transient
+    public Integer getParentId()
+    {
+        return sequencingRun != null ? sequencingRun.getId() : null;
+    }
 
 
 	/* (non-Javadoc)

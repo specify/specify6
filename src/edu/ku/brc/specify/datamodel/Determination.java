@@ -496,12 +496,10 @@ public class Determination extends CollectionMember implements java.io.Serializa
      * 
      * setTaxon() should be used instead.
      */
-    @SuppressWarnings("unused")
     public void setPreferredTaxon(Taxon preferredTaxon)
     {
         this.preferredTaxon = preferredTaxon;
     }
-
 
     /**
      * 
@@ -582,7 +580,27 @@ public class Determination extends CollectionMember implements java.io.Serializa
 //            ds.getId(); // make sure it is loaded;
 //        }
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()
+     */
+    @Override
+    @Transient
+    public Short getParentTableId()
+    {
+        return (short)CollectionObject.getClassTableId();
+    }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentId()
+     */
+    @Override
+    @Transient
+    public Integer getParentId()
+    {
+        return collectionObject != null ? collectionObject.getId() : null;
+    }
+ 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */

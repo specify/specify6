@@ -79,14 +79,22 @@ public class PostInsertEventListener implements org.hibernate.event.PostInsertEv
                     try
                     {
                         localSession = DataProviderFactory.getInstance().createSession();
-                        SpAuditLog spal = new SpAuditLog();
-                        spal.initialize();
-                        spal.setAction(action);
-                        spal.setRecordId(dObj.getId());
-                        spal.setRecordVersion(dObj.getVersion() == null ? 0 : dObj.getVersion());
-                        spal.setTableNum((short)dObj.getTableId());
                         
                         localSession.beginTransaction();
+                        
+                        SpAuditLog spal = new SpAuditLog();
+                        spal.initialize();
+                        
+                        spal.setRecordId(dObj.getId());
+                        spal.setTableNum((short)dObj.getTableId());
+                        
+                        spal.setParentRecordId(dObj.getParentId());
+                        spal.setParentTableNum(dObj.getParentTableId());
+                        
+                        spal.setRecordVersion(dObj.getVersion() == null ? 0 : dObj.getVersion());
+                        spal.setAction(action);
+                        
+                        
                         localSession.saveOrUpdate(spal);
                         localSession.commit();
                         

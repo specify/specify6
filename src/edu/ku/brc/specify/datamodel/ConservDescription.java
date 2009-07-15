@@ -396,6 +396,42 @@ public class ConservDescription extends DataModelObjBase implements AttachmentOw
     {
         this.conservDescriptionAttachments = conservDescriptionAttachments;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()
+     */
+    @Override
+    @Transient
+    public Short getParentTableId()
+    {
+        if (division != null)
+        {
+            return (short)Division.getClassTableId();
+        }
+        if (collectionObject != null)
+        {
+            return (short)CollectionObject.getClassTableId();
+        }
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentId()
+     */
+    @Override
+    @Transient
+    public Integer getParentId()
+    {
+        if (division != null)
+        {
+            return division.getId();
+        }
+        if (collectionObject != null)
+        {
+            return collectionObject.getId();
+        }
+        return null;
+    }
 
     /**
      * Generic Getter for the ID Property.

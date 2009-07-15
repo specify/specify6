@@ -295,9 +295,17 @@ public class SpQuery extends DataModelObjBase implements Cloneable
 		this.searchSynonymy = searchSynonymy;
 	}
 
-	
-	
-	/**
+	/* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#isChangeNotifier()
+     */
+    @Override
+    @Transient
+    public boolean isChangeNotifier()
+    {
+        return false;
+    }
+
+    /**
 	 * @return the countOnly
 	 */
 	@Column(name = "CountOnly", unique = false, nullable = true, insertable = true, updatable = true)

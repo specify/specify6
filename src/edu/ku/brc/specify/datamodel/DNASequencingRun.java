@@ -743,10 +743,29 @@ public class DNASequencingRun extends CollectionMember
 	}
 
 	//---------------------------------------------------------------
-	//DataModelObjBase override
+	// DataModelObjBase override
 	//---------------------------------------------------------------
-	
-	
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()
+     */
+    @Override
+    @Transient
+    public Short getParentTableId()
+    {
+        return (short)DNASequence.getClassTableId();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentId()
+     */
+    @Override
+    @Transient
+    public Integer getParentId()
+    {
+        return dnaSequence != null ? dnaSequence.getId() : null;
+    }
+
 	
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getDataClass()

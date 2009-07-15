@@ -50,11 +50,11 @@ public class ConservDescriptionAttachment extends DataModelObjBase implements Ob
                                                                               Serializable,
                                                                               Comparable<ConservDescriptionAttachment>
 {
-    protected Integer    conservDescriptionAttachmentId;
-    protected ConservDescription     conservDescription;
-    protected Attachment attachment;
-    protected Integer    ordinal;
-    protected String     remarks;
+    protected Integer            conservDescriptionAttachmentId;
+    protected ConservDescription conservDescription;
+    protected Attachment         attachment;
+    protected Integer            ordinal;
+    protected String             remarks;
     
     public ConservDescriptionAttachment()
     {
@@ -178,7 +178,27 @@ public class ConservDescriptionAttachment extends DataModelObjBase implements Ob
     {
         return conservDescriptionAttachmentId;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()
+     */
+    @Override
+    @Transient
+   public Short getParentTableId()
+    {
+        return (short)ConservDescription.getClassTableId();
+    }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentId()
+     */
+    @Override
+    @Transient
+    public Integer getParentId()
+    {
+        return conservDescription != null ? conservDescription.getId() : null;
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getTableId()
      */

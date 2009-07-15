@@ -199,7 +199,27 @@ public class DeaccessionPreparation extends DataModelObjBase implements java.io.
         this.loanReturnPreparations.remove(loanReturnPreparation);
         loanReturnPreparation.setDeaccessionPreparation(null);
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()
+     */
+    @Override
+    @Transient
+    public Short getParentTableId()
+    {
+        return (short)Deaccession.getClassTableId();
+    }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentId()
+     */
+    @Override
+    @Transient
+   public Integer getParentId()
+    {
+        return deaccession != null ? deaccession.getId() : null;
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */

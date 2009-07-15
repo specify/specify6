@@ -455,7 +455,17 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
 //	{
 //		this.useCaptionForText = useCaptionForText;
 //	}
-
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#isChangeNotifier()
+     */
+    @Override
+    @Transient
+    public boolean isChangeNotifier()
+    {
+        return false;
+    }
+    
 	/*
      * (non-Javadoc)
      * 

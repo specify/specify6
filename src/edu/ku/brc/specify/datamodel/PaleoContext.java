@@ -35,6 +35,8 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Index;
 
+import edu.ku.brc.af.ui.forms.FormDataObjIFace;
+
 /**
  * @author rods
  *
@@ -365,7 +367,31 @@ public class PaleoContext extends CollectionMember implements Cloneable
     {
         return paleoContextId;
     }
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()
+     */
+    @Override
+    @Transient
+    public Short getParentTableId()
+    {
+        return (short)CollectionObject.getClassTableId();
+    }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentId()
+     */
+    @Override
+    @Transient
+    public Integer getParentId()
+    {
+        
+        if (collectionObjects != null && collectionObjects.size() == 1)
+        {
+            return ((FormDataObjIFace)collectionObjects.toArray()[0]).getId();
+        }
+        return null;
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */

@@ -514,7 +514,27 @@ public class LithoStrat extends DataModelObjBase implements java.io.Serializable
     }
 
     /* Code added in order to implement Treeable */
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()
+     */
+    @Override
+    @Transient
+    public Short getParentTableId()
+    {
+        return (short)LithoStrat.getClassTableId();
+    }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentId()
+     */
+    @Override
+    @Transient
+    public Integer getParentId()
+    {
+        return parent != null ? parent.getId() : null;
+    }
+    
     @Transient
     public Integer getTreeId()
     {

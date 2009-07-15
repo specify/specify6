@@ -712,6 +712,26 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
     }
     */
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()
+     */
+    @Override
+    @Transient
+    public Short getParentTableId()
+    {
+        return (short)Discipline.getClassTableId();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentId()
+     */
+    @Override
+    @Transient
+    public Integer getParentId()
+    {
+        return discipline != null ? discipline.getId() : null;
+    }
+    
     @SuppressWarnings("unchecked")
     @Transient
     public List<CollectingEvent> getCollectingEvents()

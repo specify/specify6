@@ -52,11 +52,11 @@ public class BorrowReturnMaterial extends CollectionMember implements java.io.Se
 
     // Fields    
 
-     protected Integer borrowReturnMaterialId;
-     protected Calendar returnedDate;
-     protected Short quantity;
-     protected String remarks;
-     protected Agent agent;
+     protected Integer        borrowReturnMaterialId;
+     protected Calendar       returnedDate;
+     protected Short          quantity;
+     protected String         remarks;
+     protected Agent          agent;
      protected BorrowMaterial borrowMaterial;
 
 
@@ -189,6 +189,26 @@ public class BorrowReturnMaterial extends CollectionMember implements java.io.Se
     
     public void setBorrowMaterial(BorrowMaterial borrowMaterial) {
         this.borrowMaterial = borrowMaterial;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()
+     */
+    @Override
+    @Transient
+    public Short getParentTableId()
+    {
+        return (short)BorrowMaterial.getClassTableId();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentId()
+     */
+    @Override
+    @Transient
+    public Integer getParentId()
+    {
+        return borrowMaterial != null ? borrowMaterial.getId() : null;
     }
 
     /* (non-Javadoc)

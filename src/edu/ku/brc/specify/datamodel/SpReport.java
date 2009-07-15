@@ -378,6 +378,15 @@ public class SpReport extends DataModelObjBase
     //-- DataModelObjBase
     //----------------------------------------------------------------------
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#isChangeNotifier()
+     */
+    @Override
+    @Transient
+    public boolean isChangeNotifier()
+    {
+        return false;
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getDataClass()

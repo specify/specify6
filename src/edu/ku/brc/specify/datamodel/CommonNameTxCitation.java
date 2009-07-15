@@ -302,8 +302,27 @@ public class CommonNameTxCitation extends DataModelObjBase implements java.io.Se
 	{
 		this.commonNameTx = commonNameTx;
 	}
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()
+     */
+    @Override
+    @Transient
+    public Short getParentTableId()
+    {
+        return (short)CommonNameTx.getClassTableId();
+    }
 
-
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentId()
+     */
+    @Override
+    @Transient
+    public Integer getParentId()
+    {
+        return commonNameTx != null ? commonNameTx.getId() : null;
+    }
+    
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.specify.datamodel.DataModelObjBase#initialize()
 	 */

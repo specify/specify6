@@ -35,6 +35,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 
 /**
  * @author rods
@@ -271,7 +272,52 @@ public class AttributeDef extends DataModelObjBase implements java.io.Serializab
         this.collectionObjectAttrs.remove(collectionObjectAttr);
         collectionObjectAttr.setCollectionObject(null);
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()
+     */
+    @Override
+    @Transient
+    public Short getParentTableId()
+    {
+        if (collectingEventAttrs != null && collectingEventAttrs.size() > 0)
+        {
+            return (short)CollectingEventAttr.getClassTableId();
+        }
+        if (preparationAttrs != null && collectingEventAttrs.size() > 0)
+        {
+            return (short)PreparationAttr.getClassTableId();
+        }
+        if (collectionObjectAttrs != null && collectingEventAttrs.size() > 0)
+        {
+            return (short)CollectionObjectAttr.getClassTableId();
+        }
+        return null;
+    }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentId()
+     */
+    @Override
+    @Transient
+    public Integer getParentId()
+    {
+        
+        if (collectingEventAttrs != null && collectingEventAttrs.size() == 1)
+        {
+            return ((FormDataObjIFace)collectingEventAttrs.toArray()[0]).getId();
+        }
+        if (preparationAttrs != null && collectingEventAttrs.size() == 1)
+        {
+            return ((FormDataObjIFace)preparationAttrs.toArray()[0]).getId();
+        }
+        if (collectionObjectAttrs != null && collectingEventAttrs.size() == 1)
+        {
+            return ((FormDataObjIFace)collectionObjectAttrs.toArray()[0]).getId();
+        }
+        return null;
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */

@@ -34,6 +34,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import edu.ku.brc.af.ui.forms.FormDataObjIFace;
+
 /**
  * @author rod
  *
@@ -331,6 +333,67 @@ public class AddressOfRecord extends DataModelObjBase
     {
         return AddressOfRecord.class;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentId()
+     */
+    @Override
+    @Transient
+    public Short getParentTableId()
+    {
+        if (accessions != null && accessions.size() == 1)
+        {
+            return (short)Accession.getClassTableId();
+        }
+        if (repositoryAgreements != null && repositoryAgreements.size() == 1)
+        {
+            return (short)RepositoryAgreement.getClassTableId();
+        }
+        if (loans != null && loans.size() == 1)
+        {
+            return (short)Loan.getClassTableId();
+        }
+        if (exchangeIns != null && exchangeIns.size() == 1)
+        {
+            return (short)ExchangeIn.getClassTableId();
+        }
+        if (exchangeOuts != null && exchangeOuts.size() == 1)
+        {
+            return (short)ExchangeOut.getClassTableId();
+        }
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentId()
+     */
+    @Override
+    @Transient
+    public Integer getParentId()
+    {
+        if (accessions != null && accessions.size() == 1)
+        {
+            return ((FormDataObjIFace)accessions.toArray()[0]).getId();
+        }
+        if (repositoryAgreements != null && repositoryAgreements.size() == 1)
+        {
+            return ((FormDataObjIFace)repositoryAgreements.toArray()[0]).getId();
+        }
+        if (loans != null && loans.size() == 1)
+        {
+            return ((FormDataObjIFace)loans.toArray()[0]).getId();
+        }
+        if (exchangeIns != null && exchangeIns.size() == 1)
+        {
+            return ((FormDataObjIFace)exchangeIns.toArray()[0]).getId();
+        }
+        if (exchangeOuts != null && exchangeOuts.size() == 1)
+        {
+            return ((FormDataObjIFace)exchangeOuts.toArray()[0]).getId();
+        }
+        return null;
+    }
+
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getId()

@@ -42,6 +42,8 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
+import edu.ku.brc.af.ui.forms.FormDataObjIFace;
+
 /**
 
  */
@@ -371,7 +373,31 @@ public class Permit extends DataModelObjBase implements AttachmentOwnerIFace<Per
     //---------------------------------------------------------------------------
     // Overrides DataModelObjBase
     //---------------------------------------------------------------------------
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()
+     */
+    @Override
+    @Transient
+    public Short getParentTableId()
+    {
+        return (short)AccessionAuthorization.getClassTableId();
+    }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentId()
+     */
+    @Override
+    @Transient
+    public Integer getParentId()
+    {
+        if (accessionAuthorizations != null && accessionAuthorizations.size() == 1)
+        {
+            return ((FormDataObjIFace)accessionAuthorizations.toArray()[0]).getId();
+        }
+        return null;
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getIdentityTitle()
      */

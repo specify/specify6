@@ -200,6 +200,26 @@ public class AgentSpecialty extends DataModelObjBase implements Serializable, Or
         return orderNumber.compareTo(obj.orderNumber);
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()
+     */
+    @Override
+    @Transient
+    public Short getParentTableId()
+    {
+        return (short)Agent.getClassTableId();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentId()
+     */
+    @Override
+    @Transient
+    public Integer getParentId()
+    {
+        return agent != null ? agent.getId() : null;
+    }
+    
     @Override
     @Transient
     public String getIdentityTitle()

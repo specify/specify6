@@ -638,7 +638,30 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
         }
 		return dir;
 	}
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()
+     */
+    @Override
+    @Transient
+    public Short getParentTableId()
+    {
+        return (short)Geography.getClassTableId();
+    }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentId()
+     */
+    @Override
+    @Transient
+    public Integer getParentId()
+    {
+        return parent != null ? parent.getId() : null;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.Treeable#getFullNameSeparator()
+     */
     @Transient
 	public String getFullNameSeparator()
 	{

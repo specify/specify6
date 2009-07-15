@@ -584,9 +584,7 @@ public final class FormHelper
      * @param isNewObject whether it is a new object
      * @return the dialog
      */
-    public static  ViewBasedDisplayIFace createDataObjectDialog(@SuppressWarnings("unused") 
-                                                                final AltViewIFace     altView, 
-                                                                final JComponent       mainComp, 
+    public static  ViewBasedDisplayIFace createDataObjectDialog(final JComponent       mainComp, 
                                                                 final FormDataObjIFace dataObj, 
                                                                 final boolean          isEditMode,
                                                                 final boolean          isNewObject)

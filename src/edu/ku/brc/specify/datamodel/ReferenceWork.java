@@ -640,6 +640,26 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
     }
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()
+     */
+    @Override
+    @Transient
+    public Short getParentTableId()
+    {
+        return (short)(journal != null ? Journal.getClassTableId() : containedRFParent != null ? ReferenceWork.getClassTableId() : null);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentId()
+     */
+    @Override
+    @Transient
+    public Integer getParentId()
+    {
+        return journal != null ? Journal.getClassTableId() : containedRFParent != null ? containedRFParent.getId() : null;
+    }
+    
+    /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override

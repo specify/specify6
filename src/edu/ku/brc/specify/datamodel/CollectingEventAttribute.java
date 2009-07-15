@@ -598,6 +598,30 @@ public class CollectingEventAttribute extends CollectionMember
         return this.collectingEventAttributeId;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()
+     */
+    @Override
+    @Transient
+    public Short getParentTableId()
+    {
+        return (short)CollectingEvent.getClassTableId();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentId()
+     */
+    @Override
+    @Transient
+    public Integer getParentId()
+    {
+        if (collectingEvents != null && collectingEvents.size() == 1)
+        {
+            return ((CollectionObject)collectingEvents.toArray()[0]).getId();
+        }
+        return null;
+    }
+    
     /**
      * @return the Table ID for the class.
      */

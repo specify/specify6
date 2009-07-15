@@ -982,7 +982,7 @@ public class TableViewObj implements Viewable,
             parentDataObj.addReference(dObj, dataSetFieldName);
         }
         
-        final ViewBasedDisplayIFace dialog = FormHelper.createDataObjectDialog(altView, mainComp, dObj, isEditing, isNew);
+        final ViewBasedDisplayIFace dialog = FormHelper.createDataObjectDialog(mainComp, dObj, isEditing, isNew);
         if (dialog != null)
         {
             // Now we need to get the MultiView and add it into the MV tree

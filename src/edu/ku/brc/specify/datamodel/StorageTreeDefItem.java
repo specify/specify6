@@ -352,7 +352,27 @@ public class StorageTreeDefItem extends DataModelObjBase implements Serializable
 			+ getId();
 		return BasicSQLUtils.getNumRecords(sql) > 0;
 	}
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()
+     */
+    @Override
+    @Transient
+    public Short getParentTableId()
+    {
+        return (short)StorageTreeDef.getClassTableId();
+    }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentId()
+     */
+    @Override
+    @Transient
+    public Integer getParentId()
+    {
+        return parent != null ? parent.getId() : null;
+    }
+    
 	/**
      * @return the Table ID for the class.
      */

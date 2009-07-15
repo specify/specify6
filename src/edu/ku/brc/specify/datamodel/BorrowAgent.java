@@ -69,9 +69,6 @@ public class BorrowAgent extends CollectionMember implements java.io.Serializabl
     public BorrowAgent(Integer borrowAgentId) {
         this.borrowAgentId = borrowAgentId;
     }
-   
-    
-    
 
     // Initializer
     @Override
@@ -163,7 +160,7 @@ public class BorrowAgent extends CollectionMember implements java.io.Serializabl
     }
 
     /**
-     *      * ID of borrow in which Agent played role
+     * ID of borrow in which Agent played role
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "BorrowID", unique = false, nullable = false, insertable = true, updatable = true)
@@ -173,6 +170,26 @@ public class BorrowAgent extends CollectionMember implements java.io.Serializabl
     
     public void setBorrow(Borrow borrow) {
         this.borrow = borrow;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentTableId()
+     */
+    @Override
+    @Transient
+    public Short getParentTableId()
+    {
+        return (short)Agent.getClassTableId();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getParentId()
+     */
+    @Override
+    @Transient
+    public Integer getParentId()
+    {
+        return agent != null ? agent.getId() : null;
     }
 
     /* (non-Javadoc)
