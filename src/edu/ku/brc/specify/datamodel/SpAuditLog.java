@@ -40,14 +40,14 @@ import javax.persistence.Transient;
 @Table(name = "spauditlog")
 public class SpAuditLog extends DataModelObjBase implements java.io.Serializable 
 {
-
+    public enum ACTION {Insert, Update, Remove};
     // Fields
 
     protected Integer           spAuditLogId;
-    protected Integer           tableNum;
+    protected Short             tableNum;
     protected Integer           recordId;
-    protected Integer           action;
-    protected String            description;
+    protected Integer           recordVersion;
+    protected Byte              action;
     
     protected Set<SpAuditLogField> fields;
 
@@ -73,8 +73,8 @@ public class SpAuditLog extends DataModelObjBase implements java.io.Serializable
         spAuditLogId    = null;
         tableNum        = null;
         recordId        = null;
+        recordVersion   = null;
         action          = null;
-        description     = null;
         
         fields          = new HashSet<SpAuditLogField>();
     }
@@ -123,17 +123,34 @@ public class SpAuditLog extends DataModelObjBase implements java.io.Serializable
      *
      */
     @Column(name = "TableNum", unique = false, nullable = false, insertable = true, updatable = true)
-    public Integer getTableNum() 
+    public Short getTableNum() 
     {
         return this.tableNum;
     }
 
-    public void setTableNum(Integer tableNum) 
+    public void setTableNum(Short tableNum) 
     {
         this.tableNum = tableNum;
     }
 
     
+    /**
+     * @return the recordVersion
+     */
+    @Column(name = "RecordVersion", unique = false, nullable = false, insertable = true, updatable = true)
+    public Integer getRecordVersion()
+    {
+        return recordVersion;
+    }
+
+    /**
+     * @param recordVersion the recordVersion to set
+     */
+    public void setRecordVersion(Integer recordVersion)
+    {
+        this.recordVersion = recordVersion;
+    }
+
     /**
 	 * @return the recordId
 	 */
@@ -155,7 +172,7 @@ public class SpAuditLog extends DataModelObjBase implements java.io.Serializable
      * @return the action
      */
     @Column(name = "Action", unique = false, nullable = false, insertable = true, updatable = true)
-    public Integer getAction()
+    public Byte getAction()
     {
         return action;
     }
@@ -163,26 +180,9 @@ public class SpAuditLog extends DataModelObjBase implements java.io.Serializable
     /**
      * @param action the action to set
      */
-    public void setAction(Integer action)
+    public void setAction(Byte action)
     {
         this.action = action;
-    }
-
-    /**
-     * @return the desc
-     */
-    @Column(name = "Description", unique = false, nullable = false, insertable = true, updatable = true, length = 64)
-    public String getDescription()
-    {
-        return description;
-    }
-    
-    /**
-     * @param desc the desc to set
-     */
-    public void setDescription(String desc)
-    {
-        this.description = desc;
     }
 
     /**
@@ -235,6 +235,16 @@ public class SpAuditLog extends DataModelObjBase implements java.io.Serializable
     public static int getClassTableId()
     {
         return 530;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#isChangeNotifier()
+     */
+    @Transient
+    @Override
+    public boolean isChangeNotifier()
+    {
+        return false;
     }
 
 }

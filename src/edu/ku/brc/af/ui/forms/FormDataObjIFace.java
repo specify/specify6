@@ -148,6 +148,11 @@ public interface FormDataObjIFace
     public abstract int getTableId();
     
     /**
+     * @return the version number of the record or null if it does apply.
+     */
+    public abstract Integer getVersion();
+    
+    /**
      * Returns whether the viewing of this class is restrictable
      * @return - boolean whether the viewing of this class is restrictable
      */

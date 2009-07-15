@@ -22,8 +22,6 @@ package edu.ku.brc.specify.dbsupport;
 import org.hibernate.event.PostUpdateEvent;
 
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
-import edu.ku.brc.ui.CommandAction;
-import edu.ku.brc.ui.CommandDispatcher;
 
 /**
  * THis class listens for Update events from Hibernate so it can update the Lucene index.<br>
@@ -50,13 +48,9 @@ public class PostUpdateEventListener implements org.hibernate.event.PostUpdateEv
         {
             if (((FormDataObjIFace)obj.getEntity()).isChangeNotifier())
             {
-                CommandDispatcher.dispatch(new CommandAction("Database", "Update", obj.getEntity()));
+                PostInsertEventListener.saveOnAuditTrail((byte)1, obj.getEntity());
             }
-        } else
-        {
-            CommandDispatcher.dispatch(new CommandAction("Database", "Update", obj.getEntity()));
         }
-
     }
 
 }

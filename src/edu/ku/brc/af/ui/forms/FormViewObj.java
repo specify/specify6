@@ -2735,6 +2735,7 @@ public class FormViewObj implements Viewable,
         
         if (saveState == SAVE_STATE.SaveOK)
         {
+            
             if (businessRules != null)
             {
                 businessRules.afterSaveCommit(dataObj, session);
@@ -3153,6 +3154,7 @@ public class FormViewObj implements Viewable,
                         }
                         session.commit();
                         session.flush();
+                        
                         if (businessRules != null)
                         {
                             businessRules.afterDeleteCommit(dbDataObj);

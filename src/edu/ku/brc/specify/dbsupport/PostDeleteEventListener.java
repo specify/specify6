@@ -22,8 +22,6 @@ package edu.ku.brc.specify.dbsupport;
 import org.hibernate.event.PostDeleteEvent;
 
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
-import edu.ku.brc.ui.CommandAction;
-import edu.ku.brc.ui.CommandDispatcher;
 
 /**
  * This class listens for Insert events from Hibernate so it can update the Lucene index. 
@@ -50,11 +48,8 @@ public class PostDeleteEventListener implements org.hibernate.event.PostDeleteEv
         {
             if (((FormDataObjIFace)obj.getEntity()).isChangeNotifier())
             {
-                CommandDispatcher.dispatch(new CommandAction("Database", "Delete", obj.getEntity()));
+                PostInsertEventListener.saveOnAuditTrail((byte)2, obj.getEntity());
             }
-        } else
-        {
-            CommandDispatcher.dispatch(new CommandAction("Database", "Delete", obj.getEntity()));
         }
     }
 

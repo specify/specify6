@@ -215,11 +215,9 @@
 		<listener type="post-delete" class="edu.ku.brc.specify.dbsupport.PostDeleteEventListener" />
 		-->
 		
-		<!--
-		<listener type="post-commit-update" class="edu.ku.brc.specify.dbsupport.DBSaveEventListener"  />
-		<listener type="post-commit-insert" class="edu.ku.brc.specify.dbsupport.DBSaveEventListener"  />
-		<listener type="post-commit-delete" class="edu.ku.brc.specify.dbsupport.DBFlushEventListener" /> 
-		 -->
+		<listener type="post-commit-update" class="edu.ku.brc.specify.dbsupport.PostUpdateEventListener"  />
+		<listener type="post-commit-insert" class="edu.ku.brc.specify.dbsupport.PostInsertEventListener"  />
+		<listener type="post-commit-delete" class="edu.ku.brc.specify.dbsupport.PostDeleteEventListener" /> 
 		
 	</session-factory>
 

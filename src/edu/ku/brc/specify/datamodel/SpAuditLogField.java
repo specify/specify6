@@ -210,5 +210,15 @@ public class SpAuditLogField extends DataModelObjBase implements java.io.Seriali
     {
         return 531;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#isChangeNotifier()
+     */
+    @Transient
+    @Override
+    public boolean isChangeNotifier()
+    {
+        return false;
+    }
 
 }

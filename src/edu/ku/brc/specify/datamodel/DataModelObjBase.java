@@ -167,7 +167,7 @@ public abstract class DataModelObjBase implements FormDataObjIFace,
 
     @Version
     @Column(name="Version")
-    public int getVersion()
+    public Integer getVersion()
     {
         return version;
     }

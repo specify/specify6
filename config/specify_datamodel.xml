@@ -2501,10 +2501,9 @@
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.SpecifyUser" relationshipname="specifyUser" columnname="SpecifyUserID" othersidename="spAppResourceDirs" updatable="false" required="false" save="false"/>
     </table>
     <table classname="edu.ku.brc.specify.datamodel.SpAuditLog" table="spauditlog" tableid="530" searchable="false" abbrv="spal">
-      <field column="Action" name="action" type="java.lang.Integer" updatable="true" required="true" unique="false" indexed="false" partialDate="false"/>
-      <field column="Description" name="description" type="java.lang.String" length="64" updatable="true" required="true" unique="false" indexed="false" partialDate="false"/>
+      <field column="Action" name="action" type="java.lang.Byte" updatable="true" required="true" unique="false" indexed="false" partialDate="false"/>
       <field column="RecordId" name="recordId" type="java.lang.Integer" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
-      <field column="TableNum" name="tableNum" type="java.lang.Integer" updatable="true" required="true" unique="false" indexed="false" partialDate="false"/>
+      <field column="TableNum" name="tableNum" type="java.lang.Short" updatable="true" required="true" unique="false" indexed="false" partialDate="false"/>
       <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" updatable="false" required="true" unique="false" indexed="false" partialDate="false"/>
       <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
       <field column="Version" name="version" type="java.lang.Integer" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>

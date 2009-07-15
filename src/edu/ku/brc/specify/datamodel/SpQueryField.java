@@ -631,6 +631,16 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
         return getClassTableId();
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#isChangeNotifier()
+     */
+    @Transient
+    @Override
+    public boolean isChangeNotifier()
+    {
+        return false;
+    }
+
     /**
      * @return the Table ID for the class.
      */
