@@ -43,7 +43,7 @@
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.RepositoryAgreement" relationshipname="repositoryAgreement" columnname="RepositoryAgreementID" othersidename="accessions" updatable="false" required="false" save="false"/>
       <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.TreatmentEvent" relationshipname="treatmentEvents" othersidename="accession" updatable="false" required="false" save="true"/>
     </table>
-    <table classname="edu.ku.brc.specify.datamodel.AccessionAgent" table="accessionagent" tableid="12" searchable="true" abbrv="aa">
+    <table classname="edu.ku.brc.specify.datamodel.AccessionAgent" table="accessionagent" tableid="12" searchable="true" businessrule="edu.ku.brc.specify.datamodel.busrules.AccessionAgentBusRules" abbrv="aa">
       <display view="AccessionAgent" dataobjformatter="AccessionAgent" searchdlg="AccessionAgentSearch" newobjdlg="AccessionAgentDisplay"/>
       <field column="Remarks" name="remarks" type="text" length="4096" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
       <field column="Role" name="role" type="java.lang.String" length="50" updatable="true" required="true" unique="false" indexed="false" partialDate="false"/>
@@ -70,7 +70,7 @@
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="createdByAgent" columnname="CreatedByAgentID" updatable="false" required="false" save="false"/>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="modifiedByAgent" columnname="ModifiedByAgentID" updatable="false" required="false" save="false"/>
     </table>
-    <table classname="edu.ku.brc.specify.datamodel.AccessionAuthorization" table="accessionauthorization" tableid="13" searchable="true" abbrv="aca">
+    <table classname="edu.ku.brc.specify.datamodel.AccessionAuthorization" table="accessionauthorization" tableid="13" searchable="true" businessrule="edu.ku.brc.specify.datamodel.busrules.AccessionAuthorizationBusRules" abbrv="aca">
       <display dataobjformatter="AccessionAuthorization"/>
       <field column="Remarks" name="remarks" type="text" length="4096" updatable="true" required="false" unique="false" indexed="false" partialDate="false"/>
       <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" updatable="false" required="true" unique="false" indexed="false" partialDate="false"/>

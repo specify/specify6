@@ -28,6 +28,7 @@
         <view name="AccessionAgent"
               objtitle="Accession Agent"
               class="edu.ku.brc.specify.datamodel.AccessionAgent"
+              busrules="edu.ku.brc.specify.datamodel.busrules.AccessionAgentBusRules"
               resourcelabels="false">
             <desc><![CDATA[Subform within the Accession form.]]></desc>
             <altviews>
@@ -41,6 +42,7 @@
         <view name="AccessionAuthorization"
             objtitle="Accession Authorization"
             class="edu.ku.brc.specify.datamodel.AccessionAuthorization"
+            busrules="edu.ku.brc.specify.datamodel.busrules.AccessionAuthorizationBusRules"
             resourcelabels="false">
             <desc><![CDATA[Permit subform within the Accession form.]]></desc>
             <altviews>

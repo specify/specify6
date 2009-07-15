@@ -52,8 +52,6 @@ import org.hibernate.annotations.Index;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
-//Meg removed uniqueConstraints
-//@Table(name = "accession", uniqueConstraints = { @UniqueConstraint(columnNames = { "RepositoryAgreementID" }) })
 @Table(name = "accession")
 @org.hibernate.annotations.Table(appliesTo="accession", indexes =
     {   @Index (name="AccessionNumberIDX", columnNames={"AccessionNumber"}),

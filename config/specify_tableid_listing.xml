@@ -18,6 +18,7 @@
         </table>
         <table name="edu.ku.brc.specify.datamodel.AccessionAgent" abbrev="aa" id="12" searchable="true">
             <display view="AccessionAgent" dataobjformatter="AccessionAgent" searchdlg="AccessionAgentSearch" newobjdlg="AccessionAgentDisplay"/>
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.AccessionAgentBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.AccessionAttachment" abbrev="acat" id="108" searchable="true">
             <display view="ObjectAttachment" newobjdlg="AccessionAttachmentDisplay" searchdlg="AttachmentSearch" />
@@ -25,6 +26,7 @@
         </table>
         <table name="edu.ku.brc.specify.datamodel.AccessionAuthorization" abbrev="aca" id="13" searchable="true">
             <display dataobjformatter="AccessionAuthorization"/>
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.AccessionAuthorizationBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.Address" abbrev="ad" id="8" workbench="false" searchable="true">
             <display view="Address" newobjdlg="AddressDisplay"/>

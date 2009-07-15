@@ -24,6 +24,7 @@ import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
@@ -903,6 +904,49 @@ public class BaseBusRules implements BusinessRulesIFace
                 FormHelper.setValue(data, "GUID", lsid);
             }
         }
+    }
+    
+    /**
+     * Removed an Object from a Collection by Id.
+     * @param collection the Java Collection
+     * @param dataObj the data object to be removed
+     */
+    public static void removeById(final Collection<?> collection, final FormDataObjIFace dataObj)
+    {
+        for (Object obj : collection.toArray())
+        {
+            if (obj instanceof FormDataObjIFace)
+            {
+                FormDataObjIFace colObj = (FormDataObjIFace)obj;
+                if (obj == colObj || (colObj.getId() != null && dataObj.getId() != null && dataObj.getId().equals(colObj.getId())))
+                {
+                    collection.remove(obj);
+                    break;
+                }
+            }
+        }
+    }
+
+    /**
+     * Removed an Object from a Collection by Id.
+     * @param collection the Java Collection
+     * @param dataObj the data object to be removed
+     */
+    public static int countDataObjectById(final Collection<?> collection, final FormDataObjIFace dataObj)
+    {
+        int cnt = 0;
+        for (Object obj : collection.toArray())
+        {
+            if (obj instanceof FormDataObjIFace)
+            {
+                FormDataObjIFace colObj = (FormDataObjIFace)obj;
+                if (obj == colObj || (colObj.getId() != null && dataObj.getId() != null && dataObj.getId().equals(colObj.getId())))
+                {
+                    cnt++;
+                }
+            }
+        }
+        return cnt;
     }
 
     /* (non-Javadoc)
