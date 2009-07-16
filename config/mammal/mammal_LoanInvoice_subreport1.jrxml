@@ -38,10 +38,10 @@ FROM (SELECT e1.*, taxon.FullName AS TaxonFullName
 FROM (SELECT collectionobject.CatalogNumber, collectionobject.FieldNumber, collectionobject.CollectionObjectID, collectionobject.CollectingEventID, 
 determination.PreferredTaxonID
 FROM collectionobject 
-INNER JOIN determination 
+LEFT JOIN determination 
 ON collectionobject.CollectionObjectID = determination.CollectionObjectID 
-WHERE determination.IsCurrent) e1 
-INNER JOIN taxon 
+WHERE determination.IsCurrent or determination.determinationid is null) e1 
+LEFT JOIN taxon 
 ON e1.PreferredTaxonID = taxon.TaxonID) e2 
 INNER JOIN preparation 
 ON e2.CollectionObjectID = preparation.CollectionObjectID) e3 
@@ -51,11 +51,11 @@ INNER JOIN loanpreparation
 ON e4.PreparationID = loanpreparation.PreparationID) e5 
 INNER JOIN loan 
 ON e5.LoanID = loan.LoanID) e6 
-INNER JOIN collectingevent 
+LEFT JOIN collectingevent 
 ON e6.CollectingEventID = collectingevent.CollectingEventID) e7 
-INNER JOIN locality 
+LEFT JOIN locality 
 ON e7.LocalityID = locality.LocalityID) e8 
-INNER JOIN geography 
+LEFT JOIN geography 
 ON e8.GeographyID = geography.GeographyID 
 where LoanID $P!{itemnum} order by CatalogNumber]]></queryString>
 
