@@ -30,6 +30,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
+
 /**
  * 
  */
@@ -234,6 +237,12 @@ public class AccessionAuthorization extends DataModelObjBase implements java.io.
     @Transient
     public String getIdentityTitle()
     {
-        return permit != null ? permit.getIdentityTitle() : super.getIdentityTitle();
+        if (permit != null)
+        {
+            return permit.getIdentityTitle();
+        }
+        
+        DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(Permit.getClassTableId());
+        return ti.getTitle();
     }
 }

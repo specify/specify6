@@ -14,17 +14,21 @@
  */
 package edu.ku.brc.specify.datamodel.busrules;
 
+import java.util.Set;
+
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import edu.ku.brc.af.ui.forms.BaseBusRules;
+import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.AccessionAuthorization;
 import edu.ku.brc.specify.datamodel.Permit;
+import edu.ku.brc.specify.datamodel.RepositoryAgreement;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -55,7 +59,7 @@ public class AccessionAuthorizationBusRules extends BaseBusRules
     {
         super.initialize(viewableArg);
         
-        if (formViewObj != null)
+        if (formViewObj != null && formViewObj.isEditing())
         {
             permitQCBX = formViewObj.getCompById("1");
             if (permitQCBX != null)
@@ -66,11 +70,15 @@ public class AccessionAuthorizationBusRules extends BaseBusRules
                     {
                         if (!e.getValueIsAdjusting())
                         {
-                            Accession  accession = (Accession)formViewObj.getParentDataObj();
-                            Permit     permit    = (Permit)permitQCBX.getValue();
-                            if (countDataObjectById(accession.getAccessionAuthorizations(), permit) > 1)
+                            FormDataObjIFace parentData = (FormDataObjIFace)formViewObj.getParentDataObj();
+                            Set<?>           setOfData  = parentData instanceof Accession ? ((Accession)parentData).getAccessionAuthorizations() :
+                                                          ((RepositoryAgreement)parentData).getRepositoryAgreementAuthorizations();
+                            
+                            Permit permit = (Permit)permitQCBX.getValue();
+                            if (countDataObjectById(setOfData, permit) > 1)
                             {
-                                UIRegistry.showError("dup");
+                                UIRegistry.showLocalizedError("ACCAUTH_DUP", permit.getIdentityTitle());
+                                
                                 SwingUtilities.invokeLater(new Runnable() {
                                     @Override
                                     public void run()

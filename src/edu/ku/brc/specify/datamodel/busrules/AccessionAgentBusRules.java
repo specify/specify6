@@ -19,6 +19,8 @@ package edu.ku.brc.specify.datamodel.busrules;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.Hashtable;
 
 import javax.swing.SwingUtilities;
@@ -26,6 +28,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import edu.ku.brc.af.ui.forms.BaseBusRules;
+import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.validation.ValComboBox;
 import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
@@ -33,6 +36,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.AccessionAgent;
 import edu.ku.brc.specify.datamodel.Agent;
+import edu.ku.brc.specify.datamodel.RepositoryAgreement;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -66,7 +70,7 @@ public class AccessionAgentBusRules extends BaseBusRules
     {
         super.initialize(viewableArg);
         
-        if (formViewObj != null)
+        if (formViewObj != null && formViewObj.isEditing())
         {
             agentQCBX = formViewObj.getCompById("1");
             if (agentQCBX != null)
@@ -86,48 +90,105 @@ public class AccessionAgentBusRules extends BaseBusRules
             roleCBX = formViewObj.getCompById("2");
             if (roleCBX != null)
             {
-                roleCBX.getComboBox().addActionListener(new ActionListener() {
+                roleCBX.getComboBox().addItemListener(new ItemListener() {
+                    @Override
+                    public void itemStateChanged(ItemEvent e)
+                    {
+                        if (e.getStateChange() == ItemEvent.SELECTED)
+                        {
+                            checkForDuplicate();
+                        }
+                    }
                     
-                    /* (non-Javadoc)
-                     * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
-                     */
+                });
+                
+                roleCBX.getComboBox().addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e)
                     {
-                        checkForDuplicate();
+                        //checkForDuplicate();
                     }
                 });
             }
         }
     }
     
+    /**
+     * 
+     */
     private void checkForDuplicate()
     {
-        Accession  accession  = (Accession)formViewObj.getParentDataObj();
-        Agent      agent      = (Agent)agentQCBX.getValue();
-        String     role       = (String)roleCBX.getValue();
         
-        if (accession != null && agent != null && role != null && accession.getAccessionAgents() != null)
+       
+        FormDataObjIFace    parentDataObj = (FormDataObjIFace)formViewObj.getParentDataObj();
+        AccessionAgent accAgent   = (AccessionAgent)formViewObj.getDataObj();
+        Agent          agent      = accAgent.getAgent();
+        String         role       = accAgent.getRole();
+        
+        if (agent == null)
         {
-            hash.clear();
-            for (AccessionAgent aa : accession.getAccessionAgents())
-            {
-                hash.put(aa.getAgent().getId()+"_"+aa.getRole(), true);
-            }
-            
-            String key = agent.getId() + "_" + role;
-            if (hash.get(key) != null)
-            {
-                UIRegistry.showError("dup");
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run()
-                    {
-                        roleCBX.setValue(null, null);
-                    }
-                });
-            }
+            agent = (Agent)agentQCBX.getValue();
         }
+        
+        if (role == null)
+        {
+            role = (String)roleCBX.getValue();
+        }
+        
+        //if (agent != null) System.out.println("\nAGENT: "+agent.getId()+"  "+(accAgent.getAgent() != null ? accAgent.getAgent().getId() : "null")+"  "+role); else System.out.println("\nAGENT: isNULL");
+        
+        if (parentDataObj instanceof Accession)
+        {
+            Accession accession = (Accession)parentDataObj;
+            if (accession != null && agent != null && role != null && accession.getAccessionAgents() != null)
+            {
+                hash.clear();
+                for (AccessionAgent aa : accession.getAccessionAgents())
+                {
+                    if (aa.getAgent() != null && aa.getRole() != null)
+                    {
+                        if (aa != accAgent)
+                        {
+                            String key = aa.getAgent().getId()+"_"+aa.getRole();
+                            hash.put(key, true);
+                        }
+                    }
+                }
+            }
+        } else
+        {
+            RepositoryAgreement reposAgreement = (RepositoryAgreement)parentDataObj;
+            if (reposAgreement != null && agent != null && role != null && reposAgreement.getRepositoryAgreementAgents() != null)
+            {
+                hash.clear();
+                for (AccessionAgent aa : reposAgreement.getRepositoryAgreementAgents())
+                {
+                    if (aa.getAgent() != null && aa.getRole() != null)
+                    {
+                        if (aa != accAgent)
+                        {
+                            String key = aa.getAgent().getId()+"_"+aa.getRole();
+                            hash.put(key, true);
+                        }
+                    }
+                }
+            } 
+        }
+        
+        String key = agent.getId() + "_" + role;
+        if (hash.get(key) != null)
+        {
+            UIRegistry.showLocalizedError("ACCESSION_DUP_AGENTROLE", agent.getIdentityTitle(), role);
+            
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run()
+                {
+                    roleCBX.setValue(null, null);
+                }
+            });
+        }
+        
     }
 
     /* (non-Javadoc)

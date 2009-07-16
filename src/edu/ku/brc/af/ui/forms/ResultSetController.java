@@ -824,31 +824,34 @@ public class ResultSetController implements ValidationListener
      */
     protected static void installRS(final ResultSetController rsc)
     {
-        if (commandsHash == null)
+        if (commandsHash == null && rsc != null)
         {
             rsc.createRSActions();
         }
         
-        for (RSAction<CommandType> rsca : commandsHash.values())
+        if (commandsHash != null)
         {
-            rsca.setRs(rsc);
-            
-            if (rsc != null)
+            for (RSAction<CommandType> rsca : commandsHash.values())
             {
-                JButton btn = rsc.btnsHash.get(rsca.getType());
-                if (btn != null)
+                rsca.setRs(rsc);
+                
+                if (rsc != null)
                 {
-                    KeyStroke ks         = UIHelper.getKeyStroke(rsca.getType());
-                    String    ACTION_KEY = rsca.getType().toString();
-                    InputMap  inputMap   = btn.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
-                    ActionMap actionMap  = btn.getActionMap();
-                    
-                    inputMap.put(ks, ACTION_KEY);
-                    actionMap.put(ACTION_KEY, rsca);
-                    rsca.setBtn(btn);
-                } else
-                {
-                    //System.err.println("Btn for ["+rsca.getType()+"] is null");
+                    JButton btn = rsc.btnsHash.get(rsca.getType());
+                    if (btn != null)
+                    {
+                        KeyStroke ks         = UIHelper.getKeyStroke(rsca.getType());
+                        String    ACTION_KEY = rsca.getType().toString();
+                        InputMap  inputMap   = btn.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+                        ActionMap actionMap  = btn.getActionMap();
+                        
+                        inputMap.put(ks, ACTION_KEY);
+                        actionMap.put(ACTION_KEY, rsca);
+                        rsca.setBtn(btn);
+                    } else
+                    {
+                        //System.err.println("Btn for ["+rsca.getType()+"] is null");
+                    }
                 }
             }
         }
