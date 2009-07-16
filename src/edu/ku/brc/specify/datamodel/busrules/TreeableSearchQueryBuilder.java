@@ -193,7 +193,10 @@ public class TreeableSearchQueryBuilder implements ViewBasedSearchQueryBuilderIF
             if (nodeNumber != null && highestChildNodeNumber != null)
             {
                 //don't allow children to be used as (for example). hybrid parents
-                queryStr += " and (n.nodeNumber not between " + nodeNumber + " and " + highestChildNodeNumber + ")";
+            	if (lookupType != ACCEPTED_PARENT || nodeId != null)
+            	{
+            		queryStr += " and (n.nodeNumber not between " + nodeNumber + " and " + highestChildNodeNumber + ")";
+            	}
                 if (lookupType == ACCEPTED_PARENT)
                 {
                 	//don't allow ancestors to be accpeted parents. 

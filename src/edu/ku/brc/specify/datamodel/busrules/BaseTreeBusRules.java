@@ -1366,6 +1366,15 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
 				String fldTitle = fld != null ? fld.getTitle() : UIRegistry.getResourceString("PARENT");
 				reasonList.add(String.format(UIRegistry.getResourceString("GENERIC_FIELD_MISSING"), fldTitle));
 			}
+			//check that non-accepted node has an 'AcceptedParent'
+			if (obj.getIsAccepted() == null || !obj.getIsAccepted() && obj.getAcceptedParent() == null)
+			{
+				result = STATUS.Error;
+				DBTableInfo info = DBTableIdMgr.getInstance().getInfoById(obj.getTableId());
+				DBFieldInfo fld = info.getFieldByColumnName("AcceptedParent");
+				String fldTitle = fld != null ? fld.getTitle() : UIRegistry.getResourceString("ACCEPTED");
+				reasonList.add(String.format(UIRegistry.getResourceString("GENERIC_FIELD_MISSING"), fldTitle));
+			}
 	    	return result;
 		}
 		return STATUS.None; //???
