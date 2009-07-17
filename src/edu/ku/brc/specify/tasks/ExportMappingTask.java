@@ -517,13 +517,13 @@ public class ExportMappingTask extends QueryTask
 		{
 			PanelBuilder pb = new PanelBuilder(new FormLayout("5dlu, p, 2dlu, p, 5dlu", "p, 2dlu, p, 2dlu, p"));
 			CellConstraints cc = new CellConstraints();
-			JLabel lbl = new JLabel("ExportMappingTask.SchemaDescTitle");
+			JLabel lbl = new JLabel(getResourceString("ExportMappingTask.SchemaDescTitle"));
 			lbl.setHorizontalAlignment(SwingConstants.RIGHT);
 			pb.add(lbl, cc.xy(2, 1));
-			lbl = new JLabel("ExportMappingTask.SchemaTitleTitle");
+			lbl = new JLabel(getResourceString("ExportMappingTask.SchemaTitleTitle"));
 			lbl.setHorizontalAlignment(SwingConstants.RIGHT);
 			pb.add(lbl, cc.xy(2, 3));
-			lbl = new JLabel("ExportMappingTask.SchemaVersionTitle");
+			lbl = new JLabel(getResourceString("ExportMappingTask.SchemaVersionTitle"));
 			lbl.setHorizontalAlignment(SwingConstants.RIGHT);
 			pb.add(lbl, cc.xy(2, 5));
 			JTextField namespace = new JTextField(xsd.attributeValue("targetNamespace"));

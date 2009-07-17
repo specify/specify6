@@ -259,7 +259,7 @@ public class SpExportSchema extends DataModelObjBase
 	@Override
 	public String toString()
 	{
-		return schemaName;
+		return schemaName + " (" + schemaVersion + ")";
 	}
 
 	/* (non-Javadoc)
