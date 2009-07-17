@@ -44,14 +44,17 @@
         </text>
       </splashScreen>
       <java mainClass="edu.ku.brc.specify.Specify" vmParameters="-Xmx768m" arguments="-Dappdir=.. -Dcom.apple.macos.useSmallTabs=true -Dapple.laf.useScreenMenuBar=true -Xdock:icon=&quot;src/edu/ku/brc/specify/images/specify128.png&quot; -Dcom.apple.mrj.application.apple.menu.about.name=Specify" allowVMPassthroughParameters="true" preferredVM="">
-        <classPath>
+      <classPath>
           <archive location="specify.jar" failOnError="true" />
           <scanDirectory location="libs" failOnError="true" />
           <scanDirectory location="hibernate_libs" failOnError="true" />
           <scanDirectory location="iReportLibs" failOnError="true" />
-          <directory location="help" failOnError="true" />
+          <scanDirectory location="wwlib" failOnError="true" />
+          <directory location="help" failOnError="false" />
         </classPath>
-        <nativeLibraryDirectories />
+        <nativeLibraryDirectories>
+          <directory name="wwlib" />
+        </nativeLibraryDirectories>
       </java>
       <includedFiles />
       <unextractableFiles />
@@ -70,13 +73,17 @@
         </text>
       </splashScreen>
       <java mainClass="edu.ku.brc.specify.tools.ireportspecify.MainFrameSpecify" vmParameters="-Xmx512m" arguments="-Dappdir=.. -Dcom.apple.macos.useSmallTabs=true -Dapple.laf.useScreenMenuBar=true -Xdock:icon=&quot;src/edu/ku/brc/specify/images/specify128.png&quot; -Dcom.apple.mrj.application.apple.menu.about.name=SpecifyiReport" allowVMPassthroughParameters="true" preferredVM="">
-        <classPath>
+      <classPath>
           <archive location="specify.jar" failOnError="true" />
           <scanDirectory location="libs" failOnError="true" />
           <scanDirectory location="hibernate_libs" failOnError="true" />
           <scanDirectory location="iReportLibs" failOnError="true" />
+          <scanDirectory location="wwlib" failOnError="true" />
+          <directory location="help" failOnError="false" />
         </classPath>
-        <nativeLibraryDirectories />
+        <nativeLibraryDirectories>
+          <directory name="wwlib" />
+        </nativeLibraryDirectories>
       </java>
       <includedFiles />
       <unextractableFiles />
@@ -95,14 +102,17 @@
         </text>
       </splashScreen>
       <java mainClass="edu.ku.brc.specify.config.init.SpecifyDBSetupWizardFrame" vmParameters="-Xmx1024m" arguments="-Dappdir=.. -Dcom.apple.macos.useSmallTabs=true -Dapple.laf.useScreenMenuBar=true -Xdock:icon=&quot;src/edu/ku/brc/specify/images/specify128.png&quot; -Dcom.apple.mrj.application.apple.menu.about.name=SpecifyDBSetupWizard" allowVMPassthroughParameters="true" preferredVM="">
-        <classPath>
+      <classPath>
           <archive location="specify.jar" failOnError="true" />
           <scanDirectory location="libs" failOnError="true" />
           <scanDirectory location="hibernate_libs" failOnError="true" />
           <scanDirectory location="iReportLibs" failOnError="true" />
+          <scanDirectory location="wwlib" failOnError="true" />
           <directory location="help" failOnError="false" />
         </classPath>
-        <nativeLibraryDirectories />
+        <nativeLibraryDirectories>
+          <directory name="wwlib" />
+        </nativeLibraryDirectories>
       </java>
       <includedFiles />
       <unextractableFiles />
@@ -121,14 +131,17 @@
         </text>
       </splashScreen>
       <java mainClass="edu.ku.brc.specify.BackupAndRestoreApp" vmParameters="-Xmx768m" arguments="-Dappdir=.. -Dcom.apple.macos.useSmallTabs=true -Dapple.laf.useScreenMenuBar=true -Xdock:icon=&quot;src/edu/ku/brc/specify/images/specify128.png&quot; -Dcom.apple.mrj.application.apple.menu.about.name=BackupAndRestore" allowVMPassthroughParameters="true" preferredVM="">
-        <classPath>
+      <classPath>
           <archive location="specify.jar" failOnError="true" />
           <scanDirectory location="libs" failOnError="true" />
           <scanDirectory location="hibernate_libs" failOnError="true" />
           <scanDirectory location="iReportLibs" failOnError="true" />
-          <directory location="help" failOnError="true" />
+          <scanDirectory location="wwlib" failOnError="true" />
+          <directory location="help" failOnError="false" />
         </classPath>
-        <nativeLibraryDirectories />
+        <nativeLibraryDirectories>
+          <directory name="wwlib" />
+        </nativeLibraryDirectories>
       </java>
       <includedFiles />
       <unextractableFiles />
@@ -147,14 +160,17 @@
         </text>
       </splashScreen>
       <java mainClass="edu.ku.brc.specify.Specify" vmParameters="-Xmx768m" arguments="-Dappdir=.. -Dcom.apple.macos.useSmallTabs=true -Dapple.laf.useScreenMenuBar=true -Xdock:icon=&quot;src/edu/ku/brc/specify/images/specify128.png&quot; -Dcom.apple.mrj.application.apple.menu.about.name=Specify" allowVMPassthroughParameters="true" preferredVM="">
-        <classPath>
+      <classPath>
           <archive location="specify.jar" failOnError="true" />
           <scanDirectory location="libs" failOnError="true" />
           <scanDirectory location="hibernate_libs" failOnError="true" />
           <scanDirectory location="iReportLibs" failOnError="true" />
-          <directory location="help" failOnError="true" />
+          <scanDirectory location="wwlib" failOnError="true" />
+          <directory location="help" failOnError="false" />
         </classPath>
-        <nativeLibraryDirectories />
+        <nativeLibraryDirectories>
+          <directory name="wwlib" />
+        </nativeLibraryDirectories>
       </java>
       <includedFiles />
       <unextractableFiles />
@@ -173,14 +189,17 @@
         </text>
       </splashScreen>
       <java mainClass="edu.ku.brc.specify.utilapps.ImportFileSplitter" vmParameters="-Xmx768m" arguments="-Dappdir=.. -Dcom.apple.macos.useSmallTabs=true -Dapple.laf.useScreenMenuBar=true -Xdock:icon=&quot;src/edu/ku/brc/specify/images/specify128.png&quot; -Dcom.apple.mrj.application.apple.menu.about.name=ImportFileSplitter" allowVMPassthroughParameters="true" preferredVM="">
-        <classPath>
+      <classPath>
           <archive location="specify.jar" failOnError="true" />
           <scanDirectory location="libs" failOnError="true" />
           <scanDirectory location="hibernate_libs" failOnError="true" />
           <scanDirectory location="iReportLibs" failOnError="true" />
+          <scanDirectory location="wwlib" failOnError="true" />
           <directory location="help" failOnError="false" />
         </classPath>
-        <nativeLibraryDirectories />
+        <nativeLibraryDirectories>
+          <directory name="wwlib" />
+        </nativeLibraryDirectories>
       </java>
       <includedFiles />
       <unextractableFiles />
