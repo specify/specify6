@@ -78,6 +78,19 @@ public class GeoLocateResultsChooser extends CustomDialog
         rowIndex = -1;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.CustomDialog#createUI()
+     */
+    @Override
+    public void createUI()
+    {
+        super.createUI();
+        
+        applyBtn.setEnabled(false);
+        
+        resultsDisplayPanel.setAcceptBtn(applyBtn);
+    }
+
     /**
      * @return
      */

@@ -33,6 +33,7 @@ import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -73,6 +74,7 @@ import gov.nasa.worldwind.view.OrbitView;
  * 
  * @author jstewart
  * @author rods
+ * 
  * @code_status Alpha
  */
 public class GeoLocateResultsDisplay extends JPanel implements MapperListener, SelectListener
@@ -83,16 +85,18 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
     protected ResultsTableModel tableModel;
     protected JTable            resultsTable;
     
-    protected JLabel             mapLabel;
+    protected JLabel            mapLabel;
     
-    protected JTextField   localityStringField;
-    protected JTextField   countyField;
-    protected JTextField   stateField;
-    protected JTextField   countryField;
+    protected JTextField        localityStringField;
+    protected JTextField        countyField;
+    protected JTextField        stateField;
+    protected JTextField        countryField;
     
-    private WorldWindPanel wwPanel       = null;
-    protected GeorefResult userDefGeoRef = null;
-    protected Position     lastClickPos  = null;
+    protected JButton           acceptBtn     = null;
+    
+    protected WorldWindPanel    wwPanel       = null;
+    protected GeorefResult      userDefGeoRef = null;
+    protected Position          lastClickPos  = null;
     
     /**
      * Constructor.
@@ -173,6 +177,21 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
         resultsTable.setRowSelectionAllowed(true);
         resultsTable.setDefaultRenderer(String.class, new BiColorTableCellRenderer(false));
         
+        resultsTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e)
+            {
+                if (!e.getValueIsAdjusting())
+                {
+                    if (acceptBtn != null)
+                    {
+                        System.out.println(resultsTable.getSelectedRowCount());
+                        acceptBtn.setEnabled(resultsTable.getSelectedRowCount() > 0);
+                    }
+                }
+            }
+        });
+        
         if (wwPanel != null)
         {
             resultsTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -207,35 +226,54 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
     }
     
     /**
+     * @param acceptBtn the acceptBtn to set
+     */
+    public void setAcceptBtn(JButton acceptBtn)
+    {
+        this.acceptBtn = acceptBtn;
+    }
+
+    /**
      * 
      */
     private void addUserDefinedMarker()
     {
-        Position pos = wwPanel.getWorld().getCurrentPosition();
+        Position        pos = wwPanel.getWorld().getCurrentPosition();
         GeographicPoint pnt = new GeographicPoint();
         pnt.setLatitude(pos.getLatitude().getDegrees());
         pnt.setLongitude(pos.getLongitude().getDegrees());
+        
+        // Create User defined point/marker
         userDefGeoRef = new GeorefResult();
         userDefGeoRef.setWGS84Coordinate(pnt);
-        userDefGeoRef.setParsePattern("(User Defined)"); // XXX I18N
+        userDefGeoRef.setParsePattern(getResourceString("GeoLocateResultsDisplay.USRDEF")); // XXX I18N
         tableModel.add(userDefGeoRef);
+        
+        // Auto select the User Defined row
+        int lastRow = tableModel.getRowCount() - 1;
+        resultsTable.getSelectionModel().setSelectionInterval(lastRow, lastRow);
         resultsTable.repaint();
-        wwPanel.placeMarkers(tableModel.getResults());
+        wwPanel.placeMarkers(tableModel.getResults(), null);
     }
     
+    /**
+     * 
+     */
     private void repositionUserDefMarker()
     {
-        Position pos = wwPanel.getWorld().getCurrentPosition();
+        Position        pos = wwPanel.getWorld().getCurrentPosition();
         GeographicPoint pnt = userDefGeoRef.getWGS84Coordinate();
         pnt.setLatitude(pos.getLatitude().getDegrees());
         pnt.setLongitude(pos.getLongitude().getDegrees());
         
         tableModel.fireTableCellUpdated(tableModel.getRowCount()-1, 1);
         tableModel.fireTableCellUpdated(tableModel.getRowCount()-1, 2);
-        //Marker marker = wwPanel.getMarkers().get(wwPanel.getMarkers().size()-1);
-        //marker.setPosition(pos);
-        wwPanel.placeMarkers(tableModel.getResults());
+        
+        wwPanel.placeMarkers(tableModel.getResults(), null);
         wwPanel.getWorld().repaint();
+        
+        int lastRow = tableModel.getRowCount() - 1;
+        resultsTable.getSelectionModel().setSelectionInterval(lastRow, lastRow);
         resultsTable.repaint();
     }
     
@@ -261,7 +299,7 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener, S
         
         if (wwPanel != null)
         {
-            wwPanel.placeMarkers(georefResults.getResultSet());
+            wwPanel.placeMarkers(georefResults.getResultSet(), 0);
         } else
         {
             mapLabel.setText(getResourceString("GeoLocateResultsDisplay.LOADING_MAP")); //$NON-NLS-1$

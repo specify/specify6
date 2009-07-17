@@ -38,6 +38,7 @@ import gov.nasa.worldwind.layers.LayerList;
 import gov.nasa.worldwind.layers.MarkerLayer;
 import gov.nasa.worldwind.layers.placename.PlaceNameLayer;
 import gov.nasa.worldwind.render.AnnotationAttributes;
+import gov.nasa.worldwind.render.FrameFactory;
 import gov.nasa.worldwind.render.GlobeAnnotation;
 import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.markers.BasicMarker;
@@ -170,27 +171,33 @@ public class WorldWindPanel extends JPanel
     }
     
     /**
-     * @param points
+     * Places marker points on map.
+     * @param points the list of points
      */
-    public void placeMarkers(final List<GeorefResult> points)
+    public void placeMarkers(final List<GeorefResult> points, final Integer flyToIndex)
     {
-        init();
+        init(); // does this the first time only
         
+        int radius = 3;
         AnnotationAttributes defaultAttributes = new AnnotationAttributes();
-        defaultAttributes.setCornerRadius(6);
+        defaultAttributes.setCornerRadius(radius);
         defaultAttributes.setInsets(new Insets(4, 4, 4, 4));
-        defaultAttributes.setBackgroundColor(new Color(0f, 0f, 0f, .5f));
-        defaultAttributes.setTextColor(Color.WHITE);
-        defaultAttributes.setDrawOffset(new Point(25, 25));
-        defaultAttributes.setDistanceMinScale(.5);
+        defaultAttributes.setBackgroundColor(new Color(0f, 0f, 0f, 0.5f));
+        defaultAttributes.setDrawOffset(new Point(0, radius+1));
+        defaultAttributes.setDistanceMinScale(0.5);
         defaultAttributes.setDistanceMaxScale(2);
-        defaultAttributes.setDistanceMinOpacity(.5);
+        defaultAttributes.setDistanceMinOpacity(0.5);
+        defaultAttributes.setLeader(FrameFactory.LEADER_NONE);
+        defaultAttributes.setFont(Font.decode("Arial-BOLD-10"));
+        defaultAttributes.setTextColor(Color.WHITE);
+        defaultAttributes.setBorderColor(new Color(0.75f, 0.75f, 0.75f, 0.75f));
         
         annoLayer.clearList();
         annoLayer.removeAllAnnotations();
         markerLayer.clearList();
         
-        BasicMarkerAttributes bma = new BasicMarkerAttributes(Material.RED, BasicMarkerShape.ORIENTED_CYLINDER, 1d, 4, 4);
+        Material material = new Material(new Color(1f, 0.1f, 0.1f, 0.75f));
+        BasicMarkerAttributes bma = new BasicMarkerAttributes(material, BasicMarkerShape.ORIENTED_SPHERE, 1d, radius, radius);
         
         int i = 1;
         markers.clear();
@@ -200,16 +207,12 @@ public class WorldWindPanel extends JPanel
             double lat = pnt.getWGS84Coordinate().getLatitude();
             double lon = pnt.getWGS84Coordinate().getLongitude();
             Position pos = Position.fromDegrees(lat, lon, 0);
+            
             Marker marker = new BasicMarker(pos, bma);
             marker.setPosition(Position.fromDegrees(lat, lon, 0));
-            //marker.setHeading(Angle.fromDegrees(lat * 5));
             markers.add(marker);
             
-            AnnotationAttributes annoAttr = new AnnotationAttributes();
-            annoAttr.setDefaults(defaultAttributes);
-            annoAttr.setFont(Font.decode("Arial-BOLD-10"));
-            annoAttr.setTextColor(Color.YELLOW);
-            GlobeAnnotation ga = new GlobeAnnotation(Integer.toString(i++), pos, annoAttr);
+            GlobeAnnotation ga = new GlobeAnnotation(Integer.toString(i++), pos, defaultAttributes);
             annoLayer.addAnnotation(ga);
             annotations.add(ga);
         }
@@ -219,9 +222,12 @@ public class WorldWindPanel extends JPanel
         markerLayer.setElevation(1000d);
         markerLayer.setMarkers(markers);
         
-        double lat = points.get(0).getWGS84Coordinate().getLatitude();
-        double lon = points.get(0).getWGS84Coordinate().getLongitude();
-        flyTo(LatLon.fromDegrees(lat, lon));
+        if (flyToIndex != null && flyToIndex > -1 && flyToIndex < points.size())
+        {
+            double lat = points.get(0).getWGS84Coordinate().getLatitude();
+            double lon = points.get(0).getWGS84Coordinate().getLongitude();
+            flyTo(LatLon.fromDegrees(lat, lon));
+        }
     }
     
     /**
