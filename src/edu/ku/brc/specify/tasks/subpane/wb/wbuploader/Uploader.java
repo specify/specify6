@@ -1372,12 +1372,12 @@ public class Uploader implements ActionListener, KeyListener
                 {
                     setCurrentOp(Uploader.INITIAL_STATE);
                 }
-                else if (dataValidated && resolver.isResolved())
+                else if (dataValidated && resolver.isResolved() && mainPanel != null)
                 {
                     mainPanel.addMsg(new BaseUploadMessage(getResourceString("WB_DATASET_VALIDATED")));
                     setCurrentOp(Uploader.READY_TO_UPLOAD);
                 }
-                else
+                else if (mainPanel != null)
                 {
                     mainPanel.addMsg(new BaseUploadMessage(getResourceString("WB_INVALID_DATASET")));
                     setCurrentOp(Uploader.USER_INPUT);

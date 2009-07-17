@@ -67,6 +67,7 @@ public class UploadTableTree extends UploadTable
     protected SortedSet<Treeable> defaultParents;
     protected TreeDefIface<?, ?, ?> treeDef;
     protected boolean incrementalNodeNumberUpdates = false;
+    protected boolean allowUnacceptedMatches = true;
     
     
 
@@ -153,6 +154,39 @@ public class UploadTableTree extends UploadTable
     }
             
     /**
+     * @param parent
+     * @param currentRec
+     * @param recNum
+     * @return parent or its 'AcceptedParent'.
+     */
+    protected DataModelObjBase getAcceptedParent(DataModelObjBase parent, Treeable currentRec, int recNum, boolean notify)
+    {
+        if (parent == null || ((Treeable )parent).getIsAccepted())
+        {
+        	return parent;
+        }
+        DataModelObjBase newResult = (DataModelObjBase )((Treeable )parent).getAcceptedParent();
+        if (notify)
+		{
+			String name = currentRec == null ? null : currentRec.getName();
+			if (name == null)
+			{
+				Treeable tRec = (Treeable) getCurrentRecord(recNum);
+				name = tRec == null ? getResourceString("UploadTableTree.CurrentNode")
+						: tRec.getName();
+			}
+			String parentName = ((Treeable) parent).getName();
+			String newParentName = ((Treeable) newResult).getName();
+			String msg = String
+					.format(
+							getResourceString("UploadTableTree.UnacceptedParentSwitch"),
+							wbCurrentRow, name, parentName, newParentName);
+			uploader.addMsg(new AcceptedParentSwitchMessage(msg, wbCurrentRow));
+		}
+        return (DataModelObjBase )((Treeable )parent).getAcceptedParent();
+    }
+    
+    /**
      * @param recNum
      * 
      * @return the nearest non-null parent, or null.
@@ -160,7 +194,7 @@ public class UploadTableTree extends UploadTable
      * Example: if this object, represented Genus and the Family was not provided for the current row, the Order would be used
      * as the parent. (Validation would have already detected if Family was required and missing).
      */
-    protected DataModelObjBase getParentRec(int recNum)
+    protected DataModelObjBase getParentRec(Treeable currentRec, int recNum)
     {
         if (parent == null)
         {
@@ -173,7 +207,7 @@ public class UploadTableTree extends UploadTable
             result = grandParent.getCurrentRecord(recNum);
             grandParent = grandParent.parent;
         }
-        return result;
+        return getAcceptedParent(result, currentRec, recNum, true);
     }
     
     /* (non-Javadoc)
@@ -184,8 +218,8 @@ public class UploadTableTree extends UploadTable
     {
         super.finalizeWrite(rec, recNum);
         //assign treedef and treedefitem to rec
-        DataModelObjBase parentRec = getParentRec(recNum);
         Treeable tRec = (Treeable)rec;
+        DataModelObjBase parentRec = getParentRec(tRec, recNum);
         tRec.setDefinition(getTreeDef());
         tRec.setDefinitionItem(getTreeDefItem());
         if (parentRec == null)
@@ -211,9 +245,9 @@ public class UploadTableTree extends UploadTable
         DataModelObjBase result = super.getParentRecord(recNum, forChild);
         if (result != null) 
         { 
-            return result; 
+        	return result;
         }
-        result = getParentRec(recNum);
+        result = getParentRec(null, recNum);
         if (result == null && (forChild instanceof UploadTableTree)) 
         { 
             return (DataModelObjBase) getDefaultParent2(getTreeDefItem()); 
@@ -905,11 +939,14 @@ public class UploadTableTree extends UploadTable
             InvocationTargetException
     {
         boolean result =  super.getMatchCriteria(critter, recNum, restrictedVals);
+        if (!allowUnacceptedMatches)
+        {
         //XXX It is possible for taxa (or other tree tables) to have null (interpreted as true) isAccepted
         //if they were entered outside of Specify or the Specify wizard. In that case this restriction
         //will fail and new tree nodes may be created unnecessarily.
-        restrictedVals.add(new UploadTable.MatchRestriction("isAccepted", addRestriction(
+        	restrictedVals.add(new UploadTable.MatchRestriction("isAccepted", addRestriction(
                 critter, "isAccepted", new Boolean(true), false), -1));
+        }
         return result;
     }
 
@@ -929,5 +966,35 @@ public class UploadTableTree extends UploadTable
 		return child;
 	}
 
-    
+    /**
+     * @author timo
+     * 
+     * Message for non-accepted to accepted parent switches.
+     *
+     */
+    public class AcceptedParentSwitchMessage extends BaseUploadMessage
+    {
+    	protected final int row;
+    	
+    	/**
+    	 * @param msg
+    	 * @param row
+    	 */
+    	public AcceptedParentSwitchMessage(String msg, int row)
+    	{
+    		super(msg);
+    		this.row = row;
+    	}
+
+		/* (non-Javadoc)
+		 * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.BaseUploadMessage#getRow()
+		 */
+		@Override
+		public int getRow()
+		{
+			return row;
+		}
+    	
+    	
+    }
 }
