@@ -96,7 +96,7 @@ public class DBConnection
                     @Override
                     public void run() 
                     {
-                        if (isEmbeddedDB)
+                        if (isEmbeddedDB != null && isEmbeddedDB)
                         {
                             ServerLauncherSocketFactory.shutdown(embeddedDataDir, null);
                         }
