@@ -886,7 +886,7 @@ public class TemplateEditor extends CustomDialog
     		if (fmp != currentMap && fmp.getFieldInfo() != null && fmp.getFieldInfo().getTableinfo().getClassObj().equals(Determination.class))
     		{
     			int rank = getRank(fmp.getFieldInfo());
-    			if (rank < high)
+    			if (rank != -1 && rank < high)
     			{
     				high = rank;
     			}
