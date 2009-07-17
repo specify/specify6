@@ -60,6 +60,7 @@ import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.dnd.SimpleGlassPane;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -434,7 +435,7 @@ public class MySQLBackupService extends BackupServiceFactory
      * @param newFilePath
      * @param isMonthly
      */
-    public void doCompareBeforeRestore(final String restoreFilePath)
+    public void doCompareBeforeRestore(final String restoreFilePath, final SimpleGlassPane glassPane)
     {
         SwingWorker<Integer, Integer> backupWorker = new SwingWorker<Integer, Integer>()
         {
@@ -463,14 +464,14 @@ public class MySQLBackupService extends BackupServiceFactory
                     dlg.setVisible(true);
                     if (!dlg.isCancelled())
                     {
-                        doActualRestore(restoreFilePath);
+                        doActualRestore(restoreFilePath, glassPane);
                     } else
                     {
                         UIRegistry.clearSimpleGlassPaneMsg();
                     }
                 } else
                 {
-                  doActualRestore(restoreFilePath);
+                  doActualRestore(restoreFilePath, glassPane);
                 }
             }
         };
@@ -522,15 +523,16 @@ public class MySQLBackupService extends BackupServiceFactory
         statusBar.setIndeterminate(STATUSBAR_NAME, true);
         
         final String   databaseName = DBConnection.getInstance().getDatabaseName();
-        UIRegistry.writeSimpleGlassPaneMsg(getLocalizedMessage("MySQLBackupService.RESTORING", databaseName), 24);
+        SimpleGlassPane glassPane = UIRegistry.writeSimpleGlassPaneMsg(getLocalizedMessage("MySQLBackupService.RESTORING", databaseName), 24);
 
-        doCompareBeforeRestore(path);
+        doCompareBeforeRestore(path, glassPane);
     }
     
     /**
      * @param restoreFilePath
+     * @param glassPane
      */
-    protected void doActualRestore(final String restoreFilePath)
+    protected void doActualRestore(final String restoreFilePath, final SimpleGlassPane glassPane)
     {
         AppPreferences remotePrefs  = AppPreferences.getLocalPrefs();
         final String   mysqlLoc     = remotePrefs.get(MYSQL_LOC,     getDefaultMySQLLoc());
@@ -569,7 +571,8 @@ public class MySQLBackupService extends BackupServiceFactory
                         fileSize  = inFile.length();
                         System.out.println(fileSize);
                         
-                        double oneMeg     = (1024.0 * 1024.0);
+                        double oneMB      = (1024.0 * 1024.0);
+                        double threshold  = fileSize < (oneMB * 4) ? 8192*8 : oneMB;
                         long   totalBytes = 0;
                         
                         dspMegs = 0;
@@ -577,7 +580,6 @@ public class MySQLBackupService extends BackupServiceFactory
                         input = new FileInputStream(inFile);
                         try 
                         {
-                            
                             byte[] bytes = new byte[8192*4];
                             do
                             {
@@ -588,7 +590,7 @@ public class MySQLBackupService extends BackupServiceFactory
                                 {
                                     out.write(bytes, 0, numBytes);
                                  
-                                    long megs = (long)(totalBytes / oneMeg);
+                                    long megs = (long)(totalBytes / threshold);
                                     if (megs != dspMegs)
                                     {
                                         dspMegs = megs;
@@ -675,10 +677,10 @@ public class MySQLBackupService extends BackupServiceFactory
             }
         };
         
-        final JStatusBar statusBar = UIRegistry.getStatusBar();
-        statusBar.setProgressRange(STATUSBAR_NAME, 0, 100);
+        //final JStatusBar statusBar = UIRegistry.getStatusBar();
+        //statusBar.setProgressRange(STATUSBAR_NAME, 0, 100);
         
-        //UIRegistry.writeSimpleGlassPaneMsg(getLocalizedMessage("MySQLBackupService.RESTORING", databaseName), 24);
+        glassPane.setProgress(0);
         
         backupWorker.addPropertyChangeListener(
                 new PropertyChangeListener() {
@@ -686,15 +688,14 @@ public class MySQLBackupService extends BackupServiceFactory
                         if (MEGS.equals(evt.getPropertyName())) 
                         {
                             int value = (Integer)evt.getNewValue();
+                            
                             if (value < 100)
                             {
-                                statusBar.setValue(STATUSBAR_NAME, (Integer)evt.getNewValue());
+                                glassPane.setProgress((Integer)evt.getNewValue());
                             } else
                             {
-                                statusBar.setProgressDone(STATUSBAR_NAME);
+                                glassPane.setProgress(100);
                             }
-                            long dspMegs = (Long)evt.getOldValue();
-                            statusBar.setText(UIRegistry.getLocalizedMessage("MySQLBackupService.RESTORE_MEGS", dspMegs));
                         }
                     }
                 });

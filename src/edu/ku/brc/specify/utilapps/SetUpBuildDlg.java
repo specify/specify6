@@ -19,6 +19,7 @@
 */
 package edu.ku.brc.specify.utilapps;
 
+import static edu.ku.brc.ui.UIHelper.addAutoSelect;
 import static edu.ku.brc.ui.UIHelper.createButton;
 import static edu.ku.brc.ui.UIHelper.createCheckBox;
 import static edu.ku.brc.ui.UIHelper.createComboBox;
@@ -214,15 +215,15 @@ class SetUpBuildDlg extends CustomDialog
             accNumGrpList.add("Acc "+d.getTitle() + " Group");
         }
         
-        databaseNameTxt     = createTextField(databaseName, 15);
-        dbUsernameTxtFld    = createTextField(dbUser.first, 15);
-        dbPasswdTxtFld      = createPasswordField(dbUser.second, 15);
+        databaseNameTxt     = addAutoSelect(createTextField(databaseName, 15));
+        dbUsernameTxtFld    = addAutoSelect(createTextField(dbUser.first, 15));
+        dbPasswdTxtFld      = addAutoSelect(createPasswordField(dbUser.second, 15));
         
-        saUsernameTxtFld   = createTextField(saUser.first, 15);
-        saPasswdTxtFld     = createPasswordField(saUser.second, 15);
+        saUsernameTxtFld   = addAutoSelect(createTextField(saUser.first, 15));
+        saPasswdTxtFld     = addAutoSelect(createPasswordField(saUser.second, 15));
         
-        usrUsernameTxtFld   = createTextField(cmUser.first, 15);
-        usrPasswdTxtFld     = createPasswordField(cmUser.second, 15);
+        usrUsernameTxtFld   = addAutoSelect(createTextField(cmUser.first, 15));
+        usrPasswdTxtFld     = addAutoSelect(createPasswordField(cmUser.second, 15));
         
         extraCollectionsChk = createCheckBox("Create Extra Collections");
         extraCollectionsChk.setSelected(true);

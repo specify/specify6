@@ -55,6 +55,7 @@ import java.awt.Shape;
 import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
@@ -2856,6 +2857,23 @@ public final class UIHelper
         JTextField tf = new JTextField();
         setControlSize(tf);
         return tf;
+    }
+    
+    
+    @SuppressWarnings("unchecked")
+    public static <T> T addAutoSelect(final JTextField tf)
+    {
+        if (!isMacOS())
+        {
+            tf.addFocusListener(new FocusAdapter() {
+                @Override
+                public void focusGained(FocusEvent e)
+                {
+                    ((JTextField)e.getSource()).selectAll();
+                }
+            });
+        }
+        return (T)tf;
     }
     
     /**
