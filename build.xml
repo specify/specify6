@@ -202,12 +202,16 @@
                 <exclude name="**/derby.jar" />
 			</fileset>
 		</copy>
-		
         <copy todir="${installer.dir}/wwlib">
 			<fileset dir="wwlib">
 				<exclude name="**/*.svn" />
 			</fileset>
-		</copy>		
+		</copy>	
+        <copy todir="${installer.dir}/embedded_libs">
+			<fileset dir="embedded_libs">
+				<exclude name="**/*.svn" />
+			</fileset>
+		</copy>
 		
 		<!-- Copy Help -->
 		<copy todir="${installer.dir}/help">
@@ -291,6 +295,25 @@
 				<exclude name="**/*.svn" />
 			</fileset>
 		</copy>
+		
+        <copy todir="UpdaterInstall/hibernate_libs">
+			<fileset dir="hibernate_libs">
+				<exclude name="**/*.svn" />
+			</fileset>
+		</copy>
+		
+		<copy todir="UpdaterInstall/config">
+			<fileset dir="config">
+				<exclude name="**/*.svn" />
+			</fileset>
+		</copy>
+
+        <copy todir="UpdaterInstall/iReportLibs">
+			<fileset dir="iReportLibs">
+				<exclude name="**/*.svn" />
+			</fileset>
+		</copy>
+		
 		<copy file="${jar.name}.jar" todir="UpdaterInstall" />
     </target>
 	
