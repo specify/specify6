@@ -86,6 +86,12 @@ public class ERTICaptionInfoQB extends ERTICaptionInfo
                 return this.uiFieldFormatter.formatToUI((Object[] )value);
             }
         }	
+    	//else another complication - formats for export to db
+    	if (uiFieldFormatter instanceof ExportFieldFormatter)
+    	{
+    		return this.uiFieldFormatter.formatToUI(value);
+    	}
+    	
     	//else
     	//XXX for large picklists the next two blocks could become time-consuming...
     	if (value != null && pickList instanceof TypeCode)

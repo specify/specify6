@@ -153,7 +153,8 @@ public class TreeLevelQRI extends FieldQRI
      * @see edu.ku.brc.specify.tasks.subpane.qb.FieldQRI#getSQLFldSpec(edu.ku.brc.specify.tasks.subpane.qb.TableAbbreviator, boolean)
      */
     @Override
-    public String getSQLFldSpec(final TableAbbreviator ta, final boolean forWhereClause)
+    public String getSQLFldSpec(final TableAbbreviator ta, final boolean forWhereClause,
+    		final boolean forSchemaExport)
     {
         String result = getSQLFldName(ta);
         return result;

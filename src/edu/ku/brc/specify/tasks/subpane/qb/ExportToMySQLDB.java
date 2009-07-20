@@ -15,6 +15,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.hibernate.tool.hbm2x.StringUtils;
 
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.ui.db.ERTICaptionInfo;
@@ -278,13 +279,16 @@ public class ExportToMySQLDB
 		result.append("insert into " + tblName + " values(");
 		for (int r=0; r < row.getFieldCount(); r++)
 		{
+			System.out.println("geting insert value for: " + row.getFieldValue(r));
 			if (r > 0)
 			{
 				result.append(", ");
 			}
-			result.append(BasicSQLUtils.getStrValue(row.getFieldValue(r)));			
+			String val = BasicSQLUtils.getStrValue(row.getFieldValue(r));
+			result.append(val);			
 		}
 		result.append(")");
+		System.out.println(result.toString());
 		return result.toString();
 	}
 	

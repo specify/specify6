@@ -42,6 +42,7 @@ import java.io.File;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -1189,7 +1190,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             
         	if (qfi.isForDisplay())
             {
-                String fldSpec = qfi.getFieldQRI().getSQLFldSpec(tableAbbreviator, false);
+                String fldSpec = qfi.getFieldQRI().getSQLFldSpec(tableAbbreviator, false, isSchemaExport);
                 if (StringUtils.isNotEmpty(fldSpec))
                 {
                     if (fieldsStr.length() > 0)
@@ -1691,7 +1692,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         return fldName.trim().replaceAll(" ", "_");
     }
     
-    protected static UIFieldFormatterIFace getColumnFormatter(final FieldQRI fqri)
+    protected static UIFieldFormatterIFace getColumnFormatter(final FieldQRI fqri, final boolean forSchemaExport)
     {
     	if (fqri instanceof RelQRI)
     	{
@@ -1702,6 +1703,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             }
             return null;
         }
+    	if (forSchemaExport && fqri.getDataClass().equals(Calendar.class))
+    	{
+    		return new CalendarExportFormatter();
+    	}
     	return fqri.getFormatter();
     }
     /**
@@ -1710,7 +1715,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      * @return ERTICaptionInfo for the visible columns returned by a query.
      */
     protected static List<ERTICaptionInfoQB> getColumnInfo(final Vector<QueryFieldPanel> queryFieldItemsArg, final boolean fixLabels,
-            final DBTableInfo rootTbl, boolean includePartialDatePrecision)
+            final DBTableInfo rootTbl, boolean forSchemaExport)
     {
         List<ERTICaptionInfoQB> result = new Vector<ERTICaptionInfoQB>();
         Vector<ERTICaptionInfoTreeLevelGrp> treeGrps = new Vector<ERTICaptionInfoTreeLevelGrp>(5);
@@ -1720,6 +1725,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             {
             	continue;
             }
+            
+            System.out.println(qfp.getFieldQRI().getFieldName());
             
         	DBFieldInfo fi = qfp.getFieldInfo();
             DBTableInfo ti = null;
@@ -1807,10 +1814,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 }
                 else
                 {
-                	erti = new ERTICaptionInfoQB(colName, lbl, true, getColumnFormatter(qfp.getFieldQRI()), 0, qfp.getStringId(), qfp.getPickList(), fi);
+                	erti = new ERTICaptionInfoQB(colName, lbl, true, getColumnFormatter(qfp.getFieldQRI(), forSchemaExport), 0, qfp.getStringId(), qfp.getPickList(), fi);
                 }
                 erti.setColClass(qfp.getFieldQRI().getDataClass());
-                if (includePartialDatePrecision && 
+                if (!forSchemaExport && 
                 		qfp.getFieldInfo() != null && qfp.getFieldQRI().getFieldInfo().isPartialDate())
                 {
                     String precName = qfp.getFieldQRI().getFieldInfo().getDatePrecisionName();

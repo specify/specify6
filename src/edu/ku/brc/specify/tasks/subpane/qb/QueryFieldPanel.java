@@ -941,7 +941,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
     {
         if (operatorCBX.getSelectedItem().equals(SpQueryField.OperatorType.EMPTY))
         {
-            return fieldQRI.getSQLFldSpec(ta, true) + (isNotCheckbox.isSelected() ? " is not " : " is ") + "null";
+            return fieldQRI.getSQLFldSpec(ta, true, this.schemaItem != null) + (isNotCheckbox.isSelected() ? " is not " : " is ") + "null";
         }
         
         if (hasCriteria())
@@ -1103,7 +1103,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                 StringBuilder str = new StringBuilder();
 
                 str.append(isNotCheckbox.isSelected() ? "(NOT " : "");
-                str.append(fieldQRI.getSQLFldSpec(ta, true) + " ");
+                str.append(fieldQRI.getSQLFldSpec(ta, true, schemaItem != null) + " ");
                 str.append(operStr);
                 str.append(" ");
                 str.append(criteriaFormula);
@@ -1112,7 +1112,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                     if (!operStr.equals(SpQueryField.OperatorType
                             .getString(SpQueryField.OperatorType.EMPTY.getOrdinal())))
                     {
-                        str.append(" or " + fieldQRI.getSQLFldSpec(ta, true) + " is null");
+                        str.append(" or " + fieldQRI.getSQLFldSpec(ta, true, schemaItem != null) + " is null");
                     }
                     str.append(")");
                 }

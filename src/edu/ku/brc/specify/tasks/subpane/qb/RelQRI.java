@@ -138,7 +138,8 @@ public class RelQRI extends FieldQRI
      * @see edu.ku.brc.specify.tasks.subpane.qb.FieldQRI#getSQLFldSpec(edu.ku.brc.specify.tasks.subpane.qb.TableAbbreviator)
      */
     @Override
-    public String getSQLFldSpec(TableAbbreviator ta, final boolean forWhereClause)
+    public String getSQLFldSpec(TableAbbreviator ta, final boolean forWhereClause, 
+    		final boolean forSchemaExport)
     {
         if (relationshipInfo.getType().equals(DBRelationshipInfo.RelationshipType.OneToMany)
                 || relationshipInfo.getType().equals(DBRelationshipInfo.RelationshipType.ZeroOrOne) /*What about ManyToMany?? And some OneToOnes???*/)

@@ -96,10 +96,11 @@ public class FieldQRI extends BaseQRI
      * @param forWhereClause
      * @return sql/hql specification for this field.
      */
-    public String getSQLFldSpec(final TableAbbreviator ta, final boolean forWhereClause)
+    public String getSQLFldSpec(final TableAbbreviator ta, final boolean forWhereClause, 
+    		final boolean forSchemaExport)
     {
         String result = ta.getAbbreviation(table.getTableTree()) + "." + getFieldName();
-        if (!forWhereClause && getFieldInfo() != null && getFieldInfo().isPartialDate())
+        if (!forWhereClause && getFieldInfo() != null && getFieldInfo().isPartialDate() && !forSchemaExport)
         {
             String precName = getFieldInfo().getDatePrecisionName();
             result += ", " + ta.getAbbreviation(table.getTableTree()) + "." + precName;
