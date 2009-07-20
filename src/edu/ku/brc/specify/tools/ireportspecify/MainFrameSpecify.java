@@ -496,6 +496,7 @@ public class MainFrameSpecify extends MainFrame
                     spRep.setSpecifyUser(AppContextMgr.getInstance().getClassObject(SpecifyUser.class));
                     session.beginTransaction();
                     transOpen = true;
+                    session.saveOrUpdate(spRep.getReportObject());
                     session.save(spRep);
                     session.commit();
                     transOpen = false;
