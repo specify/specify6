@@ -1710,7 +1710,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      * @return ERTICaptionInfo for the visible columns returned by a query.
      */
     protected static List<ERTICaptionInfoQB> getColumnInfo(final Vector<QueryFieldPanel> queryFieldItemsArg, final boolean fixLabels,
-            final DBTableInfo rootTbl)
+            final DBTableInfo rootTbl, boolean includePartialDatePrecision)
     {
         List<ERTICaptionInfoQB> result = new Vector<ERTICaptionInfoQB>();
         Vector<ERTICaptionInfoTreeLevelGrp> treeGrps = new Vector<ERTICaptionInfoTreeLevelGrp>(5);
@@ -1810,7 +1810,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 	erti = new ERTICaptionInfoQB(colName, lbl, true, getColumnFormatter(qfp.getFieldQRI()), 0, qfp.getStringId(), qfp.getPickList(), fi);
                 }
                 erti.setColClass(qfp.getFieldQRI().getDataClass());
-                if (qfp.getFieldInfo() != null && qfp.getFieldQRI().getFieldInfo().isPartialDate())
+                if (includePartialDatePrecision && 
+                		qfp.getFieldInfo() != null && qfp.getFieldQRI().getFieldInfo().isPartialDate())
                 {
                     String precName = qfp.getFieldQRI().getFieldInfo().getDatePrecisionName();
                     
@@ -2030,7 +2031,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             UIRegistry.getStatusBar().setErrorMessage(ex.getLocalizedMessage(), ex);
             return;
         }
-        final List<ERTICaptionInfoQB> cols = getColumnInfo(qfps, false, rootQRI.getTableInfo());
+        final List<ERTICaptionInfoQB> cols = getColumnInfo(qfps, false, rootQRI.getTableInfo(), true);
         final QBDataSource src = new QBDataSource(sql.getHql(), sql.getArgs(), sql
                 .getSortElements(), cols,
                 includeRecordIds);
@@ -2351,7 +2352,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 	}
                 
                 	src = new QBDataSource(sql.getHql(), sql.getArgs(), sql
-                        .getSortElements(), getColumnInfo(qfps, true, rootQRI.getTableInfo()),
+                        .getSortElements(), getColumnInfo(qfps, true, rootQRI.getTableInfo(), false),
                         includeRecordIds, report.getRepeats());
                 	((QBDataSource )src).startDataAcquisition();
                 }
@@ -2556,7 +2557,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                               final DBTableInfo                rootTable, 
                               final boolean                    distinct)
     {
-        List<? extends ERTICaptionInfo> captions = getColumnInfo(queryFieldItemsArg, false, rootTable);
+        List<? extends ERTICaptionInfo> captions = getColumnInfo(queryFieldItemsArg, false, rootTable, false);
         
         String iconName = distinct ? "BlankIcon" : rootTable.getClassObj().getSimpleName();
         int tblId = distinct ? -1 : rootTable.getTableId();
