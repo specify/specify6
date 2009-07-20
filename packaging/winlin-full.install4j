@@ -564,6 +564,9 @@
                       <void property="programGroupName">
                         <string>${compiler:sys.fullName}</string>
                       </void>
+                      <void property="unixSymlinks">
+                        <boolean>false</boolean>
+                      </void>
                     </object>
                   </java>
                 </serializedBean>

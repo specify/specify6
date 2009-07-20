@@ -34,7 +34,7 @@
   </files>
   <launchers>
     <launcher name="Specify" id="19" external="false" excludeFromMenu="false" menuName="" icnsFile="../InstallerFiles/images/specify.icns" pngIcon16File="../InstallerFiles/images/specify16.png" pngIcon32File="../InstallerFiles/images/specify32.png" macServiceDependencies="" swtApp="false" fileset="">
-      <executable name="Specify" type="1" iconSet="true" iconFile="../InstallerFiles/images/specify128.ico" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
+      <executable name="Specify" type="1" iconSet="true" iconFile="../InstallerFiles/images/specify128.ico" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
       <splashScreen show="true" autoOff="true" alwaysOnTop="false" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" java6SplashScreen="false">
@@ -65,7 +65,7 @@
       </customScript>
     </launcher>
     <launcher name="SpiReport" id="357" external="false" excludeFromMenu="false" menuName="" icnsFile="../InstallerFiles/images/spireports.icns" pngIcon16File="../InstallerFiles/images/spireport16.png" pngIcon32File="../InstallerFiles/images/spireport32.png" macServiceDependencies="" swtApp="false" fileset="">
-      <executable name="SpiReport" type="1" iconSet="true" iconFile="../InstallerFiles/images/spireport128.ico" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
+      <executable name="SpiReport" type="1" iconSet="true" iconFile="../InstallerFiles/images/spireport128.ico" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
       <splashScreen show="true" autoOff="true" alwaysOnTop="false" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" java6SplashScreen="false">
@@ -96,7 +96,7 @@
       </customScript>
     </launcher>
     <launcher name="SpWizard" id="710" external="false" excludeFromMenu="false" menuName="" icnsFile="../InstallerFiles/images/spwizard.icns" pngIcon16File="../InstallerFiles/images/spwizard16.png" pngIcon32File="../InstallerFiles/images/spwizard32.png" macServiceDependencies="" swtApp="false" fileset="">
-      <executable name="SpWizard" type="1" iconSet="true" iconFile="../InstallerFiles/images/spwizard128.ico" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="../" singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
+      <executable name="SpWizard" type="1" iconSet="true" iconFile="../InstallerFiles/images/spwizard128.ico" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="../" singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
       <splashScreen show="true" autoOff="true" alwaysOnTop="false" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" java6SplashScreen="false">
@@ -127,7 +127,7 @@
       </customScript>
     </launcher>
     <launcher name="SpBackupRestore" id="790" external="false" excludeFromMenu="false" menuName="" icnsFile="../InstallerFiles/images/backuprestore.icns" pngIcon16File="../InstallerFiles/images/spbackup16.png" pngIcon32File="../InstallerFiles/images/spbackup32.png" macServiceDependencies="" swtApp="false" fileset="">
-      <executable name="SpBackupRestore" type="1" iconSet="true" iconFile="../InstallerFiles/images/spbackup128.ico" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
+      <executable name="SpBackupRestore" type="1" iconSet="true" iconFile="../InstallerFiles/images/spbackup128.ico" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
       <splashScreen show="true" autoOff="true" alwaysOnTop="false" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" java6SplashScreen="false">
@@ -158,7 +158,7 @@
       </customScript>
     </launcher>
     <launcher name="Specify1GB" id="1213" external="false" excludeFromMenu="false" menuName="" icnsFile="../InstallerFiles/images/specify.icns" pngIcon16File="../InstallerFiles/images/specify16.png" pngIcon32File="../InstallerFiles/images/specify32.png" macServiceDependencies="" swtApp="false" fileset="">
-      <executable name="Specify1GB" type="1" iconSet="true" iconFile="../InstallerFiles/images/specify128.ico" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
+      <executable name="Specify1GB" type="1" iconSet="true" iconFile="../InstallerFiles/images/specify128.ico" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
       <splashScreen show="true" autoOff="true" alwaysOnTop="false" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" java6SplashScreen="false">
@@ -189,7 +189,7 @@
       </customScript>
     </launcher>
     <launcher name="ImportFileSplitter" id="1238" external="false" excludeFromMenu="false" menuName="" icnsFile="../InstallerFiles/images/specify.icns" pngIcon16File="../InstallerFiles/images/data_split16.png" pngIcon32File="../InstallerFiles/images/data_split32.png" macServiceDependencies="" swtApp="false" fileset="">
-      <executable name="ImportFileSplitter" type="1" iconSet="true" iconFile="../InstallerFiles/images/data_split.ico" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="../" singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
+      <executable name="ImportFileSplitter" type="1" iconSet="true" iconFile="../InstallerFiles/images/data_split.ico" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="../" singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
       <splashScreen show="true" autoOff="true" alwaysOnTop="false" width="700" height="357" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" java6SplashScreen="false">
