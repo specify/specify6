@@ -288,19 +288,19 @@ public class ImportFileSplitter extends CustomDialog
 			int             maxCols = 0;
 			boolean         hasHeaders = headerChk.isSelected();
 			
-			protected void writeXLSChunk(final File toChunk, final HSSFWorkbook workBookOut, final int fileNum, final int numFiles,
+			protected void writeXLSChunk(final File toChunkArg, final HSSFWorkbook workBookOut, final int fileNum, final int numFiles,
 					final String firstLine) throws FileNotFoundException, IOException
 			{
-	        	String fileName = toChunk.getAbsolutePath();
-	            String ext = "." + FilenameUtils.getExtension(fileName);
-	        	fileName = fileName.substring(0, fileName.lastIndexOf(ext)) + "_" + fileNum;
-	            FileOutputStream fos = new FileOutputStream(fileName + ext);
+	        	String fName = toChunkArg.getAbsolutePath();
+	            String ext = "." + FilenameUtils.getExtension(fName);
+	        	fName = fName.substring(0, fName.lastIndexOf(ext)) + "_" + fileNum;
+	            FileOutputStream fos = new FileOutputStream(fName + ext);
 	            workBookOut.write(fos);
 	            fos.close();
 	            Float ratio = new Float((float )fileNum / (float )numFiles);
 	            Float prog = new Float(Math.max(0., Math.min(100., ratio.floatValue() * 100.)));
 	            setProgress(prog.intValue());
-	            result.addChunk(fileName, firstLine);
+	            result.addChunk(fName, firstLine);
 			}
 			
 			protected void checkXLS()
@@ -324,9 +324,9 @@ public class ImportFileSplitter extends CustomDialog
                 }
 			}
 			
-			protected ChunkageReport chunkXLS(final File toChunk)
+			protected ChunkageReport chunkXLS(final File toChunkArg)
 			{
-				result = new ChunkageReport(toChunk);
+				result = new ChunkageReport(toChunkArg);
 				result.setSuccess(false);
 				if (hasHeaders)
 				{
@@ -334,7 +334,7 @@ public class ImportFileSplitter extends CustomDialog
 				}
 				try
 				{
-					input    = new FileInputStream(toChunk);
+					input    = new FileInputStream(toChunkArg);
 					fs       = new POIFSFileSystem(input);
 					workBook = new HSSFWorkbook(fs);
 					sheet    = workBook.getSheetAt(0);
@@ -381,7 +381,7 @@ public class ImportFileSplitter extends CustomDialog
 									fileNum++;
 							        try
 							        {
-							        	writeXLSChunk(toChunk, workBookOut, fileNum, numFiles, firstLine);
+							        	writeXLSChunk(toChunkArg, workBookOut, fileNum, numFiles, firstLine);
 							        } 
 							        catch (Exception e)
 							        {
@@ -462,7 +462,7 @@ public class ImportFileSplitter extends CustomDialog
 						if (rowNum > 0)
 						{
 							fileNum++;
-							writeXLSChunk(toChunk, workBookOut, fileNum, numFiles, firstLine);
+							writeXLSChunk(toChunkArg, workBookOut, fileNum, numFiles, firstLine);
 						}
 						result.setSuccess(true);
 					}
@@ -475,9 +475,9 @@ public class ImportFileSplitter extends CustomDialog
 				return result;
 			}
 			
-			protected ChunkageReport chunkCSV(final File toChunk)
+			protected ChunkageReport chunkCSV(final File toChunkArg)
 			{
-				result = new ChunkageReport(toChunk);
+				result = new ChunkageReport(toChunkArg);
 				result.setSuccess(false);
 				if (hasHeaders)
 				{
@@ -485,7 +485,7 @@ public class ImportFileSplitter extends CustomDialog
 				}
 				try
 				{
-					LineIterator it = FileUtils.lineIterator(toChunk);
+					LineIterator it = FileUtils.lineIterator(toChunkArg);
 					int numRows = 0;
 					while (it.hasNext())
 					{
@@ -516,7 +516,7 @@ public class ImportFileSplitter extends CustomDialog
 				        String firstLine = null;
 				        boolean wroteHeaders = false;
 				        Vector<String> outLines = new Vector<String>(chunkSize);
-						it = FileUtils.lineIterator(toChunk);
+						it = FileUtils.lineIterator(toChunkArg);
 						String headerLine = null;
 						String lineIn = null;
 						while (it.hasNext())
@@ -524,7 +524,7 @@ public class ImportFileSplitter extends CustomDialog
 							if (outLines.size() == chunkSize)
 							{
 								fileNum++;
-							    writeCSVChunk(toChunk, outLines, fileNum, numFiles, firstLine);
+							    writeCSVChunk(toChunkArg, outLines, fileNum, numFiles, firstLine);
 						        outLines.clear();
 						        wroteHeaders = false;
 							}
@@ -550,7 +550,7 @@ public class ImportFileSplitter extends CustomDialog
 						if (outLines.size() > 0)
 						{
 							fileNum++;
-							writeCSVChunk(toChunk, outLines, fileNum, numFiles, firstLine);
+							writeCSVChunk(toChunkArg, outLines, fileNum, numFiles, firstLine);
 						}
 						result.setSuccess(true);	
 					}
@@ -563,18 +563,18 @@ public class ImportFileSplitter extends CustomDialog
 				return result;
 			}
 
-			protected void writeCSVChunk(final File toChunk, final Vector<String> outLines, final int fileNum, final int numFiles,
+			protected void writeCSVChunk(final File toChunkArg, final Vector<String> outLines, final int fileNum, final int numFiles,
 					final String firstLine) throws IOException
 			{
-	        	String fileName = toChunk.getAbsolutePath();
-	            String ext = "." + FilenameUtils.getExtension(fileName);
-	        	fileName = fileName.substring(0, fileName.lastIndexOf(ext)) + "_" + fileNum;
-	        	File file = new File(fileName + ext);
+	        	String fName = toChunkArg.getAbsolutePath();
+	            String ext = "." + FilenameUtils.getExtension(fName);
+	        	fName = fName.substring(0, fName.lastIndexOf(ext)) + "_" + fileNum;
+	        	File file = new File(fName + ext);
 	        	FileUtils.writeLines(file, outLines);
 	            Float ratio = new Float((float )fileNum / (float )numFiles);
 	            Float prog = new Float(Math.max(0., Math.min(100., ratio.floatValue() * 100.)));
 	            setProgress(prog.intValue());
-	            result.addChunk(fileName, firstLine);
+	            result.addChunk(fName, firstLine);
 			}
 			
 			/* (non-Javadoc)
@@ -707,13 +707,32 @@ public class ImportFileSplitter extends CustomDialog
         // Set App Name, MUST be done very first thing!
         UIRegistry.setAppName("ImportFileSplitter");  //$NON-NLS-1$
         
-        String appDir = System.getProperty("appdir"); //$NON-NLS-1$
+        for (String s : args)
+        {
+            String[] pairs = s.split("="); //$NON-NLS-1$
+            if (pairs.length == 2)
+            {
+                if (pairs[0].startsWith("-D")) //$NON-NLS-1$
+                {
+                    //System.err.println("["+pairs[0].substring(2, pairs[0].length())+"]["+pairs[1]+"]");
+                    System.setProperty(pairs[0].substring(2, pairs[0].length()), pairs[1]);
+                } 
+            } else
+            {
+                String symbol = pairs[0].substring(2, pairs[0].length());
+                //System.err.println("["+symbol+"]");
+                System.setProperty(symbol, symbol);
+            }
+        }
+        
+        // Now check the System Properties
+        String appDir = System.getProperty("appdir");
         if (StringUtils.isNotEmpty(appDir))
         {
             UIRegistry.setDefaultWorkingPath(appDir);
         }
         
-        String appdatadir = System.getProperty("appdatadir"); //$NON-NLS-1$
+        String appdatadir = System.getProperty("appdatadir");
         if (StringUtils.isNotEmpty(appdatadir))
         {
             UIRegistry.setBaseAppDataDir(appdatadir);
