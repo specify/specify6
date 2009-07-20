@@ -2171,6 +2171,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 					boolean dumped = ExportToMySQLDB.exportRowsToTabDelimitedText(file, null, 
 							ExportToMySQLDB.fixNameForMySQL(exportQuery.getName()));
 					System.out.println("exported to tabbed text: " + UIRegistry.getDefaultWorkingPath() + File.separator + exportQuery.getName() + ".txt");
+					String iptSQL = ExportToMySQLDB.getSelectForIPTDBSrc(ExportToMySQLDB.fixNameForMySQL(exportQuery.getName()));
+					System.out.println("IPT sql: " + iptSQL);
 					//file.
 					UIRegistry.displayInfoMsgDlgLocalized("QB_EXPORT_TO_DB_SUCCESS");
 					boolean transOpen = false;
@@ -2234,6 +2236,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         
         
     }
+    
     /**
      * @param report
      * 

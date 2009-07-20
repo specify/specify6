@@ -291,6 +291,47 @@ public class ExportToMySQLDB
 		return result.toString();
 	}
 	
+	public static String getSelectForIPTDBSrc(String tblName)
+	{
+		try
+		{
+		Connection c = null;
+		Statement s = null;
+		try
+		{
+			c = DBConnection.getInstance().createConnection();
+			s = c.createStatement();
+			ResultSet rs = s.executeQuery("select * from " + tblName.toLowerCase() + " limit 1");
+			String result = "select ";
+			for (int col = 1; col <= rs.getMetaData().getColumnCount(); col++)
+			{
+				if (col > 1)
+				{
+					result += ", ";
+				}
+				//XXX This only works because currently fieldNames = conceptNames
+				result += tblName.toLowerCase() + "." + rs.getMetaData().getColumnName(col) + " as \"" + rs.getMetaData().getColumnName(col) + "\"";
+			}
+			return result + " from " + tblName.toLowerCase();
+		} finally
+		{
+			if (s != null)
+			{
+				s.close();
+			}
+			if (c != null)
+			{
+				c.close();
+			}
+		} 
+		} catch (Exception ex)
+		{
+			UIRegistry.displayErrorDlg(ex.getClass().getSimpleName() + ": " + ex.getLocalizedMessage());
+			return null;
+		}
+		
+	}
+	
 	protected static boolean exportRowsToTabDelimitedText(File file,
 			List<String> headers, String tableName)
 	{
