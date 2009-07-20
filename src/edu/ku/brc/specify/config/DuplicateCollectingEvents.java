@@ -45,12 +45,9 @@ public class DuplicateCollectingEvents
 	 */
 	static protected void duplicateCollectingEvents(int collectionId) throws Exception
 	{
-		//Assuming caller has checked collection.getIsEmbeddedCollectingEvent()
-		
 		Vector<Object[]> ces = getCollectingEventsWithManyCollectionObjects(collectionId);
 		for (Object[] ce : ces)
 		{
-			System.out.println("duplicating ce: " + ce[0]);
 			duplicateCollectingEvent(ce[0]);
 		}
 		
