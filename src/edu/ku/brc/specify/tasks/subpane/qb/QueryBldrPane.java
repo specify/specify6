@@ -308,60 +308,60 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     protected void loadAutoMaps() {
 		autoMaps.put("Phylum", new AutoMap(
 				"1,9-determinations,4-preferredTaxon.taxon.Phylum", "Phylum",
-				"1,9-determinations,4-preferredTaxon"));
+				"1,9-determinations,4-preferredTaxon", false));
 		autoMaps.put("Kingdom", new AutoMap(
 				"1,9-determinations,4-preferredTaxon.taxon.Kingdom", "Kingdom",
-				"1,9-determinations,4-preferredTaxon"));
+				"1,9-determinations,4-preferredTaxon", false));
 		autoMaps.put("Order", new AutoMap(
 				"1,9-determinations,4-preferredTaxon.taxon.Order", "Order",
-				"1,9-determinations,4-preferredTaxon"));
+				"1,9-determinations,4-preferredTaxon", false));
 		autoMaps.put("CatalogNumber", new AutoMap(
-				"1.collectionobject.catalogNumber", "catalogNumber", "1"));
+				"1.collectionobject.catalogNumber", "catalogNumber", "1", false));
 		autoMaps.put("Class", new AutoMap(
 				"1,9-determinations,4-preferredTaxon.taxon.Class", "Class",
-				"1,9-determinations,4-preferredTaxon"));
+				"1,9-determinations,4-preferredTaxon", false));
 		autoMaps.put("ScientificNameAuthor", new AutoMap(
 				"1,9-determinations,4-preferredTaxon.taxon.author", "author",
-				"1,9-determinations,4-preferredTaxon"));
+				"1,9-determinations,4-preferredTaxon", false));
 		autoMaps.put("Genus", new AutoMap(
 				"1,9-determinations,4-preferredTaxon.taxon.Genus", "Genus",
-				"1,9-determinations,4-preferredTaxon"));
+				"1,9-determinations,4-preferredTaxon", false));
 		autoMaps.put("Family", new AutoMap(
 				"1,9-determinations,4-preferredTaxon.taxon.Family", "Family",
-				"1,9-determinations,4-preferredTaxon"));
+				"1,9-determinations,4-preferredTaxon", false));
 		autoMaps.put("ScientificName", new AutoMap(
 				"1,9-determinations,4-preferredTaxon.taxon.fullName",
-				"fullName", "1,9-determinations,4-preferredTaxon"));
+				"fullName", "1,9-determinations,4-preferredTaxon", false));
 		autoMaps.put("Country", new AutoMap("1,10,2,3.geography.Country",
-				"Country", "1,10,2,3"));
-//		autoMaps.put("Collector", new AutoMap(
-//				"1,10,30-collectors.collector.collectors", "collectors",
-//				"1,10,30-collectors"));
+				"Country", "1,10,2,3", false));
+		autoMaps.put("Collector", new AutoMap(
+				"1,10,30-collectors.collector.collectors", "collectors",
+				"1,10,30-collectors", true));
 		autoMaps.put("SpecificEpithet", new AutoMap(
 				"1,9-determinations,4-preferredTaxon.taxon.Species", "Species",
-				"1,9-determinations,4-preferredTaxon"));
+				"1,9-determinations,4-preferredTaxon", false));
 		autoMaps.put("Continent", new AutoMap("1,10,2,3.geography.Continent",
-				"Continent", "1,10,2,3"));
+				"Continent", "1,10,2,3", false));
 		autoMaps.put("StateProvince", new AutoMap("1,10,2,3.geography.State",
-				"State", "1,10,2,3"));
+				"State", "1,10,2,3", false));
 		autoMaps.put("County", new AutoMap("1,10,2,3.geography.County",
-				"County", "1,10,2,3"));
+				"County", "1,10,2,3", false));
 		autoMaps.put("CollectionCode", new AutoMap("1,23.collection.code",
-				"code", "1,23"));
+				"code", "1,23", false));
 		autoMaps.put("Locality", new AutoMap("1,10,2.locality.localityName",
-				"localityName", "1,10,2"));
+				"localityName", "1,10,2", false));
 		autoMaps.put("DecimalLatitude", new AutoMap(
-				"1,10,2.locality.latitude1", "latitude1", "1,10,2"));
+				"1,10,2.locality.latitude1", "latitude1", "1,10,2", false));
 		autoMaps.put("MaximumElevationInMeters", new AutoMap(
-				"1,10,2.locality.maxElevation", "maxElevation", "1,10,2"));
+				"1,10,2.locality.maxElevation", "maxElevation", "1,10,2", false));
 		autoMaps.put("GlobalUniqueIdentifier", new AutoMap(
-				"1.collectionobject.guid", "guid", "1"));
+				"1.collectionobject.guid", "guid", "1", false));
 		autoMaps.put("MinimumElevationInMeters", new AutoMap(
-				"1,10,2.locality.minElevation", "minElevation", "1,10,2"));
+				"1,10,2.locality.minElevation", "minElevation", "1,10,2", false));
 		autoMaps.put("DecimalLongitude", new AutoMap(
-				"1,10,2.locality.longitude1", "longitude1", "1,10,2"));
+				"1,10,2.locality.longitude1", "longitude1", "1,10,2", false));
 		autoMaps.put("DayCollected", new AutoMap(
-				"1,10.collectingevent.startDate", "startDate", "1,10"));
+				"1,10.collectingevent.startDate", "startDate", "1,10", false));
 	}
     /**
      * create the query builder UI.
@@ -497,7 +497,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 }
                 else
                 {
-                	addNewMapping(fieldQRI, qf);
+                	addNewMapping(fieldQRI, qf, selectedQFP);
                 }
             }
         });
@@ -691,31 +691,31 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      * 
      * Adds a new mapping or condition for schema export.
      */
-    protected void addNewMapping(FieldQRI fieldQRI, SpQueryField qf)
+    protected void addNewMapping(FieldQRI fieldQRI, SpQueryField qf, QueryFieldPanel qfp)
     {
-    	if (selectedQFP != null)
+    	if (qfp != null)
     	{
-    		if (selectedQFP.getFieldQRI() != null)
+    		if (qfp.getFieldQRI() != null)
     		{
-    			selectedQFP.getFieldQRI().setIsInUse(false);
+    			qfp.getFieldQRI().setIsInUse(false);
     		}
-    		if (selectedQFP.getQueryField() != null)
+    		if (qfp.getQueryField() != null)
     		{
     			//removeReference doesn't work. Something off with the equals method or Comparable<?> stuff or something.
     			//query.removeReference(selectedQFP.getQueryField(), "fields");
-    			removeFieldFromQuery(selectedQFP.getQueryField());
-    			removeSchemaItemMapping(selectedQFP.getItemMapping());
+    			removeFieldFromQuery(qfp.getQueryField());
+    			removeSchemaItemMapping(qfp.getItemMapping());
     		}
     		if (!isConditionForSchemaMap(QueryBldrPane.this.selectedQFP))
     		{
     			SpExportSchemaItemMapping newMapping = new SpExportSchemaItemMapping();
     			newMapping.initialize();
-    			newMapping.setExportSchemaItem(selectedQFP.getSchemaItem());
+    			newMapping.setExportSchemaItem(qfp.getSchemaItem());
     			newMapping.setExportSchemaMapping(schemaMapping);
     			newMapping.setQueryField(qf);
     			schemaMapping.getMappings().add(newMapping);
     			qf.setMapping(newMapping);
-    			QueryBldrPane.this.selectedQFP.setField(fieldQRI, qf);
+    			qfp.setField(fieldQRI, qf);
                 fieldQRI.setIsInUse(true);
     		}
     		updateUIAfterAddOrMap(fieldQRI, null, false, false);
@@ -934,6 +934,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         }
 
         boolean header = true;
+        boolean doAutoMap = true;
         for (final QueryFieldPanel qfp : qfps)
         {
             if (header)
@@ -954,10 +955,36 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 });
                 qfp.resetValidator();
                 queryFieldsPanel.add(qfp);
+                doAutoMap = qfp.getFieldQRI() == null;
             }
         }
         qualifyFieldLabels();
         
+        if (doAutoMap)
+        {
+        	for (QueryFieldPanel qfp : queryFieldItems)
+        	{
+        		AutoMap mappedTo = autoMaps.get(qfp.getSchemaItem().getFieldName());
+        		if (mappedTo != null)
+        		{
+        			FieldQRI fqri = getFieldQRI(tableTree, mappedTo.getFieldName(), mappedTo.isRel(),
+        	    			mappedTo.getStringId(), getTableIds(mappedTo.getTableIds()),
+        	    			0, tableTreeHash);
+        			if (fqri != null)
+        			{
+        				SpQueryField qf = new SpQueryField();
+        				qf.initialize();
+        				qf.setFieldName(fqri.getFieldName());
+        				qf.setStringId(fqri.getStringId());
+        				query.addReference(qf, "fields");
+        				addNewMapping(fqri, qf, qfp);
+        				dirty = true;
+        			}
+        		}
+        	
+        	}
+        }
+        	
         SwingUtilities.invokeLater(new Runnable(){
 
 			/* (non-Javadoc)
@@ -3245,7 +3272,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                                         }
                                         else
                                         {
-                                        	addNewMapping(fieldQRI, qf);
+                                        	addNewMapping(fieldQRI, qf, selectedQFP);
                                         }
                                     }
                                 }
@@ -3933,17 +3960,17 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             if (qfp != null)
             {
             	FieldQRI fqri = qfp.getFieldQRI();
-            	if (fqri == null)
-            	{
-            		AutoMap mappedTo = autoMaps.get(qfp.getSchemaItem().getFieldName());
-            		if (mappedTo != null)
-            		{
-            			fqri = getFieldQRI(tableTree, mappedTo.getFieldName(), false,
-            	    			mappedTo.getStringId(), getTableIds(mappedTo.getTableIds()),
-            	    			0, tableTreeHash);
-            		}
-            	
-            	}
+//            	if (fqri == null)
+//            	{
+//            		AutoMap mappedTo = autoMaps.get(qfp.getSchemaItem().getFieldName());
+//            		if (mappedTo != null)
+//            		{
+//            			fqri = getFieldQRI(tableTree, mappedTo.getFieldName(), false,
+//            	    			mappedTo.getStringId(), getTableIds(mappedTo.getTableIds()),
+//            	    			0, tableTreeHash);
+//            		}
+//            	
+//            	}
             	if (fqri != null)
             	{
             		displayField(fqri);
@@ -4387,12 +4414,14 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     	protected final String stringId;
     	protected final String fieldName;
     	protected final String tableIds;
+    	protected final boolean isRel;
     	
-		public AutoMap(String stringId, String fieldName, String tableIds) {
+		public AutoMap(String stringId, String fieldName, String tableIds, boolean isRel) {
 			super();
 			this.stringId = stringId;
 			this.fieldName = fieldName;
 			this.tableIds = tableIds;
+			this.isRel = isRel;
 		}
 
 		public String getStringId() {
@@ -4407,7 +4436,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 			return tableIds;
 		}
     	
-    	
+    	public boolean isRel()
+    	{
+    		return isRel;
+    	}
     }
     
 }
