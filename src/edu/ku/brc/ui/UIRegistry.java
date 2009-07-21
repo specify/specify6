@@ -1642,7 +1642,7 @@ public class UIRegistry
      */
     public static void setEmbeddedDBDir(final String path)
     {
-        //log.debug(">>>>>>>>>>>>>>>>>>>>>> setEmbeddedDBDir: "+path);
+        //log.debug(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> setEmbeddedDBDir: "+path);
         if (StringUtils.isNotEmpty(path))
         {
             System.setProperty(EMBEDDED_DB_PATH, path);
@@ -1655,6 +1655,10 @@ public class UIRegistry
     public static String getEmbeddedDBPath()
     {
         //log.debug("************************ getEmbeddedDBPath: "+System.getProperty(EMBEDDED_DB_PATH));
+        //try
+        //{
+        //log.debug("************************ getEmbeddedDBPath: ["+(new File(System.getProperty(EMBEDDED_DB_PATH))).getCanonicalPath()+"]");
+        //} catch (Exception ex) {}
         return System.getProperty(EMBEDDED_DB_PATH);
     }
     
@@ -1663,7 +1667,10 @@ public class UIRegistry
      */
     public static String getDefaultEmbeddedDBPath()
     {
-        //log.debug("########################## getDefaultEmbeddedDBPath["+(UIRegistry.getAppDataDir() + File.separator + EMBEDDED_DB_DIR)+"]");
+        //try
+        //{
+        //log.debug("########################## getDefaultEmbeddedDBPath["+(new File(getAppDataDir() + File.separator + EMBEDDED_DB_DIR)).getCanonicalPath()+"]");
+        //} catch (Exception ex) {}
         return UIRegistry.getAppDataDir() + File.separator + EMBEDDED_DB_DIR;
     }
     
@@ -1673,7 +1680,10 @@ public class UIRegistry
      */
     public static String getMobileEmbeddedDBPath()
     {
-        //log.debug("########################## getMobileEmbeddedDBPath["+(UIRegistry.getDefaultWorkingPath() + File.separator + EMBEDDED_DB_DIR)+"]");
+        //try
+        //{
+        //log.debug("=======================================  getMobileEmbeddedDBPath["+(new File(getDefaultWorkingPath() + File.separator + EMBEDDED_DB_DIR)).getCanonicalPath()+"]");
+        //} catch (Exception ex) {}
         return UIRegistry.getDefaultWorkingPath() + File.separator + EMBEDDED_DB_DIR;
     }
     

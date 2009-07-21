@@ -79,7 +79,6 @@ public class DisciplineSetupPanel extends JPanel implements SetupPanelIFace
     /**
      * 
      */
-    @SuppressWarnings("unchecked")
     public DisciplineSetupPanel(final String helpContext, final JButton nextBtn)
     {
         super();

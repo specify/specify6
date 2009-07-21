@@ -3050,7 +3050,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
       {
           UIRegistry.setBaseAppDataDir(appdatadir);
       }
-      
+          
       String embeddeddbdir = System.getProperty("embeddeddbdir");
       if (StringUtils.isNotEmpty(embeddeddbdir))
       {
@@ -3064,7 +3064,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
           
           try
           {
-              UIRegistry.setEmbeddedDBDir(DBConnection.getMobileTempDir().getAbsolutePath());
+              UIRegistry.setEmbeddedDBDir(DBConnection.getMobileTempDir().getCanonicalPath());
           } catch (IOException e)
           {
             e.printStackTrace();
@@ -3081,6 +3081,8 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                   // Load Local Prefs
                   AppPreferences localPrefs = AppPreferences.getLocalPrefs();
                   localPrefs.setDirPath(UIRegistry.getAppDataDir());
+                  
+                  //System.err.println("LocalPrefs: "+(new File(UIRegistry.getAppDataDir())).getCanonicalPath());
                   
                   // Check to see if we should check for a new version
                   String VERSION_CHECK = "version_check.auto";

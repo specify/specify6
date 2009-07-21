@@ -41,6 +41,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
 import org.apache.commons.io.FileUtils;
@@ -332,12 +333,13 @@ public class DatabasePanel extends BaseSetupPanel
                         String newConnStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostName, dbName, dbUserName, dbPwd, driverInfo.getName());
                         if (DBConnection.isEmbedded(newConnStr))
                         {
+                            //System.err.println(newConnStr);
                             try
                             {
                                 Class.forName(driverInfo.getDriverClassName());
                                 
+                                // This call will create the database if it doesn't exist
                                 DBConnection testDB = DBConnection.createInstance(driverInfo.getDriverClassName(), driverInfo.getDialectClassName(), dbName, newConnStr, dbUserName, dbPwd);
-                                
                                 Connection conn = testDB.createConnection();
                                 
                                 if (conn != null)
@@ -476,6 +478,17 @@ public class DatabasePanel extends BaseSetupPanel
                         }
                     });
             worker.execute();
+        } else
+        {
+            errorKey = "NO_LOGIN_ROOT";
+            DatabasePanel.this.label.setText(UIRegistry.getResourceString(errorKey));
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run()
+                {
+                    UIRegistry.getTopWindow().pack();
+                }
+            });
         }
     }
 
@@ -562,24 +575,50 @@ public class DatabasePanel extends BaseSetupPanel
      */
     protected boolean verifyDatabase(final Properties props)
     {
-        boolean proceed = true;
-        if (!DBConnection.getInstance().isEmbedded())
+        boolean isEmbedded = DBConnection.getInstance().isEmbedded();
+        boolean proceed    = true;
+        if (isEmbedded)
+        {
+            File specifyDataDir = DBConnection.getEmbeddedDataDir();
+            if (specifyDataDir != null)
+            {
+                if (specifyDataDir.exists())
+                {
+                    proceed = UIHelper.promptForAction("PROCEED", "CANCEL", "DEL_CUR_DB_TITLE", UIRegistry.getLocalizedMessage("DEL_CUR_DB", props.getProperty(DBNAME)));
+                    if (proceed)
+                    {
+                        try
+                        {
+                            FileUtils.deleteDirectory(specifyDataDir);
+                            
+                        } catch (Exception ex)
+                        {
+                            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyDBSetupWizard.class, new Exception("The Embedded Data Dir has not been set"));
+                        }
+                    }
+                }
+                return proceed;
+                
+            } else
+            {
+                edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyDBSetupWizard.class, new Exception("The Embedded Data Dir has not been set"));
+            }  
+        }
+        
+        if (proceed)
         {
             if (checkForDatabase(props))
             {
-                Object[] options = { 
-                        getResourceString("PROCEED"), 
-                        getResourceString("CANCEL")
-                      };
-                int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
-                                                             UIRegistry.getLocalizedMessage("DEL_CUR_DB", props.getProperty(DBNAME)), 
-                                                             getResourceString("DEL_CUR_DB_TITLE"), 
-                                                             JOptionPane.YES_NO_OPTION,
-                                                             JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-                proceed = userChoice == JOptionPane.YES_OPTION;
-                
-            } 
+                return isEmbedded ? true : UIHelper.promptForAction("PROCEED", "CANCEL", "DEL_CUR_DB_TITLE", UIRegistry.getLocalizedMessage("DEL_CUR_DB", props.getProperty(DBNAME)));
+
+            } else
+            {
+                proceed = false;
+            }
         }
+        
         return proceed;
     }
     

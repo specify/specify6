@@ -155,8 +155,8 @@ public class MasterUserPanel extends GenericFormPanel
         isEmbedded = DBConnection.getInstance().isEmbedded();
         if (isEmbedded)
         {
-            ((JTextField)comps.get("saUserName")).setText("Specify");
-            ((JTextField)comps.get("saPassword")).setText("Specify");
+            ((JTextField)comps.get("saUserName")).setText(properties.getProperty("dbUserName"));
+            ((JTextField)comps.get("saPassword")).setText(properties.getProperty("dbPassword"));
             ((JTextField)comps.get("saUserName")).setEnabled(false);
             ((JTextField)comps.get("saPassword")).setEnabled(false);
         }

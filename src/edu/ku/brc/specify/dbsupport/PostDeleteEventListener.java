@@ -44,7 +44,7 @@ public class PostDeleteEventListener implements org.hibernate.event.PostDeleteEv
     @Override
     public void onPostDelete(PostDeleteEvent obj)
     {
-        if (obj.getEntity() instanceof FormDataObjIFace)
+        if (PostInsertEventListener.isAuditOn() && obj.getEntity() instanceof FormDataObjIFace)
         {
             if (((FormDataObjIFace)obj.getEntity()).isChangeNotifier())
             {

@@ -43,13 +43,15 @@ public class PostInsertEventListener implements org.hibernate.event.PostInsertEv
 {
     private static final Logger log = Logger.getLogger(PostInsertEventListener.class);
     
+    private static boolean isAuditOn = true;
+    
     /* (non-Javadoc)
      * @see org.hibernate.event.PostInsertEventListener#onPostInsert(org.hibernate.event.PostInsertEvent)
      */
     @Override
     public void onPostInsert(PostInsertEvent obj)
     {
-        if (obj.getEntity() instanceof FormDataObjIFace)
+        if (isAuditOn() && obj.getEntity() instanceof FormDataObjIFace)
         {
             if (((FormDataObjIFace)obj.getEntity()).isChangeNotifier())
             {
@@ -121,4 +123,22 @@ public class PostInsertEventListener implements org.hibernate.event.PostInsertEv
             log.error("Can't audit data object, not instanceof FormDataObjIFace: "+(dObjArg != null ? dObjArg.getClass().getSimpleName() : "null"));
         }
     }
+
+    /**
+     * @return the isAuditOn
+     */
+    public static boolean isAuditOn()
+    {
+        return isAuditOn;
+    }
+
+    /**
+     * @param isAuditOn the isAuditOn to set
+     */
+    public static void setAuditOn(boolean isAuditOn)
+    {
+        PostInsertEventListener.isAuditOn = isAuditOn;
+    }
+    
+    
 }

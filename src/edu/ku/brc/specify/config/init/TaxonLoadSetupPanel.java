@@ -35,6 +35,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -126,6 +127,7 @@ public class TaxonLoadSetupPanel extends BaseSetupPanel
         coverageTF = createTextField("");
         descTA     = createTextArea();
         otherBrw   = new ValBrowseBtnPanel(otherTF = new ValTextField(), false, true);
+        otherBrw.setUseNativeFileDlg(true);
         
         descTA.setEditable(false);
         descTA.setColumns(30);
@@ -202,6 +204,18 @@ public class TaxonLoadSetupPanel extends BaseSetupPanel
                 updateBtnUI();
             }
             
+        });
+        
+        otherBrw.setNativeDlgFilter(new FilenameFilter() {
+
+            /* (non-Javadoc)
+             * @see java.io.FilenameFilter#accept(java.io.File, java.lang.String)
+             */
+            @Override
+            public boolean accept(File dir, String name)
+            {
+                return name.toLowerCase().endsWith("xls");
+            }
         });
     }
     

@@ -39,6 +39,7 @@ import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import com.install4j.api.launcher.ApplicationLauncher;
 import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
@@ -81,6 +82,8 @@ import edu.ku.brc.ui.IconManager.IconSize;
  */
 public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFace
 {
+    private static final Logger  log                = Logger.getLogger(SpecifyDBSetupWizardFrame.class);
+    
     /**
      * @throws HeadlessException
      */
@@ -89,6 +92,8 @@ public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFa
         super();
         
         new MacOSAppHandler(this);
+        
+        UIRegistry.setTopWindow(this);
         
         // Now initialize
         AppPreferences localPrefs = AppPreferences.getLocalPrefs();
@@ -118,7 +123,7 @@ public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFa
                     public void cancelled()
                     {
                         setVisible(false);
-                        dispose();
+                        //dispose();
                         doExit(true);
                     }
                     @Override
@@ -129,8 +134,14 @@ public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFa
                     @Override
                     public void finished()
                     {
-                        dispose();
-                        doExit(true);
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run()
+                            {
+                                dispose();
+                                doExit(true);
+                            }
+                        });
                     }
                     @Override
                     public void panelChanged(String title)
@@ -151,7 +162,11 @@ public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFa
      */
     public boolean doExit(boolean doAppExit)
     {
+        DBConnection.setCopiedToMachineDisk(true);
+        DBConnection.shutdown();
+        
         System.exit(0);
+        
         return true;
     }
     
@@ -324,7 +339,9 @@ public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFa
             
             try
             {
+                log.debug("%%%%%%%%%%%%%%%%%%%%%% ");
                 UIRegistry.setEmbeddedDBDir(DBConnection.getMobileTempDir().getAbsolutePath());
+                log.debug("%%%%%%%%%%%%%%%%%%%%%% ");
                 
             } catch (IOException e)
             {
@@ -344,6 +361,10 @@ public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFa
                 
                 // Load Local Prefs
                 AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+                //try {
+                //System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "+(new File(UIRegistry.getAppDataDir()).getCanonicalPath())+"]");
+                //} catch (IOException ex) {}
+                
                 localPrefs.setDirPath(UIRegistry.getAppDataDir());
                 
                 // Check to see if we should check for a new version

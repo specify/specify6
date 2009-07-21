@@ -108,6 +108,7 @@ import edu.ku.brc.specify.datamodel.StorageTreeDefItem;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
+import edu.ku.brc.specify.dbsupport.PostInsertEventListener;
 import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
 import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
 import edu.ku.brc.ui.CustomDialog;
@@ -147,6 +148,8 @@ public class SpecifyDBConverter
      */
     public SpecifyDBConverter()
     {
+        PostInsertEventListener.setAuditOn(false);
+        
         setUpSystemProperties();
         
     }

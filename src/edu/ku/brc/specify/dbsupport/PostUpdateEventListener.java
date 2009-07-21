@@ -44,7 +44,7 @@ public class PostUpdateEventListener implements org.hibernate.event.PostUpdateEv
     @Override
     public void onPostUpdate(PostUpdateEvent obj)
     {
-        if (obj.getEntity() instanceof FormDataObjIFace)
+        if (PostInsertEventListener.isAuditOn() && obj.getEntity() instanceof FormDataObjIFace)
         {
             if (((FormDataObjIFace)obj.getEntity()).isChangeNotifier())
             {

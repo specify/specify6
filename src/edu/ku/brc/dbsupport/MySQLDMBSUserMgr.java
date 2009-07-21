@@ -56,7 +56,7 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
 		super();
 		
 		driverInfo = DatabaseDriverInfo.getDriver("MySQL");
-		if (driverInfo == null)
+		if (driverInfo == null || DBConnection.getInstance().isEmbedded())
 		{
 		    driverInfo = DatabaseDriverInfo.getDriver("MySQLEmbedded");
 		}

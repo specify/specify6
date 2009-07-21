@@ -7344,6 +7344,7 @@ public class BuildSampleDatabase
                 
                 frame.setVisible(false);
                 frame.dispose();
+                DBConnection.shutdown();
                 System.exit(0); // I didn't used to have to do this.
 
             }

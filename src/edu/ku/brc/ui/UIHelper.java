@@ -107,6 +107,7 @@ import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JPopupMenu;
@@ -3577,6 +3578,32 @@ public final class UIHelper
 		}
 
         return localPrefs.getBoolean(HAS_OPENGL_PREF, false);  
+    }
+    
+    /**
+     * A Two button prompt to ask the user for a decision.
+     * @param yesLabelKey the I18N label for the Yes button
+     * @param noLabelKey the I18N label for the No button
+     * @param titleKey I18N key for title
+     * @param msg (not localized)
+     * @return
+     */
+    public static boolean promptForAction(final String yesLabelKey, 
+                                          final String noLabelKey,
+                                          final String titleKey,
+                                          final String msg)
+    {
+        Object[] options = { 
+                getResourceString(yesLabelKey), 
+                getResourceString(noLabelKey)
+              };
+        
+        int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
+                                                     msg, 
+                                                     getResourceString(titleKey), 
+                                                     JOptionPane.YES_NO_OPTION,
+                                                     JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+        return userChoice == JOptionPane.YES_OPTION;
     }
     
 }

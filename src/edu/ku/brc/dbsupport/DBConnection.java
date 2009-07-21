@@ -96,9 +96,19 @@ public class DBConnection
                     @Override
                     public void run() 
                     {
+                        if (UIRegistry.isMobile())
+                        {
+                            copyToMobileDisk();
+                        }
+
                         if (isEmbeddedDB != null && isEmbeddedDB)
                         {
                             ServerLauncherSocketFactory.shutdown(embeddedDataDir, null);
+                        }
+                        
+                        if (UIRegistry.isMobile())
+                        {
+                            copyToMobileDisk();
                         }
                     }
                 });
@@ -153,9 +163,17 @@ public class DBConnection
      */
     public boolean isEmbedded()
     {
-        return isEmbeddedDB;
+        return isEmbeddedDB == null ? false : isEmbeddedDB;
     }
     
+    /**
+     * @return the the full file path to the embedded directory. 
+     */
+    public static File getEmbeddedDataDir()
+    {
+        return embeddedDataDir;
+    }
+
     /**
      * @param dbUsername
      * @param dbPassword
@@ -248,7 +266,8 @@ public class DBConnection
             }
             Class.forName(dbDriver); // load driver
             
-            //log.debug("["+dbConnectionStr+"]["+dbUsername+"]["+dbPassword+"] ");
+            log.debug("******** ["+dbConnectionStr+"]["+dbUsername+"]["+dbPassword+"] ");
+            System.err.println("["+dbConnectionStr+"]["+dbUsername+"]["+dbPassword+"] ");
             con = DriverManager.getConnection(dbConnectionStr, dbUsername, dbPassword);
             
         } catch (SQLException sqlEX)
@@ -541,14 +560,20 @@ public class DBConnection
     /**
      * Shuts down all the connections (including the main getInstance()).
      */
-    public static void shutdown()
+    public synchronized static void shutdown()
     {
         isShuttingDown = true;
-        for (DBConnection dbc : new Vector<DBConnection>(connections))
+        try
         {
-            dbc.close();
+            for (DBConnection dbc : new Vector<DBConnection>(connections))
+            {
+                dbc.close();
+            }
+            connections.clear();
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
         }
-        connections.clear();
         isShuttingDown = false;
         
         if (UIRegistry.isMobile())
@@ -578,6 +603,14 @@ public class DBConnection
     }
     
     /**
+     * @param isCopiedToMachineDisk the isCopiedToMachineDisk to set
+     */
+    public static void setCopiedToMachineDisk(final boolean isCopiedToMachineDisk)
+    {
+        DBConnection.isCopiedToMachineDisk = isCopiedToMachineDisk;
+    }
+
+    /**
      * @return
      */
     private static boolean copyToMachineDisk()
@@ -587,8 +620,12 @@ public class DBConnection
             try
             {
                 mobileTmpDir = getMobileTempDir();
+                
+                System.out.println("********************* copyToMachineDisk - getMobileEmbeddedDBPath["+(new File(UIRegistry.getMobileEmbeddedDBPath()).getCanonicalPath())+"] to mobileTmpDir["+mobileTmpDir.getCanonicalPath()+"]");
+                
                 FileUtils.copyDirectory(new File(UIRegistry.getMobileEmbeddedDBPath()), mobileTmpDir, true);
-                UIRegistry.setEmbeddedDBDir(mobileTmpDir.getAbsolutePath());
+                UIRegistry.setEmbeddedDBDir(mobileTmpDir.getCanonicalPath());
+                
                 isCopiedToMachineDisk = true;
                 
                 for (Object fObj : FileUtils.listFiles(mobileTmpDir, null, true))
@@ -614,12 +651,16 @@ public class DBConnection
      */
     private static boolean copyToMobileDisk()
     {
+        System.out.println("########################  copyToMobileDisk  -  mobileTmpDir["+mobileTmpDir+"] isCopiedToMachineDisk ["+isCopiedToMachineDisk+"]");
         if (mobileTmpDir != null && isCopiedToMachineDisk)
         {
             try
             {
                 File mobileDir = new File(UIRegistry.getMobileEmbeddedDBPath());
                 FileUtils.deleteDirectory(mobileDir);
+                
+                System.out.println("###################################### copyToMachineDisk  -  mobileTmpDir["+mobileTmpDir+"] to mobileDir["+mobileDir.getCanonicalPath()+"]");
+                
                 FileUtils.copyDirectory(mobileTmpDir, mobileDir, true);
                 for (Object fObj : FileUtils.listFiles(mobileDir, null, true))
                 {
@@ -629,6 +670,7 @@ public class DBConnection
                         f.delete();
                     }
                 }
+                
                 for (Object fObj : FileUtils.listFiles(mobileTmpDir, null, true))
                 {
                     File f = (File)fObj;
