@@ -64,7 +64,7 @@ public class PreparationBusRules extends AttachmentOwnerBaseBusRules
             } else
             {
                 DBTableInfo tableInfo      = DBTableIdMgr.getInstance().getInfoById(Preparation.getClassTableId());
-                String[]    tableFieldList = gatherTableFieldsForDelete(new String[] {"preapration"}, tableInfo);
+                String[]    tableFieldList = gatherTableFieldsForDelete(new String[] {"preparation"}, tableInfo);
                 isOK = okToDelete(tableFieldList, dbObj.getId());
             }
             deletable.doDeleteDataObj(dataObj, session, isOK);
