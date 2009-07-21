@@ -1193,6 +1193,7 @@ public class MainFrameSpecify extends MainFrame
         for (int c = 0; c < getConnections().size(); c++)
         {
             SpJRIReportConnection conn = (SpJRIReportConnection )getConnections().get(c);
+            //this only works if getIdentityTitle() is overridden appropriately-
             if (conn.getName().equals(object.getIdentityTitle()))
             {
                 return conn;
