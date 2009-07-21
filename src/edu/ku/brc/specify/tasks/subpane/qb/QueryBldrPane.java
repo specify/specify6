@@ -121,6 +121,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.SpExportSchema;
 import edu.ku.brc.specify.datamodel.SpExportSchemaItem;
@@ -164,6 +165,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 {
     protected static final Logger                            log            = Logger.getLogger(QueryBldrPane.class);
     protected static final Color                             TITLEBAR_COLOR = new Color(82, 160, 52);
+    protected static final int                               ExportSchemaPreviewSize = 120;
     
     protected JList                                          tableList;
     protected Vector<QueryFieldPanel>                        queryFieldItems  = new Vector<QueryFieldPanel>();
@@ -528,7 +530,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         	add(mover, BorderLayout.EAST);
         }
         
-        searchBtn   = createButton(UIRegistry.getResourceString("QB_SEARCH"));
+        String searchLbl = schemaMapping == null ? getResourceString("QB_SEARCH") : getResourceString("QB_EXPORT_PREVIEW");
+        searchBtn   = createButton(searchLbl);
         searchBtn.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
@@ -540,6 +543,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 							"Export to db? Yes or No?", "YES", "NO",
 							JOptionPane.QUESTION_MESSAGE))
 					{
+						query.forceLoad();
 						QueryBldrPane.exportToTable(query);
 					} else
 					{
@@ -955,7 +959,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 });
                 qfp.resetValidator();
                 queryFieldsPanel.add(qfp);
-                doAutoMap = qfp.getFieldQRI() == null;
+                doAutoMap &= qfp.getFieldQRI() == null;
             }
         }
         qualifyFieldLabels();
@@ -2525,10 +2529,17 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         runningResults.set(null);
        
         int results = completedResults.get().getQuery().getDataObjects().size();
-        int max = completedResults.get().getMaxTableRows();
+        int max = schemaMapping == null ? completedResults.get().getMaxTableRows() : ExportSchemaPreviewSize;
         if (results > max && !countOnly &&  !completedResults.get().getQuery().isCancelled())
         {
-            UIRegistry.displayInfoMsgDlgLocalized("QB_PARTIAL_RESULTS_DISPLAY", max, results);
+            if (schemaMapping == null)
+            {
+            	UIRegistry.displayInfoMsgDlgLocalized("QB_PARTIAL_RESULTS_DISPLAY", max, results);
+            }
+            else
+            {
+            	UIRegistry.displayInfoMsgDlgLocalized("QB_PREVIEW_DISPLAY", max, results);
+            }
         }
         else
         {
@@ -2537,7 +2548,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         SwingUtilities.invokeLater(new Runnable() {
             public void run()
             {
-                QueryBldrPane.this.searchBtn.setText(UIRegistry.getResourceString("QB_SEARCH")); 
+                String searchLbl = schemaMapping == null ? getResourceString("QB_SEARCH") : getResourceString("QB_EXPORT_PREVIEW");
+                QueryBldrPane.this.searchBtn.setText(searchLbl); 
                 UIRegistry.getStatusBar().setProgressDone(query.getName());
             }
         });
@@ -2606,7 +2618,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run()
                     {
-                        QueryBldrPane.this.searchBtn.setText(UIRegistry.getResourceString("QB_SEARCH")); 
+                        String searchLbl = schemaMapping == null ? getResourceString("QB_SEARCH") : getResourceString("QB_EXPORT_PREVIEW");
+                        QueryBldrPane.this.searchBtn.setText(searchLbl); 
                         UIRegistry.getStatusBar().setProgressDone(query.getName());
                         
                     }
@@ -2763,10 +2776,23 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         return result;
     }
 
+    /**
+     * @return an un-used name based on the schema name and version.
+     */
     protected boolean getExportMappingQueryName()
     {
-    	//XXX finish this!
-    	query.setName(exportSchema.getSchemaName() + "ExportQuery");
+    	//not worrying about multi-user issues
+    	String baseName = exportSchema.getSchemaName() + exportSchema.getSchemaVersion();
+    	String result = baseName;
+    	int cnt = BasicSQLUtils.getCount("select count(*) from spquery where name = '" + result + "'");
+    	int suffix = 2;
+    	while (cnt > 0)
+    	{
+    		result = baseName + "_" + suffix; 
+    		cnt = BasicSQLUtils.getCount("select count(*) from spquery where name = '" + result + "'");
+    		suffix++;
+    	}
+    	query.setName(result);
     	return true;
     }
     

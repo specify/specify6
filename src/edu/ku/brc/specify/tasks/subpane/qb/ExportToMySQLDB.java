@@ -295,41 +295,40 @@ public class ExportToMySQLDB
 	{
 		try
 		{
-		Connection c = null;
-		Statement s = null;
-		try
-		{
-			c = DBConnection.getInstance().createConnection();
-			s = c.createStatement();
-			ResultSet rs = s.executeQuery("select * from " + tblName.toLowerCase() + " limit 1");
-			String result = "select ";
-			for (int col = 1; col <= rs.getMetaData().getColumnCount(); col++)
+			Connection c = null;
+			Statement s = null;
+			try
 			{
-				if (col > 1)
+				c = DBConnection.getInstance().createConnection();
+				s = c.createStatement();
+				ResultSet rs = s.executeQuery("select * from " + tblName + " limit 1");
+				String result = "select ";
+				for (int col = 1; col <= rs.getMetaData().getColumnCount(); col++)
 				{
-					result += ", ";
+					if (col > 1)
+					{
+						result += ", ";
+					}
+					//XXX This only works because currently fieldNames = conceptNames
+					result += tblName.toLowerCase() + "." + rs.getMetaData().getColumnName(col) + " as \"" + rs.getMetaData().getColumnName(col) + "\"";
 				}
-				//XXX This only works because currently fieldNames = conceptNames
-				result += tblName.toLowerCase() + "." + rs.getMetaData().getColumnName(col) + " as \"" + rs.getMetaData().getColumnName(col) + "\"";
-			}
-			return result + " from " + tblName.toLowerCase();
-		} finally
-		{
-			if (s != null)
+				return result + " from " + tblName.toLowerCase();
+			} finally
 			{
-				s.close();
-			}
-			if (c != null)
-			{
-				c.close();
-			}
-		} 
+				if (s != null)
+				{
+					s.close();
+				}
+				if (c != null)
+				{
+					c.close();
+				}
+			} 
 		} catch (Exception ex)
 		{
 			UIRegistry.displayErrorDlg(ex.getClass().getSimpleName() + ": " + ex.getLocalizedMessage());
 			return null;
 		}
-		
 	}
 	
 	protected static boolean exportRowsToTabDelimitedText(File file,

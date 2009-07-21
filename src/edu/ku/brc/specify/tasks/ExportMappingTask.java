@@ -221,7 +221,7 @@ public class ExportMappingTask extends QueryTask
 		DBTableInfo tableInfo = getTableInfo();
 		SpQuery query = new SpQuery();
 		query.initialize();
-		query.setName(exportSchema.getSchemaName());
+		query.setName(exportSchema.getSchemaName() + exportSchema.getVersion());
 		query.setNamed(false);
 		query.setContextTableId((short) tableInfo.getTableId());
 		query.setContextName(tableInfo.getShortClassName());
