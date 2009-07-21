@@ -21,8 +21,10 @@ package edu.ku.brc.ui;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 
 /**
@@ -36,6 +38,16 @@ import java.awt.event.MouseEvent;
 @SuppressWarnings("serial")
 public class TriangleButton extends GradiantButton
 {
+    
+protected static RenderingHints hints;
+    
+    static
+    {
+        hints = new RenderingHints(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        hints.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        hints.put(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+    }
+    
     /**
      * 
      */
@@ -59,6 +71,9 @@ public class TriangleButton extends GradiantButton
     public void paint(Graphics g) 
     {       
         super.paint(g);
+        
+        Graphics2D g2d = (Graphics2D)g;
+        g2d.addRenderingHints(hints);
         
         if (pressed) 
         {
