@@ -229,6 +229,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     protected final AtomicLong doneTime = new AtomicLong(-1);
     protected final AtomicLong startTime = new AtomicLong(-1);
     
+    protected Map<String, AutoMap> autoMaps = new HashMap<String, AutoMap>();
     
     
     /**
@@ -290,6 +291,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             fieldsToSkipHash.put(nameStr, true);
         }
         
+        loadAutoMaps();
+        
         QueryTask qt = (QueryTask )task;
         Pair<TableTree, Hashtable<String, TableTree>> trees = qt.getTableTrees();
         tableTree = trees.getFirst();
@@ -302,6 +305,64 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         CommandDispatcher.register(ReportsBaseTask.REPORTS, this);
     }
 
+    protected void loadAutoMaps() {
+		autoMaps.put("Phylum", new AutoMap(
+				"1,9-determinations,4-preferredTaxon.taxon.Phylum", "Phylum",
+				"1,9-determinations,4-preferredTaxon"));
+		autoMaps.put("Kingdom", new AutoMap(
+				"1,9-determinations,4-preferredTaxon.taxon.Kingdom", "Kingdom",
+				"1,9-determinations,4-preferredTaxon"));
+		autoMaps.put("Order", new AutoMap(
+				"1,9-determinations,4-preferredTaxon.taxon.Order", "Order",
+				"1,9-determinations,4-preferredTaxon"));
+		autoMaps.put("CatalogNumber", new AutoMap(
+				"1.collectionobject.catalogNumber", "catalogNumber", "1"));
+		autoMaps.put("Class", new AutoMap(
+				"1,9-determinations,4-preferredTaxon.taxon.Class", "Class",
+				"1,9-determinations,4-preferredTaxon"));
+		autoMaps.put("ScientificNameAuthor", new AutoMap(
+				"1,9-determinations,4-preferredTaxon.taxon.author", "author",
+				"1,9-determinations,4-preferredTaxon"));
+		autoMaps.put("Genus", new AutoMap(
+				"1,9-determinations,4-preferredTaxon.taxon.Genus", "Genus",
+				"1,9-determinations,4-preferredTaxon"));
+		autoMaps.put("Family", new AutoMap(
+				"1,9-determinations,4-preferredTaxon.taxon.Family", "Family",
+				"1,9-determinations,4-preferredTaxon"));
+		autoMaps.put("ScientificName", new AutoMap(
+				"1,9-determinations,4-preferredTaxon.taxon.fullName",
+				"fullName", "1,9-determinations,4-preferredTaxon"));
+		autoMaps.put("Country", new AutoMap("1,10,2,3.geography.Country",
+				"Country", "1,10,2,3"));
+//		autoMaps.put("Collector", new AutoMap(
+//				"1,10,30-collectors.collector.collectors", "collectors",
+//				"1,10,30-collectors"));
+		autoMaps.put("SpecificEpithet", new AutoMap(
+				"1,9-determinations,4-preferredTaxon.taxon.Species", "Species",
+				"1,9-determinations,4-preferredTaxon"));
+		autoMaps.put("Continent", new AutoMap("1,10,2,3.geography.Continent",
+				"Continent", "1,10,2,3"));
+		autoMaps.put("StateProvince", new AutoMap("1,10,2,3.geography.State",
+				"State", "1,10,2,3"));
+		autoMaps.put("County", new AutoMap("1,10,2,3.geography.County",
+				"County", "1,10,2,3"));
+		autoMaps.put("CollectionCode", new AutoMap("1,23.collection.code",
+				"code", "1,23"));
+		autoMaps.put("Locality", new AutoMap("1,10,2.locality.localityName",
+				"localityName", "1,10,2"));
+		autoMaps.put("DecimalLatitude", new AutoMap(
+				"1,10,2.locality.latitude1", "latitude1", "1,10,2"));
+		autoMaps.put("MaximumElevationInMeters", new AutoMap(
+				"1,10,2.locality.maxElevation", "maxElevation", "1,10,2"));
+		autoMaps.put("GlobalUniqueIdentifier", new AutoMap(
+				"1.collectionobject.guid", "guid", "1"));
+		autoMaps.put("MinimumElevationInMeters", new AutoMap(
+				"1,10,2.locality.minElevation", "minElevation", "1,10,2"));
+		autoMaps.put("DecimalLongitude", new AutoMap(
+				"1,10,2.locality.longitude1", "longitude1", "1,10,2"));
+		autoMaps.put("DayCollected", new AutoMap(
+				"1,10.collectingevent.startDate", "startDate", "1,10"));
+	}
     /**
      * create the query builder UI.
      */
@@ -847,7 +908,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             }
             query.forceLoad(true);                	
             qfps = exportSchema == null ? getQueryFieldPanels(this, query.getFields(), tableTree, tableTreeHash, saveBtn, missingFlds)
-            		: getQueryFieldPanelsForMapping(this, query.getFields(), tableTree, tableTreeHash, saveBtn, schemaMapping, missingFlds);
+            		: getQueryFieldPanelsForMapping(this, query.getFields(), tableTree, tableTreeHash, saveBtn, schemaMapping, missingFlds, autoMaps);
             
             if (missingFlds.size() > 0)
             {
@@ -2018,7 +2079,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         final boolean rebuildExistingTbl = needToRebuildTable;
         
         Vector<QueryFieldPanel> qfps = QueryBldrPane.getQueryFieldPanelsForMapping(qpp, exportQuery.getFields(), tblTree, ttHash,
-        		null, mapping, null);
+        		null, mapping, null, null);
 
         HQLSpecs sql = null;
 
@@ -3529,7 +3590,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     
     public FieldQRI getFieldQRI(final SpQueryField field)
     {
-    	return getFieldQRI(tableTree, field, getTableIds(field.getTableList()),
+//    	return getFieldQRI(tableTree, field, getTableIds(field.getTableList()),
+//    			0, tableTreeHash);
+    	return getFieldQRI(tableTree, field.getFieldName(), field.getIsRelFld() != null && field.getIsRelFld(),
+    			field.getStringId(), getTableIds(field.getTableList()),
     			0, tableTreeHash);
     }
     
@@ -3541,8 +3605,11 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      * @return
      */
     protected static FieldQRI getFieldQRI(final TableTree tbl,
-                                   final SpQueryField field,
-                                   final Vector<TableTreePathPoint> tableIds,
+                                   //final SpQueryField field,
+                                   final String fieldName,
+    								final boolean isRelFld,
+    								final String fldStringId,
+    								final Vector<TableTreePathPoint> tableIds,
                                    final int level,
                                    final Hashtable<String, TableTree> ttHash)
     {
@@ -3557,24 +3624,28 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 {
                     if (level == (tableIds.size() - 1))
                     {
-                        if (field.getIsRelFld() == null || !field.getIsRelFld())
+                        //if (field.getIsRelFld() == null || !field.getIsRelFld())
+                    	if (!isRelFld)
                         {
                             for (int f = 0; f < kid.getTableQRI().getFields(); f++)
                             {
-                                if (kid.getTableQRI().getField(f).getStringId().equals(field.getStringId())) 
+                                //if (kid.getTableQRI().getField(f).getStringId().equals(field.getStringId())) 
+                                if (kid.getTableQRI().getField(f).getStringId().equals(fldStringId))
                                 { 
                                     return kid.getTableQRI().getField(f); 
                                 }
                             }
                         }
-                        else if (kid.field.equalsIgnoreCase(field.getFieldName()))
+                        //else if (kid.field.equalsIgnoreCase(field.getFieldName()))
+                        else if (kid.field.equalsIgnoreCase(fieldName))
                         {
                             return buildFieldQRI(kid.getTableQRI());
                         }
                     }
                     else
                     {
-                        FieldQRI fi = getFieldQRI(kid, field, tableIds, level + 1, ttHash);
+                        //FieldQRI fi = getFieldQRI(kid, field, tableIds, level + 1, ttHash);
+                        FieldQRI fi = getFieldQRI(kid, fieldName, isRelFld, fldStringId, tableIds, level + 1, ttHash);
                         if (fi != null) 
                         { 
                         	return fi; 
@@ -3618,7 +3689,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         result.add(bldQueryFieldPanel(container, null, null, container.getColumnDefStr(), saveBtn));
         for (SpQueryField fld : orderedFlds)
         {
-        	FieldQRI fieldQRI = getFieldQRI(tblTree, fld, getTableIds(fld.getTableList()), 0, ttHash);
+        	FieldQRI fieldQRI = getFieldQRI(tblTree, fld.getFieldName(), fld.getIsRelFld() != null && fld.getIsRelFld(),
+        			fld.getStringId(), getTableIds(fld.getTableList()), 0, ttHash);
             if (fieldQRI != null)
             {
                 result.add(bldQueryFieldPanel(container, fieldQRI, fld, container.getColumnDefStr(), saveBtn));
@@ -3662,7 +3734,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     protected static Vector<QueryFieldPanel> getQueryFieldPanelsForMapping(final QueryFieldPanelContainerIFace container, 
             final Set<SpQueryField> fields, final TableTree tblTree, 
             final Hashtable<String,TableTree> ttHash, final Component saveBtn,
-            SpExportSchemaMapping schemaMapping, List<String> missingFlds) 
+            SpExportSchemaMapping schemaMapping, List<String> missingFlds,
+            Map<String, AutoMap> autoMaps)
     {
         Vector<QueryFieldPanel> result = new Vector<QueryFieldPanel>();
         //Need to change columnDefStr if mapMode...
@@ -3687,12 +3760,13 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         	SpQueryField fld = getQueryFieldMapping(schemaMapping, schemaItem);
         	if (fld == null)
         	{
-        		result.add(new QueryFieldPanel(container, null, 
+        			result.add(new QueryFieldPanel(container, null, 
         				container.getColumnDefStr(), saveBtn, fld, schemaItem));
         	}
         	else
         	{
-        		FieldQRI fieldQRI = getFieldQRI(tblTree, fld, getTableIds(fld.getTableList()), 0, ttHash);
+        		FieldQRI fieldQRI = getFieldQRI(tblTree, fld.getFieldName(), fld.getIsRelFld() != null && fld.getIsRelFld(),
+            			fld.getStringId(), getTableIds(fld.getTableList()), 0, ttHash);
         		if (fieldQRI != null)
         		{
         			result.add(new QueryFieldPanel(container, fieldQRI, 
@@ -3856,9 +3930,24 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 scrollQueryFieldsToRect(selectedQFP.getBounds());
             }
             updateMoverBtns();
-            if (qfp != null && qfp.getFieldQRI() != null)
+            if (qfp != null)
             {
-            	displayField(qfp.getFieldQRI());
+            	FieldQRI fqri = qfp.getFieldQRI();
+            	if (fqri == null)
+            	{
+            		AutoMap mappedTo = autoMaps.get(qfp.getSchemaItem().getFieldName());
+            		if (mappedTo != null)
+            		{
+            			fqri = getFieldQRI(tableTree, mappedTo.getFieldName(), false,
+            	    			mappedTo.getStringId(), getTableIds(mappedTo.getTableIds()),
+            	    			0, tableTreeHash);
+            		}
+            	
+            	}
+            	if (fqri != null)
+            	{
+            		displayField(fqri);
+            	}
             }
         }
     }
@@ -4291,6 +4380,34 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     		}
     	}
     	return false;
+    }
+    
+    public class AutoMap 
+    {
+    	protected final String stringId;
+    	protected final String fieldName;
+    	protected final String tableIds;
+    	
+		public AutoMap(String stringId, String fieldName, String tableIds) {
+			super();
+			this.stringId = stringId;
+			this.fieldName = fieldName;
+			this.tableIds = tableIds;
+		}
+
+		public String getStringId() {
+			return stringId;
+		}
+
+		public String getFieldName() {
+			return fieldName;
+		}
+
+		public String getTableIds() {
+			return tableIds;
+		}
+    	
+    	
     }
     
 }
