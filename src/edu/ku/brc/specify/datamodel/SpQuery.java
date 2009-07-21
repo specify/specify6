@@ -539,6 +539,14 @@ public class SpQuery extends DataModelObjBase implements Cloneable
         return query;
     }
 
+    
+	@Override
+	@Transient
+	public String getIdentityTitle()
+	{
+		return getName();
+	}
+
 	/**
 	 * @param obj
 	 * @return true if obj has same fields (in the same order) and tablecontext
