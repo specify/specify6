@@ -766,7 +766,10 @@ public class FormValidator implements ValidationListener, DataChangeListener
     {
         if (isNotEmpty(id) && comp != null)
         {
-            jc.getVars().put(id, comp);
+            if (jc != null && jc.getVars() != null)
+            {
+                jc.getVars().put(id, comp);
+            }
             
         } else if (!UIRegistry.isRelease())
         {

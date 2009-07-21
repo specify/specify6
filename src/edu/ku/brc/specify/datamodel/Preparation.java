@@ -758,9 +758,13 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
         obj.deaccessionPreparations = new HashSet<DeaccessionPreparation>();
         obj.preparationAttachments  = new HashSet<PreparationAttachment>();
        
-        // Clone Attributes ????
-        obj.preparationAttribute    = null;
+        // Clone Attributes
+        obj.preparationAttribute    = preparationAttribute != null ? (PreparationAttribute)preparationAttribute.clone() : null;
         obj.preparationAttrs        = new HashSet<PreparationAttr>();
+        for (PreparationAttr pa : preparationAttrs)
+        {
+            obj.preparationAttrs.add((PreparationAttr)pa.clone());
+        }
          
         return obj;
     }

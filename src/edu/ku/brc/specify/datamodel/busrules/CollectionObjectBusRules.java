@@ -24,6 +24,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static edu.ku.brc.ui.UIRegistry.showLocalizedMsg;
 
 import java.util.List;
+import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -43,6 +44,7 @@ import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.specify.datamodel.CollectionObjectAttribute;
 import edu.ku.brc.specify.datamodel.DeaccessionPreparation;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.LoanPreparation;
@@ -398,7 +400,14 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
         {
             // So we need to clone it make a full copy when it is embedded.
             return AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent();
+            
         }
+        
+        if (fieldName.equals("collectionObjectAttribute"))
+        {
+            return true;
+        }
+        
         return false;
     }
 
@@ -485,5 +494,50 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
         }
         return true;
     }
-
+    
+    public static void fixDupColObjAttrs()
+    {
+        String sql = "SELECT * FROM (SELECT CollectionObjectAttributeID, count(*) as cnt FROM collectionobject c WHERE CollectionObjectAttributeID IS NOT NULL group by CollectionObjectAttributeID) T1 WHERE cnt > 1";
+        Vector<Object[]> rows = BasicSQLUtils.query(sql);
+        if (rows != null)
+        {
+            for (Object[] row : rows)
+            {
+                DataProviderSessionIFace session = null;
+                try
+                {
+                    session = DataProviderFactory.getInstance().createSession();
+                    CollectionObjectAttribute colObjAttr = session.get(CollectionObjectAttribute.class, (Integer)row[1]);
+                    
+                    int cnt = 0;
+                    for (CollectionObject co : colObjAttr.getCollectionObjects())
+                    {
+                        if (cnt > 0)
+                        {
+                            CollectionObjectAttribute colObjAttribute = (CollectionObjectAttribute)colObjAttr.clone();
+                            co.setCollectionObjectAttribute(colObjAttribute);
+                            colObjAttribute.getCollectionObjects().add(co);
+                            
+                            session.beginTransaction();
+                            session.saveOrUpdate(colObjAttribute);
+                            session.saveOrUpdate(co);
+                            session.commit();
+                        }
+                        cnt++;
+                    }
+                    
+                } catch (Exception ex)
+                {
+                   session.rollback();
+                   ex.printStackTrace();
+                } finally
+                {
+                    if (session != null)
+                    {
+                        session.close();
+                    }
+                }
+            }
+        }
+    }
 }

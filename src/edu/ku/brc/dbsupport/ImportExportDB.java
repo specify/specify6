@@ -39,6 +39,7 @@ import java.util.Vector;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
@@ -63,6 +64,8 @@ import edu.ku.brc.util.Pair;
 // TODO find a better way to stip the working set
 public class ImportExportDB
 {
+    private static final Logger log = Logger.getLogger(ImportExportDB.class);
+    
     protected Session session;
     protected String  importFolderPath;
 
@@ -157,7 +160,7 @@ public class ImportExportDB
             Element dbImport = XMLHelper.readFileToDOM4J(path);
             if (path == null)
             {
-                System.err.println("error opening file"); //$NON-NLS-1$
+                log.debug("error opening file"); //$NON-NLS-1$
             } else
             {
                 HibernateUtil.beginTransaction();
@@ -206,10 +209,10 @@ public class ImportExportDB
 
             if (path == null)
             {
-                System.err.println("error opening file"); //$NON-NLS-1$
+                log.debug("error opening file"); //$NON-NLS-1$
             } else if (importMe == null)
             {
-                System.err.println("record with id:" + id + " does not exsist in " //$NON-NLS-1$ //$NON-NLS-2$
+                log.debug("record with id:" + id + " does not exsist in " //$NON-NLS-1$ //$NON-NLS-2$
                         + importFolderPath + dbTable + ".xml"); //$NON-NLS-1$
             } else
             {
@@ -246,7 +249,7 @@ public class ImportExportDB
 
             if (path == null)
             {
-                System.err.println("error opening file"); //$NON-NLS-1$
+                log.debug("error opening file"); //$NON-NLS-1$
             } else
             {
                 long t = 0;
@@ -281,7 +284,7 @@ public class ImportExportDB
 
             if (path == null)
             {
-                System.err.println("error opening file"); //$NON-NLS-1$
+                log.debug("error opening file"); //$NON-NLS-1$
             } else
             {
                 long t = 0;
@@ -314,7 +317,7 @@ public class ImportExportDB
 
             if (path == null)
             {
-                System.err.println("error opening file"); //$NON-NLS-1$
+                log.debug("error opening file"); //$NON-NLS-1$
             } else
             {
                 long t = 0;
@@ -351,7 +354,7 @@ public class ImportExportDB
                                                                         // name
             if (records.size() < 1)
             {
-                System.err.println("Cannot import. Given database type:" + dbTable //$NON-NLS-1$
+                log.debug("Cannot import. Given database type:" + dbTable //$NON-NLS-1$
                         + " does not exsist in import file"); //$NON-NLS-1$
             } else
             {
@@ -407,7 +410,7 @@ public class ImportExportDB
                                     agentMap.put(element.getName(), collection);
                                 } else
                                 {
-                                    System.err.println("error on the collection " //$NON-NLS-1$
+                                    log.debug("error on the collection " //$NON-NLS-1$
                                             + element.getName() + " with parent " + dbTable); //$NON-NLS-1$
                                 }
                             }
@@ -417,7 +420,7 @@ public class ImportExportDB
                             // if it is the tables id, just ignore. otherwise print out error
                             if (!element.getName().equals(lowerdbTable + "Id")) //$NON-NLS-1$
                             {
-                                System.err.println("did not add " + element.getName() //$NON-NLS-1$
+                                log.debug("did not add " + element.getName() //$NON-NLS-1$
                                         + " to the element " + dbTable); //$NON-NLS-1$
                             }
                         }
@@ -476,7 +479,7 @@ public class ImportExportDB
 
             if (records.size() < 1)
             {
-                System.err.println("Cannot import. Given database type:" + dbTable //$NON-NLS-1$
+                log.debug("Cannot import. Given database type:" + dbTable //$NON-NLS-1$
                         + " does not exsist in import file"); //$NON-NLS-1$
             } else
             {
@@ -538,7 +541,7 @@ public class ImportExportDB
                             // if it is an id, just ignore. otherwise print out error
                             if (!element.getName().equals(lowerdbTable + "Id")) //$NON-NLS-1$
                             {
-                                System.err.println("did not add " + element.getName() //$NON-NLS-1$
+                                log.debug("did not add " + element.getName() //$NON-NLS-1$
                                         + " to the element " + dbTable); //$NON-NLS-1$
                             }
                         }
@@ -680,7 +683,7 @@ public class ImportExportDB
                                 // if it is an id, just ignore. otherwise print out error
                                 if (!element.getName().equals(lowerdbTable + "Id")) //$NON-NLS-1$
                                 {
-                                    System.err.println("did not add " + element.getName() //$NON-NLS-1$
+                                    log.debug("did not add " + element.getName() //$NON-NLS-1$
                                             + " to the element " + dbTable); //$NON-NLS-1$
                                 }
                             }
@@ -793,7 +796,7 @@ public class ImportExportDB
                     // if it is an id, just ignore. otherwise print out error
                     if (!element.getName().equals(lowerdbTable + "Id")) //$NON-NLS-1$
                     {
-                        System.err.println("did not add " + element.getName() + " to the element " //$NON-NLS-1$ //$NON-NLS-2$
+                        log.debug("did not add " + element.getName() + " to the element " //$NON-NLS-1$ //$NON-NLS-2$
                                 + dbTable);
                     }
                 }
@@ -886,7 +889,7 @@ public class ImportExportDB
                     // if it is an id, just ignore. otherwise print out error
                     if (!element.getName().equals(primaryKey))
                     {
-                        System.err.println("did not add " + element.getName() + " to the element " //$NON-NLS-1$ //$NON-NLS-2$
+                        log.debug("did not add " + element.getName() + " to the element " //$NON-NLS-1$ //$NON-NLS-2$
                                 + dbTable);
                     }
                 }
@@ -983,7 +986,7 @@ public class ImportExportDB
                     // if it is an id, just ignore. otherwise print out error
                     if (!element.getName().equals(primaryKey))
                     {
-                        System.err.println("did not add " + element.getName() + " to the element " //$NON-NLS-1$ //$NON-NLS-2$
+                        log.debug("did not add " + element.getName() + " to the element " //$NON-NLS-1$ //$NON-NLS-2$
                                 + dbTable);
                     }
                 }
@@ -1081,7 +1084,7 @@ public class ImportExportDB
                     // if it is an id, just ignore. otherwise print out error
                     if (!element.getName().equals(primaryKey))
                     {
-                        System.err.println("did not add " + element.getName() + " to the element " //$NON-NLS-1$ //$NON-NLS-2$
+                        log.debug("did not add " + element.getName() + " to the element " //$NON-NLS-1$ //$NON-NLS-2$
                                 + dbTable);
                     }
                 }
@@ -1130,7 +1133,7 @@ public class ImportExportDB
 
             if (records.size() < 1)
             {
-                System.err.println("Cannot import. Given database type:" + dbTable //$NON-NLS-1$
+                log.debug("Cannot import. Given database type:" + dbTable //$NON-NLS-1$
                         + " does not exsist in import file"); //$NON-NLS-1$
             } else
             {
@@ -1187,7 +1190,7 @@ public class ImportExportDB
                             // if it is an id, just ignore. otherwise print out error
                             if (!element.getName().equals(primaryKey))
                             {
-                                System.err.println("did not add " + element.getName() //$NON-NLS-1$
+                                log.debug("did not add " + element.getName() //$NON-NLS-1$
                                         + " to the element " + dbTable); //$NON-NLS-1$
                             }
                         }
@@ -1275,7 +1278,7 @@ public class ImportExportDB
             // List ids = dbImport.selectNodes("//"+lowerdbTable+"Id");//assume this is dbs id name
             if (records.size() < 1)
             {
-                System.err.println("Cannot import. Given database type:" + dbTable //$NON-NLS-1$
+                log.debug("Cannot import. Given database type:" + dbTable //$NON-NLS-1$
                         + " does not exsist in import file"); //$NON-NLS-1$
             } else
             {
@@ -1311,7 +1314,7 @@ public class ImportExportDB
                             // if it is an id, just ignore. otherwise print out error
                             if (!element.getName().equals(lowerdbTable + "Id")) //$NON-NLS-1$
                             {
-                                System.err.println("did not add " + element.getName() //$NON-NLS-1$
+                                log.debug("did not add " + element.getName() //$NON-NLS-1$
                                         + " to the element " + dbTable); //$NON-NLS-1$
                             }
                         }
@@ -1355,7 +1358,7 @@ public class ImportExportDB
                                                                         // name
             if (records.size() < 1)
             {
-                System.err.println("Cannot import. Given database type:" + dbTable //$NON-NLS-1$
+                log.debug("Cannot import. Given database type:" + dbTable //$NON-NLS-1$
                         + " does not exsist in import file"); //$NON-NLS-1$
             } else
             {
@@ -1410,7 +1413,7 @@ public class ImportExportDB
                                     agentMap.put(element.getName(), collection);
                                 } else
                                 {
-                                    System.err.println("error on the collection " //$NON-NLS-1$
+                                    log.debug("error on the collection " //$NON-NLS-1$
                                             + element.getName() + " with parent " + dbTable); //$NON-NLS-1$
                                 }
                             }
@@ -1420,7 +1423,7 @@ public class ImportExportDB
                             // if it is an id, just ignore. otherwise print out error
                             if (!element.getName().equals(lowerdbTable + "Id")) //$NON-NLS-1$
                             {
-                                System.err.println("did not add " + element.getName() //$NON-NLS-1$
+                                log.debug("did not add " + element.getName() //$NON-NLS-1$
                                         + " to the element " + dbTable); //$NON-NLS-1$
                             }
                         }
@@ -1519,7 +1522,7 @@ public class ImportExportDB
                                 collectingEventMap.put(secondelement.getName(), collection);
                             } else
                             {
-                                System.err.println("error on the collection " //$NON-NLS-1$
+                                log.debug("error on the collection " //$NON-NLS-1$
                                         + secondelement.getName() + " with parent " + dbTable); //$NON-NLS-1$
                             }
                         }
@@ -1528,7 +1531,7 @@ public class ImportExportDB
                         // if it is an id, just ignore. otherwise print out error
                         if (!secondelement.getName().equals(lowerdbTable + "Id")) //$NON-NLS-1$
                         {
-                            System.err.println("did not add " + secondelement.getName() //$NON-NLS-1$
+                            log.debug("did not add " + secondelement.getName() //$NON-NLS-1$
                                     + " to the element " + dbTable); //$NON-NLS-1$
                         }
                     }
@@ -1571,7 +1574,7 @@ public class ImportExportDB
 
             if (records.size() < 1)
             {
-                System.err.println("Cannot import. Given database type:" + dbTable //$NON-NLS-1$
+                log.debug("Cannot import. Given database type:" + dbTable //$NON-NLS-1$
                         + " does not exsist in import file"); //$NON-NLS-1$
             } else
             {
@@ -1633,7 +1636,7 @@ public class ImportExportDB
                             // if it is an id, just ignore. otherwise print out error
                             if (!element.getName().equals(primaryKey))
                             {
-                                System.err.println("did not add " + element.getName() //$NON-NLS-1$
+                                log.debug("did not add " + element.getName() //$NON-NLS-1$
                                         + " to the element " + dbTable); //$NON-NLS-1$
                             }
                         }
@@ -1802,7 +1805,7 @@ public class ImportExportDB
                         return "OneToMany"; //$NON-NLS-1$
                     } else
                     {
-                        System.err.println("could not import element: " + compareMe.getName() //$NON-NLS-1$
+                        log.debug("could not import element: " + compareMe.getName() //$NON-NLS-1$
                                 + ", with data:" + compareMe.getData()); //$NON-NLS-1$
                     }
                 }
@@ -1828,7 +1831,7 @@ public class ImportExportDB
             DBTableInfo info = DBTableIdMgr.getInstance().getInfoByTableName(lowerdbTable);
             /*
              * List<DBTableIdMgr.FieldInfo> list = info.getFields();
-             * //System.err.println(compareMe.getName()); for( DBTableIdMgr.FieldInfo i: list){
+             * //log.debug(compareMe.getName()); for( DBTableIdMgr.FieldInfo i: list){
              * System.out.println(i.getName()); }
              */
             // find element with compareme.getName()
@@ -1964,7 +1967,7 @@ public class ImportExportDB
                         return "OneToMany"; //$NON-NLS-1$
                     } else
                     {
-                        System.err.println("could not import element: " + compareMe.getName() //$NON-NLS-1$
+                        log.debug("could not import element: " + compareMe.getName() //$NON-NLS-1$
                                 + ", with data:" + compareMe.getData()); //$NON-NLS-1$
                     }
                 }
@@ -2083,7 +2086,7 @@ public class ImportExportDB
                         return "OneToMany"; //$NON-NLS-1$
                     } else
                     {
-                        System.err.println("could not import element: " + compareMe.getName() //$NON-NLS-1$
+                        log.debug("could not import element: " + compareMe.getName() //$NON-NLS-1$
                                 + ", with data:" + compareMe.getData()); //$NON-NLS-1$
                     }
                 }
@@ -2206,7 +2209,7 @@ public class ImportExportDB
                         return "OneToMany"; //$NON-NLS-1$
                     } else
                     {
-                        System.err.println("could not import element: " + compareMe.getName() //$NON-NLS-1$
+                        log.debug("could not import element: " + compareMe.getName() //$NON-NLS-1$
                                 + ", with data:" + compareMe.getData()); //$NON-NLS-1$
                     }
                 }
@@ -2342,7 +2345,7 @@ public class ImportExportDB
                     return "OneToMany"; //$NON-NLS-1$
                 } else
                 {
-                    System.err.println("could not import element: " + compareMe.getName() //$NON-NLS-1$
+                    log.debug("could not import element: " + compareMe.getName() //$NON-NLS-1$
                             + ", with data:" + compareMe.getData()); //$NON-NLS-1$
                 }
             }
@@ -2606,7 +2609,7 @@ public class ImportExportDB
         {
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImportExportDB.class, ex);
-            System.err.println("table: " + dbTable + " does not exsist"); //$NON-NLS-1$ //$NON-NLS-2$
+            log.debug("table: " + dbTable + " does not exsist"); //$NON-NLS-1$ //$NON-NLS-2$
         }
         return children;
     }
@@ -2653,7 +2656,7 @@ public class ImportExportDB
         {
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImportExportDB.class, ex);
-            System.err.println("table:" + dbTable + " does not exsist"); //$NON-NLS-1$ //$NON-NLS-2$
+            log.debug("table:" + dbTable + " does not exsist"); //$NON-NLS-1$ //$NON-NLS-2$
         }
         return parents;
     }
@@ -2698,7 +2701,7 @@ public class ImportExportDB
         {
             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ImportExportDB.class, ex);
-            System.err.println("table: " + dbTable + " does not exsist"); //$NON-NLS-1$ //$NON-NLS-2$
+            log.debug("table: " + dbTable + " does not exsist"); //$NON-NLS-1$ //$NON-NLS-2$
         }
         return parents;
     }

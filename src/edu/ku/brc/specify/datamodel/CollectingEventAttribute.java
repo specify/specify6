@@ -50,7 +50,7 @@ import org.hibernate.annotations.Index;
     {   
         @Index (name="COLEVATSColMemIDX", columnNames={"CollectionMemberID"})
     })
-public class CollectingEventAttribute extends CollectionMember
+public class CollectingEventAttribute extends CollectionMember implements Cloneable
 {
     protected Integer collectingEventAttributeId;
     
@@ -576,6 +576,19 @@ public class CollectingEventAttribute extends CollectionMember
         this.yesNo5 = yesNo5;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#clone()
+     */
+    @Override
+    public Object clone() throws CloneNotSupportedException
+    {
+        CollectingEventAttribute obj = (CollectingEventAttribute)super.clone();
+        obj.collectingEventAttributeId        = null;
+        obj.collectingEvents                  = new HashSet<CollectingEvent>();
+        
+        return obj;
+    }
+
 
 
     /* (non-Javadoc)

@@ -52,7 +52,7 @@ import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 @org.hibernate.annotations.Table(appliesTo="preparationattribute", indexes =
     {   @Index (name="PrepAttrsColMemIDX", columnNames={"CollectionMemberID"})
     })
-public class PreparationAttribute extends CollectionMember
+public class PreparationAttribute extends CollectionMember implements Cloneable
 {
     protected Integer preparationAttributeId;
     protected Date attrDate;
@@ -894,6 +894,19 @@ public class PreparationAttribute extends CollectionMember
     public void setYesNo2(Boolean yesNo2)
     {
         this.yesNo2 = yesNo2;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#clone()
+     */
+    @Override
+    public Object clone() throws CloneNotSupportedException
+    {
+        PreparationAttribute obj = (PreparationAttribute)super.clone();
+        obj.preparationAttributeId    = null;
+        obj.preparations              = new HashSet<Preparation>();
+        
+        return obj;
     }
     
     /* (non-Javadoc)

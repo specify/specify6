@@ -585,6 +585,14 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
             newCollector.setCollectingEvent(obj);
             obj.collectors.add(newCollector);
         }
+        
+        // Clone Attributes
+        obj.collectingEventAttribute    = collectingEventAttribute != null ? (CollectingEventAttribute)collectingEventAttribute.clone() : null;
+        obj.collectingEventAttrs        = new HashSet<CollectingEventAttr>();
+        for (CollectingEventAttr cea : collectingEventAttrs)
+        {
+            obj.collectingEventAttrs.add((CollectingEventAttr)cea.clone());
+        }
          
         return obj;
     }
