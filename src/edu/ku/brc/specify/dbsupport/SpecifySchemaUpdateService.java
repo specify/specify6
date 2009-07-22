@@ -31,6 +31,7 @@ import java.util.Vector;
 
 import javax.swing.JOptionPane;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
@@ -278,8 +279,10 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
         {
             log.debug("App - Prev["+prevVersionArg+"] New["+newVersionArg+"]");
             
-            double prevVersion = Double.parseDouble(prevVersionArg);
-            double newVersion  = Double.parseDouble(newVersionArg);
+            Integer prevVersion = Integer.parseInt(StringUtils.replace(StringUtils.deleteWhitespace(prevVersionArg), ".", ""));
+            Integer newVersion  = Integer.parseInt(StringUtils.replace(StringUtils.deleteWhitespace(newVerBadErrKey), ".", ""));
+            log.debug("App - Prev["+prevVersion+"] New["+newVersion+"]");
+            
             if (prevVersion > newVersion)
             {
                 UIRegistry.showLocalizedError(newVerBadErrKey, newVersionArg, prevVersionArg);
