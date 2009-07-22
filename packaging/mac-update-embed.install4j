@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="4.2.3" transformSequenceNumber="2">
   <directoryPresets config="../InstallerFiles/images" />
-  <application name="Specify" distributionSourceDir="" applicationId="5397-6897-2502-8965" mediaDir="../MacMediaUpdate" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}_Beta_update" compression="6" lzmaCompression="false" pack200Compression="false" excludeSignedFromPacking="true" keepModificationTimes="false" missingFilesStrategy="warn" shortName="Specify" publisher="Biodiversity Research Center, University of Kansas" publisherWeb="http://www.specifysoftware.org" version="6.2.75" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="true" macSignature="????" installerName="" javaMinVersion="1.6" javaMaxVersion="1.6" allowBetaVM="false" jdkMode="runtimeJre" jdkName="">
+  <application name="Specify" distributionSourceDir="" applicationId="5397-6897-2502-8965" mediaDir="../MacMediaUpdate" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}_Beta_update" compression="6" lzmaCompression="false" pack200Compression="false" excludeSignedFromPacking="true" keepModificationTimes="false" missingFilesStrategy="warn" shortName="Specify" publisher="Biodiversity Research Center, University of Kansas" publisherWeb="http://www.specifysoftware.org" version="6.2.76" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="true" macSignature="????" installerName="" javaMinVersion="1.6" javaMaxVersion="1.6" allowBetaVM="false" jdkMode="runtimeJre" jdkName="">
     <languages skipLanguageSelection="false" languageSelectionInPrincipalLanguage="false">
       <principalLanguage id="en" customLocalizationFile="" />
       <additionalLanguages />
@@ -25,7 +25,46 @@
           <entry location="demo_files/taxonomy" fileType="regular" />
           <entry location="hibernate_libs" fileType="regular" />
           <entry location="iReportLibs" fileType="regular" />
-          <entry location="libs" fileType="regular" />
+          <entry location="libs/ant-launcher.jar" fileType="regular" />
+          <entry location="libs/ant.jar" fileType="regular" />
+          <entry location="libs/commons-beanutils.jar" fileType="regular" />
+          <entry location="libs/commons-betwixt.jar" fileType="regular" />
+          <entry location="libs/commons-codec.jar" fileType="regular" />
+          <entry location="libs/commons-digester.jar" fileType="regular" />
+          <entry location="libs/commons-httpclient.jar" fileType="regular" />
+          <entry location="libs/commons-io.jar" fileType="regular" />
+          <entry location="libs/commons-jexl.jar" fileType="regular" />
+          <entry location="libs/commons-lang.jar" fileType="regular" />
+          <entry location="libs/commons-validator.jar" fileType="regular" />
+          <entry location="libs/DynamicJasper.jar" fileType="regular" />
+          <entry location="libs/ezmorph.jar" fileType="regular" />
+          <entry location="libs/forms.jar" fileType="regular" />
+          <entry location="libs/itext.jar" fileType="regular" />
+          <entry location="libs/jasperreports.jar" fileType="regular" />
+          <entry location="libs/javacsv.jar" fileType="regular" />
+          <entry location="libs/jaxen.jar" fileType="regular" />
+          <entry location="libs/jazzy-core.jar" fileType="regular" />
+          <entry location="libs/jazzy-swing.jar" fileType="regular" />
+          <entry location="libs/jcommon.jar" fileType="regular" />
+          <entry location="libs/jfreechart.jar" fileType="regular" />
+          <entry location="libs/jh.jar" fileType="regular" />
+          <entry location="libs/json-lib.jar" fileType="regular" />
+          <entry location="libs/jtds.jar" fileType="regular" />
+          <entry location="libs/junit.jar" fileType="regular" />
+          <entry location="libs/log4j.jar" fileType="regular" />
+          <entry location="libs/looks.jar" fileType="regular" />
+          <entry location="libs/mail.jar" fileType="regular" />
+          <entry location="libs/msbase.jar" fileType="regular" />
+          <entry location="libs/mssqlserver.jar" fileType="regular" />
+          <entry location="libs/msutil.jar" fileType="regular" />
+          <entry location="libs/mysql-connector.jar" fileType="regular" />
+          <entry location="libs/poi.jar" fileType="regular" />
+          <entry location="libs/servlet-api.jar" fileType="regular" />
+          <entry location="libs/swingx.jar" fileType="regular" />
+          <entry location="libs/TimingFramework.jar" fileType="regular" />
+          <entry location="libs/versions.txt" fileType="regular" />
+          <entry location="libs/xpp3_minO.jar" fileType="regular" />
+          <entry location="libs/xstream.jar" fileType="regular" />
           <entry location="non-mac-application-adapter.jar" fileType="regular" />
         </exclude>
       </dirEntry>
