@@ -42,7 +42,6 @@ import edu.ku.brc.af.core.db.DBTableChildIFace;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
-import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -886,10 +885,9 @@ public class BaseBusRules implements BusinessRulesIFace
         boolean doLSID = ((SpecifyLSIDGeneratorFactory)SpecifyLSIDGeneratorFactory.getInstance()).isPrefOn(data.getTableId());
         if (doLSID)
         {
-            AppPreferences remote = AppPreferences.getRemote();
-            
-            String                prefix       = "Prefs.LSID.";
-            boolean               doVersioning = remote.getBoolean(prefix + "UseVersioning", false);
+            //AppPreferences remote = AppPreferences.getRemote();
+            //String                prefix       = "Prefs.LSID.";
+            boolean               doVersioning = true;//remote.getBoolean(prefix + "UseVersioning", false);
             UIFieldFormatterIFace formatter    = null;
             
             if (data.getTableId() == 1)

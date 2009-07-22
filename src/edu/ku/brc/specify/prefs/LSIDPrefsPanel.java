@@ -86,7 +86,11 @@ public class LSIDPrefsPanel extends GenericPrefsPanel
         validator.setName("LSID Validator");
         validator.setNewObj(true);
         
+        UIRegistry.loadAndPushResourceBundle("preferences");
+        
         createUI();
+        
+        UIRegistry.popResourceBundle();
     }
 
     /**
@@ -133,7 +137,7 @@ public class LSIDPrefsPanel extends GenericPrefsPanel
         DataChangeNotifier dcn = validator.createDataChangeNotifer(pName, useVersioning, null);
         useVersioning.addActionListener(dcn);
         
-        JButton updateLSIDsBtn = UIHelper.createButton("Create LSIDs");
+        JButton updateLSIDsBtn = UIHelper.createI18NButton("CREATE_LSIDS");
         updateLSIDsBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e)
@@ -144,8 +148,8 @@ public class LSIDPrefsPanel extends GenericPrefsPanel
         });
         
         PanelBuilder pbInner = new PanelBuilder(new FormLayout("p,20px,p", "p"));
-        pbInner.add(useVersioning, cc.xy(1, 1));
-        pbInner.add(updateLSIDsBtn, cc.xy(3, 1));
+        //pbInner.add(useVersioning, cc.xy(1, 1));
+        pbInner.add(updateLSIDsBtn, cc.xy(1, 1));
         
         pb.add(pbInner.getPanel(), cc.xyw(1, y, 3));
         y += 2;
