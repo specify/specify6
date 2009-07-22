@@ -18,7 +18,23 @@ public class CalendarExportFormatter extends ExportFieldFormatter
 	@Override
 	public Object formatToUI(Object... data)
 	{
+		if (data[0] == null)
+		{
+			return null;
+		}
 		Calendar calendar = (Calendar )data[0];
-		return calendar.get(Calendar.YEAR) + "-" + calendar.get(Calendar.MONTH) + "-" + calendar.get(Calendar.DAY_OF_MONTH);
+		int num = calendar.get(Calendar.MONTH)+1;
+		String monStr = String.valueOf(num);
+		if (num < 10)
+		{
+			monStr = "0" + monStr; 
+		}
+		num = Calendar.DAY_OF_MONTH;
+		String numStr = String.valueOf(num);
+		if (num < 10)
+		{
+			numStr = "0" + numStr;
+		}
+		return calendar.get(Calendar.YEAR) + "-" + monStr + "-" + numStr;
 	}
 }

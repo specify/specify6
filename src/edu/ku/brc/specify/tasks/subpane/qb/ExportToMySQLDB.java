@@ -15,11 +15,16 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBFieldInfo;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.db.ERTICaptionInfo;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -91,8 +96,18 @@ public class ExportToMySQLDB
 	public static String fixNameForMySQL(String name)
 	{
         //XXX probably lots of other possibilities to fix
-		return name.trim().replaceAll(" ", "_");
+		return name.trim().replaceAll(" ", "_").replaceAll("\\.", "_");
 	}
+	
+	/**
+	 * @param name
+	 * @return lower-cased name with invalid characters removed or subbstituted
+	 */
+	public static String fixTblNameForMySQL(String name)
+	{
+		return fixNameForMySQL(name).toLowerCase();
+	}
+	
 	/**
 	 * @param column
 	 * @return a mysql field declaration for column.
@@ -185,7 +200,7 @@ public class ExportToMySQLDB
 	 */
 	public static void exportToTable(Connection toConnection, List<ERTICaptionInfoQB> columns,
 			QBDataSource rows, String originalTblName, List<QBDataSourceListenerIFace> listeners,
-			boolean idColumnPresent, boolean overwrite, boolean update) throws Exception
+			boolean idColumnPresent, boolean overwrite, boolean update, int baseTableId) throws Exception
 	{
 		for (QBDataSourceListenerIFace listener : listeners)
 	    {
@@ -193,11 +208,18 @@ public class ExportToMySQLDB
 	    	listener.rowCount(rows.size());
 	    }
 	    boolean newTable = false;
-	    String tblName = fixNameForMySQL(originalTblName);
+	    String tblName = fixTblNameForMySQL(originalTblName);
 	    if (overwrite || !tableExists(toConnection, tblName))
 	    {
 	    	createTable(toConnection, columns, tblName, idColumnPresent);
 	    	newTable = true;
+	    }
+	    
+	    if (update)
+	    {
+	    	DBTableInfo tbl = DBTableIdMgr.getInstance().getInfoById(baseTableId);
+	    	
+	    	deleteDeletedRecs(toConnection, tblName, tblName + "Id", tbl.getName(), tbl.getIdColumnName(), AppContextMgr.getInstance().getClassObject(Collection.class).getId());
 	    }
 	    
 		Statement stmt = toConnection.createStatement();
@@ -210,6 +232,7 @@ public class ExportToMySQLDB
 			int rowNum = 0;
 			while (rows.getNext())
 			{
+				System.out.println("exporting " + rowNum);
 				for (QBDataSourceListenerIFace listener : listeners)
 				{
 					listener.currentRow(rowNum++);
@@ -262,9 +285,16 @@ public class ExportToMySQLDB
 	 */
 	public static void exportToTable(List<ERTICaptionInfoQB> columns, QBDataSource rows, 
 			String tblName, List<QBDataSourceListenerIFace> listeners,
-			boolean idColumnPresent, boolean overwrite, boolean update) throws Exception
+			boolean idColumnPresent, boolean overwrite, boolean update, int baseTableId) throws Exception
 	{
-		exportToTable(DBConnection.getInstance().createConnection(), columns, rows, tblName, listeners, idColumnPresent, overwrite, update);
+		exportToTable(DBConnection.getInstance().createConnection(), columns, rows, tblName, listeners, idColumnPresent, overwrite, update, baseTableId);
+	}
+	
+	protected static void deleteDeletedRecs(Connection connection, String tblName, String keyFld, String spTblName, String spKeyFld, int collMemId) throws Exception
+	{
+		Statement statement = connection.createStatement();
+		statement.execute("delete from " + tblName + " where " + keyFld + " not in(select " + spKeyFld + " from " + spTblName + ")");
+		statement.close();
 	}
 	
 	/**
@@ -284,6 +314,10 @@ public class ExportToMySQLDB
 				result.append(", ");
 			}
 			String val = BasicSQLUtils.getStrValue(row.getFieldValue(r));
+			if (StringUtils.isBlank(val))
+			{
+				val = "null";
+			}
 			result.append(val);			
 		}
 		result.append(")");
