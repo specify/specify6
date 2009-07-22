@@ -139,7 +139,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                             
                         } else if (!appVersion.equals(appVerNum))
                         {
-                            if (checkVersion(dbVersion, appVerNum, "SpecifySchemaUpdateService.APP_VER_ERR", "SpecifySchemaUpdateService.APP_VER_NEQ"))
+                            if (checkVersion(appVersion, appVerNum, "SpecifySchemaUpdateService.APP_VER_ERR", "SpecifySchemaUpdateService.APP_VER_NEQ"))
                             {
                                 doUpdateAppVer = true;
                             } else
