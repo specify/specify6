@@ -123,9 +123,9 @@ public class NavigationTreeContextMenuMgr extends MouseAdapter implements TreeSe
      */
     protected void updateBtnUI()
     {
-         addUserBtn.setEnabled(false);
-         addExtUserBtn.setEnabled(false);
-         delUserBtn.setEnabled(false);
+        addUserBtn.setEnabled(treeMgr.canAddNewUser(lastClickComp));
+        addExtUserBtn.setEnabled(treeMgr.canAddNewUser(lastClickComp));
+        delUserBtn.setEnabled(treeMgr.canDeleteUser(lastClickComp));
     }
 
     /**

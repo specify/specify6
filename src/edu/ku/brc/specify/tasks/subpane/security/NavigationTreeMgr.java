@@ -224,7 +224,13 @@ public class NavigationTreeMgr
         // get the user from the selected tree node
         DataModelObjBaseWrapper wrapper = (DataModelObjBaseWrapper) userNode.getUserObject();
         Object                  object  = wrapper.getDataObj();
-        SpecifyUser             user    = (SpecifyUser)object;
+        
+        if (!(object instanceof SpecifyUser))
+        {
+            return false;
+        }
+        
+        SpecifyUser user = (SpecifyUser)object;
 
         if (currentUser.getSpecifyUserId().equals(user.getSpecifyUserId()))
         {
@@ -280,6 +286,8 @@ public class NavigationTreeMgr
      */
     public void deleteUser(final DefaultMutableTreeNode userNode)
     {
+        // Ask here to delete user
+        
         DataModelObjBaseWrapper wrapper = (DataModelObjBaseWrapper) userNode.getUserObject();
         Object                  object  = wrapper.getDataObj();
         if (!(object instanceof SpecifyUser) || !canDeleteUser(userNode))

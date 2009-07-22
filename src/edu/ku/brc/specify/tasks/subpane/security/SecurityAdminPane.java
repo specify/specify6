@@ -1022,7 +1022,7 @@ public class SecurityAdminPane extends BaseSubPane
             
            if (refreshObj)
            {
-               refreshTreeNode(session);
+               refreshTreeNode();
            }
            
         } catch (Exception ex)
@@ -1045,7 +1045,7 @@ public class SecurityAdminPane extends BaseSubPane
     /**
      * 
      */
-    protected void refreshTreeNode(@SuppressWarnings("unused") DataProviderSessionIFace session)
+    protected void refreshTreeNode()
     {
         if (currentDisplayPanel.setData(objWrapper, secondObjWrapper) && currentEditorPanel != null)
         {
