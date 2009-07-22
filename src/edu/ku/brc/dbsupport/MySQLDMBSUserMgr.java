@@ -121,10 +121,10 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
         itPassword = itPasswordArg;
         hostName   = databaseHost;
         
-        String connStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Create, databaseHost,  dbName);
+        String connStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Create, databaseHost, dbName);
         if (connStr == null)
         {
-            connStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, databaseHost,  dbName);
+            connStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, databaseHost, dbName);
         }
         
         dbConnection   = new DBConnection(itUsernameArg, 
@@ -433,9 +433,17 @@ public class MySQLDMBSUserMgr extends DBMSUserMgr
 	{
 		try
 		{
-			dbConnection.close();
-            dbConnection = null;
-            connection   = null;
+		    if (dbConnection != null)
+		    {
+		        dbConnection.close();
+		        dbConnection = null;
+		    }
+		    
+            if (connection != null)
+            {
+                connection.close();
+                connection = null;
+            }
 			return true;
 			
 		} catch (Exception ex)

@@ -21,8 +21,8 @@ package edu.ku.brc.specify.dbsupport;
 
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.dbsupport.CustomQueryIFace;
 import edu.ku.brc.dbsupport.CustomQueryFactory;
+import edu.ku.brc.dbsupport.CustomQueryIFace;
 import edu.ku.brc.specify.dbsupport.customqueries.CustomStatQueries;
 
 /**

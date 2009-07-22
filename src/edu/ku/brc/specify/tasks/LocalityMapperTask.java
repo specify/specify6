@@ -28,7 +28,6 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
-
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;

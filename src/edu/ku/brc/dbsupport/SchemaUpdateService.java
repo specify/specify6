@@ -24,6 +24,7 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.sql.SQLException;
 
+import javax.swing.JLabel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
@@ -67,11 +68,12 @@ public abstract class SchemaUpdateService
      */
     public static Pair<String, String> getITUsernamePwd() throws SQLException
     {
-        JTextField     userNameTF = new JTextField(15);
-        JPasswordField passwordTF = new JPasswordField();
+        JTextField     userNameTF = UIHelper.createTextField(15);
+        JPasswordField passwordTF = UIHelper.createPasswordField();
+        JLabel         statusLbl  = UIHelper.createLabel("");
         
         CellConstraints cc = new CellConstraints();
-        PanelBuilder    pb = new PanelBuilder(new FormLayout("p,2px,p", "p,4px,p"));
+        PanelBuilder    pb = new PanelBuilder(new FormLayout("p,2px,f:p:g", "p,4px,p,10px,p"));
         
         pb.add(UIHelper.createI18NFormLabel("IT_Username"), cc.xy(1, 1));
         pb.add(userNameTF, cc.xy(3, 1));
@@ -79,15 +81,44 @@ public abstract class SchemaUpdateService
         pb.add(UIHelper.createI18NFormLabel("IT_Password"), cc.xy(1, 3));
         pb.add(passwordTF, cc.xy(3, 3));
         
+        pb.add(statusLbl, cc.xyw(1, 5, 3));
+        
         pb.setDefaultDialogBorder();
         
-        CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getMostRecentWindow(), UIRegistry.getResourceString("IT_LOGIN"), true, pb.getPanel());
-        dlg.setVisible(true);
-        if (!dlg.isCancelled())
+        while (true)
         {
-            return new Pair<String, String>( userNameTF.getText(), new String(passwordTF.getPassword()));
+            CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getMostRecentWindow(), UIRegistry.getResourceString("IT_LOGIN"), true, pb.getPanel());
+            dlg.setVisible(true);
+            if (!dlg.isCancelled())
+            {
+                String uName = userNameTF.getText();
+                String pwd   = new String(passwordTF.getPassword());
+    
+                DBConnection dbc    = DBConnection.getInstance();
+                DBConnection dbConn = DBConnection.createInstance(dbc.getDriver(), 
+                                                                  dbc.getDialect(), 
+                                                                  dbc.getDatabaseName(), 
+                                                                  dbc.getConnectionStr(), 
+                                                                  uName, 
+                                                                  pwd);
+                if (dbConn != null)
+                {
+                    DBMSUserMgr dbMgr = DBMSUserMgr.getInstance();
+                    dbMgr.close();
+                    
+                    if (dbMgr.connect(uName, pwd, dbc.getServerName(), dbc.getDatabaseName()))
+                    {
+                        dbMgr.close();
+                        return new Pair<String, String>(uName, pwd);
+                    }
+                    dbMgr.close();
+                    statusLbl.setText("<HTML><font color=\"red\">"+UIRegistry.getResourceString("IT_LOGIN_ERROR")+"</font></HTML>");
+                }
+            } else
+            {
+                return null;
+            }
         }
-        return null;
     }
     
     /**

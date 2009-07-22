@@ -30,8 +30,6 @@ import java.awt.RenderingHints;
 import java.awt.Stroke;
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBuffer;
-import java.awt.image.renderable.ParameterBlock;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -39,17 +37,11 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import javax.imageio.ImageIO;
-//import javax.media.jai.JAI;
-//import javax.media.jai.LookupTableJAI;
-//import javax.media.jai.RenderedOp;
 import javax.swing.ImageIcon;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.tools.ant.util.UUEncoder;
-
-//import com.sun.media.jai.codec.FileSeekableStream;
-//import com.sun.media.jai.codec.TIFFDecodeParam;
 
 import sun.misc.UUDecoder;
 

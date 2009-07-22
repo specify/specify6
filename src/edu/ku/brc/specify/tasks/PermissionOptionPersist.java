@@ -22,9 +22,9 @@ package edu.ku.brc.specify.tasks;
 import com.thoughtworks.xstream.XStream;
 
 import edu.ku.brc.af.auth.PermissionSettings;
+import edu.ku.brc.af.auth.specify.permission.BasicSpPermission;
 import edu.ku.brc.af.core.PermissionIFace;
 import edu.ku.brc.specify.datamodel.SpPermission;
-import edu.ku.brc.af.auth.specify.permission.BasicSpPermission;
 
 /**
  * @author rod

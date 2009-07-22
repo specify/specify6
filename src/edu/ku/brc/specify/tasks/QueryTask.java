@@ -83,10 +83,8 @@ import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.specify.config.DuplicateCollectingEvents;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
-import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpExportSchemaMapping;
@@ -916,15 +914,6 @@ public class QueryTask extends BaseTask
 
         }
         isShowDefault = true;
-        try
-        {
-//        	DuplicateCollectingEvents.duplicateCollectingEvents(AppContextMgr.getInstance().getClassObject(
-//                Collection.class).getId());
-        	DuplicateCollectingEvents.duplicateCollectingEvents();
-        } catch (Exception ex)
-        {
-        	System.out.println(ex);
-        }
     }
 
     /**

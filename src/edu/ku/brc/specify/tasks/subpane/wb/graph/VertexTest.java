@@ -19,8 +19,9 @@
 */
 package edu.ku.brc.specify.tasks.subpane.wb.graph;
 
-import org.junit.Test;
 import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
 
 /**
  * @author timo

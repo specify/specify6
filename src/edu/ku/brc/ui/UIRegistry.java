@@ -1501,11 +1501,13 @@ public class UIRegistry
             glassPane.setMargin(new Insets(0, 0, statusBar.getSize().height, 0));
         }
         
-        UIRegistry.getGlassPane().finishedWithDragAndDrop();
-
         oldGlassPane = UIRegistry.getGlassPane();
+        if (oldGlassPane != null)
+        {
+            oldGlassPane.finishedWithDragAndDrop();
+        }
         
-        if (glassPane != null)
+        if (glassPane != null && UIRegistry.getTopWindow() != null)
         {
             ((JFrame)UIRegistry.getTopWindow()).setGlassPane(glassPane);
             glassPane.setVisible(true);

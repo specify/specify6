@@ -45,7 +45,6 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.specify.config.DisciplineType;
-import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.util.Pair;
 
 /**

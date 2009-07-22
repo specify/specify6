@@ -30,8 +30,8 @@ import edu.ku.brc.services.biogeomancer.BioGeomancerResultsDisplay;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.CustomDialog;
-import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 
 public class BioGeomancerResultsChooser extends CustomDialog
 {

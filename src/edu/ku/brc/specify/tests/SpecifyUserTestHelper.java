@@ -23,8 +23,8 @@ import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 
 import edu.ku.brc.dbsupport.HibernateUtil;
-import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
+import edu.ku.brc.specify.datamodel.SpecifyUser;
 //import edu.ku.brc.specify.datamodel.UserPermission;
 /**
  * 

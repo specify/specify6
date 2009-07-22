@@ -107,8 +107,8 @@ import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.auth.UserAndMasterPasswordMgr;
 import edu.ku.brc.af.auth.specify.SpecifySecurityMgr;
 import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.core.GenericLSIDGeneratorFactory;
 import edu.ku.brc.af.core.FrameworkAppIFace;
+import edu.ku.brc.af.core.GenericLSIDGeneratorFactory;
 import edu.ku.brc.af.core.MacOSAppHandler;
 import edu.ku.brc.af.core.MainPanel;
 import edu.ku.brc.af.core.RecordSetFactory;
@@ -153,6 +153,7 @@ import edu.ku.brc.exceptions.ExceptionTracker;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.config.CollectingEventsAndAttrsMaint;
 import edu.ku.brc.specify.config.DebugLoggerDialog;
 import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.config.FeedBackDlg;
@@ -2502,6 +2503,16 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                 window.setVisible(false);
             }
             
+            // Temp Code to Fix issues with Release 6.0.9 and below
+            SwingUtilities.invokeLater(new Runnable() 
+            {
+                @Override
+                public void run()
+                {
+                    CollectingEventsAndAttrsMaint.performMaint();
+                }
+            });
+            
         } else if (status == AppContextMgr.CONTEXT_STATUS.Error)
         {
 
@@ -2800,7 +2811,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
   //-- Application MAIN
   //-----------------------------------------------------------------------------
 
-  public static void startApp(final boolean doConfig)
+  public static void startApp()
   {
       
       // XXX RELEASE
@@ -3108,7 +3119,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                          {
                              public void exited(int exitValue)
                              {
-                                 startApp(false);
+                                 startApp();
                              }
                              public void prepareShutdown()
                              {
@@ -3119,7 +3130,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                           
                       } catch (Exception ex)
                       {
-                          startApp(false);
+                          startApp();
                       }
                   } else
                   {
@@ -3127,7 +3138,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                       {
                           UIRegistry.showLocalizedMsg(null, "SpReg.NOT_REGISTERED");
                       }
-                      startApp(false);
+                      startApp( );
                   }
               } catch (Exception ex)
               {

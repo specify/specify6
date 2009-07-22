@@ -23,9 +23,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import edu.ku.brc.af.core.db.DBFieldInfo;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterField.FieldType;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace.FormatterType;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace.PartialDateEnum;
-import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterField.FieldType;
 
 /**
  * @author Ricardo

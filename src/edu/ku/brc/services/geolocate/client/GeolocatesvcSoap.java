@@ -21,9 +21,9 @@ package edu.ku.brc.services.geolocate.client;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
-import javax.jws.WebParam.Mode;
 import javax.jws.WebResult;
 import javax.jws.WebService;
+import javax.jws.WebParam.Mode;
 import javax.xml.ws.Holder;
 import javax.xml.ws.RequestWrapper;
 import javax.xml.ws.ResponseWrapper;

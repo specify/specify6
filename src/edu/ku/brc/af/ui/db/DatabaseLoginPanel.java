@@ -928,7 +928,7 @@ public class DatabaseLoginPanel extends JTiledPanel
                 }
 
                 if (isLoggedIn)
-                {                    
+                {          
                     if (StringUtils.isNotEmpty(appName))
                     {
                         SwingUtilities.invokeLater(new Runnable(){

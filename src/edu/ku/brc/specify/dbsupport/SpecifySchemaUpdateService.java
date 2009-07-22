@@ -43,6 +43,8 @@ import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.ProgressFrame;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
@@ -164,7 +166,7 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                 }
                 
                 SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-                Timestamp        now               = new Timestamp(System .currentTimeMillis());
+                Timestamp        now               = new Timestamp(System.currentTimeMillis());
 
                 try
                 {
@@ -183,11 +185,23 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
                             {
                                 DBConnection dbc = DBConnection.getInstance();
         
+                                ProgressFrame frame = new ProgressFrame(getResourceString("UPDATE_SCHEMA_TITLE"));
+                                frame.adjustProgressFrame();
+                                frame.turnOffOverAll();
+                                frame.getCloseBtn().setVisible(false);
+                                frame.getProcessProgress().setIndeterminate(true);
+                                frame.setDesc(UIRegistry.getLocalizedMessage("UPDATE_SCHEMA", dbVersion));
+                                
+                                UIHelper.centerAndShow(frame);
+                                
                                 boolean ok = SpecifySchemaGenerator.updateSchema(DatabaseDriverInfo.getDriver(dbc.getDriver()), dbc.getServerName(), dbc.getDatabaseName(), usrPwd.first,usrPwd.second);
                                 if (!ok)
                                 {
+                                    frame.setVisible(false);
                                     return false;
                                 }
+                                frame.setVisible(false);
+                                
                             } else
                             {
                                 CommandDispatcher.dispatch(new CommandAction("App", "AppReqExit", null));

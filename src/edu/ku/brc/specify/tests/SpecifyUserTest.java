@@ -20,9 +20,9 @@
 package edu.ku.brc.specify.tests;
 
 
+import static edu.ku.brc.specify.config.init.DataBuilder.createSpecifyUser;
 import static edu.ku.brc.specify.tests.SpecifyUserTestHelper.deleteSpecifyUserDB;
 import static edu.ku.brc.specify.tests.SpecifyUserTestHelper.isSpecifyUserInDB;
-import static edu.ku.brc.specify.config.init.DataBuilder.createSpecifyUser;
 import junit.framework.TestCase;
 
 import org.apache.log4j.Logger;

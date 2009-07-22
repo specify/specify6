@@ -6,12 +6,15 @@ All Rights Reserved.
 */
 package edu.ku.brc.specify.ui;
 
-import gov.nasa.worldwind.event.*;
-import gov.nasa.worldwind.geom.*;
-import gov.nasa.worldwind.view.*;
-import gov.nasa.worldwind.globes.Globe;
 import gov.nasa.worldwind.WorldWindow;
+import gov.nasa.worldwind.event.SelectEvent;
+import gov.nasa.worldwind.event.SelectListener;
+import gov.nasa.worldwind.geom.Angle;
+import gov.nasa.worldwind.geom.Position;
+import gov.nasa.worldwind.globes.Globe;
 import gov.nasa.worldwind.util.Logging;
+import gov.nasa.worldwind.view.FlyToOrbitViewStateIterator;
+import gov.nasa.worldwind.view.OrbitView;
 
 /**
  * Handles view 'fly to' on left clicked picked objects with a position.

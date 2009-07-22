@@ -113,7 +113,6 @@ import edu.ku.brc.specify.datamodel.StorageTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.Treeable;
-import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
 import edu.ku.brc.specify.prefs.FormattingPrefsPanel;
 import edu.ku.brc.specify.tasks.BaseTreeTask;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
@@ -1519,7 +1518,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             }
             
             currentStatus = CONTEXT_STATUS.OK;
-        
+            
             return currentStatus;
             
         } catch (Exception ex)

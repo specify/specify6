@@ -21,8 +21,8 @@ package edu.ku.brc.af.core.db;
 
 import org.apache.commons.lang.StringUtils;
 
-import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.auth.PermissionSettings;
+import edu.ku.brc.af.auth.SecurityMgr;
 
 /**
  * Hold the Schema Information, this is used for for L10N/I18N and whether the item is visible.

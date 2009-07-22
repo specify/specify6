@@ -19,9 +19,9 @@
 */
 package edu.ku.brc.specify.prefs;
 
+import static edu.ku.brc.af.core.AppContextMgr.isSecurityOn;
 import static edu.ku.brc.ui.UIHelper.createI18NButton;
 import static edu.ku.brc.ui.UIHelper.createI18NFormLabel;
-import static edu.ku.brc.af.core.AppContextMgr.isSecurityOn;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;

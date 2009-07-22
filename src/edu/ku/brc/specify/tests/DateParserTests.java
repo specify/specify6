@@ -19,9 +19,9 @@
 */
 package edu.ku.brc.specify.tests;
 
+import junit.framework.TestCase;
 import edu.ku.brc.ui.DateParser;
 import edu.ku.brc.ui.DateParser.DateFormatType;
-import junit.framework.TestCase;
 
 
 public class DateParserTests extends TestCase

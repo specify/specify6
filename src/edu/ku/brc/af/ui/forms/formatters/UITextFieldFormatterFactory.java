@@ -26,9 +26,9 @@ import java.util.regex.Pattern;
 
 import edu.ku.brc.af.core.db.AutoNumberIFace;
 import edu.ku.brc.af.core.db.DBFieldInfo;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterField.FieldType;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace.FormatterType;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace.PartialDateEnum;
-import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterField.FieldType;
 
 /**
  * This class is used to build UIFieldFormatters from a formatting string for text fields 

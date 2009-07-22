@@ -19,8 +19,6 @@
 */
 package edu.ku.brc.specify.datamodel.busrules;
 
-import org.apache.log4j.Logger;
-
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.FormViewObj;
@@ -113,15 +111,15 @@ public class LoanGiftShipmentBusRules extends BaseBusRules
                 MultiView multiView = formViewObj.getMVParent().getMultiViewParent();
                 if (multiView != null)
                 {
-                    FormViewObj fvo         = multiView.getCurrentViewAsFormViewObj();
+                    //FormViewObj fvo         = multiView.getCurrentViewAsFormViewObj();
                     //Shipment    shipment    = (Shipment)formViewObj.getDataObj();
                     //Loan        loan        = shipment.getLoan();
                     //Gift        gift        = shipment.getGift();
                     //ExchangeOut exchangeOut = shipment.getExchangeOut();
                     //Borrow      borrow      = shipment.getBorrow();
                     
-                    String controlName = null;
-                    /*if (loan != null)
+                    /*String controlName = null;
+                    if (loan != null)
                     {
                         if (StringUtils.isEmpty(shipment.getShipmentNumber()))
                         {

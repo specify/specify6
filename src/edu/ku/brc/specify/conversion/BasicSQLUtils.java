@@ -461,12 +461,23 @@ public class BasicSQLUtils
      * @param sql
      * @return
      */
+    public static int getCountAsInt(final String sql)
+    {
+        Integer cnt = getCount(dbConn != null ? dbConn : DBConnection.getInstance().getConnection(), sql);
+        return cnt == null ? 0 : cnt;
+    }
+    
+    /**
+     * @param sql
+     * @return
+     */
     public static Integer getCount(final Connection connection, final String sql)
     {
         Integer   count = null;
         Statement stmt  = null;
         try
         {
+            log.debug(sql);
             stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
             if (rs.next())
@@ -474,6 +485,8 @@ public class BasicSQLUtils
                 count = rs.getInt(1);
             }
             rs.close();
+            
+            log.debug(count+" - "+sql);
 
         } catch (Exception ex)
         {
