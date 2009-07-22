@@ -31,6 +31,7 @@ import java.util.Vector;
 
 import javax.swing.JOptionPane;
 
+import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
 import edu.ku.brc.af.core.SubPaneMgr;
@@ -58,7 +59,8 @@ import edu.ku.brc.util.Pair;
  */
 public class SpecifySchemaUpdateService extends SchemaUpdateService
 {
-
+    protected static final Logger  log = Logger.getLogger(SpecifySchemaUpdateService.class);
+    
     /**
      * 
      */
@@ -274,6 +276,8 @@ public class SpecifySchemaUpdateService extends SchemaUpdateService
     {
         try
         {
+            log.debug("App - Prev["+prevVersionArg+"] New["+newVersionArg+"]");
+            
             double prevVersion = Double.parseDouble(prevVersionArg);
             double newVersion  = Double.parseDouble(newVersionArg);
             if (prevVersion > newVersion)
