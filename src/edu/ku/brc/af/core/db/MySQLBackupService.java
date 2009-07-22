@@ -363,6 +363,7 @@ public class MySQLBackupService extends BackupServiceFactory
                 {
                     ex.printStackTrace();
                     errorMsg = ex.toString();
+                    UIRegistry.showLocalizedError("MySQLBackupService.EXCP_BK");
                     
                 } finally
                 {
@@ -611,9 +612,10 @@ public class MySQLBackupService extends BackupServiceFactory
                     catch (IOException ex)
                     {
                         edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(MySQLBackupService.class, ex);
+                        //edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(MySQLBackupService.class, ex);
                         ex.printStackTrace();
                         errorMsg = ex.toString();
+                        UIRegistry.showLocalizedError("MySQLBackupService.EXCP_RS");
                         
                     } catch (Exception ex)
                     {
@@ -910,58 +912,6 @@ public class MySQLBackupService extends BackupServiceFactory
         return false;
     }
     
-    /**
-     * @param command
-     * @return
-     */
-    @SuppressWarnings("unused")
-    private boolean runCmd(final String command)
-    {
-        BufferedReader input = null;
-        try
-        {
-            Thread.sleep(100);
-            
-            Process process = Runtime.getRuntime().exec(command);
-            
-            input = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-            String line = null;
-            StringBuilder sb = new StringBuilder();
-            while ((line = input.readLine()) != null)
-            {
-                if (line.startsWith("ERR"))
-                {
-                    sb.append(line);
-                    sb.append("\n");
-                }
-            }
-            errorMsg = sb.toString();
-            if (StringUtils.isNotEmpty(errorMsg))
-            {
-                return false;
-            }
-            
-        } catch (Exception ex)
-        {
-            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(MySQLBackupService.class, ex);
-            ex.printStackTrace();
-            errorMsg = ex.toString();
-            return false;
-            
-        } finally
-        {
-            if (input != null)
-            {
-                try
-                {
-                    input.close();
-                } catch (Exception ex) {}
-            }
-        }
-        return true;
-    }
-
     /**
      * @return
      */
