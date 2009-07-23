@@ -190,18 +190,18 @@ public class CollectingEventsAndAttrsMaint
             {
                 int count = 0;
                 count += fixDupColEveAttrs();
-                firePropertyChange("CNT", count, (int)( (100.0 * totalCnt) / count));
+                firePropertyChange(CNT, count, (int)( (100.0 * totalCnt) / count));
                 
                 for (Integer id : collectionsIds)
                 {
                     count += duplicateCollectingEvents(id);
-                    firePropertyChange("CNT", count, (int)( (100.0 * totalCnt) / count));
+                    firePropertyChange(CNT, count, (int)( (100.0 * totalCnt) / count));
                     
                     count += fixDupPrepAttrs(id);
-                    firePropertyChange("CNT", count, (int)( (100.0 * totalCnt) / count));
+                    firePropertyChange(CNT, count, (int)( (100.0 * totalCnt) / count));
                     
                     count += fixDupColObjAttrs(id);
-                    firePropertyChange("CNT", count, (int)( (100.0 * totalCnt) / count));
+                    firePropertyChange(CNT, count, (int)( (100.0 * totalCnt) / count));
                 }
                 return null;
             }

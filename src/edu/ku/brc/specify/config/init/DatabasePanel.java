@@ -615,7 +615,7 @@ public class DatabasePanel extends BaseSetupPanel
 
             } else
             {
-                proceed = false;
+                proceed = isEmbedded ? false : true;
             }
         }
         

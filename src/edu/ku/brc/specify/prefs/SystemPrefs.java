@@ -88,8 +88,14 @@ public class SystemPrefs extends GenericPrefsPanel
     protected static final String SEND_STATS          = "usage_tracking.send_stats";
     protected static final String SEND_ISA_STATS      = "usage_tracking.send_isa_stats";
     
-    protected String oldAttachmentPath = null;
-    protected String oldSplashPath     = null;
+    protected static final String USE_WORLDWIND       = "USE.WORLDWIND";
+    protected static final String SYSTEM_HasOpenGL    = "SYSTEM.HasOpenGL";
+    
+    protected AppPreferences remotePrefs = AppPreferences.getRemote();
+    protected AppPreferences localPrefs  = AppPreferences.getLocalPrefs();
+    
+    protected String oldAttachmentPath   = null;
+    protected String oldSplashPath       = null;
     
     /**
      * Constructor.
@@ -107,7 +113,6 @@ public class SystemPrefs extends GenericPrefsPanel
             }
         });
         
-        AppPreferences localPrefs = AppPreferences.getLocalPrefs();
         ValBrowseBtnPanel browse = form.getCompById("7");
         if (browse != null)
         {
@@ -206,7 +211,6 @@ public class SystemPrefs extends GenericPrefsPanel
         ValCheckBox chk = form.getCompById("2");
         chk.setValue(localPrefs.getBoolean(VERSION_CHECK, true), "true");
         
-        AppPreferences remotePrefs = AppPreferences.getRemote();
         chk = form.getCompById("3");
         chk.setValue(remotePrefs.getBoolean(SEND_STATS, true), "true");
         
@@ -228,11 +232,11 @@ public class SystemPrefs extends GenericPrefsPanel
          });
         
         // Not sure why the form isn't picking up the pref automatically
-        final ValCheckBox useWWChk  = form.getCompById("USE.WORLDWIND");
-        final ValCheckBox hasOGLChk = form.getCompById("SYSTEM.HasOpenGL");
+        final ValCheckBox useWWChk  = form.getCompById(USE_WORLDWIND);
+        final ValCheckBox hasOGLChk = form.getCompById(SYSTEM_HasOpenGL);
         
-        useWWChk.setSelected(localPrefs.getBoolean("USE.WORLDWIND", false));
-        hasOGLChk.setSelected(localPrefs.getBoolean("SYSTEM.HasOpenGL", false));
+        useWWChk.setValue(localPrefs.getBoolean(USE_WORLDWIND, false), null);
+        hasOGLChk.setValue(localPrefs.getBoolean(SYSTEM_HasOpenGL, false), null);
         hasOGLChk.setEnabled(false);
         
         /*
@@ -335,8 +339,6 @@ public class SystemPrefs extends GenericPrefsPanel
      */
     private void verifyAttachmentPath()
     {
-        AppPreferences localPrefs = AppPreferences.getLocalPrefs();
-        
         ValBrowseBtnPanel browse = form.getCompById("8");
         if (browse != null)
         {
@@ -391,9 +393,6 @@ public class SystemPrefs extends GenericPrefsPanel
         {
             super.savePrefs();
             
-            AppPreferences localPrefs  = AppPreferences.getLocalPrefs();
-            AppPreferences remotePrefs = AppPreferences.getRemote();
-            
             ValCheckBox chk = form.getCompById("2");
             localPrefs.putBoolean(VERSION_CHECK, (Boolean)chk.getValue());
             
@@ -402,6 +401,12 @@ public class SystemPrefs extends GenericPrefsPanel
             
             chk = form.getCompById("9");
             remotePrefs.putBoolean(SEND_ISA_STATS, (Boolean)chk.getValue());
+            
+            chk = form.getCompById(USE_WORLDWIND);
+            localPrefs.putBoolean(USE_WORLDWIND, (Boolean)chk.getValue());
+            
+            chk = form.getCompById(SYSTEM_HasOpenGL);
+            localPrefs.putBoolean(SYSTEM_HasOpenGL, (Boolean)chk.getValue());
             
             ValComboBox localeCBX = form.getCompById("5");
             Locale item = (Locale)localeCBX.getComboBox().getSelectedItem();
