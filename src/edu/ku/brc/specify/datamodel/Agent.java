@@ -53,6 +53,7 @@ import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.af.ui.db.PickListItemIFace;
 import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.dbsupport.TypeCode;
 import edu.ku.brc.specify.dbsupport.TypeCodeItem;
 import edu.ku.brc.ui.UIRegistry;
@@ -1023,16 +1024,26 @@ public class Agent extends DataModelObjBase implements java.io.Serializable,
      * @param user User that agents will point to
      * @param agents Agents that will all point to the given user
      */
-    public static void setUserAgent(SpecifyUser user, Set<Agent> agents)
+    public static void setUserAgent(final SpecifyUser user, final Discipline discipline)
     {
-        for (Agent uAgent : agents)
+        
+        String sql = "SELECT a.AgentID FROM discipline d INNER JOIN agent_discipline ad ON d.UserGroupScopeId = ad.DisciplineID "+
+                     "INNER JOIN agent a ON ad.AgentID = a.AgentID "+
+                     "INNER JOIN specifyuser su ON a.SpecifyUserID = su.SpecifyUserID WHERE " +
+                     "d.UserGroupScopeId = " + discipline.getId() + " AND su.SpecifyUserID = " + user.getId();
+        
+        userAgent = null;
+        Integer agentId = BasicSQLUtils.getCount(sql);
+        if (agentId != null)
         {
-        	SpecifyUser spu = uAgent.getSpecifyUser();
-        	if (spu != null && spu.getSpecifyUserId().equals(user.getSpecifyUserId()))
-        	{
-        		Agent.setUserAgent(uAgent);
-        		break;
-        	}
+            userAgent = getDataObj(Agent.class, agentId);
+            if (userAgent == null)
+            {
+                UIRegistry.showError("A user agent was not found for the SpecifyUser for discipline["+discipline.getName()+"] and Agent id ["+agentId+"]");
+            }
+        } else
+        {
+            UIRegistry.showError("A user agent was not found for the SpecifyUser for discipline["+discipline.getName()+"]");
         }
     }
     
