@@ -650,10 +650,12 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
     {
         super.setValue(value, defaultValue);
         
-        if (value == null)
+        // rods - It CANNOT return on null! 
+        // Commenting out below to fix Bug 5476
+        /*if (value == null)
         {
             return;
-        }
+        }*/
         
         if (value != null && !(value instanceof Locality))
         {
@@ -694,7 +696,7 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
             setLatLon(null, null, null, null);
         }
         
-        log.debug("******** Index: "+currentInx);
+        //log.debug("******** Index: "+currentInx);
         
         stateChangeOK = false;
         formatSelector.setSelectedIndex(currentInx);
