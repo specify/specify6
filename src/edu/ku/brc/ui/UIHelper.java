@@ -1556,16 +1556,19 @@ public final class UIHelper
      * @param useDialog use a Dialog or a Frame
      * @param listener a listener for when it is logged in or fails
      * @param iconName name of icon to use
+     * @param appIconName application icon name
+     * @param helpContext help context for Help button on dialog
      */
-    public static DatabaseLoginPanel doLogin(final String userName,
-                                             final String password,
+    public static DatabaseLoginPanel doLogin(final String  userName,
+                                             final String  password,
                                              final boolean doAutoClose,
                                              final boolean useDialog,
                                              final DatabaseLoginListener listener,
                                              final String  iconName,
-                                             final String  appIconName)
+                                             final String  appIconName,
+                                             final String  helpContext)
     {     
-        return doLogin(userName, password, doAutoClose, useDialog, listener, iconName, null, null, appIconName);
+        return doLogin(userName, password, doAutoClose, useDialog, listener, iconName, null, null, appIconName, helpContext);
     }
     
     /**
@@ -1579,6 +1582,8 @@ public final class UIHelper
      * @param iconName name of icon to use
      * @param title name
      * @param appName name
+     * @param appIconName application icon name
+     * @param helpContext help context for Help button on dialog
      */
     public static DatabaseLoginPanel doLogin(final MasterPasswordProviderIFace usrPwdProvider,
                                              final boolean doAutoClose,
@@ -1587,9 +1592,10 @@ public final class UIHelper
                                              final String  iconName,
                                              final String  title,
                                              final String  appName,
-                                             final String  appIconName)
+                                             final String  appIconName,
+                                             final String  helpContext)
     {     
-        return doLogin(null, null, usrPwdProvider, doAutoClose, useDialog, listener, iconName, title, appName, appIconName); 
+        return doLogin(null, null, usrPwdProvider, doAutoClose, useDialog, listener, iconName, title, appName, appIconName, helpContext); 
     }
     
     /**
@@ -1604,6 +1610,8 @@ public final class UIHelper
      * @param iconName name of icon to use
      * @param title name
      * @param appName name
+     * @param appIconName application icon name
+     * @param helpContext help context for Help button on dialog
      */
     public static DatabaseLoginPanel doLogin(final String  userName,
                                              final String  password,
@@ -1613,10 +1621,12 @@ public final class UIHelper
                                              final String  iconName,
                                              final String  title,
                                              final String  appName,
-                                             final String  appIconName)
+                                             final String  appIconName,
+                                             final String  helpContext)
     {     
-        return doLogin(userName, password, null, doAutoClose, useDialog, listener, iconName, title, appName, appIconName);
+        return doLogin(userName, password, null, doAutoClose, useDialog, listener, iconName, title, appName, appIconName, helpContext);
     }
+    
     /**
      * Tries to do the login, if doAutoLogin is set to true it will try without displaying a dialog
      * and if the login fails then it will display the dialog
@@ -1629,6 +1639,8 @@ public final class UIHelper
      * @param iconName name of icon to use
      * @param title name
      * @param appName name
+     * @param appIconName application icon name
+     * @param helpContext help context for Help button on dialog
      */
     public static DatabaseLoginPanel doLogin(final String  userName,
                                              final String  password,
@@ -1639,7 +1651,8 @@ public final class UIHelper
                                              final String  iconName,
                                              final String  title,
                                              final String  appName,
-                                             final String  appIconName) //frame's icon name
+                                             final String  appIconName,
+                                             final String  helpContext) //frame's icon name
     {  
     	
         ImageIcon icon = IconManager.getIcon("AppIcon", IconManager.IconSize.Std16);
@@ -1655,7 +1668,7 @@ public final class UIHelper
         if (useDialog)
         {
             JDialog.setDefaultLookAndFeelDecorated(false); 
-            DatabaseLoginDlg dlg = new DatabaseLoginDlg((Frame)UIRegistry.getTopWindow(), userName, password, listener, iconName);
+            DatabaseLoginDlg dlg = new DatabaseLoginDlg((Frame)UIRegistry.getTopWindow(), userName, password, listener, iconName, helpContext);
             JDialog.setDefaultLookAndFeelDecorated(true); 
             dlg.setDoAutoClose(doAutoClose);
             dlg.setModal(true);
@@ -1704,11 +1717,13 @@ public final class UIHelper
         DatabaseLoginPanel panel;
         if (StringUtils.isNotEmpty(title))
         {
-            panel = new DatabaseLoginPanel(userName, password, usrPwdProvider, new DBListener(frame, listener, doAutoClose), false, title, appName, iconName);
+            panel = new DatabaseLoginPanel(userName, password, usrPwdProvider, new DBListener(frame, listener, doAutoClose), 
+                                           false, title, appName, iconName, helpContext);
         }
         else
         {
-            panel = new DatabaseLoginPanel(userName, password, usrPwdProvider, new DBListener(frame, listener, doAutoClose), false, null, null, iconName);
+            panel = new DatabaseLoginPanel(userName, password, usrPwdProvider, new DBListener(frame, listener, doAutoClose), 
+                                          false, null, null, iconName, helpContext);
         }
         
         panel.setAutoClose(doAutoClose);

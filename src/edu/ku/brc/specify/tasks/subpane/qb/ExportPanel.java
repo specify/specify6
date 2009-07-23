@@ -327,7 +327,7 @@ public class ExportPanel extends JPanel
                 };
                 String nameAndTitle = "Schema Exporter"; // I18N
                 UIRegistry.setRelease(true);
-                UIHelper.doLogin(usrPwdProvider, false, false, new SchemaExportLauncher(), "Specify", nameAndTitle, nameAndTitle, "SpecifyWhite32"); // true
+                UIHelper.doLogin(usrPwdProvider, false, false, new SchemaExportLauncher(), "Specify", nameAndTitle, nameAndTitle, "SpecifyWhite32", "login"); // true
 																																	// means
 																																	// do
 																																	// auto

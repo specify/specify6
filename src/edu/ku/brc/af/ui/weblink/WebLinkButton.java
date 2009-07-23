@@ -185,19 +185,6 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
         {
             watchId = properties.getProperty("watch");
         }
-        
-        /*if (!isViewMode)
-        {
-            editBtn = createButton(IconManager.getIcon("EditIcon"));
-            add(editBtn, BorderLayout.EAST);
-            
-            editBtn.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e)
-                {
-                    doEdit();
-                }
-            });
-        }*/
     }
 
     

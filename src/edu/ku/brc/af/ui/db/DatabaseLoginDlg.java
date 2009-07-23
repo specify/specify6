@@ -54,12 +54,14 @@ public class DatabaseLoginDlg extends JDialog implements DatabaseLoginListener
      * @param frame the parent frame
      * @param listener the listener usually the parent like the Dialog
      * @param iconName name of icon to use
+     * @param helpContext context for help btn on dialog
      */
     public DatabaseLoginDlg(final Frame frame, 
                             final String userName,
                             final String password,
                             final DatabaseLoginListener listener,
-                            final String iconName)
+                            final String iconName,
+                            final String helpContext)
     {
         super(frame);
         
@@ -67,7 +69,7 @@ public class DatabaseLoginDlg extends JDialog implements DatabaseLoginListener
 
         //setTitle(getResourceString("LOGINTITLE")); //$NON-NLS-1$
 
-        dbPanel = new DatabaseLoginPanel(userName, password, this, true, iconName);
+        dbPanel = new DatabaseLoginPanel(userName, password, this, true, iconName, helpContext);
         setContentPane(dbPanel);
 
         setLocationRelativeTo(UIRegistry.get(UIRegistry.FRAME));

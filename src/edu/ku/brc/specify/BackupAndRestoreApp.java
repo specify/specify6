@@ -568,7 +568,7 @@ public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener
         CommandDispatcher.register(BaseTask.APP_CMD_TYPE, this);
         
         
-        dbLoginPanel = UIHelper.doLogin(null, false, false, this, "DatabaseIcon", getTitle(), null, "SpecifyWhite32"); // true means do auto login if it can, second bool means use dialog instead of frame
+        dbLoginPanel = UIHelper.doLogin(null, false, false, this, "DatabaseIcon", getTitle(), null, "SpecifyWhite32", "Backup_Restore"); // true means do auto login if it can, second bool means use dialog instead of frame
         localPrefs.load();
     }
     /**
