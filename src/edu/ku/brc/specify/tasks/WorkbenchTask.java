@@ -2740,13 +2740,18 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                         {
                             //log.debug("del ["+wbtmi.getCaption()+"]["+wbtmi.getWorkbenchTemplateMappingItemId().longValue()+"]");
                             //wbtmi.setWorkbenchTemplate(null);
-                            items.remove(wbtmi);
+                    		
+                    		items.remove(wbtmi);
+                    		wbtmi.setWorkbenchTemplate(null);
                             if (wbtmi.getWorkbenchDataItems() != null)
                             {
-                                for (WorkbenchDataItem wbdi : wbtmi.getWorkbenchDataItems())
+                              
+                            	for (WorkbenchDataItem wbdi : wbtmi.getWorkbenchDataItems())
                                 {
                                     session.delete(wbdi);
+                            		//wbdi.setWorkbenchTemplateMappingItem(null);
                                 }
+                            	wbtmi.getWorkbenchDataItems().clear();
                             }
                             session.delete(wbtmi);
                             break;
@@ -2762,7 +2767,6 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                     session.saveOrUpdate(wbtmi) ;
                 }
                 
-                session.saveOrUpdate(workbenchTemplate);
                 
                 //Check to see if geo/ref data needs to be updated
                 WorkbenchTemplateMappingItem aGeoRefMapping = null;
@@ -2780,7 +2784,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 }
                 if (aGeoRefMapping != null)
                 {
-                	for (Workbench wb : wbTemplate.getWorkbenches())
+                	for (Workbench wb : workbenchTemplate.getWorkbenches())
                 	{
                 		Workbench mwb = session.merge(wb);
                 		mwb.forceLoad();
@@ -2792,6 +2796,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 	}
                 }
                 
+                session.saveOrUpdate(workbenchTemplate);
                 session.commit();
                 session.flush();
                 
