@@ -544,7 +544,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 							JOptionPane.QUESTION_MESSAGE))
 					{
 						query.forceLoad();
-						QueryBldrPane.exportToTable(query);
+						QueryBldrPane.exportToTable(query, null);
 					} else
 					{
 						doSearch();
@@ -2036,7 +2036,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     }
     
     //XXX DEVELOPING...
-    public static void exportToTable(final SpQuery exportQuery)
+    public static void exportToTable(final SpQuery exportQuery, final List<QBDataSourceListenerIFace> dataSrcListeners)
     {
         UsageTracker.incrUsageCount("QB.ExportToTable." + exportQuery.getContextName());
         QueryTask qt = (QueryTask )ContextMgr.getTaskByClass(QueryTask.class);
@@ -2134,17 +2134,25 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         final QBDataSource src = new QBDataSource(sql.getHql(), sql.getArgs(), sql
                 .getSortElements(), cols,
                 includeRecordIds);
+        if (dataSrcListeners != null)
+        {
+        	for (QBDataSourceListenerIFace l : dataSrcListeners)
+        	{
+        		src.addListener(l);
+        	}
+        }
         src.startDataAcquisition();
         
         //XXX need progress report for data acquisition step too.
         
         //XXX also nay need a 'standalone' app to export schemas.
         
-        final ProgressDialog progDlg = new ProgressDialog(UIRegistry.getResourceString("QB_EXPORTING_TO_DB_PROGRESS_TITLE"), false, false);
-        javax.swing.SwingWorker<Object, Object> worker = new javax.swing.SwingWorker<Object, Object>()  {
-        	private Exception killer = null;
-        	private boolean success = false;
-        	private QBDataSourceListenerIFace listener = new QBDataSourceListenerIFace() {
+        final ProgressDialog progDlg = (dataSrcListeners == null || dataSrcListeners.size() == 0) ? new ProgressDialog(UIRegistry.getResourceString("QB_EXPORTING_TO_DB_PROGRESS_TITLE"), false, false)
+        		: null;
+        final List<QBDataSourceListenerIFace> listeners = new Vector<QBDataSourceListenerIFace>();
+        if (dataSrcListeners == null || dataSrcListeners.size() == 0)
+        {
+        	listeners.add(new QBDataSourceListenerIFace() {
 
 				/* (non-Javadoc)
 				 * @see edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace#currentRow(int)
@@ -2227,7 +2235,15 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 					});
 				}
         		
-        	};
+        	});
+        }
+        else
+        {
+        	listeners.addAll(dataSrcListeners);
+        }
+        javax.swing.SwingWorker<Object, Object> worker = new javax.swing.SwingWorker<Object, Object>()  {
+        	private Exception killer = null;
+        	private boolean success = false;
 
 			/* (non-Javadoc)
 			 * @see javax.swing.SwingWorker#doInBackground()
@@ -2235,8 +2251,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 			@Override
 			protected Object doInBackground() throws Exception
 			{
-				Vector<QBDataSourceListenerIFace> listeners = new Vector<QBDataSourceListenerIFace>();
-				listeners.add(listener);
+				//Vector<QBDataSourceListenerIFace> listeners = new Vector<QBDataSourceListenerIFace>();
+				//listeners.add(listener);
 				try
 				{
 					//XXX This only works if the Master user is given create privilege...
@@ -2310,12 +2326,23 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 					}
 					UIRegistry.displayErrorDlg(msg);
 				}
-				progDlg.setVisible(false);
+				for (QBDataSourceListenerIFace l : listeners)
+				{
+					l.done(-1);
+				}
+				if (progDlg != null)
+				{
+					progDlg.setVisible(false);
+				}
 			}
         	
         };
-        progDlg.getProcessProgress().setIndeterminate(true);
-        UIHelper.centerAndShow(progDlg);
+        if (progDlg != null)
+        {
+        	progDlg.getProcessProgress().setIndeterminate(true);
+        	UIHelper.centerAndShow(progDlg);
+        }
+        
         worker.execute();
 
 //        try

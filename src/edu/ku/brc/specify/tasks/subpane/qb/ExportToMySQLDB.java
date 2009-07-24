@@ -202,11 +202,14 @@ public class ExportToMySQLDB
 			QBDataSource rows, String originalTblName, List<QBDataSourceListenerIFace> listeners,
 			boolean idColumnPresent, boolean overwrite, boolean update, int baseTableId) throws Exception
 	{
-		for (QBDataSourceListenerIFace listener : listeners)
-	    {
-	    	listener.loading();
-	    	listener.rowCount(rows.size());
-	    }
+		if (rows.hasResultSize())
+		{
+			for (QBDataSourceListenerIFace listener : listeners)
+			{
+				listener.loaded();
+				listener.rowCount(rows.size());
+			}
+		}
 	    boolean newTable = false;
 	    String tblName = fixTblNameForMySQL(originalTblName);
 	    if (overwrite || !tableExists(toConnection, tblName))

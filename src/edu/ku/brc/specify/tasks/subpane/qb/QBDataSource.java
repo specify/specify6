@@ -104,7 +104,7 @@ public class QBDataSource extends QBDataSourceBase implements CustomQueryListene
         //XXX - what if user-defined 'resultsetsize' field exists???
     	if (arg0.getName().equalsIgnoreCase("resultsetsize"))
         {
-        	return String.valueOf(resultSetSize);  //currently returned as a string for convenience.
+        	return String.valueOf(resultSetSize.get());  //currently returned as a string for convenience.
         }
     	
     	boolean logIt = rows.get() == null || processing.get();

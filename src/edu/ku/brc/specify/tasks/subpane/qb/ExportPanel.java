@@ -15,7 +15,10 @@ import java.util.ResourceBundle;
 import java.util.Vector;
 
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -55,7 +58,7 @@ import edu.ku.brc.util.Pair;
  *
  */
 @SuppressWarnings("serial")
-public class ExportPanel extends JPanel
+public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 {
     protected static final Logger                            log            = Logger.getLogger(ExportPanel.class);
 
@@ -63,6 +66,9 @@ public class ExportPanel extends JPanel
 	protected DefaultTableModel mapsModel;
 	protected JButton exportToDbTblBtn;
 	protected JButton exportToTabDelimBtn;
+	protected JLabel status;
+	protected JProgressBar prog;
+	protected int rowCount = 0;
 	
 	
 	protected final List<SpExportSchemaMapping> maps;
@@ -78,10 +84,18 @@ public class ExportPanel extends JPanel
 	{
     	buildTableModel();
 		mapsDisplay = new JTable(mapsModel);
-		mapsDisplay.getColumnModel().getColumn(0).setHeaderValue(UIRegistry.getResourceString("ExportPanel.MappingTitle"));
-		mapsDisplay.getColumnModel().getColumn(1).setHeaderValue(UIRegistry.getResourceString("ExportPanel.MappingExportTimeTitle"));
     	setLayout(new BorderLayout());
-    	add(mapsDisplay, BorderLayout.CENTER);
+    	System.out.println();
+    	for (int r = 0; r < mapsDisplay.getRowCount(); r++)
+    	{
+    		for (int c = 0; c < mapsDisplay.getColumnCount(); c++)
+    		{
+    			System.out.print(mapsDisplay.getValueAt(r, c));
+    		}
+    		System.out.println();
+    	}
+    	JScrollPane sp = new JScrollPane(mapsDisplay);
+    	add(sp, BorderLayout.CENTER);
     	JPanel btnPanel = new JPanel(new BorderLayout());
     	exportToDbTblBtn = new JButton(UIRegistry.getResourceString("ExportPanel.ExportToDBTbl"));
     	exportToDbTblBtn.addActionListener(new ActionListener() {
@@ -92,29 +106,145 @@ public class ExportPanel extends JPanel
 				if (row != -1)
 				{
 					SpExportSchemaMapping map = maps.get(row);
-					map.forceLoad();
 					SpQuery q = map.getMappings().iterator().next()
 						.getQueryField().getQuery();
-					q.forceLoad();
-					QueryBldrPane.exportToTable(q);
+					Vector<QBDataSourceListenerIFace> ls = new Vector<QBDataSourceListenerIFace>();
+					ls.add(ExportPanel.this);
+					QueryBldrPane.exportToTable(q, ls);
 				}
 			}
     	});
+    	status = new JLabel("ready and waiting"); //XXX i18n
+    	btnPanel.add(status, BorderLayout.WEST);
+    	prog = new JProgressBar();
+    	btnPanel.add(prog, BorderLayout.CENTER);
     	btnPanel.add(exportToDbTblBtn, BorderLayout.EAST);
+    	
     	add(btnPanel, BorderLayout.SOUTH);
 	}
 	
 	protected void buildTableModel()
 	{
-		mapsModel = new DefaultTableModel();
+		Vector<Vector<String>> data = new Vector<Vector<String>>();
 		for (SpExportSchemaMapping map : maps)
 		{
-			Vector<Object> row = new Vector<Object>(2);
+			Vector<String> row = new Vector<String>(2);
 			row.add(map.getMappingName());
-			row.add(map.getTimestampExported());
-			mapsModel.addRow(row);
+			row.add(map.getTimestampExported() != null ? map.getTimestampExported().toString() : "needs to be built");
+			data.add(row);
 		}
+		Vector<String> headers = new Vector<String>();
+		headers.add(UIRegistry.getResourceString("ExportPanel.MappingTitle"));
+		headers.add(UIRegistry.getResourceString("ExportPanel.MappingExportTimeTitle"));
+
+		mapsModel = new DefaultTableModel(data, headers);
+//		for (SpExportSchemaMapping map : maps)
+//		{
+//			Vector<Object> row = new Vector<Object>(2);
+//			row.add(map.getMappingName());
+//			row.add(map.getTimestampExported() != null ? map.getTimestampExported() : "needs to be built");
+//			mapsModel.addRow(row);
+//		}
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace#currentRow(int)
+	 */
+	@Override
+	public void currentRow(final int currentRow)
+	{
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run()
+			{
+				//progDlg.setProcess(currentRow);
+				prog.setValue(currentRow);
+				System.out.println(currentRow);
+			}
+		});
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace#done(int)
+	 */
+	@Override
+	public void done(int rows)
+	{
+		System.out.println("done exporting " + rowCount);
+		status.setText("exported " + rowCount); //XXX i18n
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace#filling()
+	 */
+	@Override
+	public void filling()
+	{
+		SwingUtilities.invokeLater(new Runnable(){
+			public void run()
+			{
+				//progDlg.getProcessProgress().setIndeterminate(false);
+				prog.setIndeterminate(false);
+				System.out.println("filling");
+				status.setText("filling"); //XXX i18n
+			}
+		});
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace#loaded()
+	 */
+	@Override
+	public void loaded()
+	{
+		SwingUtilities.invokeLater(new Runnable(){
+			public void run()
+			{
+				//progDlg.getProcessProgress().setIndeterminate(false);
+				prog.setIndeterminate(false);
+				System.out.println("loaded");
+				status.setText("loaded"); //XXX i18n
+			}
+		});
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace#loading()
+	 */
+	@Override
+	public void loading()
+	{
+		SwingUtilities.invokeLater(new Runnable(){
+			public void run()
+			{
+				//progDlg.getProcessProgress().setIndeterminate(true);
+				prog.setIndeterminate(true);
+				System.out.println("loading");
+				status.setText("loading"); //XXX i18n
+			}
+		});
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace#rowCount(int)
+	 */
+	@Override
+	public void rowCount(final int rowCount)
+	{
+		SwingUtilities.invokeLater(new Runnable(){
+			public void run()
+			{
+				//progDlg.getProcessProgress().setIndeterminate(false);
+				//progDlg.setProcess(0, rowCount);
+				prog.setIndeterminate(false);
+				prog.setMinimum(0);
+				prog.setMaximum(rowCount);
+				System.out.println(rowCount);
+				ExportPanel.this.rowCount = rowCount;
+			}
+		});
+	}
+
+	
     public static void main(String[] args)
     {
         log.debug("********* Current ["+(new File(".").getAbsolutePath())+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
