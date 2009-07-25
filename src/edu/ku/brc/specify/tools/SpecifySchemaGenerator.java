@@ -116,40 +116,52 @@ public class SpecifySchemaGenerator
         
         log.debug("Creating database connection to: " + connectionStr);
         // Now connect to other databases and "create" the Derby database
-        DBConnection dbConn = DBConnection.createInstance(dbdriverInfo.getDriverClassName(), dbdriverInfo.getDialectClassName(), databaseName, connectionStr, userName, password);
-
-        if (dbConn.getConnection() != null)
+        DBConnection dbConn = null;
+        try
         {
-            log.debug("calling dropAndCreateDB(" + dbConn.toString() + ", " + databaseName +")");
-            if (!doUpdate)
+            dbConn = DBConnection.createInstance(dbdriverInfo.getDriverClassName(), dbdriverInfo.getDialectClassName(), databaseName, connectionStr, userName, password);
+            if (dbConn != null && dbConn.getConnection() != null)
             {
-                dropAndCreateDB(dbConn, databaseName);
-            }
-            
-            connectionStr = dbdriverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostname, databaseName, userName, password, dbdriverInfo.getName());
-            
-            log.debug("Preparing to doGenSchema: " + connectionStr);
-            
-            // Generate the schema
-            doGenSchema(dbdriverInfo,
-                        connectionStr,
-                        userName,
-                        password,
-                        doUpdate);
-            
-            String       connStr           = dbdriverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostname, databaseName);
-            DBConnection dbConnForDatabase = DBConnection.createInstance(dbdriverInfo.getDriverClassName(), dbdriverInfo.getDialectClassName(), databaseName, connStr, userName, password);
-            if (!doUpdate)
+                log.debug("calling dropAndCreateDB(" + dbConn.toString() + ", " + databaseName +")");
+                if (!doUpdate)
+                {
+                    dropAndCreateDB(dbConn, databaseName);
+                }
+                
+                connectionStr = dbdriverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostname, databaseName, userName, password, dbdriverInfo.getName());
+                
+                log.debug("Preparing to doGenSchema: " + connectionStr);
+                
+                // Generate the schema
+                doGenSchema(dbdriverInfo,
+                            connectionStr,
+                            userName,
+                            password,
+                            doUpdate);
+                
+                String       connStr           = dbdriverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostname, databaseName);
+                DBConnection dbConnForDatabase = DBConnection.createInstance(dbdriverInfo.getDriverClassName(), dbdriverInfo.getDialectClassName(), databaseName, connStr, userName, password);
+                if (!doUpdate)
+                {
+                    fixFloatFields(dbConnForDatabase);
+                }
+                dbConnForDatabase.close();
+                
+            } else
             {
-                fixFloatFields(dbConnForDatabase);
+                UIRegistry.showLocalizedError("SpecifySchemaGenerator.IT_UP_ERROR");
+                CommandDispatcher.dispatch(new CommandAction("App", "AppReqExit", null));
+                return false;
             }
-        } else
+            return true;
+            
+        } finally
         {
-            UIRegistry.showLocalizedError("SpecifySchemaGenerator.IT_UP_ERROR");
-            CommandDispatcher.dispatch(new CommandAction("App", "AppReqExit", null));
-            return false;
+            if (dbConn != null)
+            {
+                dbConn.close();
+            }
         }
-        return true;
     }
 
     /**

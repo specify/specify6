@@ -1377,7 +1377,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         //----------------------------------------------------
         
         JMenu helpMenu = UIHelper.createLocalizedMenu(mb, "Specify.HELP_MENU", "Specify.HELP_MNEU"); //$NON-NLS-1$ //$NON-NLS-2$
-        HelpMgr.createHelpMenuItem(helpMenu, "Specify"); //$NON-NLS-1$
+        HelpMgr.createHelpMenuItem(helpMenu, getResourceString("SPECIFY_HELP")); //$NON-NLS-1$
         helpMenu.addSeparator();
         
         String ttle = "Specify.LOG_SHOW_FILES";//$NON-NLS-1$ 

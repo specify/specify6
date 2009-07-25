@@ -115,7 +115,7 @@ public class MasterUserPanel extends GenericFormPanel
         // Advance part of pane
         advLabel    = UIHelper.createI18NLabel("ADV_MU_DESC", SwingConstants.CENTER);
         skipStepBtn = UIHelper.createI18NButton("ADV_MU_TEST");
-        builder.addSeparator(UIRegistry.getResourceString("ADV_TITLE"), cc.xyw(3, row, 2)); row += 2;
+        JComponent sep = builder.addSeparator(UIRegistry.getResourceString("ADV_TITLE"), cc.xyw(3, row, 2)); row += 2;
         builder.add(advLabel, cc.xyw(3, row, 2)); row += 2;
         
         tstPB = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g", "p"));
@@ -131,7 +131,7 @@ public class MasterUserPanel extends GenericFormPanel
                 boolean ok = skipDBCreate();
                 createMUBtn.setEnabled(true);
                 skipStepBtn.setEnabled(true);
-                 advLabel.setText(UIRegistry.getResourceString(ok ? "ADV_DB_OK" : "ADV_DB_ERR"));
+                advLabel.setText(UIRegistry.getResourceString(ok ? "ADV_DB_OK" : "ADV_DB_ERR"));
             }
         });
 
@@ -144,6 +144,13 @@ public class MasterUserPanel extends GenericFormPanel
             }
         });
         progressBar.setVisible(false);
+        
+        if (UIRegistry.isMobile())
+        {
+            skipStepBtn.setVisible(false);
+            advLabel.setVisible(false);
+            sep.setVisible(false);
+        }
     }
     
     /* (non-Javadoc)
@@ -280,7 +287,7 @@ public class MasterUserPanel extends GenericFormPanel
     protected void createMU()
     {
         String saUsrNm = ((JTextField)comps.get("saUserName")).getText();
-        if (StringUtils.isNotEmpty(saUsrNm) && saUsrNm.equalsIgnoreCase("root"))
+        if (StringUtils.isNotEmpty(saUsrNm) && !UIRegistry.isMobile() && saUsrNm.equalsIgnoreCase("root"))
         {
             UIRegistry.showLocalizedError("MASTER_NO_ROOT");
             ((JTextField)comps.get("saUserName")).setText("");

@@ -106,6 +106,9 @@ public class UIRegistry
     protected static final String EMBEDDED_DB_PATH = "embedded.dbpath";
     protected static final String EMBEDDED_DB_DIR = "specify_data";
     
+    protected static final boolean debugPaths  = true;
+
+    
     public static final String FRAME        = "frame";
     public static final String MENUBAR      = "menubar";
     public static final String TOOLBAR      = "toolbar";
@@ -550,7 +553,14 @@ public class UIRegistry
     		instance.defaultWorkingPath = UIHelper.stripSubDirs(file.getAbsolutePath(), 1);
     		log.debug("Working Path not set, setting it to["+instance.defaultWorkingPath+"]");
     	}
-    	log.debug("Def Working Path["+instance.defaultWorkingPath+"]");
+    	//log.debug("Def Working Path["+instance.defaultWorkingPath+"]");
+    	
+        if (debugPaths)
+        {
+            try {
+                log.debug("************************ getDefaultWorkingPath: ["+(new File(instance.defaultWorkingPath).getCanonicalPath())+"]");
+            } catch (Exception ex) {}
+        }
         return instance.defaultWorkingPath;
     }
 
@@ -580,7 +590,7 @@ public class UIRegistry
      */
     public static void setDefaultWorkingPath(final String defaultWorkingPath)
     {
-    	log.debug("Setting Working Path ["+defaultWorkingPath+"]");
+        dumpCanonicalPath("setDefaultWorkingPath", defaultWorkingPath);
         instance.defaultWorkingPath = defaultWorkingPath;
     }
 	
@@ -589,6 +599,7 @@ public class UIRegistry
 	 */
 	public static void setBaseAppDataDir(final String appDataDir) 
 	{
+        dumpCanonicalPath("setBaseAppDataDir", appDataDir);
 		instance.appDataDir = appDataDir;
 	}
 
@@ -625,7 +636,12 @@ public class UIRegistry
                 throw new RuntimeException("Couldn't create data directory for "+instance.appName+" ["+dir.getAbsolutePath()+"]");
             }
         }
-         
+        if (debugPaths)
+        {
+            try {
+                log.debug("************************ setDefaultWorkingPath: ["+dir.getCanonicalPath()+"]");
+            } catch (Exception ex) {}
+        }
         return dir.getAbsolutePath();
     }
 
@@ -1644,7 +1660,8 @@ public class UIRegistry
      */
     public static void setEmbeddedDBDir(final String path)
     {
-        //log.debug(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> setEmbeddedDBDir: "+path);
+        dumpCanonicalPath("setEmbeddedDBDir", path);
+
         if (StringUtils.isNotEmpty(path))
         {
             System.setProperty(EMBEDDED_DB_PATH, path);
@@ -1656,12 +1673,31 @@ public class UIRegistry
      */
     public static String getEmbeddedDBPath()
     {
-        //log.debug("************************ getEmbeddedDBPath: "+System.getProperty(EMBEDDED_DB_PATH));
-        //try
-        //{
-        //log.debug("************************ getEmbeddedDBPath: ["+(new File(System.getProperty(EMBEDDED_DB_PATH))).getCanonicalPath()+"]");
-        //} catch (Exception ex) {}
+        
         return System.getProperty(EMBEDDED_DB_PATH);
+    }
+    
+    /**
+     * @param desc
+     * @param path
+     */
+    private static void dumpCanonicalPath(final String desc, final String path)
+    {
+        dumpCanonicalPath(desc, new File(path));
+    }
+    
+    /**
+     * @param desc
+     * @param path
+     */
+    private static void dumpCanonicalPath(final String desc, final File path)
+    {
+        if (debugPaths)
+        {
+            try {
+                log.debug("************************ "+desc+": ["+path.getCanonicalPath()+"]");
+            } catch (Exception ex) {}
+        }
     }
     
     /**
@@ -1669,10 +1705,7 @@ public class UIRegistry
      */
     public static String getDefaultEmbeddedDBPath()
     {
-        //try
-        //{
-        //log.debug("########################## getDefaultEmbeddedDBPath["+(new File(getAppDataDir() + File.separator + EMBEDDED_DB_DIR)).getCanonicalPath()+"]");
-        //} catch (Exception ex) {}
+        dumpCanonicalPath("getDefaultEmbeddedDBPath", getAppDataDir() + File.separator + EMBEDDED_DB_DIR);
         return UIRegistry.getAppDataDir() + File.separator + EMBEDDED_DB_DIR;
     }
     
@@ -1682,10 +1715,7 @@ public class UIRegistry
      */
     public static String getMobileEmbeddedDBPath()
     {
-        //try
-        //{
-        //log.debug("=======================================  getMobileEmbeddedDBPath["+(new File(getDefaultWorkingPath() + File.separator + EMBEDDED_DB_DIR)).getCanonicalPath()+"]");
-        //} catch (Exception ex) {}
+        dumpCanonicalPath("getMobileEmbeddedDBPath", UIRegistry.getDefaultWorkingPath() + File.separator + EMBEDDED_DB_DIR);
         return UIRegistry.getDefaultWorkingPath() + File.separator + EMBEDDED_DB_DIR;
     }
     

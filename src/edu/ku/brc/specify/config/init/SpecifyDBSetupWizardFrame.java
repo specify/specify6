@@ -25,6 +25,7 @@ import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -39,7 +40,6 @@ import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 import com.install4j.api.launcher.ApplicationLauncher;
 import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
@@ -57,12 +57,14 @@ import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
+import edu.ku.brc.af.ui.ProcessListUtil;
 import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.af.ui.weblink.WebLinkMgr;
 import edu.ku.brc.dbsupport.CustomQueryFactory;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.config.SpecifyAppPrefs;
@@ -82,7 +84,7 @@ import edu.ku.brc.ui.IconManager.IconSize;
  */
 public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFace
 {
-    private static final Logger  log                = Logger.getLogger(SpecifyDBSetupWizardFrame.class);
+    //private static final Logger  log = Logger.getLogger(SpecifyDBSetupWizardFrame.class);
     
     /**
      * @throws HeadlessException
@@ -155,6 +157,28 @@ public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFa
         setContentPane(wizPanel);
         
         pack();
+        
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run()
+            {
+                checkForMySQLProcesses();
+            }
+        });
+    }
+    
+    private void checkForMySQLProcesses()
+    {
+        List<String> processList = ProcessListUtil.getRunningProcesses();
+        for (String line : processList)
+        {
+            if (StringUtils.contains(line, "3337"))
+            {
+                String[] toks = StringUtils.split(line, ' ');
+                
+                ProcessListUtil.killProcess(Integer.parseInt(toks[1]));
+            }
+        }
     }
 
     /* (non-Javadoc)
@@ -164,6 +188,7 @@ public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFa
     {
         DBConnection.setCopiedToMachineDisk(true);
         DBConnection.shutdown();
+        HibernateUtil.shutdown();
         
         System.exit(0);
         
@@ -295,8 +320,6 @@ public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFa
             e.printStackTrace();
         }
         
-        UIRegistry.setEmbeddedDBDir(UIRegistry.getDefaultEmbeddedDBPath()); // on the local machine
-        
         for (String s : args)
         {
             String[] pairs = s.split("="); //$NON-NLS-1$
@@ -330,22 +353,26 @@ public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFa
         if (StringUtils.isNotEmpty(embeddeddbdir))
         {
             UIRegistry.setEmbeddedDBDir(embeddeddbdir);
+        } else
+        {
+            UIRegistry.setEmbeddedDBDir(UIRegistry.getDefaultEmbeddedDBPath()); // on the local machine
         }
+        
+        // For Debugging Only 
+        //System.setProperty("mobile", "true");
         
         String mobile = System.getProperty("mobile");
         if (StringUtils.isNotEmpty(mobile))
         {
             UIRegistry.setMobile(true);
             
-            try
-            {
-                log.debug("%%%%%%%%%%%%%%%%%%%%%% ");
-                UIRegistry.setEmbeddedDBDir(DBConnection.getMobileTempDir().getAbsolutePath());
-                log.debug("%%%%%%%%%%%%%%%%%%%%%% ");
+            try 
+            { 
+                UIRegistry.setEmbeddedDBDir(DBConnection.getMobileTempDir().getCanonicalPath());
                 
-            } catch (IOException e)
+            } catch (IOException e) 
             {
-              e.printStackTrace();
+                e.printStackTrace();
             }
         }
         

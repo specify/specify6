@@ -270,7 +270,7 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
     {
         if (isOnLoan == null)
         {
-            Connection conn = DBConnection.getInstance().createConnection();
+            Connection conn = null;
             Statement  stmt = null;
             try
             {

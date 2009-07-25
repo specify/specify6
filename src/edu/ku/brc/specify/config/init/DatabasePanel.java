@@ -37,6 +37,7 @@ import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
@@ -76,6 +77,8 @@ import edu.ku.brc.util.thumbnails.Thumbnailer;
  */
 public class DatabasePanel extends BaseSetupPanel
 {
+    private enum VerifyStatus {OK, CANCELLED, ERROR}
+    
     protected final String            PROPNAME    = "PROPNAME";
     protected final String            DBNAME      = "dbName";
     protected final String            HOSTNAME    = "hostName";
@@ -156,7 +159,7 @@ public class DatabasePanel extends BaseSetupPanel
         // Advance part of pane
         advLabel    = UIHelper.createI18NLabel("ADV_DB_DESC", SwingConstants.CENTER);
         skipStepBtn = UIHelper.createI18NButton("ADV_DB_TEST");
-        builder.addSeparator(UIRegistry.getResourceString("ADV_TITLE"), cc.xyw(3, row, 1)); row += 2;
+        JComponent sep = builder.addSeparator(UIRegistry.getResourceString("ADV_TITLE"), cc.xyw(3, row, 1)); row += 2;
         builder.add(advLabel, cc.xyw(3, row, 1)); row += 2;
         
         tstPB = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g", "p"));
@@ -183,6 +186,13 @@ public class DatabasePanel extends BaseSetupPanel
                 createDB();
             }
         });
+        
+        if (UIRegistry.isMobile())
+        {
+            skipStepBtn.setVisible(false);
+            advLabel.setVisible(false);
+            sep.setVisible(false);
+        }
         
         progressBar.setVisible(false);
 
@@ -305,7 +315,8 @@ public class DatabasePanel extends BaseSetupPanel
         String connStrInitial = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostName, dbName, dbUserName, dbPwd, driverInfo.getName());
         DBConnection.checkForEmbeddedDir(connStrInitial);
         
-        if ((isOK == null || !isOK) && verifyDatabase(properties))
+        VerifyStatus status = verifyDatabase(properties);
+        if ((isOK == null || !isOK) && status == VerifyStatus.OK)
         {
             progressBar.setIndeterminate(true);
             progressBar.setVisible(true);
@@ -340,11 +351,11 @@ public class DatabasePanel extends BaseSetupPanel
                                 
                                 // This call will create the database if it doesn't exist
                                 DBConnection testDB = DBConnection.createInstance(driverInfo.getDriverClassName(), driverInfo.getDialectClassName(), dbName, newConnStr, dbUserName, dbPwd);
-                                Connection conn = testDB.createConnection();
+                                testDB.getConnection(); // Opens the connection
                                 
-                                if (conn != null)
+                                if (testDB != null)
                                 {
-                                    conn.close();
+                                    testDB.close();
                                 }
                                 dbmsOK = true;
                                 
@@ -478,7 +489,8 @@ public class DatabasePanel extends BaseSetupPanel
                         }
                     });
             worker.execute();
-        } else
+            
+        } else if (status == VerifyStatus.ERROR)
         {
             errorKey = "NO_LOGIN_ROOT";
             DatabasePanel.this.label.setText(UIRegistry.getResourceString(errorKey));
@@ -573,10 +585,10 @@ public class DatabasePanel extends BaseSetupPanel
      * @param props props
      * @return true if proceeding
      */
-    protected boolean verifyDatabase(final Properties props)
+    protected VerifyStatus verifyDatabase(final Properties props)
     {
-        boolean isEmbedded = DBConnection.getInstance().isEmbedded();
-        boolean proceed    = true;
+        boolean      isEmbedded = DBConnection.getInstance().isEmbedded();
+        VerifyStatus status     = VerifyStatus.OK;
         if (isEmbedded)
         {
             File specifyDataDir = DBConnection.getEmbeddedDataDir();
@@ -584,8 +596,8 @@ public class DatabasePanel extends BaseSetupPanel
             {
                 if (specifyDataDir.exists())
                 {
-                    proceed = UIHelper.promptForAction("PROCEED", "CANCEL", "DEL_CUR_DB_TITLE", UIRegistry.getLocalizedMessage("DEL_CUR_DB", props.getProperty(DBNAME)));
-                    if (proceed)
+                    boolean isOK = UIHelper.promptForAction("PROCEED", "CANCEL", "DEL_CUR_DB_TITLE", UIRegistry.getLocalizedMessage("DEL_CUR_DB", props.getProperty(DBNAME)));
+                    if (isOK)
                     {
                         try
                         {
@@ -595,35 +607,37 @@ public class DatabasePanel extends BaseSetupPanel
                         {
                             edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyDBSetupWizard.class, new Exception("The Embedded Data Dir has not been set"));
+                            return VerifyStatus.ERROR;
                         }
+                    } else
+                    {
+                       return VerifyStatus.CANCELLED; 
                     }
                 }
-                return proceed;
-                
             } else
             {
                 edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
                 edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyDBSetupWizard.class, new Exception("The Embedded Data Dir has not been set"));
+                return VerifyStatus.ERROR;
             }  
+            return VerifyStatus.OK;
         }
         
-        if (proceed)
+        if (checkForDatabase(props))
         {
-            if (checkForDatabase(props))
-            {
-                return isEmbedded ? true : UIHelper.promptForAction("PROCEED", "CANCEL", "DEL_CUR_DB_TITLE", UIRegistry.getLocalizedMessage("DEL_CUR_DB", props.getProperty(DBNAME)));
+            boolean proceed = UIHelper.promptForAction("PROCEED", "CANCEL", "DEL_CUR_DB_TITLE", UIRegistry.getLocalizedMessage("DEL_CUR_DB", props.getProperty(DBNAME)));
+            status = proceed ? VerifyStatus.OK : VerifyStatus.CANCELLED;
 
-            } else
-            {
-                proceed = isEmbedded ? false : true;
-            }
+        } else
+        {
+            status = VerifyStatus.OK;
         }
         
-        return proceed;
+        return status;
     }
     
     /**
-     * Checks to see if the database already exists.
+     * Checks to see if the database already exists and has tables.
      * @param props the props
      * @return true if it exists
      */

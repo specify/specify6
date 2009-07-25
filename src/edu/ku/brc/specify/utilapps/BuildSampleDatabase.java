@@ -7659,12 +7659,7 @@ public class BuildSampleDatabase
                 
                 DBConnection testDB = DBConnection.createInstance(driverInfo.getDriverClassName(), driverInfo.getDialectClassName(), dbName, newConnStr, saUser.first, saUser.second);
                 
-                Connection conn = testDB.createConnection();
-                
-                if (conn != null)
-                {
-                    conn.close();
-                }
+                testDB.getConnection();
                 
             } catch (Exception ex)
             {

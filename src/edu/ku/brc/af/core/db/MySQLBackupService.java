@@ -100,7 +100,7 @@ public class MySQLBackupService extends BackupServiceFactory
      */
     public int getNumberofTables()
     {
-        Connection dbConnection = DBConnection.getInstance().createConnection();
+        Connection dbConnection = null;
         Statement dbStatement = null;
         try
         {
@@ -154,8 +154,8 @@ public class MySQLBackupService extends BackupServiceFactory
     {
         Vector<String> tablesNames = new Vector<String>();
         
-        Connection dbConnection = DBConnection.getInstance().createConnection();
-        Statement dbStatement = null;
+        Connection dbConnection = null;
+        Statement  dbStatement = null;
         try
         {
             dbConnection = DBConnection.getInstance().createConnection();

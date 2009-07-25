@@ -269,7 +269,7 @@ public class ConvertVerifier
         
         String srcConStr = driverInfoSource.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, databaseHostSource, databaseNameSource, itUsrPwd.first, itUsrPwd.second, driverNameSource);
         DBConnection oldDB = DBConnection.createInstance(driverInfoSource.getDriverClassName(), null, databaseNameSource, srcConStr, itUsrPwd.first, itUsrPwd.second);
-        oldDBConn = oldDB.createConnection();
+        oldDBConn = oldDB.getConnection();
         if (oldDBConn == null)
         {
             throw new RuntimeException(oldDB.getErrorMsg());
