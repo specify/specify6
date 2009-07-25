@@ -40,7 +40,7 @@ public class ProcessListUtil
         List<String> processList = new ArrayList<String>();
         try 
         {
-            Process        process = Runtime.getRuntime().exec("tasklist.exe /fo csv /nh");
+            Process        process = Runtime.getRuntime().exec("tasklist.exe /v /nh");
             BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
             String line;
             while ((line = input.readLine()) != null) 
@@ -48,7 +48,7 @@ public class ProcessListUtil
                 if (!line.trim().equals("")) 
                 {
                     // keep only the process name
-                    line = line.substring(1);
+                    //line = line.substring(1);
                     //processes.add(line.substring(0, line.indexOf("\"")));
                     processList.add(line);
                 }
@@ -96,24 +96,36 @@ public class ProcessListUtil
      * @param text the text to be search for
      * @return the list if ids
      */
-    public static List<Integer> getProcessIdWithText(final String text)
+    public static List<Integer> getProcessIdWithText(final String...text)
     {
         ArrayList<Integer> ids = new ArrayList<Integer>();
         
         List<String> processList = ProcessListUtil.getRunningProcesses();
         for (String line : processList)
         {
-            if (StringUtils.contains(line, text))
+            //System.out.println(line);
+            boolean doCont = false;
+            for (int i=0;i<text.length;i++)
             {
-                String[] toks = StringUtils.split(line, ' ');
-                
-                if (UIHelper.isWindows())
+                if (!StringUtils.contains(line.toLowerCase(), text[i].toLowerCase()))
                 {
-                    
-                } else
-                {
-                    ids.add(Integer.parseInt(toks[1]));
+                    doCont = true;
+                    break;
                 }
+            }
+            if (doCont)
+            {
+                continue;
+            }
+            
+            String[] toks = StringUtils.split(line, ' ');
+            
+            if (UIHelper.isWindows())
+            {
+            	ids.add(Integer.parseInt(toks[1]));
+            } else
+            {
+                ids.add(Integer.parseInt(toks[1]));
             }
         }
         return ids;
@@ -138,15 +150,18 @@ public class ProcessListUtil
      */
     public static boolean killProcess(final int processId)
     {
+    	String cmd;
         if (UIHelper.isWindows())
         {
-            return false;
+        	cmd = "taskkill /PID " + processId;
+        } else
+        {
+        	cmd = "kill " + processId;
         }
         
-        // Unix
         try 
         {
-            Process process = Runtime.getRuntime().exec("kill " + processId);
+            Process process = Runtime.getRuntime().exec(cmd);
             process.waitFor();
             return process.exitValue() == 0;
         }
@@ -163,17 +178,22 @@ public class ProcessListUtil
      */
     public static void main(String[] args)
     {
-        List<String> processList = getRunningProcesses();
+        //List<String> processList = getRunningProcesses();
 
-        StringBuilder sb = new StringBuilder();
-        for (String line : processList)
+        List<Integer> ids;
+        if (!UIHelper.isWindows())
         {
-            if (StringUtils.contains(line.toLowerCase(), "mysqld") && StringUtils.contains(line.toLowerCase(), "3337"))
-            {
-                if (sb.length() > 0) sb.append("\n");
-                sb.append(line);
-            }
+            ids = getProcessIdWithText("3337");
+        } else
+        {
+        	ids = getProcessIdWithText("mysqld-nt.exe", System.getProperty("user.name"));
         }
-        System.out.println(sb.length() == 0 ? "None" : sb.toString());
+        for (Integer id : ids)
+        {
+            System.out.println(id);
+            killProcess(id);
+        }
+        
+        
     }
 }
