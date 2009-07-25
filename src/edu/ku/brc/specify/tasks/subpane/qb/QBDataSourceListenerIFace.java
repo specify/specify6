@@ -30,21 +30,21 @@ public interface QBDataSourceListenerIFace
 	 * 
 	 * Sent when the current row changes.
 	 */
-	public void currentRow(final int currentRow);	
+	public void currentRow(final long currentRow);	
 	
 	/**
 	 * @param rowCount
 	 * 
 	 * Sent when/if the total row count is determined. 
 	 */
-	public void rowCount(final int rowCount);
+	public void rowCount(final long rowCount);
 	
 	/**
 	 * @param rows the number of rows processed.
 	 * 
 	 * Sent when processing stops.
 	 */
-	public void done(final int rows);
+	public void done(final long rows);
 	
 	/**
 	 * Sent when/if data needs to be pre-processed before JR report can be filled.

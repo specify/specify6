@@ -560,7 +560,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
 	 * @see edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace#currentRow(int)
 	 */
 	@Override
-	public void currentRow(final int currentRow)
+	public void currentRow(final long currentRow)
 	{
 		SwingUtilities.invokeLater(new Runnable(){
 
@@ -576,7 +576,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
 					progressBar.setMaximum(((QBDataSource )dataSource).size());
 					progressBar.setIndeterminate(false);
 				}
-				progressBar.setValue(currentRow);
+				progressBar.setValue((int )currentRow);
 			}
 			
 		});
@@ -586,7 +586,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
 	 * @see edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace#done(int)
 	 */
 	@Override
-	public void done(int rows)
+	public void done(long rows)
 	{
 		// TODO Auto-generated method stub
 		
@@ -647,7 +647,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
 	 * @see edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace#rowCount(int)
 	 */
 	@Override
-	public void rowCount(final int rowCount)
+	public void rowCount(final long rowCount)
 	{
 		if (rowCount > 0)
 		{
@@ -663,7 +663,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
 				public void run()
 				{
 					progressBar.setMinimum(0);
-					progressBar.setMaximum(rowCount);
+					progressBar.setMaximum((int )rowCount);
 					progressBar.setValue(0);
 					progressBar.setIndeterminate(false);
 				}

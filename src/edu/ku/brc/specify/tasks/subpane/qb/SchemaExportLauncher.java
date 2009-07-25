@@ -30,6 +30,7 @@ import edu.ku.brc.specify.datamodel.SpExportSchemaMapping;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.tasks.QueryTask;
 import edu.ku.brc.specify.tools.ireportspecify.IReportLauncher;
+import edu.ku.brc.ui.UIHelper;
 
 /**
  * @author timo
@@ -166,7 +167,9 @@ public class SchemaExportLauncher implements DatabaseLoginListener
                     	ExportPanel ep = new ExportPanel(maps);
                     	JFrame frame = new JFrame();
                     	frame.setContentPane(ep);
-                    	frame.setVisible(true);
+                    	frame.pack();
+                    	//frame.setVisible(true);
+                    	UIHelper.centerAndShow(frame);
 //                    	CustomDialog cd = new CustomDialog((Frame )UIRegistry.getTopWindow(), 
 //                    			getResourceString("SchemaExportLauncher.DlgTitle"), true,
 //                    			ep);

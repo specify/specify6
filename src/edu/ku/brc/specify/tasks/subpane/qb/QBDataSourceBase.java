@@ -326,4 +326,15 @@ public class QBDataSourceBase implements JRDataSource
     {
         return -1;
     }
+    
+    /**
+     * @param idx
+     * @returns the ColumnInfo at idx
+     * 
+     * No processing for recordId column, partial date type columns etc.
+     */
+    public ERTICaptionInfoQB getColumnInfo(int idx)
+    {
+    	return columnInfo.get(this.recordIdsIncluded ? idx-1 : idx);
+    }
 }

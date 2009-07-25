@@ -2158,12 +2158,12 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 				 * @see edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace#currentRow(int)
 				 */
 				@Override
-				public void currentRow(final int currentRow)
+				public void currentRow(final long currentRow)
 				{
 					SwingUtilities.invokeLater(new Runnable() {
 						public void run()
 						{
-							progDlg.setProcess(currentRow);
+							progDlg.setProcess((int )currentRow);
 						}
 					});
 				}
@@ -2172,7 +2172,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 				 * @see edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace#done(int)
 				 */
 				@Override
-				public void done(int rows)
+				public void done(long rows)
 				{
 					// TODO Auto-generated method stub
 					
@@ -2224,13 +2224,13 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 				 * @see edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace#rowCount(int)
 				 */
 				@Override
-				public void rowCount(final int rowCount)
+				public void rowCount(final long rowCount)
 				{
 					SwingUtilities.invokeLater(new Runnable(){
 						public void run()
 						{
 							progDlg.getProcessProgress().setIndeterminate(false);
-							progDlg.setProcess(0, rowCount);
+							progDlg.setProcess(0, (int )rowCount);
 						}
 					});
 				}
@@ -2244,6 +2244,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         javax.swing.SwingWorker<Object, Object> worker = new javax.swing.SwingWorker<Object, Object>()  {
         	private Exception killer = null;
         	private boolean success = false;
+        	private long rowsExported = 0;
 
 			/* (non-Javadoc)
 			 * @see javax.swing.SwingWorker#doInBackground()
@@ -2257,7 +2258,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 				{
 					//XXX This only works if the Master user is given create privilege...
 					//XXX Assuming specimen-based export - 1 for baseTableId.
-					ExportToMySQLDB.exportToTable(cols, src, exportQuery.getName(), listeners, includeRecordIds, rebuildExistingTbl, true, 1);
+					rowsExported = ExportToMySQLDB.exportToTable(cols, src, exportQuery.getName(), listeners, includeRecordIds, rebuildExistingTbl, true, 1);
 					success = true;
 				}
 				catch (Exception ex)
@@ -2308,6 +2309,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 			        {
 			        	theSession.close();
 			        }
+					for (QBDataSourceListenerIFace listener : listeners)
+					{
+						listener.done(rowsExported);
+					}
 				}
 				else
 				{
@@ -2806,6 +2811,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 
     /**
      * @return an un-used name based on the schema name and version.
+     * 
+     * 
+     * NOTE: sets query.name AND schemaMapping.mappingName
      */
     protected boolean getExportMappingQueryName()
     {
@@ -2821,6 +2829,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     		suffix++;
     	}
     	query.setName(result);
+    	schemaMapping.setMappingName(result);
     	return true;
     }
     

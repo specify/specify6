@@ -22,11 +22,15 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.ExperienceBlue;
 
@@ -41,6 +45,8 @@ import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.af.ui.weblink.WebLinkMgr;
 import edu.ku.brc.dbsupport.CustomQueryFactory;
 import edu.ku.brc.dbsupport.DBMSUserMgr;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.dbsupport.SchemaUpdateService;
 import edu.ku.brc.helpers.XMLHelper;
@@ -68,8 +74,9 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 	protected JButton exportToTabDelimBtn;
 	protected JLabel status;
 	protected JProgressBar prog;
-	protected int rowCount = 0;
-	
+	protected long rowCount = 0;
+	protected int mapUpdating = -1;
+	protected int stupid = -1;
 	
 	protected final List<SpExportSchemaMapping> maps;
 	
@@ -79,6 +86,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 		this.maps = maps;
 		createUI();
 	}
+	
 	
 	public void createUI()
 	{
@@ -95,9 +103,10 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
     		System.out.println();
     	}
     	JScrollPane sp = new JScrollPane(mapsDisplay);
+    	sp.setBorder(new EmptyBorder(7,7,7,7));
     	add(sp, BorderLayout.CENTER);
-    	JPanel btnPanel = new JPanel(new BorderLayout());
     	exportToDbTblBtn = new JButton(UIRegistry.getResourceString("ExportPanel.ExportToDBTbl"));
+    	//exportToDbTblBtn.setEnabled(false);
     	exportToDbTblBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0)
@@ -105,6 +114,8 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 				int row = mapsDisplay.getSelectedRow();
 				if (row != -1)
 				{
+					mapUpdating = row;
+					stupid = 1;
 					SpExportSchemaMapping map = maps.get(row);
 					SpQuery q = map.getMappings().iterator().next()
 						.getQueryField().getQuery();
@@ -114,15 +125,20 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 				}
 			}
     	});
-    	status = new JLabel("ready and waiting"); //XXX i18n
-    	btnPanel.add(status, BorderLayout.WEST);
-    	prog = new JProgressBar();
-    	btnPanel.add(prog, BorderLayout.CENTER);
-    	btnPanel.add(exportToDbTblBtn, BorderLayout.EAST);
+    	PanelBuilder pbb = new PanelBuilder(new FormLayout("2dlu, f:p:g, f:p, 2dlu", "p, p"));
+    	CellConstraints cc = new CellConstraints();
+    	status = new JLabel(UIRegistry.getResourceString("ExportPanel.InitialStatus")); 
+    	pbb.add(status, cc.xy(2, 1));
+    	pbb.add(exportToDbTblBtn, cc.xy(3, 1));
     	
-    	add(btnPanel, BorderLayout.SOUTH);
+    	prog = new JProgressBar();
+    	pbb.add(prog, cc.xyw(2, 2, 2));
+    	add(pbb.getPanel(), BorderLayout.SOUTH);
 	}
 	
+	/**
+	 * 
+	 */
 	protected void buildTableModel()
 	{
 		Vector<Vector<String>> data = new Vector<Vector<String>>();
@@ -130,7 +146,8 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 		{
 			Vector<String> row = new Vector<String>(2);
 			row.add(map.getMappingName());
-			row.add(map.getTimestampExported() != null ? map.getTimestampExported().toString() : "needs to be built");
+			row.add(map.getTimestampExported() != null ? map.getTimestampExported().toString() : 
+				UIRegistry.getResourceString("ExportPanel.MappingCacheNeedsBuilding"));
 			data.add(row);
 		}
 		Vector<String> headers = new Vector<String>();
@@ -138,26 +155,19 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 		headers.add(UIRegistry.getResourceString("ExportPanel.MappingExportTimeTitle"));
 
 		mapsModel = new DefaultTableModel(data, headers);
-//		for (SpExportSchemaMapping map : maps)
-//		{
-//			Vector<Object> row = new Vector<Object>(2);
-//			row.add(map.getMappingName());
-//			row.add(map.getTimestampExported() != null ? map.getTimestampExported() : "needs to be built");
-//			mapsModel.addRow(row);
-//		}
 	}
 	
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace#currentRow(int)
 	 */
 	@Override
-	public void currentRow(final int currentRow)
+	public void currentRow(final long currentRow)
 	{
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run()
 			{
 				//progDlg.setProcess(currentRow);
-				prog.setValue(currentRow);
+				prog.setValue((int )currentRow);
 				System.out.println(currentRow);
 			}
 		});
@@ -167,12 +177,39 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 	 * @see edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace#done(int)
 	 */
 	@Override
-	public void done(int rows)
+	public void done(long rows)
 	{
-		System.out.println("done exporting " + rowCount);
-		status.setText("exported " + rowCount); //XXX i18n
+		if (stupid == 0 && mapUpdating != -1)
+		{
+			System.out.println("done exporting " + rowCount);
+			status.setText(String.format(UIRegistry.getResourceString("ExportLabel.UpdateDone"), rowCount));
+			refreshUpdatedMapDisplay(mapUpdating);
+			prog.setValue(0);
+			mapUpdating = -1;
+		}
+		stupid--;
 	}
 
+	/**
+	 * 
+	 */
+	protected void refreshUpdatedMapDisplay(int mapToRefresh)
+	{
+		SpExportSchemaMapping map = maps.get(mapToRefresh);
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        try
+        {
+        	session.refresh(map);
+			map.forceLoad();
+			map.getMappings().iterator().next().getQueryField().getQuery().forceLoad();
+       }
+        finally
+        {
+        	session.close();
+        }
+        this.mapsModel.setValueAt(map.getTimestampExported().toString(), mapToRefresh, 1);
+	}
+	
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace#filling()
 	 */
@@ -185,7 +222,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 				//progDlg.getProcessProgress().setIndeterminate(false);
 				prog.setIndeterminate(false);
 				System.out.println("filling");
-				status.setText("filling"); //XXX i18n
+				status.setText(UIRegistry.getResourceString("ExportPanel.UpdatingCache")); 
 			}
 		});
 	}
@@ -202,7 +239,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 				//progDlg.getProcessProgress().setIndeterminate(false);
 				prog.setIndeterminate(false);
 				System.out.println("loaded");
-				status.setText("loaded"); //XXX i18n
+				status.setText("ExportPanel.DataRetrieved"); 
 			}
 		});
 	}
@@ -219,7 +256,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 				//progDlg.getProcessProgress().setIndeterminate(true);
 				prog.setIndeterminate(true);
 				System.out.println("loading");
-				status.setText("loading"); //XXX i18n
+				status.setText(UIRegistry.getResourceString("ExportPanel.RetrievingData")); 
 			}
 		});
 	}
@@ -228,7 +265,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 	 * @see edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace#rowCount(int)
 	 */
 	@Override
-	public void rowCount(final int rowCount)
+	public void rowCount(final long rowCount)
 	{
 		SwingUtilities.invokeLater(new Runnable(){
 			public void run()
@@ -237,7 +274,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 				//progDlg.setProcess(0, rowCount);
 				prog.setIndeterminate(false);
 				prog.setMinimum(0);
-				prog.setMaximum(rowCount);
+				prog.setMaximum((int )rowCount - 1);
 				System.out.println(rowCount);
 				ExportPanel.this.rowCount = rowCount;
 			}

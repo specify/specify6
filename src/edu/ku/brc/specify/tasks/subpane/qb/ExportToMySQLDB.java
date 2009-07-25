@@ -101,7 +101,7 @@ public class ExportToMySQLDB
 	
 	/**
 	 * @param name
-	 * @return lower-cased name with invalid characters removed or subbstituted
+	 * @return lower-cased name with invalid characters removed or substituted
 	 */
 	public static String fixTblNameForMySQL(String name)
 	{
@@ -198,7 +198,7 @@ public class ExportToMySQLDB
 	 * Exports rows to a table named tblName in toConnection's db.
 	 * NOTE: toConnection is closed by this method.
 	 */
-	public static void exportToTable(Connection toConnection, List<ERTICaptionInfoQB> columns,
+	public static long exportToTable(Connection toConnection, List<ERTICaptionInfoQB> columns,
 			QBDataSource rows, String originalTblName, List<QBDataSourceListenerIFace> listeners,
 			boolean idColumnPresent, boolean overwrite, boolean update, int baseTableId) throws Exception
 	{
@@ -262,10 +262,7 @@ public class ExportToMySQLDB
 				}
 				stmt.execute(getInsertSql(rows, tblName));
 			}
-			for (QBDataSourceListenerIFace listener : listeners)
-			{
-				listener.done(rowNum);
-			}
+		    return rowNum;
 		}
 	    finally
 	    {
@@ -286,13 +283,22 @@ public class ExportToMySQLDB
 	 * 
 	 * Exports rows to a table named tblName in the default database.
 	 */
-	public static void exportToTable(List<ERTICaptionInfoQB> columns, QBDataSource rows, 
+	public static long exportToTable(List<ERTICaptionInfoQB> columns, QBDataSource rows, 
 			String tblName, List<QBDataSourceListenerIFace> listeners,
 			boolean idColumnPresent, boolean overwrite, boolean update, int baseTableId) throws Exception
 	{
-		exportToTable(DBConnection.getInstance().createConnection(), columns, rows, tblName, listeners, idColumnPresent, overwrite, update, baseTableId);
+		return exportToTable(DBConnection.getInstance().createConnection(), columns, rows, tblName, listeners, idColumnPresent, overwrite, update, baseTableId);
 	}
 	
+	/**
+	 * @param connection
+	 * @param tblName
+	 * @param keyFld
+	 * @param spTblName
+	 * @param spKeyFld
+	 * @param collMemId
+	 * @throws Exception
+	 */
 	protected static void deleteDeletedRecs(Connection connection, String tblName, String keyFld, String spTblName, String spKeyFld, int collMemId) throws Exception
 	{
 		Statement statement = connection.createStatement();
@@ -316,10 +322,28 @@ public class ExportToMySQLDB
 			{
 				result.append(", ");
 			}
-			String val = BasicSQLUtils.getStrValue(row.getFieldValue(r));
-			if (StringUtils.isBlank(val))
+			Object valObj = row.getFieldValue(r);
+			String val;
+			if (valObj == null)
 			{
-				val = "null";
+				ERTICaptionInfoQB col = row.getColumnInfo(r);
+				if (col instanceof ERTICaptionInfoTreeLevel)
+				{
+					//need to do this for IPT
+					val = "'" + UIRegistry.getResourceString("ExportToMySQLDB.EmptyTreeLevelText") + "'";
+				}
+				else
+				{
+					val = "null";
+				}
+			}
+			else 
+			{
+				val = BasicSQLUtils.getStrValue(row.getFieldValue(r));
+				if (StringUtils.isBlank(val))
+				{
+					val = "null";
+				}
 			}
 			result.append(val);			
 		}
@@ -328,6 +352,10 @@ public class ExportToMySQLDB
 		return result.toString();
 	}
 	
+	/**
+	 * @param tblName
+	 * @return
+	 */
 	public static String getSelectForIPTDBSrc(String tblName)
 	{
 		try
@@ -368,6 +396,12 @@ public class ExportToMySQLDB
 		}
 	}
 	
+	/**
+	 * @param file
+	 * @param headers
+	 * @param tableName
+	 * @return
+	 */
 	protected static boolean exportRowsToTabDelimitedText(File file,
 			List<String> headers, String tableName)
 	{
@@ -433,6 +467,11 @@ public class ExportToMySQLDB
 		}
 	}
 	
+	/**
+	 * @param rows
+	 * @return
+	 * @throws SQLException
+	 */
 	protected static String getTabDelimLine(ResultSet rows) throws SQLException
 	{
 		StringBuilder result = new StringBuilder();
