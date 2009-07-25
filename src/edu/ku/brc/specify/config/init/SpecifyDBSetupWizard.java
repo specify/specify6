@@ -141,7 +141,6 @@ public class SpecifyDBSetupWizard extends JPanel
         this.wizardType = wizardType;
         this.listener   = listener;
         
-        UIRegistry.loadAndPushResourceBundle("specifydbsetupwiz");
         System.setProperty(DBMSUserMgr.factoryName, "edu.ku.brc.dbsupport.MySQLDMBSUserMgr");
         
         /*setupXMLPath = UIRegistry.getUserHomeAppDir() + File.separator + "setup_prefs.xml";

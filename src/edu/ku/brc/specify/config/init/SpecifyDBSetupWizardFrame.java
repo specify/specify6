@@ -93,6 +93,8 @@ public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFa
     {
         super();
         
+        UIRegistry.loadAndPushResourceBundle("specifydbsetupwiz");
+        
         new MacOSAppHandler(this);
         
         UIRegistry.setTopWindow(this);
@@ -162,21 +164,28 @@ public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFa
             @Override
             public void run()
             {
-                checkForMySQLProcesses();
+                if (DBConnection.getInstance().isEmbedded())
+                {
+                    checkForMySQLProcesses();
+                }
             }
         });
     }
     
-    private void checkForMySQLProcesses()
+    /**
+     * Check for and kills and existing embedded MySQl processes.
+     */
+    public static void checkForMySQLProcesses()
     {
-        List<String> processList = ProcessListUtil.getRunningProcesses();
-        for (String line : processList)
+        List<Integer> ids = ProcessListUtil.getProcessIdWithText("3337");
+        if (ids.size() > 0)
         {
-            if (StringUtils.contains(line, "3337"))
+            if (UIHelper.promptForAction("CONTINUE", "CANCEL", "WARNING", getResourceString("Specify.EMBD_KILL_PROCS")))
             {
-                String[] toks = StringUtils.split(line, ' ');
-                
-                ProcessListUtil.killProcess(Integer.parseInt(toks[1]));
+                for (Integer id : ids)
+                {
+                    ProcessListUtil.killProcess(id);
+                }
             }
         }
     }

@@ -161,6 +161,7 @@ import edu.ku.brc.specify.config.LoggerDialog;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.config.SpecifyAppPrefs;
 import edu.ku.brc.specify.config.init.RegisterSpecify;
+import edu.ku.brc.specify.config.init.SpecifyDBSetupWizardFrame;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.conversion.ConversionLogger;
 import edu.ku.brc.specify.conversion.ConversionLogger.TableWriter;
@@ -3086,6 +3087,11 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
           @SuppressWarnings("synthetic-access") //$NON-NLS-1$
         public void run()
           {
+              if (DBConnection.getInstance().isEmbedded())
+              {
+                  SpecifyDBSetupWizardFrame.checkForMySQLProcesses();
+              }
+              
               log.debug("Checking for update....");
               try
               {

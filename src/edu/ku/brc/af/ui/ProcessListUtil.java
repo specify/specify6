@@ -91,6 +91,34 @@ public class ProcessListUtil
         return processes;
     }
     
+    /**
+     * Returns a list of the process ids that contain the provided text (like greping for text).
+     * @param text the text to be search for
+     * @return the list if ids
+     */
+    public static List<Integer> getProcessIdWithText(final String text)
+    {
+        ArrayList<Integer> ids = new ArrayList<Integer>();
+        
+        List<String> processList = ProcessListUtil.getRunningProcesses();
+        for (String line : processList)
+        {
+            if (StringUtils.contains(line, text))
+            {
+                String[] toks = StringUtils.split(line, ' ');
+                
+                if (UIHelper.isWindows())
+                {
+                    
+                } else
+                {
+                    ids.add(Integer.parseInt(toks[1]));
+                }
+            }
+        }
+        return ids;
+    }
+    
     
     /**
      * @return
@@ -120,15 +148,14 @@ public class ProcessListUtil
         {
             Process process = Runtime.getRuntime().exec("kill " + processId);
             process.waitFor();
-            int retVal = process.exitValue();
-            System.out.println("retVal: "+retVal);
+            return process.exitValue() == 0;
         }
         catch (Exception ex) 
         {
             ex.printStackTrace();
         }
         
-        return true;
+        return false;
     }
     
     /**
