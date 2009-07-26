@@ -537,23 +537,23 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             public void actionPerformed(ActionEvent ae)
             {
                 //XXX testing!!!!!!!!!
-				if (schemaMapping != null)
-				{
-					if (UIRegistry.displayConfirm("TESTING!!!!!!!",
-							"Export to db? Yes or No?", "YES", "NO",
-							JOptionPane.QUESTION_MESSAGE))
-					{
-						query.forceLoad();
-						QueryBldrPane.exportToTable(query, null);
-					} else
-					{
-						doSearch();
-					}
-				}
-            	else
-            	{
+//				if (schemaMapping != null)
+//				{
+//					if (UIRegistry.displayConfirm("TESTING!!!!!!!",
+//							"Export to db? Yes or No?", "YES", "NO",
+//							JOptionPane.QUESTION_MESSAGE))
+//					{
+//						query.forceLoad();
+//						QueryBldrPane.exportToTable(query, null);
+//					} else
+//					{
+//						doSearch();
+//					}
+//				}
+//            	else
+//            	{
             		doSearch();
-            	}
+//            	}
             }
         });
         distinctChk = createCheckBox(UIRegistry.getResourceString("QB_DISTINCT"));
@@ -2562,16 +2562,15 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         runningResults.set(null);
        
         int results = completedResults.get().getQuery().getDataObjects().size();
-        int max = schemaMapping == null ? completedResults.get().getMaxTableRows() : ExportSchemaPreviewSize;
-        if (results > max && !countOnly &&  !completedResults.get().getQuery().isCancelled())
+        if (results > completedResults.get().getMaxTableRows() && !countOnly &&  !completedResults.get().getQuery().isCancelled())
         {
             if (schemaMapping == null)
             {
-            	UIRegistry.displayInfoMsgDlgLocalized("QB_PARTIAL_RESULTS_DISPLAY", max, results);
+            	UIRegistry.displayInfoMsgDlgLocalized("QB_PARTIAL_RESULTS_DISPLAY", completedResults.get().getMaxTableRows(), results);
             }
             else
             {
-            	UIRegistry.displayInfoMsgDlgLocalized("QB_PREVIEW_DISPLAY", max, results);
+            	UIRegistry.displayInfoMsgDlgLocalized("QB_PREVIEW_DISPLAY", completedResults.get().getMaxTableRows(), results);
             }
         }
         else
@@ -2728,6 +2727,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         	}
         }
         qri.setFilterDups(distinct && hasTreeLevels);
+        if (schemaMapping != null)
+        {
+        	qri.setMaxTableRows(ExportSchemaPreviewSize);
+        }
         runningResults.set(qri);
         doneTime.set(-1);
         

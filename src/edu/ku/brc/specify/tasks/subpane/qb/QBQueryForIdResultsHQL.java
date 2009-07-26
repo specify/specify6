@@ -59,6 +59,8 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL
     protected Vector<Vector<Object>>                          cache = null;
     protected boolean                                         recIdsLoaded = false;
     protected boolean                                         hasIds = true;
+    protected int											  maxTableRows = ExpressSearchTask.RESULTS_THRESHOLD;
+
         
     /**
      * @param bannerColor
@@ -306,9 +308,17 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL
     @Override
     public int getMaxTableRows()
     {
-        return ExpressSearchTask.RESULTS_THRESHOLD;
+    	return maxTableRows;
     }    
 
+    /**
+     * @param maxTableRows the maxTableRows to set
+     */
+    public void setMaxTableRows(int maxTableRows)
+    {
+    	this.maxTableRows = maxTableRows;
+    }
+    
     /**
      * @param sortElements the sortElements to set.
      */
