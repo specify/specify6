@@ -5,6 +5,9 @@ package edu.ku.brc.specify.tasks.subpane.qb;
 
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -16,13 +19,14 @@ import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
 import org.apache.commons.lang.StringUtils;
@@ -54,6 +58,7 @@ import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.datamodel.SpExportSchemaMapping;
 import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.tools.ireportspecify.MainFrameSpecify;
+import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -72,11 +77,13 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 	protected DefaultTableModel mapsModel;
 	protected JButton exportToDbTblBtn;
 	protected JButton exportToTabDelimBtn;
+	protected JButton showIPTSQLBtn;
 	protected JLabel status;
 	protected JProgressBar prog;
 	protected long rowCount = 0;
 	protected int mapUpdating = -1;
 	protected int stupid = -1;
+	protected javax.swing.SwingWorker<Object, Object> exporter = null;
 	
 	protected final List<SpExportSchemaMapping> maps;
 	
@@ -88,23 +95,31 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 	}
 	
 	
+	/**
+	 * 
+	 */
 	public void createUI()
 	{
     	buildTableModel();
 		mapsDisplay = new JTable(mapsModel);
+		mapsDisplay.setPreferredScrollableViewportSize(mapsDisplay.getPreferredSize());
     	setLayout(new BorderLayout());
-    	System.out.println();
-    	for (int r = 0; r < mapsDisplay.getRowCount(); r++)
-    	{
-    		for (int c = 0; c < mapsDisplay.getColumnCount(); c++)
-    		{
-    			System.out.print(mapsDisplay.getValueAt(r, c));
-    		}
-    		System.out.println();
-    	}
+    	//System.out.println();
+//    	for (int r = 0; r < mapsDisplay.getRowCount(); r++)
+//    	{
+//    		for (int c = 0; c < mapsDisplay.getColumnCount(); c++)
+//    		{
+//    			System.out.print(mapsDisplay.getValueAt(r, c));
+//    		}
+//    		System.out.println();
+//    	}
     	JScrollPane sp = new JScrollPane(mapsDisplay);
-    	sp.setBorder(new EmptyBorder(7,7,7,7));
-    	add(sp, BorderLayout.CENTER);
+    	PanelBuilder tblpb = new PanelBuilder(new FormLayout("2dlu, f:p:g, 2dlu", "5dlu, f:p:g, 5dlu"));
+    	//sp.setBorder(new EmptyBorder(7,7,7,7));
+    	CellConstraints cc = new CellConstraints();
+    	tblpb.add(sp, cc.xy(2, 2));
+    	
+    	add(tblpb.getPanel(), BorderLayout.CENTER);
     	exportToDbTblBtn = new JButton(UIRegistry.getResourceString("ExportPanel.ExportToDBTbl"));
     	//exportToDbTblBtn.setEnabled(false);
     	exportToDbTblBtn.addActionListener(new ActionListener() {
@@ -121,18 +136,78 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 						.getQueryField().getQuery();
 					Vector<QBDataSourceListenerIFace> ls = new Vector<QBDataSourceListenerIFace>();
 					ls.add(ExportPanel.this);
-					QueryBldrPane.exportToTable(q, ls);
+					exportToDbTblBtn.setEnabled(false);
+					exporter = QueryBldrPane.exportToTable(q, ls);
+				}
+				else 
+				{
+					UIRegistry.showLocalizedMsg("ExportPanel.PleaseMakeASelection");
 				}
 			}
     	});
-    	PanelBuilder pbb = new PanelBuilder(new FormLayout("2dlu, f:p:g, f:p, 2dlu", "p, p"));
-    	CellConstraints cc = new CellConstraints();
+    	
+//    	this.exportToTabDelimBtn = new JButton(UIRegistry.getResourceString("ExportPanel.ExportTabDelimTxt"));
+//    	this.exportToTabDelimBtn.setToolTipText(UIRegistry.getResourceString("ExportPanel.ExportTabDelimTxtHint"));
+//    	this.exportToTabDelimBtn.addActionListener(new ActionListener() {
+//			@Override
+//			public void actionPerformed(ActionEvent arg0)
+//			{
+//				int row = mapsDisplay.getSelectedRow();
+//				if (row != -1)
+//				{
+//					SpExportSchemaMapping map = maps.get(row);
+//					SpQuery q = map.getMappings().iterator().next()
+//						.getQueryField().getQuery();
+//					Vector<QBDataSourceListenerIFace> ls = new Vector<QBDataSourceListenerIFace>();
+//					ls.add(ExportPanel.this);
+//					QueryBldrPane.exportToTable(q, ls);
+//				}
+//				else 
+//				{
+//					UIRegistry.showLocalizedMsg("ExportPanel.PleaseMakeASelection");
+//				}
+//			}
+//    	});
+
+    	showIPTSQLBtn = new JButton(UIRegistry.getResourceString("ExportPanel.ShowSQLBtn"));
+    	showIPTSQLBtn.setToolTipText(UIRegistry.getResourceString("ExportPanel.ShowSQLBtnTT"));
+    	showIPTSQLBtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0)
+			{
+				int row = mapsDisplay.getSelectedRow();
+				if (row != -1)
+				{
+					SpExportSchemaMapping map = maps.get(row);
+					String iptSQL = ExportToMySQLDB.getSelectForIPTDBSrc(ExportToMySQLDB.fixTblNameForMySQL(map.getMappingName()));
+					JTextArea ta = new JTextArea(iptSQL);
+					ta.setLineWrap(true);
+					ta.setColumns(60);
+					ta.setRows(10);
+					ta.selectAll();
+					JScrollPane sp = new JScrollPane(ta);
+					CustomDialog cd = new CustomDialog((Frame )UIRegistry.getTopWindow(), UIRegistry.getResourceString("ExportPanel.SQLTitle"), true, sp);
+					UIHelper.centerAndShow(cd);
+				}
+				else 
+				{
+					UIRegistry.showLocalizedMsg("ExportPanel.PleaseMakeASelection");
+				}
+			}
+    	});
+    	
+    	PanelBuilder pbb = new PanelBuilder(new FormLayout("2dlu, f:p:g, f:p, 2dlu, f:p, 2dlu", "p, p"));
     	status = new JLabel(UIRegistry.getResourceString("ExportPanel.InitialStatus")); 
+    	status.setFont(status.getFont().deriveFont(Font.ITALIC));
+    	Dimension pref = status.getPreferredSize();
+    	pref.setSize(Math.max(250, pref.getWidth()), pref.getHeight());
+    	status.setPreferredSize(pref);
     	pbb.add(status, cc.xy(2, 1));
-    	pbb.add(exportToDbTblBtn, cc.xy(3, 1));
+    	pbb.add(this.showIPTSQLBtn, cc.xy(3, 1));
+    	pbb.add(exportToDbTblBtn, cc.xy(5, 1));
     	
     	prog = new JProgressBar();
-    	pbb.add(prog, cc.xyw(2, 2, 2));
+    	pbb.add(prog, cc.xyw(2, 2, 4));
     	add(pbb.getPanel(), BorderLayout.SOUTH);
 	}
 	
@@ -155,6 +230,19 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 		headers.add(UIRegistry.getResourceString("ExportPanel.MappingExportTimeTitle"));
 
 		mapsModel = new DefaultTableModel(data, headers);
+	}
+
+	public boolean close()
+	{
+		if (exporter != null)
+		{
+			boolean result = UIRegistry.displayConfirmLocalized("ExportPanel.CancelExportTitle", "ExportPanel.CancelConfirmMsg", "OK", "Cancel", JOptionPane.QUESTION_MESSAGE);
+			if (result)
+			{
+				exporter.cancel(true);
+			}
+		}
+		return true;
 	}
 	
 	/* (non-Javadoc)
@@ -185,7 +273,9 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 			status.setText(String.format(UIRegistry.getResourceString("ExportLabel.UpdateDone"), rowCount));
 			refreshUpdatedMapDisplay(mapUpdating);
 			prog.setValue(0);
+			this.exportToDbTblBtn.setEnabled(true);
 			mapUpdating = -1;
+			exporter = null;
 		}
 		stupid--;
 	}

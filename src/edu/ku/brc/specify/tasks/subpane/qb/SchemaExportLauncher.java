@@ -5,11 +5,11 @@ package edu.ku.brc.specify.tasks.subpane.qb;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.awt.Frame;
 import java.awt.Window;
 import java.util.List;
 import java.util.Locale;
 
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import edu.ku.brc.af.auth.SecurityMgr;
@@ -30,7 +30,9 @@ import edu.ku.brc.specify.datamodel.SpExportSchemaMapping;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.tasks.QueryTask;
 import edu.ku.brc.specify.tools.ireportspecify.IReportLauncher;
+import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author timo
@@ -164,16 +166,34 @@ public class SchemaExportLauncher implements DatabaseLoginListener
                                     JOptionPane.ERROR_MESSAGE);
                             System.exit(0);
                     	}
-                    	ExportPanel ep = new ExportPanel(maps);
-                    	JFrame frame = new JFrame();
-                    	frame.setContentPane(ep);
-                    	frame.pack();
+                    	final ExportPanel ep = new ExportPanel(maps);
+//                    	JFrame frame = new JFrame();
+//                    	frame.setContentPane(ep);
+//                    	frame.pack();
                     	//frame.setVisible(true);
-                    	UIHelper.centerAndShow(frame);
-//                    	CustomDialog cd = new CustomDialog((Frame )UIRegistry.getTopWindow(), 
-//                    			getResourceString("SchemaExportLauncher.DlgTitle"), true,
-//                    			ep);
-//                    	UIHelper.centerAndShow(cd);
+                    	//UIHelper.centerAndShow(frame);
+                    	@SuppressWarnings("serial")
+                    	CustomDialog cd = new CustomDialog((Frame )UIRegistry.getTopWindow(), 
+                    			getResourceString("SchemaExportLauncher.DlgTitle"), true,
+                    			ep) {
+
+									@Override
+									protected void cancelButtonPressed() {
+										if (ep.close())
+										{
+											super.cancelButtonPressed();
+										}
+									}
+                    		
+                    	};
+                    	
+                    	cd.createUI();
+                    	cd.getOkBtn().setVisible(false);
+                    	cd.setCancelLabel(UIRegistry.getResourceString("CLOSE"));
+                    	
+                    	cd.pack();
+                    	
+                    	UIHelper.centerAndShow(cd);
                     }
                 	//System.exit(0);
                 }

@@ -2036,7 +2036,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     }
     
     //XXX DEVELOPING...
-    public static void exportToTable(final SpQuery exportQuery, final List<QBDataSourceListenerIFace> dataSrcListeners)
+    public static javax.swing.SwingWorker<Object, Object> exportToTable(final SpQuery exportQuery, final List<QBDataSourceListenerIFace> dataSrcListeners)
     {
         UsageTracker.incrUsageCount("QB.ExportToTable." + exportQuery.getContextName());
         QueryTask qt = (QueryTask )ContextMgr.getTaskByClass(QueryTask.class);
@@ -2078,7 +2078,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         catch (Exception ex)
         {
         	UIRegistry.displayStatusBarErrMsg(getResourceString("QB_DBEXPORT_ERROR_LOADING_MAP"));
-        	return;
+        	return null;
         }
         finally
         {
@@ -2128,7 +2128,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             UsageTracker.incrHandledUsageCount();
             edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryBldrPane.class, ex);
             UIRegistry.getStatusBar().setErrorMessage(ex.getLocalizedMessage(), ex);
-            return;
+            return null;
         }
         final List<ERTICaptionInfoQB> cols = getColumnInfo(qfps, false, rootQRI.getTableInfo(), true);
         final QBDataSource src = new QBDataSource(sql.getHql(), sql.getArgs(), sql
@@ -2359,7 +2359,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 //        	UIRegistry.displayErrorDlg(ex.getClass().getSimpleName() + " - " + ex.getLocalizedMessage());
 //        }
         
-        
+        return worker;
     }
     
     /**
