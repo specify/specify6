@@ -83,7 +83,8 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 	protected long rowCount = 0;
 	protected int mapUpdating = -1;
 	protected int stupid = -1;
-	protected javax.swing.SwingWorker<Object, Object> exporter = null;
+	protected javax.swing.SwingWorker<Object, Object> updater = null;
+	protected javax.swing.SwingWorker<Object, Object> dumper = null;
 	
 	protected final List<SpExportSchemaMapping> maps;
 	
@@ -137,7 +138,8 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 					Vector<QBDataSourceListenerIFace> ls = new Vector<QBDataSourceListenerIFace>();
 					ls.add(ExportPanel.this);
 					exportToDbTblBtn.setEnabled(false);
-					exporter = QueryBldrPane.exportToTable(q, ls);
+					exportToTabDelimBtn.setEnabled(false);
+					updater = QueryBldrPane.exportToTable(q, ls);
 				}
 				else 
 				{
@@ -146,28 +148,34 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 			}
     	});
     	
-//    	this.exportToTabDelimBtn = new JButton(UIRegistry.getResourceString("ExportPanel.ExportTabDelimTxt"));
-//    	this.exportToTabDelimBtn.setToolTipText(UIRegistry.getResourceString("ExportPanel.ExportTabDelimTxtHint"));
-//    	this.exportToTabDelimBtn.addActionListener(new ActionListener() {
-//			@Override
-//			public void actionPerformed(ActionEvent arg0)
-//			{
-//				int row = mapsDisplay.getSelectedRow();
-//				if (row != -1)
-//				{
-//					SpExportSchemaMapping map = maps.get(row);
-//					SpQuery q = map.getMappings().iterator().next()
-//						.getQueryField().getQuery();
-//					Vector<QBDataSourceListenerIFace> ls = new Vector<QBDataSourceListenerIFace>();
-//					ls.add(ExportPanel.this);
-//					QueryBldrPane.exportToTable(q, ls);
-//				}
-//				else 
-//				{
-//					UIRegistry.showLocalizedMsg("ExportPanel.PleaseMakeASelection");
-//				}
-//			}
-//    	});
+    	this.exportToTabDelimBtn = new JButton(UIRegistry.getResourceString("ExportPanel.ExportTabDelimTxt"));
+    	this.exportToTabDelimBtn.setToolTipText(UIRegistry.getResourceString("ExportPanel.ExportTabDelimTxtHint"));
+    	this.exportToTabDelimBtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0)
+			{
+				int row = mapsDisplay.getSelectedRow();
+				if (row != -1)
+				{
+					mapUpdating = row;
+					stupid = 0;
+					SpExportSchemaMapping map = maps.get(row);
+					SpQuery q = map.getMappings().iterator().next()
+						.getQueryField().getQuery();
+					Vector<QBDataSourceListenerIFace> ls = new Vector<QBDataSourceListenerIFace>();
+					ls.add(ExportPanel.this);
+					File file = new File(UIRegistry.getDefaultWorkingPath() + File.separator + q.getName() + ".txt");
+					exportToDbTblBtn.setEnabled(false);
+					exportToTabDelimBtn.setEnabled(false);
+					dumper = ExportToMySQLDB.exportRowsToTabDelimitedText(file, null, ExportToMySQLDB.fixTblNameForMySQL(q.getName()), ls);
+					dumper.execute();
+				}
+				else 
+				{
+					UIRegistry.showLocalizedMsg("ExportPanel.PleaseMakeASelection");
+				}
+			}
+    	});
 
     	showIPTSQLBtn = new JButton(UIRegistry.getResourceString("ExportPanel.ShowSQLBtn"));
     	showIPTSQLBtn.setToolTipText(UIRegistry.getResourceString("ExportPanel.ShowSQLBtnTT"));
@@ -196,7 +204,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 			}
     	});
     	
-    	PanelBuilder pbb = new PanelBuilder(new FormLayout("2dlu, f:p:g, f:p, 2dlu, f:p, 2dlu", "p, p"));
+    	PanelBuilder pbb = new PanelBuilder(new FormLayout("2dlu, f:p:g, p, 2dlu, p, 2dlu, p, 2dlu", "p, p"));
     	status = new JLabel(UIRegistry.getResourceString("ExportPanel.InitialStatus")); 
     	status.setFont(status.getFont().deriveFont(Font.ITALIC));
     	Dimension pref = status.getPreferredSize();
@@ -204,6 +212,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
     	status.setPreferredSize(pref);
     	pbb.add(status, cc.xy(2, 1));
     	pbb.add(this.showIPTSQLBtn, cc.xy(3, 1));
+    	pbb.add(exportToTabDelimBtn, cc.xy(7, 1));
     	pbb.add(exportToDbTblBtn, cc.xy(5, 1));
     	
     	prog = new JProgressBar();
@@ -232,14 +241,24 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 		mapsModel = new DefaultTableModel(data, headers);
 	}
 
+	/**
+	 * @return
+	 */
 	public boolean close()
 	{
-		if (exporter != null)
+		if (updater != null || dumper != null)
 		{
 			boolean result = UIRegistry.displayConfirmLocalized("ExportPanel.CancelExportTitle", "ExportPanel.CancelConfirmMsg", "OK", "Cancel", JOptionPane.QUESTION_MESSAGE);
 			if (result)
 			{
-				exporter.cancel(true);
+				if (updater != null)
+				{
+					updater.cancel(true);
+				}
+				else
+				{
+					dumper.cancel(true);
+				}
 			}
 		}
 		return true;
@@ -270,12 +289,18 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 		if (stupid == 0 && mapUpdating != -1)
 		{
 			System.out.println("done exporting " + rowCount);
+			
 			status.setText(String.format(UIRegistry.getResourceString("ExportLabel.UpdateDone"), rowCount));
-			refreshUpdatedMapDisplay(mapUpdating);
+			if (updater != null)
+			{
+				refreshUpdatedMapDisplay(mapUpdating);
+			}
 			prog.setValue(0);
 			this.exportToDbTblBtn.setEnabled(true);
+			this.exportToTabDelimBtn.setEnabled(true);
 			mapUpdating = -1;
-			exporter = null;
+			updater = null;
+			dumper = null;
 		}
 		stupid--;
 	}

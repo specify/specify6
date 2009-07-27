@@ -4,6 +4,7 @@
 package edu.ku.brc.specify.tasks.subpane.qb;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -11,10 +12,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.Calendar;
-import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.core.AppContextMgr;
@@ -409,10 +408,11 @@ public class ExportToMySQLDB
 		{
 			Connection conn = DBConnection.getInstance().createConnection();
 			Statement stmt = null;
+			FileWriter fw = new FileWriter(file);
 			try
 			{
 				//XXX testing - probably no good for large tables.
-				List<String> lines = new LinkedList<String>();
+				//List<String> lines = new LinkedList<String>();
 				stmt = conn.createStatement();
 				ResultSet rows = stmt.executeQuery("select * from " + tableName);
 				String headerLine = "";
@@ -442,18 +442,30 @@ public class ExportToMySQLDB
 				{
 					//System.out.println(headerLine);				
 					//FileUtils.writeStringToFile(file, headerLine);
-					lines.add(headerLine);
+					//lines.add(headerLine);
+					fw.write(headerLine + "\n");
 				}
+				int lines = 1;
 				while (rows.next())
 				{
 					//System.out.println(getTabDelimLine(rows));
 					//FileUtils.writeStringToFile(file, getTabDelimLine(rows));
-					lines.add(getTabDelimLine(rows));
+					String line = getTabDelimLine(rows);
+					//lines.add(getTabDelimLine(rows));
+					fw.write(line + "\n");
+					if (lines++ == 10000)
+					{
+						//FileUtils.writeLines(file, lines);
+						//lines.clear();
+						fw.flush();
+						lines = 0;
+					}
 				}
-				FileUtils.writeLines(file, lines);
+				fw.flush();
 				return true;
 			} finally
 			{
+				fw.close();
 				if (stmt != null)
 				{
 					stmt.close();
@@ -503,5 +515,130 @@ public class ExportToMySQLDB
 			}
 		}
 		return result.toString();
+	}
+	
+	/**
+	 * @param file
+	 * @param headers
+	 * @param tableName
+	 * @return
+	 */
+	protected static javax.swing.SwingWorker<Object, Object> exportRowsToTabDelimitedText(final File file,
+			final List<String> headers, final String tableName, final List<QBDataSourceListenerIFace> listeners)
+	{
+		javax.swing.SwingWorker<Object, Object> result = new javax.swing.SwingWorker<Object, Object>() {
+			boolean success = false;
+			long rowCount = -1;
+			/* (non-Javadoc)
+			 * @see javax.swing.SwingWorker#doInBackground()
+			 */
+			@Override
+			protected Object doInBackground() throws Exception
+			{
+				try
+				{
+					Connection conn = DBConnection.getInstance().createConnection();
+					Statement stmt = null;
+					FileWriter fw = new FileWriter(file);
+					try
+					{
+						//XXX testing - probably no good for large tables.
+						for (QBDataSourceListenerIFace listener : listeners)
+						{
+							listener.loading();
+						}
+						stmt = conn.createStatement();
+						ResultSet rows = stmt.executeQuery("select * from " + tableName);
+						//no simple way to get record count from ResultSet??
+						rowCount = BasicSQLUtils.getCount(conn, "select count(*) from " + tableName);
+						for (QBDataSourceListenerIFace listener : listeners)
+						{
+							listener.loaded();
+							listener.rowCount(rowCount);
+						}
+						
+						String headerLine = "";
+						if (headers != null)
+						{
+							for (String header : headers)
+							{
+								if (headerLine.length() > 0)
+								{
+									headerLine += "\t";
+								}
+								headerLine += header;
+							}
+						}
+						else
+						{
+							for (int c = 1; c <= rows.getMetaData().getColumnCount(); c++)
+							{
+								if (headerLine.length() > 0)
+								{
+									headerLine += "\t";
+								}
+								headerLine += rows.getMetaData().getColumnName(c);
+							}
+						}
+						if (headerLine.length() > 0)
+						{
+							fw.write(headerLine + "\n");
+						}
+						
+						for (QBDataSourceListenerIFace listener : listeners)
+						{
+							listener.loaded();
+							listener.rowCount(rowCount);
+						}
+						
+						long lines = 0;
+						while (rows.next())
+						{
+							fw.write(getTabDelimLine(rows) + "\n");
+							if (lines++ % 1000 == 0)
+							{
+								fw.flush();
+								for (QBDataSourceListenerIFace listener : listeners)
+								{
+									listener.loaded();
+									listener.currentRow(lines);
+								}
+							}
+						}
+						fw.flush();
+						success = true;
+						return null;
+					} finally
+					{
+						fw.close();
+						if (stmt != null)
+						{
+							stmt.close();
+						}
+						conn.close();
+					}
+				} catch (Exception ex)
+				{
+					UIRegistry.displayErrorDlg(ex.getClass().getSimpleName() + ": " + ex.getLocalizedMessage());
+					success = false;
+					return null;
+				}
+			}
+
+			/* (non-Javadoc)
+			 * @see javax.swing.SwingWorker#done()
+			 */
+			@Override
+			protected void done()
+			{
+				super.done();
+				for (QBDataSourceListenerIFace listener : listeners)
+				{
+					listener.done(success ? rowCount : -1);
+				}
+			}
+		
+		};
+		return result;
 	}
 }

@@ -2277,13 +2277,14 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 				if (success)
 				{
 					//XXX export to tab delim file here for demo/testing 
-					File file = new File(UIRegistry.getDefaultWorkingPath() + File.separator + exportQuery.getName() + ".txt");
-					boolean dumped = ExportToMySQLDB.exportRowsToTabDelimitedText(file, null, 
-							ExportToMySQLDB.fixTblNameForMySQL(exportQuery.getName()));
-					System.out.println("exported to tabbed text: " + UIRegistry.getDefaultWorkingPath() + File.separator + exportQuery.getName() + ".txt");
-					String iptSQL = ExportToMySQLDB.getSelectForIPTDBSrc(ExportToMySQLDB.fixTblNameForMySQL(exportQuery.getName()));
-					System.out.println("IPT sql: " + iptSQL);
-					//file.
+//					File file = new File(UIRegistry.getDefaultWorkingPath() + File.separator + exportQuery.getName() + ".txt");
+//					boolean dumped = ExportToMySQLDB.exportRowsToTabDelimitedText(file, null, 
+//							ExportToMySQLDB.fixTblNameForMySQL(exportQuery.getName()));
+//					System.out.println("exported to tabbed text: " + UIRegistry.getDefaultWorkingPath() + File.separator + exportQuery.getName() + ".txt");
+
+					//String iptSQL = ExportToMySQLDB.getSelectForIPTDBSrc(ExportToMySQLDB.fixTblNameForMySQL(exportQuery.getName()));
+					//System.out.println("IPT sql: " + iptSQL);
+					
 					UIRegistry.displayInfoMsgDlgLocalized("QB_EXPORT_TO_DB_SUCCESS");
 					boolean transOpen = false;
 					DataProviderSessionIFace theSession = DataProviderFactory.getInstance().createSession();;
