@@ -4028,17 +4028,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             if (qfp != null)
             {
             	FieldQRI fqri = qfp.getFieldQRI();
-//            	if (fqri == null)
-//            	{
-//            		AutoMap mappedTo = autoMaps.get(qfp.getSchemaItem().getFieldName());
-//            		if (mappedTo != null)
-//            		{
-//            			fqri = getFieldQRI(tableTree, mappedTo.getFieldName(), false,
-//            	    			mappedTo.getStringId(), getTableIds(mappedTo.getTableIds()),
-//            	    			0, tableTreeHash);
-//            		}
-//            	
-//            	}
             	if (fqri != null)
             	{
             		displayField(fqri);
