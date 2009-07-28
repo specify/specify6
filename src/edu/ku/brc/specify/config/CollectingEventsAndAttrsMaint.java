@@ -86,7 +86,7 @@ public class CollectingEventsAndAttrsMaint
     protected static Vector<Object[]> getCollectingEventsWithManyCollectionObjects(final int collectionId)
     {
         
-        String sql = "SELECT * FROM (SELECT CollectingEventID, count(*) AS cnt FROM CollectionObject c WHERE " +
+        String sql = "SELECT * FROM (SELECT CollectingEventID, count(*) AS cnt FROM collectionobject c WHERE " +
                      "CollectingEventID IS NOT NULL AND CollectionMemberID = " + collectionId + " GROUP BY CollectingEventID) T1 WHERE cnt > 1";
         return BasicSQLUtils.query(sql);
         
