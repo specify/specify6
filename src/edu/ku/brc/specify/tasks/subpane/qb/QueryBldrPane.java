@@ -2259,6 +2259,31 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 					//XXX This only works if the Master user is given create privilege...
 					//XXX Assuming specimen-based export - 1 for baseTableId.
 					rowsExported = ExportToMySQLDB.exportToTable(cols, src, exportQuery.getName(), listeners, includeRecordIds, rebuildExistingTbl, true, 1);
+					boolean transOpen = false;
+					DataProviderSessionIFace theSession = DataProviderFactory.getInstance().createSession();;
+			        try
+			        {
+			        	SpExportSchemaMapping mergedMap = theSession.merge(theMapping);
+			        	mergedMap.setTimestampExported(new Timestamp(System.currentTimeMillis()));
+			        	theSession.beginTransaction();
+			        	transOpen = true;
+			        	theSession.saveOrUpdate(mergedMap);
+			        	theSession.commit();
+			        	transOpen = false;
+			        }
+			        catch (Exception ex)
+			        {
+			        	//UIRegistry.displayStatusBarErrMsg(getResourceString("QB_DBEXPORT_ERROR_SETTING_EXPORT_TIMESTAMP"));
+			        	if (transOpen)
+			        	{
+			        		theSession.rollback();
+			        	}
+			        	throw ex;
+			        }
+			        finally
+			        {
+			        	theSession.close();
+			        }
 					success = true;
 				}
 				catch (Exception ex)
@@ -2285,31 +2310,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 					//String iptSQL = ExportToMySQLDB.getSelectForIPTDBSrc(ExportToMySQLDB.fixTblNameForMySQL(exportQuery.getName()));
 					//System.out.println("IPT sql: " + iptSQL);
 					
-					UIRegistry.displayInfoMsgDlgLocalized("QB_EXPORT_TO_DB_SUCCESS");
-					boolean transOpen = false;
-					DataProviderSessionIFace theSession = DataProviderFactory.getInstance().createSession();;
-			        try
-			        {
-			        	SpExportSchemaMapping mergedMap = theSession.merge(theMapping);
-			        	mergedMap.setTimestampExported(new Timestamp(System.currentTimeMillis()));
-			        	theSession.beginTransaction();
-			        	transOpen = true;
-			        	theSession.saveOrUpdate(mergedMap);
-			        	theSession.commit();
-			        	transOpen = false;
-			        }
-			        catch (Exception ex)
-			        {
-			        	UIRegistry.displayStatusBarErrMsg(getResourceString("QB_DBEXPORT_ERROR_SETTING_EXPORT_TIMESTAMP"));
-			        	if (transOpen)
-			        	{
-			        		theSession.rollback();
-			        	}
-			        }
-			        finally
-			        {
-			        	theSession.close();
-			        }
+					//UIRegistry.displayInfoMsgDlgLocalized("QB_EXPORT_TO_DB_SUCCESS");
 					for (QBDataSourceListenerIFace listener : listeners)
 					{
 						listener.done(rowsExported);
@@ -2331,10 +2332,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 						msg += ".";
 					}
 					UIRegistry.displayErrorDlg(msg);
-				}
-				for (QBDataSourceListenerIFace l : listeners)
-				{
-					l.done(-1);
+					for (QBDataSourceListenerIFace l : listeners)
+					{
+						l.done(-1);
+					}
 				}
 				if (progDlg != null)
 				{

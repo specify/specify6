@@ -5,6 +5,7 @@ package edu.ku.brc.specify.tasks.subpane.qb;
 
 
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
@@ -25,6 +26,7 @@ import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
+import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.table.DefaultTableModel;
@@ -80,6 +82,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 	protected JButton showIPTSQLBtn;
 	protected JLabel status;
 	protected JProgressBar prog;
+	protected JPanel progPane;
 	protected long rowCount = 0;
 	protected int mapUpdating = -1;
 	protected int stupid = -1;
@@ -104,6 +107,8 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
     	buildTableModel();
 		mapsDisplay = new JTable(mapsModel);
 		mapsDisplay.setPreferredScrollableViewportSize(mapsDisplay.getPreferredSize());
+		mapsDisplay.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		mapsDisplay.getSelectionModel().setSelectionInterval(0, 0);
     	setLayout(new BorderLayout());
     	//System.out.println();
 //    	for (int r = 0; r < mapsDisplay.getRowCount(); r++)
@@ -140,6 +145,18 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 					exportToDbTblBtn.setEnabled(false);
 					exportToTabDelimBtn.setEnabled(false);
 					updater = QueryBldrPane.exportToTable(q, ls);
+					SwingUtilities.invokeLater(new Runnable() {
+
+						/* (non-Javadoc)
+						 * @see java.lang.Runnable#run()
+						 */
+						@Override
+						public void run()
+						{
+							((CardLayout )progPane.getLayout()).last(progPane);
+						}
+						
+					});
 				}
 				else 
 				{
@@ -168,6 +185,18 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 					exportToDbTblBtn.setEnabled(false);
 					exportToTabDelimBtn.setEnabled(false);
 					dumper = ExportToMySQLDB.exportRowsToTabDelimitedText(file, null, ExportToMySQLDB.fixTblNameForMySQL(q.getName()), ls);
+					SwingUtilities.invokeLater(new Runnable() {
+
+						/* (non-Javadoc)
+						 * @see java.lang.Runnable#run()
+						 */
+						@Override
+						public void run()
+						{
+							((CardLayout )progPane.getLayout()).last(progPane);
+						}
+						
+					});
 					dumper.execute();
 				}
 				else 
@@ -204,7 +233,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 			}
     	});
     	
-    	PanelBuilder pbb = new PanelBuilder(new FormLayout("2dlu, f:p:g, p, 2dlu, p, 2dlu, p, 2dlu", "p, p"));
+    	PanelBuilder pbb = new PanelBuilder(new FormLayout("2dlu, f:p:g, p, 2dlu, p, 2dlu, p, 2dlu", "p, p, 7dlu"));
     	status = new JLabel(UIRegistry.getResourceString("ExportPanel.InitialStatus")); 
     	status.setFont(status.getFont().deriveFont(Font.ITALIC));
     	Dimension pref = status.getPreferredSize();
@@ -215,8 +244,12 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
     	pbb.add(exportToTabDelimBtn, cc.xy(7, 1));
     	pbb.add(exportToDbTblBtn, cc.xy(5, 1));
     	
+    	progPane = new JPanel(new CardLayout());
+    	progPane.add(new JPanel(), "blank");
     	prog = new JProgressBar();
-    	pbb.add(prog, cc.xyw(2, 2, 4));
+    	progPane.add(prog, "prog");
+    	pbb.add(progPane, cc.xyw(2, 2, 6));
+    	//prog.setVisible(false);
     	add(pbb.getPanel(), BorderLayout.SOUTH);
 	}
 	
@@ -248,18 +281,19 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 	{
 		if (updater != null || dumper != null)
 		{
-			boolean result = UIRegistry.displayConfirmLocalized("ExportPanel.CancelExportTitle", "ExportPanel.CancelConfirmMsg", "OK", "Cancel", JOptionPane.QUESTION_MESSAGE);
+			boolean result = UIRegistry.displayConfirmLocalized("ExportPanel.CancelExportTitle", "ExportPanel.CancelConfirmMsg", "YES", "NO", JOptionPane.QUESTION_MESSAGE);
 			if (result)
 			{
-				if (updater != null)
+				if (updater != null && !updater.isCancelled() && !updater.isDone())
 				{
 					updater.cancel(true);
 				}
-				else
+				else if (dumper != null && !dumper.isCancelled() && !dumper.isDone())
 				{
 					dumper.cancel(true);
 				}
 			}
+			return result;
 		}
 		return true;
 	}
@@ -273,9 +307,8 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run()
 			{
-				//progDlg.setProcess(currentRow);
 				prog.setValue((int )currentRow);
-				System.out.println(currentRow);
+				//System.out.println(currentRow);
 			}
 		});
 	}
@@ -288,19 +321,55 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 	{
 		if (stupid == 0 && mapUpdating != -1)
 		{
-			System.out.println("done exporting " + rowCount);
+			final long frows = rows;
 			
-			status.setText(String.format(UIRegistry.getResourceString("ExportLabel.UpdateDone"), rowCount));
-			if (updater != null)
-			{
-				refreshUpdatedMapDisplay(mapUpdating);
-			}
-			prog.setValue(0);
-			this.exportToDbTblBtn.setEnabled(true);
-			this.exportToTabDelimBtn.setEnabled(true);
-			mapUpdating = -1;
-			updater = null;
-			dumper = null;
+			SwingUtilities.invokeLater(new Runnable() {
+
+				/* (non-Javadoc)
+				 * @see java.lang.Runnable#run()
+				 */
+				@Override
+				public void run()
+				{
+					if (updater != null)
+					{
+						if (frows != -1)
+						{
+							UIRegistry.displayInfoMsgDlgLocalized("ExportPanel.UpdateSuccess");
+							status.setText(String.format(UIRegistry.getResourceString("ExportLabel.UpdateDone"), rowCount));
+						}
+						else
+						{
+							UIRegistry.displayInfoMsgDlgLocalized("ExportPanel.UpdateFailMsg");
+							status.setText(UIRegistry.getResourceString("ExportLabel.UpdateFail"));
+						}
+					}
+					else
+					{
+						if (frows != -1)
+						{
+							status.setText(String.format(UIRegistry.getResourceString("ExportLabel.ExportDone"), rowCount));
+						}
+						else
+						{
+							UIRegistry.displayInfoMsgDlgLocalized("ExportPanel.ExportFailMsg");
+							status.setText(UIRegistry.getResourceString("ExportLabel.ExportFail"));
+						}
+					}
+					if (updater != null && frows != -1)
+					{
+						refreshUpdatedMapDisplay(mapUpdating);
+					}
+					((CardLayout )progPane.getLayout()).first(progPane);
+					prog.setValue(0);
+					exportToDbTblBtn.setEnabled(true);
+					exportToTabDelimBtn.setEnabled(true);
+					mapUpdating = -1;
+					updater = null;
+					dumper = null;
+				}
+			});
+			
 		}
 		stupid--;
 	}
@@ -310,19 +379,19 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 	 */
 	protected void refreshUpdatedMapDisplay(int mapToRefresh)
 	{
-		SpExportSchemaMapping map = maps.get(mapToRefresh);
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try
         {
-        	session.refresh(map);
-			map.forceLoad();
-			map.getMappings().iterator().next().getQueryField().getQuery().forceLoad();
+        	SpExportSchemaMapping newMap = session.get(SpExportSchemaMapping.class,	maps.get(mapToRefresh).getId());
+			newMap.forceLoad();
+			newMap.getMappings().iterator().next().getQueryField().getQuery().forceLoad();
+	        maps.set(mapToRefresh, newMap);
        }
         finally
         {
         	session.close();
         }
-        this.mapsModel.setValueAt(map.getTimestampExported().toString(), mapToRefresh, 1);
+        this.mapsModel.setValueAt(maps.get(mapToRefresh).getTimestampExported().toString(), mapToRefresh, 1);
 	}
 	
 	/* (non-Javadoc)
@@ -334,9 +403,10 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 		SwingUtilities.invokeLater(new Runnable(){
 			public void run()
 			{
-				//progDlg.getProcessProgress().setIndeterminate(false);
-				prog.setIndeterminate(false);
-				System.out.println("filling");
+				if (rowCount > 0)
+				{
+					prog.setIndeterminate(false);
+				}
 				status.setText(UIRegistry.getResourceString("ExportPanel.UpdatingCache")); 
 			}
 		});
@@ -353,8 +423,8 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 			{
 				//progDlg.getProcessProgress().setIndeterminate(false);
 				prog.setIndeterminate(false);
-				System.out.println("loaded");
-				status.setText("ExportPanel.DataRetrieved"); 
+				//System.out.println("loaded");
+				status.setText(UIRegistry.getResourceString("ExportPanel.DataRetrieved")); 
 			}
 		});
 	}
@@ -368,9 +438,8 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 		SwingUtilities.invokeLater(new Runnable(){
 			public void run()
 			{
-				//progDlg.getProcessProgress().setIndeterminate(true);
 				prog.setIndeterminate(true);
-				System.out.println("loading");
+				//System.out.println("loading");
 				status.setText(UIRegistry.getResourceString("ExportPanel.RetrievingData")); 
 			}
 		});
@@ -385,12 +454,12 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 		SwingUtilities.invokeLater(new Runnable(){
 			public void run()
 			{
-				//progDlg.getProcessProgress().setIndeterminate(false);
-				//progDlg.setProcess(0, rowCount);
-				prog.setIndeterminate(false);
-				prog.setMinimum(0);
-				prog.setMaximum((int )rowCount - 1);
-				System.out.println(rowCount);
+				if (rowCount > 0)
+				{
+					prog.setIndeterminate(false);
+					prog.setMinimum(0);
+					prog.setMaximum((int )rowCount - 1);
+				}
 				ExportPanel.this.rowCount = rowCount;
 			}
 		});

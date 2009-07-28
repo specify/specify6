@@ -201,14 +201,6 @@ public class ExportToMySQLDB
 			QBDataSource rows, String originalTblName, List<QBDataSourceListenerIFace> listeners,
 			boolean idColumnPresent, boolean overwrite, boolean update, int baseTableId) throws Exception
 	{
-		if (rows.hasResultSize())
-		{
-			for (QBDataSourceListenerIFace listener : listeners)
-			{
-				listener.loaded();
-				listener.rowCount(rows.size());
-			}
-		}
 	    boolean newTable = false;
 	    String tblName = fixTblNameForMySQL(originalTblName);
 	    if (overwrite || !tableExists(toConnection, tblName))
@@ -224,6 +216,18 @@ public class ExportToMySQLDB
 	    	deleteDeletedRecs(toConnection, tblName, tblName + "Id", tbl.getName(), tbl.getIdColumnName(), AppContextMgr.getInstance().getClassObject(Collection.class).getId());
 	    }
 	    
+	    System.out.println("deleted deleted recs");
+	    
+		if (rows.hasResultSize())
+		{
+			for (QBDataSourceListenerIFace listener : listeners)
+			{
+				listener.loaded();
+				listener.rowCount(rows.size());
+			}
+			System.out.println("listeners notified: loaded()");
+		}
+		
 		Statement stmt = toConnection.createStatement();
 	    try
 		{
@@ -234,7 +238,7 @@ public class ExportToMySQLDB
 			int rowNum = 0;
 			while (rows.getNext())
 			{
-				System.out.println("exporting " + rowNum);
+				//System.out.println("exporting " + rowNum);
 				for (QBDataSourceListenerIFace listener : listeners)
 				{
 					listener.currentRow(rowNum++);
@@ -261,6 +265,7 @@ public class ExportToMySQLDB
 				}
 				stmt.execute(getInsertSql(rows, tblName));
 			}
+			System.out.println("returning " + rowNum);
 		    return rowNum;
 		}
 	    finally
@@ -584,13 +589,7 @@ public class ExportToMySQLDB
 						{
 							fw.write(headerLine + "\n");
 						}
-						
-						for (QBDataSourceListenerIFace listener : listeners)
-						{
-							listener.loaded();
-							listener.rowCount(rowCount);
-						}
-						
+												
 						long lines = 0;
 						while (rows.next())
 						{

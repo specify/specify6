@@ -5,12 +5,15 @@ package edu.ku.brc.specify.tasks.subpane.qb;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
-import java.awt.Frame;
 import java.awt.Window;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.util.List;
 import java.util.Locale;
 
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.WindowConstants;
 
 import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.core.AppContextMgr;
@@ -30,7 +33,6 @@ import edu.ku.brc.specify.datamodel.SpExportSchemaMapping;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.tasks.QueryTask;
 import edu.ku.brc.specify.tools.ireportspecify.IReportLauncher;
-import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -167,35 +169,88 @@ public class SchemaExportLauncher implements DatabaseLoginListener
                             System.exit(0);
                     	}
                     	final ExportPanel ep = new ExportPanel(maps);
-//                    	JFrame frame = new JFrame();
-//                    	frame.setContentPane(ep);
-//                    	frame.pack();
-                    	//frame.setVisible(true);
-                    	//UIHelper.centerAndShow(frame);
-                    	@SuppressWarnings("serial")
-                    	CustomDialog cd = new CustomDialog((Frame )UIRegistry.getTopWindow(), 
-                    			getResourceString("SchemaExportLauncher.DlgTitle"), true,
-                    			ep) {
+                    	final JFrame frame = new JFrame();
+                    	frame.addWindowListener(new WindowListener() {
 
-									@Override
-									protected void cancelButtonPressed() {
-										if (ep.close())
-										{
-											super.cancelButtonPressed();
-										}
-									}
+							/* (non-Javadoc)
+							 * @see java.awt.event.WindowListener#windowActivated(java.awt.event.WindowEvent)
+							 */
+							@Override
+							public void windowActivated(WindowEvent arg0)
+							{
+								// TODO Auto-generated method stub
+								
+							}
+
+							/* (non-Javadoc)
+							 * @see java.awt.event.WindowListener#windowClosed(java.awt.event.WindowEvent)
+							 */
+							@Override
+							public void windowClosed(WindowEvent arg0)
+							{
+								System.exit(0);
+							}
+
+							/* (non-Javadoc)
+							 * @see java.awt.event.WindowListener#windowClosing(java.awt.event.WindowEvent)
+							 */
+							@Override
+							public void windowClosing(WindowEvent arg0)
+							{
+								if (ep.close())
+								{
+									frame.setVisible(false);
+									System.exit(0);
+								}
+							}
+
+							/* (non-Javadoc)
+							 * @see java.awt.event.WindowListener#windowDeactivated(java.awt.event.WindowEvent)
+							 */
+							@Override
+							public void windowDeactivated(WindowEvent arg0)
+							{
+								// TODO Auto-generated method stub
+								
+							}
+
+							/* (non-Javadoc)
+							 * @see java.awt.event.WindowListener#windowDeiconified(java.awt.event.WindowEvent)
+							 */
+							@Override
+							public void windowDeiconified(WindowEvent arg0)
+							{
+								// TODO Auto-generated method stub
+								
+							}
+
+							/* (non-Javadoc)
+							 * @see java.awt.event.WindowListener#windowIconified(java.awt.event.WindowEvent)
+							 */
+							@Override
+							public void windowIconified(WindowEvent arg0)
+							{
+								// TODO Auto-generated method stub
+								
+							}
+
+							/* (non-Javadoc)
+							 * @see java.awt.event.WindowListener#windowOpened(java.awt.event.WindowEvent)
+							 */
+							@Override
+							public void windowOpened(WindowEvent arg0)
+							{
+								// TODO Auto-generated method stub
+								
+							}
                     		
-                    	};
-                    	
-                    	cd.createUI();
-                    	cd.getOkBtn().setVisible(false);
-                    	cd.setCancelLabel(UIRegistry.getResourceString("CLOSE"));
-                    	
-                    	cd.pack();
-                    	
-                    	UIHelper.centerAndShow(cd);
+                    	});
+                    	frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+                    	frame.setTitle(UIRegistry.getResourceString("SchemaExportLauncher.DlgTitle"));
+                    	frame.setContentPane(ep);
+                    	frame.pack();
+                    	UIHelper.centerAndShow(frame);
                     }
-                	//System.exit(0);
                 }
                 catch (Exception e)
                 {
