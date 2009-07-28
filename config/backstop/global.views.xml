@@ -1333,7 +1333,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="parent"/>
-                	<cell type="field" id="parent" uitype="querycbx" initialize="name=Geography;title=Geography;editbtn=false;newbtn=false;editoncreate=true" name="parent"/>
+                	<cell type="field" id="parent" uitype="querycbx" isrequired="true" initialize="name=Geography;title=Geography;editbtn=false;newbtn=false;editoncreate=true" name="parent"/>
                     <cell type="label" labelfor="definitionItem"/>
                 	<cell type="field" id="definitionItem" uitype="combobox" name="definitionItem"/>
                 	<cell type="field" id="isAccepted" uitype="checkbox" name="isAccepted" default="true" isrequired="true"/>
@@ -1377,7 +1377,7 @@
                     <cell type="label" labelfor="name"/>
                     <cell type="field" id="name" uitype="text" cols="10" name="name" isrequired="true"/> 
                     <cell type="label" labelfor="parent"/>
-                	<cell type="field" id="parent" uitype="querycbx" initialize="name=Storage;title=Storage;editbtn=false;newbtn=false;editoncreate=true" name="parent"/>
+                	<cell type="field" id="parent" uitype="querycbx" isrequired="true" initialize="name=Storage;title=Storage;editbtn=false;newbtn=false;editoncreate=true" name="parent"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="remarks"/>
