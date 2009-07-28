@@ -39,6 +39,7 @@ import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.io.IOException;
 import java.lang.ref.SoftReference;
 import java.lang.reflect.Constructor;
 import java.util.Enumeration;
@@ -641,6 +642,13 @@ public class UIRegistry
             try {
                 log.debug("************************ setDefaultWorkingPath: ["+dir.getCanonicalPath()+"]");
             } catch (Exception ex) {}
+        }
+        try
+        {
+        	return dir.getCanonicalPath();
+        } catch (IOException ex)
+        {
+        	ex.printStackTrace();
         }
         return dir.getAbsolutePath();
     }

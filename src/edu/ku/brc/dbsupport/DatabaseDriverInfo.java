@@ -102,7 +102,7 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
             dataDir = new File(dataDir).getAbsolutePath();
             
             log.debug(dataDir);
-            return connStr.replaceFirst("DATADIR",  dataDir); //$NON-NLS-1$
+            return StringUtils.replace(connStr, "DATADIR",  dataDir); //$NON-NLS-1$
         }
         return connStr;
     }
@@ -120,12 +120,12 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
         {
             if (StringUtils.isNotEmpty(database))
             {
-                connStr = connStr.replaceFirst("DATABASE", database); //$NON-NLS-1$
+                connStr = StringUtils.replace(connStr, "DATABASE", database); //$NON-NLS-1$
             }
             
             connStr = subForDataDir(connStr);
             
-            return StringUtils.isNotEmpty(server) ? connStr.replaceFirst("SERVER", server) : connStr; //$NON-NLS-1$
+            return StringUtils.isNotEmpty(server) ? StringUtils.replace(connStr, "SERVER", server) : connStr; //$NON-NLS-1$
         }
         return null;
     }
@@ -150,23 +150,23 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
             {
                 if(StringUtils.isNotEmpty(database))
                 {
-                        connStr = connStr.replaceFirst("DATABASE",  database); //$NON-NLS-1$
+                        connStr = StringUtils.replace(connStr, "DATABASE",  database); //$NON-NLS-1$
                 }
                 else
                 {
-                    connStr = connStr.replaceFirst("DATABASE", ""); //$NON-NLS-1$ //$NON-NLS-2$
+                    connStr = StringUtils.replace(connStr, "DATABASE", ""); //$NON-NLS-1$ //$NON-NLS-2$
                 }
-                connStr = connStr.replaceFirst("USERNAME", username); //$NON-NLS-1$
-                connStr = connStr.replaceFirst("PASSWORD", password); //$NON-NLS-1$
-                return StringUtils.isNotEmpty(server) ? connStr.replaceFirst("SERVER", server): connStr; //$NON-NLS-1$
+                connStr = StringUtils.replace(connStr, "USERNAME", username); //$NON-NLS-1$
+                connStr = StringUtils.replace(connStr, "PASSWORD", password); //$NON-NLS-1$
+                return StringUtils.isNotEmpty(server) ? StringUtils.replace(connStr, "SERVER", server): connStr; //$NON-NLS-1$
             }
             
             connStr = subForDataDir(connStr);
             
-            connStr = connStr.replaceFirst("DATABASE", database); //$NON-NLS-1$
-            connStr = connStr.replaceFirst("USERNAME", username); //$NON-NLS-1$
-            connStr = connStr.replaceFirst("PASSWORD", password); //$NON-NLS-1$
-            return StringUtils.isNotEmpty(server) ? connStr.replaceFirst("SERVER", server): connStr; //$NON-NLS-1$
+            connStr = StringUtils.replace(connStr, "DATABASE", database); //$NON-NLS-1$
+            connStr = StringUtils.replace(connStr, "USERNAME", username); //$NON-NLS-1$
+            connStr = StringUtils.replace(connStr, "PASSWORD", password); //$NON-NLS-1$
+            return StringUtils.isNotEmpty(server) ? StringUtils.replace(connStr, "SERVER", server): connStr; //$NON-NLS-1$
         }
         return null;
     }
@@ -191,24 +191,24 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
             {
                 if(StringUtils.isNotEmpty(database))
                 {
-                        connStr = connStr.replaceFirst("DATABASE", database); //$NON-NLS-1$
+                        connStr = StringUtils.replace(connStr, "DATABASE", database); //$NON-NLS-1$
                 }
                 else
                 {
-                    connStr = connStr.replaceFirst("DATABASE", ""); //$NON-NLS-1$ //$NON-NLS-2$
+                    connStr = StringUtils.replace(connStr, "DATABASE", ""); //$NON-NLS-1$ //$NON-NLS-2$
                 }
-                connStr = connStr.replaceFirst("USERNAME", username); //$NON-NLS-1$
-                connStr = connStr.replaceFirst("PASSWORD", password); //$NON-NLS-1$
-                return StringUtils.isNotEmpty(server) ? connStr.replaceFirst("SERVER", server): connStr; //$NON-NLS-1$
+                connStr = StringUtils.replace(connStr, "USERNAME", username); //$NON-NLS-1$
+                connStr = StringUtils.replace(connStr, "PASSWORD", password); //$NON-NLS-1$
+                return StringUtils.isNotEmpty(server) ? StringUtils.replace(connStr, "SERVER", server): connStr; //$NON-NLS-1$
             }
             
             String dataDir = UIRegistry.getAppDataDir() + File.separator + "specify_data";
-            connStr = connStr.replaceFirst("DATADIR",  dataDir); //$NON-NLS-1$
+            connStr = StringUtils.replace(connStr, "DATADIR",  dataDir); //$NON-NLS-1$
             
-            connStr = connStr.replaceFirst("DATABASE", database); //$NON-NLS-1$
-            connStr = connStr.replaceFirst("USERNAME", username); //$NON-NLS-1$
-            connStr = connStr.replaceFirst("PASSWORD", password); //$NON-NLS-1$
-            return StringUtils.isNotEmpty(server) ? connStr.replaceFirst("SERVER", server): connStr; //$NON-NLS-1$
+            connStr = StringUtils.replace(connStr, "DATABASE", database); //$NON-NLS-1$
+            connStr = StringUtils.replace(connStr, "USERNAME", username); //$NON-NLS-1$
+            connStr = StringUtils.replace(connStr, "PASSWORD", password); //$NON-NLS-1$
+            return StringUtils.isNotEmpty(server) ? StringUtils.replace(connStr, "SERVER", server): connStr; //$NON-NLS-1$
         }        
         return null;
     }
@@ -230,8 +230,8 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
 //        
 //        if (connStr != null)
 //        {
-//            connStr = connStr.replaceFirst("DATABASE", database);
-//            return StringUtils.isNotEmpty(server) ? connStr.replaceFirst("SERVER", server) : connStr;
+//            connStr = StringUtils.replace(connStr, "DATABASE", database);
+//            return StringUtils.isNotEmpty(server) ? StringUtils.replace(connStr, "SERVER", server) : connStr;
 //        }
 //        
 //        return null;
