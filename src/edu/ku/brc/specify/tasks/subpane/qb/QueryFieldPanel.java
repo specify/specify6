@@ -221,14 +221,21 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                 //Also assuming (more or less) valid entry. 
                 setShowingPair(true);
                 String[] entries = entry.split(",");
-                text1.setText(entries[0]);
-                if (entries.length > 1)
+                if (entries.length > 0)
                 {
-                    text2.setText(entries[1]);
+                	text1.setText(entries[0]);
+                	if (entries.length > 1)
+                	{
+                		text2.setText(entries[1]);
+                	}
+                	else
+                	{
+                		text2.setText(null);
+                	}
                 }
                 else
                 {
-                    text2.setText(null);
+                	text1.setText(null);
                 }
             }
             else
