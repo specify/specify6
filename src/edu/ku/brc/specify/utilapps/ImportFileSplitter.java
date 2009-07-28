@@ -153,6 +153,8 @@ public class ImportFileSplitter extends CustomDialog
         
 		mainPanel.add(contentPanel, BorderLayout.CENTER);
 		
+		this.setHelpContext("slicer");
+		
 		pack();
 	}
 
@@ -781,6 +783,7 @@ public class ImportFileSplitter extends CustomDialog
 		chunker.setCustomTitleBar(UIRegistry.getResourceString("ImportFileSplitter.Title"));
 		chunker.setIconImage(icon.getImage());
 		UIHelper.centerAndShow(chunker);
+		System.exit(0);
 	}
 
 	public class ChunkageReport
