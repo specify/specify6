@@ -305,8 +305,14 @@ public class ExportToMySQLDB
 	 */
 	protected static void deleteDeletedRecs(Connection connection, String tblName, String keyFld, String spTblName, String spKeyFld, int collMemId) throws Exception
 	{
+		String sql = "delete from " + tblName + " where " + keyFld + " not in(select " + spKeyFld + " from " + spTblName;
+		if (collMemId != -1)
+		{
+			sql += " where CollectionMemberId = " + collMemId;
+		}
+		sql += ")";
 		Statement statement = connection.createStatement();
-		statement.execute("delete from " + tblName + " where " + keyFld + " not in(select " + spKeyFld + " from " + spTblName + ")");
+		statement.execute(sql);
 		statement.close();
 	}
 	

@@ -465,6 +465,63 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 		});
 	}
 
+	protected MappingStatus getMappingStatus(SpExportSchemaMapping map)
+	{
+		return null;
+	}
+	
+	public class MappingStatus
+	{
+		protected final long recsToDelete;
+		protected final long recsUpdated;
+		protected final long recsAdded;
+		protected final long totalRecsChanged;
+		/**
+		 * @param recsToDelete
+		 * @param recsUpdated
+		 * @param recsAdded
+		 * @param totalRecsChanged
+		 */
+		public MappingStatus(long recsToDelete, long recsUpdated,
+				long recsAdded, long totalRecsChanged)
+		{
+			super();
+			this.recsToDelete = recsToDelete;
+			this.recsUpdated = recsUpdated;
+			this.recsAdded = recsAdded;
+			this.totalRecsChanged = totalRecsChanged;
+		}
+		/**
+		 * @return the recsToDelete
+		 */
+		public long getRecsToDelete()
+		{
+			return recsToDelete;
+		}
+		/**
+		 * @return the recsUpdated
+		 */
+		public long getRecsUpdated()
+		{
+			return recsUpdated;
+		}
+		/**
+		 * @return the recsAdded
+		 */
+		public long getRecsAdded()
+		{
+			return recsAdded;
+		}
+		/**
+		 * @return the totalRecsChanged
+		 */
+		public long getTotalRecsChanged()
+		{
+			return totalRecsChanged;
+		}
+		
+		
+	}
 	
     public static void main(String[] args)
     {
@@ -676,7 +733,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
                     	return result;
                    }
                 };
-                String nameAndTitle = "Schema Exporter"; // I18N
+                String nameAndTitle = UIRegistry.getResourceString("SchemaExportLauncher.DlgTitle"); // I18N
                 UIRegistry.setRelease(true);
                 UIHelper.doLogin(usrPwdProvider, false, false, new SchemaExportLauncher(), "Specify", nameAndTitle, nameAndTitle, "SpecifyWhite32", "login"); // true
 																																	// means
