@@ -4,6 +4,8 @@
 package edu.ku.brc.specify.tasks.subpane.qb;
 
 
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Dimension;
@@ -12,6 +14,12 @@ import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
@@ -43,22 +51,33 @@ import com.jgoodies.looks.plastic.theme.ExperienceBlue;
 import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.auth.UserAndMasterPasswordMgr;
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.SchemaI18NService;
+import edu.ku.brc.af.core.UsageTracker;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.db.DatabaseLoginPanel;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.af.ui.weblink.WebLinkMgr;
 import edu.ku.brc.dbsupport.CustomQueryFactory;
+import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DBMSUserMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.dbsupport.SchemaUpdateService;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.datamodel.SpExportSchemaItemMapping;
 import edu.ku.brc.specify.datamodel.SpExportSchemaMapping;
 import edu.ku.brc.specify.datamodel.SpQuery;
+import edu.ku.brc.specify.datamodel.SpQueryField;
+import edu.ku.brc.specify.tasks.QueryTask;
 import edu.ku.brc.specify.tools.ireportspecify.MainFrameSpecify;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
@@ -83,6 +102,10 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 	protected JLabel status;
 	protected JProgressBar prog;
 	protected JPanel progPane;
+	
+	protected String itUserName = null;
+	protected String itPw = null;
+	
 	protected long rowCount = 0;
 	protected int mapUpdating = -1;
 	protected int stupid = -1;
@@ -91,13 +114,31 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 	
 	protected final List<SpExportSchemaMapping> maps;
 	
+	/**
+	 * @param maps
+	 */
 	public ExportPanel(List<SpExportSchemaMapping> maps)
 	{
 		super();
 		this.maps = maps;
 		createUI();
+		startStatusCalcs();
 	}
 	
+	/**
+	 * Starts threads to calculate status of maps
+	 */
+	protected void startStatusCalcs()
+	{
+		int row = 0;
+		for (SpExportSchemaMapping map : maps)
+		{
+			if (!rebuildForRow(row++))
+			{
+				getMappingStatus(map);
+			}
+		}
+	}
 	
 	/**
 	 * 
@@ -110,24 +151,13 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 		mapsDisplay.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		mapsDisplay.getSelectionModel().setSelectionInterval(0, 0);
     	setLayout(new BorderLayout());
-    	//System.out.println();
-//    	for (int r = 0; r < mapsDisplay.getRowCount(); r++)
-//    	{
-//    		for (int c = 0; c < mapsDisplay.getColumnCount(); c++)
-//    		{
-//    			System.out.print(mapsDisplay.getValueAt(r, c));
-//    		}
-//    		System.out.println();
-//    	}
     	JScrollPane sp = new JScrollPane(mapsDisplay);
     	PanelBuilder tblpb = new PanelBuilder(new FormLayout("2dlu, f:p:g, 2dlu", "5dlu, f:p:g, 5dlu"));
-    	//sp.setBorder(new EmptyBorder(7,7,7,7));
     	CellConstraints cc = new CellConstraints();
     	tblpb.add(sp, cc.xy(2, 2));
     	
     	add(tblpb.getPanel(), BorderLayout.CENTER);
     	exportToDbTblBtn = new JButton(UIRegistry.getResourceString("ExportPanel.ExportToDBTbl"));
-    	//exportToDbTblBtn.setEnabled(false);
     	exportToDbTblBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0)
@@ -138,25 +168,26 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 					mapUpdating = row;
 					stupid = 1;
 					SpExportSchemaMapping map = maps.get(row);
-					SpQuery q = map.getMappings().iterator().next()
-						.getQueryField().getQuery();
-					Vector<QBDataSourceListenerIFace> ls = new Vector<QBDataSourceListenerIFace>();
-					ls.add(ExportPanel.this);
-					exportToDbTblBtn.setEnabled(false);
-					exportToTabDelimBtn.setEnabled(false);
-					updater = QueryBldrPane.exportToTable(q, ls);
-					SwingUtilities.invokeLater(new Runnable() {
+					updater = exportToTable(map, rebuildForRow(row));
+					if (updater != null)
+					{
+						updater.execute();
+						exportToDbTblBtn.setEnabled(false);
+						exportToTabDelimBtn.setEnabled(false);
+					
+						SwingUtilities.invokeLater(new Runnable() {
 
-						/* (non-Javadoc)
-						 * @see java.lang.Runnable#run()
-						 */
-						@Override
-						public void run()
-						{
-							((CardLayout )progPane.getLayout()).last(progPane);
-						}
+							/* (non-Javadoc)
+							 * @see java.lang.Runnable#run()
+							 */
+							@Override
+							public void run()
+							{
+								((CardLayout )progPane.getLayout()).last(progPane);
+							}
 						
-					});
+						});
+					}
 				}
 				else 
 				{
@@ -174,6 +205,11 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 				int row = mapsDisplay.getSelectedRow();
 				if (row != -1)
 				{
+					if (!isBuiltForRow(row))
+					{
+						UIRegistry.displayInfoMsgDlgLocalized("ExportPanel.CacheNotCreated");
+						return;
+					}
 					mapUpdating = row;
 					stupid = 0;
 					SpExportSchemaMapping map = maps.get(row);
@@ -215,16 +251,29 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 				int row = mapsDisplay.getSelectedRow();
 				if (row != -1)
 				{
-					SpExportSchemaMapping map = maps.get(row);
-					String iptSQL = ExportToMySQLDB.getSelectForIPTDBSrc(ExportToMySQLDB.fixTblNameForMySQL(map.getMappingName()));
-					JTextArea ta = new JTextArea(iptSQL);
-					ta.setLineWrap(true);
-					ta.setColumns(60);
-					ta.setRows(10);
-					ta.selectAll();
-					JScrollPane sp = new JScrollPane(ta);
-					CustomDialog cd = new CustomDialog((Frame )UIRegistry.getTopWindow(), UIRegistry.getResourceString("ExportPanel.SQLTitle"), true, sp);
-					UIHelper.centerAndShow(cd);
+					if (rebuildForRow(row))
+					{
+						UIRegistry.displayInfoMsgDlgLocalized("ExportPanel.NoSQLForRebuild");
+					}
+					else
+					{
+						SpExportSchemaMapping map = maps.get(row);
+						String iptSQL = ExportToMySQLDB
+								.getSelectForIPTDBSrc(ExportToMySQLDB
+										.fixTblNameForMySQL(map
+												.getMappingName()));
+						JTextArea ta = new JTextArea(iptSQL);
+						ta.setLineWrap(true);
+						ta.setColumns(60);
+						ta.setRows(10);
+						ta.selectAll();
+						JScrollPane sp = new JScrollPane(ta);
+						CustomDialog cd = new CustomDialog((Frame) UIRegistry
+								.getTopWindow(), UIRegistry
+								.getResourceString("ExportPanel.SQLTitle"),
+								true, sp);
+						UIHelper.centerAndShow(cd);
+					}
 				}
 				else 
 				{
@@ -254,6 +303,66 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 	}
 	
 	/**
+	 * @param row
+	 * @return true if the cache for the map displayed at row needs rebuilding.
+	 */
+	protected boolean rebuildForRow(int row)
+	{
+		return mapsModel.getValueAt(row, 2).toString().equals(UIRegistry.getResourceString("ExportPanel.MappingCacheNeedsBuilding"));
+	}
+	
+	/**
+	 * @param row
+	 * @return true if the cache for mapping at row has ever been built
+	 */
+	protected boolean isBuiltForRow(int row)
+	{
+		return !mapsModel.getValueAt(row, 1).toString().equals(UIRegistry.getResourceString("ExportPanel.Never"));
+	}
+	
+	/**
+	 * @param map
+	 * @return text description of update status for map.
+	 */
+	protected String getInitialMapStatusText(SpExportSchemaMapping map)
+	{
+		if (needsToBeRebuilt(map))
+		{
+			return UIRegistry.getResourceString("ExportPanel.MappingCacheNeedsBuilding");
+		}
+		else
+		{
+			return UIRegistry.getResourceString("ExportPanel.CalculatingStatus");
+		}
+	}
+	
+	/**
+	 * @param map
+	 * @param stats
+	 * 
+	 * Updates status column for map in maps display
+	 */
+	protected void displayStatusForMap(SpExportSchemaMapping map, MappingUpdateStatus stats)
+	{
+		String statsText;
+		if (stats == null)
+		{
+			statsText = UIRegistry.getResourceString("ExportPanel.NeedsUpdating");
+		}
+		else if (stats.getTotalRecsChanged() == 0)
+		{
+			statsText = UIRegistry.getResourceString("ExportPanel.Uptodate");
+		}
+		else
+		{
+			statsText = String.format(getResourceString("ExportPanel.OutOfDateRecs"), stats.getTotalRecsChanged());
+		}
+		int row = 0;
+		while (maps.get(row) != map) row++;
+		mapsModel.setValueAt(statsText, row, 2);
+	}
+	
+	/**
 	 * 
 	 */
 	protected void buildTableModel()
@@ -261,16 +370,18 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 		Vector<Vector<String>> data = new Vector<Vector<String>>();
 		for (SpExportSchemaMapping map : maps)
 		{
-			Vector<String> row = new Vector<String>(2);
+			Vector<String> row = new Vector<String>(3);
 			row.add(map.getMappingName());
 			row.add(map.getTimestampExported() != null ? map.getTimestampExported().toString() : 
-				UIRegistry.getResourceString("ExportPanel.MappingCacheNeedsBuilding"));
+				UIRegistry.getResourceString("ExportPanel.Never"));
+			row.add(getInitialMapStatusText(map));
+			
 			data.add(row);
 		}
 		Vector<String> headers = new Vector<String>();
 		headers.add(UIRegistry.getResourceString("ExportPanel.MappingTitle"));
 		headers.add(UIRegistry.getResourceString("ExportPanel.MappingExportTimeTitle"));
-
+		headers.add(UIRegistry.getResourceString("ExportPanel.Status"));
 		mapsModel = new DefaultTableModel(data, headers);
 	}
 
@@ -298,6 +409,308 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 		return true;
 	}
 	
+	/**
+	 * @param map
+	 * @return the number of columns in the cache table for map
+	 */
+	protected int getNumberColumnsInCache(SpExportSchemaMapping map)
+	{
+		try
+		{
+			Connection conn = DBConnection.getInstance().createConnection();
+			Statement stmt = conn.createStatement();
+			try
+			{
+				//XXX "limit" keyword may be mySQL-specific 
+				ResultSet rs = stmt.executeQuery("select * from " + ExportToMySQLDB.fixTblNameForMySQL(map.getMappingName()) + " limit 1");
+				int result = rs.getMetaData().getColumnCount();
+				rs.close();
+				return result;
+			} finally
+			{
+				stmt.close();
+				conn.close();
+			}
+		} catch (Exception ex)
+		{
+            UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ExportPanel.class, ex);
+            //UIRegistry.getStatusBar().setErrorMessage(ex.getLocalizedMessage(), ex);
+            throw new RuntimeException(ex);
+		}
+	}
+	
+	/**
+	 * @param map
+	 * @return true if cache table for map needs to be rebuilt
+	 */
+	protected boolean needsToBeRebuilt(SpExportSchemaMapping map)
+	{
+        if (map.getTimestampExported() != null)
+        {
+        	if (getNumberColumnsInCache(map) - 1 != map.getMappings().size())
+        	{
+        		return true;
+        	}
+        	for (SpExportSchemaItemMapping im : map.getMappings())
+        	{
+        		if (im.getTimestampCreated().compareTo(map.getTimestampExported()) > 0)
+        		{
+        			return true;
+        		}
+        		if (im.getTimestampModified() != null && im.getTimestampModified().compareTo(map.getTimestampExported()) > 0)
+        		{
+        			return true;
+        		}
+        	}
+        	SpQuery q = map.getMappings().iterator().next().getQueryField().getQuery();
+        	for (SpQueryField qf : q.getFields())
+        	{
+        		if (qf.getTimestampCreated().compareTo(map.getTimestampExported()) > 0)
+        		{
+        			return true;
+        		}
+        		if (qf.getTimestampModified() != null && qf.getTimestampModified().compareTo(map.getTimestampExported()) > 0)
+        		{
+        			return true;
+        		}
+        	}
+        	return false;
+        }
+        return true;
+	}
+	
+	/**
+	 * @return IT user name and pw
+	 */
+	protected Pair<String, String> getITPW()
+	{
+		try
+		{
+			return SchemaUpdateService.getITUsernamePwd();
+		} catch (SQLException ex)
+		{
+            UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ExportPanel.class, ex);
+            UIRegistry.getStatusBar().setErrorMessage(ex.getLocalizedMessage(), ex);
+            return null;
+		}
+	}
+	
+	/**
+	 * @param theMapping
+	 * @param countOnly
+	 * @return hql to retreive cache contents for the mapping
+	 */
+	protected Pair<HQLSpecs, List<ERTICaptionInfoQB>> getSpecs(SpExportSchemaMapping theMapping, boolean includeRecordIds,
+			boolean getColInfo)
+	{
+        UsageTracker.incrUsageCount("SchemaExport.ExportToTable");
+        QueryTask qt = (QueryTask )ContextMgr.getTaskByClass(QueryTask.class);
+        final TableTree tblTree;
+        final Hashtable<String, TableTree> ttHash;
+        if (qt != null)
+        {
+            Pair<TableTree, Hashtable<String, TableTree>> trees = qt.getTableTrees();
+            tblTree = trees.getFirst();
+            ttHash = trees.getSecond();
+        }
+        else
+        {
+            log.error("Cound not find the Query task when exporting mapping");
+            //blow up
+            throw new RuntimeException("Cound not find the Query task when exporting mapping");
+        }
+        TableQRI rootQRI = null;
+		final Vector<QBDataSourceListenerIFace> dataSrcListeners = new Vector<QBDataSourceListenerIFace>();
+		dataSrcListeners.add(this);
+		SpQuery exportQuery = theMapping.getMappings().iterator().next().getQueryField().getQuery();
+        int cId = exportQuery.getContextTableId();
+        for (TableTree tt : ttHash.values())
+        {
+            if (cId == tt.getTableInfo().getTableId())
+            {
+                rootQRI = tt.getTableQRI();
+                break;
+            }
+        }
+        QueryParameterPanel qpp = new QueryParameterPanel();
+        qpp.setQuery(exportQuery, tblTree, ttHash);
+        Vector<QueryFieldPanel> qfps = QueryBldrPane.getQueryFieldPanelsForMapping(qpp, exportQuery.getFields(), tblTree, ttHash,
+        		null, theMapping, null, null);
+
+        HQLSpecs sql = null;
+        try
+        {
+            sql = QueryBldrPane.buildHQL(rootQRI, !includeRecordIds, qfps, tblTree, null, 
+            		exportQuery.getSearchSynonymy() == null ? false : exportQuery.getSearchSynonymy(),
+            				true, theMapping.getTimestampExported());
+        }
+        catch (Exception ex)
+        {
+            UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryBldrPane.class, ex);
+            UIRegistry.getStatusBar().setErrorMessage(ex.getLocalizedMessage(), ex);
+            return null;
+        }
+        List<ERTICaptionInfoQB> cols = getColInfo ?
+        	QueryBldrPane.getColumnInfo(qfps, false, rootQRI.getTableInfo(), true) : null;
+        
+        return new Pair<HQLSpecs, List<ERTICaptionInfoQB>>(sql, cols);
+	}
+	
+    protected javax.swing.SwingWorker<Object, Object> exportToTable(final SpExportSchemaMapping theMapping, final boolean rebuildExistingTbl)
+    {
+        UsageTracker.incrUsageCount("SchemaExport.ExportToTable");
+		final SpQuery exportQuery = theMapping.getMappings().iterator().next().getQueryField().getQuery();
+		final Vector<QBDataSourceListenerIFace> dataSrcListeners = new Vector<QBDataSourceListenerIFace>();
+		dataSrcListeners.add(this);
+        
+        Pair<String, String> it = null;
+		if (rebuildExistingTbl)
+		{
+				it = getITPW();
+				if (it == null)
+				{
+					return null;
+				}
+		}
+        
+		final boolean includeRecordIds = true;
+        Pair<HQLSpecs, List<ERTICaptionInfoQB>> specs = getSpecs(theMapping, includeRecordIds, true);
+        if (specs == null)
+        {
+        	return null;
+        }
+        
+        final List<ERTICaptionInfoQB> cols = specs.getSecond();
+        HQLSpecs hql = specs.getFirst();
+        final QBDataSource src = new QBDataSource(hql.getHql(), hql.getArgs(), hql
+                .getSortElements(), cols,
+                includeRecordIds);
+        for (QBDataSourceListenerIFace l : dataSrcListeners)
+        {
+        	src.addListener(l);
+        }
+        src.startDataAcquisition();
+        
+        //XXX need progress report for data acquisition step too.
+                
+        final DBConnection itDbConn = !rebuildExistingTbl ? null : getItDBConnection(it); 
+        final Connection conn = !rebuildExistingTbl  ? DBConnection.getInstance().createConnection()
+        		: itDbConn.createConnection();        
+        javax.swing.SwingWorker<Object, Object> worker = new javax.swing.SwingWorker<Object, Object>()  {
+        	private Exception killer = null;
+        	private boolean success = false;
+        	private long rowsExported = 0;
+
+			/* (non-Javadoc)
+			 * @see javax.swing.SwingWorker#doInBackground()
+			 */
+			@Override
+			protected Object doInBackground() throws Exception
+			{
+				//Vector<QBDataSourceListenerIFace> listeners = new Vector<QBDataSourceListenerIFace>();
+				//listeners.add(listener);
+				try
+				{
+					//XXX This only works if the Master user is given create privilege...
+					//XXX Assuming specimen-based export - 1 for baseTableId.
+					rowsExported = ExportToMySQLDB.exportToTable(conn, cols, src, exportQuery.getName(), dataSrcListeners, includeRecordIds, rebuildExistingTbl, true, 1);
+					boolean transOpen = false;
+					DataProviderSessionIFace theSession = DataProviderFactory.getInstance().createSession();;
+			        try
+			        {
+			        	SpExportSchemaMapping mergedMap = theSession.merge(theMapping);
+			        	mergedMap.setTimestampExported(new Timestamp(System.currentTimeMillis()));
+			        	theSession.beginTransaction();
+			        	transOpen = true;
+			        	theSession.saveOrUpdate(mergedMap);
+			        	theSession.commit();
+			        	transOpen = false;
+			        }
+			        catch (Exception ex)
+			        {
+			        	//UIRegistry.displayStatusBarErrMsg(getResourceString("QB_DBEXPORT_ERROR_SETTING_EXPORT_TIMESTAMP"));
+			        	if (transOpen)
+			        	{
+			        		theSession.rollback();
+			        	}
+			        	throw ex;
+			        }
+			        finally
+			        {
+			        	theSession.close();
+			        }
+					success = true;
+				}
+				catch (Exception ex)
+				{
+					killer = ex;
+				}
+				return null;
+			}
+
+			/* (non-Javadoc)
+			 * @see javax.swing.SwingWorker#done()
+			 */
+			@Override
+			protected void done()
+			{
+				if (success)
+				{
+					for (QBDataSourceListenerIFace listener : dataSrcListeners)
+					{
+						listener.done(rowsExported);
+					}
+				}
+				else
+				{
+					String msg = getResourceString("QB_EXPORT_TO_DB_FAIL");
+					if (killer != null)
+					{
+						msg += ": " + killer.getClass().getSimpleName();
+						if (StringUtils.isNotBlank(killer.getLocalizedMessage()))
+						{
+							msg += " (" + killer.getLocalizedMessage() + ")";
+						}
+					}
+					else
+					{
+						msg += ".";
+					}
+					UIRegistry.displayErrorDlg(msg);
+					for (QBDataSourceListenerIFace l : dataSrcListeners)
+					{
+						l.done(-1);
+					}
+				}
+				if (itDbConn != null)
+				{
+					itDbConn.close();
+				}
+			}
+        	
+        };
+        
+        return worker;
+    }
+
+    /**
+     * @param it
+     * @return a DBConnection created with the it username and password pair
+     */
+    protected DBConnection getItDBConnection(Pair<String, String> it)
+    {
+    	DBConnection dbc    = DBConnection.getInstance();
+        return DBConnection.createInstance(dbc.getDriver(), 
+                                                          dbc.getDialect(), 
+                                                          dbc.getDatabaseName(), 
+                                                          dbc.getConnectionStr(), 
+                                                          it.getFirst(), 
+                                                          it.getSecond());
+    }
+
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace#currentRow(int)
 	 */
@@ -336,7 +749,8 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 						if (frows != -1)
 						{
 							UIRegistry.displayInfoMsgDlgLocalized("ExportPanel.UpdateSuccess");
-							status.setText(String.format(UIRegistry.getResourceString("ExportLabel.UpdateDone"), rowCount));
+							//status.setText(String.format(UIRegistry.getResourceString("ExportLabel.UpdateDone"), rowCount));
+							status.setText(UIRegistry.getResourceString("ExportLabel.CacheUpdated"));
 						}
 						else
 						{
@@ -391,7 +805,8 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
         {
         	session.close();
         }
-        this.mapsModel.setValueAt(maps.get(mapToRefresh).getTimestampExported().toString(), mapToRefresh, 1);
+        mapsModel.setValueAt(maps.get(mapToRefresh).getTimestampExported().toString(), mapToRefresh, 1);
+        mapsModel.setValueAt(UIRegistry.getResourceString("ExportPanel.Uptodate"), mapToRefresh, 2);
 	}
 	
 	/* (non-Javadoc)
@@ -465,12 +880,104 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 		});
 	}
 
-	protected MappingStatus getMappingStatus(SpExportSchemaMapping map)
+	protected void getMappingStatus(final SpExportSchemaMapping map)
 	{
-		return null;
+		javax.swing.SwingWorker<MappingUpdateStatus, Object> worker = new javax.swing.SwingWorker<MappingUpdateStatus, Object>() {
+
+			/* (non-Javadoc)
+			 * @see javax.swing.SwingWorker#doInBackground()
+			 */
+			@Override
+			protected MappingUpdateStatus doInBackground() throws Exception
+			{
+				try
+				{
+					Connection conn = DBConnection.getInstance().createConnection();
+					Statement stmt = conn.createStatement();
+					try
+					{
+						MappingUpdateStatus result = null;
+						String tbl = ExportToMySQLDB.fixTblNameForMySQL(map.getMappingName());
+						String keyFld = tbl + "Id";
+						SpQuery q = map.getMappings().iterator().next().getQueryField().getQuery();
+						DBTableInfo rootTbl = DBTableIdMgr.getInstance().getInfoById(q.getContextTableId());
+						String spTbl = rootTbl.getName();
+						String spKeyFld = rootTbl.getIdColumnName();
+						String sql = "select count(*) from " + tbl + " where " + keyFld 
+							+ " not in(select " + spKeyFld + " from " + spTbl;
+						if (rootTbl.getFieldByName("collectionMemberId") != null)
+						{
+							sql += " where CollectionMemberId = " 
+								+ AppContextMgr.getInstance().getClassObject(Collection.class).getId();
+						}
+						sql += ")";
+						int deletedRecs = BasicSQLUtils.getCountAsInt(conn, sql);
+						int otherRecs = 0; 
+						HQLSpecs hql = getSpecs(map, true, false).getFirst();
+						DataProviderSessionIFace theSession = DataProviderFactory.getInstance().createSession();
+				        try
+				        {
+				        	QueryIFace query = theSession.createQuery(hql.getHql(), false);
+			                if (hql.getArgs() != null)
+			                {
+			                    for (Pair<String, Object> param : hql.getArgs())
+			                    {
+			                    	query.setParameter(param.getFirst(), param.getSecond());
+			                    }
+			                }
+			                otherRecs = query.list().size();
+				        } finally
+				        {
+				        	theSession.close();
+				        }
+				        result = new MappingUpdateStatus(deletedRecs, 0, 0, deletedRecs + otherRecs);
+						return result;
+					} finally
+					{
+						stmt.close();
+						conn.close();
+					}
+				} catch (Exception ex)
+				{
+		            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+		            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ExportPanel.class, ex);
+		            throw new RuntimeException(ex);
+				}
+			}
+
+			/* (non-Javadoc)
+			 * @see javax.swing.SwingWorker#done()
+			 */
+			@Override
+			protected void done()
+			{
+				super.done();
+				SwingUtilities.invokeLater(new Runnable() {
+					/* (non-Javadoc)
+					 * @see java.lang.Runnable#run()
+					 */
+					@Override
+					public void run()
+					{
+						try
+						{
+							displayStatusForMap(map, get());
+						} catch (Exception ex)
+						{
+				            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+				            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ExportPanel.class, ex);
+				            throw new RuntimeException(ex);
+						}
+					}
+				});
+			}
+			
+		};
+		worker.execute();
 	}
 	
-	public class MappingStatus
+	
+	public class MappingUpdateStatus
 	{
 		protected final long recsToDelete;
 		protected final long recsUpdated;
@@ -482,7 +989,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 		 * @param recsAdded
 		 * @param totalRecsChanged
 		 */
-		public MappingStatus(long recsToDelete, long recsUpdated,
+		public MappingUpdateStatus(long recsToDelete, long recsUpdated,
 				long recsAdded, long totalRecsChanged)
 		{
 			super();
@@ -636,7 +1143,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
                 catch (Exception e)
                 {
                     edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
-                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(MainFrameSpecify.class, e);
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(ExportPanel.class, e);
                     log.error("Can't change L&F: ", e); //$NON-NLS-1$
                 }
                 

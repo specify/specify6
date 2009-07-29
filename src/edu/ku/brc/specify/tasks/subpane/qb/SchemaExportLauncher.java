@@ -145,6 +145,7 @@ public class SchemaExportLauncher implements DatabaseLoginListener
                     		{
                     			map.forceLoad();
                     			map.getMappings().iterator().next().getQueryField().getQuery().forceLoad();
+                    			map.getSpExportSchema().forceLoad();
                     		}
                     	}
                     }

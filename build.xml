@@ -894,7 +894,7 @@
 	<target name="basic-non-mac-dist">
 
 		<mkdir dir="${appdir}/classes" />
-		<copy file="${source.root}/log4j.properties" todir="${appdir}/classes/." />
+		<!--<copy file="${source.root}/log4j.properties" todir="${appdir}/classes/." />-->
 		
 		<!-- Copy config dir -->
 		<copy todir="${appdir}/config">
