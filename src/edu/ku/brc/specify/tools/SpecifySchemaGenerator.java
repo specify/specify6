@@ -111,7 +111,8 @@ public class SpecifySchemaGenerator
         log.debug("generateSchema hostname:" + hostname);
         log.debug("generateSchema databaseName:" + databaseName);
         
-        String connectionStr = dbdriverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostname, "", userName, password, dbdriverInfo.getName());
+        String connectionStr = dbdriverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostname, databaseName, false, true,
+                                                             userName, password, dbdriverInfo.getName());
         log.debug("generateSchema connectionStr: " + connectionStr);
         
         log.debug("Creating database connection to: " + connectionStr);
@@ -139,7 +140,7 @@ public class SpecifySchemaGenerator
                             password,
                             doUpdate);
                 
-                String       connStr           = dbdriverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostname, databaseName);
+                String       connStr           = connectionStr;//dbdriverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostname, databaseName);
                 DBConnection dbConnForDatabase = DBConnection.createInstance(dbdriverInfo.getDriverClassName(), dbdriverInfo.getDialectClassName(), databaseName, connStr, userName, password);
                 if (!doUpdate)
                 {

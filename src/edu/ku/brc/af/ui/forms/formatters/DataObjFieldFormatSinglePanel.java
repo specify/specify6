@@ -259,14 +259,11 @@ public class DataObjFieldFormatSinglePanel extends DataObjFieldFormatPanel
      */
     public void addFormatTextListeners()
     {
-        formatEditor.getDocument().addDocumentListener(new DocumentListener()
+        formatEditor.getDocument().addDocumentListener(new DocumentAdaptor()
         {
-            public void removeUpdate (DocumentEvent e) { changed(e); }
-            public void insertUpdate (DocumentEvent e) { changed(e); }
-            public void changedUpdate(DocumentEvent e) { changed(e); }
-
-            private void changed(@SuppressWarnings("unused") DocumentEvent e)
-            { 
+            @Override
+            protected void changed(DocumentEvent e)
+            {
                 if (!ignoreFmtChange)
                 {
                     formatChanged();
@@ -354,31 +351,38 @@ public class DataObjFieldFormatSinglePanel extends DataObjFieldFormatPanel
      */
     protected void fillWithObjFormatter(final DataObjDataFieldFormatIFace singleFormatter)
     {
-        formatEditor.setText("");
-        if (singleFormatter == null)
-        {
-            return;
-        }
-        
         ignoreFmtChange = true;
-        
-        Document doc = formatEditor.getDocument();
-        DataObjDataField[] fields = singleFormatter.getFields();
-        if (fields == null)
+        try
         {
-            return;
-        }
-        
-        for (DataObjDataField field : fields)
-        {
-            try
+            formatEditor.setText("");
+            
+            if (singleFormatter == null)
             {
-                doc.insertString(doc.getLength(), field.getSep(), null);
-                insertFieldIntoTextEditor(new DataObjDataFieldWrapper(field));
+                return;
             }
-            catch (BadLocationException ble) {}
+            
+            
+            Document doc = formatEditor.getDocument();
+            DataObjDataField[] fields = singleFormatter.getFields();
+            if (fields == null)
+            {
+                return;
+            }
+            
+            for (DataObjDataField field : fields)
+            {
+                try
+                {
+                    doc.insertString(doc.getLength(), field.getSep(), null);
+                    System.err.println("["+field.getName()+"]["+field.getSep()+"]["+field.getFormat()+"]["+field.toString()+"]");
+                    insertFieldIntoTextEditor(new DataObjDataFieldWrapper(field));
+                }
+                catch (BadLocationException ble) {}
+            }
+        } finally
+        {
+            ignoreFmtChange = false;
         }
-        ignoreFmtChange = false;
     }
     
     /**
@@ -403,6 +407,7 @@ public class DataObjFieldFormatSinglePanel extends DataObjFieldFormatPanel
         {
             this.dataObjFieldWrapper = dataObjFieldWrapper;
             
+            System.err.println("-------> ["+dataObjFieldWrapper.toString()+"]");
             setText(dataObjFieldWrapper.toString());
             setCursor(Cursor.getDefaultCursor());
             setFont(new Font("Arial", Font.PLAIN, 11));
@@ -595,8 +600,10 @@ public class DataObjFieldFormatSinglePanel extends DataObjFieldFormatPanel
             Element      element = doc.getCharacterElement(i);
             AttributeSet attrs   = element.getAttributes();
             Object       obj     = attrs.getAttribute(StyleConstants.ComponentAttribute);
+            int cnt = 0;
             if (obj instanceof FieldDefinitionComp)
             {
+                System.out.println(cnt+"  "+obj);
                 // found button at the current position
                 // create corresponding field
                 String sepStr = (lastFieldPos < i - 1) ? text.substring(lastFieldPos, i) : "";
@@ -607,6 +614,7 @@ public class DataObjFieldFormatSinglePanel extends DataObjFieldFormatPanel
                 fields.add(fmtField);
                 
                 lastFieldPos = i+1;
+                cnt++;
             }
         }
 

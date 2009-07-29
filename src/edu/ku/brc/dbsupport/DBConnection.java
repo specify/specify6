@@ -36,6 +36,8 @@ import org.apache.log4j.Logger;
 
 import com.mysql.management.driverlaunched.ServerLauncherSocketFactory;
 
+import edu.ku.brc.specify.config.init.SpecifyDBSetupWizard;
+import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -235,6 +237,8 @@ public class DBConnection
      */
     public Connection createConnection()
     {
+        //ensureEmbddedDirExists();
+
         if (UIRegistry.isMobile() && this == getInstance())
         {
             copyToMachineDisk();
@@ -516,6 +520,25 @@ public class DBConnection
         return dbDialect;
     }
 
+    @SuppressWarnings("unused")
+    private void ensureEmbddedDirExists()
+    {
+        if (isEmbedded())
+        {
+            File embeddedDir = getEmbeddedDataDir();
+            if (!embeddedDir.exists())
+            {
+                log.debug("Created data dir["+embeddedDir.getAbsolutePath()+"]");
+                if (embeddedDir.mkdirs())
+                {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyDBSetupWizard.class, new Exception("The Embedded Data Dir could not be created at["+embeddedDir.getAbsolutePath()+"]"));
+
+                }
+            }
+        }
+    }
+    
     /**
      * Returns a new connection to the database. 
      * @return the JDBC connection to the database
@@ -595,26 +618,40 @@ public class DBConnection
         }*/
     }
     
+    public static void clearMobileTempDir()
+    {
+        mobileTmpDir = null;
+    }
+    
     /**
      * @return
      * @throws IOException
      */
-    public static File getMobileTempDir() throws IOException
+    public static File getMobileTempDir(final String dbName)
     {
-        if (mobileTmpDir == null)
+        if (mobileTmpDir == null && StringUtils.isNotEmpty(dbName))
         {
             String path = UIRegistry.getDefaultUserHomeDir();
             
-            mobileTmpDir = new File(path + File.separator + "specify_data_" + Long.toString(System.currentTimeMillis()));
-    
-            if (mobileTmpDir.exists() || !(mobileTmpDir.mkdir())) 
-            { 
-                throw new IOException("Could not create temp directory: " + mobileTmpDir.getAbsolutePath()); 
-            }
+            mobileTmpDir = new File(path + File.separator + dbName + "_data_" + Long.toString(System.currentTimeMillis()));
+            
+        } else if (StringUtils.isEmpty(dbName) && mobileTmpDir == null)
+        {
+            edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+            edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TaskSemaphoreMgr.class, new RuntimeException("dbName was null"));
         }
         return mobileTmpDir;
     }
     
+    /**
+     * @return
+     * @throws IOException
+     */
+    public static File getMobileTempDir()
+    {
+        return getMobileTempDir(null);
+    }
+
     /**
      * @param isCopiedToMachineDisk the isCopiedToMachineDisk to set
      */
@@ -633,6 +670,10 @@ public class DBConnection
             try
             {
                 mobileTmpDir = getMobileTempDir();
+                if (!mobileTmpDir.exists())
+                {
+                    mobileTmpDir.mkdirs();
+                }
                 
                 System.out.println("********************* copyToMachineDisk - getMobileEmbeddedDBPath["+(new File(UIRegistry.getMobileEmbeddedDBPath()).getCanonicalPath())+"] to mobileTmpDir["+mobileTmpDir.getCanonicalPath()+"]");
                 

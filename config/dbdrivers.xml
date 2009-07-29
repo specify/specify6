@@ -11,12 +11,12 @@ There are three types of connection strings:
   
 -->
 <databases>
-    <db name="MySQL" driver="com.mysql.jdbc.Driver" dialect="org.hibernate.dialect.MySQLDialect">
+    <db name="MySQL" driver="com.mysql.jdbc.Driver" dialect="org.hibernate.dialect.MySQLDialect" embedded="false">
         <connection type="open"><![CDATA[jdbc:mysql://SERVER/DATABASE?characterEncoding=UTF-8&autoReconnect=true]]></connection>
         <connection type="opensys"><![CDATA[jdbc:mysql://SERVER/]]></connection>
     </db>
     
-    <db name="MySQLEmbedded" driver="com.mysql.jdbc.Driver" dialect="org.hibernate.dialect.MySQLDialect">
+    <db name="MySQLEmbedded" driver="com.mysql.jdbc.Driver" dialect="org.hibernate.dialect.MySQLDialect" embedded="true">
         <connection type="open"><![CDATA[jdbc:mysql:mxj://SERVER:3337/DATABASE?characterEncoding=UTF-8&server.basedir=DATADIR&createDatabaseIfNotExist=true&autoReconnect=true&server.initialize-user=true]]></connection>
         <connection type="opensys"><![CDATA[jdbc:mysql:mxj://SERVER:3337/?characterEncoding=UTF-8&server.basedir=DATADIR&createDatabaseIfNotExist=true&autoReconnect=true&server.initialize-user=true]]></connection>
     </db>

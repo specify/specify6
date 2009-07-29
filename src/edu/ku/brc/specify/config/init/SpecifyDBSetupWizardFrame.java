@@ -24,7 +24,6 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
@@ -159,17 +158,6 @@ public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFa
         setContentPane(wizPanel);
         
         pack();
-        
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run()
-            {
-                if (DBConnection.getInstance().isEmbedded())
-                {
-                    checkForMySQLProcesses();
-                }
-            }
-        });
     }
     
     /**
@@ -358,15 +346,6 @@ public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFa
             UIRegistry.setBaseAppDataDir(appdatadir);
         }
         
-        String embeddeddbdir = System.getProperty("embeddeddbdir");
-        if (StringUtils.isNotEmpty(embeddeddbdir))
-        {
-            UIRegistry.setEmbeddedDBDir(embeddeddbdir);
-        } else
-        {
-            UIRegistry.setEmbeddedDBDir(UIRegistry.getDefaultEmbeddedDBPath()); // on the local machine
-        }
-        
         // For Debugging Only 
         //System.setProperty("mobile", "true");
         
@@ -374,15 +353,15 @@ public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFa
         if (StringUtils.isNotEmpty(mobile))
         {
             UIRegistry.setMobile(true);
-            
-            try 
-            { 
-                UIRegistry.setEmbeddedDBDir(DBConnection.getMobileTempDir().getCanonicalPath());
-                
-            } catch (IOException e) 
-            {
-                e.printStackTrace();
-            }
+        }
+        
+        String embeddeddbdir = System.getProperty("embeddeddbdir");
+        if (StringUtils.isNotEmpty(embeddeddbdir))
+        {
+            UIRegistry.setEmbeddedDBDir(embeddeddbdir);
+        } else
+        {
+            UIRegistry.setEmbeddedDBDir(UIRegistry.getDefaultEmbeddedDBPath()); // on the local machine
         }
         
         SwingUtilities.invokeLater(new Runnable()

@@ -3030,8 +3030,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
       
       log.debug("********* Current ["+(new File(".").getAbsolutePath())+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
       
-      UIRegistry.setEmbeddedDBDir(UIRegistry.getDefaultEmbeddedDBPath()); // on the local machine
-      
       for (String s : args)
       {
           String[] pairs = s.split("="); //$NON-NLS-1$
@@ -3063,35 +3061,28 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
           UIRegistry.setBaseAppDataDir(appdatadir);
       }
           
-      String embeddeddbdir = System.getProperty("embeddeddbdir");
-      if (StringUtils.isNotEmpty(embeddeddbdir))
-      {
-          UIRegistry.setEmbeddedDBDir(embeddeddbdir);
-      }
+      // For Debugging Only 
+      //System.setProperty("mobile", "true");
       
       String mobile = System.getProperty("mobile");
       if (StringUtils.isNotEmpty(mobile))
       {
           UIRegistry.setMobile(true);
-          
-          try
-          {
-              UIRegistry.setEmbeddedDBDir(DBConnection.getMobileTempDir().getCanonicalPath());
-          } catch (IOException e)
-          {
-            e.printStackTrace();
-          }
+      }
+      
+      String embeddeddbdir = System.getProperty("embeddeddbdir");
+      if (StringUtils.isNotEmpty(embeddeddbdir))
+      {
+          UIRegistry.setEmbeddedDBDir(embeddeddbdir);
+      } else
+      {
+          UIRegistry.setEmbeddedDBDir(UIRegistry.getDefaultEmbeddedDBPath()); // on the local machine
       }
       
       SwingUtilities.invokeLater(new Runnable() {
           @SuppressWarnings("synthetic-access") //$NON-NLS-1$
         public void run()
           {
-              if (DBConnection.getInstance().isEmbedded())
-              {
-                  SpecifyDBSetupWizardFrame.checkForMySQLProcesses();
-              }
-              
               log.debug("Checking for update....");
               try
               {

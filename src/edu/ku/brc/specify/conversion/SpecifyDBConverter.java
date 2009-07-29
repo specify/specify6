@@ -25,6 +25,7 @@ import static edu.ku.brc.specify.config.init.DataBuilder.createStandardGroups;
 import static edu.ku.brc.specify.config.init.DataBuilder.getSession;
 import static edu.ku.brc.specify.config.init.DataBuilder.setSession;
 
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -71,6 +72,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.DesertBlue;
+import com.sun.tools.javah.oldjavah.OldStubs;
 
 import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.core.AppContextMgr;
@@ -132,6 +134,8 @@ public class SpecifyDBConverter
     protected static SimpleDateFormat           dateFormatter     = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
     protected static StringBuffer               strBuf            = new StringBuffer("");
     protected static Calendar                   calendar          = Calendar.getInstance();
+    
+    protected static boolean                    doFixCollectors   = false;
     
     protected Pair<String, String>              namePairToConvert = null;
     
@@ -261,43 +265,6 @@ public class SpecifyDBConverter
         });
     }
     
-    /**
-     * @param oldDBConn
-     */
-    protected boolean showStatsFromOldCollection(final Connection oldDBConn)
-    {
-        String[] queries = {"SELECT count(*) FROM collectionobject co1 LEFT JOIN collectionobject co2 ON co1.DerivedFromID = co2.CollectionObjectID WHERE co1.DerivedFromID is not NULL AND co2.CollectionObjectID is NULL",
-                            "SELECT COUNT(*) FROM taxonname WHERE RankID iS NULL",
-                            "SELECT count(*) FROM collectionobject",
-                            "SELECT count(*) FROM collectionobjectcatalog",
-                            "SELECT count(*) FROM taxonname",
-                            "SELECT count(*) FROM determination",
-                            "SELECT count(*) FROM agent",
-                            "SELECT count(*) FROM agent WHERE LENGTH(Name) > 50",
-                            "SELECT count(*) FROM agent WHERE LENGTH(LastName) > 50"};
-        
-        String[] descs = {"Stranded Preparations",
-                          "Number of Taxon with a NULL RankId",
-                          "CollectionObjects",
-                          "Collection Object Catalogs",
-                          "Taxon",
-                          "Determinations",
-                          "Agents",
-                          "Agent Names Truncated",
-                          "Agent Last Names Truncated"};
-        
-        Object[][] rows = new Object[queries.length][2];
-        for (int i=0;i<queries.length;i++)
-        {
-            rows[i][0] = descs[i];
-            rows[i][1] = BasicSQLUtils.getCount(oldDBConn, queries[i]);
-        }
-        JTable table = new JTable(rows, new Object[] {"Description", "Count"});
-        CustomDialog dlg = new CustomDialog((Frame)null, "Source DB Statistics", true, CustomDialog.OKCANCEL, UIHelper.createScrollPane(table, true));
-        dlg.setOkLabel("Continue");
-        dlg.setVisible(true);
-        return !dlg.isCancelled();
-    }
     
     /**
      * @param newDBConn
@@ -388,7 +355,7 @@ public class SpecifyDBConverter
             final JList     list = new JList(availPairs);
             CellConstraints cc   = new CellConstraints();
             PanelBuilder    pb   = new PanelBuilder(new FormLayout("f:p:g", "f:p:g"));
-            pb.add(UIHelper.createScrollPane(list), cc.xy(1,1));
+            pb.add(UIHelper.createScrollPane(list, true), cc.xy(1,1));
             pb.setDefaultDialogBorder();
             
             final CustomDialog dlg = new CustomDialog(null, "Select a DB to Convert", true, pb.getPanel());
@@ -417,9 +384,6 @@ public class SpecifyDBConverter
             });
             
             dlg.createUI();
-            dlg.pack();
-            dlg.setSize(300, 500);
-            //dlg.pack();
             dlg.setVisible(true);
             if (dlg.isCancelled())
             {
@@ -573,12 +537,16 @@ public class SpecifyDBConverter
             return;
         }
         
-        if (!showStatsFromOldCollection(oldDBConn))
+        OldDBStatsDlg dlg = new OldDBStatsDlg(oldDBConn);
+        dlg.setVisible(true);
+        if (dlg.isCancelled())
         {
             oldDBConn.close();
             newDBConn.close();
             System.exit(0);
         }
+        
+        doFixCollectors = dlg.doFixAgents();
         
         convLogger.initialize(dbNameDest);
         
@@ -1111,7 +1079,10 @@ public class SpecifyDBConverter
                     AppContextMgr.getInstance().setClassObject(Division.class, division);
                     AppContextMgr.getInstance().setClassObject(Institution.class, institution);
                     
-                    agentConverter.fixupForCollectors(division, dscp);
+                    if (doFixCollectors)
+                    {
+                        agentConverter.fixupForCollectors(division, dscp);
+                    }
                     
                     setSession(localSession);
                     

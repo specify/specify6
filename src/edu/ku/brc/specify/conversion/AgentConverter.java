@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Stack;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringEscapeUtils;
@@ -80,6 +81,10 @@ public class AgentConverter
     protected Triple<String, String, String>                nameTriple = new Triple<String, String, String>();
 
     protected ConversionLogger.TableWriter                  tblWriter;
+    
+    // For Name Parsing
+    protected List<AgentNameInfo>                           names    = new Vector<AgentNameInfo>();
+    protected Stack<AgentNameInfo>                          recycler = new Stack<AgentNameInfo>();
 
     /**
      * @param conv
@@ -1650,7 +1655,101 @@ public class AgentConverter
             return newIdsToDuplicate;
         }
     }
+    
+    public List<AgentNameInfo> parseName(final String    firstName, 
+                                         final String    lastName,
+                                         final char      innerSep,
+                                         final char      nameSep,
+                                         final boolean   isLastNameFieldFirst,
+                                         final boolean   isLastNameFirst,
+                                         final boolean   trimAfterComma)
+    {
+        recycler.addAll(names);
+        names.clear();
+        
+        String   fullName = isLastNameFieldFirst ? lastName + (firstName != null ? " " + firstName : "") : (firstName != null ? (firstName + " ") : "") + lastName;
+        String[] toks     = StringUtils.split(fullName, nameSep);
+        
+        for (String name : toks)
+        {
+            if (trimAfterComma)
+            {
+                int inx = name.indexOf(',');
+                if (inx > -1)
+                {
+                    name = name.substring(0, inx);
+                }
+            }
+            
+            if (StringUtils.contains(name, nameSep))
+            {
+                String[] nameToks = StringUtils.split(name, innerSep);
+            }
+            
+        }
+        return names;
+    }
 
+    //-------------------------------------------------------------------------
+    //--
+    //-------------------------------------------------------------------------
+    class AgentNameInfo
+    {
+        protected String firstName;
+        protected String lastName;
+        protected String middle;
+        public AgentNameInfo(String firstName, String lastName, String middle)
+        {
+            super();
+            this.firstName = firstName;
+            this.lastName = lastName;
+            this.middle = middle;
+        }
+        /**
+         * @return the firstName
+         */
+        public String getFirstName()
+        {
+            return firstName;
+        }
+        /**
+         * @return the lastName
+         */
+        public String getLastName()
+        {
+            return lastName;
+        }
+        /**
+         * @return the middle
+         */
+        public String getMiddle()
+        {
+            return middle;
+        }
+        /**
+         * @param firstName the firstName to set
+         */
+        public void setFirstName(String firstName)
+        {
+            this.firstName = firstName;
+        }
+        /**
+         * @param lastName the lastName to set
+         */
+        public void setLastName(String lastName)
+        {
+            this.lastName = lastName;
+        }
+        /**
+         * @param middle the middle to set
+         */
+        public void setMiddle(String middle)
+        {
+            this.middle = middle;
+        }
+        
+    }
+    
     //-------------------------------------------------------------------------
     //--
     //-------------------------------------------------------------------------

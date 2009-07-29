@@ -7221,7 +7221,7 @@ public class BuildSampleDatabase
                         
                     } else if (option.equals("-Dmobile"))
                     {
-                        UIRegistry.setEmbeddedDBDir(UIRegistry.getMobileEmbeddedDBPath());
+                        UIRegistry.setEmbeddedDBDir(UIRegistry.getDefaultMobileEmbeddedDBPath());
                     }
                 }
             }

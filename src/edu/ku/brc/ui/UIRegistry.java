@@ -104,8 +104,9 @@ public class UIRegistry
 {
     // Static Data Members
     protected static final String MISSING_FACTORY_MSG = "The object has not been set for the ViewBasedDialogFactoryIFace. This class can be used without first setting a factory implementing this interface.";
-    protected static final String EMBEDDED_DB_PATH = "embedded.dbpath";
-    protected static final String EMBEDDED_DB_DIR = "specify_data";
+    protected static final String EMBEDDED_DB_PATH        = "embedded.dbpath";
+    protected static final String MOBILE_EMBEDDED_DB_PATH = "mobile.embedded.dbpath";
+    protected static final String EMBEDDED_DB_DIR         = "SPECIFY_DATA";
     
     protected static final boolean debugPaths  = true;
 
@@ -1650,7 +1651,7 @@ public class UIRegistry
      */
     public static void setMobile(final boolean isMobile)
     {
-        System.setProperty("ismobile", isMobile ? "true" : "false");
+        System.setProperty("mobile", isMobile ? "true" : "false");
     }
     
     /**
@@ -1658,7 +1659,7 @@ public class UIRegistry
      */
     public static boolean isMobile()
     {
-        String isMobileStr = System.getProperty("ismobile");
+        String isMobileStr = System.getProperty("mobile");
         return StringUtils.isNotEmpty(isMobileStr) && isMobileStr.equals("true");
     }
     
@@ -1681,7 +1682,6 @@ public class UIRegistry
      */
     public static String getEmbeddedDBPath()
     {
-        
         return System.getProperty(EMBEDDED_DB_PATH);
     }
     
@@ -1721,10 +1721,42 @@ public class UIRegistry
      * @return a default path to the embedded DB when it is suppose to be on removable media. 
      * Sos it is placed relative to the executable.
      */
-    public static String getMobileEmbeddedDBPath()
+    public static String getDefaultMobileEmbeddedDBPath()
     {
         dumpCanonicalPath("getMobileEmbeddedDBPath", UIRegistry.getDefaultWorkingPath() + File.separator + EMBEDDED_DB_DIR);
         return UIRegistry.getDefaultWorkingPath() + File.separator + EMBEDDED_DB_DIR;
+    }
+    
+    /**
+     * @return a default path to the embedded DB when it is suppose to be on removable media. 
+     * Sos it is placed relative to the executable.
+     */
+    public static String getDefaultMobileEmbeddedDBPath(final String dbName)
+    {
+        dumpCanonicalPath("getMobileEmbeddedDBPath", UIRegistry.getDefaultWorkingPath() + File.separator + dbName);
+        return UIRegistry.getDefaultWorkingPath() + File.separator + dbName;
+    }
+    
+    /**
+     * Sets the path to the embedded DB.
+     * @param path the path.
+     */
+    public static void setMobileEmbeddedDBDir(final String path)
+    {
+        dumpCanonicalPath("setMobileEmbeddedDBDir", path);
+
+        if (StringUtils.isNotEmpty(path))
+        {
+            System.setProperty(MOBILE_EMBEDDED_DB_PATH, path);
+        }
+    }
+    
+    /**
+     * @return the path to the embedded DB
+     */
+    public static String getMobileEmbeddedDBPath()
+    {
+        return System.getProperty(MOBILE_EMBEDDED_DB_PATH);
     }
     
     //---------------------------------------------------------

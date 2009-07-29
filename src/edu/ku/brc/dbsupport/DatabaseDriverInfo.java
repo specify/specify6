@@ -38,7 +38,7 @@ import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
- * This class holds the necessary nformation for connecting to JDBC and Hibernate. There is a tstaic function for
+ * This class holds the necessary nformation for connecting to JDBC and Hibernate. There is a static function for
  * readng an XML file that contains all the differently supported database drivers and there connection information.
  * 
  * @code_status Complete
@@ -57,6 +57,7 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
     protected String name;
     protected String driver;
     protected String dialect;
+    protected boolean isEmbedded;
     
     protected Hashtable<ConnectionType, String> connectionFormats = new Hashtable<ConnectionType, String>();
     
@@ -68,12 +69,13 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
      */
     public DatabaseDriverInfo(final String name, 
                               final String driver, 
-                              final String dialect)
+                              final String dialect,
+                              final boolean isEmbedded)
     {
         this.name = name;
         this.driver = driver;
         this.dialect = dialect;
-        
+        this.isEmbedded = isEmbedded;
     }
     
     /**
@@ -115,20 +117,51 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
      */
     public String getConnectionStr(final ConnectionType type, final String server, final String database)
     {
+        return getConnectionStr(type, server, database, true, true, null, null, getName());
+    }
+    
+    /**
+     * Returns the connection string might return null if connection type doesn't exist.
+     * @param server the server (machine name or IP addr)
+     * @param database the database name
+     * @return the full connection string
+     */
+    public String getConnectionStr(final ConnectionType type, 
+                                   final String server, 
+                                   final String databaseName, 
+                                   final boolean doAddAsDBName, 
+                                   final boolean doAddToPath, 
+                                   final String username, 
+                                   final String password, 
+                                   final String serverType)
+    {
+        
         String connStr = connectionFormats.get(type);
         if (connStr != null)
         {
-            if (StringUtils.isNotEmpty(database))
+            if (serverType != null && serverType.equals("SQLServer")) //$NON-NLS-1$
             {
-                connStr = StringUtils.replace(connStr, "DATABASE", database); //$NON-NLS-1$
+                connStr = connStr.replaceFirst("DATABASE", StringUtils.isNotEmpty(databaseName) && doAddAsDBName ? databaseName : ""); //$NON-NLS-1$
+                connStr = connStr.replaceFirst("USERNAME", StringUtils.isNotEmpty(username) ? username : ""); //$NON-NLS-1$
+                connStr = connStr.replaceFirst("PASSWORD", StringUtils.isNotEmpty(password) ? password : ""); //$NON-NLS-1$
+                return StringUtils.isNotEmpty(server) ? connStr.replaceFirst("SERVER", server): connStr; //$NON-NLS-1$
             }
             
             connStr = subForDataDir(connStr);
             
-            return StringUtils.isNotEmpty(server) ? StringUtils.replace(connStr, "SERVER", server) : connStr; //$NON-NLS-1$
+            connStr = connStr.replaceFirst("DATABASE", StringUtils.isNotEmpty(databaseName) && doAddAsDBName ? databaseName : ""); //$NON-NLS-1$
+            connStr = connStr.replaceFirst("USERNAME", StringUtils.isNotEmpty(username) ? username : ""); //$NON-NLS-1$
+            connStr = connStr.replaceFirst("PASSWORD", StringUtils.isNotEmpty(password) ? password : ""); //$NON-NLS-1$
+            
+            if (isEmbedded && doAddToPath)
+            {
+                connStr = connStr.replaceFirst("SPECIFY_DATA", databaseName+"_data"); //$NON-NLS-1$
+            }
+            return StringUtils.isNotEmpty(server) ? connStr.replaceFirst("SERVER", server): connStr; //$NON-NLS-1$
         }
         return null;
     }
+    
     /**
      * Returns the connection string might return null if connection type doesn't exist.
      * @param server the server (machine name or IP addr)
@@ -142,100 +175,9 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
                                    final String password, 
                                    final String serverType)
     {
-        
-        String connStr = connectionFormats.get(type);
-        if (connStr != null)
-        {
-            if (serverType.equals("SQLServer")) //$NON-NLS-1$
-            {
-                if(StringUtils.isNotEmpty(database))
-                {
-                        connStr = StringUtils.replace(connStr, "DATABASE",  database); //$NON-NLS-1$
-                }
-                else
-                {
-                    connStr = StringUtils.replace(connStr, "DATABASE", ""); //$NON-NLS-1$ //$NON-NLS-2$
-                }
-                connStr = StringUtils.replace(connStr, "USERNAME", username); //$NON-NLS-1$
-                connStr = StringUtils.replace(connStr, "PASSWORD", password); //$NON-NLS-1$
-                return StringUtils.isNotEmpty(server) ? StringUtils.replace(connStr, "SERVER", server): connStr; //$NON-NLS-1$
-            }
-            
-            connStr = subForDataDir(connStr);
-            
-            connStr = StringUtils.replace(connStr, "DATABASE", database); //$NON-NLS-1$
-            connStr = StringUtils.replace(connStr, "USERNAME", username); //$NON-NLS-1$
-            connStr = StringUtils.replace(connStr, "PASSWORD", password); //$NON-NLS-1$
-            return StringUtils.isNotEmpty(server) ? StringUtils.replace(connStr, "SERVER", server): connStr; //$NON-NLS-1$
-        }
-        return null;
+        return getConnectionStr(type, server, database, true, true, username, password, serverType);
     }
 
-    /**
-     * Returns the Create connection string and if that doesn't exist then it returns the "Open" connection string which is the default.
-     * @param server the server (machine name or IP addr)
-     * @param database the database name
-     * @return the full connection string
-     */
-    public String getConnectionCreateOpenStr(final String server, final String database, final String username, final String password, final String serverType)
-    {
-        String connStr = connectionFormats.get(ConnectionType.Create);
-        if (connStr == null)
-        {
-            connStr = connectionFormats.get(ConnectionType.Open);
-        }
-        
-        if (connStr != null)
-        {
-            if (serverType.equals("SQLServer")) //$NON-NLS-1$
-            {
-                if(StringUtils.isNotEmpty(database))
-                {
-                        connStr = StringUtils.replace(connStr, "DATABASE", database); //$NON-NLS-1$
-                }
-                else
-                {
-                    connStr = StringUtils.replace(connStr, "DATABASE", ""); //$NON-NLS-1$ //$NON-NLS-2$
-                }
-                connStr = StringUtils.replace(connStr, "USERNAME", username); //$NON-NLS-1$
-                connStr = StringUtils.replace(connStr, "PASSWORD", password); //$NON-NLS-1$
-                return StringUtils.isNotEmpty(server) ? StringUtils.replace(connStr, "SERVER", server): connStr; //$NON-NLS-1$
-            }
-            
-            String dataDir = UIRegistry.getAppDataDir() + File.separator + "specify_data";
-            connStr = StringUtils.replace(connStr, "DATADIR",  dataDir); //$NON-NLS-1$
-            
-            connStr = StringUtils.replace(connStr, "DATABASE", database); //$NON-NLS-1$
-            connStr = StringUtils.replace(connStr, "USERNAME", username); //$NON-NLS-1$
-            connStr = StringUtils.replace(connStr, "PASSWORD", password); //$NON-NLS-1$
-            return StringUtils.isNotEmpty(server) ? StringUtils.replace(connStr, "SERVER", server): connStr; //$NON-NLS-1$
-        }        
-        return null;
-    }
-    
-
-//    /**
-//     * Returns the Create connection string and if that doesn't exist then it returns the "Open" connection string which is the default.
-//     * @param server the server (machine name or IP addr)
-//     * @param database the database name
-//     * @return the full connection string
-//     */
-//    public String getConnectionCreateOpenStr(final String server, final String database)
-//    {
-//        String connStr = connectionFormats.get(ConnectionType.Create);
-//        if (connStr == null)
-//        {
-//            connStr = connectionFormats.get(ConnectionType.Open);
-//        }
-//        
-//        if (connStr != null)
-//        {
-//            connStr = StringUtils.replace(connStr, "DATABASE", database);
-//            return StringUtils.isNotEmpty(server) ? StringUtils.replace(connStr, "SERVER", server) : connStr;
-//        }
-//        
-//        return null;
-//    }
     /**
      * Returns the dialect for Hibernate
      * @return the dialect for Hibernate
@@ -263,6 +205,14 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
         return name;
     }
     
+    /**
+     * @return the isEmbedded
+     */
+    public boolean isEmbedded()
+    {
+        return isEmbedded;
+    }
+
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
@@ -352,8 +302,9 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
                     {
                         hash.put(name, name);
                         
-                        String driver  = getAttr(dbElement, "driver", null); //$NON-NLS-1$
-                        String dialect = getAttr(dbElement, "dialect", null); //$NON-NLS-1$
+                        String  driver     = getAttr(dbElement, "driver", null); //$NON-NLS-1$
+                        String  dialect    = getAttr(dbElement, "dialect", null); //$NON-NLS-1$
+                        boolean isEmbedded = getAttr(dbElement, "embedded", false); //$NON-NLS-1$
                         
                        // these can go away once we validate the XML
                         if (StringUtils.isEmpty(driver))
@@ -365,7 +316,7 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
                             throw new RuntimeException("Dialect cannot be null!"); //$NON-NLS-1$
                         }                       
                         
-                        DatabaseDriverInfo drv = new DatabaseDriverInfo(name, driver, dialect);
+                        DatabaseDriverInfo drv = new DatabaseDriverInfo(name, driver, dialect, isEmbedded);
                         
                         // Load up the Connection Types
                         for ( Iterator<?> connIter = dbElement.elementIterator( "connection" ); connIter.hasNext(); )  //$NON-NLS-1$
@@ -377,11 +328,11 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
                             drv.addFormat(type, connFormat);
                         }
                         
-                        if (drv.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, " ", " ", " ", " ", " ") == null) //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+                        /*if (drv.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, " ", " ", " ", " ", " ") == null) //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
                         {
                             log.error("Meg might've screwed up generating connection strings, contact her if you get this error"); //$NON-NLS-1$
                             throw new RuntimeException("Dialect ["+name+"] has no 'Open' connection type!"); //$NON-NLS-1$ //$NON-NLS-2$
-                        }
+                        }*/
                         
                         dbDrivers.add(drv);
                         
@@ -415,7 +366,7 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
      */
     public static DatabaseDriverInfo getInfoByName(final Vector<DatabaseDriverInfo> dbDrivers, final String name)
     {
-        int inx = Collections.binarySearch(dbDrivers, new DatabaseDriverInfo(name, null, null));
+        int inx = Collections.binarySearch(dbDrivers, new DatabaseDriverInfo(name, null, null, false));
         return inx > -1 ? dbDrivers.get(inx) : null;
     }
 

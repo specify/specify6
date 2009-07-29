@@ -769,16 +769,22 @@ public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener
            UIRegistry.setBaseAppDataDir(appdatadir);
        }
        
-       String embeddeddbdir = System.getProperty("embeddeddbdir");
-       if (StringUtils.isNotEmpty(embeddeddbdir))
-       {
-           UIRegistry.setEmbeddedDBDir(embeddeddbdir);
-       }
+    // For Debugging Only 
+       //System.setProperty("mobile", "true");
        
        String mobile = System.getProperty("mobile");
        if (StringUtils.isNotEmpty(mobile))
        {
-           UIRegistry.setEmbeddedDBDir(UIRegistry.getMobileEmbeddedDBPath());
+           UIRegistry.setMobile(true);
+       }
+       
+       String embeddeddbdir = System.getProperty("embeddeddbdir");
+       if (StringUtils.isNotEmpty(embeddeddbdir))
+       {
+           UIRegistry.setEmbeddedDBDir(embeddeddbdir);
+       } else
+       {
+           UIRegistry.setEmbeddedDBDir(UIRegistry.getDefaultEmbeddedDBPath()); // on the local machine
        }
        
        SwingUtilities.invokeLater(new Runnable() {

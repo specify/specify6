@@ -36,6 +36,7 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.File;
 import java.util.Collections;
 import java.util.Vector;
 
@@ -75,6 +76,8 @@ import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.SchemaUpdateService;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.specify.config.init.SpecifyDBSetupWizard;
+import edu.ku.brc.specify.config.init.SpecifyDBSetupWizardFrame;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.ui.IconManager;
@@ -443,7 +446,7 @@ public class DatabaseLoginPanel extends JTiledPanel
             } else
             {
                 String selectedStr = AppPreferences.getLocalPrefs().get("login.dbdriver_selected", "MySQL"); //$NON-NLS-1$ //$NON-NLS-2$
-                int inx = Collections.binarySearch(dbDrivers, new DatabaseDriverInfo(selectedStr, null, null));
+                int inx = Collections.binarySearch(dbDrivers, new DatabaseDriverInfo(selectedStr, null, null, false));
                 dbDriverCBX.setSelectedIndex(inx > -1 ? inx : -1);
             }
 
@@ -914,6 +917,33 @@ public class DatabaseLoginPanel extends JTiledPanel
             @Override
             public Object construct()
             {
+                if (DBConnection.getInstance().isEmbedded() || UIRegistry.isMobile()) // isEmbdded may not be setup yet
+                {
+                    SpecifyDBSetupWizardFrame.checkForMySQLProcesses();
+                }
+                
+                if (UIRegistry.isMobile())
+                {
+                    File mobileTmpDir = DBConnection.getMobileTempDir(getDatabaseName());
+                    if (mobileTmpDir == null)
+                    {
+                        edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                        edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(SpecifyDBSetupWizard.class, new RuntimeException("Couldn't get MobileTempDir"));
+                    }
+                    
+                    UIRegistry.setEmbeddedDBDir(mobileTmpDir.getAbsolutePath());
+                    log.debug(UIRegistry.getEmbeddedDBPath());
+                    
+                    if (UIRegistry.getMobileEmbeddedDBPath() == null)
+                    {
+                        UIRegistry.setMobileEmbeddedDBDir(UIRegistry.getDefaultMobileEmbeddedDBPath(getDatabaseName()));
+                        log.debug(UIRegistry.getMobileEmbeddedDBPath());
+                    }
+                }
+                
+                String connStr = getConnectionStr();
+                DBConnection.checkForEmbeddedDir(connStr);
+                
                 eTime = System.currentTimeMillis();
                 
                 Pair<String, String> usrPwd = getMasterUsrPwd();

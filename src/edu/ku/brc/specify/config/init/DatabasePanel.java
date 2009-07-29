@@ -55,6 +55,7 @@ import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DBMSUserMgr;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
 import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -310,9 +311,18 @@ public class DatabasePanel extends BaseSetupPanel
         final String dbPwd      = passwordTxt.getText();
         final String hostName   = hostNameTxt.getText();
         
+        if (UIRegistry.isMobile())
+        {
+            DBConnection.clearMobileTempDir();
+            File tmpDir = DBConnection.getMobileTempDir(dbName);
+            UIRegistry.setEmbeddedDBDir(tmpDir.getAbsolutePath());
+        }
+
         final DatabaseDriverInfo driverInfo = (DatabaseDriverInfo)drivers.getSelectedItem();
         String connStrInitial = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostName, dbName, dbUserName, dbPwd, driverInfo.getName());
-        DBConnection.checkForEmbeddedDir(connStrInitial);
+        System.err.println(connStrInitial);
+        
+        DBConnection.checkForEmbeddedDir("createDB - "+connStrInitial);
         
         VerifyStatus status = verifyDatabase(properties);
         if ((isOK == null || !isOK) && status == VerifyStatus.OK)
@@ -335,13 +345,31 @@ public class DatabasePanel extends BaseSetupPanel
                 {
                     isOK = false;
                     
-                    DBMSUserMgr mgr   = DBMSUserMgr.getInstance();
+                    DBMSUserMgr mgr = DBMSUserMgr.getInstance();
                     
                     boolean dbmsOK = false;
-                    if (DBConnection.getInstance().isEmbedded())
+                    if (driverInfo.isEmbedded())
                     {
+                        
+                        SpecifyDBSetupWizardFrame.checkForMySQLProcesses();
+                        
+                        if (UIRegistry.isMobile())
+                        {
+                            File mobileTmpDir = DBConnection.getMobileTempDir();
+                            if (!mobileTmpDir.exists())
+                            {
+                                if (!mobileTmpDir.mkdirs())
+                                {
+                                    System.err.println("Dir["+mobileTmpDir.getAbsolutePath()+"] didn't get created!");
+                                    // throw exception
+                                }
+                                
+                                DBConnection.setCopiedToMachineDisk(true);
+                            }
+                        }
+                        
                         String newConnStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostName, dbName, dbUserName, dbPwd, driverInfo.getName());
-                        if (DBConnection.isEmbedded(newConnStr))
+                        if (driverInfo.isEmbedded())
                         {
                             //System.err.println(newConnStr);
                             try
@@ -377,10 +405,10 @@ public class DatabasePanel extends BaseSetupPanel
                         try
                         {
                             SpecifySchemaGenerator.generateSchema(driverInfo, 
-                                    hostName,
-                                    dbName,
-                                    dbUserName, 
-                                    dbPwd); // false means create new database, true means update
+                                                                  hostName,
+                                                                  dbName,
+                                                                  dbUserName, 
+                                                                  dbPwd); // false means create new database, true means update
                             
                             String connStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Create, hostName, dbName);
                             if (connStr == null)
@@ -588,14 +616,30 @@ public class DatabasePanel extends BaseSetupPanel
     {
         boolean      isEmbedded = DBConnection.getInstance().isEmbedded();
         VerifyStatus status     = VerifyStatus.OK;
+        String       dbName     = props.getProperty(DBNAME);
         if (isEmbedded)
         {
-            File specifyDataDir = DBConnection.getEmbeddedDataDir();
+            File specifyDataDir = null;
+            if (UIRegistry.isMobile())
+            {
+                specifyDataDir = DBConnection.getMobileTempDir();
+                if (specifyDataDir == null)
+                {
+                    edu.ku.brc.af.core.UsageTracker.incrHandledUsageCount();
+                    edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(TaskSemaphoreMgr.class, new RuntimeException("DBConnection.getMobileTempDir() return null"));
+                }
+                
+                UIRegistry.setMobileEmbeddedDBDir(UIRegistry.getDefaultMobileEmbeddedDBPath(dbName));
+            } else
+            {
+                specifyDataDir = DBConnection.getEmbeddedDataDir(); 
+            }
+            
             if (specifyDataDir != null)
             {
                 if (specifyDataDir.exists())
                 {
-                    boolean isOK = UIHelper.promptForAction("PROCEED", "CANCEL", "DEL_CUR_DB_TITLE", UIRegistry.getLocalizedMessage("DEL_CUR_DB", props.getProperty(DBNAME)));
+                    boolean isOK = UIHelper.promptForAction("PROCEED", "CANCEL", "DEL_CUR_DB_TITLE", UIRegistry.getLocalizedMessage("DEL_CUR_DB", dbName));
                     if (isOK)
                     {
                         try

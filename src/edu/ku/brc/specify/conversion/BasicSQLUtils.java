@@ -463,7 +463,17 @@ public class BasicSQLUtils
      */
     public static int getCountAsInt(final String sql)
     {
-        Integer cnt = getCount(dbConn != null ? dbConn : DBConnection.getInstance().getConnection(), sql);
+        return getCountAsInt(dbConn != null ? dbConn : DBConnection.getInstance().getConnection(), sql);
+    }
+    
+    /**
+     * @param conn
+     * @param sql
+     * @return
+     */
+    public static int getCountAsInt(final Connection conn, final String sql)
+    {
+        Integer cnt = getCount(conn, sql);
         return cnt == null ? 0 : cnt;
     }
     
