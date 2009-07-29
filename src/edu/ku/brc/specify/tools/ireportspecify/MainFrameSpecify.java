@@ -50,6 +50,7 @@ import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.Vector;
 
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -95,11 +96,13 @@ import edu.ku.brc.specify.tasks.subpane.JRConnectionFieldDef;
 import edu.ku.brc.specify.tasks.subpane.SpJRIReportConnection;
 import edu.ku.brc.specify.tasks.subpane.qb.QBJRIReportConnection;
 import edu.ku.brc.specify.tasks.subpane.wb.WBJRIReportConnection;
+import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -1649,7 +1652,10 @@ public class MainFrameSpecify extends MainFrame
         HibernateUtil.setListener("post-commit-update", new edu.ku.brc.specify.dbsupport.PostUpdateEventListener()); //$NON-NLS-1$
         HibernateUtil.setListener("post-commit-insert", new edu.ku.brc.specify.dbsupport.PostInsertEventListener()); //$NON-NLS-1$
         HibernateUtil.setListener("post-commit-delete", new edu.ku.brc.specify.dbsupport.PostDeleteEventListener()); //$NON-NLS-1$
-        
+
+        ImageIcon helpIcon = IconManager.getIcon("AppIcon",IconSize.Std16); //$NON-NLS-1$
+        HelpMgr.initializeHelp("SpecifyHelp", helpIcon.getImage()); //$NON-NLS-1$
+
         SwingUtilities.invokeLater(new Runnable() {
             @SuppressWarnings("synthetic-access") //$NON-NLS-1$
           public void run()
