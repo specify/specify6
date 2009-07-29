@@ -56,7 +56,7 @@ public class CollectingEventsAndAttrsMaint
         boolean isEmbeddedCE = AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent();
         if (isEmbeddedCE)
         {
-            String sql = "SELECT SUM(cnt) FROM (SELECT CollectingEventID, count(*) AS cnt FROM CollectionObject WHERE " +
+            String sql = "SELECT SUM(cnt) FROM (SELECT CollectingEventID, count(*) AS cnt FROM collectionobject WHERE " +
                          "CollectingEventID IS NOT NULL AND CollectionMemberID = " + collectionId + " GROUP BY CollectingEventID) T1 WHERE cnt > 1";
             count += BasicSQLUtils.getCountAsInt(sql);
         }
