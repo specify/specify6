@@ -60,6 +60,7 @@ import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.IconManager.IconSize;
 
 /**
  * 
@@ -777,7 +778,8 @@ public class ImportFileSplitter extends CustomDialog
             //whatever
         }
         
-        HelpMgr.initializeHelp("SpecifyHelp", icon.getImage()); 
+        ImageIcon helpIcon = IconManager.getIcon("AppIcon",IconSize.Std16); //$NON-NLS-1$
+        HelpMgr.initializeHelp("SpecifyHelp", helpIcon.getImage());
         
 		ImportFileSplitter chunker = new ImportFileSplitter();
 		chunker.setCustomTitleBar(UIRegistry.getResourceString("ImportFileSplitter.Title"));
