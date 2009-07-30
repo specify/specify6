@@ -533,7 +533,8 @@ public class ExportMappingTask extends QueryTask
 			pb.add(title, cc.xy(4, 3));
 			JTextField version = new JTextField();
 			pb.add(version, cc.xy(4, 5));
-			CustomDialog cd = new CustomDialog((Frame )UIRegistry.get(UIRegistry.FRAME), "ExportMappingTask.SchemaInfoTitle", true,
+			CustomDialog cd = new CustomDialog((Frame )UIRegistry.get(UIRegistry.FRAME), 
+					UIRegistry.getResourceString("ExportMappingTask.SchemaInfoTitle"), true,
 					CustomDialog.OKCANCEL, pb.getPanel());
 			
 			boolean tryAgain = true;

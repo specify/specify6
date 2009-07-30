@@ -653,6 +653,14 @@ public class QueryFieldPanel extends JPanel implements ActionListener
 
 		if (schemaItem == null)
 		{
+			if (conditionForSchema)
+			{
+				schemaItemLabel.setText(UIRegistry.getResourceString("QueryFieldPanel.UnmappedCondition"));
+				sortCheckbox.setVisible(false);
+				isDisplayedCkbx.setVisible(false);
+				isPromptCkbx.setVisible(false);
+				isEnforcedCkbx.setVisible(false);
+			}
 			if (!ownerQuery.isPromptMode())
 			{
 				isDisplayedCkbx.setVisible(fieldQRI != null && !isRel);
@@ -1284,9 +1292,12 @@ public class QueryFieldPanel extends JPanel implements ActionListener
         }
         else if (conditionForSchema)
         {
-        	schemaItemLabel = createLabel(UIRegistry.getResourceString("QueryFieldPanel.UnmappedCondition"));
+        	String caption = fieldQRI == null ? 
+        			UIRegistry.getResourceString("QueryFieldPanel.AddUnmappedCondition") :
+        			UIRegistry.getResourceString("QueryFieldPanel.UnmappedCondition");	
+        	schemaItemLabel = createLabel(caption);
         	schemaItemLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        	schemaItemLabel.setText(UIRegistry.getResourceString("QueryFieldPanel.UnmappedCondition")); 
+        	schemaItemLabel.setText(UIRegistry.getResourceString(caption)); 
         }
         else
         {
@@ -1721,7 +1732,8 @@ public class QueryFieldPanel extends JPanel implements ActionListener
     
     public boolean isForDisplay()
     {
-        return ownerQuery.isPromptMode() || isDisplayedCkbx.isSelected();
+        return !conditionForSchema && 
+        	(ownerQuery.isPromptMode() || isDisplayedCkbx.isSelected());
     }
     
     public String getLabel()

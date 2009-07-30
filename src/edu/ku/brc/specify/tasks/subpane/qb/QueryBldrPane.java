@@ -708,9 +708,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     			removeFieldFromQuery(qfp.getQueryField());
     			removeSchemaItemMapping(qfp.getItemMapping());
     		}
-    		if (selectedQFP != null)
-    		{
-    			if (!selectedQFP.isConditionForSchema())
+    			if (!qfp.isConditionForSchema())
     			{
     				SpExportSchemaItemMapping newMapping = new SpExportSchemaItemMapping();
     				newMapping.initialize();
@@ -722,13 +720,21 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     			}
     			qfp.setField(fieldQRI, qf);
                 fieldQRI.setIsInUse(true);
-                if (selectedQFP.isConditionForSchema())
+                if (qfp.isConditionForSchema())
                 {
-            		newQfp = new QueryFieldPanel(this, null, 
+            		final QueryFieldPanel theNewQfp = new QueryFieldPanel(this, null, 
             				columnDefStr, saveBtn, null, null, true);
-                	queryFieldItems.add(newQfp);
+            		theNewQfp.addMouseListener(new MouseInputAdapter()
+                    {
+                        @Override
+                        public void mousePressed(MouseEvent e)
+                        {
+                            selectQFP(theNewQfp);
+                        }
+                    });
+                	queryFieldItems.add(theNewQfp);
+                	newQfp = theNewQfp;
                 }
-    		}
     		updateUIAfterAddOrMap(fieldQRI, newQfp, false, newQfp != null);
     	}
     }
@@ -3557,9 +3563,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         		}
         	}
         }
-        // now add placeHolder panel for adding new condition
-		result.add(new QueryFieldPanel(container, null, 
-				container.getColumnDefStr(), saveBtn, null, null, true));
         
         //now add un-mapped fields
         for (SpQueryField fld : fields)
@@ -3592,6 +3595,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         		}
         	}
         }
+        // now add placeHolder panel for adding new condition
+		result.add(new QueryFieldPanel(container, null, 
+				container.getColumnDefStr(), saveBtn, null, null, true));
         
         return result;
     }
