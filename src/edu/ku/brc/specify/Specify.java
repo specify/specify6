@@ -2208,7 +2208,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                     canSendStats = AppPreferences.getRemote().getBoolean(sendStatsPrefName, true); //$NON-NLS-1$
                 }
                 
-                canSendStats = false;
                 if (canSendStats)
                 {
                     Boolean          canSendISAStats  = AppPreferences.getRemote().getBoolean(sendISAStatsPrefName, true); //$NON-NLS-1$
