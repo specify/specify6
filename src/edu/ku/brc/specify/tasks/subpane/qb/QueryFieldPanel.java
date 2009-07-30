@@ -138,6 +138,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
 	protected FieldQRI						fieldQRI;
 	protected SpQueryField					queryField		= null;
 	protected SpExportSchemaItem			schemaItem      = null;
+	protected boolean						conditionForSchema = false;
 	protected PickListDBAdapterIFace		pickList		= null;
 
 	protected FormValidator					validator;
@@ -342,9 +343,29 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                            final SpQueryField  queryField,
                            final SpExportSchemaItem schemaItem)
     {
-    	this(ownerQuery, fieldQRI, IconManager.IconSize.Std24, columnDefStr, saveBtn, queryField, schemaItem);
+    	this(ownerQuery, fieldQRI, IconManager.IconSize.Std24, columnDefStr, saveBtn, queryField, schemaItem, false);
     }
-    
+
+    /**
+     * @param ownerQuery
+     * @param fieldQRI
+     * @param columnDefStr
+     * @param saveBtn
+     * @param queryField
+     * @param schemaItem
+     * @param conditionForSchema
+     */
+    public QueryFieldPanel(final QueryFieldPanelContainerIFace ownerQuery,
+            final FieldQRI      fieldQRI, 
+            final String        columnDefStr,
+            final Component       saveBtn,
+            final SpQueryField  queryField,
+            final SpExportSchemaItem schemaItem,
+            final boolean conditionForSchema)
+    {
+    	this(ownerQuery, fieldQRI, IconManager.IconSize.Std24, columnDefStr, saveBtn, queryField, schemaItem, conditionForSchema);
+    }
+
     /**
      * Constructor.
      * @param fieldName the field Name
@@ -357,9 +378,11 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                            final String        columnDefStr,
                            final Component       saveBtn,
                            final SpQueryField  queryField,
-                           final SpExportSchemaItem schemaItem)
+                           final SpExportSchemaItem schemaItem,
+                           final boolean conditionForSchema)
     {        
         this.ownerQuery = ownerQuery;
+        this.conditionForSchema = conditionForSchema;
         if (this.ownerQuery.isPromptMode())
         {
             labelStrs = new String[]{ " ",
@@ -1259,6 +1282,12 @@ public class QueryFieldPanel extends JPanel implements ActionListener
         	schemaItemLabel.setHorizontalAlignment(SwingConstants.CENTER);
         	schemaItemLabel.setText(schemaItem.getFieldName());
         }
+        else if (conditionForSchema)
+        {
+        	schemaItemLabel = createLabel(UIRegistry.getResourceString("QueryFieldPanel.UnmappedCondition"));
+        	schemaItemLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        	schemaItemLabel.setText(UIRegistry.getResourceString("QueryFieldPanel.UnmappedCondition")); 
+        }
         else
         {
         	this.schemaItemLabel = null;
@@ -1445,7 +1474,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
         JComponent[] sComps = { schemaItemLabel, iconLabel, fieldLabel, isNotCheckbox, operatorCBX, criteria,
                 sortCheckbox, closeBtn, null };
         // 0 1 2 3 4 5 6 7 8 9
-        if (schemaItem == null)
+        if (schemaItem == null && !conditionForSchema)
         {
         	comps = qComps;
         }
@@ -1480,14 +1509,6 @@ public class QueryFieldPanel extends JPanel implements ActionListener
             sb.append(columnDefStr);
         }
 
-//        if (!returnWidths && schemaItem != null && fieldQRI == null)
-//        {
-//        	for (int c = 1; c < comps.length; c++)
-//        	{
-//        		comps[c] = null;
-//        	}
-//        }
-        
         PanelBuilder builder = new PanelBuilder(new FormLayout("3px, " + sb.toString() + ", 3px", "3px, p, 3px"), this);
         CellConstraints cc = new CellConstraints();
 
@@ -1921,6 +1942,14 @@ public class QueryFieldPanel extends JPanel implements ActionListener
 	public SpExportSchemaItemMapping getItemMapping()
 	{
 		return queryField != null ? queryField.getMapping() : null;
+	}
+
+	/**
+	 * @return the conditionForSchema
+	 */
+	public boolean isConditionForSchema()
+	{
+		return conditionForSchema;
 	}
     
 }
