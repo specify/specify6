@@ -102,6 +102,7 @@
   </table>
 
   <table classname="edu.ku.brc.specify.datamodel.CollectingTrip" table="collectingtrip" tableid="87" lazy="true" >
+    <field column="Name" name="collectingTripName" type="java.lang.String" length="64"/>
     <field column="Start Date" name="startDate" type="calendar_date"/>
     <field column="Start Date Precision" name="startDatePrecision" type="java.lang.Short"/>
     <field column="Start Date Verbatim" name="startDateVerbatim" type="java.lang.String" length="50"/>
@@ -112,6 +113,7 @@
     <field column="End Time" name="endTime" type="java.lang.Short"/>
     <field column="Remarks (Collecting Trip)" name="collectingTripRemarks" type="java.lang.String" length="4096"/>
   </table>
+  
   <table classname="edu.ku.brc.specify.datamodel.CollectionObject" table="collectionobject" tableid="1" lazy="true">
     <display objtitle="Collection Object" view="CollectionObject" dataobjformatter="CollectionObject"/>
     <field column="Cataloged Date" name="catalogedDate" type="calendar_date"/>
