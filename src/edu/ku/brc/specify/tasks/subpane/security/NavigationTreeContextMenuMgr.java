@@ -87,7 +87,7 @@ public class NavigationTreeContextMenuMgr extends MouseAdapter implements TreeSe
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                getTreeMgr().addNewUser(lastClickComp);
+                lastClickComp = getTreeMgr().addNewUser(lastClickComp);
                 updateBtnUI();
             }
         });
@@ -113,6 +113,7 @@ public class NavigationTreeContextMenuMgr extends MouseAdapter implements TreeSe
                 {
                     getTreeMgr().removeUserFromGroup(lastClickComp);
                 }
+                lastClickComp = null;
                 updateBtnUI();
             }
         });
@@ -121,7 +122,7 @@ public class NavigationTreeContextMenuMgr extends MouseAdapter implements TreeSe
     /**
      * 
      */
-    protected void updateBtnUI()
+    public void updateBtnUI()
     {
         addUserBtn.setEnabled(treeMgr.canAddNewUser(lastClickComp));
         addExtUserBtn.setEnabled(treeMgr.canAddNewUser(lastClickComp));
