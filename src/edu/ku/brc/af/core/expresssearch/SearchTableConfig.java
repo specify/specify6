@@ -301,7 +301,17 @@ public class SearchTableConfig implements DisplayOrderingIFace,
         
         sqlStr.append(" WHERE ");
         
+        
+        
         boolean addParen = false;
+        String sqlSnipet = QueryAdjusterForDomain.getInstance().getSpecialColumns(tableInfo, isHQL, false, tableInfo.getAbbrev()); 
+        if (sqlSnipet != null)
+        {
+            sqlStr.append(sqlSnipet);
+            sqlStr.append(" AND (");
+            addParen = true;
+        }
+        
         if (ids != null || terms.size() == 0)
         {
             sqlStr.append(tableInfo.getAbbrev()); 
@@ -315,7 +325,7 @@ public class SearchTableConfig implements DisplayOrderingIFace,
             }
             sqlStr.append(") ");
             
-        } else
+        } /*else
         {
             String sqlSnipet = QueryAdjusterForDomain.getInstance().getSpecialColumns(tableInfo, isHQL, false, tableInfo.getAbbrev()); 
             if (sqlSnipet != null)
@@ -324,7 +334,7 @@ public class SearchTableConfig implements DisplayOrderingIFace,
                 sqlStr.append(" AND (");
                 addParen = true;
             }
-        }
+        }*/
         
         StringBuilder orderBy = new StringBuilder();
         int orderByCnt = 0;
@@ -475,11 +485,11 @@ public class SearchTableConfig implements DisplayOrderingIFace,
                     }
                 }
             }
-            
-            if (addParen)
-            {
-                sqlStr.append(")");
-            }
+        }
+        
+        if (addParen)
+        {
+            sqlStr.append(")");
         }
         
         if (cnt == 0 && terms.size() > 0)
