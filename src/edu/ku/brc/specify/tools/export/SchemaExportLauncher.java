@@ -1,7 +1,7 @@
 /**
  * 
  */
-package edu.ku.brc.specify.tasks.subpane.qb;
+package edu.ku.brc.specify.tools.export;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
@@ -32,6 +32,7 @@ import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.SpExportSchemaMapping;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.tasks.QueryTask;
+import edu.ku.brc.specify.tasks.subpane.qb.QueryBldrPane;
 import edu.ku.brc.specify.tools.ireportspecify.IReportLauncher;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;

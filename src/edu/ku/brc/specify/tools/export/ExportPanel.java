@@ -1,7 +1,7 @@
 /**
  * 
  */
-package edu.ku.brc.specify.tasks.subpane.qb;
+package edu.ku.brc.specify.tools.export;
 
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
@@ -78,6 +78,15 @@ import edu.ku.brc.specify.datamodel.SpExportSchemaMapping;
 import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpQueryField;
 import edu.ku.brc.specify.tasks.QueryTask;
+import edu.ku.brc.specify.tasks.subpane.qb.ERTICaptionInfoQB;
+import edu.ku.brc.specify.tasks.subpane.qb.HQLSpecs;
+import edu.ku.brc.specify.tasks.subpane.qb.QBDataSource;
+import edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace;
+import edu.ku.brc.specify.tasks.subpane.qb.QueryBldrPane;
+import edu.ku.brc.specify.tasks.subpane.qb.QueryFieldPanel;
+import edu.ku.brc.specify.tasks.subpane.qb.QueryParameterPanel;
+import edu.ku.brc.specify.tasks.subpane.qb.TableQRI;
+import edu.ku.brc.specify.tasks.subpane.qb.TableTree;
 import edu.ku.brc.specify.tools.ireportspecify.MainFrameSpecify;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;

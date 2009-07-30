@@ -432,7 +432,7 @@ public class QBDataSource extends QBDataSourceBase implements CustomQueryListene
     /**
      * 
      */
-    protected void startDataAcquisition()
+    public void startDataAcquisition()
     {
         JPAQuery q = new JPAQuery(hql, this);
         q.setParams(params);

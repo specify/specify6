@@ -1068,7 +1068,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      * @param keysToRetrieve
      * @return HQLSpecs for the current fields and settings.
      */
-    protected static HQLSpecs buildHQL(final TableQRI rootTable, 
+    public static HQLSpecs buildHQL(final TableQRI rootTable, 
                                        final boolean distinct, 
                                        final Vector<QueryFieldPanel> qfps,
                                        final TableTree tblTree, 
@@ -1803,7 +1803,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      * @param fixLabels
      * @return ERTICaptionInfo for the visible columns returned by a query.
      */
-    protected static List<ERTICaptionInfoQB> getColumnInfo(final Vector<QueryFieldPanel> queryFieldItemsArg, final boolean fixLabels,
+    public static List<ERTICaptionInfoQB> getColumnInfo(final Vector<QueryFieldPanel> queryFieldItemsArg, final boolean fixLabels,
             final DBTableInfo rootTbl, boolean forSchemaExport)
     {
         List<ERTICaptionInfoQB> result = new Vector<ERTICaptionInfoQB>();
@@ -3495,7 +3495,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     /**
      * @return
      */
-    protected static Vector<QueryFieldPanel> getQueryFieldPanelsForMapping(final QueryFieldPanelContainerIFace container, 
+    public static Vector<QueryFieldPanel> getQueryFieldPanelsForMapping(final QueryFieldPanelContainerIFace container, 
             final Set<SpQueryField> fields, final TableTree tblTree, 
             final Hashtable<String,TableTree> ttHash, final Component saveBtn,
             SpExportSchemaMapping schemaMapping, List<String> missingFlds,

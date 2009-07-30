@@ -1,7 +1,7 @@
 /**
  * 
  */
-package edu.ku.brc.specify.tasks.subpane.qb;
+package edu.ku.brc.specify.tools.export;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -24,6 +24,10 @@ import edu.ku.brc.af.ui.db.ERTICaptionInfo;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.tasks.subpane.qb.ERTICaptionInfoQB;
+import edu.ku.brc.specify.tasks.subpane.qb.ERTICaptionInfoTreeLevel;
+import edu.ku.brc.specify.tasks.subpane.qb.QBDataSource;
+import edu.ku.brc.specify.tasks.subpane.qb.QBDataSourceListenerIFace;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
