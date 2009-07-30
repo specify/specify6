@@ -696,6 +696,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     {
     	if (qfp != null)
     	{
+    		QueryFieldPanel newQfp = null;
     		if (qfp.getFieldQRI() != null)
     		{
     			qfp.getFieldQRI().setIsInUse(false);
@@ -707,19 +708,28 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     			removeFieldFromQuery(qfp.getQueryField());
     			removeSchemaItemMapping(qfp.getItemMapping());
     		}
-    		if (!isConditionForSchemaMap(QueryBldrPane.this.selectedQFP))
+    		if (selectedQFP != null)
     		{
-    			SpExportSchemaItemMapping newMapping = new SpExportSchemaItemMapping();
-    			newMapping.initialize();
-    			newMapping.setExportSchemaItem(qfp.getSchemaItem());
-    			newMapping.setExportSchemaMapping(schemaMapping);
-    			newMapping.setQueryField(qf);
-    			schemaMapping.getMappings().add(newMapping);
-    			qf.setMapping(newMapping);
+    			if (!selectedQFP.isConditionForSchema())
+    			{
+    				SpExportSchemaItemMapping newMapping = new SpExportSchemaItemMapping();
+    				newMapping.initialize();
+    				newMapping.setExportSchemaItem(qfp.getSchemaItem());
+    				newMapping.setExportSchemaMapping(schemaMapping);
+    				newMapping.setQueryField(qf);
+    				schemaMapping.getMappings().add(newMapping);
+    				qf.setMapping(newMapping);
+    			}
     			qfp.setField(fieldQRI, qf);
                 fieldQRI.setIsInUse(true);
+                if (selectedQFP.isConditionForSchema())
+                {
+            		newQfp = new QueryFieldPanel(this, null, 
+            				columnDefStr, saveBtn, null, null, true);
+                	queryFieldItems.add(newQfp);
+                }
     		}
-    		updateUIAfterAddOrMap(fieldQRI, null, false, false);
+    		updateUIAfterAddOrMap(fieldQRI, newQfp, false, newQfp != null);
     	}
     }
     
@@ -783,16 +793,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     	}
     	return query.getFields().size() < size;
     }
-    /**
-     * @param qfp
-     * @return true if the supplied QueryFieldPanel is a "Add condition for Mapping" 
-     * QueryFieldPanel
-     */
-    protected boolean isConditionForSchemaMap(final QueryFieldPanel qfp)
-    {
-    	//XXX implement this
-    	return false;
-    }
+
     /**
      * @param esrp the esrp to set
      */
@@ -965,24 +966,28 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         {
         	for (QueryFieldPanel qfp : queryFieldItems)
         	{
-        		AutoMap mappedTo = autoMaps.get(qfp.getSchemaItem().getFieldName());
-        		if (mappedTo != null)
-        		{
-        			FieldQRI fqri = getFieldQRI(tableTree, mappedTo.getFieldName(), mappedTo.isRel(),
-        	    			mappedTo.getStringId(), getTableIds(mappedTo.getTableIds()),
-        	    			0, tableTreeHash);
-        			if (fqri != null)
-        			{
-        				SpQueryField qf = new SpQueryField();
-        				qf.initialize();
-        				qf.setFieldName(fqri.getFieldName());
-        				qf.setStringId(fqri.getStringId());
-        				query.addReference(qf, "fields");
-        				addNewMapping(fqri, qf, qfp);
-        				dirty = true;
-        			}
-        		}
-        	
+        		if (!qfp.isConditionForSchema())
+				{
+					AutoMap mappedTo = autoMaps.get(qfp.getSchemaItem()
+							.getFieldName());
+					if (mappedTo != null)
+					{
+						FieldQRI fqri = getFieldQRI(tableTree, mappedTo
+								.getFieldName(), mappedTo.isRel(), mappedTo
+								.getStringId(), getTableIds(mappedTo
+								.getTableIds()), 0, tableTreeHash);
+						if (fqri != null)
+						{
+							SpQueryField qf = new SpQueryField();
+							qf.initialize();
+							qf.setFieldName(fqri.getFieldName());
+							qf.setStringId(fqri.getStringId());
+							query.addReference(qf, "fields");
+							addNewMapping(fqri, qf, qfp);
+							dirty = true;
+						}
+					}
+				}
         	}
         }
         	
@@ -2151,9 +2156,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 	}
                 	catch (Exception ex)
                 	{
-                		UsageTracker.incrHandledUsageCount();
-                		edu.ku.brc.exceptions.ExceptionTracker.getInstance().capture(QueryBldrPane.class, ex);
-                		UIRegistry.getStatusBar().setErrorMessage(ex.getLocalizedMessage(), ex);
+                        String msg = StringUtils.isBlank(ex.getLocalizedMessage()) ? getResourceString("QB_RUN_ERROR") : ex.getLocalizedMessage();
+                    	UIRegistry.getStatusBar().setErrorMessage(msg, ex);
+                        UIRegistry.writeTimedSimpleGlassPaneMsg(msg, Color.RED);
                 		return;
                 	}
                 
@@ -3188,7 +3193,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 				removeSchemaItemMapping(qfp.getItemMapping());
 			}
 		}
-		if (exportSchema == null || isConditionForSchemaMap(qfp))
+		if (exportSchema == null || qfp.isConditionForSchema())
 		{
 			queryFieldItems.remove(qfp);
 			//XXX field label qualification issues for schema maps??
@@ -3202,7 +3207,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 				{
 					selectQFP(null);
 				}
-				if (exportSchema == null || isConditionForSchemaMap(qfp))
+				if (exportSchema == null || qfp.isConditionForSchema())
 				{
 					queryFieldsPanel.getLayout().removeLayoutComponent(qfp);
 					queryFieldsPanel.remove(qfp);
@@ -3552,6 +3557,42 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         		}
         	}
         }
+        // now add placeHolder panel for adding new condition
+		result.add(new QueryFieldPanel(container, null, 
+				container.getColumnDefStr(), saveBtn, null, null, true));
+        
+        //now add un-mapped fields
+        for (SpQueryField fld : fields)
+        {
+        	//int insertAt = 0;
+        	if (fld.getMapping() == null)
+        	{
+        		FieldQRI fieldQRI = getFieldQRI(tblTree, fld.getFieldName(), fld.getIsRelFld() != null && fld.getIsRelFld(),
+            			fld.getStringId(), getTableIds(fld.getTableList()), 0, ttHash);
+        		if (fieldQRI != null)
+        		{
+//        			result.insertElementAt(new QueryFieldPanel(container, fieldQRI, 
+//            				container.getColumnDefStr(), saveBtn, fld, null, true), insertAt++);
+        			result.add(new QueryFieldPanel(container, fieldQRI, 
+            				container.getColumnDefStr(), saveBtn, fld, null, true));
+        			fieldQRI.setIsInUse(true);
+        			if (fieldQRI.isFieldHidden() && !container.isPromptMode())
+        			{
+        				UIRegistry.showLocalizedMsg("QB_FIELD_HIDDEN_TITLE", "QB_FIELD_HIDDEN_SHOULD_REMOVE", fieldQRI.getTitle());
+        			}
+        		}
+        		else
+        		{
+        			log.error("Couldn't find [" + fld.getFieldName() + "] [" + fld.getTableList()
+                        + "]");
+        			if (missingFlds != null)
+        			{
+        				missingFlds.add(fld.getColumnAlias());
+        			}
+        		}
+        	}
+        }
+        
         return result;
     }
 
