@@ -1019,9 +1019,14 @@ public class TableViewObj implements Viewable,
                 }
                 
                 dialog.setData(dObj);
-                dialog.showDisplay(true);
-                
+                if (localSession != null)
+                {
+                    localSession.close();
+                    localSession = null;
+                }
                 dialog.setSession(null);
+                
+                dialog.showDisplay(true);
                 
             } catch (Exception ex)
             {
