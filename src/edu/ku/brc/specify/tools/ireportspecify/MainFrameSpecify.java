@@ -423,6 +423,13 @@ public class MainFrameSpecify extends MainFrame
     {
         AppResourceIFace appRes = apr.getAppRes();
         boolean newRep = ((SpAppResource)appRes).getId() == null;
+        if (!newRep)
+        {
+        	//Need to get the latest copy from context mgr.
+        	//If other new reports were created, context mgr may have updated this report's
+        	//appResource when new reports' appResources are created and added to a directory - I think.
+        	appRes = AppContextMgr.getInstance().getResource(appRes.getName());
+        }
         boolean result = false;
         boolean savedAppRes = false;
         String xmlString = xml.toString();
