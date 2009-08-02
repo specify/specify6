@@ -27,6 +27,7 @@ import java.util.ResourceBundle;
 import java.util.Vector;
 
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -103,6 +104,8 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 {
     protected static final Logger                            log            = Logger.getLogger(ExportPanel.class);
 
+    protected static final String EXPORT_TEXT_PATH = "ExportPanel.TabDelimExportPath";
+    
     protected JTable mapsDisplay;
 	protected DefaultTableModel mapsModel;
 	protected JButton exportToDbTblBtn;
@@ -219,6 +222,16 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 						UIRegistry.displayInfoMsgDlgLocalized("ExportPanel.CacheNotCreated");
 						return;
 					}
+					AppPreferences localPrefs =  AppPreferences.getLocalPrefs();
+					String defPath = localPrefs.get(EXPORT_TEXT_PATH, null);
+					JFileChooser save = defPath == null ? new JFileChooser() :
+						new JFileChooser(new File(defPath));
+					int result = save.showSaveDialog(null);
+    				if (result != JFileChooser.APPROVE_OPTION)
+					{	
+						return;
+					}
+    				localPrefs.put(EXPORT_TEXT_PATH, save.getCurrentDirectory().getPath());
 					mapUpdating = row;
 					stupid = 0;
 					SpExportSchemaMapping map = maps.get(row);
@@ -226,7 +239,8 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 						.getQueryField().getQuery();
 					Vector<QBDataSourceListenerIFace> ls = new Vector<QBDataSourceListenerIFace>();
 					ls.add(ExportPanel.this);
-					File file = new File(UIRegistry.getDefaultWorkingPath() + File.separator + q.getName() + ".txt");
+					//File file = new File(UIRegistry.getDefaultWorkingPath() + File.separator + q.getName() + ".txt");
+					File file = save.getSelectedFile();
 					exportToDbTblBtn.setEnabled(false);
 					exportToTabDelimBtn.setEnabled(false);
 					dumper = ExportToMySQLDB.exportRowsToTabDelimitedText(file, null, ExportToMySQLDB.fixTblNameForMySQL(q.getName()), ls);
