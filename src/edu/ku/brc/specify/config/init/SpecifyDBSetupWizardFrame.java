@@ -175,6 +175,23 @@ public class SpecifyDBSetupWizardFrame extends JFrame implements FrameworkAppIFa
                     ProcessListUtil.killProcess(id);
                 }
             }
+            
+            
+            try
+            {
+                boolean cont = true;
+                while (cont)
+                {
+                    Thread.sleep(2000);
+                    
+                    ids = ProcessListUtil.getProcessIdWithText("3337");
+                    cont = ids.size()> 0;
+                }
+                
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
         }
     }
 

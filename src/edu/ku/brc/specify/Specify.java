@@ -51,6 +51,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.NoSuchElementException;
@@ -128,6 +129,7 @@ import edu.ku.brc.af.prefs.PreferencesDlg;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.StatsTrackerTask;
 import edu.ku.brc.af.tasks.subpane.FormPane;
+import edu.ku.brc.af.ui.ProcessListUtil;
 import edu.ku.brc.af.ui.db.DatabaseLoginListener;
 import edu.ku.brc.af.ui.db.DatabaseLoginPanel;
 import edu.ku.brc.af.ui.forms.FormHelper;
@@ -329,10 +331,27 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         remotePrefs.getBoolean("Interactions.Doing.Exchanges."+ds, Discipline.isCurrentDiscipline(DisciplineType.STD_DISCIPLINES.botany), true); //$NON-NLS-1$
         remotePrefs.getBoolean("Agent.Use.Variants."+ds, Discipline.isCurrentDiscipline(DisciplineType.STD_DISCIPLINES.botany), true); //$NON-NLS-1$
         
+        remotePrefs.load(); // Loads prefs from the database
+        
         try
         {
             remotePrefs.flush();
+            
         } catch (BackingStoreException ex) {}
+    }
+    
+    
+    /**
+     * Check for and kills and existing embedded MySQl processes.
+     */
+    public static void checkForSpecifyAppsRunning()
+    {
+        List<Integer> ids = ProcessListUtil.getProcessIdWithText("specify");
+        if (ids.size() > 0)
+        {
+            UIRegistry.showLocalizedMsg("WARNING", "Specify.TOO_MANY_SP");
+            System.exit(0);
+        }
     }
     
     /**
@@ -341,6 +360,13 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
     public void startUp()
     {
     	log.debug("StartUp..."); //$NON-NLS-1$
+    	
+    	if (UIHelper.isLinux())
+    	{
+    	    checkForSpecifyAppsRunning();
+    	}
+    	
+    	SpecifyDBSetupWizardFrame.checkForMySQLProcesses();
     	
         // Adjust Default Swing UI Default Resources (Color, Fonts, etc) per Platform
         UIHelper.adjustUIDefaults();
