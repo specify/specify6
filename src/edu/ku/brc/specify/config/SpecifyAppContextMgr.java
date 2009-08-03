@@ -1104,8 +1104,6 @@ public class SpecifyAppContextMgr extends AppContextMgr
         
         DBTableIdMgr.getInstance().clearPermissions();
         
-        SpecifyAppPrefs.reloadPrefs();
-        
         // This is where we will read it in from the Database
         // but for now we don't need to do that.
         //

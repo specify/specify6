@@ -170,7 +170,7 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
                         if (spAppResource == null)
                         {
                             log.error("Couldn't find Prefs object");
-                            UIRegistry.showLocalizedError("Couldn't findRemote Prefs. Application will exit."); // I18N
+                            UIRegistry.showLocalizedError("Couldn't find Remote Prefs. Application will exit."); // I18N
                             System.exit(0);
                         }
                     }
