@@ -262,7 +262,7 @@ public abstract class AppContextMgr
      */
     public void setClassObject(final Class<?> clazz, final Object object)
     {
-        System.out.println(clazz+" "+object);
+        //System.out.println(clazz+" "+object);
         if (clazz == Discipline.class || clazz == Collection.class)
         {
             int x= 0;

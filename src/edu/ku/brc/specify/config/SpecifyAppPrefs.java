@@ -55,6 +55,15 @@ public class SpecifyAppPrefs
     }
 
     /**
+     * Reloads the AppPrefsCache after loading a new set of remote preferences. 
+     */
+    public static void reloadPrefs()
+    {
+        isInited = false;
+        initialPrefs();
+    }
+    
+    /**
      * Initialize the prefs.
      */
     public static void initialPrefs()
@@ -73,6 +82,9 @@ public class SpecifyAppPrefs
         }
     }
     
+    /**
+     * Loads Default preferences into the AppPrefsCache.
+     */
     public static void loadColorAndFormatPrefs()
     {
         //FastDateFormat fastDateFormat = FastDateFormat.getDateInstance(FastDateFormat.SHORT);      
