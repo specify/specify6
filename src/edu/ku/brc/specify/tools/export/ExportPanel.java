@@ -274,7 +274,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 				int row = mapsDisplay.getSelectedRow();
 				if (row != -1)
 				{
-					if (rebuildForRow(row))
+					if (!isBuiltForRow(row))
 					{
 						UIRegistry.displayInfoMsgDlgLocalized("ExportPanel.NoSQLForRebuild");
 					}
@@ -773,7 +773,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 						{
 							UIRegistry.displayInfoMsgDlgLocalized("ExportPanel.UpdateSuccess");
 							//status.setText(String.format(UIRegistry.getResourceString("ExportLabel.UpdateDone"), rowCount));
-							status.setText(UIRegistry.getResourceString("ExportLabel.CacheUpdated"));
+							status.setText(UIRegistry.getResourceString("ExportPanel.CacheUpdated"));
 						}
 						else
 						{
