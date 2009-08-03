@@ -101,7 +101,8 @@ public class QueryConfigureDlg extends CustomDialog
         
         HelpMgr.registerComponent(helpBtn, "QBSavedQueriesConfig"); 
         
-        String sqlStr = "FROM SpQuery as sq Inner Join sq.specifyUser as user where user.specifyUserId = "+AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getSpecifyUserId() + " ORDER BY ordinal";
+        String sqlStr = "FROM SpQuery as sq Inner Join sq.specifyUser as user where user.specifyUserId = "+AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getSpecifyUserId() 
+        	+ " ORDER BY ordinal";
 
         DataProviderSessionIFace session = null;
         try
@@ -114,13 +115,15 @@ public class QueryConfigureDlg extends CustomDialog
             {
                 Object[] objs = (Object[])row;
                 SpQuery query = (SpQuery)objs[0];
-                
-                if (query.getIsFavorite())
+                if (!QueryTask.isSchemaExportQuery(query))
                 {
-                    favQueries.add(query);
-                } else
-                {
-                    otherQueries.add(query);
+                	if (query.getIsFavorite())
+                	{
+                		favQueries.add(query);
+                	} else
+                	{
+                		otherQueries.add(query);
+                	}
                 }
             }
             

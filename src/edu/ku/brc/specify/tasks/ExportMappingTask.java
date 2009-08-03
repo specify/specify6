@@ -17,6 +17,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
@@ -600,6 +601,18 @@ public class ExportMappingTask extends QueryTask
 		return false;
 	}
 	
+	
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.QueryTask#getPopupMenu()
+	 */
+	@Override
+	public JPopupMenu getPopupMenu()
+	{
+		return null;
+	}
+
+
+
 	protected JPanel bldSchemaImportPane(String schemaNamespace)
 	{
 		PanelBuilder pb = new PanelBuilder(new FormLayout("5dlu, p, 2dlu, p, 5dlu", "p, 2dlu, p, 2dlu, p"));

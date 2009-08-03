@@ -994,7 +994,7 @@ public class QueryTask extends BaseTask
      * @param query
      * @return true if query is associated with a SpExportSchemaMapping
      */
-    protected boolean isSchemaExportQuery(SpQuery query)
+    public static boolean isSchemaExportQuery(SpQuery query)
     {
     	return BasicSQLUtils.getCount("select count(*) from spexportschemaitemmapping mapping inner join spqueryfield qf "
     			+ " on qf.spqueryfieldid = mapping.spqueryfieldid where qf.spqueryid = " + query.getId()) > 0;
@@ -1889,6 +1889,11 @@ public class QueryTask extends BaseTask
         }
         
         List<String> selectedList = null;
+        if (list.size() == 0)
+        {
+        	UIRegistry.showLocalizedMsg("QY_NO_QUERIES_TO_EXPORT");
+        	return;
+        }
         if (list.size() == 1)
         {
             selectedList = list;
