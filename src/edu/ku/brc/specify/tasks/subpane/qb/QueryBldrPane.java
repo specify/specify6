@@ -706,7 +706,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     			//removeReference doesn't work. Something off with the equals method or Comparable<?> stuff or something.
     			//query.removeReference(selectedQFP.getQueryField(), "fields");
     			removeFieldFromQuery(qfp.getQueryField());
-    			removeSchemaItemMapping(qfp.getItemMapping());
+    			if (!qfp.isConditionForSchema())
+    			{
+    				removeSchemaItemMapping(qfp.getItemMapping());
+    			}
     		}
     			if (!qfp.isConditionForSchema())
     			{
