@@ -980,10 +980,7 @@ public class TaskSemaphoreMgr
             semaphore.setMachineName(doLock ? machineName : null);
             semaphore.setScope(new Byte((byte)scope.ordinal()));
             semaphore.setLockedTime(now);
-            if (doLock)
-            {
-            	semaphore.setUsageCount(null);
-            }
+            semaphore.setUsageCount(null);
             semaphore.setTimestampModified(now);
             semaphore.setDiscipline(discipline);
             semaphore.setCollection(collection);
