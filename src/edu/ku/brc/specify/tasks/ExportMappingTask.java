@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
@@ -31,6 +32,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
+import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
@@ -88,7 +90,7 @@ public class ExportMappingTask extends QueryTask
 	        
 	        menuItems = new Vector<MenuItemDesc>();
 	        
-	        if (permissions == null || permissions.canModify())
+	        if (permissions == null || permissions.canView())
 	        {
 	            String    menuTitle = "ExportMappingTask.ExMapMenu"; //$NON-NLS-1$
 	            String    mneu      = "ExportMappingTask.ExMapMneu"; //$NON-NLS-1$
@@ -107,6 +109,30 @@ public class ExportMappingTask extends QueryTask
 	        }
 	        return menuItems;
 
+	}
+
+
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.af.tasks.BaseTask#getIcon(int)
+	 */
+	@Override
+	public ImageIcon getIcon(int size)
+	{
+        IconManager.IconSize iSize = IconManager.IconSize.Std16;
+        if (size != Taskable.StdIcon16)
+        {
+            for (IconManager.IconSize ic : IconManager.IconSize.values())
+            {
+                if (ic.size() == size)
+                {
+                    iSize = ic;
+                    break;
+                }
+            }
+        }
+        //return IconManager.getIcon("SystemSetup", iSize);
+        return IconManager.getIcon("Export16", iSize);
 	}
 
 

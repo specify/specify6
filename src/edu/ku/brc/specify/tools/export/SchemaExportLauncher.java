@@ -15,7 +15,9 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.WindowConstants;
 
+import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.PermissionIFace;
 import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.UsageTracker;
@@ -24,13 +26,11 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.db.DatabaseLoginListener;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.specify.SpecifyUserTypes.UserType;
 import edu.ku.brc.specify.config.SpecifyAppPrefs;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.SpExportSchemaMapping;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
-import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.tasks.QueryTask;
 import edu.ku.brc.specify.tasks.subpane.qb.QueryBldrPane;
 import edu.ku.brc.specify.tools.ireportspecify.IReportLauncher;
@@ -99,7 +99,8 @@ public class SchemaExportLauncher implements DatabaseLoginListener
         boolean canOpen = true;
         if (AppContextMgr.isSecurityOn())
         {
-            canOpen = SpecifyUser.isCurrentUserType(UserType.Manager);
+            PermissionIFace permissions = SecurityMgr.getInstance().getPermission("Task.ExportMappingTask");
+            canOpen = permissions.canView();
         }
         if (canOpen)
         {
@@ -107,8 +108,8 @@ public class SchemaExportLauncher implements DatabaseLoginListener
         }
         else
         {
-            JOptionPane.showMessageDialog(null, getResourceString("IReportLauncher.PERMISSION_DENIED"),
-                        getResourceString("IReportLauncher.PERMISSION_DENIED_TITLE"),
+            JOptionPane.showMessageDialog(null, getResourceString("SchemaExportLauncher.PERMISSION_DENIED"),
+                        getResourceString("SchemaExportLauncher.PERMISSION_DENIED_TITLE"),
                         JOptionPane.ERROR_MESSAGE);
             System.exit(0);
         }
