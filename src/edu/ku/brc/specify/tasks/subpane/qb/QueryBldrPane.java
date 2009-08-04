@@ -711,33 +711,33 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     				removeSchemaItemMapping(qfp.getItemMapping());
     			}
     		}
-    			if (!qfp.isConditionForSchema())
-    			{
-    				SpExportSchemaItemMapping newMapping = new SpExportSchemaItemMapping();
-    				newMapping.initialize();
-    				newMapping.setExportSchemaItem(qfp.getSchemaItem());
-    				newMapping.setExportSchemaMapping(schemaMapping);
-    				newMapping.setQueryField(qf);
-    				schemaMapping.getMappings().add(newMapping);
-    				qf.setMapping(newMapping);
-    			}
-    			qfp.setField(fieldQRI, qf);
-                fieldQRI.setIsInUse(true);
-                if (qfp.isConditionForSchema())
-                {
-            		final QueryFieldPanel theNewQfp = new QueryFieldPanel(this, null, 
-            				columnDefStr, saveBtn, null, null, true);
-            		theNewQfp.addMouseListener(new MouseInputAdapter()
-                    {
-                        @Override
-                        public void mousePressed(MouseEvent e)
-                        {
-                            selectQFP(theNewQfp);
-                        }
-                    });
-                	queryFieldItems.add(theNewQfp);
-                	newQfp = theNewQfp;
-                }
+    		if (!qfp.isConditionForSchema())
+			{
+				SpExportSchemaItemMapping newMapping = new SpExportSchemaItemMapping();
+				newMapping.initialize();
+				newMapping.setExportSchemaItem(qfp.getSchemaItem());
+				newMapping.setExportSchemaMapping(schemaMapping);
+				newMapping.setQueryField(qf);
+				schemaMapping.getMappings().add(newMapping);
+				qf.setMapping(newMapping);
+			}
+			qfp.setField(fieldQRI, qf);
+			fieldQRI.setIsInUse(true);
+			if (qfp.isConditionForSchema())
+			{
+				final QueryFieldPanel theNewQfp = new QueryFieldPanel(this,
+						null, columnDefStr, saveBtn, null, null, true);
+				theNewQfp.addMouseListener(new MouseInputAdapter()
+				{
+					@Override
+					public void mousePressed(MouseEvent e)
+					{
+						selectQFP(theNewQfp);
+					}
+				});
+				queryFieldItems.add(theNewQfp);
+				newQfp = theNewQfp;
+			}
     		updateUIAfterAddOrMap(fieldQRI, newQfp, false, newQfp != null);
     	}
     }
@@ -2260,6 +2260,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         }
         else
         {
+            if (schemaMapping != null)
+            {
+            	UIRegistry.displayInfoMsgDlgLocalized("QB_PREVIEW_DISPLAY_TINY");
+            }
             UIRegistry.displayStatusBarText("");
         }
         SwingUtilities.invokeLater(new Runnable() {
