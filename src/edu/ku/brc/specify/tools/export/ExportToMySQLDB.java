@@ -131,6 +131,24 @@ public class ExportToMySQLDB
 	
 	/**
 	 * @param toConnection
+	 * @param tblName
+	 * @throws Exception
+	 */
+	protected static void dropTable(Connection toConnection, String tblName) throws Exception
+	{
+		Statement stmt = toConnection.createStatement();
+		try
+		{
+			stmt.execute("drop table " + tblName);
+		}
+		finally
+		{
+			stmt.close();
+		}
+	}
+	
+	/**
+	 * @param toConnection
 	 * @param columns
 	 * @param tblName
 	 * @param idColumn
@@ -142,24 +160,29 @@ public class ExportToMySQLDB
 	{
         Statement stmt = toConnection.createStatement();
 		StringBuilder sql = new StringBuilder();
-		sql.append("create table " + tblName + "(");
-		if (idColumn)
+		try
 		{
-			sql.append(getIdFieldName(tblName) + " int");
-		}
-		boolean commafy = idColumn;
-		for (ERTICaptionInfo col : columns)
-		{
-			if (commafy)
+			sql.append("create table " + tblName + "(");
+			if (idColumn)
 			{
-				sql.append(", ");
+				sql.append(getIdFieldName(tblName) + " int");
 			}
-			commafy = true;
-			sql.append(getFieldDef(col));
+			boolean commafy = idColumn;
+			for (ERTICaptionInfo col : columns)
+			{
+				if (commafy)
+				{
+					sql.append(", ");
+				}
+				commafy = true;
+				sql.append(getFieldDef(col));
+			}
+			sql.append(")");
+			stmt.execute(sql.toString());
+		} finally
+		{
+			stmt.close();
 		}
-		sql.append(")");
-		stmt.execute(sql.toString());
-		stmt.close();
 	}
 	
 	/**
@@ -209,6 +232,10 @@ public class ExportToMySQLDB
 	    String tblName = fixTblNameForMySQL(originalTblName);
 	    if (overwrite || !tableExists(toConnection, tblName))
 	    {
+	    	if (tableExists(toConnection, tblName))
+	    	{
+	    		dropTable(toConnection, tblName);
+	    	}
 	    	createTable(toConnection, columns, tblName, idColumnPresent);
 	    	newTable = true;
 	    }
