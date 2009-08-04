@@ -849,7 +849,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
     }
 
     @OneToMany(mappedBy = "taxon")
-    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
+    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK, CascadeType.DELETE_ORPHAN} )
 	public Set<TaxonCitation> getTaxonCitations()
 	{
 		return this.taxonCitations;
