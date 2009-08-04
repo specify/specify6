@@ -15,9 +15,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.WindowConstants;
 
-import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.core.PermissionIFace;
 import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.UsageTracker;
@@ -26,11 +24,13 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.db.DatabaseLoginListener;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.SpecifyUserTypes.UserType;
 import edu.ku.brc.specify.config.SpecifyAppPrefs;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.SpExportSchemaMapping;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
+import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.tasks.QueryTask;
 import edu.ku.brc.specify.tasks.subpane.qb.QueryBldrPane;
 import edu.ku.brc.specify.tools.ireportspecify.IReportLauncher;
@@ -99,12 +99,10 @@ public class SchemaExportLauncher implements DatabaseLoginListener
         boolean canOpen = true;
         if (AppContextMgr.isSecurityOn())
         {
-            PermissionIFace permissions = SecurityMgr.getInstance().getPermission("Task.Reports");
-            canOpen = permissions.canView();
+            canOpen = SpecifyUser.isCurrentUserType(UserType.Manager);
         }
         if (canOpen)
         {
-            //openIReportEditor();
         	openSchemaExporter();
         }
         else
