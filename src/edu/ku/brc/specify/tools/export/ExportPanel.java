@@ -936,6 +936,7 @@ public class ExportPanel extends JPanel implements QBDataSourceListenerIFace
 						sql += ")";
 						int deletedRecs = BasicSQLUtils.getCountAsInt(conn, sql);
 						int otherRecs = 0; 
+						
 						HQLSpecs hql = getSpecs(map, true, false).getFirst();
 						DataProviderSessionIFace theSession = DataProviderFactory.getInstance().createSession();
 				        try

@@ -1272,7 +1272,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 
         StringBuilder sqlStr = new StringBuilder();
         sqlStr.append("select ");
-        if (distinct || hqlHasSynJoins)
+        if (distinct || hqlHasSynJoins || isSchemaExport)
         {
             sqlStr.append(" distinct ");
         }

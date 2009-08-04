@@ -296,7 +296,7 @@ public class ExportToMySQLDB
 				}
 				stmt.execute(getInsertSql(rows, tblName));
 			}
-			System.out.println("returning " + rowNum);
+			//System.out.println("returning " + rowNum);
 		    return rowNum;
 		}
 	    finally
