@@ -42,6 +42,7 @@ import edu.ku.brc.dbsupport.CustomQueryListener;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
@@ -652,12 +653,15 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         	 */
 
     		//basically just makes sure NodeNumbers are refreshed from the db
+
     		QueryIFace q = session.createQuery("select nodeNumber, highestChildNodeNumber from " + node.getClass().getSimpleName().toLowerCase() + 
-    			" where " + node.getClass().getSimpleName() + "ID = " + node.getTreeId(), true);
+    			" where " + node.getClass().getSimpleName() + "ID = " + node.getTreeId() 
+    			+ " and " + node.getClass().getSimpleName() + "TreeDefID = " + node.getDefinition().getTreeDefId(), true);
     		Object resObj = q.uniqueResult();
     		Object[] result = (Object[] )resObj;
     		node.setNodeNumber((Integer )result[0]);
     		node.setHighestChildNodeNumber((Integer )result[1]);
+    		
     	}
     	return true;		
     }
